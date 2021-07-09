@@ -1,0 +1,87 @@
+{smcl}
+{* 27nov2004}{...}
+{hline}
+help for {hi:pnrcheck} 
+{hline}
+
+{title:pnrcheck}
+
+{p 4 8 2}{cmd:pnrcheck} {it:variable_pnr}  [{cmd:,} {cmdab:savep:nr(}{it:variable_name}{cmd:)} {cmdab:savei:nd(}{it:variable_name}{cmd:)}
+ {cmdab:listw:rong} {cmdab:listm:issing} {cmdab:di:splay} ]      {p_end}
+
+{title:Description}
+
+{p 4 8 2}{cmd:pnrcheck} Algorithm to verify the check digit in Swedish personal identification numbers (PNRs).
+The check digit is the tenth digit constructed from the preceding nine digits, according to date of birth and gender.
+
+{title:Remark}
+
+{p 4 8 2} The {it:variable_pnr} could be either a string (A) or a numeric variable (B). The check digit 
+could also be missing (C). See help {help datatypes}.  {p_end}
+
+{cmd:(A)} The {it:variable_pnr} could be stored as string
+
+{p 4 8 2}Case 1   "4102179704"        str10  (standard storage type)   {p_end}
+{p 4 8 2}Case 2   "194102179704"      str12  (if there are 2 initial numbers of the year) {p_end}
+{p 4 8 2}Case 3   "410217-9704"       str11  (if there is a minus sign)    {p_end}
+{p 4 8 2}Case 4   "19410217-9704"     str13  (if there is a minus sign and the 2 initial numbers of the year) {p_end}
+
+{cmd:(B)} The {it:variable_pnr} could be stored as number with double precision
+
+{p 4 8 2}Case 5    4.102e+09          double (corresponding to Case 1) {p_end}
+{p 4 8 2}Case 6    1.914e+11          double (corresponding to Case 2) {p_end}
+
+{cmd:(C)} The tenth digit or check digit of the {it:variable_pnr} could be missing
+
+{p 4 8 2}Case 7    4.102e+08          double  (Case 5 without the check digit) {p_end}
+{p 4 8 2}Case 8    "410217970"          str9    (Case 1 without the check digit) {p_end}
+
+{title:Algorithm}
+
+{p 4 8 2}{hi:STEP 1}
+ Multiply each of the first nine digits in the PNR by the digits 2,1,2,1,2,1,2,1,2 {p_end}
+
+{p 4 8 2}{hi:STEP 2}
+ Calculate the cumulative sum of each of these 9 calculations  {p_end}
+
+{p 4 8 2}{hi:STEP 3}
+ Verify if the check digit of  {it:variable_pnr} is equal to the number we would have to add
+to the cumulative sum (from STEP 2) to obtain a multiple of 10 {p_end}
+
+{title:Options}
+
+{p 4 8 2}{cmdab:savep:nr(}{it:variable_name}{cmd:)} saves the right PNR variable{p_end}
+
+{p 4 8 2}{cmdab:savei:nd(}{it:variable_name}{cmd:)} saves an indicator variable according to the check digit status (0=Right, 1=Wrong, 2=Missing){p_end}
+
+{p 4 8 2}{cmdab:di:splay} displays algorithm's results: number of wrong and right PNR, percentage{p_end}
+
+{p 4 8 2}{cmdab:listw:rong} lists temporary variables {it:input_pnr  i_check  output_pnr  o_check} only for individuals whose check digit is wrong{p_end}
+
+{p 4 8 2}{cmdab:listm:issing}  lists temporary variables {it:input_pnr  i_check  output_pnr  o_check} only for individuals whose check digit is missing{p_end}
+
+{title:Examples}
+
+{p 4 8 2}{inp:. insheet using http://nicolaorsini.altervista.org/stata/tutorial/p/ex_pnrs.txt, clear}{p_end}
+{p 4 8 2}{inp:. pnrcheck pnr}{p_end}
+{p 4 8 2}{inp:. pnrcheck pnr, savep(pnrright) di}{p_end}
+{p 4 8 2}{inp:. pnrcheck pnr, savep(pnrright) savei(indvar) di listw}{p_end}	
+
+{title:Authors}      
+
+{p 4 8 2}Nicola Orsini, I.M.M., Karolinska Institutet, Sweden   {p_end}
+{p 4 8 2}Nicholas J. Cox, University of Durham, U.K.  {p_end}
+{p 4 8 2}Rino Bellocco, M.E.B., Karolinska Institutet, Sweden   {p_end}
+
+{title:Support}
+
+{p 4 8 2}Nicola Orsini, {browse "http://nicolaorsini.altervista.org"}, Karolinska Institutet, Sweden{p_end}
+{p 4 8 2}{browse "mailto:nicola.orsini@imm.ki.se?subject=pnrcheck":nicola.orsini@imm.ki.se} {p_end}
+
+{title:Also see}
+
+{p 4 8 2}{hi:[R] destring}{p_end}
+{p 4 8 2}{hi:[U] Commands for dealing with strings}{p_end}
+
+{p 0 19}On-line:  help for {help destring}, {help macro}, {help strfun} {p_end}
+

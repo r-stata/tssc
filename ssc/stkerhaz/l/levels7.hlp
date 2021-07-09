@@ -1,0 +1,114 @@
+{smcl}
+{* 10 September 2002/7 March 2003}{...}
+{hline}
+help for {hi:levels7}
+{hline}
+
+{title:Levels of integer or string variable}
+
+{p 2 11}
+{cmd:levels7} 
+{it:varname} 
+[{cmd:if} {it:exp}] 
+[{cmd:in} {it:range}] 
+[
+{cmd:,}
+{cmdab:l:ocal(}{it:macname}{cmd:)} 
+{cmdab:miss:ing} 
+{cmdab:s:eparate}{cmd:(}{it:separator}{cmd:)} 
+]  
+
+
+{title:Description}
+
+{p}{cmd:levels7} displays a sorted list of the distinct values of {it:varname}, 
+which should be a variable taking on integer or string values, or in other 
+words, a categorical variable, very broadly so defined. 
+
+
+{title:Remarks}
+
+{p}{cmd:levels7} serves two different functions.  Occasionally, it serves
+to give a compact display of the distinct values of {it:varname}.  More 
+commonly, it may be useful when it is desired to cycle through the 
+distinct values of {it:varname} with (say) {cmd:foreach}. 
+{cmd:levels7} leaves behind a list in {cmd:r(levels)} which may be used in a
+subsequent command. 
+ 
+{p}If working with string variables, note that Stata trims leading spaces in
+any operation of a form necessarily used within this program: 
+ 
+{p 8 16}{cmd:local} {it:macroname} {cmd:=} {it:string_variable}{cmd:[}{it:i}{cmd:]} 
+
+{p}{cmd:levels7} may not be used if {it:varname} contains non-integer numeric 
+values. 
+
+{p}{cmd:levels7} may hit the {help limits} imposed by your Stata. However, 
+it is likely to be most useful when the number of distinct values of 
+{it:varname} is modest. 
+
+{p}The terminology of levels of a factor has long been standard in 
+experimental design. See, for example, Cochran and Cox (1957, p.148) 
+or Yates (1937, p.5). 
+
+
+{title:Options}
+
+{p 0 4}{cmd:local(}{it:macname}{cmd:)} inserts the list of values in 
+local macro {it:macname} within the calling program's space. Hence 
+that macro will be accessible after {cmd:levels7} has finished. 
+This is helpful for subsequent use, especially with {cmd:foreach}. 
+
+{p 0 4}{cmd:missing} specifies that missing values of {it:varname} 
+should be included in the calculation.  The default is to exclude them. 
+
+{p 0 4}{cmd:separate}{cmd:(}{it:separator}{cmd:)} specifies a separator 
+to serve as punctuation for the values of the returned list.
+The default is a space. The most obviously useful alternative is a comma. 
+
+
+{title:Examples}
+
+{p 4 8}{inp:. levels7 rep78}
+
+{p 4 8}{inp:. levels7 rep78, sep(,)}
+
+{p 4 8}{inp:. levels7 rep78, miss}
+
+{p 4 8}{inp:. levels7 make if foreign}
+
+{p 4 4}{inp:. levels7 factor, local(levels)}{break} 
+{inp:. foreach l of local levels {c -(}}{break}
+{inp:.{space 8}di "-> factor = `l'"}{break}
+{it:.{space 8}whatever}{inp: if factor == `l'}{break}
+{inp:. {c )-}}
+
+   
+{title:Saved results} 
+
+{p 8 8}{cmd:r(levels)}{space 8}list of distinct values 
+
+
+{title:Author} 
+
+        Nicholas J. Cox, University of Durham, U.K.
+        n.j.cox@durham.ac.uk
+
+
+{title:Acknowledgements} 
+
+	Nicholas Winter identified a bug. 
+
+
+{title:References} 	
+
+{p}Cochran, W.G. and G.M. Cox. 1957. {it:Experimental design.} 
+New York: John Wiley. 
+
+{p}Yates, F. 1937. {it:The design and analysis of factorial experiments.}
+Harpenden: Imperial Bureau of Soil Science Technical Communication 35. 
+	 
+{title:Also see}
+
+{p 0 19}On-line:  help for {help foreach}; {help limits}{p_end}
+

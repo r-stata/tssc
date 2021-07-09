@@ -1,0 +1,103 @@
+{smcl}
+{* version 1.0.3 16apr2011}{...}
+{cmd:help callsado}
+{hline}
+
+{title:Title}
+
+{p 5}
+{cmd:callsado} {hline 2} Find (user-written) ado-files called by 
+(a)do-file
+
+
+{title:Syntax}
+
+{p 8}
+{cmd:callsado} {it:{help filename}}
+[{cmd:,} {opt path(path)} {opt sys:dir(codewords)} 
+{opt ext:ension(.ext)}]
+
+
+{p 5}
+where {it:codewords} are 
+
+{p 8}
+{hi:UPDATES}, {hi:BASE}, {hi:PLUS}, {hi:PERSONAL}, {hi:OLDPLACE}
+
+
+{title:Description}
+
+{pstd}
+{cmd:callsado} finds (user-written) ado-files called by (a)do-files. 
+Any ado-file's name found in {it:filename} is displayed together with 
+the line in which it is found. The program is intended for use by 
+programmers who lost track of the user-written ados called by their 
+(a)do-files. There is no default extension provided for {it:filename}. 
+Type e.g. {cmd:callsado foo.ado}
+
+
+{title:Remarks}
+
+{pstd}
+Note that {cmd:callsado} does not only report ado-files actually 
+called, but rather names of ado-files mentioned in {it:filename}. For 
+example the line
+
+	{cmd:local strip foobar}
+
+{pstd}
+in the do-file foo.do will cause {cmd:callsado} to report that 
+{cmd:strip.ado} is called by foo.do. The user will have to decide 
+whether the ado-file is actually called or just mentioned. This said, 
+keep track of the ado-files called by your programs while writing next 
+time!
+
+
+{title:Options}
+
+{phang}
+{opt path} specifies the path where {it:filename} is to be found. 
+{cmd:callsado} uses {help findfile} to locate {it:filename}.
+
+{phang}
+{opt sysdir(codewords)} specifies the directories from which to obtain 
+a list of installed ado-files. Default {it:codewords} are "PLUS 
+PERSONAL". This option is seldom used.
+
+{phang}
+{opt extension(.ext)} finds files with extension {it:.ext}. Default 
+extension is {hi:.ado}. This option is seldom used.
+
+
+{title:Example}
+
+{phang2}{cmd:. callsado foo.ado}{p_end}
+{phang2}{cmd:. callsado foo.ado ,extension(.mata)}{p_end}
+
+
+{title:Acknowledgments}
+
+{pstd}
+Partha S. Sarkar suggested this problem on {...}
+{browse "http://www.stata.com/statalist/archive/2011-09/msg00214.html":Statlist}.
+
+{pstd}
+Kit Baum made helpful comments regarding comment lines in searched 
+files and the specification of {it:filename}.
+
+{pstd}
+I am very grateful to Matthew White, who suggested option {opt path()} 
+and fixed problems caused by left single and compound double quotes and 
+local (global) macros used in (a)do-files.
+
+
+{title:Author}
+
+{pstd}Daniel Klein, University of Bamberg, klein.daniel.81@gmail.com
+
+
+{title:Also see}
+
+{psee}
+Online: {help ado}, {help sysdir}
+{p_end}

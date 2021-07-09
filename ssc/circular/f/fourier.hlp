@@ -1,0 +1,60 @@
+{smcl}
+{* 30mar2004}{...}
+{hline}
+help for {hi:fourier}
+{hline}
+
+{title:Fourier series creation} 
+
+{p 8 17 2}
+{cmd:fourier}
+{it:degvar}
+[{cmd:if} {it:exp}] 
+[{cmd:in} {it:range}] 
+[{cmd:,} 
+{cmdab:c:stub(}{it:str}{cmd:)}
+{cmdab:s:stub(}{it:str}{cmd:)}
+{cmdab:n:pairs(}{it:#}{cmd:)} 
+]
+
+
+{title:Description} 
+
+{p 4 4 2}{cmd:fourier} creates new variables which are
+
+{p 8 8 2}cos({it:i} * {it:degvar} * pi / 180)
+
+{p 4 4 2}and
+
+{p 8 8 2}sin ({it:i} * {it:degvar} * pi / 180)
+
+{p 4 4 2}for {it:degvar} (measured in degrees) and {it:i} = 1, ..., {cmd:npairs}.
+
+
+{title:Options} 
+
+{p 4 8 2}
+{cmd:cstub(}{it:str}{cmd:)} specifies the stub for the names of the new cosine 
+variables. This defaults to {cmd:cos_}, meaning that the cosines would be 
+called {cmd:cos_1}, {cmd:cos_2}, {cmd:cos_3} and so forth.
+
+{p 4 8 2}
+{cmd:sstub(}{it:str}{cmd:)} specifies the stub for the names of the new sine 
+variables. This defaults to {cmd:sin_}, meaning that the sines would be 
+called {cmd:sin_1}, {cmd:sin_2}, {cmd:sin_3} and so forth.
+
+{p 4 8 2}
+{cmd:npairs(}{it:#}{cmd:)} specifies the number of pairs of variables.
+This defaults to 1.
+
+
+{title:Example} 
+
+{p 4 8 2}{cmd:. fourier deg, np(3)}
+
+
+{title:Author} 
+
+{p 4 4 2}Nicholas J. Cox, University of Durham, U.K.{break} 
+	n.j.cox@durham.ac.uk
+

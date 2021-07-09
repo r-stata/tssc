@@ -1,0 +1,176 @@
+{smcl}
+{* 12feb2007}{...}
+{hline}
+help for {hi: mimstack} {right:JC Galati, P Royston & JB Carlin}
+{hline}
+
+{title:Title}
+
+{p 8 8 2}
+{cmd:mimstack} {hline 2} A command for stacking a multiply-imputed dataset into the format
+required by {help mim}.
+
+
+{title:Syntax}
+
+{p 8 17 2}
+{cmd:mimstack}{cmd:,}
+{cmd:m(}{it:#}{cmd:)}
+{cmdab:so:rtorder(}{it:varlist}{cmd:)}
+{cmd:istub(}{it:string}{cmd:)} | {cmd:ifiles(}{it:string}{cmd:)}
+[
+{cmd:nomj0}
+{cmd:clear}
+]
+
+
+{title:Description}
+
+{p 4 4 2}
+{cmd:mimstack} is a utility command which transforms a multiply-imputed dataset stored in
+seperate files into the format required by {help mim}.
+
+
+{title:Options}
+
+{p 4 8 2}
+{cmd:m} specifies the number of imputed datasets 
+
+{p 4 8 2}
+{cmdab:so:rtorder} specifies a list of one or more variables that uniquely identify
+the observations in each of the datasets to be stacked
+
+{p 4 8 2}
+{cmd:istub} specifies a list of `m'+1 datasets to be
+stacked, `istub'0.dta, `istub'0.dta, ..., `istub'`m'.dta, where
+`istub'0.dta contains the original data with missing values
+and the remaining files contain the `m' imputed copies of the
+data, unless the {cmd:nomj0} option is specified, in
+which case only the imputed datasets are stacked into
+{cmd:mim}-compatible format
+
+{p 4 8 2}
+{cmd:ifiles} specifies a space-separated list of `m'+1 datasets to be
+stacked, with the first filename specifying the file containing the original
+data with missing values, and the remaining `m' filenames specifying the files
+containind the imputed datasets, unless the {cmd:nomj0} option is specified, in
+which case only the `m' files containing the imputed data are specified
+
+{p 4 8 2}
+{cmd:nomj0} specifies that the original data is not to be stacked with the imputed
+datasets
+
+{p 4 8 2}
+{cmd:clear} allows the current dataset to be discarded
+
+
+{title:Remarks}
+
+{p 4 4 2}
+{it:For users:}
+
+{p 4 4 2}
+The first use of {cmd:mimstack} addresses the problem where the user has some number of imputed
+copies of a dataset (10 for example), possibly generated using some other software, and these are
+stored in separate data files, say "myfile0.dta", "myfile1.dta", ..., "myfile10.dta", where
+"myfile0.dta" contains the original data with missing values. The datasets are stacked into a
+{cmd:mim}-compatible dataset using the {cmd:istub} option as follows
+
+{p 4 4 2}
+{cmd:. mimstack, m(10) so("idno") istub(myfile) clear}
+
+{p 4 4 2}
+Here {cmdab:so:rtorder} must contain a list of variables that uniquely identify the observations
+in each of the datasets. Upon succesful completion of the stack operation, the resulting {help mim}
+compatible dataset is the current dataset in memory. Note that the {cmd:clear} option is only
+required if the current data has not been saved, but is to be discarded. If the user optionally
+wishes to stack only the imputed datasets (a practice that is strongly discouraged by the
+authors, since details of the values that were originally missing will be lost), then this is done
+using the nomj0 option as follows
+
+{p 4 4 2}
+{cmd:. mimstack, m(10) so("idno") nomj0 istub(myfile)}
+
+{p 4 4 2}
+In this case the file "myfile0.dta" is not required. Note that certain {help mim} functions
+({cmd:predict}, for example) require that the original data be stored with the imputed data in the
+stacked dataset.
+
+
+{p 4 4 2}
+{it:For programmers:}
+
+{p 4 4 2}
+While it is desirable to do as much processing of a mim dataset with the complete
+stacked dataset in memory, there are occasions where one may have valid reasons for
+needing to process each of the imputed datasets separately in memory (this is how
+the {cmd:manip} option of {help mim} is implemented, for example). In this scenario,
+{cmd:mimstack} may be used to restack the individual datasets post processing
+using the {cmd:ifiles} option, assuming that the changes to the individual datasets
+have been captured in separate temporary files and the {cmd:_mi} variable has been
+regenerated in each dataset to reflect any changes in the number of observations
+in the datasets:
+
+{p 4 4 2}
+{cmd:. mimstack, m(`m') so("_mi") ifiles(`"`ifilelist'"') clear}
+
+{p 4 4 2}
+Here {it:m} is the number of imputed datasets in the stack and {it:ifilelist} is a
+local macro containing the list of {it:m+1} temporary filenames, with each filename
+being separated by a space, and, if the path or names of the temporary files contain
+spaces, each filename enclosed in compound quotes.
+
+{p 4 4 2}
+Note that while the most natural approach to handling the above type of processing
+is by looping over the individual _mj values, and at each iteration, preserving
+the mim dataset, keeping the individual dataset required, processing it, saving the
+results to a temporary file and then restoring; for large m this is very
+inefficient. A preferable method is to temporarily save the mim dataset to disk
+and then read in each individual dataset one at a time via the {cmd:using} clause
+of the {cmd:use} command as follows:
+
+{p 4 4 2}
+{cmd:. quietly levelsof _mj, local(levels)}
+{p_end}
+{p 4 4 2}
+{cmd:. local m : word count `levels'}
+{p_end}
+{p 4 4 2}
+{cmd:. tempfile mimfile}
+{p_end}
+{p 4 4 2}
+{cmd:. quietly save `mimfile'}
+{p_end}
+{p 4 4 2}
+{cmd:. foreach j of local levels {c -(}}
+{p_end}
+{p 4 4 2}
+{cmd:.}{space 5}{cmd:use _all if _mj==`j' using `mimfile', clear}
+{p_end}
+{p 4 4 2}
+{cmd:.}{space 5}{cmd:...}
+{p_end}
+{p 4 4 2}
+{cmd:.}{space 5}{cmd:tempfile tfile`j'}
+{p_end}
+{p 4 4 2}
+{cmd:.}{space 5}{cmd:quietly save `tfile`j''}
+{p_end}
+{p 4 4 2}
+{cmd:.}{space 5}{cmd:local ifilelist `"`ifilelist' `tfile`j''"'}
+{p_end}
+{p 4 4 2}
+{cmd:. {c )-}}
+{p_end}
+{p 4 4 2}
+{cmd:. mimstack `mimfile', m(`m') so("_mi") ifiles(`"`ifilelist'"') clear}
+{p_end}
+
+
+{title:Also see}
+
+{p 4 4 2}
+Online:  help for
+{help mim}
+.
+{p_end}

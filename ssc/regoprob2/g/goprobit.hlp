@@ -1,0 +1,417 @@
+{smcl}
+{* Last revised September 05, 2006}{...}
+{hline}
+help for {hi:goprobit}
+{hline}
+
+{title:Maximum-Likelihood Estimation of Generalized Ordered Probit Models}
+
+{p 8 15 2}
+	{cmdab:goprobit} {it:depvar} [{it:indepvars}]
+	[{it:weight}] [{cmd:if} {it:exp}] [{cmd:in} {it:range}]
+	[{cmd:,}
+	{cmdab:p:l}
+	{cmdab:p:l(}{it:varlist}{cmd:)}
+	{cmdab:np:l}
+	{cmdab:np:l(}{it:varlist}{cmd:)}
+	{cmdab:c:onstraints:(}{it:clist}{cmd:)} {cmdab:r:obust}
+	{cmdab:cl:uster:(}{it:varname}{cmd:)}
+	{cmdab:l:evel:(}{it:#}{cmd:)}
+	{cmdab:sc:ore:(}{it:newvarlist}|{it:stub}{cmd:*)}
+	{it:maximize_options} ]
+{p_end}
+
+{p 4 4 2}
+{cmd:goprobit} shares the features of all estimation commands; see help
+{help est}. {cmd:goprobit} typed without arguments redisplays previous
+results. {cmd:fweight}s, {cmd:iweight}s, and {cmd:pweight}s are allowed;
+see help {help weights}.
+{p_end}
+
+{p 4 4 2}
+The syntax of {help predict} following {cmd:goprobit} is
+{p_end}
+
+{p 8 16 2}
+{cmd:predict} [{it:type}] {it:newvarname}({it:s}) [{cmd:if} {it:exp}] [{cmd:in}
+{it:range}] [{cmd:,} {it:statistic} {cmdab:o:utcome:(}{it:outcome}{cmd:)} ]
+{p_end}
+
+{p 4 4 2}
+where {it:statistic} is
+{p_end}
+
+{p 8 21 2}
+{cmd:p}{space 8}probability (specify one new variable and {cmd:outcome()}
+option, or specify k new variables, k = # of outcomes); the default
+{p_end}
+
+{p 8 21 2}
+{cmd:xb}{space 7}linear prediction ({cmd:outcome()} option required)
+{p_end}
+
+{p 8 21 2}
+{cmd:stdp}{space 5}S.E. of linear prediction ({cmd:outcome()} option
+required)
+{p_end}
+
+{p 8 21 2}
+{cmd:stddp}{space 4}S.E. of difference in linear predictions ({cmd:outcome()}
+option is {cmd:outcome(}{it:outcome1}{cmd:,}{it:outcome2}{cmd:)})
+{p_end}
+
+{p 4 4 2}
+Note that you specify one new variable with {cmd:xb}, {cmd:stdp}, and
+{cmd:stddp} and specify either one or k new variables with {cmd:p}.
+{p_end}
+
+{p 4 4 2}
+These statistics are available both in and out of sample; type "{cmd:predict}
+{it:...} {cmd:if e(sample)} {it:...}" if wanted only for the estimation sample.
+{p_end}
+
+
+
+{title:Description}
+
+{p 4 4 2}
+{cmd:goprobit} is a user-written program that estimates generalized
+ordered probit models. The actual values taken on by the dependent variable
+are irrelevant except that larger values are assumed to correspond to "higher"
+outcomes. This model relaxes the {it:parallel regression} assumption of the standard
+ordered probit model; see below and help {help oprobit}. {cmd:goprobit} supports linear
+constraints and allows the user to partially relax equal coefficients by specifying
+variables in {cmd:npl()} or {cmd:pl()}.
+{p_end}
+
+{p 4 4 2}
+{cmd:goprobit} is a modified version of Vincent Kang Fu's
+{cmd:gologit} and particularly Richard Williams' {cmd:gologit2} programs. The current
+version of {cmd:gologit2} allows to estimate the generalized ordered probit model using
+the link(probit) option and therefore produces results equivalent to goprobit.
+{cmd:goprobit} was written for Stata 8 and many of the references in this
+help file are for Stata 8 manuals and commands.
+{p_end}
+
+
+
+{title:Options}
+
+{p 4 8 2}
+{cmd:pl}, {cmd:npl}, {cmd:npl()}, {cmd:pl()} provide alternative means for
+imposing or relaxing equal coefficients. Only one may be specified at a time.
+{p_end}
+
+{p 8 12 2}
+{cmd:pl} specified without parameters constrains all independent variables
+to meet the parallel regression assumption. It will produce results that
+are equivalent to {cmd:oprobit}.
+{p_end}
+
+{p 8 12 2}
+{cmd:npl} specified without parameters relaxes the parallel regression
+assumption for all explanatory variables. This is the default option.
+{p_end}
+
+{p 8 12 2}
+{cmd:pl(}{it:varlist}{cmd:)} constrains the specified explanatory variables
+to meet the parallel regression assumption. All other variables do not need
+to meet the assumption. The variables specified must be a subset of the
+explanatory variables.
+{p_end}
+
+{p 8 12 2}
+{cmd:npl(}{it:varlist}{cmd:)} frees the specified explanatory variables
+from meeting the parallel regression assumption. All other explanatory
+variables are constrained to meet the assumption. The variables specified
+must be a subset of the explanatory variables.
+{p_end}
+
+{p 4 8 2}
+{cmd:constraints(}{it:clist}{cmd:)} specifies the linear constraints
+to be applied during estimation. The default is to perform unconstrained
+estimation. Constraints are defined with the {help constraint} command.
+{cmd:constraints(1)} specifies that the model is to be constrained
+according to constraint 1; {cmd:constraints(1-4)} specifies constraints
+1 through 4; {cmd:constraints(1-4,8)} specifies 1 through 4 and 8. Keep
+in mind that the {cmd:pl} and {cmd:npl} options work by generating
+across-equation constraints, which may affect how any additional constraints
+should be specified. When using the {cmd: constraint} command, refer to
+equations by their equation #, e.g. #1, #2, etc.
+{p_end}
+
+{p 4 8 2}
+{cmd:robust} specifies that the Huber/White/sandwich estimator of variance is to
+be used in place of the traditional calculation; see
+{hi:[U] 23.14 Obtaining robust variance estimates}.
+{cmd:robust} combined with {cmd:cluster()} allows observations which are not
+independent within cluster (although they must be independent between clusters).
+If you specify {cmd:pweight}s, {cmd:robust} is implied.
+{p_end}
+
+{p 4 8 2}
+{cmd:cluster(}{it:varname}{cmd:)} specifies that the observations are
+independent across groups (clusters) but not necessarily within groups.
+{it:varname} specifies to which group each observation belongs; e.g.,
+{cmd:cluster(personid)} in data with repeated observations on individuals.
+{cmd:cluster()} affects the estimated standard errors and variance-covariance
+matrix of the estimators (VCE), but not the estimated coefficients.
+{cmd:cluster()} can be used with {cmd:pweight}s to produce estimates for
+unstratified cluster-sampled data.
+{p_end}
+
+{p 4 8 2}
+{cmd:level(}{it:#}{cmd:)} specifies the confidence level in percent for the
+confidence intervals of the coefficients; see help {help level}.
+{p_end}
+
+{p 4 8 2}
+{cmd:score(}{it:newvarlist}|{it:stub}{cmd:*)} creates J-1 new variables, where J
+is the number of observed outcomes. Each new variable contains the contributions
+to the scores for an equation in the model; see {hi:[U] 23.15 Obtaining scores}.
+{p_end}
+
+{p 8 8 2}
+If {cmd:score(}{it:newvarlist}{cmd:)} is specified, J-1 new variables
+must be provided.
+{p_end}
+
+{p 8 8 2}
+If {cmd:score(}{it:stub}{cmd:*)} is specified, then variables
+{it:stub}{cmd:1}, {it:stub}{cmd:2}, ..., {it:stub}{cmd:J-1} will be created.
+{p_end}
+
+{p 8 8 2}
+The first variable contains {bind:d(ln L_i)/d(x_i B_1)}; the second
+variable contains {bind:d(ln L_i)/d(x_i B_2)}; and so on.
+{p_end}
+
+{p 4 8 2}
+{it:maximize_options} control the maximization process; see help
+{help maximize}. You should never have to specify them.
+{p_end}
+
+
+
+{title:Options for {help predict}}
+
+{p 4 8 2}
+{cmd:p}, the default, calculates predicted probabilities.
+{p_end}
+
+{p 8 8 2}
+If you do not specify the {cmd:outcome()} option, you must specify k
+new variables. For instance, say you fitted your model by typing
+"{cmd:goprobit happy income health}" and that {cmd:happy} takes on
+three values. Then you could type "{cmd:predict p1 p2 p3, p}" to
+obtain all three predicted probabilities.
+{p_end}
+
+{p 8 8 2}
+If you also specify the {cmd:outcome()} option, then you specify one
+new variable. Say that {hi:happy} took on values 1, 2, and 3. Then typing
+"{cmd:predict p1, p outcome(1)}" would produce the same {hi:p1} as above,
+"{cmd:predict p2, p outcome(2)}" the same {hi:p2} as above, etc. If {hi:happy}
+took on values 7, 22, and 93, you would specify {cmd:outcome(7)},
+{cmd:outcome(22)}, and {cmd:outcome(93)}. Alternatively, you could specify the
+outcomes by referring to the equation number ({cmd:outcome(#1)},
+{cmd:outcome(#2)}, and {cmd:outcome(#3)}.
+{p_end}
+
+{p 4 8 2}
+{cmd:xb} calculates the linear prediction. You must also specify the
+{cmd:outcome()} option.
+{p_end}
+
+{p 4 8 2}
+{cmd:stdp} calculates the standard error of the linear prediction. You must
+specify option {cmd:outcome()}.
+{p_end}
+
+{p 4 8 2}
+{cmd:stddp} calculates the standard error of the difference in two linear
+predictions. You must specify option {cmd:outcome()}, in this case with two
+particular outcomes of interest inside the parentheses; for example,
+"{cmd:predict sed, stdp outcome(1,3)}".
+{p_end}
+
+{p 4 8 2}
+{cmd:outcome()} specifies for which outcome the statistic is to be calculated.
+{cmd:equation()} is a synonym for {cmd:outcome()}: it does not matter which one
+you use. {cmd:outcome()} and {cmd:equation()} can be specified using (1)
+{cmd:#1}, {cmd:#2}, ..., with {cmd:#1} meaning the first category of the
+dependent variable, {cmd:#2} the second category, etc.; or (2) values of the
+dependent variable.
+{p_end}
+
+
+{title:Remarks}
+
+{p 4 4 2}
+The {cmd:oprobit} command included with Stata imposes what is called
+the {it:parallel regression assumption}. By default, {cmd:goprobit} relaxes the
+parallel regression assumption and allows the effects of the explanatory
+variables to vary with the point at which the categories of the dependent
+variable are dichotomized. However, if the {cmd:pl} option is specified,
+{cmd:goprobit} estimates the standard ordered probit model, e.g. the commands
+{cmd:oprobit y x1 x2 x3} and {cmd:goprobit y x1 x2 x3, pl} will produce
+equivalent results.
+{p_end}
+
+{p 4 4 2}
+In practice, the parallel regression assumption is often violated by the data.
+Standard advice in such situations is to go to a non-ordinal model,
+such as {cmd:mlogit}. Unfortunately, such models do not take into account the
+ordinal nature of the dependent variable and therefore cannot be efficient.
+{cmd:goprobit} provides an alternative generalized model introduced by Maddala
+(1983:46) and Terza (1985). This model possibly relaxes the parallel regression
+assumption for some explanatory variables while being maintained for others.
+For example, the command {cmd:goprobit y x1 x2 x3, npl(x1)} would relax the
+parallel regression assumption for x1 while maintaining it for x2 and x3.
+An equivalent command is {cmd:goprobit y x1 x2 x3, pl(x2 x3)} which forces
+x2 and x3 to meet the parallel regression assumption while not imposing it on x1.
+
+{p 4 4 2}
+More formally, suppose we have an ordinal dependent variable Y
+which takes on the values 1, 2, ..., J.  The generalized ordered probit
+model estimates a set of coefficients (including one for the constant)
+for each of the J - 1 points at which the dependent variable can be
+dichotomized.  The probabilities that Y will take on each of the values
+1, ..., J is equal to
+{p_end}
+
+	P( Y = 1 ) = F( -XB_1 )
+	P( Y = j ) = F( -XB_j ) - F( -XB_(j-1) )	j = 2, ..., J - 1
+	P( Y = m ) = 1 - F( -XB_(J-1) )
+
+{p 4 4 2}
+The generalized ordered probit model uses the normal distribution as
+the cumulative distribution F(.), although other distributions may also be
+used; see help {help gologit} and help {help gologit2}.
+{p_end}
+
+{p 4 4 2}
+The standard ordered probit model (estimated by Stata's {cmd:oprobit}
+command and by {cmd:goprobit} with the {cmd:pl} option) restricts the B_j
+coefficients to be the same for every dividing point j = 1, ..., J-1. The
+generalized ordered probit model (estimated in {cmd:goprobit} via the
+{cmd:npl()} and {cmd:pl()} options) restricts some B_j coefficients to be the
+same for every dividing point while others are free to vary.
+{p_end}
+
+{p 4 4 2}
+Note that the generalized ordered probit model imposes explicit restrictions
+on the parameters. Since probabilities are by definition constrained to be in the
+range [0,1], valid combinations must satisfy the following inequalities:
+{p_end}
+
+	XB_1 >= XB_2 >= XB_3 ... >= XB_J-1
+
+{p 4 4 2}
+The current version of {cmd:goprobit} does not impose these restrictions during
+the maximization process. After fitting the model, the user should verify the
+validity of the model by calculating predicted probabilities.
+See help {help gologit2} and
+{browse "http://www.nd.edu/~rwilliam/gologit2/"} for further discussion
+on this topic.
+{p_end}
+
+{p 4 4 2}
+A panel data version of {cmd:goprobit} with random effects can be estimated by
+{cmd: regoprob}; see help {help regoprob} if installed.
+{p_end}
+
+
+{title:Examples}
+
+{p 8 12 2}
+{cmd:. goprobit happy linc unempl health if male == 1, robust}
+{p_end}
+
+{p 8 12 2}
+{cmd:. goprobit happy linc unempl health if male == 1, robust npl(linc)}
+{p_end}
+
+{p 8 12 2}
+{cmd:. goprobit, level(99)}
+{p_end}
+
+{p 8 12 2}
+{cmd:. predict xb1, xb outcome(#1)}
+{p_end}
+
+
+
+{title:Author}
+
+{p 5 5}
+Stefan Boes{break}
+Socioeconomic Institute{break}
+Statistics and Empirical Economics Research Group{break}
+University of Zurich{break}
+boes@sts.unizh.ch{break}
+{browse "http://www.unizh.ch/sts/"}
+{p_end}
+
+
+
+{title:Acknowledgements}
+
+{p 5 5}
+Richard Williams of the Notre Dame Department of Sociology wrote {cmd:gologit2}.
+Richard Williams kindly gave me permission to use his code of {cmd: gologit2} and
+I adapted much of it when programming {cmd: goprobit}. For a more detailed description
+of {cmd: gologit2} and its features, see the reference below or help {help gologit2}.
+{p_end}
+
+
+
+{title:References}
+
+{p 5 5}
+Boes, S. and R. Winkelmann (2006) "Ordered Response Models." Allgemeines
+Statistisches Archiv 90: 165-179.
+{p_end}
+
+{p 5 5}
+Fu, V.K. (1998) "Estimating Generalized Ordered Logit Models." Stata Technical
+Bulletin 8: 160-164.
+{p_end}
+
+{p 5 5}
+Long, J.S and J. Freese (2003) "Regression Models for Categorical Dependent
+Variables Using Stata", revised edition, Stata Press.
+{p_end}
+
+{p 5 5}
+Maddala, G. (1983) "Limited-Dependent and Qualitative Variables in Econometrics."
+Cambridge University Press: Cambridge.
+{p_end}
+
+{p 5 5}
+Terza, J. (1985) "Ordered Probit: A Generalization." Communications in Statistics
+– A. Theory and Methods 14: 1–11.
+{p_end}
+
+{p 5 5}
+Williams, R. (2006)  "Generalized Ordered Logit/ Partial Proportional Odds
+Models for Ordinal Dependent Variables." The Stata Journal 6(1): 58-82. A pre-publication
+version is available at {browse "http://www.nd.edu/~rwilliam/gologit2/gologit2.pdf"}.
+{p_end}
+
+{p 5 5}
+Winkelmann, R. and S. Boes (2006) "Analysis of Microdata." Springer: Berlin.
+{p_end}
+
+
+{title:Also see}
+
+{p 4 13 2}
+Manual:
+{hi:[U] 23 Estimation and post-estimation commands},{break}
+{hi:[U] 29 Overview of Stata estimation commands}
+{p_end}
+
+{p 4 13 2} Online:  help for {help estcom}, {help postest}, {help constraint},
+{help oprobit}, {help ologit}, {help gologit}, {help gologit2}, {help regoprob}
+{p_end}

@@ -1,0 +1,94 @@
+{smcl}
+{* 8december2010}{...}
+{hline}
+help for {hi:msp}
+{hline}
+
+{title:Mokken Scale Procedure}
+
+{p 8 14 2}{cmd:msp} {it:varlist} [{cmd:,} {cmdab:nodet:ails} 
+{cmdab:ker:nel}({it:#}) {cmdab:c}({it:#}) {cmdab:note:st} {cmdab:p}({it:#}) 
+{cmdab:pairw:ise} {cmdab:minv:alue}({it:#}) {cmdab:nob:on} {cmdab:noadj:ust}]
+
+
+{p 8 14 2}{it:varlist} is a list of two existing dichotomous or polytomous variables or more.
+
+{title:Description}
+
+{p 4 8 2}{cmd:msp} selects scales of dichotomous or polytomous items with the Mokken Scale Procedure (MSP) defined by Mokken (1971) and by Hemker and al. (1995).
+
+{title:Options}
+
+{p 4 8 2}{cmd:nodetails} does not display informations during the algorithm of selection.
+
+{p 4 8 2}{cmd:kernel} defines a kernel for the first scale, defined as the first # items of {it:varlist}.
+
+{p 4 8 2}{cmd:c} defines the level of the threshold {it:c}. The level of {it:c} is fixed, by default, at 0.3.
+
+{p 4 8 2}{cmd:notest} selects the scales whithout tests among the Loevinger H coefficient (Hjk>0): the new item with the maximal value for Hj>c is always selected.
+
+{p 4 8 2}{cmd:p} defines the significance level for the tests. The level of {it:p} is fixed, by default, at 0.05.
+
+{p 4 8 2}{cmd:pairwise} does no more delete all the individuals who have one or more missing values among all the items of {it:varlist} but, only these ones who have, for each pair of items, one or more missing values to these two items.
+
+{p 4 8 2}{cmd:minvalue} defines the minimum value of the coefficient Hjk for a pair of item composing a scale. This minimal value is fixed by default to 0.
+
+{p 4 8 2}{cmd:nobon} does no more correct the significance level of the test by the Bonferroni correction.
+
+{p 4 8 2}{cmd:noadjust} approximates the tests statistics like the MSP program (Molenaar et al. (2000)).
+
+{title:Remarks}
+
+{p 4 8 2}For detailed informations on the Mokken scale procedure, see Mokken (1971), Hemker and al. (1995) or the manual of the MSP software (2000).
+
+{p 4 8 2}{cmd:msp} runs with dichotomous or polytomous items.
+
+{p 4 8 2}{cmd:msp} necessitates the program {help loevh} to compute.
+
+{title:Results}
+
+{p 4 8 2}{it:r(dim)} saves the number of built scales.
+
+{p 4 8 2}{it:r(selection)} saves a vector which contains, for each item, the scale where it is selected (0 if the item is unselected).
+
+{p 4 8 2}{it:r(H#)} saves the Loevinger's H coefficient of the #th scale.
+
+{p 4 8 2}{it:r(nbitems#)} saves the number of items selected in the #th scale.
+
+{p 4 8 2}{it:r(scale#)} saves the names of the items selected in the #th scale.
+
+{p 4 8 2}{it:r(scalenum#)} saves the numbers of the items selected in the #th scale.
+
+{title:Example}
+
+        {inp:. msp itemA1-itemA7}
+
+	{inp:. msp itemA* itemB* , nodetails kernel(2)}
+
+	{inp:. msp item* , c(0.2) nob pairwise}
+
+
+{title:References}
+
+{p 4 8 2}Hemker B. T., Sijtsma K. and Molenaar I. W., Selection of unidimensional scales from a multidimensional item bank in the polytomous Mokken IRT
+model, {it: Applied Psychological Measurement}, vol.19(4), 1995, pp. 337-352. 
+
+{p 4 8 2}Mokken R. J., A theory and procedure of scale analysis. New-York/Berlin : De Guyter, 1971.
+
+{p 4 8 2}Molenaar I. W., Sijtsma K. and Boer P. User's manual of MSP5 for Windows. Groningen (The Netherlands): iec ProGAMMA, 2000.
+
+{title:Also see}
+
+{p 4 13 2} help for {help loevh} (if installed), help for {help mokken} (if installed)
+
+{title:Author}
+
+{p 4 8 2}Jean-Benoit Hardouin, PhD, assistant professor{p_end}
+{p 4 8 2}EA 4275 "Team of Biostatistics, Clinical Research and Subjective Measures in Health Sciences"{p_end}
+{p 4 8 2}University of Nantes - Faculty of Pharmaceutical Sciences{p_end}
+{p 4 8 2}1, rue Gaston Veil - BP 53508{p_end}
+{p 4 8 2}44035 Nantes Cedex 1 - FRANCE{p_end}
+{p 4 8 2}Email:
+{browse "mailto:jean-benoit.hardouin@univ-nantes.fr":jean-benoit.hardouin@univ-nantes.fr}{p_end}
+{p 4 8 2}Websites {browse "http://www.anaqol.org":AnaQol}
+and {browse "http://www.freeirt.org":FreeIRT}

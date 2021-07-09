@@ -1,0 +1,41 @@
+{smcl}
+{* 16mar2011}{...}
+{hline}
+help for {hi:hmap}
+{hline}
+
+{title:Heatmap graphs}
+
+{p 8 14}{cmd:hmap} {help varlist} {bind: [, {cmdab:mon:ochrome}} {cmdab:sc:atter} ]
+
+{p}{cmd:hmap} uses the three variables in {help varlist} to graph a heatmap. The first two variables specify x and y coordinates; the third specifies the "heat" or amplitude to graph at that (x,y) coordinate.
+Option {cmd:monochrome} specifies a grayscale heatmap.  Option {cmd:scatter} places numerical values of the amplitude at each grid point.
+
+
+{title:Example}
+
+   clear all
+   set obs 64
+   g n=int(uniform()*10)
+   g x=1+int((_n-1)/8)
+   g y=1+mod((_n-1),8)
+   la def xlab 1 "one" 2 "two" 7 "seven" 8 "eight"
+   la def ylab 3 "three" 4 "four" 5 "five" 6 "six"
+   la val x xlab
+   la val y ylab
+   ta y x [fw=n]
+   hmap x y n
+   hmap x y n, sc
+    
+{title:Author of {cmd:hmap}}
+
+	Austin Nichols
+	<austinnichols@gmail.com>
+
+{title:Acknowledgments}
+
+    This program was suggested by Brendan Halpin <brendan.halpin@ul.ie>.
+
+{title:Also see}
+
+{p 0 19}On-line:  help for {help tddens} (if installed; {stata "findit tddens":findit tddens} to download).{p_end}

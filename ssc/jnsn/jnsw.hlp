@@ -1,0 +1,149 @@
+{smcl}
+{* 2007-02-26}{...}
+{cmd:help jnsw} {right:Version 1.0 2007-02-26}
+{hline}
+
+
+{title:Title}
+
+{p2colset 5 14 14 2}{...}
+{p2col:{hi:jnsw} {hline 2}}Fit Johnson's system of transformations by Wheeler's quantile method{p_end}
+{p2colreset}{...}
+
+
+{title:Syntax}
+
+{p 8 17 2}
+{cmd:jnsw}
+{varname}
+{ifin}
+[{cmd:,} {it:options}]
+
+{synoptset 20 tabbed}{...}
+{synopthdr}
+{synoptline}
+{syntab:Main}
+{synopt:{opth g:enerate(newvar)}}create variable named {it:newvar} that is the fitted normal transformation of {varname}{p_end}
+{synopt:{opt di:stribution(type)}}force fit to a specified Johnson distribution type{p_end}
+{synopt:{opt lnt:olerance(#)}}tolerance for discriminating from the log-normal line{p_end}
+{synopt:{opt tbo:neonly}}use only the upper quantiles{p_end}
+{synopt:{opt p:ercentile(#)}}use a subset of the data{p_end}
+{synopt:{opt ga:mma(#)}}force fit with a specified value for {it:gamma}{p_end}
+{synopt:{opt d:elta(#)}}force fit with a specified value for {it:delta}{p_end}
+{synopt:{opt l:ambda(#)}}force fit with a specified value for {it:lambda}{p_end}
+{synopt:{opt x:i(#)}}force fit with a specified value for {it:xi}{p_end}
+{synoptline}
+{p2colreset}{...}
+{p 4 6 2}
+{cmd:by} may be used with {cmd:jnsw}; see {helpb by}.{p_end}
+
+
+{title:Description}
+
+{pstd}
+{cmd:jnsw} fits Johnson systems of transformations using the quantile method of Wheeler (1980).
+
+
+{title:Options}
+
+{dlgtab:Main}
+
+{phang}
+{cmd:distribution} forces the fit to a user-specified Johnson distribution type;
+acceptable types are {it:SL}, {it:SB} and {it:SU} in upper case, lower case or mixed 
+case.  The default is to select the type by reference to the log-normal line.
+
+{phang}
+{cmd:lntolerance} specifies the tolerance for discriminating {it:SB} and {it:SU}
+distribution types from {it:SL}, based upon difference from the log-normal line.  The
+default is 0.01, acceptable values are 0.0001 to 0.5, with smaller values resulting in
+more fits declared as {it:SL} type.
+
+{phang}
+{cmd:tboneonly} requests that only the upper tail contribute to the the intermediary 
+{it:tb} result; the default is to use the average of two {it:tb}s determined from 
+both tails.
+
+{phang}
+{opt percentile(#)} requests that only the values of {varname} less than or equal to 
+the # percentile contribute to the fit; the default is 100.
+
+{phang}
+{opt gamma}
+{opt delta}
+{opt lambda}
+{opt delta} forces to fit to use user-specified values of the parameter.
+
+
+{title:Remarks}
+
+{pstd}
+{cmd:jnsw} fits parameters of Johnson distributions by the method of quantiles (Wheeler, 1980).
+The method selects and fits the Johnson distribution on the basis of five quantiles, one of 
+which is the median.  Flynn (2006) determined that, at least for fitting certain {it:SB} 
+distributions, Wheeler's quantile method performs better than two other popular percentile 
+methods that use only four percentiles.
+
+{pstd}
+Details of the method for fitting {it:gamma} and {it:delta} are given in Wheeler (1980).  In 
+particular, the default of using both tails to calculate the intermediary statistic, {it:tb}, 
+is based upon a suggestion in the article that this is expected to provide for more accurate 
+results in fitting {it:delta}.  The article illustrates the method using {it:tb} estimated from 
+only one tail, however, and the {opt tboneonly} option will force this should the user desire to
+follow Wheeler's illustrations.  
+
+{pstd}
+{it:lambda} and {it:xi} are fit using ordinary least-squares linear regression, as suggested in the article.
+
+{pstd}
+The {opt percentile} option is made available for use with censored data, as suggested in the article.
+
+{pstd}
+For the {it:SL} Johnson type, {cmd:jnsw} deviates from the article in that (i) {it:gamma} is 
+explicitly fit (Wheeler combines it into {it:delta}, assuming {it:lambda} will be explicitly fit), 
+(ii) {it:delta} is constrained to be positive in accordance with convention (Wheeler 
+allows it to be negative for negatively skewed data, again, assuming that {it:lambda} will be allowed 
+to vary freely), and (iii) {it:lambda} is set to 1 if the data are positively skewed and -1 if 
+the data are negatively skewed.  This latter convention of constraining {it:lambda} to unity, with 
+its sign reflecting direction of skew, follows Hill, Hill and Holder (1976).  That method is 
+implemented in {help jnsn} (if installed).  These deviations from Wheeler's article allow results 
+between the two methods to be directly comparable.  They also allow the results from {cmd:jnsw}, 
+which are returned in return scalars and a return macro, to be used in conjunction with {help ajv} 
+(if installed) to generate random variates that follow the Johnson distribution fit for {varname} 
+by {cmd:jnsw}.
+
+{title:References}
+
+{pstd}
+M. R. Flynn, Fitting human exposure data with the Johnson SB distribution. {it:Journal of Exposure Science and Environmental Epidemiology} {bf:16}:56{c 150}62, 2006.
+
+{pstd}
+I. D. Hill, R. Hill and R. L. Holder, Fitting Johnson curves by moments. {it:Applied Statistics} {bf:25}:180{c 150}89, 1976.
+
+{pstd}
+R. E. Wheeler, Quantile estimators of Johnson curve parameters. {it:Biometrika} {bf:67}:725{c 150}28, 1980.
+
+{title:Examples}
+
+{phang}{cmd:. jnsw x}
+
+{phang}{cmd:. jnsw x, di(sb) p(75) l(101) x(0)}
+
+
+{title:Author}
+
+{pstd}
+Joseph Coveney
+jcoveney@bigplanet.com
+
+
+{title:Also see}
+
+{psee}
+Manual:  {bf:[R] summarize}, {bf:[R] boxcox}, {bf:[R] lnskew0}, {bf:[R] ladder}
+
+{psee}
+Online:  {helpb jnsn}, {helpb ajv}, {helpb transint}, {helpb summarize}, {helpb boxcox}, {helpb lnskew0}, {helpb ladder}, 
+{helpb xriml}
+
+

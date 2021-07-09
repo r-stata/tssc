@@ -1,0 +1,114 @@
+{smcl}
+{* 14aug2008}{...}
+{hline}
+help for {hi:splitvallabels}
+{hline}
+
+
+{title:Split up value labels for multi-line graph labelling}
+
+
+{p 8 17}{cmd:splitvallabels} {it:varname}
+        [{cmd:if} {it:exp}] [{cmd:in} {it:range}]
+        [{cmd:,}
+        {cmdab:l:ength(}{it:#}{cmd:)} 
+        {cmd:local(}{it:localname}{cmd:)}
+        {cmdab:nob:reak}
+        {cmdab:v:als(}{it:numlist}{cmd:)} 
+        {cmdab:r:ecode} ]
+
+
+{title:Description}
+
+{p}{cmd:splitvallabels} splits the value labels for a variable into multiple chunks,
+and returns those chunks in a form appropriate for specification as part of a graph
+command.
+
+{p}When the labels associated with axis labels are very long, these
+labels can overlap each other in the graph.  This command breaks up these long labels
+and packages them in a format appropriate for specification as part of a {cmd:xlabel()} 
+or {cmd:relabel()} option.
+This will create multi-line labels on the graph.
+
+
+{title:Options}
+
+{p 0 4}{cmd:length()} specifies maximum length of each "chunk" of labels--that is, the maximum
+width of the resulting multi-line labels.  The default is 15.
+
+{p 0 4}{cmd:local()} specifies the name of a local in the caller's namespace for the result.  Note that the
+result is also returned in r(relabel).
+
+{p 0 4}{cmd:nobreak} specifies that words longer than {cmd:length()} not be broken.
+
+{p 0 4}{cmd:vals()} specifies the values of {it:varname} that are to be included.
+By default all values are included.
+
+{p 0 4}{cmd:recode} specifies that the values 1, 2, 3, etc. be used to map the labels. This is useful 
+if the labels are to be used with {cmd:graph bar} since {cmd:graph bar} always uses  
+values 1, 2, 3, etc. to address the {cmd:over()} groups.
+
+
+{title:Examples}
+
+        {com}. sysuse auto
+        {txt}(1978 Automobile Data)
+        
+        {com}. label define rep78 1 "Very low rating in 1978" ///
+        >      2 "Mediocre - Low Rating in 1978" ///
+        >      3 "Medium Rating in 1978" ///
+        >      4 "Not bad rating in 1978, considering" ///
+        >      5 "Excellent in 1978--the best of the year!"
+        {txt}
+        {com}. label values rep78 rep78
+        {txt}
+        {com}. splitvallabels rep78 , length(11)
+        {txt}
+        {com}. graph bar mpg , over(rep78, relabel(`r(relabel)') )
+        {res}{txt}
+        {com}. splitvallabels rep78 , length(11) vals(1 3 4)
+        {txt}
+        {com}. graph twoway scatter mpg rep78 , xlabel(`r(relabel)')
+        {res}{txt}
+        {com}. splitvallabels rep78 if rep78>=3, length(11) recode
+        {txt}
+        {com}. graph bar mpg if rep78>=3, over(rep78, relabel(`r(relabel)') )
+        {res}{txt}
+
+{p}{cmd:splitvallabels} may also be used to overcome the problem
+of quotes in value labels:
+
+        {com}. sysuse auto, clear
+        {txt}(1978 Automobile Data)
+        
+        {com}. label define rep78 1 "Low" 2 "Mediocre" 3 "Medium" ///
+        >      4 `"Not "bad""' 5 "Excellent"
+        {txt}
+        {com}. label values rep78 rep78
+        {txt}
+        {com}. graph bar mpg , over(rep78)
+        {err}invalid syntax
+        {txt}{search r(198):r(198);}
+        
+        {com}. splitvallabels rep78
+        {txt}
+        {com}. label values rep78
+        {txt}
+        {com}. graph bar mpg , over(rep78, relabel(`r(relabel)'))
+        {res}{txt}
+
+{title:Saved Results}
+
+{p}{cmd:splitvallabels} saves in r(relabel) a string that may be used for graph option
+specification.
+
+
+{title:Authors}
+
+    Nick Winter
+    Cornell University
+    nw53@cornell.edu
+
+    Ben Jann
+    ETH Zurich
+    jann@soz.gess.ethz.ch

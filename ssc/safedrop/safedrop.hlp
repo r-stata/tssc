@@ -1,0 +1,50 @@
+{smcl}
+{* 22oct2003}{...}
+{hline}
+help for {hi:safedrop}
+{hline}
+
+{title:Drop variables if and only if varnames specified in full} 
+
+{p 8 17 2}
+{cmd:safedrop}
+{it:namelist}
+
+
+{title:Description}
+
+{p 4 4 2}
+{cmd:safedrop} drops the variable(s) named in {it:namelist} if and only if every 
+element of {it:namelist} is a fully spelled out variable name. 
+
+
+{title:Remarks}
+
+{p 4 4 2}
+Suppose (1) you want to drop variable {cmd:myvar} if and only if
+that variable exists with exactly that name; (2) there is just one variable in your 
+dataset whose name begins with {cmd:myvar}, namely {cmd:myvariable}. 
+As {cmd:myvar} is an unambiguous abbreviation of {cmd:myvariable}, 
+both {cmd:drop myvar} and {cmd:capture drop myvar} will cause {cmd:myvariable}
+to be {cmd:drop}ped. {cmd:safedrop myvar} is a way to ensure that 
+this does not happen. 
+
+
+{title:Examples}
+
+{p 4 8 2}{cmd:. safedrop myvar}
+
+{p 4 8 2}{cmd:. safedrop myvar yourvar}
+
+
+{title:Author}
+
+{p 4 4 2}
+Nicholas J. Cox{break} 
+n.j.cox@durham.ac.uk 
+
+
+{title:Also see}
+
+{p 4 13 2}
+Online:  help for {help drop}

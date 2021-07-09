@@ -1,0 +1,54 @@
+.-
+help for ^mkbilogn^
+.-
+
+Creation of bivariate lognormal variables
+-----------------------------------------
+
+^mkbilogn^ var1 var2 [, ^r(^#^)^ ^m1(^#^)^ ^s1(^#^)^ ^m2(^#^)^ ^s2(^#^)^ ]
+
+Options
+-------
+^r(^#^)^	correlation of ln(var1) and ln(var2); default is .5.
+^m1(^#^)^ 	mean of ln(var1); default is 0.
+^s1(^#^)^ 	standard deviation of ln(var1); default is 1.
+^m2(^#^)^ 	mean of ln(var2); default is 0.
+^s2(^#^)^ 	standard deviation of ln(var2); default is 1.
+
+Saved results
+-------------
+Two new variables (var1, var2) are added to the data set. 
+
+Description
+-----------
+^mkbilogn^ creates random variables, var1 and var2, drawn from a 
+bivariate lognormal distribution defined as follows. As n --> oo,
+X1 (var1) and X2 (var2) are such that x1=log(X1) and x2=log(X2) 
+are bivariate Normal distributed with mean(x1) = m1, mean(x2) = m2, 
+s.d.(x1) = s1, s.d.(x2) = s2, corr(x1,x2) = rho. The parameters of 
+the distribution can be optionally chosen by the user, or default 
+to the values specified above.
+
+The program applies the methods proposed at the Stata FAQ:
+	http://www.stata.com/support/faqs/stat/mvnorm.html
+
+Examples
+--------
+. ^mkbilogn x y^
+
+. ^clear^
+. ^set obs 10000^
+. ^mkbilogn x1 x2, r(.3) m1(1) s1(2) m2(3) s2(4)^
+. ^ge ly1 = ln(y1)^
+. ^ge ly2 = ln(y2)^
+. ^su^
+. ^corr^
+
+Author
+------
+Stephen P. Jenkins <stephenj@@essex.ac.uk>
+Institute for Social and Economic Research
+University of Essex, Colchester CO4 3SQ, U.K.
+
+
+

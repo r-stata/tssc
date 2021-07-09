@@ -1,0 +1,37 @@
+/*
+ varprod
+*! VERSION 2.0 26/02/2014
+*/
+VERSION 10.0
+INCLUDE _std_large
+DEFINE _dlght 150
+INCLUDE header
+HELP hlp1, view("help varprod")
+RESET res1
+DIALOG main, label("varprod - Generate Row Product of Variables") ///
+	tabtitle("Main")
+BEGIN
+ TEXT tx_yvar	_lft	_top	120	., ///
+	label("New Variable:")
+ TEXT tx_xvar	_vlx	@	300	., ///
+	label("List of Variables:")
+ VARNAME vn_yvar  _lft	 _ss	120 .,	 ///
+	label("New Variable")
+ VARLIST vl_xvar  _vlx	 @	300 ., ///
+	label("List of Variables")
+END
+
+INCLUDE ifin
+
+PROGRAM command
+BEGIN
+put "egen "
+put main.vn_yvar
+put " " "= varprod("
+put main.vl_xvar 
+put ")"
+put " " /program ifin_output
+ beginoptions
+ endoptions
+END
+

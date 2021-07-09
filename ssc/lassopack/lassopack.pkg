@@ -1,0 +1,80 @@
+"d 'LASSOPACK': module for lasso, square-root lasso, elastic net, ridge, adaptive lasso estimation and cross-validation"
+d
+d  LASSOPACK is a suite of programs for penalized regression
+d methods suitable for the high-dimensional setting where the
+d number of predictors p may be large and possibly greater than the
+d number of observations. LASSOPACK supports both lasso and
+d logistic lasso regression. The package consists of six main
+"d programs: lasso2 implements lasso, square-root lasso, elastic"
+"d net, ridge regression, adaptive lasso and post-estimation OLS."
+d cvlasso supports K-fold cross-validation and rolling
+"d cross-validation for cross-section, panel and time-series data."
+d rlasso implements theory-driven penalization for the lasso and
+"d square-root lasso for cross-section and panel data. lassologit,"
+d cvlassologit and rlassologit are the corresponding programs for
+d logistic lasso regression. The lasso (Least Absolute Shrinkage
+"d and Selection Operator, Tibshirani 1996), the square-root-lasso"
+d (Belloni et al. 2011) and the adaptive lasso (Zou 2006) are
+d regularization methods that use L1 norm penalization to achieve
+"d sparse solutions: of the full set of p predictors, typically most"
+d will have coefficients set to zero. Ridge regression (Hoerl &
+d Kennard 1970) relies on L2 norm penalization; the elastic net
+d (Zou & Hastie 2005) uses a mix of L1 and L2 penalization. lasso2
+d implements all these estimators. rlasso uses the theory-driven
+"d penalization methodology of Belloni et al. (2012, 2013, 2014,"
+d 2016) for the lasso and square-root lasso. cvlasso implements
+d K-fold cross-validation and h-step ahead rolling cross-validation
+d (for time-series and panel data) to choose the penalization
+"d parameters for all the implemented estimators. lassologit,"
+d rlassologit and cvlassologit extend support to the case where the
+"d dependent variable is a binary response. In addition, rlasso"
+d implements the Chernozhukov et al. (2013) sup-score test of joint
+d significance of the regressors that is suitable for the
+d high-dimensional setting.
+d
+d KW: lasso
+d KW: elastic net
+d KW: ridge regression
+d KW: adaptive lasso
+d KW: cross-validation
+d KW: high-dimensional models
+d KW: regularization
+d KW: penalization
+d KW: sparsity
+d
+d Requires: Stata version 13.1
+d
+d Distribution-Date: 20191103
+d
+"d Author: Achim Ahrens, Economic and Social Research Institute, Republic of Ireland"
+d Support: email achim.ahrens@@esri.ie
+d
+"d Author: Christian B. Hansen, University of Chicago"
+d Support: email Christian.Hansen@@chicagobooth.edu
+d
+"d Author: Mark E Schaffer, Heriot-Watt University"
+d Support: email m.e.schaffer@@hw.ac.uk
+d
+f lassoutils.ado
+f lasso2.ado
+f lasso2_p.ado
+f lasso2.sthlp
+f ./c/cvlasso.ado
+f ./c/cvlasso.sthlp
+f ./r/rlasso.ado
+f ./c/cvlassologit.ado
+f lassologit.ado
+f ./r/rlassologit.ado
+f lassologit_p.ado
+f ./r/rlasso_p.ado
+f ./r/rlasso.sthlp
+f lassologit.ihlp
+f lassologit.sthlp
+f ./c/cs_rlasso.do
+f ./c/cs_cvlasso.do
+f ./c/cs_lasso2.do
+f ./c/cs_cvlassologit.do
+f ./c/cs_rlassologit.do
+f ./c/cs_lassologit.do
+f ./c/cs_cvlasso.smcl
+f ./c/cs_lasso2.smcl

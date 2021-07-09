@@ -1,0 +1,141 @@
+{smcl}
+{* 4feb2003/19sept2004}{...}
+{hline}
+help for {hi:ciw}, {hi:ciwi}
+{hline}
+
+{title:Binomial confidence intervals for proportions (Wilson score)}
+
+{p 15 19}{cmd:ciw}{space 2}[{it:varlist}] [{it:weight}] [{cmd:if} {it:exp}]
+[{cmd:in} {it:range}] [{cmd:,} {cmdab:l:evel(}{it:#}{cmd:)} {cmdab:t:otal} ]
+
+{p 15 19}{cmd:ciwi} {it:#obs} {space 4} {it:#succ} {space 3} 
+[{cmd:,} {cmdab:l:evel(}{it:#}{cmd:)} ]
+
+{p}{cmd:by} {it:...} {cmd::} may be used with {cmd:ciw} (but not with
+{cmd:ciwi}); see help {help by}.
+
+{p}{cmd:fweight}s are allowed with {cmd:ciw}; see help {help weights}.
+
+
+{title:Description}
+
+{p}{cmd:ciw} computes standard errors and binomial confidence intervals for 
+each variable in {it:varlist}, which should be 0/1 binomial variables. 
+{cmd:ciwi} is the immediate form of {cmd:ciw}, for which specify the number of
+observations and the number of successes.  See help {help immed}
+for more on immediate commands. With both commands 
+confidence intervals are calculated as Wilson score intervals.
+
+
+{title:Remarks} 
+
+{p}Suppose we observe {it:n} events and record {it:k} successes. Here as usual
+"success" is conventional terminology for whatever is coded 1.  For a 95%
+confidence interval, for example, we then solve the quadratic equation in {it:p}
+
+{p}({it:k} / {it:n} - {it:p}) / sqrt[{it:p} (1 - {it:p}) / {it:n}] = +/-{it:z}
+
+{p}where {it:z} is {cmd:invnorm(0.975)}. See Wilson (1927). This contribution
+is of historical interest as an anticipation of Neyman's subsequent formulation
+of confidence intervals. It is equivalent to adding {it:z}^2 observations to a
+sample, half of them successes and half failures.  (At a 95% level, {it:z}^2 /
+2 = 1.921 to 3 d.p. and so is nearly 2.) Among other properties, note that this
+interval is typically less conservative than the exact interval, so that
+coverage probabilities are on average close to the nominal confidence level. 
+
+{p}See Brown {it:et al.} (2001) for a much fuller discussion and an entry to
+the literature. Brown {it:et al.} (2002) provide supporting technical 
+background to that paper.
+Among many references, Agresti (2002, pp.14-21), Agresti and
+Coull (1998), Newcombe (1998, 2001) and Vollset (1993) provide clear and helpful
+context.  Williams (2001, Ch.6) provides a lively alternative 
+treatment of confidence intervals for one-parameter models. 
+For more on the American mathematician, physicist and statistician
+Edwin Bidwell Wilson (1879-1964), see Stigler (1997).  He should not be
+confused with the American biologist Edmund Beecher Wilson (1856-1939), who
+worked on cytology, embryology and heredity, nor with the American physical
+chemist Edgar Bright Wilson (1908-1992); the writings of the last include
+statistical topics (Wilson 1952). 
+
+{p}Note that this is close to, but not identical to, a procedure implemented by
+Gleason (1999). 
+
+
+{title:Options}
+
+{p 0 4}{cmd:level(}{it:#}{cmd:)} specifies the confidence level, in percent,
+for confidence intervals; see help {help level}.
+
+{p 0 4}{cmd:total} is for use with the {cmd:by} {it:...} {cmd::} prefix; it
+requests that, in addition to output for each by-group, output be added for all
+groups combined.
+
+
+{title:Examples}
+
+ {inp:. ciw foreign}
+
+ {inp:. ciwi 10 1}{right:(10 binomial events, 1 observed success)}
+
+
+{title:References}
+
+{p}Agresti, A. 2002. {it:Categorical data analysis.} 
+Hoboken, NJ: John Wiley.
+
+{p}Agresti, A. and Coull, B.A. 1998. Approximate is better than "exact" for 
+interval estimation of binomial proportions. {it:American Statistician} 
+52: 119-126. 
+
+{p}Brown, L.D., Cai, T.T., DasGupta, A. 2001. Interval 
+estimation for a binomial proportion. {it:Statistical Science}
+16: 101-133.
+
+{p}Brown, L.D., Cai, T.T., DasGupta, A. 2002. Confidence intervals 
+for a binomial proportion and asymptotic expansions. {it:Annals of Statistics}
+30: 160-201. 
+
+{p}Gleason, J.R. 1999. Improved confidence intervals for binomial proportions. 
+{it:Stata Technical Bulletin} 52: 16-18 ({it:STB Reprints} 9: 208-211). 
+
+{p}Newcombe, R.G. 1998. Two-sided confidence intervals for 
+the single proportion: comparison of seven methods. 
+{it:Statistics in Medicine} 17: 857-872.
+
+{p}Newcombe, R.G. 2001. Logit confidence intervals and 
+the inverse sinh transformation. 
+{it:American Statistician} 55: 200-202.
+
+{p}Stigler, S.M. 1997. Wilson, Edwin Bidwell. 
+In Johnson, N.L. and Kotz, S. (eds)  
+{it:Leading personalities in statistical sciences: from the seventeenth century to the present.} 
+New York: John Wiley, 344-346. 
+
+{p}Vollset, S.E. 1993. Confidence intervals for a 
+binomial proportion. {it:Statistics in Medicine} 12: 809-824. 
+
+{p}Williams, D. 2001. 
+{it:Weighing the odds: a course in probability and statistics.} 
+Cambridge: Cambridge University Press. 
+
+{p}Wilson, Edgar Bright. 1952. 
+{it:An introduction to scientific research.} 
+New York: McGraw-Hill.
+
+{p}Wilson, Edwin Bidwell. 1927. Probable inference, 
+the law of succession, and statistical inference. 
+{it:Journal, American Statistical Association} 
+22: 209-212. 
+
+
+{title:Acknowledgements} 
+
+	{p 8 8}John R. Gleason increased my interest in this problem.
+	Richard Williams found a bug in {cmd:ciwi}. 
+
+
+{title:Also see}
+
+ Manual:  {hi:[R] ci} 
+{p 0 19}On-line:  help for {help ci}, {help bitest}, {help immed}{p_end}

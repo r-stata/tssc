@@ -1,0 +1,205 @@
+{smcl}
+{* *! version 1.0.0  31jan2017}{...}
+{cmd:help geo2xy_picard}
+{hline}
+
+{title:Title}
+
+{phang}
+{cmd:geo2xy} {hline 2} Convert latitude and longitude to cartesian (x,y) coordinates
+
+
+{title:Map projection}
+
+{phang}
+Picard's equidistant cylindrical projection
+
+
+{title:Syntax}
+
+{p 8 16 2}
+{cmd:geo2xy}
+{it:lat_var lon_var} 
+{ifin} 
+{cmd:,}
+{c -(}{opt gen:erate(y_lat x_lon)}{c |}{opt replace}{c )-}
+[ 
+{opt proj:ection}{cmd:(}{opt picard}
+[,{help geo2xy##proj_name:proj_opts}]{cmd:)}
+{opt ti:ssot} ]
+
+
+{synoptset 42 tabbed}{...}
+{synopthdr}
+{synoptline}
+{p2coldent :* {opt gen:erate(y_lat x_lon)}}New variable names for the projected coordinates (note the order!){p_end}
+{p2coldent :* {opt replace}}Replace the values in {it:lat_var lon_var} with the projected coordinates{p_end}
+{synopt :{opt proj:ection(picard [,proj_opts])}}Specifies the projection and, optionally, projection parameters{p_end}
+{synopt :{opt ti:ssot}}Append Tissot's indicatrices (grid of circles){p_end}
+{synoptline}
+{pstd}* Either {opt gen:erate(y_lat x_lon)} or {opt replace} is required.
+{p2colreset}
+
+
+{synoptset 15 tabbed}{...}
+{synopthdr :proj_opts}
+{synoptline}
+{synopt :{it:lat1}}standard parallel (default is mid-latitude){p_end}
+{synoptline}
+{p2colreset}
+
+{title:Description}
+
+{pstd}
+On a unit sphere, a distance along a parallel is proportional to
+cos(latitude). So for several years, I have been making maps in Stata
+by plotting raw geographic latitudes and longitudes and adjusting the
+aspect ratio of the map so that the proportions are correct at
+mid-latitude. The map ratio is calculated as
+
+          (maxlat-minlat) / (cos(midlat) * (maxlon-minlon))
+
+{pstd}
+I did not quite understand that this qualifies as a projection
+until I started researching projections for {bf:geo2xy} and found
+out that this is exactly the same transformation that
+occurs with the 
+{it:{help geo2xy_equidistant_cylindrical:Equidistant Cylindrical projection}}.
+
+{pstd}
+The simplicity of being able to plot raw geographic latitudes and longitudes
+while maintaining the correct map aspect ratio is appealing 
+so I rolled it into {bf:geo2xy}.
+All you need to do is apply the aspect ratio returned by {bf:geo2xy}.
+See the example below.
+
+
+{title:Spheroid and (x,y) coordinates units}
+
+{pstd}
+This projection assumes that the geographic latitude and longitude describe 
+locations on a sphere.  The (x,y) coordinates are
+not projected and are simply clones of the original latitudes and longitudes.
+
+
+{title:Example}
+
+{pstd}
+This example requires {cmd:geo2xy}'s ancillary datasets
+in the current directory. Click 
+{stata `"net get geo2xy, from("http://fmwww.bc.edu/repec/bocode/g")"':here}
+to download them.
+
+{pstd}
+In the following example,
+a crosshair is plotted using the coordinates of the Washington Monument
+in Washington, DC. By default, the standard parallel is set to mid-latitude
+but in this case, it is aligned with Washington's latitude. That makes
+the map's horizontal distances accurate at that latitude. As with the
+{it:{help geo2xy_equidistant_cylindrical:Equidistant Cylindrical projection}}, 
+the vertical distances (along the same longitude line) are 
+correct throughout.
+
+{space 8}{hline 27} {it:example do-file content} {hline 27}
+{cmd}{...}
+{* example_start - picard}{...}
+	use "geo2xy_us_coor.dta", clear    
+	drop if inlist(_ID, 14, 39, 42) // Alaska, Puerto Rico, Hawaii
+        
+	geo2xy _Y _X , gen(lat lon) projection(picard, 38.889689)
+	
+	// the projected coordinates are the same as the original coordinates
+	assert _Y == lat
+	assert _X == lon
+	
+	// show the projection details and compute the plot's height
+	return list
+	local yheight = 6 * `r(aspect)'
+	
+	line lat lon, lwidth(vthin) lcolor(gray) cmissing(n) ///
+		xsize(6) ysize(`yheight') ///
+		ylabel(minmax, nogrid) yscale(off) ///
+		xlabel(minmax, nogrid) xscale(off) ///
+		plotregion(margin(small)) graphregion(margin(small)) ///
+		legend(off) name(picard, replace) ///
+		xline(-77.035279, lstyle(grid)) yline(38.889689, lstyle(grid))
+{* example_end}{...}
+{txt}{...}
+{space 8}{hline 80}
+{space 8}{it:({stata geo2xy_run picard using geo2xy_picard.hlp, requires("geo2xy_us_coor.dta") preserve:click to run})}
+{* example_start - picard_t}{...}
+{* 	use "geo2xy_us_coor.dta", clear}{...}
+{* 	drop if inlist(_ID, 14, 39, 42) // Alaska, Puerto Rico, Hawaii}{...}
+{*         }{...}
+{* 	geo2xy _Y _X , gen(lat lon) projection(picard, 38.889689) tissot}{...}
+{* 	}{...}
+{* 	// the projected coordinates are the same as the original coordinates}{...}
+{* 	assert _Y == lat}{...}
+{* 	assert _X == lon}{...}
+{* 	}{...}
+{* 	return list}{...}
+{* 	local yheight = 6 * `r(aspect)'}{...}
+{* 	}{...}
+{* 	line lat lon if !mi(_ID), lwidth(vthin) lcolor(gray) cmissing(n) ///}{...}
+{* 	||  ///}{...}
+{* 	line lat lon if mi(_ID), lwidth(vthin) lcolor(eltblue) cmissing(n) ///}{...}
+{* 		xsize(6) ysize(`yheight') ///}{...}
+{* 		ylabel(minmax, nogrid) yscale(off) ///}{...}
+{* 		xlabel(minmax, nogrid) xscale(off) ///}{...}
+{* 		plotregion(margin(small)) graphregion(margin(small)) ///}{...}
+{* 		legend(off) ///}{...}
+{* 		xline(-77.035279, lstyle(grid)) yline(38.889689, lstyle(grid))}{...}
+{* example_end}{...}
+{space 8}{it:({stata geo2xy_run picard_t using geo2xy_picard.hlp, requires("geo2xy_us_coor.dta") preserve:click to run with Tissot's indicatrices})}
+
+
+{title:Certification}
+
+{pstd}
+In the following example, the height of the map represents a 10 degree 
+range of latitude (45-35).
+The width of the map represents 150 degrees of longitude (75 - -75)
+as measured at the mid-latitude point (40 degrees).
+
+{space 8}{hline 27} {it:example do-file content} {hline 27}
+{cmd}{...}
+{* example_start - certify}{...}
+	clear
+	input double(_Y _X)
+	35 -75
+	45  75
+	end
+	
+	// short-cut to convert decimal degrees to radians
+	local d2r _pi / 180
+	local ar = (10 * `d2r') / (150 * `d2r' * cos(40 * `d2r'))
+	
+	geo2xy _Y _X, gen(y x) proj(picard)
+	return list
+	
+	assert `ar' == `r(aspect)'
+	assert _X ==  x
+	assert _Y ==  y
+{* example_end}{...}
+{txt}{...}
+{space 8}{hline 80}
+{space 8}{it:({stata geo2xy_run certify using geo2xy_picard.hlp, preserve:click to run})}
+
+
+{title:References and further reading}
+
+{pstd}
+Snyder, John P., 
+{it:Map projections: A working manual}.
+U.S. Geological Survey Professional Paper 1395, 1987.
+[{it:{browse "http://pubs.er.usgs.gov/publication/pp1395":download}}].
+
+{pstd}
+Wikipedia, {it:{browse "http://en.wikipedia.org/wiki/Equirectangular_projection":Equirectangular projection}}.
+Web page, reviewed 1/31/2017.
+
+
+{title:Author}
+
+{pstd}Robert Picard{p_end}
+{pstd}picard@netbox.com{p_end}

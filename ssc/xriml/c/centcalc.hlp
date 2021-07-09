@@ -1,0 +1,128 @@
+{smcl}
+{* 22feb2008}{...}
+{cmd:help centcalc}{right:Patrick Royston}
+{hline}
+
+{title:Centile calculation}
+
+
+{title:Syntax}
+
+
+{p 8 12 2}
+{cmd:centcalc}
+{it:mvar}
+{it:svar}
+[{cmd:,}
+{it:options}
+]
+
+
+{synoptset 20 tabbed}{...}
+{synopthdr}
+{synoptline}
+{synopt :{opt c:entiles(numlist)}}defines the required centiles of {it:yvar}|{it:xvar}{p_end}
+{synopt :{opt di:st(dist_name)}}specifies the distribution of the response variable{p_end}
+{synopt :{opt g:amma(# | gvar)}}G{p_end}
+{synopt :{opt de:lta(# | dvar)}}D{p_end}
+{synopt :{opt cv}}produces estimated parameters and centiles at all non-missing values of {it:xvar}{p_end}
+{synopt :{opt p:refix(stub)}}defines a censoring variable{p_end}
+{synoptline}
+{p2colreset}{...}
+
+
+{title:Description}
+
+{pstd}
+{opt centcalc} calculates distribution-based centiles from user-supplied parameter
+values for location ({it:mvar}), scale ({it:svar}) and shape ({opt gamma()}
+and {opt delta()}). The distributions ({opt dist()}) are all transformations
+of the Normal (Gaussian) distribution.
+
+
+{title:Options}
+
+{phang}
+{opt centiles(numlist)} is the list of estimated centiles (e.g. 50 for the median)
+to be calculated.
+
+{phang}
+{opt cv} is an option relating to the parameterisation of the S-curve for the
+chosen distribution.  See {help xriml} for more information.
+
+{phang}
+{opt delta(# | dvar)} defines the (second) shape parameter as a variable
+({it:dvar}) or as a number ({it:#}).  If {opt delta()} is not specified,
+it is taken from the macro {opt $S_delta}.
+
+{phang}
+{opt dist(dist_name)} determines the distributional model (see {help xriml}
+and Remarks below for further details). {it:dist_name} must be one of
+{opt n}, {opt en}, {opt men}, {opt pn}, {opt mpn}, or {opt sl}.
+If {opt dist()} is not specified, {it:dist_name} is taken from the macro {opt $S_dist}.
+
+{phang}
+{opt gamma(# | gvar)} defines the (first) shape parameter as a variable
+({it:gvar}) or as a number ({it:#}).  If {opt gamma()} is not specified,
+it is taken from the macro {opt $S_gamma}.
+
+{phang}
+{opt prefix(stub)} is the prefix of the names of new variables created to hold the
+estimated centiles, each labelled appropriately.  Default {it:stub} is {opt C}.
+
+
+{title:Remarks}
+
+{pstd}
+Further details of the distributions:
+
+    --------------------------------------------------------------------------
+    Code     Name of distribution   Location   Scale           Shape param(s)
+    --------------------------------------------------------------------------
+    {opt n}        Normal (Gaussian)      mean       std. dev.       (not applic.)
+    {opt en}       Exponential-Normal     median     std. dev.-like  skewness-like
+    {opt men}      Modulus exp-Normal     median     std. dev.-like  (see below)
+    {opt pn}       Power-Normal           median     std. dev.-like  power transf.
+    {opt mpn}      Modulus pow-Normal     median     std. dev.-like  (see below)
+    {opt sl}       Shifted lognormal      median     std. dev.-like  skewness-like
+    --------------------------------------------------------------------------
+
+{pstd}
+The {opt mpn} and {opt men} distributions each have two shape parameters, the first
+(denoted by G) related to skewness and the second (denoted by D) related to
+kurtosis.
+
+
+{title:Examples}
+
+{phang}
+{cmd:. centcalc M_ml S_ml, dist(n) centiles(10 90)}
+
+{phang}
+{cmd:. centcalc M_ml S_ml, dist(en) centiles(10 90) gamma(G_ml)}
+
+{phang}
+{cmd:. centcalc median cv, dist(pn) centiles(3 25 75 97) gamma(lambda) cv}
+
+{phang}
+{cmd:. centcalc M S, dist(men) centiles(1 3 50 97 99) gamma(g) delta(d)}
+
+
+{title:Author}
+
+{pstd}
+Patrick Royston, MRC Clinical Trials Unit, London.
+patrick.royston@ctu.mrc.ac.uk
+
+{pstd}
+Eileen Wright, Macclesfield
+
+
+{title:Also see}
+
+{psee}
+Manual:  {bf:[R] fracpoly}
+
+{psee}
+Online:  {help xriml}, {help xrigls} (if installed), {help fracpoly}
+{p_end}

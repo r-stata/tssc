@@ -1,0 +1,171 @@
+{smcl}
+{* *! version 1.3.0  29sep2013}{...}
+{cmd:help ghansen}
+{hline}
+
+{title:Title}
+
+{phang}
+{bf:ghansen} {hline 2} Gregory-Hansen test for cointegration with regime shifts
+
+{title:Syntax}
+
+{p 8 16 2}{cmd:ghansen}
+{depvar}
+{indepvars}
+{ifin}
+{cmd:,} {cmd:break(}{it:string}{cmd:)}
+{cmd:lagmethod(}{it:string}{cmd:)}
+[{cmd:maxlags(}{it:integer}{cmd:)}
+{cmd:trim(}{it:real}{cmd:)}
+{cmd:level(}{it:real}{cmd:)}]
+
+
+{synoptset 20 tabbed}{...}
+{synopthdr}
+{synoptline}
+{syntab:Main}
+{synopt:{opt break}} type of structural break of cointegration vector{p_end}
+{synopt:{opt lagmethod}} Method for lag selection in adf test{p_end}
+{synopt:{opt maxlags}} Maximum lags to search in adf test{p_end}
+{synopt:{opt trim}} fraction of data range to skip at either end when examining possible break points{p_end}
+{synopt:{opt level}} confidence level for downward t statistic lag selection in adf test{p_end}
+{synoptline}
+{p2colreset}{...}
+{p 4 6 2}
+{cmd:by} is allowed; see {manhelp by D}.{p_end}
+{p 4 6 2}
+You must {opt tsset} your data before using {cmd:ghansen}; see
+{manhelp tsset TS}.
+{p_end}
+{p 4 6 2}
+{depvar} and {indepvars} may contain time-series operators; see {help tsvarlist}.
+{p_end}
+
+{title:Description}
+
+{pstd}
+{cmd:ghansen} performs the Gregory-Hansen test for cointegration with regime shifts proposed in Gregory and Hansen
+(1996) on a dependent variable {depvar} and up to four independent variables in {indepvars} . The test's null hypothesis
+is no cointegration against the alternative of cointegration with a single shift at an unknown point in time.
+{cmd:ghansen} does not allow gaps within the observations of the time series.
+
+{title:Options}
+
+{dlgtab:Main}
+
+{phang}
+{opt break(string)} is required and specifies the type of break in the cointegration vector. Details are provided in Gregory and Hansen (1996) and Gregory and Hansen (1996a).
+
+{phang2}
+{cmd:break(level)} specifies a break in the constant term.
+
+{phang2}
+{cmd:break(trend)} specifies a break in the constant and the trend.
+
+{phang2}
+{cmd:break(regime)} specifies a break in the constant and the slope.
+
+{phang2}
+{cmd:break(regimetrend)} specifies a break in the constant, the slope and the trend (Gregory and Hansen 1996a)
+
+{phang}
+{opt lagmethod(string)} is required and specifies the algorithm to choose the number of lags in the Augmented Dickey Fuller tests.
+
+{phang2}
+{cmd:lagmethod(fixed)} sets the number of lags equal to the maximum lags specified in {opt maxlag(integer)}
+
+{phang2}
+{cmd:lagmethod(aic)} chooses the number of lags that minimize the Akaike information criterion.
+
+{phang2}
+{cmd:lagmethod(bic)} chooses the number of lags that minimize the Bayesian information criterion.
+
+{phang2}
+{cmd:lagmethod(downt)} chooses the number of lags such that the last lag is significant according to its t-statistic, starting from a maximum number of lags.
+
+{phang}
+{opt maxlags(integer)} is optional and specifies the maximum number of lags to include in the Augmented Dickey Fuller test, or the number of lags to include if
+{cmd:lagmethod} is fixed. {opt maxlags} is required if {cmd:lagmethod} is fixed. Default is T^0.25, where T is the sample size.
+
+{phang}
+{opt trim(real)} is optional and specifies the fraction of the data range to skip at either end when examining possible break
+ points. Default is 0.15. {opt trim} must be a positive real number between 0 and 0.25.
+ 
+{phang}
+{opt level(real)} is optional and specifies the cutoff confidence level for the downt lag selection method. Default is 0.95.
+ 
+{title:Examples}
+
+{pstd}{stata "webuse balance2 ,clear" :. webuse balance2 ,clear}
+
+{pstd}Break in level, lags chosen by Akaike criterion, maximum of 5 lags.
+
+{pstd}{stata "ghansen y i c, break(level) lagmethod(aic) maxlags(5)" :. ghansen y i c, break(level) lagmethod(aic) maxlags(5)}
+
+{pstd}Change in regime , 5 lags chosen by user.
+
+{pstd}{stata "ghansen y i c, break(regime) lagmethod(fixed) maxlags(5)" :. ghansen y i c, break(regime) lagmethod(fixed) maxlags(5)}
+
+{pstd}Change in regime and trend , downward t lag selection at the 99% confidence level, trim 10% of sample.
+
+{pstd}{stata "ghansen y i c, break(regimetrend) lagmethod(downt) level(0.99) trim(0.1)" :. ghansen y i c, break(regimetrend) lagmethod(downt) level(0.99) trim(0.1)} 
+
+{title:Saved results}
+
+{pstd}
+{cmd:ghansen} saves the following in {cmd:r()}:
+
+{synoptset 20 tabbed}{...}
+{p2col 5 20 24 2: Scalars}{p_end}
+{synopt:{cmd:r(tstat)}}t-statistic for adf test{p_end}
+{synopt:{cmd:r(lag)}}lags for adf test{p_end}
+{synopt:{cmd:r(breakptadf)}}estimated breakpoint for adf test{p_end}
+{synopt:{cmd:r(za)}}za statistic{p_end}
+{synopt:{cmd:r(breakptza)}}estimated breakpoint for za test{p_end}
+{synopt:{cmd:r(zt)}}zt statistic{p_end}
+{synopt:{cmd:r(breakptzt)}}estimated breakpoint for zt test{p_end}
+
+{synoptset 20 tabbed}{...}
+{p2col 5 20 24 2: Macros}{p_end}
+{synopt:{cmd:r(break)}}Type of break{p_end}
+{synopt:{cmd:r(badfdate)}}estimated break date for adf test{p_end}
+{synopt:{cmd:r(bzadate)}}estimated break date for za test{p_end}
+{synopt:{cmd:r(bztdate)}}estimated break date for zt test{p_end}
+{p2colreset}{...}
+
+
+
+{title:Author}
+
+{pstd}Jorge Eduardo P{c e'}rez P{c e'}rez, Brown University{break} 
+       jorge_perez@brown.edu
+       
+{title:References}
+
+{pstd}Gregory, Allan W. and Bruce E. Hansen (1996). "Residual-Based Tests for Cointegration in Models with Regime Shifts", {it: Journal of Econometrics} 70(1), pp. 99-126.
+
+{pstd}Gregory, Allan W. and Bruce E. Hansen (1996a). "Tests for Cointegration in Models with Regime and Trend Shifts", {it: Oxford Bulletin of Economics and Statistics} 58 (3), pp. 555-60.
+
+{pstd}Hansen, Bruce E. (n.d.) Residual-based tests for cointegration in models with regime shifts. {it: Programs -- Cointegration}. Retrieved August 1, 2011 from http://www.ssc.wisc.edu/~bhansen/progs/joe_96.html
+
+{title:Acknowledgements} 
+
+{pstd} This command is based on R code provided in  Hansen (n.d.) I am grateful to Muhammad Anees, Nicholas Cox and Juan Gorigoit{c i'}a for help in identifying
+bugs in previous versions of the program.
+
+{title:Disclaimer}
+
+{pstd} This program is provided without warranty of any kind. The author is not responsible for any cost derived by the usage
+ of this program.
+
+{title:Also see}
+
+{psee}
+{space 2}Help:  
+{manhelp vec TS},
+{manhelp vecrank TS},
+{help zandrews} (if installed),
+{p_end}
+
+

@@ -1,0 +1,744 @@
+.-
+help for various list utilities
+.-
+
+Manipulating lists of words
+---------------------------
+
+    ^alphlist^ [ ^, c^apitals ^u^nderscore ^n^oisily ^g^lobal^(^macname^)^ ] 
+
+    ^binolist , k(^#^)^ [ ^n^oisily ^g^lobal^(^macname^)^ ] 
+
+    ^bothlist^ list1 ^\^ list2 [ ^, n^oisily ^g^lobal^(^macname^)^ ] 
+
+    ^choplist^ list ^,^ { ^p^os^(^criterion^)^ | ^l^ength^(^criterion^)^ 
+    | ^v^alue^(^criterion^)^ | ^c^har^(^#^)^ } [ ^n^oisily ^g^lobal^(^macname(s)^)^ ] 
+
+    ^collist^ list [ ^, f^ormat^(^format^) nu^mber ]
+
+    ^convlist^ numlist1 ^\^ numlist2 [ ^, n^oisily ^g^lobal^(^macname^)^ ] 
+    
+    ^cseplist^ list [ ^, n^oisily ^g^lobal^(^macname^)^ ] 
+    
+    ^cvarlist^ list ^,^ [ { ^new^ | ^nu^meric | ^s^tring } 
+    ^n^oisily ^g^lobal^(^macname(s)^)^ ]
+    
+    ^dellist^ list ^,^  { ^d^elete^(^string^)^ | ^p^os^(^numlist of positions^)^ } 
+    [ ^e^xact ^a^ll ^n^oisily ^g^lobal^(^macname^)^ ]   
+
+    ^difflist^ list1 ^\^ list2 [ ^, n^oisily ^g^lobal^(^macname^)^ ]
+    
+    ^eqlist^ list1 ^\^ list2 [ ^, n^oisily ^g^lobal^(^macname^)^ ] 
+   
+    ^fmtlist^ list  ^, f^ormat^(^format^)^ [ ^n^oisily ^g^lobal^(^macname^)^ ]  
+
+    ^inslist^ list ^, i^nsert^(^words^) p^os^(^numlist of positions^)^ 
+    [ ^, n^oisily ^g^lobal^(^macname^)^ ]
+
+    ^joinlist^ list1 ^\^ list2 [ ^, s^ep ^n^oisily ^g^lobal^(^macname^)^ ] 
+
+    ^lclist^ list [ ^, n^oisily ^g^lobal^(^macname^)^ ]
+    
+    ^maplist^ list  ^, m^ap^(^expression^)^ [ ^s^ymbol^(^string^) n^oisily ^g^lobal^(^macname^)^ ]
+    
+    ^mnthlist^ [ ^, b^egin^(^str^) n^umber^(^#^) s^tep^(^#^) l^ong ^c^aplc ^u^ppercase
+    ^y^ear ^n^oisily ^g^lobal^(^macname^)^ ]
+    
+    ^poslist^ list1 ^\^ list2 [ ^, n^oisily ^g^lobal^(^macname^)^ ]
+
+    ^postlist^ list ^, p^ost^(^string^)^ [ ^s^ep^ n^oisily ^g^lobal^(^macname^)^ ]
+
+    ^prelist^ list ^, p^re^(^string^)^ [ ^n^oisily ^g^lobal^(^macname^)^ ]
+    
+    ^prodlist^ numlist [ ^, n^oisily ^g^lobal^(^macname^)^ ] 
+   
+    ^replist^ list ^, c^opies^(^#^)^ [ ^b^lock ^n^oisily ^g^lobal^(^macname^)^ ]  
+
+    ^revlist^ list [ ^, n^oisily ^g^lobal^(^macname^)^ ]
+
+    ^rotlist^ list ^, r^ot^(^#^)^ [ ^n^oisily ^g^lobal^(^macname^)^ ] 
+
+    ^sellist^ list ^, s^elect^(^string^)^ [ ^e^xact ^a^ll ^pre^fix ^post^fix ^suf^fix 
+    ^n^oisily ^g^lobal^(^macname^)^ ]  
+
+    ^seqlist^ stub ^, c^opies^(^#^)^ [ ^s^tart^(^#^) p^refix ^post^fix^(^string^)^ 
+    ^n^oisily ^g^lobal^(^macname^)^ ]  
+
+    ^sortlist^ list [ ^, n^oisily ^g^lobal^(^macname^)^ ] 
+
+    ^sublist^ list ^, f^rom^(^string^)^ [ ^t^o^(^string^) all n^oisily ^g^lobal^(^macname^)^ ]
+
+    ^sumlist^ numlist [ ^, n^oisily ^g^lobal^(^macname^)^ ] 
+ 
+    ^takelist^ list ^, p^os^(^numlist of positions^)^ [ ^n^oisily ^g^lobal^(^macname^)^ ]
+    
+    ^trnclist^ list ^,^ { ^l^ength^(^#^)^ | ^n^umber^(^#^)^ } [ ^n^oisily ^g^lobal^(^macname^)^ ] 
+
+    ^uclist^ list [ ^, n^oisily ^g^lobal^(^macname^)^ ]
+    
+    ^uniqlist^ list [ ^, n^oisily ^g^lobal^(^macname^)^ ]
+
+    ^varflist^ list  ^, g^enerate^(^newvar^)^ [ { ^sc^alar | ^g^lobal }
+    ^st^ring ^t^ype^(^variable_type^)^ ] 
+
+    ^vectlist^ vector [ ^, n^oisily ^g^lobal^(^macname^)^ ]
+
+    ^wclist^ list [ ^, n^oisily ^g^lobal^(^macname^)^ ]
+
+    ^xorlist^ list1 ^\^ list2 [ ^, n^oisily ^g^lobal^(^macname^)^ ]  
+
+
+Description
+-----------
+
+^alphlist^ produces the letters of the English alphabet ^a^ ... ^z^ [ ^_^ ] 
+or ^A^ ... ^Z^ [ ^_^] as a list of separate words.    
+
+^binolist^ produces binomial coefficients as a list of separate words. 
+
+^bothlist^ produces the list of words that are in both list1 and list2. 
+Repeated occurrences are selected only once. ^bothlist a b c d \ d e g^ 
+produces ^d^. 
+
+^choplist^ chops a list of words into two lists according to a stated
+criterion. 
+
+^collist^ displays a list in column form: each word is printed starting on 
+a new line.
+
+^convlist^ produces the convolution of two numlists. Given a_1, ... , a_m 
+and b_1, ... , b_n the convolution is c_k, k = 1, ... , m + n - 1, where c_k 
+is the sum of products a_i * b_j such that i + j - 1 = k. More graphically, 
+consider this table of indexes k for a list of 3 items, indexed by i, and a 
+list of 4 items, indexed by j. 
+
+                j
+            1  2  3  4  
+          +----------- 		
+	1 | 1  2  3  4  
+     i  2 | 2  3  4  5
+	3 | 3  4  5  6
+
+In words, form a multiplication table, and take sums over rising 
+diagonals. Thus the convolution of 1 2 1 and 1 3 3 1 is 
+1 (2 + 3) (1 + 6 + 3) (3 + 6 + 1) (3 + 2) 1 = 1 5 10 10 5 1. 
+
+^cseplist^ interpolates commas as separators between words in the list. 
+
+^cvarlist^ selects from a list of words those that are names of variables. 
+
+^dellist^ deletes from a list of words any that contain one or more 
+specified words, or any at specified positions. 
+
+^difflist^ produces a list of words that are in list1 but not in list2. 
+Repeated occurrences are selected only once. ^difflist a b c \ b^ 
+produces ^a c^. 
+
+^eqlist^ determines whether two lists are equal, that is, have the 
+same words in the same order. 
+
+^fmtlist^ produces a list of words displayed according to a specified 
+format. Most commonly, this is used for rounding to a specified number 
+of decimal places. 
+
+^inslist^ inserts words in the list at specified positions. 
+
+^joinlist^ joins or juxtaposes corresponding words from two lists. The lists 
+should have equal numbers of words, except that any list of length 1 is 
+repeated to match the other. Given ^a1 a2 a3 \ b1 b2 b3^, ^joinlist^ produces 
+^a1b1 a2b2 a3b3^ by default and ^a1 b1 a2 b2 a3 b3^ with the ^sep^ option. 
+Given ^a1 a2 a3 \ X^, it produces ^a1X a2X a3X^ by default. 
+
+^lclist^ converts each word in the list to lower case.
+
+^maplist^ evaluates an expression substituting each word in turn. The 
+expression may return a numeric or a string result.
+
+^mnthlist^ produces a list of months. 
+
+^poslist^ produces a list of positions of words in list1 that are in list2. 
+The position is that of the first occurrence of a word in list2. Words in list2 
+that are not in list1 are assigned position ^0^. ^poslist a b c c d \ b c e^ 
+produces ^2 3 0^.
+
+^postlist^ produces a list of words all followed by the specified string. 
+^postlist a b c, p(70)^ produces ^a70 b70 c70^. 
+
+^prelist^ produces a list of words all preceded by the specified string. 
+^prelist a b c, p(70)^ produces ^70a 70b 70c^. 
+
+^prodlist^ produces the product of a numlist. 
+
+^replist^ replicates a list of words. 
+
+^revlist^ reverses a list of words.
+
+^rotlist^ rotates a list of words. 
+
+^sellist^ selects from a list of words any that contain one or more specified 
+words. 
+
+^seqlist^ produces by default a list of words suffixed by successive integers,
+such as stub^1^, stub^2^, ... Note that stub can be blank (an empty string). 
+For further details see under Options.
+
+^sortlist^ sorts a list of words into alphabetic order. 
+
+^sublist^ removes the string specified by ^from( )^ from each of the 
+words in the list provided. It replaces that string by any string specified 
+by ^to( )^. ^to( )^ defaults to an empty string. If the string specified by 
+^from( )^ is equal to the whole word, it is in effect removed from the list.
+
+^sumlist^ produces the sum of a numlist. 
+
+^takelist^ yields the words at the specified positions in the list. 
+
+^trnclist^ truncates each word, either so that it is no longer than ^length( )^ 
+characters, or so that the last ^number( )^ characters are dropped. 
+
+^uclist^ converts each word in the list to upper case.
+
+^uniqlist^ deletes from a list of words any but the first occurrence 
+of each word in the list.
+
+^varflist^ generates a new variable from a list, putting successive words 
+in successive observations, starting at 1. 
+
+^vectlist^ puts the elements of a named vector into a list. 
+
+^wclist^ counts the number of words in a list.
+
+^xorlist^ selects words that occur in either but not both of two lists
+(symmetric difference of sets). ^xorlist a b c \ c d e^ selects ^a b d e^.
+Note that ^xorlist^ yields an empty list if and only if two lists 
+contain the same words (not necessarily in the same order). 
+
+
+Remarks
+-------
+
+`Words' are separated by spaces. No significance is attached to the number 
+of spaces. No commas or ^" "^ should be included. In the case of ^bothlist^, 
+^convlist^, ^difflist^, ^eqlist^, ^joinlist^, ^poslist^ and ^xorlist^, ^\^ 
+should not be included. Hence ^a b c^ is a list of three words, ^a^, ^b^ 
+and ^c^. Similarly, ^1 2 3^ is a list of three words, ^1^, ^2^ and ^3^.
+
+Position in the list is best explained by example. In the list ^a b c^, the 
+words ^a^, ^b^, ^c^ have positions ^1^, ^2^, ^3^, and also ^-3^, ^-2^, ^-1^. Thus 
+negative positions are counted backwards from the end of the list and 
+position ^-1^ refers to the last word. It is not an error to refer to 
+position ^0^ but the result is empty. 
+
+^choplist^ with ^length( )^ or ^char( )^, ^dellist, delete( )^, ^eqlist^, ^lclist^, 
+^sellist^, ^sortlist^, ^sublist^, ^trnclist^, ^uclist^ and ^varflist^ cannot 
+handle lists containing any individual word longer than 80 characters. 
+
+^maplist^ may produce undesired results if expressions returning string 
+results contain or would return any strings longer than 80 characters. 
+Expressions are not currently checked for this problem. 
+
+Any list given as input may be specified by one or more local or global 
+macros. 
+
+The list might be a list of variable names, for example, but note that 
+these programs do not treat wild cards or dashes in variable lists in 
+any special way. Similarly, as a general rule, these programs do not 
+expand number lists (numlists) given as the main argument. Exceptions 
+are ^convlist^, ^prodlist^ and ^sumlist^. 
+
+A word contains a string if ^index("^word^","^string^") > 0^.
+
+^wclist^ allows two statements of the form 
+
+    ^local nw : word count^ list 
+    ^di `nw'^ 
+	
+to be replaced by one statement. 	
+
+^lclist^ and ^uclist^ are needed for lists more than 80 characters long, 
+because, for example, ^local lower = lower("^string^")^ truncates strings 
+that long. However, for the same reason, ^lclist^ and ^uclist^ cannot handle 
+individual words more than 80 characters long. Naturally, this is less 
+of a restriction. 
+
+
+Options
+-------
+
+- options for all commands except ^collist^ and ^varflist^ 
+
+^noisily^ specifies that the resulting list(s) should be displayed.
+
+^global( )^ specifies a global macro name to hold the resulting list. 
+
+However, the ^global^ option of ^choplist^ and ^cvarlist^ may contain either 
+one or two names. The first name (of either one or two) will be used to hold 
+the words selected by the stated criterion. Any second name will be used to 
+hold the words not selected. 
+
+Note that the ^global^ option of ^varflist^, which does not take 
+an argument, has a different function. 
+
+- options specific to ^alphlist^ 
+
+^capitals^ specifies that the list should be ^A^ ... ^Z^ rather than the 
+default ^a^ ... ^z^.
+
+^underscore^ adds ^_^ to the list. 
+
+- option specific to ^binolist^ 
+
+^k(^#^)^ specifies that the binomal coefficients should be ^comb(^k - 1, i - 1^)^ 
+for i = 1, ... , k and integer k >= 1. ^k(5)^ produces ^1 4 6 4 1^. It is a 
+required option. 
+
+- options specific to ^choplist^ 
+
+^pos( )^ specifies a criterion for selecting words according to their 
+positions. ^pos(<=3)^ puts the first three words in list 1, and any others 
+in list 2. 
+
+^length( )^ specifies a criterion for selecting words according to their 
+lengths. ^length(7)^ puts words of length <= 7 in list 1, and any others in 
+list 2.
+
+^value( )^ specifies a criterion for selecting words according to their 
+values. Words may be compared according to their numeric or string order. 
+
+^char(^#^)^ specifies that the first # characters of each word be selected. 
+^char(1)^ puts the first character of each word in list 1, and any others 
+in list 2. If # is negative, the last # characters of each word will be 
+selected. ^char(-1)^ puts the last character of each word in list 1, and 
+any others in list 2. Note that list 1 and list 2 will contain the same 
+number of words if and only if every word is at least two characters long. 
+
+Precisely one of ^pos( )^, ^length( )^, ^value( )^ or ^char( )^ should be 
+specified. With the first three options, if just a number is specified, 
+^<=^ is prefixed, except that with ^pos( )^ if a negative sign is detected, 
+^>=^ is prefixed. ^pos(3)^ and ^pos(<=3)^ are thus equivalent, as are 
+similar choices with ^length( )^ and ^value( )^. ^pos(-1)^ puts the last 
+word in list 1, and all others in list 2. 
+
+- options specific to ^collist^ 
+
+^format( )^ specifies a format to use for each word. See help for @format@. 
+
+^number^ specifies that words should be numbered from 1 upwards. 
+
+- options specific to ^cvarlist^ 
+
+^new^, ^numeric^ and ^string^ specify that words are to be selected if they 
+are the names of new, numeric or string variables respectively. Only one 
+of these options may be specified. Otherwise the names of variables in 
+memory will be selected. 
+
+- options specific to ^dellist^ 
+
+^delete(^string^)^ specifies the words to be deleted. By default a word in 
+the list is deleted if it contains any of the words in ^delete( )^. Thus 
+^dellist abc bcd c d e, d(a b c)^ deletes ^abc bcd c^. 
+
+^all^ specifies that to be deleted each word must contain all the words 
+in ^delete( )^. Thus ^dellist abc bcd c d e, d(a b c) all^ deletes ^abc^.
+
+^exact^ specifies that exact matches are required. Words will be deleted 
+only if they equal the specified word. 
+
+^all^ may not be specified with ^exact^.
+
+^pos( )^ should contain a numlist of positions of words to be deleted. 
+
+Either ^delete( )^ or ^pos( )^ must be specified. 
+
+- option specific to ^fmtlist^ 
+
+^format(^format^)^ specifies a format. It is a required option. 
+See help for @format@.
+
+- options specific to ^inslist^ 
+
+^inslist^ inserts words from ^insert( )^ as separate words at positions 
+in the original list given by ^pos( )^. 
+
+^insert( )^ should contain one or more space-separated words. 
+
+^pos( )^ should contain a numlist of positions. Position # means after word # 
+in the original list or before word # + 1. Thus ^0^ means before word 1, ^1^ means 
+after word 1, and ^-1^ means after the last word. Numbers may be repeated. 
+
+If the number of words in ^insert( )^ is less than the number 
+of positions, ^insert( )^ is expanded as required. 
+
+For example, ^inslist a b c d e f g h , i(x) p(1/7)^ produces 
+
+^a x b x c x d x e x f x g x h^ 
+
+while ^inslist a b c d e f g h , i(( )) p(0 4 4 8)^ produces 
+
+^( a b c d ) ( e f g h)^ 
+
+- option specific to ^joinlist^ 
+
+^sep^ specifies that words produced are to be separate, that is, 
+juxtaposed not joined. 
+
+- options specific to ^maplist^ 
+
+^map(^expression^)^ specifies an expression which is evaluated using each word 
+in turn. It is a required option. The expression may return either a numeric 
+or a string result. The expression must contain a particular symbol (default 
+^@@^) which is used as a placeholder for the word. Thus ^map(-@@)^ negates each
+word; ^map(sqrt(@@))^ calculates the square root of each word; ^map("foo @@")^ 
+interpolates ^foo^ as a separate word before each word in the list. 
+
+^symbol(^string^)^ specifies an alternative to ^@@^ as a placeholder for 
+each word. Thus ^map(sqrt(X)) sy(X)^ is equivalent to ^map(sqrt(@@))^. 
+
+- options specific to ^mnthlist^ 
+
+^begin(^str^)^ specifies a month to start the sequence. str can be an integer 
+between 1 and 12, indicating a month from January (1) to December (12), or
+an unambiguous English month name or abbreviation (case is not important). 
+Thus a string starting with any of "ja", "Ja", "JA", or "jA" is taken to mean 
+January. January is the default. 
+
+^number(^#^)^ specifies the number of months in the list. 12 is the default. 
+
+^step(^#^)^ specifies the step between successive months in the list. 
+1 is the default.
+
+^long^ indicates long names (january ... december or January ... December). 
+Three letter abbreviations jan ... dec are the default. 
+
+^caplc^ indicates an initial capital followed by lower case, as in January ...
+December or Jan ... Dec. All lower case is the default. 
+
+^uppercase^ indicates all upper case, as in JANUARY ... DECEMBER or 
+JAN ... DEC. All lower case is the default. 
+
+^year^ indicates the year in which in the first month occurs. Years will 
+be appended to each month. 
+
+Thus ^mnthlist^ produces ^jan feb mar apr may jun jul aug sep oct nov dec^. 
+
+^mnthlist, n(49) b(3) s(12) year(1952) caplc^ produces the 49 months 
+^Mar1952 Mar1953^ ... ^Mar1999 Mar2000^. 
+
+- options specific to ^postlist^
+
+^post(^string^)^ specifies the string to be postfixed.  It is a required 
+option.
+
+^sep^ specifies that whatever is postfixed by ^postlist^ is a separator 
+and should not appear after the last word in the list. 
+^postlist a b c, p(,) sep^ produces the list ^"a, b, c"^.
+
+- option specific to ^prelist^ 
+
+^pre(^string^)^ specifies the string to be prefixed. It is a required 
+option.
+
+- options specific to ^replist^
+
+^copies(^#^)^ specifies the number of copies to be produced. 
+By itself ^copies(3)^ produces ^a a a b b b c c c^ given ^a b c^. 
+It is a required option. 
+
+^block^ specifies that the list is to be replicated as a block. 
+^copies(3) block^ produces ^a b c a b c a b c^ given ^a b c^. 
+
+- option specific to ^rotlist^ 
+
+^rot(^#^)^ rotates the list as follows. Suppose there are n words in the 
+list and ^rot(^r^)^ is specified. If r >= 0, the new list is the last n - r 
+words of the list followed by the first r words: that is, r words from 
+the start of the list are moved to the end. If r < 0, the new list is the 
+last r words of the list followed by the first n - r words: that is, r words 
+from the end of the list are moved to the start. Thus given ^1 2 3 4 5^, 
+^rot(1)^ produces ^2 3 4 5 1^ and ^rot(-1)^ produces ^5 1 2 3 4^. For any 
+integer r, ^mod(^r^,^n^)^ is used. 
+
+- options specific to ^sellist^
+
+^select(^string^)^ specifies the words to be selected. It is a required 
+option. By default a word in the list is selected if it contains any 
+of the words in ^select( )^. Thus ^sellist abc bcd c d e, s(a b c)^ 
+produces ^abc bcd c^. With any of ^prefix^, ^postfix^ or ^suffix select( )^ 
+must contain only a single word. 
+
+^exact^ specifies that exact matches are required. Words will be selected 
+only if they equal the specified word. 
+
+^all^ specifies that to be selected each word must contain all the words 
+in ^select^. Thus ^sellist abc bcd c d e, s(a b c) all^ produces ^abc^. 
+
+^all^ may not be specified with ^exact^. 
+
+^prefix^ specifies that to be selected each word must contain the single 
+word in ^select( )^ as a prefix, at its start. 
+Thus ^sellist abc bcd c d e, s(c) pre^ produces ^c^. 
+
+^postfix^ or ^suffix^ specifies that to be selected each word must contain 
+the single word in ^select( )^ as a postfix or suffix, at its end.  
+Thus ^sellist abc bcd c d e, s(c) post^ produces ^abc c^. 
+
+^prefix^ may not be combined with ^postfix^ or ^suffix^. None of these options 
+may be combined with ^exact^ or ^all^. 
+
+- options specific to ^seqlist^ 
+
+^copies(^#^)^ specifies the number of words in the list to be produced. 
+By itself ^copies(3)^ produces stub^1^ stub^2^ stub^3^. It is a required 
+option. 
+
+^start(^#^)^ specifies a starting number other than 1. ^copies(3) start(3)^ 
+produces stub^3^ stub^4^ stub^5^. 
+
+^prefix^ specifies that numbers are to be attached as prefixes. 
+^copies(3) prefix^ produces ^1^stub ^2^stub ^3^stub. 
+
+^postfix(^string^)^ specifies a postfix to be added to all words. 
+^post(b)^ adds ^b^ to the end of each word. 
+
+- options specific to ^sublist^
+
+^from(^string^)^ specifies the string to be substituted.  It is a required
+option.
+
+^to(^string^)^ optionally specifies a replacement string to be used by 
+^sublist^. In other words, it defaults to an empty string, and in that case 
+^sublist^ deletes the argument of ^from( )^ from each word in the list
+without replacing it. 
+
+^all^ specifies that all occurrences of string in each word are to 
+be substituted by ^sublist^. The default is to substitute the first 
+occurrence only. 
+
+- option specific to ^takelist^
+
+^pos(^numlist of positions^)^ specifies the positions of the words to be taken 
+from the list.
+
+- options specific to ^trnclist^
+
+^length(^#^)^ specifies the maximum length of word acceptable. With 
+^length(8)^, for example, words of 8 or fewer characters are unchanged, 
+while words of 9 or more characters are truncated to the first 8 
+characters. 
+
+^number(^#^)^ specifies the number of characters to be dropped from the 
+end of each word. ^number(^1^)^ drops the last character from each word. 
+Dropping # characters from a word # or fewer characters long blanks it out.
+
+- options specific to ^varflist^
+
+^generate(^newvar^)^ specifies the name of a new variable to receive 
+values. It is a required option.
+
+^global^ indicates that the list is of global names, whose values are to be 
+put in the new variable. ^varflist a b c, g(foo) global^ is equivalent to 
+^varflist $a $b $c, g(foo)^. Conversely, to put the names of globals ^a b c^
+in a new variable, do not specify ^global^. 
+
+^scalar^ indicates that the list is of scalar names, whose values are to be 
+put in the new variable. ^varflist a b c, g(foo) scalar^ puts the values of 
+scalars with names ^a b c^ in ^foo^. Conversely, to put the names of scalars 
+^a b c^ in a new variable, do not specify ^scalar^.
+
+^global^ and ^scalar^ may not be combined. 
+
+^string^ specifies that the new variable is to be a string variable. 
+^string^ without ^type( )^ implies ^str1^, so that ^type( )^ is not required 
+with ^string^. However, a numeric data type must not be specified with 
+^string^. 
+
+^type(^variable_type^)^ specifies the type as which the new variable is 
+first created. See ^string^ above. 
+
+
+Saved results
+-------------
+
+Note that, except for ^collist^ and ^varflist^, in each case global macros may 
+also be set using ^global( )^. 
+
+^alphlist^: ^r(list)^ contains a set of letters of the alphabet as separate 
+words. 
+
+^binolist^: ^r(list)^ contains binomial coefficients as separate words. 
+
+^bothlist^: ^r(list)^ contains the intersection, those words in list1 and 
+in list2. 
+
+^choplist^: ^r(list1)^ contains the words selected by the stated criterion. 
+^r(list2)^ contains the words not selected.
+
+^collist^ : none.
+
+^convlist^: ^r(list)^ contains the convolution of the two numlists 
+supplied. 
+
+^cseplist^: ^r(list)^ contains the words of the original list separated by 
+commas. ^cseplist 1 2 3 4 5^ returns ^1,2,3,4,5^ as its result. 
+
+^cvarlist^: ^r(list1)^ contains the words that are variable names.  
+^r(list2)^ contains the words that are not.
+
+^dellist^: ^r(list)^ contains the original list minus those words deleted.
+
+^difflist^: ^r(list)^ contains the difference set, those words in list1 not 
+in list2.
+
+^eqlist^: ^r(iseq)^ is 1 if list1 and list2 are equal and 0 otherwise. 
+
+^fmtlist^: ^r(list)^ contains the list of words displayed using the specified 
+format. 
+
+^inslist^: ^r(list)^ contains the list after insertion. 
+
+^joinlist^: ^r(list)^ contains the list of joined or juxtaposed words. 
+
+^lclist^: ^r(list)^ contains the list in lower case. 
+
+^maplist^: ^r(list)^ contains the results of evaluating the expression 
+supplied with each word substituted in turn.
+
+^mnthlist^: ^r(list)^ contains the list of months specified. 
+
+^poslist^: ^r(list)^ contains the indexes of the words in list2 within list1. 
+
+^postlist^: ^r(list)^ contains the original list with each word followed by 
+the specified string (unless the ^sep^ option is specified).
+
+^prelist^: ^r(list)^ contains the original list with each word preceded by 
+the specified string.
+
+^prodlist^: ^r(prod)^ contains the product of the list. 
+
+^replist^: ^r(list)^ contains the replicated list. 
+
+^revlist^: ^r(list)^ contains the reverse of the original list (last word 
+first, etc.)
+
+^rotlist^: ^r(list)^ contains the rotated list. 
+
+^sellist^: ^r(list)^ contains those words selected from the original list.
+
+^seqlist^: ^r(list)^ contains a list of words suffixed (optionally, prefixed) 
+by successive integers.   
+
+^sortlist^: ^r(list)^ contains the words from list sorted into alphabetic order.
+
+^sublist^: ^r(list)^ contains the original list with each word modified by 
+substitution of the argument of ^to( )^ for the argument of ^from( )^. 
+
+^sumlist^: ^r(sum)^ contains the sum of the list. 
+
+^takelist^: ^r(list)^ contains words which were at specified positions in the 
+list.  
+
+^trnclist^: ^r(list)^ contains the original list, except that either each word 
+more than ^length( )^ characters long is truncated to its first ^length( )^ 
+characters, or the last ^number( )^ characters have been dropped.
+
+^uclist^: ^r(list)^ contains the list in upper case.
+
+^uniqlist^: ^r(list)^ contains the first occurrence of each word from list.
+
+^varflist^: none. 
+
+^vectlist^: ^r(list)^ contains the elements of a vector as a list of words.
+
+^wclist^: ^r(nw)^ contains the number of words in list.
+
+^xorlist^: ^r(list)^ contains the symmetric difference set, those words in 
+either list1 or list2, but not both. 
+
+
+Examples
+--------
+
+    . ^binolist, k(5)^ 
+
+    . ^choplist 1 2 3 4 5 6 7, p(<=3)^	
+    . ^choplist 1 2 3 4 5 6 7, p(3)^	
+    . ^choplist 7 6 5 4 3 2 1, v(>=3)^
+    . ^choplist 7 6 5 4 3 2 1, v(3)^
+
+    any variable names of 8 characters, which cannot be lengthened
+    in Stata 6? 
+
+    . ^unab list : _all^ 
+    . ^choplist `list', l(==8) n^ 
+    . ^choplist `list', l(==8) g(eightch)^ 
+    
+    ^$eightch^ will hold all names 8 characters long. 
+
+    . ^ds2^
+    . ^sellist `r(varlist)', s(age)^
+    . ^local age `r(list)'^ 
+    . ^l `age'^  
+    . ^su `age'^ 
+    
+    . ^ds2^ 
+    . ^sellist `r(varlist)', s(age)^ 
+    . ^sortlist `r(list)'^ 
+    . command ^`r(list)'^
+
+    . ^maplist 1 2 3 4 5, m(sqrt(@@))^ 
+    . ^fmtlist `r(list)', f(%4.3f)^
+
+    every 1 April for 20 years: 
+    . ^mnthlist, n(20) b(4) y(1981) s(12)^ 
+    . ^maplist `r(list)', map(d(1@@))^ 
+    . ^graph price date, xla(`r(list)')^  
+    
+    . ^local list inc exp profit^
+    . ^postlist `list', post(70)^ 
+    . ^for var `list' \ new `r(list)' : rename X Y^
+
+    . ^seqlist a, c(10)^
+
+    chances of k (1 <= k <= 20) heads in a row:   
+    . ^seqlist , c(20) n^ 
+    . ^maplist `r(list)' , map(0.5^^@@) n^
+    
+    instead of 
+    . ^graph using l1g1 l1g2 l1g3 l1g4 l1g5 l1g6 l1g7 l1g8 l1g9 l1g10^ 
+    type
+    . ^seqlist l1g, c(10)^ 
+    . ^graph using `r(list)'^
+
+    to put a set of scalar names and corresponding values in a variable:
+    . ^varflist a b c d e f g h, gen(names) string^
+    . ^varflist a b c d e f g h, gen(values) scalar type(double)^
+
+    to put a little data set in a variable: 
+    . ^varflist -1 0 1 2.71828 3.1459 42, gen(data)^ 
+    
+    
+Acknowledgements
+----------------
+
+This set of programs has benefitted from questions and comments from 
+several members of Statalist, especially Kit Baum, for encouragement 
+and suggestions; Austin Frakt, for unearthing an important bug; and 
+Fred Wolfe, who provided the stimulus to extend ^dellist^ and ^sellist^. 
+    
+
+Author
+------
+
+         Nicholas J. Cox, University of Durham, U.K.
+         n.j.cox@@durham.ac.uk
+
+
+Also see
+--------
+
+On-line: help for @format@, @numlist@, @nlist@, @unab@, @ds2@ (if installed), 
+         @vallist@ (if installed)   
+ Manual: ^[U] 21.3 Macros^, ^[R] unab^ 
+
+
+

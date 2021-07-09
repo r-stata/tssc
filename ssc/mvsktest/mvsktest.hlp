@@ -1,0 +1,58 @@
+{smcl}
+{* 6Feb2006}{cmd:help mvsktest}
+
+{hline}
+
+{title:Multivariate skewness and kurtosis}
+
+{p2colset 5 19 21 2}{...}
+{p2col :{hi: mvsktest} {hline 2 }}Multivariate skewness and kurtosis test{p_end}
+{p2colreset}{...}
+
+
+{title:Syntax}
+
+{p 8 15 2}
+{cmd:mvsktest} {it:varlist} [{cmd:if} {it:exp}] [{cmd:in} {it:range}]
+
+
+
+{title:Description}
+
+{pstd}
+{opt mvsktest} performs an (asymptotic) test for multivariate skewness and kurtosis
+using the results in Mardia (1970). Separate p-values are given for the
+multivariate skewness and multivariate kurtosis.
+
+{title:Example}
+
+{phang}{cmd:. sysuse auto}{p_end}
+
+{phang}{cmd:. mvsktest wei len turn head trunk}{p_end}
+
+{phang}{txt}Multvariate skewness b_1,p =  {res}5.0866{txt}{p_end}
+{phang}chi2({res}35{txt})=  {res}62.7349{txt}; Prob > chi2 = {res}0.0027{txt}{p_end}
+
+{phang}Multivariate kurtosis b_2,p = {res}34.3138{txt}{p_end}
+{phang}z =  {res}0.1270{txt}; Prob > |z| =  {res}0.8989{txt}{p_end}
+
+{phang}{cmd:. mvsktest wei len turn head trunk disp for}{p_end}
+
+{phang}{txt}Multvariate skewness b_1,p = {res}15.9989{txt}{p_end}
+{phang}chi2({res}84{txt})= {res}197.3198{txt}; Prob > chi2 = {res}0.0000{txt}{p_end}
+{phang}#D.f. < #obs.; asymptotic distribution may not be accurate{p_end}
+
+{phang}Multivariate kurtosis b_2,p = {res}66.3341{txt}{p_end}
+{phang}z =  {res}1.9213{txt}; Prob > |z| =  {res}0.0547{txt}{p_end}
+
+
+
+{title:See also}
+{p 0 21}{bind:}Online:    help for {help sktest} {p_end}
+{p 0 21}{bind:}On paper: Mardia, K. V. (1970)
+   {browse "http://links.jstor.org/sici?sici=0006-3444%28197012%2957%3A3%3C519%3AMOMSAK%3E2.0.CO%3B2-Z":Measures of Multivariate Skewness and Kurtosis with Applications.}
+   Biometrika, {hi: 57} (3), pp. 519-530{p_end}
+
+
+{title:Contributed by}
+Stas Kolenikov, skolenik at gmail.com

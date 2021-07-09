@@ -1,0 +1,58 @@
+*Version December 2013
+----------------------
+basic syntax:
+rca var, j(exporter) m(export_varieties)index(#) by(year)
+
+Description:
+RCA calculates Balassa revealed comparative advantage index (BRCA), symmetric revealed comparative advantage index (SRCA), weighted revealed comparative advantage index (WRCA) & additive revealed comparative advantage index (ARCA). The module computes category level product share for country `j' and reference economy and requires that complete sector-level trade data are available.
+
+Balassa revealed comparative advantage (BRCA) index
+BRCA= (Xjm/Xj)/(Xkm/Xk)
+
+Symmetric revealed comparative advantage (SRCA) index
+SRCA= (BRCA-1)/(BRCA+1)
+
+Weighted revealed comparative advantage (WRCA) index 
+WRCA= (BRCA)/[sum(BRCAjm)/N]
+
+Additive revealed comparative advantage (ARCA) index
+ARCA = (Xjm/Xj)-(Xkm/Xk)
+
+where,
+Xjm    = Exports of country `j' of product `m'
+Xj     = Total exports of country `j'
+Xkm    = Total world exports of product `m'
+Xk     = Total world exports
+BRCAjm = Sector level BRCA for country `j'
+N      = Total number of sectors
+
+
+Option
+-------
+by(varlist): allows groups defined by `varlist' e.g. (year)
+
+
+Examples:
+----------
+rca volume, j(exporter) m(export_varieties)index(BRCA) by(year)
+rca volume, j(exporter) m(export_varieties)index(SRCA) by(year)
+rca volume, j(exporter) m(export_varieties)index(WRCA) by(year)
+rca volume, j(exporter) m(export_varieties)index(ARCA) by(year)
+
+
+Author:
+Muhammad Rashid Ansari						
+INSEAD Business School						
+1 Ayer Rajah Avenue, Singapore 138676						
+rashid.ansari@insead.edu
+
+References:
+Balassa, B. (1965), Trade liberalization and revealed comparative advantage, The Manchester School 33: 99-123
+
+Dalum, B., Laursen, K., & Villumsen, G. (1998). Structural change in OECD export specialization patterns: De-specialization and 'stickiness.'. International Review of Applied Economics, 12 (3), 423-443.
+
+Laursen, K. (1998), Revealed Comparative Advantage and the Alternatives as Measures of International Specialization, Department of Industrial Economics and Strategy, Copenhagen Business School
+
+PROUDMAN, J. & REDDING, S. 2000. Evolving patterns of international trade. Review of International Economics, 8, 373-396. 
+
+Alex R. Hoen, Jan Oosterhaven(2006). On the measurement of comparative advantage. The Annals of Regional Science, 40 (3), 677-691

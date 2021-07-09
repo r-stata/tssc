@@ -1,0 +1,103 @@
+{smcl}
+{* 6Jan2006}{* 2Apr2008}{* 15Oct2009}
+{hline}
+help for {hi:zipsave}, {hi:zipsaveold}, {hi:zipuse}, {hi:zipappend}, {hi:zipmerge}{right:(Henrik Stovring)}
+{hline}
+
+{title:Save and use datasets compressed by zip on WindowsXP/Unix/Linux/MacOSX}
+
+{p 8 13 2}
+{cmd:zipsave} [{it:filename}] [{cmd:,} {cmd:replace} {it:save_options}]
+
+{p 8 13 2}
+{cmd:zipsaveold} [{it:filename}] [{cmd:,} {cmd:replace} {it:saveold_options}]
+
+{p 8 13 2}{cmd:zipuse} {it:filename} {cmd:,} {cmd:clear} {cmd:dtafile}({it:dtafilename}) {it:use_options}]
+
+{p 8 13 2}{cmd:zipuse} [{varlist}] {ifin} {helpb using} {it:filename} [{cmd:,} {cmd:clear} {cmd:dtafile}({it:dtafilename}) {it:use_options}]
+
+{p 8 13 2}{cmd:zipappend} [{varlist}] {helpb using} {it:filename} [{it:filename} {cmd:...}] [{cmd:,} {cmd:dtafile}({it:dtafilename}) {it:append_options}]
+
+{p 8 13 2}{cmd:zipmerge} [{varlist}] {helpb using} {it:filename} [{it:filename} {cmd:...}] [{cmd:,} {cmd:dtafile}({it:dtafilename}) {it:merge_options}]
+
+{title:Description}
+
+{p 4 4 2} {cmd:zipsave} compress and stores the dataset currently in memory on disk under the name {it:filename}. If no {it:filename} is specified, the command tries to open the last filename under which the data were last known to Stata (c(filename)). If {it:filename} is specified without an extension, {hi:.dta.zip} is used.
+
+{p 4 4 2} {cmd:zipuse} loads a Stata-format dataset into memory that was previously saved and zipped, either directly by {cmd:zipsave} or manually. If the zip-file {it:filename} is specified without an extension, {hi:.dta.zip} is assumed. If the zip-file {it:filename} only contains one datafile, {it:dtafilename} need not be specified, but if the zip-file is an archive containing more files, then {it:dtafilename} must be specified to indicate the relevant file for de-compression.
+
+{p 4 4 2}
+{cmd:zipappend} appends a Stata-format dataset previously saved in zip-format (see description above for {cmd:zipuse}) to the current dataset in memory.
+
+{p 4 4 2}
+{cmd:zipmerge} merges one or more Stata-format dataset(s) previously saved in zip-format (see description above for {cmd:zipuse}) with the current dataset in memory.
+
+{p 4 4 2} Obviously, the commands require the zip command to be available at the command line.  It can be downloaded for free at {browse "http://www.info-zip.org"}, but is preinstalled on most Unix/Linux systems. On Unix/Linux/MacOSX you can check if zip is available with
+
+{p 8 8 2}{cmd:. shell which zip}
+
+{p 4 4 2} which should return something like '/usr/bin/zip'. On Windows the zip.exe and unzip.exe must similarly be found in the path, cf. the documentation on your Windows version. The easiest way to check if your path is set up correctly on Windows is to try out {cmd:zipsave} and {cmd:zipuse} on a test dataset (ie. an artificial dataset you can afford to lose!). {hi:If it does not work, you either have not installed zip or your path is not configured correctly.}
+
+{p 4 4 2} In principle, the command should work on any system with zip installed and ordinary shell commands available. The command has however only been tested on the platforms mentioned above, so as always {bf:use at your own risk!}
+
+
+{title:Options}
+
+{p 4 8 2}{cmd:replace} permits gzsave to overwrite an existing dataset. {cmd:replace} may not be abbreviated.
+
+{p 4 8 2}{cmd:clear} permits the data to be loaded even if there is a dataset already in memory and even if that dataset has changed since the data were last saved.
+
+{p 4 8 2}{cmd:dtafile} must be specified when the zip-file contains two or more datafiles. The full name of the datafile must be given.
+
+{p 4 8 2}save_options are all options available with {help save}.
+
+{p 4 8 2}saveold_options are all options available with {help saveold}.
+
+{p 4 8 2}use_options are all options available with {help use}.
+
+{p 4 8 2}append_options are all options available with {help append}.
+
+{p 4 8 2}merge_options are all options available with {help merge}.
+
+{title:Remarks}
+
+{p 4 4 2} These commands are useful for two purposes: 
+
+{p 4 8 2} First, they obviously help lowering the space used on disk by a dataset, which may be important when storing very large datasets.
+
+{p 4 8 2} Second, they may help reduce network load and hence the time used for storing and opening datasets when using a distributed disk system such as NFS. This is due to the fact that the commands only transfer the compressed datasets over the network, since the uncompressed dataset is only stored as a temporay datafile, which typically resides on the local disk (where local is relative to the running instance of Stata).
+
+{p 4 4 2} The price paid for saving disk space (and network load) is the CPU time used by gzip - please, test for yourself whether compression is actually advantageous in your specific set-up.
+
+{p 4 4 2} Note, that with {zipsave} the filename listed inside the zip-archive is that of a temporary file created in the process (St12709.0000001 for example), and so you should not extract the dataset using a simple unzip command. Put differently, you should only use the command {cmd:zipuse} to open data saved with {cmd:zipsave}. {cmd:zipuse} can however also open a manually created zip-archive
+consisting of one or more datafiles by use of the option {cmd:dtafile}.
+
+{p 4 4 2} Also note, that the {cmd:zipsave} and {cmd:zipuse} commands sets the filename associated with the dataset, so that for example {cmd:describe} correctly reports the originating filename of the compressed dataset. An unwanted side-effect of this occurs when issuing a {cmd:save, replace} on a dataset opened with {cmd:zipuse}, as this will save an uncompressed dataset replacing the original compressed dataset. This is, however, considered a feature, as it ensures that commands such as {cmd:describe} points exactly to the relevant file, and it remains the users responsibility to be aware which filename is actually used in the command {cmd:save, replace}.
+
+{p 4 4 2} If you prefer to use {cmd:gzip} for compression, have a look at {net describe gzsave:gzsave}.
+
+{title:Examples}
+
+    {cmd:. zipsave myfile}
+    {cmd:. zipsave myfile, replace}
+
+    {cmd:. zipuse myfile}
+    {cmd:. zipuse myfile, clear}
+    {cmd:. zipuse multfile.zip, clear dtafile(data.dta)}
+
+    {cmd:. zipappend using myfile2}
+    {cmd:. zipappend using multfile2, dtafile(data2.dta)}
+
+    {cmd:. zipmerge id using myfile3, unique}
+
+{title:Author}
+
+{{p 4 4 2} Henrik Stovring ({browse "mailto:stovring@biostat.au.dk":stovring@biostat.au.dk}), Biostatistics, Department of Public Health, Aarhus University, Denmark.
+
+{title:Also see}
+
+{p 4 13 2}
+Manual:  {hi:[R] save}
+
+{p 4 13 2} Online: help for {help save}, {help use}, {help compress}, {help append}, {help merge}, {help gzsave} (if installed, otherwise {net describe gzsave})
+{p_end}

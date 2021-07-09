@@ -1,0 +1,123 @@
+{smcl}
+{* 02aug2007}{...}
+{cmd:help multibar}
+{hline}
+
+{title:Title}
+
+{title:Bar and dot graphs for use with overlapping over() categories}
+
+
+{title:Syntax}
+
+{p 8 17 2}
+{cmd:multibar}
+{varlist}
+{ifin}
+[{cmd:,} {it:options}]
+
+{synoptset 32 tabbed}{...}
+{synopthdr}
+{synoptline}
+{syntab:Main}
+{synopt:{opt p:ercent}}display results on a percent scale{p_end}
+{synopt:{opt gnum:ber(#)}}number of categories. Required option{p_end}
+{synopt:{opt catlab:els(string)}}category labels. Required option{p_end}
+{synopt:{opt stat:istic(string)}}statistic represented in bar or dot graph{p_end}
+{synopt:{opt t:ype(string)}}bar, hbar or dot. Required option{p_end}
+{synopt:{opt l:ist}}displays numeric results{p_end}
+{synoptline}
+{p2colreset}{...}
+
+{title:Description}
+
+{pstd}
+{cmd:multibar} creates bar and dot graphs for overlapping {it:over()} categories. 
+{cmd:multibar} is a wrapper for Stata's {it:graph bar} and {it: graph dot}. When 
+entered correctly, {cmd:multibar} treats overlapping catgories as if they are 
+not overlapping and, therefore, allows use of {it:over()}.
+
+
+
+{title:Options}
+
+{dlgtab:Main}
+
+{phang}
+{cmd:percent} displays results as percents.
+
+{phang}
+{opt gnumber (#)} is the number of categories. This option is required.
+
+{phang}
+{opt catlabels (string)} are the labels given to the categories. See example.
+
+{phang}
+{opt statistic (string)} is the statistic to be represented in the bar or dot 
+graph. Default is mean. See {helpb collapse} for allowed statistics. Weights are 
+not supported. 
+
+{phang}
+{opt type (bar, hbar, dot)} selects the type of graph. This option is required.
+
+{phang}
+{cmd:list} displays numeric results.
+
+
+{title:Remarks}
+
+{pstd}
+Each yvar is a group of variables that is treated as a category level. All of the 
+levels together form the {it:over()} category. Suppose we have panel or 
+longitudinal data in which subjects take drugs (treatments) at two (or more) 
+times. For example, Drug A can be used at baseline entry into the cohort and at the 
+final observation in the cohort. We are interested in displaying the proportion 
+(or percent) usage of drugs A, B, C at the baseline and final obervation. The 
+group of these three drugs is an overlapping group because persons can receive one 
+or more of the drugs at any time. Stata's graph bar, hbar and dot cannot handle this 
+type of category. {cmd:multibar}, using {cmd:collapse}, {cmd:preserve}, and 
+{cmd:restore} creates a result set to enable this type of categorization.
+
+{pstd}
+In the example above, we have drugAfirst, drugAlast, drugBfirst, drugBlast, 
+drugCfirst, drugClast. Drugs have to be arranged this way: (drugAfirst drugBfirst 
+drugCfirst)  (drugAlast drugBlast drugClast).  drugAfirst and 
+drugAlast will form the the first of the three categories in this example. The drugs 
+will need a label because they are newly created composite variables. Use 
+{hi:catlabels()} to do this. The data have to be entered with the ordering noted 
+above. The parentheses are not necessary, but can help in making the lists 
+easier to read. There are three categories in this example, and this information 
+must be entered into the {hi:gnumber()} option as gnumber(3).
+
+{pstd}
+"first" and "last" in the above example are treated as "variables," but are newly 
+created by the program. To be meaningful they need to be added with 
+legend descriptions, as shown in the example below.
+
+
+{title:Examples}
+
+{phang}
+To install test dataset, type {hi: ssc describe multibar} and follow instructions.
+
+{phang}
+{cmd:. use multibar, clear}
+
+{phang}
+{cmd:. multibar (fprednisn fmtxa ftnf fplaquinl fazulfidn) (bpred bmtxa btnf bplaq bazulf), gnumber(5) catlab(1 Prednisone 2 MTX 3 TNF 4 HCQ 5 SSZ) p legend(label(1 Baseline) label(2 "At index observation")) yline(37) type(dot)}
+
+{title:Author}
+
+{pstd}
+F. Wolfe fwolfe@arthritis-research.org. 
+
+{title:Acknowledgements}
+
+{pstd}
+Nick Cox made very helpful suggestions.
+
+
+{title:Also see}
+
+{psee}
+Online:  {helpb graph bar}, {helpb graph dot}

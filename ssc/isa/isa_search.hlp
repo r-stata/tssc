@@ -1,0 +1,105 @@
+{smcl}
+{* *! version 1.0.1  31Dec2011}{...}
+{cmd:help isa_search}
+{hline}
+
+{title:Title}
+
+{p2colset 9 19 21 2}{...}
+{p2col: {cmd:isa_search} {hline 2}} Wrapper Program for -isa- (Imbens' Sensitivity Analysis) {p_end}
+{p2colreset}{...}
+
+
+{title:Syntax}
+
+{p 8 15 2}
+{cmd:isa_search}
+{depvar}
+{it:treatmentvar}
+[{indepvars}]
+{ifin}
+{cmd:,} {opt tau(real)} {it:or} {opt tstat(real)} [{it:options}]
+
+{synoptset 26 tabbed}{...}
+{synopthdr}
+{synoptline}
+{syntab:Model}
+{p2coldent:* {opth tau(real)}}the target size of the coefficient of the treatment variable.{p_end}
+{p2coldent:* {opth tstat(real)}}the target size of the t-value of the treatment variable.{p_end}
+{synopt:{opth maxa:lpha(real)}}the maximum value of alpha in the search; default is {cmd: maxalpha(10)}{p_end}
+{synopt:{opth mina:lpha(real)}}the minimum value of alpha in the search; default is {cmd: minalpha(0)}{p_end}
+{synopt:{opth maxd:elta(real)}}the maximum value of delta in the search; default is {cmd: maxdelta(5)}{p_end}
+{synopt:{opth mind:elta(real)}}the minimum value of delta in the search; default is {cmd: mindelta(0)}{p_end}
+{synopt:{opth incr:ement(real)}}the increment of the size of alpha and delta for the next iteration; default is {cmd: increment(.5)}{p_end}
+
+{syntab:SE/Robust}
+{synopt :{opth vce(vcetype)}}{it:vcetype} may be {opt oim},
+{opt r:obust}, {opt cl:uster} {it:clustvar}, or {opt opg}{p_end}
+{synoptline}
+{p2colreset}{...}
+{p 4 6 2}* Either {opt tau(real)} or {opt tstat(real)} is required.{p_end}
+{p 4 6 2}* The value of {opt tau(real)} or {opt tstat(real)} must be positive and smaller than the original treatment effect.{p_end}
+{p 4 6 2}At least one {indepvars} is required.{p_end}
+{p 4 6 2}{it:treatmentvar} must be binary.{p_end}
+
+
+{title:Description}
+
+{pstd}
+{opt isa_search} is a wrapper program of -isa- Imbens' (2003) Sensitivity Analysis.
+This program should be used when researchers do not have any idea about how to set {opt minalpha}, {opt maxalpha}, {opt mindelta} and {opt maxdelta} in -{cmd:isa}-.
+The program automatically check where in a given region a contour line exists.
+Once the program ends, it will generate the diagram that consists of + (in blue), triangle (in red), and dot (in black).
+The contour line should exist somewhere between + (in blue) and triangle (in red) if these symbols do not represent the location of irrelevant contour,
+which is usually obvious from the figure.
+In running {opt isa}, a researcher should set the region defined by {opt minalpha}, {opt maxalpha}, {opt mindelta} and {opt maxdelta} in the following way.
+First, the region should be defined as small as possible as long as it produces a good contour.
+Second, the region should not include the areas that produce the irrelevant contours.
+Please read the quick guide for the further detail (Click {browse "http://home.uchicago.edu/~masa/docs/QuickGuideForISA.pdf":here}.) 
+
+
+{title:Example}
+
+{phang}. {stata sysuse nlsw88:sysuse nlsw88}{p_end}
+{phang}. {stata xi i.race:xi i.race}{p_end}
+{phang}. {stata rename _Irace_2 black:rename _Irace_2 black}{p_end}
+{phang}. {stata rename _Irace_3 other:rename _Irace_3 other}{p_end}
+{phang}. {stata xi i.industry:xi i.industry}{p_end}
+{phang}. {stata rename _Iindustry_5 mnfctr:rename _Iindustry_5 mnfctr}{p_end}
+{phang}. {stata isa_search wage union age black other grade married south c_city mnfctr, tau(.314):isa_search wage union age black other grade married south c_city mnfctr, tau(.314)}{p_end}
+
+{pstd} If the user wants to know the more detailed results, set {opth incr:ement(real)} at the value smaller than .5.
+
+{phang}. {stata isa_search wage union age black other grade married south c_city mnfctr, tau(.314) incr(.25):isa_search wage union age black other grade married south c_city mnfctr, tau(.314) incr(.25)}{p_end}
+
+
+{title:Saved results}
+
+{pstd}
+{cmd:isa_search} saves the following variables:
+
+{synoptset 20 tabbed}{...}
+
+{synopt:{cmd:isas_tau}}the treatment effect when alpha = isas_alpha[_n] and delta = isas_delta[_n].{p_end}
+{synopt:{cmd:isas_tstat}}the t-statistics of the treatment effect when alpha = isas_alpha[_n] and delta = isas_delta[_n].{p_end}
+{synopt:{cmd:isas_converged}}identifier of whether the estimation achieved convergence or not{p_end}
+{synopt:{cmd:isas_alpha}}the value of alpha when quantity of interest is estimated.{p_end}
+{synopt:{cmd:isas_delta}}the value of delta when quantity of interest is estimated.{p_end}
+{synopt:{cmd:isas_plus}}indicator that the coordinate(isas_alpha[_n], isas_delta[_n]) is located marginally below the contour.{p_end}
+{synopt:{cmd:isas_minus}}indicator that the coordinate(isas_alpha[_n], isas_delta[_n]) is located marginally above the contour.{p_end}
+
+
+{title:Reference}
+
+{pstd}
+{browse "http://home.uchicago.edu/~masa/docs/quick_guide_isa_search.pdf":Here} is the link for the quick guide by the author of the program.
+
+{pstd}
+If you use this program, please cite:
+
+{pstd}
+Imbens, Guido W. 2003. "Sensitivity to Exogeneity Assumptions in Program Evaluation." {it:The American Economic Review} 93(2):126-132.
+
+{pstd}
+Harada, Masataka "Generalized Sensitivity Analysis." {it:Working paper}.
+

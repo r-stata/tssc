@@ -1,0 +1,62 @@
+{smcl}
+{* 27apr2004}{...}
+{hline}
+help for {hi:circxlowess}
+{hline}
+
+{title:Smoothing including lowess for circular data, x variable circular} 
+
+{p 8 17 2} 
+{cmd:circxlowess}
+{it:yvar xvar}
+[{cmd:if} {it:exp}] 
+[{cmd:in} {it:range}]
+[ 
+{cmd:,}
+{cmdab:p:ad(}{it:#}{cmd:)} 
+{it:lowess_options}
+] 
+
+
+{title:Description} 
+
+{p 4 4 2} 
+{cmd:circxlowess} carries out smoothing (including lowess) of a {it:y}
+variable {it:yvar} (specified first in the {it:varlist}) with respect to some
+circular {it:x} variable {it:xvar}. {it:xvar} should take on values between
+0 and 360 degrees. Smoothing is done by temporarily adding pads of repeated
+values at either end of the circular scale. 
+
+{p 4 4 2}The kind and degree of smoothing and the rendition of the display 
+are specified by invoking options of {cmd:lowess}. 
+
+
+{title:Options}
+
+{p 4 8 2}{cmd:pad(}{it:#}{cmd:)} specifies a pad of {it:#} degrees at each {it:x} 
+axis end. Data less than or equal to {it:#} degrees are copied at the right end of 
+the {it:x} axis  for an interval of 360 to {bind:360 + {it:#}} degrees. 
+Data more than {bind:360 - {it:#}} degrees are copied at the left end of the 
+{it:x} axis for an interval of -{it:#} to 0 degrees. The default is 180, so 
+that a full two cycles are shown.
+
+{p 4 8 2}{it:lowess_options} specify options allowed with 
+{help lowess}.   
+
+
+{title:Examples} 
+
+{p 4 8 2}{cmd:. circxlowess length wallasp, gen(lowess) yla(,ang(h))} 
+
+
+{title:Author} 
+
+{p 4 4 2}Nicholas J. Cox, University of Durham, U.K.{break} 
+         n.j.cox@durham.ac.uk
+
+
+{title:Also see} 
+
+{p 4 13 2} 
+On-line: help for {help lowess}, {help circylowess} 
+

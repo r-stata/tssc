@@ -1,0 +1,191 @@
+.-
+help for ^sparl^
+.-
+
+Scatter plot and regression line
+--------------------------------
+
+    ^sparl^ yvar xvar [weight] [^if^ exp] [^in^ range]
+    [ ^, logy logx pow^er ^q^uad ^pgen(^prevar^) pv^alue ^corr^
+    ^yn^ame^(^string^) xn^ame^(^string^) afmt(^format^) bfmt(^format^)^
+    ^cfmt(^format^) pfmt(^format^) rfmt(^format^) ln ci level(^#^) rvl^
+    ^means r^ound^(^#^)^ graph_options ]
+
+Description
+-----------
+
+^sparl^ produces a scatter plot and regression line for yvar predicted
+from xvar. The data are yvar and xvar and the regression equation is by
+default ypred = a + b xvar.
+
+The options ^logx^, ^logy^, ^power^ and ^quad^ allow the use of
+logarithmic transforms and the fitting of quadratics.
+
+The scatter plot is basically ^graph^ yvar ypred ypred xvar. The extra
+ypred is redundant for many purposes, but makes it easier to get a
+scatter plot that emphasises the split into linear prediction and
+vertical residual, for example by specifying the options ^c(||l) sy(iii)^.
+^rvl^ is a quick synonym for these particular choices.
+
+Internally, ^sparl^ uses ^regress^, so it may be followed immediately by
+those commands that may follow ^regress^. ^regress^ itself gives a replay 
+of the detailed regression results.
+
+Options
+-------
+
+- options for logarithmic transforms and fitting quadratics
+  ---------------------------------------------------------
+
+^logy^ means that the y variable will be logged before regression, by
+    itself implying that the model equation is
+
+    log y = a + b x.
+
+^logx^ means that the x variable will be logged before regression, by
+    itself implying that the model equation is
+
+    y = a + b log x.
+
+^power^ and ^logy logx^ are equivalent, so implying that the model
+    equation is
+
+    log y = a + b log x.
+
+^quad^ means that a quadratic in the x variable is fitted, by itself
+implying that the model equation is
+
+                   2
+    y = a + bx + cx .
+
+^quad^ may be combined with ^logy^ or ^logx^ or both.
+
+Logarithms are natural logarithms, to base e = 2.71828 to 5 d.p.
+
+If either ^logy^ or ^logx^ is used, then the ^ylog^ and ^xlog^ options
+of ^graph^ may be used to linearise the regression line. This has no
+effect on numerical results which refer to transformed values.
+
+- options for predicted values
+  ----------------------------
+
+^pgen(^prevar^)^ places predicted (fitted) values in a new variable
+    prevar. This variable is produced by ^predict^, which respects any
+    restrictions imposed by ^if^ and ^in^. If ^logy^ has been used, the
+    predictions are exponentiated so that they are on the original scale
+    of measurement.
+
+- options for P-value
+  -------------------
+
+^pvalue^ specifies that the model P-value is printed in the ^t2title^.
+    This is the probability under the null hypothesis of getting an F
+    statistic greater than that observed, given model and residual
+    degrees of freedom.
+
+- options for correlation
+  -----------------------
+
+^corr^ specifies that the correlation (before any transformation) is
+    printed in the ^t2title^.
+
+- options controlling equations on the graph
+  ------------------------------------------
+  
+^yname( )^ and ^xname( )^ control the names used for yvar and xvar in the 
+    ^t1title^. They default to the variable names. Long names can lead 
+    to problems with the ^t1title^, especially if any of ^logy^, ^logx^ 
+    or ^quad^ is specified.  
+
+^afmt(^format^)^, ^bfmt(^format^)^, ^cfmt(^format^)^, ^pfmt(^format^)^
+    and ^rfmt(^format^)^ control the formats with which numeric results
+    are presented in the ^t1title^ and ^t2title^.
+
+    ^afmt^ controls the format of a and RMSE, which have the units of y.
+
+    ^bfmt^ controls the format of b, which has the units of y divided by
+    the units of x.
+
+    ^cfmt^ controls the format of c, which has the units of y divided by
+    the square of the units of x.
+
+    ^pfmt^ controls the format of the model P-value, presented if
+    ^pvalue^ is specified.
+
+    ^rfmt^ controls the format of the Pearson correlation r and of its
+    square, the coefficient of determination.
+
+    The default value of all is ^%4.3f^. For very small or very large
+    numbers, consider using an e format, such as ^%10.3e^.
+
+^ln^ means that equations including logarithms are written using the
+    abbreviation ^ln^, rather than ^log^.
+
+- other options controlling the graph
+  -----------------------------------
+
+^ci^ specifies that confidence intervals are to be added. These are
+    confidence intervals for the mean based on the standard error of
+    prediction. The confidence level is ^$S_level^, which may be overridden
+    by use of the ^level^ option. If ^logy^ has been used, the limits are
+    exponentiated so that they are on the original scale of measurement.
+
+^level(^#^)^ specifies the confidence level, in percent, for confidence
+    intervals; see help @level@.
+
+^rvl^ specifies that residuals are to be shown as vertical lines. More
+    precisely, it is a synonym for ^c(||sss) sy(iiiii)^. Simultaneous calls
+    to ^connect^ and ^symbol^ are not treated as errors but are ignored.
+
+^means^ specifies that the mean of yvar is calculated for each rounded
+    value of xvar. This mean is then plotted for each value of xvar.
+    This option does not affect the regression, merely the graphical
+    display.
+
+^round(^#^)^ means that xvar is to be rounded to the nearest # before
+    calculating a group mean for values that round to the same value.
+    The default is 1. ^round(^#^)^ without ^means^ is not an error, but
+    is ignored.
+
+graph_options are options allowed with ^graph, twoway^. The default
+    values include
+
+    ^xla yla c(..l) sy(Oii) sort gap(6)^
+
+    ^t1title^ gives the regression equation
+
+    ^t2title^ gives   (if ^corr^ option specified) the correlation
+                    (before any transformation)
+
+                    the coefficient of determination and
+                    the root mean square error (both after any
+                    transformation)
+
+                and the number of observations
+
+
+Examples
+--------
+
+        . ^sparl length width^
+        . ^sparl length width, rvl^
+        . ^sparl length width, power^
+	. ^sparl length width, sy([name]ii)^
+	. ^sparl length width, yn(Length (m)) xn(Width (m))^ 
+	. ^sparl length width, yn(Length) xn("Width    (units m)")^  
+
+
+Author
+------
+
+         Nicholas J. Cox, University of Durham, U.K.
+         n.j.cox@@durham.ac.uk
+
+
+Also see
+--------
+
+ Manual: ^[U] 19.5.1 Numeric formats^
+         ^[R] regress^
+On-line: help for @graph@, @regress@, @predict@, @estimates@, @format@
+

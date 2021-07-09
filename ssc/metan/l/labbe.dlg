@@ -1,0 +1,180 @@
+/* 
+
+*! laabe dialog version 1.0.2,  3 Jun 2003, T. J. Steichen, steichen@triad.rr.com 
+*!    for laabe version 1.21   24 Mar 2003  M. J. Bradburn, mike.bradburn@cancer.org.uk 
+
+L'abbe Graph
+------------
+
+Syntax:  labbe varlist [if exp] [in range] [weight] , [ nowt percent
+              or(#,...,#) rr(#,...,#) rd(#,...,#) rrn(#,...,#) null logit graph options ]
+ 
+To install in User Statistics menu via Stata commands:
+  . window menu append item "stUserStatistics" "Metan-based L'abbe Graph (&labbe)" "db labbe"
+  . window menu refresh
+To permanently install, place the commands in your -profile.do- file.
+
+*/
+
+VERSION 8.0
+
+INCLUDE _std_small
+INCLUDE header
+
+HELP hlp1, view("help metan")
+RESET res1, label("Reset")
+
+DIALOG main, label("labbe 1.21 - Metan-based L'abbe Graph") tabtitle("Main")
+BEGIN
+  TEXT     tx_binary    10    5  330      .,            ///
+     label("Vars for Counts a, b, c, d, in that order")
+  VARLIST  vl_binary     @   _ss   @      .,            ///
+     label("Vars for a, b, c, d")
+
+/*  end vars  */
+
+  CHECKBOX cb_nowt      10   50  130      .,            ///
+     label("Symbols not sized")                         ///
+     option("nowt")
+
+  CHECKBOX cb_percent   10   70  130      .,            ///
+     label("Event Rates in %")                          ///
+     option("percent")
+  
+  CHECKBOX cb_null      10  100  130      .,            ///
+     label("Draw p1=p2 line")                           ///
+     option("null")
+
+  CHECKBOX cb_logit     10  130  130      .,            ///
+     label("Use logit scale")                           ///
+     option("logit")
+
+/*  end switches  */
+
+  GROUPBOX gb_lines    170   48  175    108,            ///
+     label("Draw Lines at:")
+
+  CHECKBOX cb_or       180  +20   80      .,            ///
+     label("OR:    (>0)")                               ///
+     onclickon(program or_on)                           ///
+     onclickoff(script or_off)
+  EDIT     ed_or       265    @   70      .,            ///
+     label("or")                                        ///
+     option("or")
+
+  CHECKBOX cb_rd       180  +20   80      .,            ///
+     label("RD:  (-1,1)")                               ///
+     onclickon(script rd_on)                            ///
+     onclickoff(program rd_off)
+  EDIT     ed_rd       265    @   70      .,            ///
+     label("rd")                                        ///
+     option("rd")
+
+  CHECKBOX cb_rr       180  +20   80      .,            ///
+     label("RR:    (>0)")                               ///
+     onclickon(script rr_on)                            ///
+     onclickoff(program rr_off)
+  EDIT     ed_rr       265    @   70      .,            ///
+     label("rr")                                        ///
+     option("rr")
+
+  CHECKBOX cb_rrn      180  +20   80      .,            ///
+     label("RRN: (>0)")                                 ///
+     onclickon(script rrn_on)                           ///
+     onclickoff(program rrn_off)
+  EDIT     ed_rrn      265    @   70      .,            ///
+     label("rrn")                                       ///
+     option("rrn")
+
+/*  end sets  */
+
+  GROUPBOX gb_gopts7    10 155  330   _ht1h,            ///
+     label("Allowed Graph7 Options:")
+  EDIT     ed_gopts7    15 175  320       .,            ///
+     label("Graph7 Options")
+
+/*  end Graph7 opts  */
+
+END
+
+INCLUDE ifin
+INCLUDE weights_a
+
+PROGRAM or_on
+BEGIN
+  call main.ed_or.enable
+  if !(main.cb_rd | main.cb_rr | main.cb_rrn) {
+     call main.cb_logit.enable
+  }
+END
+
+SCRIPT or_off
+BEGIN
+  main.ed_or.disable
+  main.cb_logit.setoff
+  main.cb_logit.disable
+END
+
+SCRIPT rd_on
+BEGIN
+  main.ed_rd.enable
+  main.cb_logit.setoff
+  main.cb_logit.disable
+END
+
+PROGRAM rd_off
+BEGIN
+  call main.ed_rd.disable
+  if main.cb_or & !(main.cb_rr | main.cb_rrn) {
+     call main.cb_logit.enable
+  }
+END
+
+SCRIPT rr_on
+BEGIN
+  main.ed_rr.enable
+  main.cb_logit.setoff
+  main.cb_logit.disable
+END
+
+PROGRAM rr_off
+BEGIN
+  call main.ed_rr.disable
+  if main.cb_or & !(main.cb_rd | main.cb_rrn) {
+     call main.cb_logit.enable
+  }
+END
+
+SCRIPT rrn_on
+BEGIN
+  main.ed_rrn.enable
+  main.cb_logit.setoff
+  main.cb_logit.disable
+END
+
+PROGRAM rrn_off
+BEGIN
+  call main.ed_rrn.disable
+  if main.cb_or & !(main.cb_rd | main.cb_rr) {
+     call main.cb_logit.enable
+  }
+END
+
+PROGRAM command
+BEGIN
+  put "labbe "
+  varlist main.vl_binary
+  INCLUDE _weights_pr
+  INCLUDE _ifin_pr
+  beginoptions
+    option main.cb_nowt
+    option main.cb_percent
+    option main.cb_null
+    option main.cb_logit
+    optionarg main.ed_or
+    optionarg main.ed_rd
+    optionarg main.ed_rr
+    optionarg main.ed_rrn
+    put main.ed_gopts7
+  endoptions
+END

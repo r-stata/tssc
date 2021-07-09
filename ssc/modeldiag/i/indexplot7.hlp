@@ -1,0 +1,103 @@
+{smcl}
+{* 13feb2003}{...}
+{hline}
+help for {hi:indexplot7}
+{hline}
+
+{title:Index plots of estimation results} 
+
+{p 8 16}{cmd:indexplot7} [{it:indexvar}] [ {cmd:,} {it:predict_options}
+{cmdab:hi:gh(}{it:#}{cmd:)} {cmdab:lo:w(}{it:#}{cmd:)}
+{cmdab:z:ero(}{it:str}{cmd:)} {bind:{cmdab:p:oints} {it:graph_options} ]} 
+
+{title:Description}
+
+{p}{cmd:indexplot7} plots estimation results (by default whatever {cmd:predict}
+produces by default) from an immediately previous {cmd:regress} or similar
+command versus a numeric index or identifier variable, if that is supplied, or
+observation number, if that is not supplied. Values are shown, by default, as
+vertical spikes starting {bind:at 0}. 
+
+{p}The plot is restricted to the estimation sample.  
+
+{p}{cmd:indexplot7} is a renamed clone of {cmd:indexplot} 1.2.3 which is for 
+Stata 7. Stata 8 users should use {cmd:indexplot} 2.0.0 or later. 
+
+
+{title:Options}
+
+{p 0 4} 
+{it:predict_options} are options of {cmd:predict} used to specify results other
+than the default. 
+
+{p 0 4}
+{cmd:high(}{it:#}{cmd:)} specifies that the highest {it:#} of the results are
+to be identified by their identifiers or observation numbers using
+{cmd:xlabel()}.
+
+{p 0 4}
+{cmd:low(}{it:#}{cmd:)} specifies that the lowest {it:#} of the results 
+are to be identified by their identifiers or observation numbers using
+{cmd:xlabel()}. 
+
+{p 0 4} 
+Note that the total number of observations identified by {cmd:high()} and 
+{cmd:low()} must not exceed 25.
+
+{p 0 4} 
+{cmd:zero(}{it:str}{cmd:)} specifies an alternative to 0 as the starting 
+point for spikes. {cmd:zero(mean)} specifies the mean of whatever is being 
+shown; {cmd:zero(}{it:varname}{cmd:)} specifies the values of a numeric 
+variable {it:varname}; and {cmd:zero(}{it:#}{cmd:)} specifies a number 
+{it:#}. 
+
+{p 0 4} 
+{cmd:points} specifies the plotting of points rather than spikes. 
+
+{p 0 4} 
+{it:graph_options} are {cmd:bbox()}, {cmd:connect()}, {cmd:gap()},
+{cmd:l1title()}, {cmd:saving()}, {cmd:symbol()}, {cmd:title()}, {cmd:xlabel()},
+{cmd:ylabel()} and {cmd:yline()}. Note that {cmd:high()} and {cmd:low()}
+control {cmd:xlabel()}; {cmd:points} sets {cmd:connect(ii)}; and, if changing
+{cmd:symbol()} or {cmd:connect()}, that two variables are plotted on the y
+axis, the result and whatever is "zero". 
+
+
+{title:Examples}
+
+{p 4 8}{inp:. use auto}
+
+{p 4 8}{inp:. regress mpg weight}{p_end}
+{p 4 8}{inp:. indexplot7}{p_end}
+{p 4 8}{inp:. indexplot7, sy([_n]i) c(..)}{p_end}
+{p 4 8}{inp:. indexplot7, zero(mean)}{p_end}
+{p 4 8}{inp:. indexplot7, residual hi(3) lo(3)}{p_end}
+{p 4 8}{inp:. indexplot7, cooksd hi(6)}
+
+{p 4 8}{inp:. glm mpg weight, link(log)}{p_end}
+{p 4 8}{inp:. indexplot7, anscombe hi(3) lo(3)}
+
+{p 4 8}{inp:. use census}
+
+{p 4 8}{inp:. encode state, gen(State)}{p_end}
+{p 4 8}{inp:. regress marriage pop} {p_end}
+{p 4 8}{inp:. indexplot7 State, residual hi(1)} 
+
+
+{title:Author}
+
+    Nicholas J. Cox, University of Durham, U.K.
+    n.j.cox@durham.ac.uk
+
+
+{title:Acknowledgements} 
+
+    Phil Ender and Andy Sloggett provided very helpful comments. 
+
+
+{title:Also see}
+
+{p 0 19}On-line:  help for {help graph}, {help regdiag},
+{help regplot} (if installed), {help anovaplot} (if installed), 
+{help ovfplot} (if installed) 
+{p_end}

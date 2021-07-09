@@ -1,0 +1,194 @@
+{smcl}
+{hline}
+help for {hi:hammock}{right:{hi: Matthias Schonlau}}
+{hline}
+
+{title:Graph for visualizing categorical and continuous data}
+
+{p 8 27}
+{cmd:hammock} 
+{it:varlist}
+[{cmd:if} {it:exp}] 
+[{cmd:in} {it:range}] 
+{cmd:,} 
+[
+{cmdab:m:issing}
+{cmdab:lab:el}
+{cmdab:hivar:iable(}{it:varname}{cmd:)}
+{cmdab:hival:ues:(}{it:numlist}{cmd:)} 
+{cmdab:thi:ckness(}{it:#}{cmd:)} 
+{cmdab:spa:ce(}{it:#}{cmd:)} 
+{cmdab:out:line}
+{it:graph_options}
+]
+
+
+{title:Description}
+
+{p}{cmd:hammock} draws a graph to visualize categorical data - though it also does fine
+with continuous data. 
+A hammock plot visualizes categorical data - though it also does fine with continuous data.  
+Like in a parallel coordinate, axes for each variable are parallel to
+the vertical axis. Categories of adjacent variables are connected by rectangles (more precisely: parallelograms). 
+The width of the parallelogram is proportional to number of observations it represents.
+The hammock plot also includes category labels in the plotting areas, 
+and when appropriate, a separate category for missing values.
+
+{p} The easiest way to understand a hammock plot is to draw a simple example 
+with 2 or 3 variables (preferably specifying the label option).
+
+{p} 
+If the rectangles degenerate to a single line, and no labels or missing values are used 
+the hammock plot corresponds to a parallel coordinate plot. Rectangles degenerate into a single
+line if {it: thickness} is so small that the rectangles
+for categorical variables appear to be a single line. For continuous variables rectangles
+will usually appear to be a single line because each category typically
+ only contains one observation.
+
+{p} All variables in {it:varlist} must be numerical. String variables should be 
+converted to numerical variables first, e.g. using {cmd: encode} or {cmd: destring}. 
+
+{p} To allow comparisons between different slices of the data 
+  the placement of the rectangles and labels is not affected by 
+ [{cmd:if}] and [{cmd:in}]. Specifically, if using  
+ [{cmd:if}] and [{cmd:in}] causes one category for a variable to have no observations, 
+ the other categories are not placed differently because of it.
+
+{p} The graphs are produced in Stata 7 using version control. Because graphs have changed in Stata,
+it is not easy to print the graphs produced. Screen shots can be used, of course. Here is another option:
+When using  stata 8 or higher
+ graph options can be changed with {cmd:oldgprefs}. For example, the clipboard 
+  by default copies black and white graphs. To change this, type {com:oldgprefs},
+  click on Clipboard, and choose the schemes "White background" or "black background".
+ Some graph options can be directly specified in Stata 8. For example,
+  a white background in the graph window (but not the clipboard) 
+ can be specified by typing
+
+{p 4 4}{inp:.  gprefs set window scheme whitebg}
+
+
+
+{title:Options}
+
+{p 0 4} {cmd:label} specifies that value labels (see {cmd: label values}) 
+are to be displayed on the graph. For variables for which value labels are not defined 
+the values themselves are displayed. This makes it easier to identify which category
+is displayed where. Value labels must not not contain the characters "@" or ",".
+
+{p 0 4} {cmd:missing} specifies that "missing value" is a separate category. 
+The "missing value category" is always the lowest category drawn at 
+the bottom of the graph. A vertical line is drawn to separate missing values
+from non-missing values. If there are no missing values the space below 
+the vertical line remains empty.
+If this option is not specified observations with missing values are ignored.
+
+{p 0 4}{cmd:hivariable} specifies which variable is to be highlighted. {cmd: hivalues}
+can be used to specify individual categories to be highlighted. 
+
+{p 4 4}A category that is highlighted appears in a different color and observations in this 
+category can be traced through the entire graph. 
+The variable {it:varname} does not have to be part of {it:varlist}.
+
+{p 4 4}When a graph contains colors
+it is sometimes easier to view the graph with a white background. 
+
+{p 0 4}{cmd:hivalues} specifies which categories of {cmd:hivariable} are highlighted.
+Each category specified is assigned a different color: 
+the first category specified uses {it:pen=2}, the next uses {it:pen=3}, and so forth. 
+If more than 8 categories are specified, colors are recycled.
+All unspecified categories use the default color {it:pen=1}.
+{cmd:hivalues} is ignored if {cmd:hivariable} is not specified. See the example below
+for how to choose specific pens for categories.
+
+
+{p 0 4}{cmd:samescale} specifies that for each axis the same scale is to be used.
+
+{p 0 4}{cmd:space(}{it:#}{cmd:)} specifies the fraction of plot allocated for 
+displaying labels. By default this is set to 0.3, meaning 30% of the available
+ space is allocated to the display of labels, and 70% for the graph elements.
+This option is ignored if option "label" is not specified.
+
+{p 0 4}{cmd:thickness(}{it:#}{cmd:)} specifies a proportionality constant or
+ fudge factor controlling the
+width of line segments. It is typically only modified to reduce visual clutter.  The
+relative width of any two line segments is not affected.  The value should be
+between 0 and 1.  The default is 0.2.
+
+{p 0 4} {cmd:outline} specifies that individual graph segments (rectangles, 
+or, strictly speaking, parallelograms)) are only outlined and not solid.
+ By default each segment is solid. This option is rarely used.
+
+{p 0 4}
+{it:graph_options} are options of {cmd:graph, twoway} other than 
+{cmd:symbol()} and {cmd:connect()}. 
+
+{title:Examples}
+
+{p}Plot the hammock for {inp:var1} through {inp:var7}:
+
+{p 4 8}{inp:. hammock var1-var7}
+
+{p} Check visually that dummy variables do not have missing values. If true
+there must be no points/lines below the horizontal line near the bottom of the graph.
+
+{p 4 8}{inp:. hammock white black asian race_other, missing}
+
+{p} Check visually that no observation is coded "1" for more than (0/1) dummy variable. 
+There should be no vertical lines in the "1" category at the top of the graph.
+(This checks adjacent categories, change order of variables to look at non-adjacent
+variables.) 
+ 
+{p 4 8}{inp:. hammock white black asian race_other}
+
+{p}Plot the hammock with a smaller width to reduce visual clutter:
+
+{p 4 8}{inp:. hammock group sepallen-petalwid, thickness(.1) }
+
+{p} Fisher's Iris data has three species. Highlight each species in a different color.
+
+{p 4 8}{inp:. hammock sepallen-petalwid, hivar(species) hivalues(1/3) }
+
+{p} Because variables are continuous the hammock plot looks just like the parallel 
+coordinate plot. If I only highlight 2 species the same affect is achieved as the third species
+is assigned the default color:
+
+{p 4 8}{inp:. hammock sepallen-petalwid, hivar(species) hivalues(1 2) }
+
+{p} {cmd:hammock} can be tricked into assigning specific pens or colors to 
+individual categories. Suppose in the previous example one desires a different 
+pen for category "1". By adding "1" to hivalues a different pen is assigned: 
+
+{p 4 8}{inp:. hammock sepallen-petalwid, hivar(species) hivalues(1 2 1) }
+
+{p 4 8} If you would like another color , simply continue assigning categories: 
+
+{p 4 8}{inp:. hammock sepallen-petalwid, hivar(species) hivalues(1 2 1 1) }
+
+
+{p} Note: Because this program uses the old graph7 command, modern graph schemes will not work.
+Instead use the old ones. For example, to display a graph on a white background use: 
+
+{p 4 8}{inp:. gprefs set window scheme whitebg}
+
+{title:References}
+
+{p 0 8}Schonlau M. Visualizing Categorical Data Arising in the Health Sciences 
+Using Hammock Plots. In Proceedings of the Section on Statistical Graphics, 
+American Statistical Association; 2003, CD-ROM.
+
+
+
+{title:Author}
+
+	Matthias Schonlau, University of Waterloo
+	schonlau at uwaterloo dot ca
+	{browse "http://www.schonlau.net":www.schonlau.net}
+
+
+{title:Also see}
+
+{p 0 19}Manual:  {hi:[R] graph}{p_end}
+{p 0 19}Stata Journal:  {hi:[SJ] clustergram} {p_end}
+{p 0 19}Stata Bulletin: {hi:[STB] parcoord}{p_end}
+{p 0 19}On-line:  help {help graph}{p_end}
+

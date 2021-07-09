@@ -1,0 +1,84 @@
+{smcl}
+{.-}
+help for {cmd:subsave} {right:(Roger Newson)}
+{.-}
+
+ 
+{title:Save a subset of the dataset in memory to a disk file}
+
+{p 8 15}
+{cmd:subsave} [{it:{help varlist}}] [{help if}] [{help in}] {help using} {it:filename} [,
+  {break}
+  {cmdab:ren:ame}{cmd:(}{it:oldvarname_1 newvarname_1 ... oldvarname_n newvarname_n}{cmd:)}
+  {break}
+  {cmdab:gs:ort}{cmd:(} {it:gsort_list} [ {cmd:,} {it:gsort_options} ] {cmd:)}
+  {break}
+  {it:save_options} ]
+
+{p}
+where {it:gsort_list} is a list of one or more elements of the form
+
+{p 8 15}[{cmd:+}|{cmd:-}]{it:varname}
+
+{p}
+(as used by the {help gsort} command), {it:gsort_options} is a list of options used by {help gsort},
+and {it:save_options} are options used by {help save}.
+
+
+{title:Description}
+
+{p}
+{cmd:subsave} saves a subset of the dataset currently in memory,
+specified by the {it:varlist} and/or the {cmd:if} and/or {cmd:in} qualifiers,
+to the disk filename specified by the {cmd:using} qualifier.
+This saves the user the trouble of inserting a {help preserve} statement before a {help save} command
+and a {help restore} statement after a {help save} command.
+This is especially useful in a group of commands between a {help preserve} command and a {help restore} command,
+as paired {help preserve} and {help restore} statements cannot be nested.
+In the output dataset, variables can be renamed, and observations can be resorted.
+
+
+{title:Options}
+
+{p 0 4}{cmd:rename(}{it:oldvarname_1 newvarname_1 ... oldvarname_n newvarname_n}{cmd:)}
+specifies a list
+of pairs of variable names. The first variable name of each pair specifies a
+variable in the output dataset, which is renamed to the second
+variable name of the pair. This option may be used to change the names of output variables
+to prevent name clashes, especially if the output dataset is to be match merged
+with the old dataset using {help merge}.
+
+{p 0 4}{cmd:gsort(} {it:gsort_list} [ {cmd:,} {it:gsort_options} ] {cmd:)}
+specifies a generalized sorting order (as recognised by {help gsort})
+for the observations in the output dataset specified by {cmd:using}.
+If {cmd:rename()} is specified, then {cmd:gsort()} must use the new names.
+
+{p 0 4}{cmd:{it:save_options}} are options used by {help save}.
+
+
+{title:Examples}
+
+{p 8 16}{inp:. subsave make mpg weight foreign using trash1}{p_end}
+
+{p 8 16}{inp:. subsave if foreign using trash1, replace}{p_end}
+
+{p 8 16}{inp:. subsave make weight price in 1/50 using trash2, replace}{p_end}
+
+{p 8 16}{inp:. subsave make mpg weight foreign using trash1, replace rename(mpg mileage weight pounds) gsort(make -foreign)}{p_end}
+
+
+{title:Author}
+
+{p}
+Roger Newson, Imperial College London, UK.
+Email: {browse "mailto:r.newson@imperial.ac.uk":r.newson@imperial.ac.uk}
+
+
+{title:Also see}
+
+{p 0 21}
+{bind: }Manual:  {hi:[D] gsort}, {hi:[D] merge}, {hi:[D] save}, {hi:[D] use}
+{p_end}
+{p 0 21}
+On-line:  help for {help gsort}, {help merge}, {help save}, {help use}
+{p_end}

@@ -1,0 +1,322 @@
+{smcl}
+{* 19may2008}{...}
+{cmd:help fairlie}
+{hline}
+
+{title:Title}
+
+{p2colset 5 17 19 2}{...}
+{p2col :{hi:fairlie} {hline 2}}Nonlinear decomposition of binary outcome
+differentials{p_end}
+{p2colreset}{...}
+
+
+{title:Syntax}
+
+{p 8 17 2}
+{cmd:fairlie}
+{depvar} {indepvars}
+{ifin} {weight}{cmd:,} {opt by(groupvar)}
+[ {it:options} ]
+
+{pstd} where the syntax for {indepvars} is
+
+{p 8 8 2}{it:term} [{it:term} {it:...}]
+
+{pstd}with {it:term} as a variable name or, alternatively, a set of
+variables specified as
+
+{p 8 8 2}{cmd:(}[{it:name}{cmd::}] {varlist}{cmd:)}
+
+{pstd}{it:name} is any valid Stata name and labels the set. If {it:name}
+is omitted, the name of the first variable is used to label the set.
+
+
+{synoptset 18}{...}
+{synopthdr}
+{synoptline}
+{synopt:{opt by(groupvar)}}specify the groups (required); {it:groupvar}
+must be 0/1{p_end}
+{synopt:{opt r:eps(#)}}number of decomposition replications; default is 100{p_end}
+{synopt:{opt nod:ots}}suppress the replication dots{p_end}
+{synopt:{opt ro}}randomize ordering of variables in the detailed decomposition{p_end}
+{synopt:{opt ref:erence(#)}}specify the reference model; {it:#} must be 0
+(use group 0 model) or
+1 (use group 1 model); default is 0{p_end}
+{synopt:{cmdab: p:ooled}[{cmd:(}{varlist}{cmd:)}]}use a pooled model as
+reference; {varlist} is added to the model if specified{p_end}
+{synopt:{opt probit}}use a {cmd:probit} model; default is to use a {cmd:logit} model{p_end}
+{synopt:{opt noe:st}}suppress model estimation output{p_end}
+{synopt:{opt save:est(name)}}store model estimation results under {it:name}{p_end}
+{synopt:{opt l:evel(#)}}set confidence level; default is {cmd:level(95)}{p_end}
+{synopt :{opt nole:gend}}suppress legend{p_end}
+{synopt:{it:estopts}}options passed through to the internal call of {helpb logit}
+or {helpb probit}{p_end}
+{synoptline}
+{p2colreset}{...}
+{p 4 6 2}
+    {cmd:fweight}s, {cmd:pweight}s, and {cmd:iweight} are allowed;
+    see {help weight}.
+{p_end}
+
+
+{title:Description}
+
+{pstd}
+{cmd:fairlie} computes the nonlinear decomposition of binary outcome
+differentials proposed by Fairlie (1999, 2003, 2005). That is, {cmd:fairlie}
+computes the difference in Pr({depvar}!=0) between the two groups defined
+by {it:groupvar} and quantifies the contribution of
+group differences in the {indepvars} to the outcome differential.
+Furthermore, {cmd:fairlie} estimates the separate contributions of the
+individual independent variables (or groups of independent variables).
+{cmd:fairlie} also reports standard errors for these separate
+contributions. Note that the covariances are set to zero. Therefore, do {it:not}
+use post-estimation commands such as {cmd:test} or {cmd:lincom} after
+{cmd:fairlie}.
+
+{pstd}
+The implementation of the decomposition technique closely follows the
+suggestions provided by Fairlie (2003). The paper can be downloaded
+from {browse "http://ssrn.com/abstract=497302"}. If weights are specified,
+a modified algorithm is used for the computation of the detailed
+decomposition (see below).
+
+{pstd}
+The decomposition technique involves one-to-one matching of cases
+between the two groups. If the groups have different sizes, a
+sample is drawn from the larger group. Since the results depend on
+the specific sample, the process is repeated and mean results
+are reported. Use {cmd:reps()} to specify the number of desired
+replications. Set the random-number seed for replicable
+results; see help {helpb generate}.
+
+{pstd}
+The separate contributions from independent variables or groups of
+independent variables may be sensitive to the ordering of variables.  If
+results are sensitive to ordering then use the {cmd:ro} option described below to
+randomize the ordering of variables, thus approximating results over all
+possible orderings.
+
+{pstd}
+Alternative decomposition approaches for binary response variables
+are provided, e.g., by Gomulka and Stern (1990) and Yun (2003).
+
+{pstd}{it:Algorithm for weighted data}: The algorithm by Fairlie for the
+detailed decomposition is based on matching observations from the two
+groups, where the groups are balanced by drawing a random sample (without
+replacement) from the larger group. The goal of the matching is to generate
+a hypothetical sample in which the distributions of some of the variables
+stem from the first group and some from the second group. In the case of
+weighted data, the original algorithm cannot be used, since different
+weights would have to be applied to the different variables in the
+hypothetical sample. However, an appropriate hypothetical sample can be
+constructed by matching samples from both groups where the sampling
+probabilities are proportional to the weights. In the present
+implementation the sizes of the two sub-samples are set to half the total
+sample size over both groups and observations are drawn with replacement.
+The choice of the sub-sample size is arbitrary but that does not matter
+much since the precision of the results only depends on the "grand total"
+of sampled observations, which is a function of the sub-sample size and the
+number of decomposition replications as set by the {cmd:reps()} option.
+That is, a smaller (larger) sub-sample size can be counterbalanced by an
+increase (a decrease) in the number of replications. The results from the
+original algorithm and from the algorithm for weighted data are numerically
+different, but they have the same expectation if the weights are
+uninformative (i.e. if the weights are equal for all observations or if
+the weights are independent from the observations).
+
+
+{title:Options}
+
+{phang}{opt by(groupvar)} defines the groups between which
+the decomposition is to be performed. {it:groupvar}
+must be 0/1.
+
+{phang}{opt reps(#)} specifies the number of decomposition replications to be
+performed. The default is 100.
+
+{phang}{opt nodots} suppresses the display of replication dots.
+
+{phang}{opt ro} causes the ordering of variables to be randomized in the
+detailed decomposition. The default is to estimate the separate
+contributions of the individual independent variables (or groups of
+independent variables) one after another in the specified order. Note that
+results are sensitive to this ordering. Specifying the {opt ro} option
+will randomize the order of the variables in each replication and, therefore,
+approximate average results over all possible orderings. This is recommended
+if the results are sensitive to ordering of variables. It may also be useful
+to increase the number of replications when using this option.
+
+{phang}{opt reference(#)} specifies the reference estimates to be
+used with the decomposition. {cmd:reference(0)}, the default,
+indicates that the coefficients from the {it:groupvar}==0 model are
+used. {cmd:reference(1)} specifies that the coefficients from
+the {it:groupvar}==1 model are used.
+
+{phang}{opt pooled}[{cmd:(}{varlist}{cmd:)}] specifies that the
+coefficients from the pooled model over all cases be used for the
+decomposition. (Note that the cases used in the pooled model are not
+necessarily restricted to the non-missing cases of {it:groupvar}.
+This is reasonable because it is sometimes desirable to include cases
+from other groups as well. Use {cmd:if} and {cmd:in} to
+restrict the sample of the pooled model.) Optionally, {varlist} will be
+added as additional control variables to the pooled model. Often,
+{opt pooled(groupvar)} is a good choice. In any case, it is important
+that the reference group in the pooled model is the group for which
+{it:groupvar}==0.
+
+{phang}{opt probit} specifies that the {cmd:probit} command is used
+for model estimation. The default is to use {cmd:logit}.
+
+{phang}{opt noest} suppresses the display of the model estimates.
+
+{phang}{opt saveest(name)}
+stores the model estimation results under {it:name} using
+{helpb estimates store}.
+
+{phang}
+{opt level(#)}; see {help estimation options##level():estimation options}.
+
+{phang} {opt nolegend} suppresses the legend for the variable sets.
+
+{phang}{it:estopts} are options passed through to the internal call
+of {helpb logit} or {helpb probit}.
+
+
+{title:Examples}
+
+        {com}. {stata "use http://fmwww.bc.edu/RePEc/bocode/h/homecomp.dta"}
+
+        . {stata "fairlie homecomp female age (educ:hsgrad somecol college) (marstat:married prevmar) if white==1|black==1, by(black)":fairlie homecomp female age (educ:hsgrad somecol college)}
+             {stata "fairlie homecomp female age (educ:hsgrad somecol college) (marstat:married prevmar) if white==1|black==1, by(black)":(marstat:married prevmar) if white==1|black==1, by(black)}
+
+        . {stata "fairlie homecomp female age (educ:hsgrad somecol college) (marstat:married prevmar) if white==1|black==1, by(black) pooled(black)":fairlie homecomp female age (educ:hsgrad somecol college)}
+             {stata "fairlie homecomp female age (educ:hsgrad somecol college) (marstat:married prevmar) if white==1|black==1, by(black) pooled(black)":(marstat:married prevmar) if white==1|black==1, by(black)}
+             {stata "fairlie homecomp female age (educ:hsgrad somecol college) (marstat:married prevmar) if white==1|black==1, by(black) pooled(black)":pooled(black)}
+
+        . {stata "generate black2 = black==1 if white==1|black==1"}
+
+        . {stata "fairlie homecomp female age (educ:hsgrad somecol college) (marstat:married prevmar), by(black2) pooled(black latino asian natamer)":fairlie homecomp female age (educ:hsgrad somecol college)}
+             {stata "fairlie homecomp female age (educ:hsgrad somecol college) (marstat:married prevmar), by(black2) pooled(black latino asian natamer)":(marstat:married prevmar), by(black2)}
+             {stata "fairlie homecomp female age (educ:hsgrad somecol college) (marstat:married prevmar), by(black2) pooled(black latino asian natamer)":pooled(black latino asian natamer)}
+
+        . {stata "fairlie homecomp female age (educ:hsgrad somecol college) (marstat:married prevmar) if white==1|black==1 [pw=wgt], by(black)":fairlie homecomp female age (educ:hsgrad somecol college)}
+             {stata "fairlie homecomp female age (educ:hsgrad somecol college) (marstat:married prevmar) if white==1|black==1 [pw=wgt], by(black)":(marstat:married prevmar) if white==1|black==1 [pw=wgt],}
+             {stata "fairlie homecomp female age (educ:hsgrad somecol college) (marstat:married prevmar) if white==1|black==1 [pw=wgt], by(black)":by(black)}
+{txt}
+
+{title:Saved Results}
+
+{synoptset 15 tabbed}{...}
+{p2col 5 15 19 2: Scalars}{p_end}
+{synopt:{cmd:e(N)}}number of observations
+    {p_end}
+{synopt:{cmd:e(N_0)}}number of obs for which {it:groupvar}==0
+    {p_end}
+{synopt:{cmd:e(N_1)}}number of obs for which {it:groupvar}==1
+    {p_end}
+{synopt:{cmd:e(N_match)}}sample size used for one-to-one matching
+    {p_end}
+{synopt:{cmd:e(reps)}}number of decomposition replications
+    {p_end}
+{synopt:{cmd:e(pr_0)}}outcome probability for {it:groupvar}==0
+    {p_end}
+{synopt:{cmd:e(pr_1)}}outcome probability for {it:groupvar}==1
+    {p_end}
+{synopt:{cmd:e(diff)}}differential {cmd:e(pr_0)}-{cmd:e(pr_1)}
+    {p_end}
+{synopt:{cmd:e(expl)}}total contribution of group differences in regressors
+    {p_end}
+
+
+{synoptset 15 tabbed}{...}
+{p2col 5 15 19 2: Macros}{p_end}
+{synopt:{cmd:e(cmd)}}{cmd:fairlie}
+    {p_end}
+{synopt:{cmd:e(depvar)}}name of dependent variable
+    {p_end}
+{synopt:{cmd:e(by)}}name group variable
+    {p_end}
+{synopt:{cmd:e(_cmd)}}command used for model estimation ({cmd:logit} or {cmd:probit})
+    {p_end}
+{synopt:{cmd:e(wtype)}}weight type
+    {p_end}
+{synopt:{cmd:e(wexp)}}weight expression
+    {p_end}
+{synopt:{cmd:e(reference)}}reference estimates ({cmd:0}, {cmd:1}, or {cmd:pooled})
+    {p_end}
+{synopt:{cmd:e(legend)}}definitions of regressor sets
+    {p_end}
+{synopt:{cmd:e(ro)}}{cmd:ro}, if the random order option was specified
+    {p_end}
+{synopt:{cmd:e(properties)}}{cmd:b V}
+    {p_end}
+
+{synoptset 15 tabbed}{...}
+{p2col 5 15 19 2: Matrices}{p_end}
+{synopt:{cmd:e(b)}}detailed decomposition results
+    {p_end}
+{synopt:{cmd:e(V)}}variances for {cmd:e(b)} (covariances are set to zero)
+    {p_end}
+{synopt:{cmd:e(_b)}}reference coefficients
+    {p_end}
+{synopt:{cmd:e(_V)}}variance-covariance matrix of {cmd:e(_b)}
+    {p_end}
+
+{synoptset 15 tabbed}{...}
+{p2col 5 15 19 2: Functions}{p_end}
+{synopt:{cmd:e(sample)}}marks estimation sample{p_end}
+{p2colreset}{...}
+
+
+{title:References}
+
+{phang}
+Fairlie, Robert W. (1999). The Absence of the African-American Owned Business: An Analysis
+of the Dynamics of Self-Employment. Journal of Labor Economics 17(1): 80-108.
+{p_end}
+{phang}
+Fairlie, Robert W. (2003). An Extension of the Blinder-Oaxaca Decomposition Technique to
+Logit and Probit Models. Economic Growth Center,
+Yale University Discussion Paper No. 873.
+{p_end}
+{phang}
+Fairlie, Robert W. (2005). An extension of the Blinder-Oaxaca decomposition technique to
+logit and probit models. Journal of Economic and Social Measurement
+30: 305-316.
+{p_end}
+{phang}
+Gomulka, Joanna, and Nicholas Stern (1990). The Employment of Married
+Women in the United Kingdom 1970-83. Economica 57: 171-199.
+{p_end}
+{phang}
+Yun, Myeong-Su (2003). Decomposing Differences in the First Moment.
+IZA Discussion Paper No. 877.
+{p_end}
+
+
+{title:Author}
+
+{pstd}
+Ben Jann, ETH Zurich, jannb@ethz.ch
+
+{pstd}Thanks for citing this software as follows:
+
+{pmore}
+Jann, B. (2006). fairlie: Stata module to generate nonlinear decomposition of
+binary outcome differentials. Available from
+http://ideas.repec.org/c/boc/bocode/s456727.html.
+
+
+{title:Acknowledgments}
+
+{pstd}
+I thank Sonia Bhalotra, Rob Fairlie, Julia Horstschräer, George Leckie,
+and Steven Samuels for their comments and suggestions.
+
+
+{title:Also see}
+
+{p 4 13 2}
+Online:  help for {helpb logit}, {helpb probit}, {helpb generate}

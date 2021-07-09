@@ -1,0 +1,73 @@
+d 'SVMACHINES': module providing Support Vector Machines for both Classification and Regression
+d
+d     svmachines fits a support vector machine (SVM) model.  SVM is
+"d not one, but several, variant models each    based upon the"
+d principles of splitting hyperplanes and the culling of
+d unimportant observations.    The basic SVM idea is to find a
+d linear boundary--a hyperplane--in high-dimensional space:  for
+"d classification, this is a boundary between two classes; for"
+d regression it is a line near which points    should be--much like
+"d in OLS, while simultaneously minimizing the number of"
+d observations required to    distinguish this hyperplane.  The
+"d unimportant observations are ignored after fitting is done, which"
+d    makes SVM very memory efficient.    Each observation can be
+"d thought of as a vector, so the support vectors are those"
+d observations which the    algorithm deems critical to the fit.
+d
+d
+d Requires: Stata version 13
+d
+d Distribution-Date: 20191022
+d
+"d Author: Nick Guenther , University of Waterloo"
+d Support: email nguenthe@@uwaterloo.ca
+d
+"d Author: Matthias Schonlau, University of Waterloo"
+d Support: email schonlau@@uwaterloo.ca
+d
+f svmachines.ado
+f svmachines.sthlp
+f svmlight.sthlp
+f svm_ensurelib.ado
+f svm_predict.ado
+f ./_/_svm_model2stata.ado
+f ./_/_svm_train.ado
+f svm_binary_classification_example.do
+f svm_class_probability_example.do
+f svm_multiclass_classification_example.do
+f svm_regression_example.do
+f svmachines_example.ado
+f ./i/import_svmlight.ado
+f ./i/import_svmlight.sthlp
+f svm_examples.ihlp
+f ./e/export_svmlight.ado
+f ./e/export_svmlight.sthlp
+f ./a/attitude_indicators.dta
+G LINUX64      ./_/_svm_dlopenable_linux64.plugin _svm_dlopenable.plugin
+G MACINTEL64   ./_/_svm_dlopenable_mac64.plugin   _svm_dlopenable.plugin
+G WIN64        ./_/_svm_dlopenable_win64.plugin   _svm_dlopenable.plugin
+G WIN64A       ./_/_svm_dlopenable_win64.plugin   _svm_dlopenable.plugin
+G LINUX64      ./_/_svm_getenv_linux64.plugin     _svm_getenv.plugin
+G MACINTEL64   ./_/_svm_getenv_mac64.plugin       _svm_getenv.plugin
+G WIN64        ./_/_svm_getenv_win64.plugin       _svm_getenv.plugin
+G WIN64A       ./_/_svm_getenv_win64.plugin       _svm_getenv.plugin
+G LINUX64      ./_/_svm_setenv_linux64.plugin     _svm_setenv.plugin
+G MACINTEL64   ./_/_svm_setenv_mac64.plugin       _svm_setenv.plugin
+G WIN64        ./_/_svm_setenv_win64.plugin       _svm_setenv.plugin
+G WIN64A       ./_/_svm_setenv_win64.plugin       _svm_setenv.plugin
+G LINUX64      ./_/_svmachines_linux64.plugin     _svmachines.plugin
+G MACINTEL64   ./_/_svmachines_mac64.plugin       _svmachines.plugin
+G WIN64        ./_/_svmachines_win64.plugin       _svmachines.plugin
+G WIN64A       ./_/_svmachines_win64.plugin       _svmachines.plugin
+G LINUX64      ./_/_svmlight_linux64.plugin       _svmlight.plugin
+G MACINTEL64   ./_/_svmlight_mac64.plugin         _svmlight.plugin
+G WIN64        ./_/_svmlight_win64.plugin         _svmlight.plugin
+G WIN64A       ./_/_svmlight_win64.plugin         _svmlight.plugin
+G WIN64        ./l/libsvm.dll
+G WIN64A       ./l/libsvm.dll
+h _svm_dlopenable.plugin
+h _svm_getenv.plugin
+h _svm_setenv.plugin
+h _svmachines.plugin
+h _svmlight.plugin
+

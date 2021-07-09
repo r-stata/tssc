@@ -1,0 +1,74 @@
+{smcl}
+{* 10february2003/26january2011}{...}
+{hline}
+help for {hi:selectvars}
+{hline}
+
+{title:Selecting all possible {it:n}-tuples from a varlist} 
+
+{p 8 17 2} 
+{cmd:selectvars} 
+{it: varlist}
+[{cmd:,}
+{cmd:min(}{it:#}{cmd:)}
+{cmd:max(}{it:#}{cmd:)}
+]
+
+
+{title:Description}
+
+{p 4 4 2}
+{cmd:selectvars} produces a list of all possible {it:n}-tuples from a list 
+of variable names. That is, given a list of {it:k} variable names, it produces 
+the empty list; all possible distinct singletons (each individual 
+variable name); all possible distinct pairs; and so forth. Tuples are 
+bound in " ". As {cmd:selectvars} is intended for programming, the list 
+is not displayed, but left behind as a saved result. 
+ 
+{p 4 4 2} 
+Note that there is no checking of a possible error with even modest {it:k}: 
+that a full list of (at most 2^{it:k}) tuples can not be accommodated 
+in a macro.  
+
+{p 4 4 2}
+As of January 2011, this command is declared superseded by the author's 
+{cmd:tuples}. 
+
+
+{title:Options} 
+
+{p 4 8 2}{cmd:min(}{it:#}{cmd:)} specifies a minimum value for the number of 
+names in a tuple.
+
+{p 4 8 2}{cmd:max(}{it:#}{cmd:)} specifies a maximum value for the number of 
+names in a tuple. 
+
+
+{title:Examples}
+
+{p 4 8 2}{cmd:. selectvars headroom trunk length displacement}
+
+{p 4 8 2}{cmd:. foreach v in `r(varlist)' {c -(}}{p_end}
+    {cmd:.        regress mpg `v'}
+    {cmd:. {c )-}}
+    
+{p 4 8 2}{cmd:. selectvars headroom trunk length displacement, min(2) max(2)}
+
+
+{title:Saved results} 
+
+{p 4 4 2}{cmd:r(varlist)}{space 8}list of tuples 
+
+
+{title:Author}
+
+{p 4 4 2}Nicholas J. Cox, University of Durham{break} 
+n.j.cox@durham.ac.uk
+
+
+{title:Acknowledgments} 
+
+{p 4 4 2}Sebastian Orbe reported a problem in {help tuples} which led to a 
+bug fix. 
+
+

@@ -1,0 +1,857 @@
+/*
+artsurv
+
+VERSION 1.0.3 SB/SB 20dec2004
+
+Survival outcomes
+
+keyword: rclass
+
+*/
+
+VERSION 8.0
+
+INCLUDE _std_large
+
+LIST method
+	BEGIN
+		logrank, unweighted
+		logrank, Tarone-Ware weights
+		logrank, Fleming-Harrington weights
+		binomial, conditional on total events
+		binomial, unconditional on total events
+	END
+	
+LIST meth_val
+	BEGIN
+		l
+		t
+		h
+		b
+		u
+	END
+
+LIST tunit
+	BEGIN
+		Year
+		6 Months
+		Quarter
+		Month
+		Week
+		Day
+		Unspecified
+	END
+	
+LIST tunit_val
+	BEGIN
+		1
+		2
+		3
+		4
+		5
+		6
+		7
+	END
+
+DIALOG main1, title("ART - ANALYSIS OF RESOURCES FOR TRIALS - Survival outcomes") tabtitle("Panel 1")
+BEGIN
+ /*--+----1----+----2----+----3----+----4----+----5----+----6----+----7----+*/
+ 
+ GROUPBOX gb_setup    	10      10      _iwd    _ht14h, label("Set-up")	
+ TEXT tx_np		15	30	90	., label("Number of periods") 
+ EDIT vl_np 		160	@	60	., label("Number of periods") default(1) option(nperiod)
+ TEXT tx_nu		250	30	90	., label("Number of groups") 
+ EDIT vl_ngroups	410	@	60	., label("Number of groups") default(2) option(ngroups)
+ TEXT tx_tunit		15	60 	180	., label("Time unit (= 1 period)") 
+ COMBOBOX cb_tunit	130	@	90	., label("Time unit (= 1 period)") option(tunit) contents(tunit) dropdownl value(tunit_val)
+ TEXT tx_alp		250	60	90	., label("Alpha (2-sided)")
+ EDIT vl_alpha	410	@	60	., label("alpha") default(0.05) option(alpha)
+ CHECKBOX ck_med	15	90	135	., label("Median survival time") option(med) onclickon("script med_on") onclickoff("script med_off")
+ EDIT vl_med		160	@	60	., label("Median survival time") option(median)
+ TEXT tx_pow		250	90	90	., label("Power or N")
+ EDIT vl_pow		410	@	60	., label("power") default(0.8) option(power)
+ TEXT tx_pro		15	120	240	., label("Baseline survival or failure probabilities")
+ EDIT vl_pr		250	@	220	., label("Baseline survival or failure probabilities") option(pr)
+ TEXT tx_per		15	150	240	., label("At the end of period(s)") 
+ EDIT vl_per		250	@	220	., label("At the end of period(s)") option(per)
+ 
+ GROUPBOX gb_options 	10	190	_iwd	_ht7h, label("Options")
+ RADIO r1_pow		15	210	170	., first label("Specify power") option(power)
+ RADIO r2_samp		250	@	170	., last label("Specify sample size") option(n)
+ RADIO r1_sp		15	240	220	., first label("Specify baseline survival probabilities")
+ RADIO r2_fp		250	@	220	., last label("Specify baseline failure probabilities") option(fp)
+ CHECKBOX ck_ni		15	270	170	., label("Non-inferiority design") option(ni)
+ CHECKBOX ck_ones	250	@	170	., label("One-sided alpha") option(onesided)
+ 
+END
+
+SCRIPT med_on
+BEGIN
+  main1.vl_med.enable
+  main1.vl_pr.disable
+  main1.vl_per.disable
+END
+
+SCRIPT med_off
+BEGIN
+  main1.vl_med.disable
+  main1.vl_pr.enable
+  main1.vl_per.enable
+END
+
+PROGRAM disable_median
+BEGIN
+	call gaction main1.ck_med.disable
+END
+
+PROGRAM enable_median
+BEGIN
+	call gaction main1.ck_med.enable
+	if main1.ck_med {
+		call script med_on
+	}
+	if ! main1.ck_med {
+		call script med_off
+	}
+END
+
+DIALOG main2, tabtitle("Panel 2")
+BEGIN
+ GROUPBOX gb_arm	10 	10	_iwd	_ht24h, label("Required treatment arm set-up")
+ TEXT tx_arm		20	30	160	., label("Choose treatment group:")
+ LISTBOX  lb_arm        20      50      _cwd1   _ht4h, label("Choose groups") contents(eqn_con) onselchangelist(eqn_sel)
+ 
+ GROUPBOX gb_hr		20	135	_cwd1	_ht5h, label("Hazard ratios")
+ TEXT tx_rel		25	155	200	., label("Enter relative to the control distribution")
+ TEXT tx_hr		25	185	50	., label("Group 1")
+ EDIT vl_hr1		70	@	160	., label("HR Group 1") option(hr1) default(1)
+ 
+ EDIT vl_hr2 		70	@	160	., label("HR Group 2") option(hr2)
+ 
+ EDIT vl_hr3		70	@	160	., label("HR Group 3") option(hr3)
+ 
+ EDIT vl_hr4		70	@	160	., label("HR Group 4") option(hr4)
+ 
+ EDIT vl_hr5		70	@	160	., label("HR Group 5") option(hr5)
+ 
+ EDIT vl_hr6		70	@	160	., label("HR Group 6") option(hr6)
+ 
+ GROUPBOX gb_ar		250	135	_cwd1 	_ht5h, label("Allocation ratio")
+ TEXT tx_def		255	155	200	., label("Default: equal allocation for all groups")
+ TEXT tx_ar		255	185	50	., label("Group 1")
+ EDIT vl_ar1		310	@	160	., label("Group 1 ar") option(ar1) default(1)
+ 
+ EDIT vl_ar2		310	@	160	., label("Group 2 ar") option(ar2) default(1)
+ 
+ EDIT vl_ar3		310	@	160	., label("Group 3 ar") option(ar3)
+ 
+ EDIT vl_ar4		310	@	160	., label("Group 4 ar") option(ar4)
+ 
+ EDIT vl_ar5		310	@	160	., label("Group 5 ar") option(ar5)
+ 
+ EDIT vl_ar6		310	@	160	., label("Group 6 ar") option(ar6)
+ 
+ CHECKBOX ck_trend	020	240	90	., label("Trend") option(trend) onclickon("script dose_on") onclickoff("script dose_off")
+ 
+ GROUPBOX gb_dose	250	220	_cwd1	_ht2h, label("Dose")	
+ TEXT tx_doses		255	240	90	., label("Group 1")
+ EDIT vl_doses1	310	@	160	., label("Group 1 ds") option(doses1)
+ 
+ EDIT vl_doses2 	310	@	160	., label("Group 2 ds") option(doses2)
+ 
+ EDIT vl_doses3 	310	@	160	., label("Group 3 ds") option(doses3)
+ 
+ EDIT vl_doses4 	310	@	160	., label("Group 4 ds") option(doses4)
+ 
+ EDIT vl_doses5 	310	@	160	., label("Group 5 ds") option(doses5)
+ 
+ EDIT vl_doses6 	310	@	160	., label("Group 6 ds") option(doses6)
+
+END
+
+SCRIPT dose_on
+BEGIN
+  main2.vl_doses1.enable
+  main2.vl_doses2.enable
+  main2.vl_doses3.enable
+  main2.vl_doses4.enable
+  main2.vl_doses5.enable
+  main2.vl_doses6.enable
+END
+
+SCRIPT dose_off
+BEGIN
+  main2.vl_doses1.disable
+  main2.vl_doses2.disable
+  main2.vl_doses3.disable
+  main2.vl_doses4.disable
+  main2.vl_doses5.disable
+  main2.vl_doses6.disable
+END
+
+PROGRAM disable_doses
+BEGIN
+	call gaction main2.ck_trend.disable
+END
+
+PROGRAM enable_doses
+BEGIN
+	call gaction main2.ck_trend.enable
+	if main2.ck_trend {
+		call script dose_on
+	}
+	if ! main2.ck_trend {
+		call script dose_off
+	}
+END
+
+LIST eqn_con
+BEGIN
+	Group 1 (required)
+	Group 2 (required)
+	Group 3
+	Group 4
+	Group 5
+	Group 6
+END
+
+LIST eqn_sel
+BEGIN
+	script eqn1
+	script eqn2
+	script eqn3
+	script eqn4
+	script eqn5
+	script eqn6
+END
+
+PROGRAM hide_all
+BEGIN
+	if !H(main2.vl_hr1) {
+		call gaction main2.vl_hr1.hide
+		call gaction main2.vl_ar1.hide
+		call gaction main2.vl_doses1.hide
+	}
+	if !H(main2.vl_hr2) {
+		call gaction main2.vl_hr2.hide
+		call gaction main2.vl_ar2.hide
+		call gaction main2.vl_doses2.hide
+	}
+	if !H(main2.vl_hr3) {
+		call gaction main2.vl_hr3.hide
+		call gaction main2.vl_ar3.hide
+		call gaction main2.vl_doses3.hide
+	}
+	if !H(main2.vl_hr4) {
+		call gaction main2.vl_hr4.hide
+		call gaction main2.vl_ar4.hide
+		call gaction main2.vl_doses4.hide
+	}
+	if !H(main2.vl_hr5) {
+		call gaction main2.vl_hr5.hide
+		call gaction main2.vl_ar5.hide
+		call gaction main2.vl_doses5.hide
+	}
+	if !H(main2.vl_hr6) {
+		call gaction main2.vl_hr6.hide
+		call gaction main2.vl_ar6.hide
+		call gaction main2.vl_doses6.hide
+	}
+
+END
+
+SCRIPT eqn1
+BEGIN
+	program hide_all
+	main2.tx_hr.setlabel "Group 1"
+	main2.vl_hr1.show
+	main2.tx_ar.setlabel "Group 1"
+	main2.vl_ar1.show
+	main2.tx_doses.setlabel "Group 1"
+	main2.vl_doses1.show
+	
+END
+
+SCRIPT eqn2
+BEGIN
+	program hide_all
+	main2.tx_hr.setlabel "Group 2"
+	main2.vl_hr2.show
+	main2.tx_ar.setlabel "Group 2"
+	main2.vl_ar2.show
+	main2.tx_doses.setlabel "Group 2"
+	main2.vl_doses2.show
+END
+
+SCRIPT eqn3
+BEGIN
+	program hide_all
+	main2.tx_hr.setlabel "Group 3"
+	main2.vl_hr3.show
+	main2.tx_ar.setlabel "Group 3"
+	main2.vl_ar3.show
+	main2.tx_doses.setlabel "Group 3"
+	main2.vl_doses3.show
+END
+
+SCRIPT eqn4
+BEGIN
+	program hide_all
+	main2.tx_hr.setlabel "Group 4"
+	main2.vl_hr4.show
+	main2.tx_ar.setlabel "Group 4"
+	main2.vl_ar4.show
+	main2.tx_doses.setlabel "Group 4"
+	main2.vl_doses4.show
+END
+
+SCRIPT eqn5
+BEGIN
+	program hide_all
+	main2.tx_hr.setlabel "Group 5"
+	main2.vl_hr5.show
+	main2.tx_ar.setlabel "Group 5"
+	main2.vl_ar5.show
+	main2.tx_doses.setlabel "Group 5"
+	main2.vl_doses5.show
+END
+
+SCRIPT eqn6
+BEGIN
+	program hide_all
+	main2.tx_hr.setlabel "Group 6"
+	main2.vl_hr6.show
+	main2.tx_ar.setlabel "Group 6"
+	main2.vl_ar6.show
+	main2.tx_doses.setlabel "Group 6"
+	main2.vl_doses6.show
+END
+
+DIALOG main3, tabtitle("Panel 3")
+BEGIN
+ 
+ GROUPBOX gb_pr		10	10	_iwd	_ht8h, label("Patient recruitment")
+ TEXT tx_du		15	30	50	., label("Duration")
+ EDIT vl_du		170	@	60	., label("Duration") default(0) option(duration)
+ TEXT tx_prop		250	@	160	., label("Proportion recruited at start")
+ EDIT vl_prop	415	@	60	., label("prop") default(0) option(prop)
+ RADIO rb_wei1		15	60	150	., first label("Equal weights over periods") option(eq) clickon("script wgt_off")
+ RADIO rb_wei2		15	90	120	., last label("Unequal weights:") option(uneq) clickon("script wgt_on")
+ EDIT vl_wei		170	@	60	., label("weights") option(weights)
+ RADIO rb_dis1		250	60	120	., first label("Uniform accrual") option(uni) clickon("script exp_off")
+ RADIO rb_dis2		250	90	120	., last label("Exponential accrual:") option(exp) clickon("script exp_on")
+ EDIT vl_dis		415	@	60	., label("dis") option(dis)
+ 
+ GROUPBOX gb_op		10	140	_iwd	_ht8h, label("Model Options")
+ RADIO r1_loc		15	160	170	., first label("Local alternatives")
+ RADIO r2_dist		250	@	170	., last label("Distant alternatives") option(distant)
+ TEXT tx_meth		15	190	170	., label("Method of sample size calculation") 
+ COMBOBOX cb_meth	190	@	210	., label("Method") option(method) contents(method) dropdownl value(meth_val)
+ CHECKBOX ck_det	15	220	170	., label("Additional details in output") option(detail)
+ TEXT tx_use		250	@	100	., label("Save using filename")
+ EDIT vl_use		360	@	110	., label("Save using filename") option(filename)
+ 
+END
+
+SCRIPT wgt_on
+BEGIN
+  main3.vl_wei.enable
+END
+
+SCRIPT wgt_off
+BEGIN
+  main3.vl_wei.disable
+END
+
+PROGRAM disable_weights
+BEGIN
+	call gaction main3.rb_wei1.disable
+	call gaction main3.rb_wei2.disable
+END
+
+PROGRAM enable_weights
+BEGIN
+	call gaction main3.rb_wei1.enable
+	call gaction main3.rb_wei2.enable
+	if main3.rb_wei1 {
+		call script wgt_off
+	}
+	if ! main3.rb_wei1 {
+		call script wgt_on
+	}
+END
+
+SCRIPT exp_on
+BEGIN
+  main3.vl_dis.enable
+END
+
+SCRIPT exp_off
+BEGIN
+  main3.vl_dis.disable
+END
+
+PROGRAM disable_dis
+BEGIN
+	call gaction main3.rb_dis1.disable
+	call gaction main3.rb_dis2.disable
+END
+
+PROGRAM enable_dis
+BEGIN
+	call gaction main3.rb_dis1.enable
+	call gaction main3.rb_dis2.enable
+	if main3.rb_dis1 {
+		call script exp_off
+	}
+	if ! main3.rb_dis1 {
+		call script exp_on
+	}
+END
+
+DIALOG options, tabtitle("Advanced options")
+BEGIN
+ TEXT tx_chgr		10 	10	160	., label("Choose treatment group:")
+ LISTBOX  lb_loss       10      30       _cwd1     _ht4h, label("Choose groups options") contents(loss_cross) onselchangelist(loss_sel)
+ 
+ GROUPBOX gb_loss	250 	10	240	_ht8h, label("Loss to follow-up")
+ TEXT tx_loss		255	30	170	., label("Enter cumulative distribution")
+ TEXT tx_gr1l		255	50	50	., label("Group 1")
+ EDIT vl_gr1l	310	@	160	., label("Group 1 l") option(gr1loss)
+ EDIT vl_gr2l	310	@	160	., label("Group 2 l") option(gr2loss)
+ EDIT vl_gr3l	310	@	160	., label("Group 3 l") option(gr3loss)
+ EDIT vl_gr4l	310	@	160	., label("Group 4 l") option(gr4loss)
+ EDIT vl_gr5l	310	@	160	., label("Group 5 l") option(gr5loss)
+ EDIT vl_gr6l	310	@	160	., label("Group 6 l") option(gr6loss)
+ TEXT tx_perl		255	70	170	., label("At the end of period(s)")
+ TEXT tx_per1l		255	90	50	., label("Group 1")
+ EDIT vl_per1l	310	@	160	., label("At the end of period(s)") option(per1l)
+ EDIT vl_per2l	310	@	160	., label("At the end of period(s)") option(per2l)
+ EDIT vl_per3l	310	@	160	., label("At the end of period(s)") option(per3l)
+ EDIT vl_per4l	310	@	160	., label("At the end of period(s)") option(per4l)
+ EDIT vl_per5l	310	@	160	., label("At the end of period(s)") option(per5l)
+ EDIT vl_per6l	310	@	160	., label("At the end of period(s)") option(per6l)
+ 
+ GROUPBOX gb_with	10	130	_iwd	_ht12h, label("Withdrawal from allocated treatment")
+ TEXT tx_with		15	150	170	., label("Enter cumulative distribution")
+ TEXT tx_gr1w		15	180	50	., label("Group 1")
+ EDIT vl_gr1w	70	@	160	., label("Group 1 w") option(gr1with)
+ EDIT vl_gr2w	70	@	160	., label("Group 2 w") option(gr2with)
+ EDIT vl_gr3w	70	@	160	., label("Group 3 w") option(gr3with)
+ EDIT vl_gr4w	70	@	160	., label("Group 4 w") option(gr4with)
+ EDIT vl_gr5w	70	@	160	., label("Group 5 w") option(gr5with)
+ EDIT vl_gr6w	70	@	160	., label("Group 6 w") option(gr6with)
+ TEXT tx_perw		250	150	170	., label("At the end of period(s)")
+ TEXT tx_per1w		250	180	50	., label("Group 1")
+ EDIT vl_per1w	305	@	160	., label("At the end of period(s)") option(per1w)
+ EDIT vl_per2w	305	@	160	., label("At the end of period(s)") option(per2w)
+ EDIT vl_per3w	305	@	160	., label("At the end of period(s)") option(per3w)
+ EDIT vl_per4w	305 	@	160	., label("At the end of period(s)") option(per4w)
+ EDIT vl_per5w	305 	@	160	., label("At the end of period(s)") option(per5w)
+ EDIT vl_per6w	305	@	160	., label("At the end of period(s)") option(per6w)
+ TEXT tx_tar		15	210	220	., label("Enter post-withdrawal hazard ratios, or target")
+ TEXT tx_targ		15	225	170	., label("groups on cross-over")	
+ TEXT tx_tar1		15	250	50	., label("Group 1")
+ EDIT vl_tar1	70	@	160	., label("Group 1 t") option(tar1)
+ EDIT vl_tar2	70	@	160	., label("Group 2 t") option(tar2)
+ EDIT vl_tar3	70	@	160	., label("Group 3 t") option(tar3)
+ EDIT vl_tar4	70	@	160	., label("Group 4 t") option(tar4)
+ EDIT vl_tar5	70	@	160	., label("Group 5 t") option(tar5)
+ EDIT vl_tar6	70	@	160	., label("Group 6 t") option(tar6)
+ RADIO r1_tar		250	220	200	., first label("Specify target group on cross-over") option(r1tar)
+ RADIO r2_haz		250	250	200	., last label("Specify hazard ratios post-withdrawal") option(r2tar)
+
+END
+
+LIST loss_cross
+BEGIN
+	Group 1 
+	Group 2 
+	Group 3
+	Group 4
+	Group 5
+	Group 6
+END
+
+LIST loss_sel
+BEGIN
+	script loss1
+	script loss2
+	script loss3
+	script loss4
+	script loss5
+	script loss6
+END
+
+ PROGRAM hide_it
+BEGIN
+	if !H(options.vl_gr1l) {
+		call gaction options.vl_gr1l.hide
+		call gaction options.vl_per1l.hide
+		call gaction options.vl_gr1w.hide
+		call gaction options.vl_per1w.hide
+		call gaction options.vl_tar1.hide
+	}
+	if !H(options.vl_gr2l) {
+		call gaction options.vl_gr2l.hide
+		call gaction options.vl_per2l.hide
+		call gaction options.vl_gr2w.hide
+		call gaction options.vl_per2w.hide
+		call gaction options.vl_tar2.hide
+	}
+	if !H(options.vl_gr3l) {
+		call gaction options.vl_gr3l.hide
+		call gaction options.vl_per3l.hide
+		call gaction options.vl_gr3w.hide
+		call gaction options.vl_per3w.hide
+		call gaction options.vl_tar3.hide
+	}
+	if !H(options.vl_gr4l) {
+		call gaction options.vl_gr4l.hide
+		call gaction options.vl_per4l.hide
+		call gaction options.vl_gr4w.hide
+		call gaction options.vl_per4w.hide
+		call gaction options.vl_tar4.hide
+	}
+	if !H(options.vl_gr5l) {
+		call gaction options.vl_gr5l.hide
+		call gaction options.vl_per5l.hide
+		call gaction options.vl_gr5w.hide
+		call gaction options.vl_per5w.hide
+		call gaction options.vl_tar5.hide
+	}
+	if !H(options.vl_gr6l) {
+		call gaction options.vl_gr6l.hide
+		call gaction options.vl_per6l.hide
+		call gaction options.vl_gr6w.hide
+		call gaction options.vl_per6w.hide
+		call gaction options.vl_tar6.hide
+	}
+
+END
+
+SCRIPT loss1
+BEGIN
+	program hide_it
+	options.tx_gr1l.setlabel "Group 1"
+	options.vl_gr1l.show
+	options.tx_per1l.setlabel "Group 1"
+	options.vl_per1l.show
+	options.tx_gr1w.setlabel "Group 1"
+	options.vl_gr1w.show
+	options.tx_per1w.setlabel "Group 1"
+	options.vl_per1w.show
+	options.tx_tar1.setlabel "Group 1"
+	options.vl_tar1.show
+END
+
+SCRIPT loss2
+BEGIN
+	program hide_it
+	options.tx_gr1l.setlabel "Group 2"
+	options.vl_gr2l.show
+	options.tx_per1l.setlabel "Group 2"
+	options.vl_per2l.show
+	options.tx_gr1w.setlabel "Group 2"
+	options.vl_gr2w.show
+	options.tx_per1w.setlabel "Group 2"
+	options.vl_per2w.show
+	options.tx_tar1.setlabel "Group 2"
+	options.vl_tar2.show
+END
+
+SCRIPT loss3
+BEGIN
+	program hide_it
+	options.tx_gr1l.setlabel "Group 3"
+	options.vl_gr3l.show
+	options.tx_per1l.setlabel "Group 3"
+	options.vl_per3l.show
+	options.tx_gr1w.setlabel "Group 3"
+	options.vl_gr3w.show
+	options.tx_per1w.setlabel "Group 3"
+	options.vl_per3w.show
+	options.tx_tar1.setlabel "Group 3"
+	options.vl_tar3.show
+END
+
+SCRIPT loss4
+BEGIN
+	program hide_it
+	options.tx_gr1l.setlabel "Group 4"
+	options.vl_gr4l.show
+	options.tx_per1l.setlabel "Group 4"
+	options.vl_per4l.show
+	options.tx_gr1w.setlabel "Group 4"
+	options.vl_gr4w.show
+	options.tx_per1w.setlabel "Group 4"
+	options.vl_per4w.show
+	options.tx_tar1.setlabel "Group 4"
+	options.vl_tar4.show
+END
+
+SCRIPT loss5
+BEGIN
+	program hide_it
+	options.tx_gr1l.setlabel "Group 5"
+	options.vl_gr5l.show
+	options.tx_per1l.setlabel "Group 5"
+	options.vl_per5l.show
+	options.tx_gr1w.setlabel "Group 5"
+	options.vl_gr5w.show
+	options.tx_per1w.setlabel "Group 5"
+	options.vl_per5w.show
+	options.tx_tar1.setlabel "Group 5"
+	options.vl_tar5.show
+END
+
+SCRIPT loss6
+BEGIN
+	program hide_it
+	options.tx_gr1l.setlabel "Group 6"
+	options.vl_gr6l.show
+	options.tx_per1l.setlabel "Group 6"
+	options.vl_per6l.show
+	options.tx_gr1w.setlabel "Group 6"
+	options.vl_gr6w.show
+	options.tx_per1w.setlabel "Group 6"
+	options.vl_per6w.show
+	options.tx_tar1.setlabel "Group 6"
+	options.vl_tar6.show
+END
+
+
+
+
+INCLUDE header
+HELP   hlp1, label("Help") view("help artsurvdlg")
+RESET  res1
+
+PROGRAM command
+BEGIN
+
+	require main1.vl_ngroups main1.vl_np  main2.vl_hr1 main2.vl_hr2
+	
+	if options.vl_gr1w {
+		require options.vl_per1w
+	}
+	
+	if options.vl_gr2w {
+		require options.vl_per2w
+	}
+	
+	if options.vl_gr1l {
+		require options.vl_per1l
+	}
+	
+	if options.vl_gr2l {
+		require options.vl_per2l
+	}
+
+	put "artsurv "
+	
+	if main3.vl_use {
+		put "using " main3.vl_use
+	} 
+
+	beginoptions
+		optionarg main3.cb_meth /*method*/
+		optionarg main1.vl_np /*nperiod*/
+		optionarg main1.vl_ngroups /*ngroups*/
+		optionarg main1.r2_fp /*flag for failure probs (default is survival probs)*/
+		put "edf0(" main1.vl_pr ", " main1.vl_per ") "
+		optionarg main1.vl_med 
+		put "hratio(" /hidden main2.vl_hr1 ", " /hidden main2.vl_hr2  
+		if main2.vl_hr3 {
+			put ", " /hidden main2.vl_hr3 
+		}
+		if main2.vl_hr4 {
+			put ", " /hidden main2.vl_hr4 
+		}
+		if main2.vl_hr5 {
+			put ", " /hidden main2.vl_hr5 
+		}
+		if main2.vl_hr6 {
+			put ", " /hidden main2.vl_hr6 
+		} 
+		put ") " 
+		
+		if main1.r2_samp {
+			put "n(" main1.vl_pow ") " /*n*/
+		}
+		optionarg main1.vl_alpha /*alpha*/
+		if main1.r1_pow {
+			optionarg main1.vl_pow
+		}
+		put "aratios(" /hidden main2.vl_ar1 " " /hidden main2.vl_ar2 " " /hidden main2.vl_ar3 " " /hidden main2.vl_ar4 " " /hidden main2.vl_ar5 " " /hidden main2.vl_ar6 ") " /*aratios*/
+		
+		if options.vl_gr1w | options.vl_gr2w | options.vl_gr3w | options.vl_gr4w | options.vl_gr5w | options.vl_gr6w {
+			put "wg("
+			if options.vl_gr1w {
+				put "1 "
+			}
+			if options.vl_gr2w {
+				put "2 "
+			}
+			if options.vl_gr3w {
+				put "3 "
+			}
+			if options.vl_gr4w {
+				put "4 "
+			}
+			if options.vl_gr5w {
+				put "5 "
+			}
+			if options.vl_gr6w {
+				put "6 "
+			}
+			put ") "
+		}
+		if options.vl_gr1w | options.vl_gr2w | options.vl_gr3w | options.vl_gr4w | options.vl_gr5w | options.vl_gr6w {
+			put "wdf("
+			if options.vl_gr1w {
+				put /hidden options.vl_gr1w ", " /hidden options.vl_per1w
+			}
+			if options.vl_gr2w {
+				if options.vl_gr1w {
+					put "; " 
+				}
+				put /hidden options.vl_gr2w ", " /hidden options.vl_per2w
+			}
+			if options.vl_gr3w {
+				if options.vl_gr2w {
+					put "; " 
+				}
+				put /hidden options.vl_gr3w ", " /hidden options.vl_per3w
+			}
+			if options.vl_gr4w {
+				if options.vl_gr3w {
+					put "; " 
+				}
+				put /hidden options.vl_gr4w ", " /hidden options.vl_per4w
+			}
+			if options.vl_gr5w {
+				if options.vl_gr4w {
+					put "; " 
+				}
+				put /hidden options.vl_gr5w ", " /hidden options.vl_per5w
+			}
+			if options.vl_gr6w {
+				if options.vl_gr5w {
+					put "; " 
+				}
+				/hidden options.vl_gr6w ", " /hidden options.vl_per6w
+			}
+			put ") "
+		}
+			
+		if options.vl_tar1 | options.vl_tar2 | options.vl_tar3 | options.vl_tar4 | options.vl_tar5 | options.vl_tar6 {
+			if options.r1_tar {
+				put "crover(" /hidden options.vl_tar1 " " /hidden options.vl_tar2 " " /hidden options.vl_tar3 " " /hidden options.vl_tar4 " " /hidden options.vl_tar5 " " /hidden options.vl_tar6 ") "
+			}	
+			if options.r2_haz {
+				put "pwehr(" /hidden options.vl_tar1 ", " /hidden options.vl_tar2 ", " /hidden options.vl_tar3 ", " /hidden options.vl_tar4 ", " /hidden options.vl_tar5 ", " /hidden options.vl_tar6 ") "
+			}
+		}
+		
+		if options.vl_gr1l | options.vl_gr2l | options.vl_gr3l | options.vl_gr4l | options.vl_gr5l | options.vl_gr6l {
+			put "lg("
+			if options.vl_gr1l {
+				put "1 "
+			}
+			if options.vl_gr2l {
+				put "2 "
+			}
+			if options.vl_gr3l {
+				put "3 " 
+			}
+			if options.vl_gr4l {
+				put "4 "
+			}
+			if options.vl_gr5l {
+				put "5 "
+			}
+			if options.vl_gr6l {
+				put "6 "
+			}
+			put ") "
+		}
+		if options.vl_gr1l | options.vl_gr2l | options.vl_gr3l | options.vl_gr4l | options.vl_gr5l | options.vl_gr6l {
+			put "ldf( "
+			if options.vl_gr1l {
+				put /hidden options.vl_gr1l ", " /hidden options.vl_per1l
+			}
+			if options.vl_gr2l {
+				if options.vl_gr1l {
+					put "; " 
+				}
+				put /hidden options.vl_gr2l ", " /hidden options.vl_per2l
+			}
+			if options.vl_gr3l {
+				if options.vl_gr2l {
+					put "; " 
+				}
+				put /hidden options.vl_gr3l ", " /hidden options.vl_per3l
+			}
+			if options.vl_gr4l {
+				if options.vl_gr3l {
+					put "; " 
+				}
+				put /hidden options.vl_gr4l ", " /hidden options.vl_per4l
+			}
+			if options.vl_gr5l {
+				if options.vl_gr4l {
+					put "; " 
+				}
+				put /hidden options.vl_gr5l ", " /hidden options.vl_per5l
+			}
+			if options.vl_gr6l {
+				if options.vl_gr5l {
+					put "; " 
+				}
+				put /hidden options.vl_gr6l ", " /hidden options.vl_per6l
+			}
+			put ") "
+		}
+		put "recrt("
+		if main3.vl_du {
+			put main3.vl_du " "
+		}
+		put main3.vl_prop ", "
+		if main3.rb_wei1 {
+			put "1, "
+		}
+		if main3.rb_wei2 {
+			put /hidden main3.vl_wei ", "
+		}
+		if main3.rb_dis1 {
+			put "0 "
+		} 
+		if main3.rb_dis2 {
+			put /hidden main3.vl_dis
+		}
+		put ") "
+		
+		
+		optionarg main3.r2_dist
+		
+		optionarg main3.ck_det
+		optionarg main1.ck_ones
+		optionarg main1.ck_ni
+		optionarg main1.cb_tunit
+		
+		optionarg main2.ck_trend 
+		
+		if main2.vl_doses1 | main2.vl_doses2 | main2.vl_doses3 | main2.vl_doses4 | main2.vl_doses5 | main2.vl_doses6 {
+			put "doses( " /hidden main2.vl_doses1 " " /hidden main2.vl_doses2 " " /hidden main2.vl_doses3 " " /hidden main2.vl_doses4 " " /hidden main2.vl_doses5 " " /hidden main2.vl_doses6 ") "
+		}		
+		
+	endoptions
+	
+END
+
+	
+
+
+
+

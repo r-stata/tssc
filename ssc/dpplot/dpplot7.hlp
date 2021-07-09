@@ -1,0 +1,170 @@
+{smcl}
+{* 19june2002/3june2004}{...}
+{hline}
+help for {hi:dpplot7}
+{hline}
+
+{title:Density probability plots} 
+
+{p 8 16}{cmd:dpplot7} 
+{it:varname} 
+[{cmd:if} {it:exp}]  
+[{cmd:in} {it:range}] 
+[ {cmd:,}
+{cmd:a(}{it:#}{cmd:)}  
+{cmd:dist(}{it:name}{cmd:)} 
+{cmd:param(}{it:numlist}{cmd:)} 
+{it:graph_options} 
+] 
+
+
+{title:Description}
+
+{p}{cmd:dpplot7} plots density probability plots for {it:varname} given a 
+reference distribution, by default normal (Gaussian). 
+
+{p}Note: {cmd:dpplot7} is the original version, written for Stata 7, 
+of {cmd:dpplot}. Users of Stata 8 or later should switch to {cmd:dpplot}. 
+
+
+{title:Remarks}
+
+{p}
+To establish notation, and to fix ideas with a concrete example: consider an
+observed variable Y, whose distribution we wish to compare with a normally
+distributed variable X. That variable has density function f(X), distribution
+function P = F(X) and quantile function X = Q(P). (The distribution function
+and the quantile function are inverses of each other.) Clearly, this notation
+is fairly general and also covers other distributions, at least for continuous
+variables.
+ 
+{p}  
+The particular density function f(X | parameters) most pertinent to
+comparison with data for Y can be computed given values for its
+parameters, either estimates from data on Y, or parameter values chosen
+for some other good reason. In the case of a normal distribution, these
+parameters would usually be the mean and the standard deviation. Such density
+functions are often superimposed on histograms or other graphical displays.
+In Stata, {cmd:graph, histogram} has a {cmd:normal} option which adds 
+the normal density curve corresponding to the mean and standard deviation of the
+data shown. 
+
+{p} 
+The density function can also be computed indirectly via the quantile function
+as f(Q(P)). For example, if P were 0.5, then f(Q(0.5)) would be
+the density at the median. In practice P is calculated as  
+so-called plotting positions p_i attached to values y_(i) of a sample of Y 
+of size n which have rank i: that is, the y_(i) are the order statistics 
+y_(1) <= ... <= y_(n). One simple rule uses p_i = (i - 0.5) / n.  
+Most other rules follow one of a family (i - a) / (n - 2a + 1) indexed by a. 
+
+{p} 
+Plotting both f(X | parameters) and f(Q(P = p_i)), calculated using plotting
+positions, versus observed Y gives two curves. In our example, the first is
+normal by construction and the second would be a good estimate of a normal
+density if Y were truly normal with the same parameters. In terms of Stata 
+functions, the two curves are based on {cmd:normden(}(X - mean) / SD){cmd:)} 
+and {cmd:normden(invnorm(}p_i{cmd:))}. The match or mismatch between the
+curves allows graphical assessment of goodness or badness of fit. What is more,
+we can use experience from comparing frequency distributions, as shown on
+histograms, dot plots or other similar displays, in comparing or identifying
+location and scale differences, skewness, tail weight, tied values, gaps, 
+outliers and so forth. 
+
+{p}Such {it:density probability plots} were suggested by Jones and Daly (1995). 
+They are best seen as special-purpose plots, like normal quantile plots 
+and their kin, rather than general-purpose plots, like histograms or dot plots.
+
+{p}Extending the discussion in Jones and Daly (1995), the advantages (+) and 
+limitations (-) of these plots include 
+
+{p 4 4}+1. No choices of binning or origin (cf. histograms, dot plots, etc.) 
+or of kernel or of degree of smoothing (cf. density estimation) are required. 
+
+{p 4 4}+2. Some people find them easier to interpret than quantile-quantile 
+plots. 
+
+{p 4 4}+3. They work well for a wide range of sample sizes. At the same 
+time, as with any other method, a sample of at least moderate size is 
+preferable (one rule of thumb is >= 25). 
+
+{p 4 4}+4. If X has bounded support in one or both directions, then this 
+should be clear on the plot. 
+
+{p 4 4}-1. Results may be difficult to decipher if observed and reference
+distributions differ in modality. For example, if the reference distribution is
+unimodal but the observed data hint at bimodality, nevertheless f(Q(P)) must be
+unimodal even though f(Y) may not be. Similarly, when the reference
+distribution is exponential, then f(Q(P)) must be monotone decreasing whatever
+the shape of f(Y). 
+
+{p 4 4}-2. It may be difficult to discern subtle differences in one or both 
+tails of the observed and reference distributions. 
+
+{p 4 4}-3. Comparison is of a curve with a curve: some people argue
+that graphical references should where possible be linear (and ideally 
+horizontal). (A linear reference is a clear advantage of quantile plots.) 
+
+{p 4 4}-4. There is no simple extension to comparison of two samples 
+with each other. 
+
+{p}
+Programmers may wish to inspect the code and add code for other distributions.
+If parameters are not estimated, then naturally their values must be 
+supplied: the order of parameters should seem natural or at least conventional. 
+
+
+{title:Options}
+
+{p 0 4}{it:graph_options} are options of {cmd:graph, twoway}. 
+The defaults include 
+{cmd:gap(4) symbol(oi) connect(.s) l1title("Probability density") xla yla}. 
+
+{p 0 4}{cmd:a()} specifies a family of plotting positions,
+as explained above. The default is 0.5. Choice of {cmd:a} is rarely material 
+unless the sample size is very small, and then the exercise is moot whatever
+is done. 
+
+{p 0 4}{cmd:dist()} specifies a distribution to act as a reference. In this 
+preliminary version, the distributions allowed are {cmd:exponential} and 
+{cmd:normal}, the latter being the default. {cmd:Gaussian} is a synonym 
+for {cmd:normal}. Abbreviations down to at least three letters (e.g. {cmd:exp}, 
+{cmd:nor}) are allowed. 
+
+{p 0 4}{cmd:param()} specifies parameter values which give reference 
+distributions; specifications override parameters estimated from the data. 
+ 
+{p 4 4}With {cmd:dist(normal)} up to two parameters may be specified. The first
+is the mean and the second is the standard deviation. 
+ 
+{p 4 4}With {cmd:dist(exponential)} one parameter may be specified, namely the
+mean. 
+ 
+ 
+{title:Examples}
+
+{p 4 8}{inp:. dpplot7 mpg} 
+
+{p 4 8}{inp:. set obs 1000}{p_end}
+{p 4 8}{inp:. gen rnd = invnorm(uniform())}{p_end}
+{p 4 8}{inp:. dpplot7 rnd, param(0 1)}
+
+
+{title:Author}
+
+    Nicholas J. Cox, University of Durham, U.K.  
+    n.j.cox@durham.ac.uk
+
+
+{title:References} 
+
+{p}Jones, M.C. and F. Daly. 1995. Density probability plots. 
+{it:Communications in Statistics, Simulation and Computation} 
+24: 911-927. 
+
+
+{title:Also see}
+
+{p 0 19}On-line:  help for {help graph}, {help diagplots} 
+{p_end}
+  

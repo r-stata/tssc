@@ -1,0 +1,74 @@
+.-
+help for ^badiag^                                                 (STB-55: sbe33)
+.-
+
+Bland-Altman plots
+------------------
+
+        ^badiag^ varname1 varname2 [^if^ exp] [^in^ range] [^, format(^str^)^ 
+              ^avlab(^str^) difflab(^str^) err(^real 2^) ^graph_options]
+
+
+Description
+-----------
+This is a variation on the well-known Bland-Altman (BA) plot.
+BA plots are used in the comparison of paired data from two methods of 
+measuring the same quantity (e.g. two blood pressure devices), 
+where the relationship between the measurements is not in doubt, and 
+emphasis is on the absolute size of the differences. Only if it is sufficiently 
+small will ther mew machine be regarded as an adequate substitute for the standard.
+
+The standard BA plot shows the average and difference between the measurements, 
+(varname1 + varname2)/2 and varname2 - varname1
+with 95% reference lines at mean +/- 2 SD (or 1.96 SD with the ^err^ option.)
+
+^badiag^ is a variation of the command ^baplot^.  In both cases, 
+the standard reference interval for the difference is calculated).  However, 
+^badiag^ adds these to a plot of 
+
+
+^badiag^ plots actual values of varname1 against varname2, with the Bland-Altman 
+reference lines added.  The result is to rotate the well-known Bland-Altman plots 
+
+Options
+-------
+
+^format(^str^)^ sets the format for the results given.
+
+^avlab(^str^)^ gives a variable label to the average before plotting the graph.
+
+^difflab(^str^)^  gives a variable label to the difference before plotting the
+    graph.
+
+graph_options are any of the options allowed with ^graph, twoway^.
+
+
+Examples
+--------
+
+ . ^use col_icp^
+ . ^badiag icp colorime, avlab("ICPOES vs Colorimetry)^
+
+
+Author
+------
+        Paul Seed
+        School of Medicine
+        King's College London, UK
+        email: paul.seed@@kcl.ac.uk
+
+References
+----------
+Bland, J. Martin and Altman, Douglas G.  Statistical methods for assessing agreement 
+between two methods of clinical measurement. Lancet, 1986; i: 307-310. 
+
+Bland, J. Martin and Altman, Douglas G.  Measuring agreement in method comparison s
+tudies. Statistical methods in medical research, 1999; 8: 135-160
+
+
+
+Also see
+--------
+
+    STB: STB-55 sbe33
+

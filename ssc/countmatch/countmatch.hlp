@@ -1,0 +1,227 @@
+{smcl}
+{* 7nov2006}{...}
+{hline}
+help for {hi:countmatch}
+{hline}
+
+{title:Count matching values for one variable in another}
+
+{p 8 12 2} 
+{cmd:countmatch} 
+{it:var1} {it:var2}
+{ifin} 
+[
+{cmd:,}
+{cmdab:g:enerate(}{it:newvar}{cmd:)}
+{cmd:by(}{it:byvarlist}{cmd:)}
+{cmdab:miss:ing}
+{it:list_options} 
+] 
+
+
+{title:Description} 
+
+{p 4 4 2}
+{cmd:countmatch} counts observations for which each distinct value of
+{it:var1} is matched by (is equal to) {it:var2}, whether for the same
+observation or for some different observation(s). {it:var1} and
+{it:var2} should be both numeric or both string. 
+
+
+{title:Options} 
+
+{p 4 8 2} 
+{cmd:generate()} specifies the name of a new variable to hold information on
+match counts. If {cmd:generate()} is not specified, data and counts
+will be {cmd:list}ed. 
+    
+{p 4 8 2} 
+{cmd:by()} specifies that matching is to be carried out only 
+within distinct groups defined by {it:byvarlist}. Observations with 
+equal values must belong to the same group to count as matching. 
+
+{p 4 8 2} 
+{cmd:missing} indicates that missing values of {it:var1} should be included in
+the comparison. By default, they are excluded.
+
+{p 4 8 2} 
+{it:list_options} are options of {help list}, which may be used to tune 
+the output of any listing. 
+
+
+{title:Remarks} 
+
+    {hline}
+{p 4 4 2}{it:Examples} 
+
+{p 4 4 2}For concreteness, consider data on friendships. Two variables
+are {cmd:name} and {cmd:bestfriendname}. Then 
+{cmd:countmatch name bestfriendname} counts how many people name each
+person in {cmd:name} as their best friend in {cmd:bestfriendname}.  This
+will include all those who name themselves as their own best friends. 
+
+{p 4 4 2}Alternatively, two variables are {cmd:name} and
+{cmd:friendname} and each observation specifies a person and one of
+their friends, so that the data occur in blocks, one block for each
+person.  Then {cmd:countmatch name friendname} counts how many people
+name each person in {cmd:name} as their friend in {cmd:friendname}. This
+will, again, include all those who name themselves as their own friends.
+The count will necessarily be the same for each observation on a
+particular person. Downstream of this you may wish to list each person
+and the corresponding count just once, and 
+{help egen:egen's tag() function} offers a way to do this. 
+
+{p 4 4 2}Doing this with {cmd:by()} adds a restriction: count only
+within distinct groups of {it:byvarlist}. You might be counting only 
+friends of the same race or gender, for example. Getting all friends 
+and all friends in the same group will allow you to determine all
+friends outside the same group by subtraction. 
+
+    {hline}
+{p 4 4 2}{it:Do-it-yourself} 
+
+{p 4 4 2}Although {cmd:countmatch} automates a solution, the following
+notes on how to do this for yourself may be interesting or useful. 
+
+{p 4 4 2}We focus on a simple version of the problem.  For different
+values of {it:var1}, how many values of {it:var2} are the same? 
+
+{p 4 4 2}We will need to loop over the distinct values of {it:var1}.
+Each time round the loop there will be a {help count}, and then the
+result will be put into a variable in the right place(s).  To do that we
+need to have a variable to put it in. 
+
+{p 8 8 2}{cmd:. gen long count = 0} 
+
+{p 4 4 2}
+initialises a counter variable. The {cmd:long} is cautious, 
+just in case the counts get really big. Another variable type 
+may well be fine for your problem. Initialising to missing 
+(not 0) is another good way. 
+
+{p 4 4 2}
+For toy examples, we can use {help levelsof} confidently.  (In an
+updated Stata 8, use {help levels} instead.) Frequently, {it:var1} and
+{it:var2} are both string, so let us focus on that situation. 
+
+{p 8 8 2}{cmd:. levelsof {it:var1}, local(levels)}
+
+{p 4 4 2}puts the distinct values into a local macro. 
+
+{p 8 8 2}{cmd:.	quietly foreach l of local levels {c -(}}{break}
+{cmd:.{space 8}count if `"`l'"' == {it:var2}}{break}
+{cmd:.{space 8}replace count = r(N) if {it:var1} == `"`l'"'}{break}  
+{cmd:. {c )-}} 
+
+{p 4 4 2}gives a first solution. Compound double quotes {cmd:`" "'} are
+used just in case there are double quotes lurking in the strings. That
+may be unlikely, but it does no harm.  
+
+{p 4 4 2}Now this code pivots on both variables being string. Also, in a
+industrial-strength solution, you would not want to rely on all the
+distinct values fitting into a macro, so {cmd:levelsof} may be set on
+one side. One thing we can always do is map the distinct values to
+successive integers: 
+
+{p 8 8 2}
+{cmd:. egen group = group({it:var1})}{break}
+{cmd:. su group, meanonly}{break}  
+{cmd:. local ngroup = r(max)}
+
+{p 4 4 2}
+{cmd:egen, group()} maps the distinct values of {it:var1} to the 
+integers 1,...,#groups; and we can retrieve #groups by a 
+{help summarize} and then peeking at the saved results. 
+Initialise as before: 
+
+{p 8 8 2}{cmd:. gen long count = 0}
+
+{p 4 4 2}Another variable will come in useful, holding the observation
+numbers. Then once again the counting is done in a loop. 
+
+{p 8 8 2}{cmd:. gen long obs = _n}
+
+{p 8 8 2}{cmd:. qui forval i = 1/`ngroup' {c -(}}{break}
+{cmd:.{space 8}su obs if group == `i', meanonly}{break}
+{cmd:.{space 8}local first = r(min)}{break}
+{cmd:.{space 8}count if {it:var1}[`first'] == {it:var2}}{break}
+{cmd:.{space 8}replace count = r(N) if group == `i'}{break}
+{c )-} 
+
+{p 4 4 2}
+The loop uses a look-up technique. When we are focusing on 
+{cmd:group == 1}, for example, how we know what value of {it:var1} we
+are dealing with?  (By construction, {it:var1} is constant for each
+distinct value of {cmd:group} {c -} we set up a one-to-one mapping {c -}
+but what is that constant?) Notice that it is not general enough to go 
+
+{p 8 8 2}{cmd:. su {it:var1} if group == `i'} 
+
+{p 4 4 2}and look at the saved results, because in general {it:var1}
+could be a string. We have to be one step more devious.  We just need to
+find the observation number for any observation in a particular group,
+and then we can get at the corresponding value of {it:var1}. That is
+where the {cmd:obs} variable comes in useful.  There are two saved
+results after a {help summarize} that will work here, the minimum or the
+maximum, and you can choose. (The mean will not work in general: consider,
+for example, a group with just two representatives, in observation 8 and
+observation 10: the mean at 9 does not identify a representative.) 
+
+    {hline}
+{p 4 4 2}{it:Existence of match deducible from count of matches} 
+
+{p 4 4 2}Whether or not a match exists is determined by
+{cmd:inrange({it:count},1,.)}.  
+
+    {hline}
+{p 4 4 2}{it:Multiple variables} 
+
+{p 4 4 2}Given {it:var1} and some {it:varlist} over which we wish to
+count matches, loop over {it:varlist}. This will fail if variables are not
+either all numeric or all string. One way of checking first is to use
+{help ds}. 
+
+{p 8 8 2}{cmd:. qui foreach v of var {it:varlist} {c -(}}{break} 
+{cmd:. {space 8}countmatch {it:var1} `v', gen(`v'_m)}{break}
+{cmd:. {c )-}} 
+
+    {hline}
+{p 4 4 2}{it:Matches in the same observation} 
+
+{p 4 4 2}Given {it:var1} and some {it:varlist} over which we wish to
+count matches in the same observation, initialise a count variable and
+then loop over {it:varlist}. This will fail if variables are not either all
+numeric or all string. One way of checking first is to use
+{help ds}. 
+
+{p 8 8 2}{cmd:. gen count = 0}{p_end}
+{p 8 8 2}{cmd:. qui foreach v of var {it:varlist} {c -(}}{break} 
+{cmd:. {space 8}replace count = count + (`v' == {it:var1})}{break}
+{cmd:. {c )-}} 
+
+
+{title:Examples} 
+
+{p 4 4 2}{cmd:. countmatch name bestfriend}{p_end}
+{p 4 4 2}{cmd:. countmatch name bestfriend, gen(nfriends)}
+
+
+{title:Author} 
+
+{p 4 4 2}Nicholas J. Cox, Durham University, U.K.{break} 
+	 n.j.cox@durham.ac.uk
+
+
+{title:Acknowledgments}
+
+{p 4 4 2}This is a rewriting of {cmd:fndmtch2}. The original problem was
+suggested by Brian Uzzi. A bug was reported by Socrates Mokkas, which
+prompted this rewriting. Marcello Pagano pointed out some unclear
+wording in this help. 
+
+ 
+{title:See also} 
+
+{p 4 13 2}Online: help for {help duplicates}; {help fndmtch} (if installed)
+
+

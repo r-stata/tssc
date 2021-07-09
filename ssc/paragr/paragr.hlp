@@ -1,0 +1,103 @@
+{smcl}
+{* 04Aug2009}{...}
+{cmd:help paragr}
+
+{hline}
+
+{title:Title}
+
+{p2colset 5 15 22 2}{...}
+{p2col :{hi:  paragr} {hline 2}}Parallel graphing of a coefficient across different equations{p_end}
+
+{marker s_Syntax}
+{title:Syntax}
+
+{p 4 8 6}
+{cmdab:paragr} {it: variable} [, {it:options}]
+
+{marker s_Description}
+{title:Description}
+
+{p 4 8 6}
+{cmd:paragr} provides a fast and easy way to compare a coefficient across different equations 
+within an estimation.
+
+{p 4 8 6}
+It can used to visualize the parallel assumption of ordered logit or 
+the equality of coefficients for quantile regression, etc.
+
+{p 4 8 6}
+By default {cmd:paragr} plots a scatter graph. A quadratic fitted line (qfit) can be superimposed.
+
+{p 4 8 6}
+Twoway graph options can be specified for the entire graph, or separately for the scatter graph 
+or for the qfit graph.
+
+{marker s_Options}
+{title:Options}
+
+{dlgtab:Main}
+
+{p 4 12 6}{opt scat:ter( )} standard options for {help scatter graph}. Use this to set color, range, etc {p_end}
+
+{p 4 12 6}{opt qfit} a quadratic fitted line is superimposed. {p_end}
+
+{p 4 12 6}{opt qfit( )} standard options for {help twoway_qfit:qfit graph}. Use this to set color, range, etc {p_end}
+
+{p 4 12 6}{opt gen( )} a prefix for saving the plot points as variables.{p_end}
+
+{p 4 12 6}{help twoway_options:click here} for a list of {help twoway} options, including:{p_end}
+
+{p 8 12 6}{opt nodraw} suppress the display of graph{p_end}
+
+{p 8 12 6}{opt saving( )} save as a Stata graph{p_end}
+
+{p 8 12 6}{opt name(name[, replace])} specifies the name of the graph
+
+{marker s_0}
+{title:Examples}
+
+{p 4 8 6}* reg3{p_end}
+{p 4 8 6}{stata sysuse auto, clear}{p_end}
+{p 4 8 6}{stata reg3 (price weight rep78) (price weight rep78 mpg) (price weight rep78 mpg headroom) (price weight rep78 mpg headroom length)}{p_end}
+{p 4 8 6}{stata paragr rep78, xtitle(Equation) gen(reg3_) saving(mygraph)}{p_end}
+
+
+{p 4 8 6}* sqreg {p_end}
+{p 4 8 6}{stata sysuse auto, clear}{p_end}
+{p 4 8 6}{stata sqreg price mpg rep78 headroom length, q(.10 .20 30 .40 .50 .60 .70 .80 .90) reps(25)}{p_end}
+{p 4 8 6}{stata paragr rep78, qfit}{p_end}
+
+
+{p 4 8 6}* Unconstrained gologit {p_end}
+{p 4 8 6}{stata sysuse auto, clear}{p_end}
+{p 4 8 6}{stata egen money=cut(price), group(5)}{p_end}
+{p 4 8 6}{stata gologit money headroom mpg weight length turn displacemen}{p_end}
+{p 4 8 6}{stata paragr displacement}{p_end}
+
+
+{p 4 8 6}* constrained gologit2 from ssc (need Stata 8.2 or better) {p_end}
+{p 4 8 6}{stata sysuse auto, clear}{p_end}
+{p 4 8 6}{stata egen money=cut(price), group(5)}{p_end}
+{p 4 8 6}{stata gologit2 money headroom mpg weight length turn displacement, auto}{p_end}
+{p 4 8 6}{stata paragr weight, qfit ytitle(odds ratios) xtitle(cut)}{p_end}
+
+
+{title:Remarks}
+
+{p 4 12 6}{opt qfit} requires at least two equations.{p_end}
+
+{p 4 12 6}Coefficient values goes on the y-axis.{p_end}
+
+
+{title:Acknowledgement}
+
+{p 4 12 6}Nick Cox provided detailed and helpful suggestions.{p_end}
+
+
+{title:Author}
+
+{p 4 8 6}Roy Wada{p_end}
+{p 4 8 6}roywada@hotmail.com{p_end}
+
+

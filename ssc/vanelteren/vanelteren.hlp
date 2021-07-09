@@ -1,0 +1,85 @@
+{smcl}
+{* 2004-05-07}{...}
+{hline}
+help for {hi:vanelteren}{right:Version 1.0 2004-05-09}
+{hline}
+
+{title:van Elteren's test (generalized Wilcoxon-Mann-Whitney ranksum test)}
+
+{p 8 17 2}
+{cmd:vanelteren}
+[{it:depvar}]
+[{cmd:if} {it:exp}]
+[{cmd:in} {it:exp}]
+[{cmd:,}
+    {cmd:by(}{it:groupvar}{cmd:)}
+    {cmdab:st:rata:(}{it:varname}{cmd:)}
+]
+
+
+{p 4 4 2}
+{cmd:by} {it:...}{cmd::} may be used with {cmd:vanelteren}; see help {help by}.
+
+
+
+{title:Description}
+
+{p 4 4 2}
+{cmd:vanelteren} performs van Elteren's generalization of the Wilcoxon-Mann-Whitney
+ranksum test, a modification that allows stratification or blocking on a variable.
+It can be thought of as a nonparametric analogue of a randomized-blocks
+analysis of variance (ANOVA), that is, with a treatment factor (which may
+only have two levels) and a blocking or stratification variable that accounts
+for some heterogeneity in response.  {it:depvar} must be at least ordinal, 
+and {it:groupvar} must be numeric.  The stratification (blocking) variable
+may be either string or numeric.  {cmd:vanelteren} calls {cmd:ranksum} for the 
+within-stratum Wilcoxon statistics and weights them before combining them in an 
+overall asymptotic test statistic.
+
+
+{title:Options}
+
+{p 4 8 2}
+{cmd:by(}{it:groupvar}{cmd:)} is not optional.  It specifies the name of 
+the grouping variable.  This {cmd:by()} is separate from the {cmd:by} {it:...}{cmd::} 
+prefix and may be combined with the prefix.
+
+{p 4 8 2}
+{cmdab:st:rata:(}{it:varname}{cmd:)} is likewise not optional.  It specifies
+the name of the stratification or blocking variable, which may be an independent unit, 
+for example, a subject ID analogous to that specified by {cmd:i(}{it:varname}{cmd:)} 
+in {cmd:xtreg}.
+
+
+
+{title:Remarks}
+
+{p 4 4 2}
+For more information on van Elteren's test, see E. L. Lehmann 
+(and H. J. M. D'Abrera), {it:Nonparametrics. Statistical Methods Based on Ranks} 
+(San Francisco:  Holden-Day, 1975), pp. 132-141.  This cites the 
+original{char -}{char -}P. H. van Elteren,  On the combination of independent two-sample 
+tests of Wilcoxon. {it:Bulletin of the International Statistical Institute} {bf:37}:351-61, 1960.
+
+
+{title:Examples}
+
+{p 4 8 2}{cmd:. vanelteren response, by(treatment) strata(clinic)}
+
+{p 4 8 2}{cmd:. vanelteren likertscore, by(intervention) st(packsaday)}
+
+
+{title:Author}
+
+{p 4 4 2}
+J. Coveney  E-mail {browse "mailto:jcoveney@bigplanet.com":jcoveney@bigplanet.com}
+if you observe any problems.
+
+
+{title:Also see}
+
+{p 4 13 2}
+Manual:  {hi:[R] signrank}
+
+{p 4 13 2}
+Online:  help for {help signrank}

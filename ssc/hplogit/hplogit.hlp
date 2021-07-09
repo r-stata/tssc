@@ -1,0 +1,131 @@
+{smcl}
+{hline}
+help for {hi:hplogit} {right:(Joseph Hilbe)}
+{hline}
+
+{title:Poisson-logit hurdle regression}
+
+{p 8 13 2}{cmd:hplogit}{space 2}{it:depvar} [{it:varlist}] 
+	[{cmd:if} {it:exp}] [{cmd:in} {it:range}]  [, {cmdab:off:set(}{it:varname}{cmd:)}
+        {cmdab:exp:osure(}{it:varname}{cmd:)} {cmdab:cl:uster(}{it:varname}{cmd:)}
+        {cmdab:l:evel(}{it:#}{cmd:)} {cmdab:from:(}{it:asis}{cmd:)} {cmdab:ir:r} {cmdab:rob:ust}
+        {cmd:nolog} {it:maximize_options} {it:survey_options}]
+
+
+
+{p 4 4 2}
+{cmd:aweight}s, {cmd:fweight}s, {cmd:iweight}s, and {cmd:pweight}s are
+allowed; see help {help weights}.
+
+{p 4 4 2}
+{cmd:hplogit} provides access to all {it:maximize} options; see help {help maximize}.
+
+{p 4 4 2}
+{cmd:hplogit} provides access to all {it:survey} options; see help {help svy}.
+
+
+{title:Description}
+
+{p 4 4 2}{cmd:hplogit} fits a Poisson-logit maximum-likelihood hurdle model 
+of {it:depvar} on {it:indepvars}, where {it:depvar} is a non-negative count variable.
+
+{p 4 4 2}{cmd:hplogit} acccepts all of the {it:help maximize} options, the {it:constraint()} 
+option, and all survey options and capabilities documented in {cmd:[SVY]}; including 
+multi-level surveys; poststratification; and BRR, jackknife, and linearization VCE estimators.
+
+{p 4 4 2}This program uses {cmd:ml lf} method. 
+
+
+{title:Options}
+
+{dlgtab:Model}
+
+{phang}
+{opth offset(varname)} specifies a {it:varname} in model with coefficient constrained to 1.
+
+{phang}
+{opth exposure(varname)} specifies a {it:ln(varname)} in model with coefficient constrained to 1.
+
+{phang}
+{opth constraints(constraints)} apply specified linear constraints.
+
+
+
+{dlgtab:SE/Robust}
+
+{phang}
+{opth cluster(varname)} 
+
+{p 4 8 2}
+{cmd:robust} specifies that the Huber/White/sandwich estimator of
+variance is to be used in place of the traditional calculation.  {cmd:robust}
+combined with {cmd:cluster}{cmd:(}{cmd:)} allows observations which are not
+independent within cluster (although they must be independent between
+clusters).  If you specify {cmd:pweight}s, {cmd:robust} is implied.
+
+{phang}
+{opth vce(options)} allowed. {cmd:vce}{cmd:(}{cmd:)} supports {it:robust}, {it:opg}, and {it:native}.
+{cmd:vce} does not support options {it:bootstrap} or {it:jacknife}, However,  {cmd:hplogit} does support  
+the {cmd:bootstrap} and {cmd:jacknife} commands, so these modeling capabilities are allowed.  
+
+
+{dlgtab:Reporting}
+   
+{p 4 8 2}{cmd:level(}{it:#}{cmd:)} specifies the confidence level, in percent,
+for confidence intervals of the coefficients; see help {help level}.
+
+{p 4 8 2}
+{cmd:nolog} suppresses the iteration log.
+
+
+{dlgtab:max options}
+
+{phang}
+
+{p 4 8 2}
+{it:maximize_options}: technique(algorithm_spec), [no]log, trace, hessian, gradient, showstep, 
+shownrtolerance, difficult, iterate(#), tolerance(#), ltolerance(#), gtolerance(#), nrtolerance(#), 
+nonrtolerance, from(init_specs); see {help maximize}.  
+
+
+{dlgtab:svy options}
+
+{phang}
+{it:survey_options} are all available. See help {help svy}
+
+
+
+
+{title:Author and support}
+
+{phang}
+{cmd: Joseph Hilbe},
+{cmd: Arizona State University}:
+{cmd: jhilbe@aol.com}
+
+
+{title:Remarks}
+
+{pstd}
+{cmd:hplogit} is a user authored program. Support is by author. {cmd:hplogit}
+is one of a suite of hurdle programs created by the author. 2Oct2005
+
+{pstd}
+{cmd:hplogit} requires a response with counts including a number of 0's. {cmd:irr} for binary model.
+
+
+{title:Examples}
+
+{phang}{cmd:. hplogit accident co_70_74 co_75_79 op_75_79, nolog exposure(service)}
+
+{phang}{cmd:. hplogit accident co_70_74 co_75_79 op_75_79, nolog exposure(service) cluster(ship)}
+
+{phang}{cmd:. bootstrap: hplogit accident co_70_74 co_75_79 op_75_79, nolog exposure(service)}
+
+
+
+
+
+
+
+

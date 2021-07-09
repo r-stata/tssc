@@ -1,0 +1,116 @@
+{smcl}
+{*.* !22 January 2010} {...}
+{hi: help sixplot}
+{hline}
+{pstd}
+{title:Title}
+
+{title: Syntax}
+
+{p 8 16 2}
+{cmd:sixplot}{varlist} {ifin}
+
+{title: Description}
+
+{pstd} 
+{cmd:sixplot} displays six diagnostic and descriptive graphs for a single variable formatted as a 2 row, 3 column array.  
+The arguments are {it:varname} and {it:sequence variable}.  If no {it:sequence variable} is named, the program plots {it:varname} 
+versus the sequence the data are stored in.
+
+{phang}
+The plot in the (1,1) position is a {bf:sequence plot} of {it:varname} versus the sequence.  
+
+{phang}
+The plot in the (1,2) position is a {bf:residual versus fitted plot} of the regression of {it:varname} versus sequence.  
+
+{phang}
+The plot in the (1,3) position is a {bf:boxplot} of {it:varname}.
+
+{phang}
+The plot in the (2,1) position is a {bf:first difference plot} of {it:varname} versus sequence.
+
+{phang}
+The plot in the (2,2) position is a {bf:histogram} of {it:varname}.
+
+{phang}
+The plot in the (2,3) position is a {bf:normal quantile plot} of {it:varname}.
+
+{pstd}
+The default is to conduct these analyses for all observations in the data set in the order they are recorded.  
+If you sort the data, the analysis will be conducted on that order.
+
+{pstd}
+The sequence plot allows you to examine the data for drift over the sequence (presumably time).  
+This graph also displays the linear fit line and a 95% forecast interval.  Observations outside the 
+shaded line are candidates for inspection as outliers.  If you plot more than 300 observations, the plot is blurred and I suggest you use batches of 300. {p_end}
+
+{pstd}
+The rvfplot displays the residuals versus the fitted values and allows you to check for outliers and patterns such as 
+unequal variance over fitted values.  Clear patterns suggest you should look closely at your model. It also displays limits of 2*rmse as a guide. {p_end}
+
+{pstd}
+The boxplot shows quartiles and outliers. {p_end}
+
+{pstd}
+The first difference plot checks for changes in the data.  {p_end}
+
+{pstd}
+The histogram provides a picture of the distribution of {it:varname}.  It has 10 bins, which you may wish to 
+change in further analysis.  It should be roughly symmetric if the data are normal.  Do not get overly concerned 
+with apparent departures from symmetry if your data set is small. {p_end}
+
+{pstd}
+The normal quantile plot gives a graphical diagnostic of normality.  If the plot suggests non-normality, 
+there may be concern about the validity of procedures such as confidence intervals. {p_end}
+
+{pstd} 
+{title:{bf:Caution:}}  If the data set is large, the sequence plot and the first difference plot may be blurred 
+and difficult to interpret.  We suggest examining the data in batches of 300 or so using the {it:in 1/300} option.  
+Sixplot does not superimpose a normal plot on the histogram.
+
+{title: Examples}
+
+	{hline}
+	Setup
+{phang2} {cmd:. sysuse uslifeexp.dta}{p_end}
+{phang2} {cmd:. sixplot le_male} {p_end}
+{phang2} {cmd:. sixplot le_female} {p_end}
+
+{pstd} The data set gives life expectancy by sex and race from 1900 to 1999.  The above commands provide a sixplot for these years.
+
+	Setup
+{phang} {cmd:. sysuse nlsw88.dta}{p_end}
+{phang} {cmd:. sixplot wage} {p_end}
+
+{pstd} This data has over 2000 observations and blurs the information on the plots.  There is no obvious time relation here. {p_end}
+
+{phang} {cmd:. sixplot wage in 1/300} {p_end}
+
+{phang} The "in" restriction can be repeated as 301/600, etc. {p_end}
+
+{pstd} {bf:Notes} {p_end}
+
+{pstd} These plots were cited in Good and Hardin's book as the fourplot.  I have added the rvfplot and boxplot.  This seems to have originated in the {it:Engineering Statistics Handbook} section 4.4.5.3, from NIST (available online from www.itl.nist.gov/div898/handbook/) {p_end}
+
+{pstd} {bf:Author}
+Peter. A. Lachenbruch, Oregon State University, Corvallis, peter.lachenbruch@oregonstate.edu {p_end}
+
+{pstd} {bf:Acknowledgement}  
+I thank Nick Cox, Vince Wiggns Liu Wei who made several useful and important suggestions to improve the ado file. {p_end}
+
+{pstd} {bf:References} {p_end}
+
+{pstd}Good, P.I. and Hardin, J. W. (2009) {it:Common Errors in Statistics (and how to avoid them}} New York:  Wiley {p_end} 
+
+{pstd}NIST {it:Engineering Statistics Handbook} downloaded Jan 4, 2010 - see section 4.4.5.3 {p_end}
+
+
+
+
+
+
+
+
+
+
+

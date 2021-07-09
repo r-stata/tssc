@@ -1,0 +1,169 @@
+{smcl}
+{* version 2.1 abuxton 23sep2007.}{...}
+{hline}
+help for {hi:cureregr8} (sep2007) {right:(see also:  {hi:[R] stset})}
+{hline}
+
+{title:cureregr8}, cure model regression (split-population model) or, {title:parametric-cure model (PCM)}
+
+{p 8 17}{cmd:cureregr8} [{it:varlist}] [{cmd:if} {it:exp}] [{cmd:in} {it:range}] 
+{it:,}
+         [{cmdab:dist:ribution_option(}{it:weibull | lognormal | logistic | 
+		 gamma | exponential}{cmd:)}
+          {cmdab:class:_option(}{it:mixture | non-mixture}{cmd:)}
+          {cmdab:link:_option(}{it:logistic | lml, log-minus-log | linear}
+		  {cmd:)}
+          {cmdab:sc:ale_option(}{it:varlist}{cmd:)}
+          {cmdab:sh:ape_option(}{it:varlist}{cmd:)}
+          {cmdab:noconst:ant}{cmd:}
+          {cmdab:scale_noc}{cmd:}
+          {cmdab:shape_noc}{cmd:}
+	  {cmdab:nodesc:riptionmodel}{cmd:} 
+	  {cmdab:nosh:ow}{cmd:}
+          {cmdab:left}{cmd:}]
+	
+{title:Description}
+
+{p 4 4}{cmd:cureregr8} fits a parametric cure model in either the non-mixture or 
+mixture class.{p_end}
+{p 8 8} important -- {cmd:cureregr8} requires that the data be {cmd:stset} prior 
+to use. {cmd:cureregr8} will 
+correctly estimate multiple records per subject, to include 
+time-varying-covariates. Please note that
+for multiple records per subject the records must be in contiguous intervals 
+defined in {cmd:stset}, [_t0, _t]; 
+in other words, there may be no gaps (see: {cmd:stdes}).
+{p_end}
+
+{title:Options}
+
+{p 4 8}{cmdab:dist:ribution_option(}{it:weibull | lognormal | logistic | gamma | exponential}{cmd:)}{p_end}
+{p 8 12} {it:define Kernel:}{p_end}
+{p 12 16} weibull: exponential in tt {p_end}
+{p 12 16} lognormal: norm(ln(tt)) {p_end}
+{p 12 16} logistic: tt/(1-tt) {p_end}
+{p 12 16} gamma: gammap(shape, scale, time) {p_end}
+{p 12 16} exponential: gammap(shape==1, scale, time) {p_end}
+{p 4 8}{cmdab:class:_option(}{it:mixture | non-mixture}{cmd:)}{p_end}
+{p 8 12} {it: define parametric-cure model class:}{p_end}
+{p 12 16} mixture: pi+(1-pi)*(1-Kernel){p_end}
+{p 12 16} non-mixture: pi^Kernel{p_end}
+{p 4 8}{cmdab:link:_option(}{it:logistic | lml, log-minus-log | linear}{cmd:)}
+{p_end}
+{p 8 12} {it: define cure_fraction (pi) link funtion} {p_end}
+{p 12 16} logistic: exp(xb_pi)/(1+exp(xb_pi)){p_end}
+{p 12 16} lml: exp(-exp(xb_pi)){p_end}
+{p 12 16} linear: exp(xb_pi){p_end}
+{p 16 16} {it:where} xb_pi {it:is the linear model for the cure_fraction, pi}
+{p_end}
+{p 4 8}{cmdab:sc:ale_option(}{it:varlist}{cmd:)}{p_end}
+{p 12 16}{it: varlist for scale model}{p_end}
+{p 4 8}{cmdab:sh:ape_option(}{it:varlist}{cmd:)}{p_end}
+{p 12 16}{it: varlist for shape model}{p_end}
+{p 4 8}{cmdab:noconst:ant}{cmd:}{p_end}
+{p 12 16}{it: specifies that no constant term for cure-fraction model is to be fit}{p_end}
+{p 4 8}{cmdab:scale_noc}{cmd:}{p_end}
+{p 12 16}{it: specifies that no constant term for scale model is to be fit}
+{p_end}
+{p 4 8}{cmdab:shape_noc}{cmd:}{p_end}
+{p 12 16}{it: specifies that no constant term for shape model is to be fit}
+{p_end}
+{p 4 8} -- {p_end}
+{p 4 8}{cmdab:left} specifies that there are left censored subjects.
+the failures defined by the last value specified by the failure()
+argument of {cmd:stset} are taken to be left censored. this {res}creates{txt} 
+(or {res}overwrites{txt}) a variable called {it:{res}_leftd{txt}} and is indicated 
+in e(depvar).{p_end}
+{p 4 8} -- {p_end}
+{p 4 8}{cmdab:nodesc:riptionmodel}{cmd:}{p_end}
+{p 12 16}{it: do not show cureregr8 model definition information}
+{p_end}
+{p 4 8}{cmdab:nosh:ow}{cmd:}{p_end}
+{p 12 16}{it: do not show st setting information}
+{p_end}
+
+{title:please note these definitions}
+{p 4 8} tt = (scale*time)^shape {it: function of time, t-tilde}{p_end}
+{p 8 12} scale=exp(xb_scale) {it:for the scale model}{p_end}
+{p 8 12} shape=exp(xb_shape) {it:for the shape model}{p_end}
+
+{title:Example}
+
+{p 8 12}{inp:. cureregr8 g1_ageyr, dist(weibull) class(n) link(logi) noconstant}
+{p_end}
+
+{p 8 12}{inp:. xi: cureregr8  g0_ageyr i.g0_wbc i.g0_plt, sc(i.g0_wbc i.g0_plt) sh(i.g0_plt) dist(lognormal) class(non) link(logi) scale_noc shape_noc}{p_end}
+
+{p 8 12}{inp:. xi: cureregr8 (i.study_r) i.g_liver i.race2 if analset1 ,}
+		{inp: dist(weibull) link(lml) sc((i.study_r) ) sh((i.study_r) )}
+		{inp: class(nonmixture) technique(nr)}{p_end}
+
+{p 8 12}{res}{it: predicting }{txt}{p_end}
+
+{p 8 12}{cmd:predict} [{cmd:if} {it:exp}] [{cmd:in} {it:range}] {it:,}
+         [{cmdab:at:(}{txt}{it:numlist}{cmd:)}{txt} | 
+		  {cmdab:all:}{txt} |
+          {cmdab:s:urvival}{txt} |
+          {cmdab:se:s}{txt} |
+          {cmdab:u:cs}{txt} |
+          {cmdab:l:cs}{txt} |
+          {cmdab:h:azard}{txt} |
+          {cmdab:fd:}{txt}]
+		  [{cmdab:gen:(}{txt}{it:varlist}{cmd:)}{txt}]
+		  [{cmdab:level:(}{txt}{it:number}{cmd:)}{txt}]
+		  [{cmdab:fmt:print(}{txt}{it:%8.6f}{cmd:)}{txt}]
+		  {p_end}
+
+{p 16 12} After model estimation the survival, standard error, and confidence 
+interval can be displayed with {cmd:predict}, 
+{cmdab:at:()} specified time points. The survival estimates are displayed 
+for all covariate patterns and {cmd:if} or {cmd:in} may be used to limit the 
+number of covariate patterns displayed; An example can be found in the ancillary file, cureregr8_predict_eg.pdf. The {cmd:fmt()} option allows any acceptable numeric format specification for the displayed numeric results. Please note also that the 
+confidence limits are based on a ln(-ln(S)) transform. {p_end}
+
+{p 16 12} Six quantities may be estimated and placed into a new variable: 
+survival (S), and its standard error (seS), lower confidence limit (lciS), 
+and upper confidence limit (uciS). In addition, the hazard (haz), or the fail 
+density (fd) may be estimated. One of the key words (s, se, l, u, h, fd, 
+or all) can be specified. With the option {cmdab:gen:()}, the estimate 
+requested by the keyword will be placed in the new variable, while the 
+keyword {cmdab:all:} requires six new variable names in order:
+survival, ses, lcs, ucs, hazard, and fd. Where the default names are: {it:S}, 
+{it:seS}, {it:lciS}, {it:uciS}, {it:haz}, and {it:fd}, respectively.{p_end}
+
+{p 8 12}{inp:. predict if study_r==1 & g_liver==1 & race2==2, at(30(30)365 2922)}{p_end}
+{p 8 12}{inp:. predict ,  all gen(s_v2 se_v2 lci90_v2 uci90_v2 haz_v2 fd_v2) level(90)}{p_end}
+{p 8 12}{inp:. predict ,  hazard gen(myhaz)}{p_end}
+{p 8 12}{inp:. predict ,  lcs gen(lci95_v1) level(95)}{p_end}
+{p 8 12}{inp:. predict ,  ucs gen(uci95_v1) level(95)}{p_end}
+
+{title:Author}
+{p 8 12} Allen Buxton, CureSearch, Children's Oncology Group, Arcadia, CA{p_end}
+{p 4 8} - acknowledgements - {p_end}
+{p 8 12} Richard Sposto, Mark Krailo, & Todd Alonzo, Keck School of Medicine, 
+University of Southern California, USA{p_end}
+{p 8 12} John Thompson & Clarie Weston, Department of Health Sciences, 
+University of Leicester, UK{p_end}
+
+{title:References}
+{p 8 12} Sposto R. Cure model analysis in cancer: An application to data from 
+the Children's Cancer Group. Statistics in Medicine, 21: 293-312, 2002{p_end}
+{p 8 12} Stephen Jenkins, spsurv (spsurv.ado for Stata, 23may2001), University 
+of Essex, UK{p_end}
+{p 8 12} Maller RA. & Zhou, X. Survival Analysis with Long Term Survivors, 
+John Wiley, 1997. {p_end}
+{p 8 12} Schmidt P. & Witte A. Predicting criminal recidivism using 
+'split-population' survival time models, Journal of Econometrics, 40: 141-159, 
+1989{p_end}
+
+{title:Files}
+{p 8 12} main: cureregr8.ado, & ml {it:evaluators}: PCM{it:mmkkll}.ado{p_end}
+{p 8 12} predict: _cureregr8.ado & _cureregr8_gen.ado{p_end}
+{p 4 8} - ancillary - {p_end}
+{p 8 12} pcm_key.pdf, a description of the models {cmd:cureregr8} will fit.
+{p_end}
+{p 8 12} example_stata.dta, dataset in the above example.{p_end}
+
+{title:Also see}
+{p 1 14}Manual: {hi:[R] stset} {p_end}
+

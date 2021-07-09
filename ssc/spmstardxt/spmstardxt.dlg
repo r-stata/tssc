@@ -1,0 +1,325 @@
+/*
+ spmstardxt
+*! VERSION 1.0 15/12/2013
+*/
+VERSION 11.0
+INCLUDE _std_xlarge
+DEFINE _dlght 370
+INCLUDE header
+HELP hlp1, view("help spmstardxt")
+RESET res1
+
+SCRIPT PREINIT
+BEGIN
+program parseMessage
+script se_createAsSvyOLS
+script se_setBias_on
+program svy_check_title
+END
+
+PROGRAM parseMessage
+BEGIN
+if __MESSAGE.contains("__MI__") {
+call script se_setMI_on
+}
+END
+
+SCRIPT POSTINIT
+BEGIN
+program check_bytab
+program se_setFinalInitState
+END
+
+PROGRAM check_bytab
+BEGIN
+if ! __MESSAGE.contains("__MI__") {
+call script sub_set_by_on
+}
+END
+
+SCRIPT svy_is_on
+BEGIN
+	script max_setDefaultNoLog
+END
+SCRIPT svy_is_off
+BEGIN
+	script max_setDefaultLog
+END
+
+DIALOG main, label("spmstardxt- mSTAR Spatial Durbin Panel Models") ///
+	tabtitle("Main")
+BEGIN
+ DEFINE wlabel 130
+ DEFINE cmdx 320
+ DEFINE cmdw 170
+ DEFINE _x _xsetbu
+ DEFINE _y _top
+
+ TEXT tx_fnm	_lft  _top   350 ., ///
+ label("Weight Matrix File Name (dta):") 
+ TEXT  tx_cmd  380    @      80  .,  ///
+ label("# Cross Section:")
+ TEXT tx_nwm   480    @      50  .,	/*
+	*/ label("nwmat")
+ FILE fi_fnm   _lft     _ss  	350 ., ///
+ label("Brows...")		 ///
+ option("wmfile")		 ///
+ filter("Stata dta File (*.dta)|*.dta|All (*.*)|*.*") ///
+ defext(dta)
+ EDIT ed_cmd   380      @    80 ., ///
+	option("nc")		///
+	label("Cross Section")
+  SPINNER  sp_nwm  480     @    50  .,	/*
+	*/ min(1) max(4) default(1)	/*
+	*/ option("nwmat")		/*
+	*/ label("nwmat")
+
+ GROUPBOX gb_group1   _lft     _ss    _iwd     _ht9 , 
+  TEXT     tx_yvar     _ilft   +15    _vnwd     .,	/*
+		*/ label("Dependent Variable:")		/*
+		*/
+  TEXT     tx_xvar     _vlx      @      _cwd2     .,	/*
+		*/ label("Independent Variables:")	/*
+		*/
+  VARNAME  vn_yvar     _ilft       _ss       _vnwd   .,	/*
+		*/ label("Dependent Variable")		/*
+		*/
+  VARLIST  vl_xvar     _vlx       @         380      .,	/*
+		*/ label("Independent Variables")
+ CHECKBOX ck_nocons @   _ms   _cwd1  .,	/*
+		*/ label("No Constant")	/*
+		*/ option("noconstant")		/*
+		*/
+ VARLIST vl_aux _ilft   _ls   410    ., ///
+	label("Auxiliary Variables") ///
+	option(aux)
+ TEXT tx_aux    440   @    90   .,	///
+	label("Auxiliary Variables")
+*/	
+ GROUPBOX gb_optdst  _lft    _ls   _ibwd    _ht1 , ///
+	label("Distribution:")
+  RADIO rb_norm	_ilft   _ss     120  ., /*
+	*/ label("Normal")	 /*
+	*/ first			/*
+	*/ option("dist(norm)")		/*
+*/
+  RADIO rb_exp   120  @	120	., /*
+	*/ label("Exponential") /*
+	*/ option("dist(exp)")		/*
+*/
+  RADIO rb_weib	220	@	120 .,	/*
+	*/ label("Weibull") /*
+	*/ last				/*
+	*/ option("dist(weib)")		/*
+*/
+  CHECKBOX ck_mfx  _lft    _ls   _ibwd    _ht2 , ///
+	groupbox				///
+	onclickon(script ck_mfx_on)		///
+	onclickoff(script ck_mfx_off)		///
+label("Total, Direct, and Indirect Marginal Effects - Elasticities:")
+
+ RADIO rb_lin	_ilft  _ss  120  ., /*
+	*/ label("Linear")	 /*
+	*/ first			/*
+	*/ option("mfx(lin)")		/*
+*/
+DEFINE y @y
+ RADIO rb_log	130   y  120 .,	/*
+	*/ label("Log-Log") /*
+	*/ last				/*
+	*/ option("mfx(log)")		/*
+*/
+  CHECKBOX ck_tolog    250   y 120 ., option("tolog") /*
+*/ label("Log Transform Varlist") /*
+*/
+  CHECKBOX ck_model0 _lft    _xls   _ibwd    _ht5 , ///
+	groupbox				 ///
+	onclickon(script ck_model0_on)		 ///
+	onclickoff(script ck_model0_off)	 ///
+	label("Standardized Weight Matrix Type:")
+  RADIO    rb_ws1  _ilft     _ss     300    ., 	/*
+	*/ label("Standardized Weight Matrix - (W)") /*
+	*/ first			/*
+	*/ option("stand")		/*
+*/
+  RADIO    rb_ws2  _ilft     _ss     300    ., 	/*
+	*/ label("Inverse Standardized Weight Matrix - (1/W)") /*
+	*/ option("stand inv")		/*
+*/
+  RADIO    rb_ws3  _ilft     _ss     300    ., 	/*
+	*/ label("Inverse Squared Standardized Weight Matrix - (1/W^2)") /*
+	*/ last					/*
+	*/ option("stand inv2")			/*
+*/
+END
+
+DIALOG est1 , tabtitle("Options")
+BEGIN
+ CHECKBOX ck_model11  _lft    _top   _ibwd    _ht21 , ///
+ groupbox				 ///
+ onclickon(script ck_model11_on)	 ///
+ onclickoff(script ck_model11_off)	 ///
+ label("Options:")
+ CHECKBOX ck_tests    _ilft  _ss   350  ., option("tests") /*
+*/ label("Display ALL Tests") 
+ CHECKBOX ck_lmspac    _ilft  _ss   350  ., option("lmspac") /*
+*/ label("Spatial Autocorrelation Tests") 
+ CHECKBOX ck_diag   @  _ss  @  ., option("diag") /*
+*/ label("Model Selection Diagnostic Criteria") 
+ CHECKBOX ck_lmhet    _ilft  _ss   350  ., option("lmhet") /*
+*/ label("Heteroscedasticity Tests") 
+ CHECKBOX ck_lmnorm    _ilft  _ss   350  ., option("lmnorm") /*
+*/ label("Non Normality Tests") 
+ CHECKBOX ck_coll _ilft     _ss    400 ., option("coll") /*
+*/ label("coll: Keep Collinear Variables")
+ CHECKBOX ck_zero _ilft     _ss    400 ., option("zero") /*
+*/ label("zero: Convert Missing Values Observations to Zero")
+ CHECKBOX ck_robust _ilft  _ss   350  ., option("robust") /*
+*/ label("robust: Use Huber-White Variance-Covariance Matrix") 
+ CHECKBOX ck_tobit _ilft  _ls   350  ., option("tobit") /*
+*/ label("tobit: Use Tobit Model") 
+  EDIT ed_llt  _ilft     _ms    50   ., /*
+	*/ label("llt")			/*
+	*/ option("ll")
+  TEXT tx_llt     80    @  300    .,	/*
+	*/ label("ll: Tobit Minimum Left-Censoring Dependent Variable Value")
+
+ CHECKBOX ck_model3 _lft _xls _ibwd    _ht4 , 	///
+ groupbox					///
+ onclickon(script ck_model31_on)		///
+ onclickoff(script ck_model31_off)		///
+ label("Additional Options:")
+ TEXT tx_predict _ilft    _ss    150 .,	///
+	label("Predicted Variable")
+ TEXT tx_resid   200      @      150 .,	///
+	label("Residuals Variable")
+ VARNAME vn_predict _ilft _ss   150  .,	///
+	label("predict") 		///
+	option(predict)
+ VARNAME vn_resid  200   @     150  .,	///
+	label("resid") 			///
+	option(resid)
+*/
+END
+
+SCRIPT ck_dist_on
+BEGIN
+ main.rb_norm.enable
+ main.rb_exp.enable
+ main.rb_weib.enable
+END
+
+SCRIPT ck_dist_off
+BEGIN
+ main.rb_norm.disable
+ main.rb_exp.disable
+ main.rb_weib.disable
+END
+
+SCRIPT ck_mfx_on
+BEGIN
+ main.rb_lin.enable
+ main.rb_log.enable
+END
+SCRIPT ck_mfx_off
+BEGIN
+ main.rb_lin.disable
+ main.rb_log.disable
+END
+
+SCRIPT ck_model0_on
+BEGIN
+ main.rb_ws1.enable
+ main.rb_ws2.enable
+ main.rb_ws3.enable
+END
+
+SCRIPT ck_model0_off
+BEGIN
+ main.rb_ws1.disable
+ main.rb_ws2.disable
+ main.rb_ws3.disable
+END
+
+SCRIPT ck_model11_on
+BEGIN
+ est1.ck_tests.enable
+ est1.ck_lmspac.enable
+ est1.ck_lmhet.enable
+ est1.ck_lmnorm.enable
+ est1.ck_diag.enable
+ est1.ck_coll.enable
+ est1.ck_zero.enable
+ est1.ck_robust.enable
+ est1.ck_tobit.enable
+ est1.ed_llt.enable
+END
+
+SCRIPT ck_model11_off
+BEGIN
+ est1.ck_lmspac.disable
+ est1.ck_lmhet.disable
+ est1.ck_lmnorm.disable
+ est1.ck_diag.disable
+ est1.ck_tests.disable
+ est1.ck_coll.disable
+ est1.ck_zero.disable
+ est1.ck_robust.disable
+ est1.ck_tobit.disable
+ est1.ed_llt.disable
+END
+
+SCRIPT ck_model31_on
+BEGIN
+ est1.vn_predict.enable
+ est1.vn_resid.enable
+END
+
+SCRIPT ck_model31_off
+BEGIN
+ est1.vn_predict.disable
+ est1.vn_resid.disable
+END
+
+INCLUDE byifin
+INCLUDE weights_fpai
+INCLUDE se
+INCLUDE max_ml
+
+PROGRAM command
+BEGIN
+ put /program by_output
+ put "spmstardxt "
+ varlist main.vn_yvar main.vl_xvar
+ put " " /program ifin_output
+ put " " /program weights_output
+ put /program se_prefix_output
+ require main.fi_fnm
+ require main.ed_cmd
+beginoptions
+ optionarg main.fi_fnm
+ optionarg main.ed_cmd
+ optionarg main.sp_nwm 
+ option radio(main rb_norm rb_exp rb_weib)
+ optionarg main.vl_aux
+ option radio(main rb_lin rb_log)
+ option main.ck_tolog 
+ option radio(main rb_ws1 rb_ws2 rb_ws3)
+ option main.ck_nocons
+ option est1.ck_lmspac
+ option est1.ck_lmhet
+ option est1.ck_lmnorm
+ option est1.ck_diag
+ option est1.ck_tests
+ option est1.ck_coll
+ option est1.ck_robust
+ option est1.ck_tobit 
+ option est1.ck_zero
+ optionarg est1.ed_llt
+ optionarg est1.vn_predict
+ optionarg est1.vn_resid
+ put " " /program se_output
+ put " " /program max_output
+endoptions
+ END
+

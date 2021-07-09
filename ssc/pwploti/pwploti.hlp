@@ -1,0 +1,72 @@
+.-
+help for ^pwploti^               
+.-
+
+Plot Power curve for sample size and power calculation
+------------------------------------------------------
+    ^pwploti^ #1^,^ ^d^list^(^#^)^ [ ^nf^rom^(^#^)^ ^nt^o^(^#^)^ ^i^nc^(^#^)^ 
+                  ^l^ist ^key^() ^b1()^ ^b2()^ sampsi_options graph_options ]
+
+Description
+-----------
+^pwploti^ plots statistical power on the Y-axis and the required sample 
+size of on the X-axis. Several lines can be plotted on the power curve, 
+each one corresponding to a value of difference (defined in ^dlist^) between 
+two groups. 
+
+It is an extension to @sampsi@. Most @sampsi@ options are accepted.  
+Note: ^pwploti^ only specifies the mean or proportion value in group 1, #1. 
+The corresponding values in group 2 are derived from the #1 and differences 
+between  two groups, ^d^list. -keyplot- should be installed when more than 
+four labels are needed.
+
+Options specific to ^pwploti^
+---------------------------
+^d^list lists possible differences between two groups.
+^nf^rom^(^#^)^ and ^nt^o^(^#^)^ assign the range sample size with ^i^nc^(^#^)^ 
+     increment.
+^l^ist gives detail values of calculated statistical powers.
+^key^ gives a list of strings as a legend to keyplot. See -keyplot-
+^b1^ and ^b2^give different titles at the bottom
+
+See ^sampsi^ for details
+
+Examples 
+---------
+ 1. Plot of Two-sample comparison of mean1 to mean2 (different possible values)
+  . ^pwploti 132, dlist(8,10, 15,20) nfrom(10) nto(100) i(5) sd1(15) sd2(18)^
+ 
+ 2. One-sample comparison of mean to hypothesized value = 180. 
+  . ^pwploti 180, dlist(8,10, 15,20) nfrom(10) nto(100) i(5) sd(46) onesam^
+ 
+ 3. One-sample comparison of mean to hypothesized value = 0.  
+  . ^pwploti 0, dlist(1,2,3) nfrom(10) nto(100) i(5) sd(4) n(25) onesam^
+
+ 4. Two-sample comparison of proportions.  
+  . ^pwploti .5, dlist(-.1,-.2,-.3) nfrom(10) nto(100) i(5) xlab(10(10)100)^
+
+ 5. One-sample comparison of proportion to hypothesized value = 0.5:
+  . ^pwploti 0.3, dlist(.1,.15,.2,.25,.3) nfrom(10) nto(100) i(5) onesam^
+
+ 6. Two-sample comparison of proportions with a legend for the differences 
+  . ^pwploti .5, dlist(-.1,-.2,-.3 .-5 .-10) nfrom(10) nto(100) i(5) xlab(10(10)100)^
+    ^key(-.1 -.2 -.3 -.5 -.10)
+
+ 4. Two-sample comparison of proportions with different titles.
+  . ^pwploti .5, dlist(-.1,-.2,-.3) nfrom(10) nto(100) i(5) xlab(10(10)100)^
+     ^b1("Sample size (N)") b2("Power to detect (alpha 0.05)")^
+
+
+Author
+------
+   Zhiqiang Wang
+   Menzies School of Health Research
+   Darwin, Australia
+   email: wang@@menzies.su.edu.au
+   Modified by Jan Brogger, University of Bergen, Norway 04dec2000, 
+   email: jan.brogger@med.uib.no
+
+Also see
+--------
+ Manual:  [R] sampsi
+On-line:  help for @sampsi@, @immed@ 

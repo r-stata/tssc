@@ -1,0 +1,273 @@
+{smcl}
+{* 09 Feb 2009}{...}
+{cmd:help skilmack}
+{hline}
+
+
+{title:Title}
+
+
+{p2colset 5 17 19 2}{...}
+{p2col :{hi:skilmack} {hline 2}}Skillings-Mack test{p_end}
+{p2colreset}{...}
+
+
+
+{title:Syntax}
+
+
+{p 8 16 2}
+{cmd:skilmack}
+{it:varname}
+{ifin}{cmd:,} {opt i:d(varname)} {opt repeated(varname)} [{it:options}]
+
+
+{synoptset 30}{...}
+{synopthdr}
+{synoptline}
+{synopt:{opt c:ovariance}}use estimated covariance matrix in place of no-ties covariance matrix{p_end}
+{synopt:{cmdab:f:orcesims(on}|{cmd:off)}}if and only if there are ties will simulations be run, unless overridden by this option{p_end}
+{synopt:{opt reps(#)}}number of simulations; default is {cmd:reps(1000)}{p_end}
+{synopt:{opt s:eed(#)}}specify initial value of random-number seed{p_end}
+{synopt:{cmdab:n:otable(noties}|{cmd:tiescov}|{cmd:both)}}suppress output
+table produced in no-ties section or in case of ties when {cmd:covariance}
+option is used (or both){p_end}
+{synoptline}
+{p2colreset}{...}
+
+
+
+{title:Description}
+
+
+{pstd} {cmd:skilmack} implements the Skillings-Mack (SM) test, which is a
+generalization of the Friedman test. It is particularly useful for an unbalanced/incomplete block design or in the presence of
+missing data. Missing data can be missing by design or missing completely at
+random.
+
+
+{pstd} N.B. The SM test is equivalent to the Friedman test
+when there are no missing data and is useful when there are many ties or equal ranks.
+
+
+{pstd} Unlike with the {helpb friedman} command, the data are required to be in the
+more usual long format, i.e., one column for the outcome measure, one for the
+block identifier or ID, and one for the treatment or
+within-block repeated variable.
+
+
+
+{title:Options}
+
+
+{phang} {cmd:id(}{it:varname}{cmd:)} is required and specifies the factor variable containing
+the block identifiers.
+
+
+{phang} {cmd:repeated(}{it:varname}{cmd:)} is required and specifies the factor variable
+containing the treatment identifiers.
+
+
+{phang} {cmd:covariance} specifies that the estimated covariance
+matrix is used in place of the no-ties covariance matrix. The estimated
+covariance matrix is the sample covariance matrix of the weighted sum of
+centered ranks from the simulations.
+
+
+{phang} {cmd:forcesims(on}|{cmd:off)} forces whether simulations are used.
+Simulations will be run if and only if there are ties, unless overridden by
+this option.
+
+
+{phang} {opt reps(#)} sets the number of simulations. The default is
+{cmd:reps(1000)}.
+
+
+{phang} {opt seed(#)} specifies the random-number seed; time is used as the
+default seed.  This option allows an exact replication of the Monte Carlo
+simulations.
+
+
+{phang} {cmd:notable(noties}|{cmd:tiescov}|{cmd:both)} suppresses the output
+table produced in the no-ties section or in the case of ties when the
+{cmd:covariance} option is used (or both).
+
+
+
+{title:Remarks}
+
+
+{phang} The following data are taken from Brady (1969):
+
+
+    Dysfluencies under each condition
+      +-----------------+
+      | id   R   A    N |
+      |-----------------|
+      |  1   3   5   15 |
+      |  2   1   3   18 |
+      |  3   5   4   21 |
+      |  4   2   .    6 |
+      |  5   0   2   17 |
+      |  6   0   2   10 |
+      |  7   0   3    8 |
+      |  8   0   2   13 |
+      +-----------------+
+  
+{pstd}Use {helpb reshape} to reshape the data into the long format; this is,
+after prefixing each condition with "score" by using {helpb rename}, type
+
+
+      . {cmd:reshape long score, i(id) j(cond) string}
+        
+      +--------------------+
+      | id    cond   score |
+      |--------------------|
+      |  1       A       5 |
+      |  1       N      15 |
+      |  1       R       3 |
+      |--------------------| 
+      |  2       A       3 |
+      |  2       N      18 |
+      |  2       R       1 |
+      |--------------------|
+      |  3       A       4 |
+      |  3       N      21 |
+      |  3       R       5 |
+      |--------------------|
+      |  4       A       . |
+      |  4       N       6 |
+      |  4       R       2 |
+      |--------------------|
+      |  5       A       2 |
+      |  5       N      17 |
+      |  5       R       0 |
+      |--------------------|
+      |  6       A       2 |
+      |  6       N      10 |
+      |  6       R       0 |
+      |--------------------|
+      |  7       A       3 |
+      |  7       N       8 |
+      |  7       R       0 |
+      |--------------------|
+      |  8       A       2 |
+      |  8       N      13 |
+      |  8       R       0 |
+      +--------------------+
+
+
+    The SM results from the above data are
+
+
+        . {cmd:skilmack score, id(id) repeated(cond)}  
+
+
+        Weighted Sum of Centered Ranks
+
+
+         cond  |     N  WSumCRank        SE   WSum/SE  
+        -------+-------------------------------------
+         A     |     7      -1.73      3.74     -0.46  
+         N     |     8      13.12      3.87      3.39  
+         R     |     8     -11.39      3.87     -2.94  
+        ---------------------------------------------
+         Total               0 
+
+
+        Skillings Mack    =  13.281
+        P-value (No ties) =   0.0013
+             N.B. As P-value <0.02, it is likely to be conservative (unless n large).
+             Consider obtaining a p-value from a simulated null distribution of SM -
+             see options.
+
+
+
+{pstd} N.B. A large negative {cmd:WSumCRank} (or {cmd:WSum/SE}) means a low ranking
+(e.g., 1) because of typically low scores. This was the case for condition
+{cmd:R},
+which had the fewest dysfluencies.
+
+
+{bf: Simulations and ties}
+
+
+{pstd} Simulations are preferable for obtaining more accurate small p-values
+if the sample size is not large, because the p-value from the chi-squared
+approximation is likely to be conservative here (Skillings and Mack
+1981).
+
+
+{pstd} If there are ties (equal ranks), average ranks are assigned, e.g., 1.5,
+1.5, 3. Assigning average ranks is perhaps the most common way of dealing with
+ties. However, one may prefer to force ranks to be randomly assigned when they
+are tied. (This can effectively be done by adding a small random amount to
+each score.)
+
+
+{pstd} The SM statistic can be calculated when there are ties; however, the p-value calculated from the assumed chi-squared null distribution
+becomes more and more conservative the more ties there are.  To provide a
+more accurate p-value, simulations are used to approximate the distribution
+of SM values under the null hypothesis, and conditional on the particular
+missing-data structure and tied rankings.
+
+
+{pstd} A dataset is simulated by sorting on random numbers, for each
+individual, to randomly shuffle which data point belongs to which repeat.  The
+sorting on random numbers is not applied where there are missing data to
+preserve the missing-data structure.
+
+
+{pstd} With the {cmd:covariance} option, the SM statistic can be redefined by
+estimating the covariance matrix of the weighted sums of centered ranks and
+using this in place of the covariance matrix (which is accurate when there are
+no ties, but not when there are many ties).  A new table is produced with
+different standard errors, and a new SM statistic and p-value are calculated.
+The tables can be suppressed by using the {cmd:notable} option.
+
+
+{bf: Definition of SM statistic}
+
+
+{pstd} SM = A' (sigma0^-1) A , where A is a column vector of all but one of
+the weighted [by sqrt(12/ si+1), where si is the number of measures for person
+i] sums of centered ranks, and (sigma0^-1) is any generalized inverse of the
+covariance matrix.
+
+
+
+{title:References} 
+
+
+{phang}
+Brady, J. P. 1969. Studies on the metronome effect on stuttering. {it:Behaviour Research and Therapy} 7: 197-204.
+
+
+{phang}
+Skillings, J. H., and G. A. Mack. 1981. On the use of a Friedman-type
+statistic in balanced and unbalanced block designs. {it:Technometrics} 23: 171-177.
+
+
+
+{title:Authors}
+
+
+{pstd}Mark Chatfield{p_end}
+{pstd}Medical Research Council{p_end}
+{pstd}Human Nutrition Research{p_end}
+{pstd}Cambridge, UK{p_end}
+{pstd}mdc_england@hotmail.com{p_end}
+
+
+{pstd}Adrian Mander{p_end}
+{pstd}Medical Research Council{p_end}
+{pstd}Human Nutrition Research{p_end}
+{pstd}Cambridge, UK{p_end}
+
+
+
+{title:Also see}
+
+
+{psee}
+Online:  {helpb friedman} (if installed) {p_end}

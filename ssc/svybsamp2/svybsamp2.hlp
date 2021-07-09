@@ -1,0 +1,53 @@
+{smcl}
+{* 20Sep05}{...}
+{hline}
+help for {hi:svybsamp2}
+{hline}
+
+{title:Re-sampling for complex survey data}
+
+		{p 8 16 2}{cmd:svybsamp2 ,} [{cmd:if} {it:exp}] [{cmd:in} {it:range}]
+	
+	
+	{cmd:svybsamp2} requires that the survey design variables be identified using {cmd:svyset}, see help {help svyset}
+
+
+{title:Description}
+
+	{p 4 4 2}{cmd:svybsamp2} creates a new data set with _N randomly drawn observations (with replacement). Similarly
+	to {help svybsamp} (if installed), the procedure respects survey design, re-sampling within different 
+	combinations of strata and PSU. Therefore using the inflation factors (pweight, see help {help weights}) the 
+	new sample can be used to get to the original "super-population". 
+	
+	{p 4 4 2} {cmd:svybsamp2} improves considerably the speed compared to the original {cmd:svybsamp}. However, the re-samplying
+	procedure becomes slower as the number of strata in the sample increases.     
+
+
+{title:Examples}
+
+	{hi:local i=1} 
+	{hi:while `i'<100 {c -(}} 
+		{hi:svybsamp2} 
+		{hi:qui svyreg y x1 x2} 
+		{hi:if `i'==1 {c -(}} 
+			{hi:matrix `b'=`b`i''} 
+		{hi:{c )-}} 
+		{hi:else {c -(}} 
+			{hi:matrix `b'=`b'+`b`i''} 
+		{hi:{c )-}}	
+	{hi:{c )-}} 
+
+
+{title:Authors}
+
+{browse "http://www.econ.cam.ac.uk/phd/red29/":Rafael E. De Hoyos}, Faculty of Economics, University of Cambridge. {browse "mailto:red29@cam.ac.uk":red29@cam.ac.uk} 
+
+{browse "http://www.econ.cam.ac.uk/phd/jr280/":Jaime Ruiz-Tagle}, Faculty of Economics, University of Cambridge. {browse "mailto:jr280@cam.ac.uk":jr280@cam.ac.uk}
+
+
+{title:Also see}
+
+Manual:	{hi:[U] Bootstrap}
+	{hi:[SVY] svy estimators}
+
+Online:	help for {help svybsamp} (if installed), {help bsample}, {help svyset}, {help jknife}

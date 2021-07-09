@@ -1,0 +1,99 @@
+{smcl}
+{* 1aug2005/10apr2006/15feb2007}{...}
+{hline}
+help for {hi:vincenty}
+{hline}
+
+{title:Calculate distances on the Earth's surface}
+
+{p 8 14}{cmd:vincenty} {it:lat1} {it:lon1} {it:lat2} {it:lon2}
+[{cmd:if} {it:exp}] [{cmd:in} {it:range}] {break}
+{bind:[{cmd:,}} {bind:{cmdab:v:in}({it:varname})} 
+{bind:{cmdab:h:av}({it:varname})}
+{bind:{cmdab:l:oc}({it:varname})}
+{cmd:replace} {cmdab:i:mmed} {cmd:inkm}]
+
+{title:Description}
+
+{p}{cmd:vincenty} is used for calculating geodesic distances 
+between a pair of points on the surface of the Earth
+(specified in signed decimal degrees latitude and longitude),
+using an accurate ellipsoidal model of the Earth.
+see {browse "http://www.ngs.noaa.gov/PUBS_LIB/inverse.pdf"}.
+
+{title:Acknowledgements}
+
+{p}The program is named for Thaddeus Vincenty who wrote
+"Direct and Inverse Solutions of Geodesics on the Ellipsoid 
+with application of nested equations" but the code
+borrows extensively from Javascript code at
+{browse "http://www.movable-type.co.uk/scripts/LatLongVincenty.html"}.
+
+{title:Limitations}
+
+{p}The calculations are accurate to insane precision
+assuming elevation above the ellipsoid is zero, so the
+real 3D distance could differ substantially.
+Note that elevation, even if available, cannot be
+included in these calculations. 
+
+{p}The Vincenty-style calculations may fail if distance is close to a quarter
+of the Earth's circumference, or if it is close to zero,
+where the trig functions tax the limits of
+machine precision. Haversine calculations and those based on the Law of Cosines
+are more robust to these odd cases.
+
+{title:Options}
+
+{p 0 4}{cmd:immed} calculates distances between two locations 
+specified on the command line.  If {cmd:immed} is not specified,
+one set of locations should contain variable names. If no new variable
+names are specified, the immediate option is implied.
+
+{p 0 4}{cmd:inkm} requests distances expressed in kilometers; the 
+default is miles, each of which is 5280*12*2.54/1e5=1.609344 km.
+
+{p 0 4}{cmd:vin} stores the results of Vincenty-style calculations in the named variable.
+
+{p 0 4}{cmd:hav} stores the results of Haversine-based calculations in the named variable.
+
+{p 0 4}{cmd:loc} stores the results of Law-of-Cosines-based calculations in the named variable.
+
+{title:Examples}
+
+{p 8 12}{stata "set obs 5000" : . set obs 5000}
+
+{p 8 12}{stata "g double lon1=360*uniform()-180" : . g double lon1=360*uniform()-180}
+
+{p 8 12}{stata "g double lon2=360*uniform()-180" : . g double lon2=360*uniform()-180}
+
+{p 8 12}{stata "g double lat1=360*uniform()-180" : . g double lat1=360*uniform()-180}
+
+{p 8 12}{stata "g double lat2=180*uniform()-90" : . g double lat2=180*uniform()-90}
+
+{p 8 12}{stata "drop if abs(lat1)>90" : . drop if abs(lat1)>90}
+
+{p 8 12}{stata "vincenty lat1 lon1 lat2 lon2, v(v) hav(h) l(loc)" : . vincenty lat1 lon1 lat2 lon2, v(v) hav(h) l(loc)}
+
+{p 8 12}{stata "gen double diff=(v-h)/v" : . gen double diff=(v-h)/v}
+
+{p 8 12}{stata "su v h diff" : . su v h diff}
+
+{p 8 12}{stata "vincenty 38.9 -77.077 39 -77.077" : . vincenty 38.9 -77.077 39 -77.077}
+
+{p 8 12}{stata "ret li" : . ret li}
+
+{p 8 12}{stata "vincenty 38.9 -77.077 39 -77.077, v(vb) h(hb)" : . vincenty 38.9 -77.077 39 -77.077, v(vb) h(hb)}
+
+{p 8 12}{stata "vincenty lat1 lon1 39 -77, h(ddc)" : . vincenty lat1 lon1 39 -77, h(ddc)}
+
+{p 8 12}{stata "su" : . su}
+
+{{title:Remarks}
+
+{p}Type {cmd:return list} to see saved results in {cmd:r()} in the immediate version of the command.
+
+{title:Author}
+
+    Austin Nichols
+    austinnichols@gmail.com

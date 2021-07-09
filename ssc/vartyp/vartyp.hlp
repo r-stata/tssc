@@ -1,0 +1,86 @@
+{smcl}
+{hline}
+help for {hi:vartyp}
+{hline}
+
+{title:Set or list variable types (characteristics) for the {cmd:codebook2} command}
+
+{p 8 17}{cmd: vartyp} [{it:varlist}] [, {cmdab:s:et}({it:type}) 
+      | {cmdab:l:ist}({it:type})]
+{p_end}
+	
+{p 8 } Where "type" id one of:{p_end}
+{p 16 }		disc  - discrete{p_end}
+{p 16 }		cont  - continuous{p_end}
+{p 16 }		ord   - ordinal{p_end}
+{p 16 }		date  - elaspsed date{p_end}
+{p 16 }		id    - identification{p_end}
+{p 16 }		undef - undefined type{p_end}
+{p 16 }		clear - clear a set type{p_end}
+
+		
+{title:Description}
+
+{p}
+The {cmd:vartyp} command is used to set or list the variable type(s) used by the
+{cmd:codebook2} command.  With no variables or options specified, {cmd:vartyp} will 
+simply list all variables and their types.  {cmd:vartyp} can also be used to clear types 
+that have already been set.
+{p_end}
+
+{title:Saved Results}
+
+Variables listed or set are returned in r(varlist).
+
+
+{title:Examples}
+
+List all variables:
+{p 8 12}{inp:. vartyp}{p_end}
+
+List specific variables:
+{p 8 12}{inp:. vartyp idnum var1 weight}{p_end}
+
+List variables of a specific type:
+{p 8 12}{inp:. vartyp ,l(cont)}{p_end}
+{p 8 12}{inp:. vartyp ,l(id)}{p_end}
+
+List variables that have no type set:
+{p 8 12}{inp:. vartyp, l(undef)}{p_end}
+
+Set a type for a variable:
+{p 8 12}{inp:. vartyp idnum, s(id)}{p_end}
+{p 8 12}{inp:. vartyp birthdate weddate, s(date)}{p_end}
+
+Clear a type set for a variable:
+{p 8 12}{inp:. vartyp var1, s(clear)}{p_end}
+
+
+If you simply want to change a variable's type, you only need to set it to 
+the new type, you do not have to clear it first.  The {cmd:vartyp} command can work
+nicely with the {cmd:ds3} command to set types for many variables at a time:
+
+Set the type to "cont" for all variables that do not have a value label:
+{p 8 12}{inp:. ds3, not(vall)}{p_end}
+{p 8 12}{inp:. vartyp `r(varlist)', s(cont)}{p_end}
+
+Set the type to "date" for all varaibles with the word "date" in the variable
+label:
+{p 8 12}{inp:. ds3, has(varl "*date*")}{p_end}
+{p 8 12}{inp:. vartyp `r(varlist)', s(date)}{p_end}
+
+Now set all the remaining variables to "disc":
+{p 8 12}{inp:. vartyp, l(undef)}{p_end}
+{p 8 12}{inp:. vartyp `r(varlist)', s(disc)}{p_end}
+
+{hline}
+
+{title:Author}
+	Paul H. Bern, Syracuse University, phbern@syr.edu
+	
+
+{title:See Also:}
+             Help for:   {help char: characteristic}
+	     Net Search: {net search ds3: ds3}
+	     Net Search: {net search codebook2: codebook2}
+       

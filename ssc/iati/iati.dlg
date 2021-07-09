@@ -1,0 +1,141 @@
+*! v1 2jan2016 - @liamswiss lswiss@mun.ca*
+
+VERSION 1.0               /*  09Feb2016  */
+SYNCHRONOUS_ONLY
+POSITION . . 550 150
+
+OK      ok1,    label("OK")
+CANCEL  can1,   label("Cancel")
+SUBMIT  sub1
+COPY    copy1
+HELP    hlp1,   view("help iati")
+RESET   res1,   label("Reset")
+
+DIALOG main, label("IATI Activity Data Import") tabtitle("Options")
+BEGIN
+
+ GROUPBOX options1		10  10  520  120,			///
+	label("Select Donor or Manually enter Organization ID to Import from IATI Datastore:")
+ TEXT lab2			20  +30 180  10,			///
+	label(Primary IATI Donors)
+ COMBOBOX donor		140 @   380  20,			/// 
+	dropdown							/// 
+	contents(donorname)						///
+	values(donorid)						///
+	append							///
+	label(Primary IATI Donors)
+HLINK help 140  +30  360  20, label("Click to access full list of IATI publishers for manual entry.") onpush("view browse http://iatiregistry.org/publisher")
+TEXT lab3	20  +30 180  10,			///
+	label(Fiscal Year Start Month)
+COMBOBOX fy		140 @ 40  20,			/// 
+	dropdown							/// 
+	contents(fymo)						///
+	nomemory							///
+	option(fy)							///
+	label(Fiscal Year Start Month)
+END
+LIST fymo
+BEGIN
+	1
+	2
+	3
+	4
+	5
+	6
+	7
+	8
+	9
+	10
+	11
+	12
+END
+
+LIST donorname
+BEGIN
+	---BILATERAL---
+	AU-5 - Australia - Department of  Foreignffairs and Trade
+	BE-10 - Belgian Development Cooperation
+	CA-3 - Canada - Global Affairs Canada | Affaires mondiales Canada
+	CH-4 - Switzerland - Swiss Agency for Development and Cooperation (SDC)
+	DE-1 - Germany - Ministry for Economic Cooperation and Development
+	DK-1 - Denmark - Danida - Danish Ministry of Foreigh Affairs
+	ES-DIR3-E04585801 - Spain - Ministry of Foreign Affairs and Cooperation
+	FI-3 - Finland - Ministry of Foreign Affairs
+	FR-3 - France - Agence Française de Développement
+	FR-6 - France - Ministry of Foreign Affairs and International Development
+	GB-1 - UK - Department for International Development (DFID)
+	NL-1 - Netherlands - Ministry of Foreign Affairs
+	NZ-1 - New Zealand - Ministry of Foreign Affairs and Trade - New Zealand Aid Programme
+	SE-0 - Sweden, through Swedish International Development Cooperation Agency (Sida)
+	US-1 - USA - United States Agency for International Development (USAID)
+	XI-IATI-EC_DEVCO - European Commission - Development and Cooperation-EuropeAid
+	XM-DAC-21-1	- Ireland - Department of Foreign Affairs and Trade
+	XM-DAC-701-8 - Japan - Japan International Cooperation Agency (JICA) : XM-DAC-701-8
+	---MULTILATERAL---
+	41108 - International Fund for Agricultural Development (IFAD)
+	41119 - United Nations Population Fund (UNFPA)
+	41122 - United Nations Children's Fund (UNICEF)
+	44000 - The World Bank
+	46002 - African Development Bank
+	46004 - Asian Development Bank
+	47045 - The Global Fund to Fight AIDS, Tuberculosis and Malaria
+	47111 - Adaptation Fund
+	47122 - GAVI Alliance
+	47135 - Climate Investment Funds
+	411124 - UN Women
+	---PRIVATE---
+	DAC-1601 - Bill & Melinda Gates Foundation
+END
+
+LIST donorid
+BEGIN
+	""
+	AU-5
+	BE-10
+	CA-3
+	CH-4
+	DE-1
+	DK-1
+	ES-DIR3-E04585801
+	FI-3
+	FR-3
+	FR-6
+	GB-1
+	NL-1
+	NZ-1
+	SE-0
+	US-1
+	XI-IATI-EC_DEVCO
+	XM-DAC-21-1
+	XM-DAC-701-8
+	""
+	41108
+	41119
+	41122
+	44000
+	46002
+	46004
+	47045
+	47111
+	47122
+	47135
+	411124
+	""
+	DAC-1601
+END
+
+PROGRAM command
+BEGIN
+    put "iati "
+    require main.donor
+    put main.donor
+    beginoptions
+    	optionarg main.fy
+    endoptions
+END
+
+**********************************************************
+
+
+
+

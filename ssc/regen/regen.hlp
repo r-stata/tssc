@@ -1,0 +1,177 @@
+{smcl}
+{* version 1.0.0}{...}
+{cmd:help regen}
+{hline}
+
+{title:Title}
+
+{p 5}
+{cmd:regen} {hline 2} Create new or change existing variable
+
+
+{title:Syntax}
+
+{p 5}
+Create a new variable
+
+{p 8 12 12}
+{cmd:regen} {dtype} [{it:{help format:%fmt}}] 
+{newvar}[{cmd::}{it:lblname}] [{cmd:"}{it:label}{cmd:"}] 
+{cmd:=}{it:{help exp}} {ifin} 
+
+{p 8 12 12}
+{cmd:regen} {dtype} [{it:{help format:%fmt}}] 
+{newvar}[{cmd::}{it:lblname}] [{cmd:"}{it:label}{cmd:"}]
+{cmd:=}{it:{help egen:fcn{sf:(}arguments{sf:)}}} {ifin} 
+[{cmd:,} {it:options}]
+
+
+{p 5}
+Change an existing variable
+
+{p 8 12 12}
+{cmd:regen} {dtype} [{it:{help format:%fmt}}] 
+{it:oldvar}[{cmd::}{it:lblname}] [{cmd:"}{it:label}{cmd:"}] 
+{cmd:=}{it:{help exp}} {ifin} {cmd:, replace} [{it:options}]
+
+{p 8 12 12}
+{cmd:regen} {dtype} [{it:{help format:%fmt}}] 
+{it:oldvar}[{cmd::}{it:lblname}] [{cmd:"}{it:label}{cmd:"}]
+{cmd:=}{it:{help egen:fcn{sf:(}arguments{sf:)}}} {ifin} 
+{cmd:, replace} [{it:options}]
+
+
+{p 5}
+{helpb by} is allowed
+
+
+{title:Description}
+
+{pstd}
+{cmd:regen} creates a new variable or changes an existing variable in 
+the most general way. 
+
+{pstd}
+The syntax essentially follows that of {helpb generate}, 
+{helpb replace} and {helpb egen} respectively. Elements correspond 
+to those allowed with {cmd:generate} (or {cmd:egen}, see below) where 
+additional elements set (or change) {varname}'s display format and 
+{help label:variable label}. All elements are specified in the order 
+they appear in the output of {helpb describe}. A value label may be 
+detached from {it:varname} by setting {it:lblname} to {cmd:.} and a 
+variable label may be removed specifying {it:label} as {cmd:""}. 
+Invalid {it:%fmt}, {it:lblname} or {it:label} specifications are 
+ignored and do not result in error.
+
+{pstd}
+Beware the differences in some of {cmd:egen}'s functions 
+(e.g. {cmd:anycount()}) regarding the {cmd:if} and {cmd:in} 
+qualifiers and see option {opt else()} below.
+
+
+{title:Remarks}
+
+{pstd}
+{cmd:regen} is, in a way, an extension of 
+{help regen##ref:Royston's (2013)} {stata findit cmpute:{bf:cmpute}} 
+command. It features some of the capabilities of Nick Cox' 
+{stata findit labgen:{bf:labgen} package}, supports the {helpb by} 
+prefix, assigns (or detaches) value and variable labels 'on the fly' 
+and is compatible with any official Stata's as well as (most) 
+user-written {helpb egen:egen functions} 
+(e.g. {stata findit egenmore:{bf:egenmore}}).
+
+
+{title:Options}
+
+{phang}
+{opt replace} is required when changing an existing variable, but is 
+ignored otherwise.
+
+{phang}
+{opt nop:romote} is the same as with {help generate##options:replace}.
+
+{phang}
+{opt nofix} is the same as with {help label##options:label values}.
+
+{phang}
+{it:{help egen:egen_options}} are options allowed with the 
+respective {it:{help egen:{sf:egen} fcn{sf:()}}}
+
+{phang}
+{opt else(exp)} specifies that values for observations excluded 
+by the {cmd:if} and/or {cmd:in} qualifier be set to {it:exp}. 
+The option is intended for use with {cmd:egen} functions that set 
+observations excluded by {cmd:if} and {cmd:in} to 0 (not missing). It 
+might also be useful to replace an existing variable just as though 
+it did not exist before. However, do not use {opt else()} just to 
+assign two different values with a single line of code. For that use 
+the {helpb cond():cond() {sf:function}}.
+
+
+{title:Examples}
+
+{pstd}
+Create and label a new variable containing the values of {cmd:mpg} 
+squared
+
+{phang2}{cmd:. regen mpg2 "Milage squared" = mpg^2}{p_end}
+
+
+{pstd}
+Create a new variable indicating whether married women live in 
+the south or in a central city
+
+{phang2}{cmd:. regen byte sthcty = anymatch(south c_city) if (married == 1) ,values(1)}{p_end}
+
+{pstd}
+Note that {cmd:anymatch()} sets observations excluded by the {cmd:if} 
+qualifier to 0 (not missing). To set {cmd:sthcty} to missing for 
+unmarried women we should have used the {opt else()} option. We can 
+still do this, specifying also the {opt replace} option (because now 
+{cmd:sthcty} already exists)
+
+{phang2}{cmd:. regen sthcty = anymatch(south c_city) if (married == 1) ,values(1) replace else(.)}{p_end}
+
+
+{pstd}
+Create a new variable containing the log-transformed values of 
+weight and record the definition in the variable label
+
+{phang2}{cmd:. regen ln_weight "\`s(expr)'" = ln(weight)}{p_end}
+
+{pstd}
+The above needs explanation. {cmd:regen} saves {it:exp} 
+(or {it:fcn}()), i.e. whatever follows the equals sign, in 
+{cmd:s(expr)}. The contents saved in {cmd:s()} by {cmd:regen} are 
+accessible within the program, typing the {help macro} name with 
+surrounding left and right single quotes. The backslash prevents macro 
+expansion (see {manlink P macro}, p.201-202) and tells {cmd:regen} to 
+substitute {cmd:s(expr)} when assigning the variable label. Other 
+saved results include {cmd:s(if)}, {cmd:s(in)} and {cmd:s(by)}. 
+Specifying {it:label} as {cmd:"\`s(expr)' \`s(if)' \`s(in)'"} 
+replicates variable labels created by {cmd:labegen}.
+
+
+{marker ref}{...}
+{title:References}
+
+{p 4 8 2}
+Royston, Patrick. 2013. cmpute: A tool to generate or replace a variable. {it:The Stata Journal} volume 13, number 4, pp. 862-866. 
+({browse "http://www.stata-journal.com/article.html?article=dm0072":dm0072})
+
+
+{title:Author}
+
+{pstd}Daniel Klein, University of Kassel, klein.daniel.81@gmail.com
+
+
+{title:Also see}
+
+{psee}
+Online: {help generate}, {help egen}
+{p_end}
+
+{psee}
+if installed: {help cmpute}, {help labgen}, {help vlgen}
+{p_end}

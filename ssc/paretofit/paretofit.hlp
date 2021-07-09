@@ -1,0 +1,300 @@
+{smcl}
+{* 2015-10-16 added material to stats output, fixed typos in help, var, v1.1.0}{...}
+{* 2010-02-23 (correct e(alpha) into e(b), 2007-04-11, v1.0.0}{...}
+{hline}
+help for {hi:paretofit}{right:Stephen P. Jenkins & Philippe Van Kerm (October 2015)}
+{hline}
+
+{title:Fitting a Pareto (Type I) distribution by ML to unit record data}
+
+{p 8 17 2}{cmd:paretofit} {it:var} [{it:weight}] [{cmd:if} {it:exp}]
+        [{cmd:in} {it:range}] [{cmd:,}
+        {cmdab:x0(}{it:scalar}} {cmdab:me(}{it:scalar}}   {cmdab:a:var(}{it:varlist}{cmd:)}
+        {cmdab:cdf(}{it:cdfname}{cmd:)} {cmdab:pdf(}{it:pdfname}{cmd:)} 
+        {cmdab:r:obust} {cmdab:cl:uster(}{it:varname}{cmd:)} 
+        {cmdab:f:rom(}{it:#}{cmd:)} {cmdab:l:evel(}{it:#}{cmd:)} {it:maximize_options} ]
+
+{p 4 4 2}{cmd:by} and {cmd:svy} prefixes are allowed (but not jointly); see {help prefix}.{p_end}
+
+{p 4 4 2}{opt fweight}s, {opt aweight}s, {opt pweight}s, and {opt iweight}s are allowed; see
+{help weight}.{p_end}
+
+
+{title:Description}
+
+{p 4 4 2}
+{cmd:paretofit} fits by ML a Pareto (Type I) distribution to 
+sample observations on a random variable {it:var}. Unit record data 
+are assumed (rather than grouped data).{p_end}
+
+{p 4 4 2}
+The Pareto distribution is named after the Italian economist 
+Vilfredo Pareto (1848-1923). It is one of the most famous and 
+widely studied statistical size distributions. 
+It is well-known for approximating top income or wealth distributions, 
+but has applications in many different fields (e.g. for size distibutions
+of human settlements, sand particles, word frequencies, or for 
+assessing portfolio risk). See Kleiber and Kotz (2003) and Arnold (2008, 2015) for a 
+comprehensive review of the Pareto distributions and their properties. Formulae for
+the inequality indices cited below are shown in Cowell (2011, Table A2).
+
+{p 4 4 2}
+The likelihood function for a sample of observations on {it:var} is specified 
+as the product of the densities for each observation (weighted where relevant), and
+is maximized using {cmd:ml model lf}. A closed-form expression for 
+the ML estimator of the Pareto Type I shape parameter is readily available but
+estimation with {cmd:ml model} allows us to accommodate various sample design 
+easily, as well as inclusion of covariates. 
+
+
+{title:Options}
+
+{p 4 8 2}{cmd:x0(}{it:scalar}{cmd:)} specifies the scale parameter of the 
+        Pareto distribution (see formula below). The Pareto distribution 
+        is fitted only to sample observations where {it:var}>={it:x0}. 
+        By default, {it:x0} is set to the minimum value of {it:var} (within 
+        the sub-sample identified by {cmd:if} and {cmd:in} clauses).
+		
+{p 4 8 2}{cmd:me(}{it:scalar}{cmd:)} specifies the threshold to be used for the
+		estimation of the mean excess, i.e. i.e. E(X-t|X>t) given specified threshold 
+		t >= x0. By default, threshold {it:t} is set to {it:x0}.		
+         
+{p 4 8 2}{cmd:avar(}{it:varlist}{cmd:)} allows the user to specify the shape 
+        parameter of the distribution as a function of the covariates specified
+        in {it:varlist}. A constant term is always included. 
+
+{p 4 8 2}{cmd:stats} displays selected distributional statistics implied by the
+        Pareto parameter estimate:  quantiles, cumulative 
+        shares of total {it:var} at quantiles (i.e. the Lorenz curve 
+        ordinates), and and quantile ratios p90/p10 and p75/p25. Also reported are
+		the mode, mean, standard deviation, variance, three inequality indices
+		from the generalized entropy family (Mean Logarithmic Deviation, Theil index, 
+		half the squared coefficient of variation squared), and the Gini coefficient. 
+		This option is not available together with {cmd:avar(}{it:varlist}{cmd:)}.
+
+{p 4 8 2}{cmd:poorfrac(}{it:#}{cmd:)} displays the estimated proportion with values of {it:var} 
+        less than the cut-off specified by {it:#}. This option may be specified when replaying
+        results.
+
+{p 4 8 2}{cmd:cdf(}{it:cdfname}{cmd:)} creates a new variable {it:cdfname} containing the
+        estimated Pareto c.d.f. value F(x) for each x.
+
+{p 4 8 2}{cmd:pdf(}{it:pdfname}{cmd:)} creates a new variable {it:pdfname} containing the
+        estimated Pareto p.d.f. value f(x) for each x.
+
+{p 4 8 2}{cmd:robust} specifies that the Huber/White/sandwich estimator of
+variance is to be used in place of the traditional calculation; see
+{hi:[U] 23.14 Obtaining robust variance estimates}.  {cmd:robust} combined
+with {cmd:cluster()} allows observations which are not independent within
+cluster (although they must be independent between clusters).  
+{help pweight}s imply {cmd:robust}.
+
+{p 4 8 2}{cmd:cluster(}{it:varname}{cmd:)} specifies that the observations are
+independent across groups (clusters) but not necessarily within groups.
+{it:varname} specifies to which group each observation belongs; e.g.,
+{cmd:cluster(personid)} in data with repeated observations on individuals. 
+See {hi:[U] 23.14 Obtaining robust variance estimates}. {cmd:cluster()} can be
+used with {help pweight}s to produce estimates for unstratified
+cluster-sampled data. Use the {help svy} {help prefix} for full complex survey 
+design support. Specifying {cmd:cluster()} implies {cmd:robust}. 
+
+{p 4 8 2}{cmd:from(}{it:#}{cmd:)} specifies a starting value for the maximum likelhood estimation.
+
+{p 4 8 2}{cmd:level(}{it:#}{cmd:)} specifies the confidence level, in percent,
+for the confidence intervals of the coefficients; see help {help level}.
+
+{p 4 8 2}{cmd:nolog} suppresses the iteration log.
+
+{p 4 8 2}{it:maximize_options} control the maximization process. The options
+available are those shown by {help maximize}. If you are seeing many
+"(not concave)" messages in the iteration log, using the {cmd:difficult} 
+or {cmd:technique} options may help convergence.
+
+
+{title:Saved results}
+
+{p 4 4 2}In addition to the usual results saved after {cmd:ml}, {cmd:paretofit} 
+saves the following, if no covariates have been specified and the relevant options are used:
+
+{p 4 4 2}{cmd:e(ba)} is the estimated Pareto Type I shape parameter. If the {cmd:stats} option
+is used, the shape parameter is also saved in {cmd:e(alpha)}. {cmd:e(x0)} is the value of x0.
+
+{p 4 4 2}{cmd:e(cdfvar)} and {cmd:e(pdfvar)} are the variable names specified for the
+c.d.f. and the p.d.f.
+
+{p 4 4 2}
+{cmd:e(mode)}, {cmd:e(mean)}, {cmd:e(var)}, {cmd:e(sd)}, {cmd:e(ge0)}, {cmd:e(ge1)}
+{cmd:e(ge2)}, and {cmd:e(gini)} are the estimated mode, mean, variance, standard deviation, 
+mean logarithmic deviation, Theil index, half the squared coefficient of variation, and Gini coefficient.
+{cmd:e(beta)} is the estimate of a/(a-1). {cmd:e(me)} is the mean excess, i.e. E(X-t|X>t) 
+given threshold t >= x0. The threshold is saved in {cmd:e(t)}. Estimated standard 
+errors (derived using the delta method) are also saved, in macros with names prefixed by "se_".  
+For example, {cmd:e(se_gini)} is the estimated standard error of the Gini coefficient.
+
+{p 4 4 2}
+{cmd:e(pX)}, and {cmd:e(LpX)} are the quantiles, and Lorenz ordinates, where 
+X = {1, 5, 10, 20, 25, 30, 40, 50, 60, 70, 75, 80, 90, 95, 99}.
+
+
+{title:Formulae}
+
+{p 4 4 2}
+The Pareto (Type I) distribution has cumulative distribution function (c.d.f.)
+
+{p 8 8 2}
+        F(x) = 1 - { x / x0 }^(-a)
+
+{p 4 4 2}
+where a>0 is a shape parameter (estimated by {cmd:paretofit}), 
+x0 is a scale parameter, and x >= x0 > 0 is a random variable. 
+The right tail of a Pareto distribution is heavier as a is smaller.
+
+{p 4 4 2}
+The probability density function (p.d.f.) is
+
+{p 8 8 2}
+        f(x) =  a*(x0^a) / x^(a+1).
+
+{p 4 4 2}
+The formulae used to derive the distributional summary statistics 
+(reported optionally) are as follows. The r-th moment about the origin
+is given by
+
+{p 8 8 2}
+        a*(x0^r) / (a-r)
+
+{p 4 4 2}
+which exists only if r<a (Kleiber and Kotz, 2003, p. 70). It follows that 
+
+{p 8 8 2} 
+        mean = a*x0 / (a-1)
+
+{p 8 8 2}
+        variance = a*(x0^2) / [ (a-2)*(a-1)^2 ]
+
+{p 4 4 2}
+from which the standard deviation is derived. These two statistics are defined only 
+where a>2. The density is decreasing, so the mode is simply
+
+{p 8 8 2}
+        mode = x0.
+
+{p 4 4 2}
+Beta is the 'inverted Pareto coefficient' commonly employed in the "top income shares"
+literature (see Atkinson, Piketty, and Saez, 2011).
+
+{p 8 8 2}
+		beta = a/(a-1).		
+		
+{p 4 4 2}
+The "mean excess" ("mean residual life") is
+
+{p 8 8 2}
+		me = t / (a-1) given threshold t >= x0.
+		
+{p 4 4 2}
+The Mean Logarithmic Deviation measure of inequality, i.e. generalized entropy index GE(0), is
+		
+{p 8 8 2}
+		ge0 = log(a/(a-1)) - (1/a).
+		
+{p 4 4 2}		
+The Theil measure of inequality, i.e. generalized entropy index GE(1), is
+		
+{p 8 8 2}
+		ge1 = (1/(a-1)) - log(a/(a-1)).		
+		
+{p 4 4 2}		
+Half the squared coefficient of variation, i.e. generalized entropy index GE(2), 
+is defined only if a > 2, in which case it is
+		
+{p 8 8 2}
+		ge2 = 1/(2a(a-2)).			
+
+{p 4 4 2}
+The quantiles are derived by inverting the distribution function: 
+
+{p 8 8 2}
+        x_s = x0*(1-s)^(-1/a), for each 0 < s = F(x_s) < 1.
+
+{p 4 4 2}
+The median is therefore
+
+{p 8 8 2}
+        median = x0*(2^(1/a)).
+        
+{p 4 4 2}
+The Gini coefficient of inequality is given by
+
+{p 8 8 2}
+        Gini = 1 / (2a - 1).
+
+{p 4 4 2}
+The Lorenz curve ordinates at each s = F(x_s) are given by
+
+{p 8 8 2}
+        L(s) = 1 - (1 - s)^{1 - 1/a).
+
+        
+{title:Examples}
+
+{p 4 8 2}{inp:. sysuse nlsw88}
+
+{p 4 8 2}{inp:. paretofit wage  }
+
+{p 4 8 2}{inp:. paretofit wage, x0(20) stats }
+
+{p 4 8 2}{inp:. paretofit wage  }
+
+{p 4 8 2}{inp:. paretofit wage, avar(age married) x0(15) }
+
+{p 4 8 2}{inp:. paretofit wage, poorfrac(20) x0(15) }
+
+
+
+
+{title:Authors}
+
+{p 4 4 2}Stephen P. Jenkins <s.jenkins@lse.ac.uk>, London School of Economics, U.K.
+
+{p 4 4 2}Philippe Van Kerm <philippe.vankerm@liser.lu>, LISER, Luxembourg.
+
+
+{title:Reference}
+
+{p 4 8 2}Arnold, B. C. (2008). Pareto and Generalized Pareto Distributions. In:
+        D. Chotikapanich (ed.), {it:Modeling Income Distributions and Lorenz Curves}. 
+        New York, NY: Springer Science+Business.
+		
+{p 4 8 2}Arnold, B. C. (2015). 
+        {it:Pareto Distributions}, second edition. 
+        Monographs on Statistics and Applied Probability 140.
+		Boca Raton, FL: CRC Press.
+		
+{p 4 8 2}Atkinson, A. B., Piketty, T., and Saez, E. (2011). 
+        Top incomes in the long run of history. 
+		{it:Journal of Economic Literature}, 49(1), 3{c -}71. 		
+		
+{p 4 8 2}Cowell, F. A. (2011). 
+        {it:Measuring Inequality}, third edition. 
+		Oxford: Oxford University Press.
+		
+{p 4 8 2}Kleiber, C. and Kotz, S. (2003). 
+        {it:Statistical Size Distributions in Economics and Actuarial Sciences}. 
+        Hoboken, NJ: John Wiley.
+
+		
+{title:Note}		
+
+{p 4 4 2}
+The first version of this module was released in 2010. This version adds
+reporting of additional statistics (such as inequality indices), and additional 
+literature references.
+
+
+{title:Also see}
+
+{p 4 13 2}
+Online: help for {help smfit}, {help dagumfit}, {help gb2fit},  {help gb2lfit},
+{help lognfit}, {help extreme}, {help hillp} if installed. 
+

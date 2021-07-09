@@ -1,0 +1,167 @@
+{smcl}
+{* 19aug2003}{...}
+{hline}
+help for {hi:metafunnel} {right:dialog:  {dialog metafunnel}{space 20}}
+{hline}
+
+{title:Funnel plots for meta-analysis}
+
+{p 8 15 2}
+{cmd:metafunnel}
+{it:{ theta { se | var } | exp(theta) ll ul [cl] }}
+[{cmd:if} {it:exp}]
+[{cmd:in} {it:range}]
+[{cmd:,}
+{cmdab:ef:orm}
+{cmdab:nol:ine}
+{cmdab:rev:erse}
+{cmdab:forc:enull}
+{cmdab:graph_options}
+]
+
+
+{title:Description}
+
+{p 4 4 2}
+{cmd:metafunnel} plots funnel plots. These graphical displays are used to
+examine whether the results of a meta-analysis may have been affected by
+publication or other types of bias.
+
+
+{title:Options}
+
+{p 4 8 2}
+{cmd:by(}{it:byvarname}{cmd:)} displays subgroups according to the value
+of {it: byvarname}. The legend
+displays the value labels for the levels of {it: byvarname} if these are 
+present; otherwise it displays the value of each level of{it: byvarname}. 
+
+{p 4 8 2}
+{cmd:eform} exponentiates the treatment effect theta and displays the
+horizontal axis (treatment effect) on a log scale. This is useful for
+displaying ratio measures such as odds ratios and risk ratios.
+
+{p 4 8 2}
+{cmd:reverse} inverts the funnel plot so that larger studies are displayed
+at the bottom of the plot with smaller studies at the top.
+This may also be achieved by specifying {cmd:noreverse} as part of the
+{cmd: yscale(}{it:axis_description}{cmd:)} graphics option.
+
+{p 4 8 2}
+{cmd:noline} specifies that pseudo 95% confidence interval lines
+should not be included in the plot.  The default is to include them.
+
+{p 4 8 2}
+{cmd:forcenull} forces the vertical line at the centre of the funnel
+to be plotted at the null treatment effect of zero (1 when the treatment
+effect is exponentiated). The default is for the line to be plotted at
+the value of the fixed effect summary estimate.
+
+{title:Remarks}
+
+{p 4 4 2}
+Funnel plots are simple graphical displays of a measure of study size
+on the vertical axis against intervention or treatment effect on the 
+horizontal axis. The name "funnel plot" is based on the fact that the
+precision in the estimation of the underlying intervention or treatment
+effect will increase as the size of component studies increases. Results
+from small studies will therefore scatter more widely, with the spread
+narrowing among larger studies. In the absence of bias the plot will
+resemble a symmetrical inverted funnel.
+
+{p 4 4 2}
+If there is bias, for example because smaller studies showing no
+statistically significant effects remain unpublished, then such
+publication bias will lead to an asymmetrical appearance of the funnel
+plot. It should be noted that although funnel plots have traditionally
+been used to examine evidence for publication bias, funnel plot asymmetry
+may reflect other types of bias, or even result from the true intervention
+or treatment effect differing between small and large studies. They should
+thus be seen as displaying the evidence for "small study effects" in general
+rather than publication bias in particular. These issues are discussed by
+Egger {it: et al.} (1997) and Sterne {it:et al.} (2001a).
+
+{p 4 4 2}
+{cmd:metafunnel} uses the same syntax as other meta-analysis commands
+such as {help meta}, {help metabias}, {help metainf} and {help metatrim}.
+The user provides an estimate of the treatment or intervention effect,
+{it: theta}, together with its associated standard error {it: se_theta}
+(the default) or variance {it: var_theta}, (in which case the {cmd: var}
+option should be specified). Alternatively, the user provides {it:exp(theta)}
+(i.e., a risk ratio or odds ratio) and its confidence interval,
+{it: (ll, ul)}).
+
+{p 4 4 2}
+The funnel plots are displayed in line with meta-analytic convention and
+the recommendations of Sterne et al. (2001b). The effect of the 
+treatment or intervention in each study (horizontal axis) is plotted
+against the study size, as measured by the standard error of the treatment
+or intervention effect.
+(vertical axis). The vertical axis is reversed so that larger studies are
+displayed towards the top of the graph (this behaviour may be changed using
+the {cmd: reverse} option). Users who wish to plot the treatment effect on the vertical axis should use the {cmd:graph(begg)} option of
+the {help metabias} command. The {help funnel} command, which is part
+of the {help metan} package, also provides an alternative way to draw
+funnel plots.
+
+{p 4 4 2}
+The plots include pseudo-95% confidence interval lines, which are
+drawn around the summary fixed-effect estimate of the intervention or
+treatment effect. The lines may be omitted using the {cmd:nolines} option.
+The user may also specify that the pseudo confidence limits are centred
+around a zero intervention effect using the {cmd:forcenull} option.
+
+{p 4 4 2}
+When the {cmd:eform} option is used, the label of the horizontal axis
+(treatment effect, {it:theta}) is 
+changed accordingly, unless there is a variable label for {cmd: theta} or
+the {cmd: xtitle(}{it:axis_title}{cmd:)} graphics option is used.
+
+{p 4 4 2}
+By default, the subtitle "Funnel plot with pseudo 95% confidence limits"
+is displayed. This may be changed using the graphics option
+{cmd:subtitle(}{it:tinfo}{cmd:)}.
+
+
+{title:Examples}
+
+{p 4 8 2}{cmd:. metafunnel meandiff semeandiff}
+
+{p 4 8 2}{cmd:. metafunnel logor selogor, eform xtitle("Odds ratio (log scale)")}
+
+{p 4 8 2}{cmd:. metafunnel sttd stderr, by(dose) subtitle(Funnel plot with subgroups) forcenull}
+
+{p 4 8 2}{cmd:. metafunnel logor varlogor, var reverse nolines xtitle(log odds ratio)}
+
+
+
+{title:Acknowledgements}
+
+{p 4 4 2}
+{cmd:metafunnel} was written by Jonathan Sterne, University of Bristol.
+Portions of the code were originally written by Tom Steichen, who also
+gave helpful comments on an early version of the command and provided
+the dialog.
+
+
+{title:References}
+
+{p 4 8 2}Egger, M., Davey Smith, G., Schneider, M., & Minder, C. (1997).
+Bias in meta-analysis detected by a simple, graphical test.
+{it:British Medical Journal} 315: 629-634
+
+{p 4 8 2}Sterne, J.A.C., Egger, M. and Davey Smith, G. (2001a).
+Investigating and dealing with publication and other biases
+in meta-analysis. {it: British Medical Journal} 323: 101-105
+
+{p 4 8 2}Sterne, J.A.C. & Egger, M. (2001b). Funnel plots for detecting
+bias in meta-analysis: guidelines on choice of axis.
+{it: Journal of Clinical Epidemiology} 54: 1046-1055
+
+
+{title:Also see}
+
+{p 4 13 2}
+Online:  help for {help meta}, {help metabias},
+{help metainf}, {help metatrim}, {help metan}, {help funnel} (if installed)
+{p_end}

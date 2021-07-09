@@ -1,0 +1,80 @@
+.-
+help for ^fitint^                         (^Neville Verlander and Andre Charlett^)
+.-
+
+Fitting a regression model and testing each term
+------------------------------------------------
+
+    ^fitint^ regression_cmd yvar xvarlist [weight] [^if^ exp] [^in^ range]
+		[^,^ ^fac^tor^(^varlist^)^ ^twoway(^varlist [,varlist] ^)^
+		^noshow^  regression_cmd_options ]
+
+where regression_cmd is one of
+
+	@clogit@        @nbreg@         @scobit@ 
+	@cloglog@       @ologit@        @stcox@
+	@cnreg@         @oprobit@       @streg@
+	@glm@           @poisson@       @tobit@
+	@logistic@      @probit@
+	@logit@         @regress@
+
+Note: The yvar is not required for the stcox and streg commands but the data
+need to be @stset@
+
+Warning: In order to generate any interactions between continuous variables
+this program uses the naming convention __x_y (double underscore) where x and y 
+denote the position of the two variables in the x variable list. In order for 
+this to work any pre-existing variables prefixed __ must be deleted or renamed. 
+The program will not run until this is done.
+
+
+Description
+-----------
+
+Fitint fits a regression model and tests any twoway interactions and any
+main effects not included in interaction terms. The appropriate test (LR of F) 
+is chosen depending upon the regression model being estimated.
+
+Options
+-------
+
+^noshow^ suppress the regression table output
+
+^fac^tor(varlist) define those xvarlist terms that are factors
+
+^twoway^(varlist[,varlist]) define those xvarlist terms for which twoway interactions
+    are required. If more than two x-variables are listed then all possible twoway 
+    interactions are generated. When a comma is used to separate x-variables lists then 
+    all possible twoway interactions within each list are generated. e.g.
+    twoway(A B C, D E F) will produce the six interactions A*B A*C B*C D*E D*F E*F
+
+regression_cmd_options are options appropriate to the regression command in
+    use. The ^cluster()^, ^robust^ and ^noconstant^ options are not available with
+    this command, if these options are issued the program will detected this
+    and exit.
+
+
+Examples
+--------
+
+Suppose ^age^ is a continuous variable, ^sex^, ^auber^ and ^okra^ ^categorical^:
+
+  .  fitint glm case age sex okra auber, show factor(sex auber okra)
+     twoway(auber age sex, auber okra) f(bin) 
+
+If the user wishes to use the ^logistic^ command, an example might be:
+
+  .  fitint logistic case age sex okra auber, factor(sex auber okra)
+     twoway(auber age sex, auber okra) asis
+
+
+Also see
+--------
+
+Manual:  ^[U] 23 Estimation and post-estimation commands^,
+	   ^[U] 29 Overview of model estimation in Stata^
+
+On-line:  help for @lrtest@, @test@, @anova@; @clogit@, @cloglog@, @cnreg@, 
+          @glm@, @logistic@, @logit@, @nbreg@, @ologit@, @oprobit@, @poisson@,
+          @probit@, @regress@, @scobit@, @stcox@, @streg@, @tobit@, @xi@, @lrdrop1@.
+

@@ -1,0 +1,320 @@
+{smcl}
+{* August 2007}{...}
+{hline}
+help for {hi:mvtobit}{right: Mikkel Barslund (mikkelbarslund@gmail.com)}
+{hline}
+
+{title:Multivariate tobit models estimated by maximum simulated likelihood}
+
+{p 4 12 2}{cmd:mvtobit} {it:equation1} {it:equation2} {it: ...} {it:equationM} 
+    [{it:weight}] [{cmd:if} {it:exp}] [{cmd:in} {it:range}] [{cmd:,}
+    {cmdab:dr:aws(}{it:#}{cmd:)} {cmdab:an} {cmdab:s:eed(}{it:#}{cmd:)} 
+    {cmdab:b:eta0} {cmdab:a:trho0(}{it:matrix_name}{cmd:)}
+    {cmdab:pre:fix(}{it:string}{cmd:)} {cmdab:bu:rn(}{it:integer}{cmd:)}
+    {cmdab:ran:dom} {cmdab:hran:dom} {cmdab:sh:uffle} {cmdab:adoon:ly}
+    {cmdab:prim:es(}{it:matrix_name}{cmd:)} {cmdab:init(}{it:matrix_name}{cmd:)}    
+    {cmdab:r:obust} {cmdab:cl:uster(}{it:varname}{cmd:)}
+    {cmdab:const:raints(}{it:numlist}{cmd:)} 
+    {cmdab:l:evel(}{it:#}{cmd:)} {it:maximize_options} ]
+
+{p 4 4 2}where each equation is specified as
+
+{p 12 12 2}{cmd:(} [{it:eqname}{cmd::}] {it:depvar} [{cmd:=}] [{it:varlist}]
+        [{cmd:,} {cmdab:nocon:stant}] {cmd:)}
+
+{p 4 4 2}{cmd:by} {it:...} {cmd::} may be used with {cmd:mvtobit}; see help
+{help by}. 
+
+{p 4 4 2}{cmd:pweight}s, {cmd:fweight}s, {cmd:aweight}s, and {cmd:iweight}s 
+are allowed; see help {help weights}.
+
+{p 4 4 2}{cmd:mvtobit} is likely to produce a series of "(not concave)"
+statements in the beginning of the estimation process. It is recommended to
+specify the {cmd:difficult} option; see help {help maximize}.
+
+{p 4 4 2}{cmd:mvtobit} shares the features of all estimation commands; see help
+{help est}.
+
+{p 4 4 2}{cmd:mvtobit} typed without arguments redisplays the last estimates. 
+The {cmd:level} option may be used.
+
+{p 4 4 2}{cmd:mvtobit} requires {cmd:mdraws} to be installed.
+
+{p 4 4 2}{cmd:Note:} much code in this routine is hacked from or inspired by Cappellari
+and Jenkins' {cmd:mvprobit} and {cmd:mdraws} commands (see {help mvprobit} and
+{help mdraws} if installed). This in particular applies to the help and syntax handling files.
+{cmd:mdraws} must be installed for {cmd:mvtobit} to work. The {cmd:shuffle} 
+option requires installation of {cmd:_gclsort}. Both are available from SSC.
+
+{p 4 4 2}{it:{cmd: Using Stata version 9 or above? }}{it:Take a look at {stata findit cmp:cmp} and {browse "http://www.cgdev.org/content/publications/detail/1421516/":Roodman (2009)}. }
+
+{title:Description}
+
+{p 4 4 2}{cmd:mvtobit} estimates {it:M}-equation tobit models (including bivariate models),
+by the method
+of maximum simulated likelihood (MSL). Bivariate tobit models are estimated without
+simulation (see also Daniel Lawsons {help bitobit} if installed). A limitation is that
+only models left-censored at zero can be estimated, i.e.
+
+{center: y(i) = max[xb(i)+e(i),0]}
+
+{p 4 4 2} where {it:e} is {it:M}-variate normally distributed. Along with
+coefficients for each equation {cmd:mvtobit} estimates the cross-equation
+error-correlations and the variance of the error terms.
+
+{p 4 4 2}{cmd:mvtobit} uses the Geweke-Hajivassiliou-Keane (GHK) simulator
+implemented in {cmd:egen} function {help mvnp} (if installed) and the
+related {help mdraws} function to draw random numbers for evaluation of
+the multi-dimensional Normal integrals in the likelihood function.
+For each observation, a likelihood contribution is calculated 
+for each replication, and the simulated likelihood contribution is the 
+average of the values derived from all the replications. The simulated 
+likelihood function for the sample as a whole is then maximized using 
+standard methods ({cmd:ml} in this case). For a brief description of the 
+GHK smooth recursive simulator, see Greene (2003, 931-933), who also 
+provides references to the literature. See Cappellari and Jenkins (2006)
+for detailed information on implemention of MSL in Stata and the workings
+of {help mvnp} and {help mdraws}. Also see Train (2003).
+
+{p 4 4 2}Under standard conditions, the MSL estimator is consistent as the
+number of observations and the number of draws tend to infinity and is
+asymptotically equivalent to the true maximum likelihood estimator as the
+ratio of the square root of the sample size to the number of draws tends to
+zero. Thus, other things equal, the more draws, the better. In practice,
+however, it has been observed that a relatively small number of draws may work
+well for `smooth' likelihoods in the sense that the change in estimates as the
+number of draws is increased is negligible. It is the responsibility of the 
+user to check that this is the case. Simulation variance may be reduced
+using antithetic draws in addition to the pseudo-random uniform variates used
+in the calculation of the simulated likelihood. The antithetic draws for a 
+vector of pseudo-random uniform draws, z, are 1-z.
+
+{p 4 4 2}Estimation is numerically intensive and may be very slow if the data 
+set is large, if the number of draws is large, or (especially) if the 
+number of equations is large. Users may also need to {cmd:set matsize} 
+and {cmd:set memory} to values above the default ones. (See help for 
+{help matsize} and {help memory}.) Use of the {cmd:atrho0} option may
+speed up convergence. 
+
+{p 4 4 2}Models for which the error variance-covarince matrix is close
+to not being positive definite are likely to be difficult to maximize.
+(The Cholesky factorization used by MSL requires positive definiteness.)
+ In these cases, {cmd:ml} may report difficulties calculating numerical
+derivatives and a non-concave log likelihood. In difficult maximization
+problems, the message "Warning: cannot do Cholesky factorization of rho matrix"
+may appear between iterations. It may be safely ignored if the maximization proceeds 
+to a satisfactory conclusion. Results may differ depending on the sort order
+of the data, because the sort order affects which values of the random
+variable(s) get allocated to which observation. (Note, {cmd:mvtobit} does
+not change the sort order of the data.) This potential
+problem is reduced by the larger the number of random draws that is used. 
+
+{title:Options}
+
+{p 4 8 2}{cmd:beta0} specifies that the estimates of the marginal tobit
+regressions (used to provide starting values) are reported.
+
+{p 4 8 2}{cmd:atrho0(}{it:matrix_name}{cmd:)} allows users to specify 
+starting values for the standard deviations and correlations that
+are different from the default values (zeroes and ones, respectively). 
+The matrix {it:matrix_name} contains values of the incidental parameters,
+/lnsigma{it:i} and /atrho{it:ij}, for the {it:M} equations. Matrix 
+{it:matrix_name} must have properly named column names. E.g., if 
+a starting value in /atrho{it:12} is being set, one would first use the 
+command {cmd:matrix {it:matrix_name} = ({it:value})}, followed by
+{cmd:matrix colnames {it:matrix_name} = atrho12:_cons}. Between 1 and 
+{it:M}({it:M}-1)/2 /atrho{it:ij}, and between 1 and {it:M} /lnsigma{it:i}
+starting values may be specified, where {it:i} = 1,...,{it:M-1}, and
+{it:j} > {it:i}. One likely source for a non-default starting value
+for atrho{it:ji} is the /athrho parameter estimate from a bivariate model
+corresponding to equations {it:i} and {it:j} of the full {cmd:mvtobit} model.
+
+{p 4 8 2}{cmd:robust} specifies that the Huber/White/sandwich estimator of
+variance is to be used in place of the traditional calculation; see
+{hi:[U] 23.11 Obtaining robust variance estimates}.  {cmd:robust} combined
+with {cmd:cluster()} allows observations that are not independent within
+clusters (although they must be independent between clusters).  If you 
+specify {help pweight}s, {cmd:robust} is implied.
+
+{p 4 8 2}{cmd:cluster(}{it:varname}{cmd:)} specifies that the observations are
+independent across groups (clusters) but not necessarily within groups.
+{it:varname} specifies to which group each observation belongs; e.g.,
+{cmd:cluster(personid)} in data with repeated observations on individuals. 
+See {hi:[U] 23.11 Obtaining robust variance estimates}. {cmd:cluster()} can be
+used with {help pweight}s to produce estimates for unstratified
+cluster-sampled data.  Specifying {cmd:cluster()} implies {cmd:robust}.
+
+{p 4 8 2}{cmd:noconstant} suppresses the constant term (intercept) in the
+relevant regression.  
+
+{p 4 8 2}{cmd:constraints(}{it:numlist}{cmd:)} specifies the linear constraints
+to be applied during estimation.  Constraints are defined using the
+{cmd:constraint} command and are numbered; see help {help constraint}. The
+default is to perform unconstrained estimation.
+
+{p 4 8 2}{cmd:level(}{it:#}{cmd:)} specifies the confidence level, in percent,
+for the confidence intervals of the coefficients; see help {help level}.
+
+{p 4 8 2}{cmd:init(}{it:matrix_name}{cmd:)} specifies a matrix of starting values.
+Options from {cmd:ml init} can be specified inside the parenthesis.
+
+{p 4 8 2}{it:maximize_options} control the maximization process; see help
+{help maximize}. Use of them is likely to be rare.
+
+{title:Options related to random number generation}
+See also {help mdraws}. The explanations below are taken from the {cmd:mdraws} helpfile.
+
+{p 4 8 2}{cmd:draws(}{it:#}{cmd:)} specifies the number of pseudo-random 
+standard uniform variates drawn when calculating the simulated likelihood. 
+The default is 5. (See the discussion above concerning the choice of the
+number of draws.) If the {cmd:an} option is specified, the total number of
+draws used in the calculations is twice the number specified in 
+{cmd:draws(}{it:#}{cmd:)}.
+
+{p 4 8 2}{cmd:prefix(}{it:string}{cmd:)} specifies the prefix common
+to the names of each of the created variables containing the random
+numbers used by the {cmd:egen} function {help mvnp:mvnp()}. The default
+prefix is X_MVT.
+
+{p 4 8 2}{cmd:an} specifies that antithetic draws is to be used by {cmd:mdraws}.
+The antithetic draw for a vector of uniform draws, z, is 1-z.
+
+{p 4 8 2}{cmd:random} specifies that pseudorandom number sequences
+are created rather than Halton sequences (the default).
+
+{p 4 8 2}{cmd:seed(}{it:#}{cmd:)} specifies the initial value of the 
+(pseudo-)random-number seed used by the {cmd:mdraws} function 
+in the simulation process. The value should be an integer (the 
+default value is 123456789). Warning: if the number of draws is 'small',
+changes in the seed value may lead to surprisingly large changes in 
+estimates. {cmd:seed(}{it:#}{cmd:)} only has effect when {cmd:random},
+{cmd:hrandom} or {cmd:shuffle} are specified.
+
+{p 4 8 2}{cmd:primes(}{it:matrix_name}{cmd:)} specifies the name of an 
+existing 1 x {it:M} or {it:M} x 1 matrix containing 
+{it:M} different prime numbers. If the option is not specified and
+as long as {it:M} <= 20, the program uses the first {it:M} prime numbers 
+in ascending order to generate the Halton sequences.
+
+{p 4 8 2}{cmd:burn(}{it:#}{cmd:)} specifies the number of initial
+sequence elements to drop for each equation when creating Halton 
+sequences. The default is zero, and the option is ignored if 
+{cmd:random} is specified. Specification of this option
+reduces the correlation between the sequences in each dimension. 
+Train (2003, 230) recommends that {it:#} should be at least as 
+large as the prime number used to generate the sequences.
+
+{p 4 8 2}{cmd:hrandom} specifies that each Halton sequence should be 
+transformed by a random perturbation. For each dimension, a draw, 
+{it:u}, is taken from the standard uniform distribution.
+Each sequence element has {it:u} added to it. If the sum is greater
+than 1, the element is transformed to the sum minus 1; otherwise, the
+element is transformed to the sum. See Train (2003, 234). 
+
+{p 4 8 2}{cmd:shuffle} specifies that "shuffled" Halton draws should be
+created, as proposed by Hess and Polak (2003). Each Halton sequence in 
+each dimension is randomly shuffled before sequence elements are
+allocated to observations. Philippe Van Kerm's program {cmd: _gclsort}, 
+available via SSC, must be installed for this option to work. 
+
+{p 4 8 2}{cmd:adoonly} prevents using the Stata plugin to perform the 
+intensive numerical calculations. Specifying this option results in 
+slower-running code but may be necessary if the plugin is not available
+for your platform. This option is also useful if you like to do speed
+comparisons!
+
+{title:Saved results}
+
+{p 4 4 2} In addition to the usual results saved after {cmd:ml},
+{cmd:mvtobit} also saves the following:
+
+{p 4 8 2}{cmd:e(draws)} is the number of pseudo-random draws used when simulating 
+probabilities. If the {cmd:an} option is specified, {cmd:e(draws)} is twice the
+number specified in {cmd:draws(}{it:#}{cmd:)}, rather than equal to the number.
+
+{p 4 8 2}{cmd:e(an)} is a local macro containing "yes" if the {cmd:an} option is 
+specified, and containing "no" otherwise.
+
+{p 4 8 2}{cmd:e(seed)} is the initial seed value used by the random-number 
+generator. 
+
+{p 4 8 2}{cmd:e(neqs)} is the number of equations in the {it:M}-equation model.
+
+{p 4 8 2}{cmd:e(ll0)} is the log likehood for the comparison model (the sum of 
+the log likelihoods from the marginal univariate tobit models corresponding 
+to each equation).
+
+{p 4 8 2}{cmd:e(chi2_c)} is chi-square test statistic for the likelihood ratio 
+test of the multivariate tobit model against the comparison model.
+
+{p 4 8 2}{cmd:e(nrho)} is the number of estimated rhos (the degrees of freedom 
+for the likelihood ratio test against the comparison model). 
+
+{p 4 8 2}{cmd:e(sigma{it:i})} is the estimate of the standard deviation of the {it:i}'th
+error term. 
+
+{p 4 8 2}{cmd:e(sesigma{it:i})} is the estimated standard error of sigma{it:i}.
+
+{p 4 8 2}{cmd:e(rho{it:ji})} is the estimate of correlation {it:ji} in the 
+variance-covariance matrix of cross-equation error terms. 
+
+{p 4 8 2}{cmd:e(serho{it:ji})} is the estimated standard error of 
+correlation {it:ji}.
+
+{p 4 8 2}{cmd:e(rhs{it:i})} is the list of explanatory variables used in 
+equation {it:i}. This list does not include the constant term, regardless 
+of whether there is one is implied by equation {it:i}.
+
+{p 4 8 2}{cmd:e(nrhs{it:i})} is the number of explanatory variables in equation
+{it:i}.  This number includes the constant term if there is one implied by
+equation {it:i}.
+
+
+{title:Examples}
+
+{p 8 12 2}{cmd:. mvtobit (y1 = x11 x12) (y2 = x21 x22) }
+
+{p 8 12 2}{cmd:. mvtobit (y1 = x11 x12) (y2 = x21 x22) (y3 = x31 x32), dr(20) an }
+
+{p 8 12 2}{cmd:. constraint define 1 [y1]x11 = [y2]x22 }
+
+{p 8 12 2}{cmd:. mvtobit (y1 = x11 x12) (y2 = x21 x22) (y3 = x31 x32), dr(20) an constraints(1) }
+
+{title:Authors}
+
+{p 4 4 2}{browse "http://ideas.repec.org/f/pba424.html":Mikkel Barslund}, Danish Economic Councils, Denmark{break}
+<mikkelbarslund@gmail.com>
+
+{title:Acknowledgments}
+
+{p 4 4 2}I have hacked a large amount of code from Cappellari and Jenkins {cmd:mvprobit}
+ (Cappellari and Jenkins, 2003). In addition most of the heavy work in this routine is
+ performed by their {cmd:mdraws} command. All errors are, of course, mine.
+
+{title:Version}
+
+{p 4 4 2}Version 1.0, August, 2007.
+
+{title:References}
+
+{p 4 8 2} Cappellari, L. and S.P. Jenkins. 2003. Multivariate probit regression 
+using simulated maximum likelihood. {it:The Stata Journal} 3(3): 278{c -}294.
+
+{p 4 8 2} Cappellari, L. and S.P. Jenkins. 2006. Calculation of multivariate 
+normal probabilities by simulation, with applications to maximum simulated
+likelihood estimation. {it:The Stata Journal} 6(2): 156{c -}189.
+
+{p 4 8 2} Greene, W.H. 2003. {it:Econometric Analysis}, 5th ed. 
+Upper Saddle River, NJ: Prentice-Hall.
+
+{p 4 8 2} Roodman, D. 2009. {browse "http://www.cgdev.org/content/publications/detail/1421516/":Estimating Fully Observed Recursive Mixed-Process Models with cmp.} 
+Working Paper 168. Center for Global Development.
+
+{title:Also see}
+
+{p 4 19 2}Manual:  {hi:[R] intreg},{p_end}
+{p 13 13 2}{hi:[R] tobit}
+
+{p 4 19 2}Online:  help for {help constraint}, {help est}, {help ereturn}, {help postest},
+{help ml}, {help tobit}, and (if installed) 
+ {help bitobit}, {help mdraws}, {help mvnp}.{p_end}

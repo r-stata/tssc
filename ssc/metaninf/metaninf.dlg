@@ -1,0 +1,377 @@
+/* 
+
+*! metaninf dialog version 1.0.2, 29 Feb 2004, T. J. Steichen, steichen@triad.rr.com 
+*!    for metaninf version 1.0.2, 29 Feb 2004, T. J. Steichen, steichen@triad.rr.com 
+
+Influence of a single study in meta-analysis estimation
+-------------------------------------------------------
+
+Syntax: metaninf varlist [if exp] [in range] [, fixed fixedi random randomi
+                 rr or rd peto cornfield hedges cohen glass nostandard
+                 label(namevar=namevar[, yearvar=yearvar]) 
+                 ilevel(#) olevel(#) notable nograph save(varname [, replace]) ]
+
+Install in User Statistics menu via Stata commands:
+  . window menu append item "stUserStatistics" "metan&inf (Metan-based Influence Analysis)" "db metaninf"
+  . window menu refresh
+To permanently install, place the commands in your -profile.do- file.
+*/
+
+VERSION 8.0
+
+INCLUDE _std_small
+INCLUDE _ht240
+INCLUDE header
+
+HELP hlp1, view("help metaninf")
+RESET res1, label("Reset")
+
+DIALOG main, label("metaninf 1.0.2 - Metan-based Influence Analysis") tabtitle("Main")
+BEGIN
+  GROUPBOX gb_data      10    5  330  _ht1h,            ///
+     label("Type of Data:")
+  RADIO    r_binary     15   25  100      .,            ///
+     label("Binary Count")      first                   ///
+     onclickon(script main_binary_on)                   ///
+     onclickoff(script main_binary_off)
+  RADIO    r_continuous 125  25  100      .,            ///
+     label("Continuous")       middle                   ///
+     onclickon(script main_continuous_on)               ///
+     onclickoff(script main_continuous_off)
+  RADIO    r_effect    235   25  100      .,            ///
+     label("Effect Size") last                          ///
+     onclickon(script main_effect_on)                   ///
+     onclickoff(script main_effect_off)
+
+  TEXT     tx_binary    10   50   _iwd   .,             ///
+     label("Vars for Counts a, b, c, d, in that order")
+  VARLIST  vl_binary     @   _ss   @      .,            ///
+     label("Vars for a, b, c, d")
+
+  TEXT     tx_contin_exp @   50   _iwd   .,             ///
+     label("Vars for Experimental Group: n, mean, sd, in that order")
+  VARLIST  vl_contin_exp @   _ss   @      .,            ///
+     label("Experimental Group: n, mean, sd")
+  TEXT     tx_contin_ctl @   _ss   _iwd   .,            ///
+     label("Vars for Control Group: n, mean, sd, in that order")
+  VARLIST  vl_contin_ctl @   _ss   @      .,            ///
+     label("Control Group: n, mean, sd")
+
+  TEXT     tx_effect     @   50   _iwd   .,             ///
+     label("Vars for Effect Sizes: theta, se(theta), in that order")
+  VARLIST  vl_effect     @   _ss   @      .,            ///
+     label("Effect Sizes: theta, se(theta)")
+
+  GROUPBOX gb_labels     10  130  330  _ht3h,           ///
+     label("Labels for Data:")
+  CHECKBOX cb_name       20  150  70 .,                 ///
+     label("Name:")                                     ///
+     onclickon(main.vn_name.enable)                     ///
+     onclickoff(main.vn_name.disable)                   ///
+     option("id")
+  VARNAME vn_name       100  150 230 .,                 ///
+     label("Name Variable")
+  CHECKBOX cb_year       20  170  70 .,                 ///
+     label("Year:")                                     ///
+     onclickon(main.vn_year.enable)                     ///
+     onclickoff(main.vn_year.disable)                   ///
+     option("id")
+  VARNAME vn_year       100  170 230  .,                /// 
+     label("Year Variable")
+
+  CHECKBOX cb_save_jk 10    200    330    .,            ///
+     label("Save jack-knived estimates: varname [, replace]") ///
+     onclickon(main.vn_save_jk.enable)                  ///
+     onclickoff(main.vn_save_jk.disable)
+  VARNAME vn_save_jk  10    220    330    .,            ///
+     label("Save estimates Variable")                   ///
+     option("save")
+
+END
+
+DIALOG metan_b, tabtitle("Binary Opts")
+BEGIN
+  GROUPBOX gb_pool 0      10      210      _ht9h,            ///
+     label("Pooling Model")
+  RADIO    r_fixed 10  30     190     .,                     ///
+     label("Fixed, Mantel Haenzel")    first                 ///
+     option("fixed")
+  RADIO    r_fixedi  @         _ss       @         .,        ///
+     label("Fixed, Inverse Variance")  middle                ///
+     option("fixedi")
+  RADIO    r_random    @         _ss       @       .,        ///
+     label("Random, Mantel Haenzel")   middle                ///
+     option("random")
+  RADIO    r_randomi  @         _ss       @        .,        ///
+     label("Random, Inverse Variance") middle                ///
+     option("randomi")
+  RADIO    r_peto    @         _ss       @         .,        ///
+     label("Peto")                     last                  ///
+     option("peto")
+
+  GROUPBOX gb_stat 220     10     120      _ht5h,            ///
+     label("Statistic")
+  RADIO    r_rr  230       30      80     .,                 ///
+     label("RR") first                                       ///
+     option("rr")
+  RADIO    r_or  @         _ss       @    .,                 ///
+     label("OR") middle                                      ///
+     onclickon(script metan_b_or_on)                         ///
+     onclickoff(script metan_b_or_off)                       ///
+     option("or")
+  RADIO    r_rd  @         _ss       @    .,                 ///
+     label("RD") last                                        ///
+     option("rd")
+
+  CHECKBOX cb_cornfield 10  140 200  .,                      ///
+     label("Use Cornfield CI's")                             ///
+     option("cornfield")
+  CHECKBOX cb_chi2      10  160 200  .,                      ///
+     label("Use Chi-2 Statistic")                            ///
+     option("chi2")
+  CHECKBOX cb_breslow   10  180 200  .,                      ///
+     label("Use Breslow-Day test")                           ///
+     option("breslow")
+
+  CHECKBOX cb_notable  230  140 200  .,                      ///
+     label("noTable")                                        ///
+     option("notable")
+  CHECKBOX cb_nograph  230  160 200  .,                      ///
+     label("noGraph")                                        ///
+     option("nograph")
+END
+
+DIALOG metan_c, tabtitle("Contin. Opts")
+BEGIN
+  GROUPBOX gb_pool    0  10     210      _ht3h,              ///
+     label("Pooling Model")
+  RADIO    r_fixed   10  30     190        .,                ///
+     label("Fixed, Inverse Variance")  first                 ///
+     option("fixed")
+  RADIO    r_random   @         _ss       @        .,        ///
+     label("Random, Inverse Variance") last                  ///
+     option("random")
+
+  GROUPBOX gb_stat      220     10     120 _ht7h,            ///
+     label("Statistic")
+  RADIO    r_cohen      230     30      100    .,            ///
+     label("Cohen")      first                               ///
+     option("cohen")
+  RADIO    r_hedges       @     _ss       @    .,            ///
+     label("Hedges")     middle                              ///
+     option("hedges")
+  RADIO    r_glass        @     _ss       @    .,            ///
+     label("Glass")      middle                              ///
+     option("glass")
+  RADIO    r_nostandard   @     _ss       @    .,            ///
+     label("noStandard") last                                ///
+     option("nostandard")
+
+  CHECKBOX cb_notable     230  140 200  .,                   ///
+     label("noTable")                                        ///
+     option("notable")
+  CHECKBOX cb_nograph     230  160 200  .,                   ///
+     label("noGraph")                                        ///
+     option("nograph")
+END
+
+DIALOG metan_e, tabtitle("Effect Opts")
+BEGIN
+  GROUPBOX gb_pool    0  10     210      _ht3h,              ///
+     label("Pooling Model")
+  RADIO    r_fixed   10  30     190        .,                ///
+     label("Fixed, Inverse Variance")  first                 ///
+     option("fixed")
+  RADIO    r_random   @  _ss      @        .,                ///
+     label("Random, Inverse Variance") last                  ///
+     option("random")
+/*
+  GROUPBOX gb_stat  220     10     120   _ht5h,              ///
+     label("Statistic")
+  RADIO    r_rr     230     30      80    .,                 ///
+     label("RR") first                                       ///
+     option("rr")
+  RADIO    r_or       @     _ss      @    .,                 ///
+     label("OR") middle                                      ///
+     option("or")
+  RADIO    r_rd       @     _ss      @    .,                 ///
+     label("RD") last                                        ///
+     option("rd")
+*/
+
+  CHECKBOX cb_notable 230  140   200  .,                     ///
+     label("noTable")                                        ///
+     option("notable")
+  CHECKBOX cb_nograph 230  160   200  .,                     ///
+     label("noGraph")                                        ///
+     option("nograph")
+END
+
+INCLUDE ifin
+
+SCRIPT main_binary_on
+BEGIN
+  main.tx_binary.show
+  main.vl_binary.show
+  main.tx_binary.enable
+  main.vl_binary.enable
+
+  main.tx_effect.disable
+  main.vl_effect.disable
+  main.tx_effect.hide
+  main.vl_effect.hide
+  
+  main.tx_contin_exp.disable
+  main.vl_contin_exp.disable
+  main.tx_contin_exp.hide
+  main.vl_contin_exp.hide
+  
+  main.tx_contin_ctl.disable
+  main.vl_contin_ctl.disable
+  main.tx_contin_ctl.hide
+  main.vl_contin_ctl.hide
+
+END
+
+SCRIPT main_binary_off
+BEGIN
+  main.tx_binary.disable
+  main.vl_binary.disable
+  main.tx_binary.hide
+  main.vl_binary.hide
+END
+
+SCRIPT main_continuous_on
+BEGIN
+  main.tx_contin_exp.show
+  main.vl_contin_exp.show
+  main.tx_contin_exp.enable
+  main.vl_contin_exp.enable
+
+  main.tx_contin_ctl.show
+  main.vl_contin_ctl.show
+  main.tx_contin_ctl.enable
+  main.vl_contin_ctl.enable
+
+  main.tx_binary.disable
+  main.vl_binary.disable
+  main.tx_binary.hide
+  main.vl_binary.hide
+  
+  main.tx_effect.disable
+  main.vl_effect.disable
+  main.tx_effect.hide
+  main.vl_effect.hide
+END
+
+SCRIPT main_continuous_off
+BEGIN
+  main.tx_contin_exp.disable
+  main.vl_contin_exp.disable
+  main.tx_contin_exp.hide
+  main.vl_contin_exp.hide
+  
+  main.tx_contin_ctl.disable
+  main.vl_contin_ctl.disable
+  main.tx_contin_ctl.hide
+  main.vl_contin_ctl.hide
+END
+
+SCRIPT main_effect_on
+BEGIN
+  main.tx_effect.show
+  main.vl_effect.show
+  main.tx_effect.enable
+  main.vl_effect.enable
+
+  main.tx_binary.disable
+  main.vl_binary.disable
+  main.tx_binary.hide
+  main.vl_binary.hide
+  
+  main.tx_contin_exp.disable
+  main.vl_contin_exp.disable
+  main.tx_contin_exp.hide
+  main.vl_contin_exp.hide
+  
+  main.tx_contin_ctl.disable
+  main.vl_contin_ctl.disable
+  main.tx_contin_ctl.hide
+  main.vl_contin_ctl.hide
+END
+
+SCRIPT main_effect_off
+BEGIN
+  main.tx_effect.disable
+  main.vl_effect.disable
+  main.tx_effect.hide
+  main.vl_effect.hide
+END
+
+SCRIPT metan_b_or_on
+BEGIN
+  metan_b.r_peto.enable
+  metan_b.cb_cornfield.enable
+  metan_b.cb_chi2.enable
+  metan_b.cb_breslow.enable
+END
+
+SCRIPT metan_b_or_off
+BEGIN
+  metan_b.r_peto.disable
+  metan_b.cb_cornfield.disable
+  metan_b.cb_chi2.disable
+  metan_b.cb_breslow.disable
+END
+
+PROGRAM command
+BEGIN
+  put "metaninf "
+  if main.r_binary {
+    varlist main.vl_binary 
+  }
+  if main.r_continuous {
+    varlist main.vl_contin_exp main.vl_contin_ctl 
+  }
+  if main.r_effect {
+    varlist main.vl_effect 
+  }
+  INCLUDE _ifin_pr
+  beginoptions
+    if main.cb_name | main.cb_year {
+      put "label("
+      if main.cb_name {
+        put "namevar=" main.vn_name
+      }
+      if main.cb_name & main.cb_year {
+        put ", "
+      }
+      if main.cb_year {
+        put "yearvar=" main.vn_year
+      }
+      put ") "
+    }
+    if main.r_binary {
+      option radio(metan_b r_fixed r_fixedi r_random r_randomi)
+      option radio(metan_b r_rr r_or r_rd)
+      option metan_b.cb_cornfield
+      option metan_b.cb_chi2
+      option metan_b.cb_breslow
+      option metan_b.cb_nograph
+      option metan_b.cb_notable
+    }
+    if main.r_continuous {
+      option radio(metan_c r_fixed r_random)
+      option radio(metan_c r_cohen r_hedges r_glass r_nostandard)
+      option metan_c.cb_nograph
+      option metan_c.cb_notable
+    }
+    if main.r_effect {
+      option radio(metan_e r_fixed r_random)
+/*      option radio(metan_e r_rr r_or r_rd) */
+      option metan_e.cb_nograph
+      option metan_e.cb_notable
+    }
+    optionarg main.vn_save_jk
+  endoptions
+END

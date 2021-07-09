@@ -1,0 +1,281 @@
+/*
+ spregfext
+*! VERSION 2.0 03/03/2013
+*/
+VERSION 10.0
+INCLUDE _std_xlarge
+DEFINE _dlght 350
+INCLUDE header
+HELP hlp1, view("help spregfext")
+RESET res1
+
+SCRIPT PREINIT
+BEGIN
+program parseMessage
+script se_createAsSvyOLS
+script se_setBias_on
+program svy_check_title
+END
+
+PROGRAM parseMessage
+BEGIN
+if __MESSAGE.contains("__MI__") {
+call script se_setMI_on
+}
+END
+
+SCRIPT POSTINIT
+BEGIN
+program check_bytab
+program se_setFinalInitState
+END
+
+PROGRAM check_bytab
+BEGIN
+if ! __MESSAGE.contains("__MI__") {
+call script sub_set_by_on
+}
+END
+
+SCRIPT svy_is_on
+BEGIN
+	script max_setDefaultNoLog
+END
+SCRIPT svy_is_off
+BEGIN
+	script max_setDefaultLog
+END
+
+DIALOG main, label("spregfext- Spatial Panel Fixed Effects Regression: Lag and Durbin Models") ///
+	tabtitle("Main")
+BEGIN
+ DEFINE wlabel 130
+ DEFINE cmdx 320
+ DEFINE cmdw 170
+ DEFINE _x _xsetbu
+ DEFINE _y _top
+
+ TEXT tx_fnm	_lft  _top   350 ., ///
+ label("Weight Matrix File Name (dta):") 
+ TEXT  tx_cmd  450    @      80  .,  ///
+ label("# Cross Section:")
+ FILE fi_fnm   _lft     _ss  	420 ., ///
+ label("Brows...")		 ///
+ option("wmfile")		 ///
+ filter("Stata dta File (*.dta)|*.dta|All (*.*)|*.*") ///
+ defext(dta)
+ EDIT ed_cmd   450      @    80 ., ///
+	option("nc")		///
+	label("Cross Section")
+
+ GROUPBOX gb_group1   _lft     _ss    _iwd     _ht7 , 
+  TEXT     tx_yvar     _ilft   +15    _vnwd     .,	/*
+		*/ label("Dependent Variable:")		/*
+		*/
+  TEXT     tx_xvar     _vlx      @      _cwd2     .,	/*
+		*/ label("Independent Variables:")	/*
+		*/
+  VARNAME  vn_yvar     _ilft       _ss       _vnwd   .,	/*
+		*/ label("Dependent Variable")		/*
+		*/
+  VARLIST  vl_xvar     _vlx       @         380      .,	/*
+		*/ label("Independent Variables")
+
+ VARLIST vl_aux _ilft   _ls   400    ., ///
+	label("Auxiliary Variables") ///
+	option(aux)
+ TEXT tx_aux    440   @    90   .,	///
+	label("Auxiliary Variables")
+*/	
+
+ GROUPBOX gb_model _lft   _xls _ibwd  _ht1,	/*
+*/ label("Spatial Model") /*
+*/
+  RADIO rb_sar	_ilft   _ss     100  ., /*
+	*/ label("SAR")	 /*
+	*/ first			/*
+	*/ option("model(sar)")		/*
+*/
+  RADIO rb_sdm   120  @	100	., /*
+	*/ label("SDM") /*
+	*/ last				/*
+	*/ option("model(sdm)")		/*
+*/
+
+  CHECKBOX ck_mfx  _lft    _ls   _ibwd    _ht2 , ///
+	groupbox				///
+	onclickon(script ck_mfx_on)		///
+	onclickoff(script ck_mfx_off)		///
+label("Marginal Effects - Elasticities:")
+ RADIO rb_lin	_ilft  _ss  120  ., /*
+	*/ label("Linear")	 /*
+	*/ first			/*
+	*/ option("mfx(lin)")		/*
+*/
+DEFINE y @y
+ RADIO rb_log	130   y  120 .,	/*
+	*/ label("Log-Log") /*
+	*/ last				/*
+	*/ option("mfx(log)")		/*
+*/
+  CHECKBOX ck_tolog    250   y 120 ., option("tolog") /*
+*/ label("Log Transform Varlist") /*
+*/
+  CHECKBOX ck_model0 _lft    _xls   _ibwd    _ht5 , ///
+	groupbox				 ///
+	onclickon(script ck_model0_on)		 ///
+	onclickoff(script ck_model0_off)	 ///
+	label("Standardized Weight Matrix Type:")
+  RADIO    rb_ws1  _ilft     _ss     300    ., 	/*
+	*/ label("Standardized Weight Matrix - (W)") /*
+	*/ first			/*
+	*/ option("stand")		/*
+*/
+  RADIO    rb_ws2  _ilft     _ss     300    ., 	/*
+	*/ label("Inverse Standardized Weight Matrix - (1/W)") /*
+	*/ option("stand inv")		/*
+*/
+  RADIO    rb_ws3  _ilft     _ss     300    ., 	/*
+	*/ label("Inverse Squared Standardized Weight Matrix - (1/W^2)") /*
+	*/ last					/*
+	*/ option("stand inv2")			/*
+*/
+END
+
+DIALOG est1 , tabtitle("Options")
+BEGIN
+ CHECKBOX ck_model11  _lft    _top   _ibwd    _ht16 , ///
+ groupbox				 ///
+ onclickon(script ck_model11_on)	 ///
+ onclickoff(script ck_model11_off)	 ///
+ label("Options:")
+ CHECKBOX ck_tests    _ilft  _ss   350  ., option("tests") /*
+*/ label("Display ALL Tests") 
+ CHECKBOX ck_lmspac    _ilft  _ss   350  ., option("lmspac") /*
+*/ label("Spatial Autocorrelation Tests") 
+ CHECKBOX ck_diag   @  _ss  @  ., option("diag") /*
+*/ label("Model Selection Diagnostic Criteria") 
+ CHECKBOX ck_lmhet    _ilft  _ss   350  ., option("lmhet") /*
+*/ label("Heteroscedasticity Tests") 
+ CHECKBOX ck_lmnorm    _ilft  _ss   350  ., option("lmnorm") /*
+*/ label("Non Normality Tests") 
+ CHECKBOX ck_coll _ilft     _ss    400 ., option("coll") /*
+*/ label("coll: Keep Collinear Variables")
+ CHECKBOX ck_zero _ilft     _ss    400 ., option("zero") /*
+*/ label("zero: Convert Missing Values Observations to Zero")
+ CHECKBOX ck_dn _ilft  _ss   400  ., option("dn") /*
+*/ label("dn: Use (N) divisor instead of (N-K) for Degrees of Freedom (DF)") 
+
+ CHECKBOX ck_model3 _lft _xls _ibwd    _ht4 , 	///
+ groupbox					///
+ onclickon(script ck_model31_on)		///
+ onclickoff(script ck_model31_off)		///
+ label("Additional Options:")
+ TEXT tx_predict _ilft    _ss    150 .,	///
+	label("Predicted Variable")
+ TEXT tx_resid   200      @      150 .,	///
+	label("Residuals Variable")
+ VARNAME vn_predict _ilft _ss   150  .,	///
+	label("predict") 		///
+	option(predict)
+ VARNAME vn_resid  200   @     150  .,	///
+	label("resid") 			///
+	option(resid)
+*/
+END
+
+SCRIPT ck_mfx_on
+BEGIN
+ main.rb_lin.enable
+ main.rb_log.enable
+END
+SCRIPT ck_mfx_off
+BEGIN
+ main.rb_lin.disable
+ main.rb_log.disable
+END
+
+SCRIPT ck_model0_on
+BEGIN
+ main.rb_ws1.enable
+ main.rb_ws2.enable
+ main.rb_ws3.enable
+END
+
+SCRIPT ck_model0_off
+BEGIN
+ main.rb_ws1.disable
+ main.rb_ws2.disable
+ main.rb_ws3.disable
+END
+
+SCRIPT ck_model11_on
+BEGIN
+ est1.ck_tests.enable
+ est1.ck_lmspac.enable
+ est1.ck_lmhet.enable
+ est1.ck_lmnorm.enable
+ est1.ck_diag.enable
+ est1.ck_coll.enable
+ est1.ck_zero.enable
+ est1.ck_dn.enable
+END
+
+SCRIPT ck_model11_off
+BEGIN
+ est1.ck_lmspac.disable
+ est1.ck_lmhet.disable
+ est1.ck_lmnorm.disable
+ est1.ck_diag.disable
+ est1.ck_tests.disable
+ est1.ck_coll.disable
+ est1.ck_zero.disable
+ est1.ck_dn.disable
+END
+
+SCRIPT ck_model31_on
+BEGIN
+ est1.vn_predict.enable
+ est1.vn_resid.enable
+END
+
+SCRIPT ck_model31_off
+BEGIN
+ est1.vn_predict.disable
+ est1.vn_resid.disable
+END
+
+INCLUDE byifin
+INCLUDE se
+INCLUDE max_ml
+
+PROGRAM command
+BEGIN
+ put /program by_output
+ put "spregfext "
+ varlist main.vn_yvar main.vl_xvar
+ put " " /program ifin_output
+ put /program se_prefix_output
+ require main.fi_fnm
+ require main.ed_cmd
+beginoptions
+ optionarg main.fi_fnm
+ optionarg main.ed_cmd
+ option radio(main rb_sar rb_sdm)
+ option radio(main rb_lin rb_log)
+ option main.ck_tolog 
+ option radio(main rb_ws1 rb_ws2 rb_ws3)
+ option est1.ck_lmspac
+ option est1.ck_lmhet
+ option est1.ck_lmnorm
+ option est1.ck_diag
+ option est1.ck_tests
+ option est1.ck_coll
+ option est1.ck_zero
+ option est1.ck_dn
+ optionarg est1.vn_predict
+ optionarg est1.vn_resid
+ put " " /program se_output
+ put " " /program max_output
+endoptions
+ END

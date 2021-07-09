@@ -1,0 +1,80 @@
+{smcl}
+{hline}
+help for {hi:matwrite}
+{hline}
+
+{title:MAT-file export plugin}
+
+{p 4 4 2}{cmdab:matwrite}
+[{it:anything}] {cmd:using} {it:filename} [{cmd:if} {it:exp}] [{cmd:in} {it:range}]
+{cmd:[,}
+	{cmdab:mat:rix}{cmd:(}{it:namelist}{cmd:)}
+	{cmd:replace}
+{cmd:]}
+
+{title:Description}
+
+{p 4 4 2}{cmd:matwrite} allows you to export data in the MATLAB MAT-file format from within
+Stata. Variables as specified in {it:anything} can be exported as column vectors, and groups
+of variables can be exported as matrices. Stata matrices as specified in
+{cmdab:mat:rix}{cmd:(}{it:namelist}{cmd:)} are exported as matrices. 
+
+{title:Options}
+
+{p 4 8 2}{it:anything} can contain a {it:varlist}, as well as facilitating the export of a group of
+variables as a matrix. {cmd:matwrite} identifies user specified matrices by the matrix name being
+followed by a {it:varlist} contained within square brackets: {it:matrixname[varlist]}. For example,
+income[y*] will export a matrix named "income" which contains all variables which begin with "y".
+
+{p 4 8 2}{cmdab:mat:rix}{cmd:(}{it:namelist}{cmd:)} specifies the Stata matrices that will be exported
+by {cmd:matwrite}. If any of the specified matrices do not exist, a warning message will be displayed, 
+although an error will not be raised. 
+
+{title:Notes}
+
+{p 4 4 2}If {it:anything} is not specified, all variable in the open Stata dataset
+will be exported as column vectors. Similarly, if {cmdab:mat:rix}{cmd:(}{it:namelist}{cmd:)} is not
+specified, all Stata matrices will be exported.
+
+{p 4 4 2}Missing values in both variables and matrices are recoded as positive infinity in MATLAB.
+
+{p 4 4 2}String variables can not be exported as this is not allowed by the Stata plugin interface.
+
+{p 4 4 2}Variable names and matrix names can not be longer than 19 characters as this is not
+supported by the Level 4 MAT-File format. A future version of {cmd:matwrite} will support the Level 5
+MAT-File format which does not impose this restriction.
+ 
+{title:Examples}
+
+{p 4 4 2}{inp: . matwrite using c:\matlabfile,replace}
+
+{p 4 4 2}{inp: . matwrite var1 var2 var3 using c:\matlabfile, mat(mat1 mat2) replace}
+
+{p 4 4 2}{inp: . matwrite var1 if var2<=10 using c:\matlabfile, mat(mat1 mat2) replace}
+   
+{p 4 4 2}{inp: . matwrite mymat1[var*] var1 var2 using c:\matlabfile, mat(mat1 mat2) replace}
+
+{title:Acknowledgments}
+
+{p 4 4 2}MATLAB is a registered trademark of The MathWorks, Inc. Sections of this code
+make use of the Stata plugin interface. 
+
+{title:Disclaimer}
+
+{p 4 4 2}THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED
+OR IMPLIED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
+FITNESS FOR A PARTICULAR PURPOSE. THE ENTIRE RISK AS TO THE QUALITY AND PERFORMANCE OF THE
+PROGRAM IS WITH YOU. SHOULD THE PROGRAM PROVE DEFECTIVE, YOU ASSUME THE COST OF ALL NECESSARY
+SERVICING, REPAIR OR CORRECTION.
+
+{p 4 4 2}IN NO EVENT WILL THE COPYRIGHT HOLDERS OR THEIR EMPLOYERS, OR ANY OTHER PARTY WHO
+MAY MODIFY AND/OR REDISTRIBUTE THIS SOFTWARE, BE LIABLE TO YOU FOR DAMAGES, INCLUDING ANY
+GENERAL, SPECIAL, INCIDENTAL OR CONSEQUENTIAL DAMAGES ARISING OUT OF THE USE OR INABILITY
+TO USE THE PROGRAM (INCLUDING BUT NOT LIMITED TO LOSS OF DATA OR DATA BEING RENDERED INACCURATE
+OR LOSSES SUSTAINED BY YOU OR THIRD PARTIES OR A FAILURE OF THE PROGRAM TO OPERATE WITH ANY OTHER
+PROGRAMS), EVEN IF SUCH HOLDER OR OTHER PARTY HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
+
+{title:Author}
+
+{p 4 4 2}Andrew Shephard, Institute for Fiscal Studies, London, UK {browse "mailto:a.shephard@ifs.org.uk"}.
+

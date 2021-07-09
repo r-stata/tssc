@@ -1,0 +1,123 @@
+{smcl}
+{* 21nov2009}{...}
+{cmd:help sortl}
+{hline}
+
+{title:Title}
+
+    {hi:sortl -} sort rotated loadings (pattern matrix) or rotated components created by {manhelp rotate MV}
+
+
+{title:Syntax}
+
+    {cmd:sortl}
+
+
+{title:Description}
+
+{pstd}
+To make an interpretation of a factor solution easier, {cmd:-sortl-} sorts the rotated loadings
+(pattern matrix) or rotated components stored by {manhelp rotate MV} into the matrix {hi:e(r_L)}. It
+also sorts the matrix {hi:e(Psi)} of the unique or unexplained variances created by
+{manhelp factor MV} or by {manhelp pca MV} into the same order.
+
+{pstd} {cmd:-sortl-} displays the sorted loadings or components and the unique or unexplained
+variances of the variables in the Stata Results window, stores the sorted loadings or components
+into the matrix {hi:e(r_Ls)}, and stores the sorted unique or unexplained variances into the
+matrix {hi:e(Psis)}.
+
+
+{title:Example}
+
+{com}. webuse bg2
+{txt}(Physician-cost data)
+
+{com}. factor bg*, factors(2)
+{txt}(obs=568)
+
+Factor analysis/correlation{col 52}Number of obs    = {res}     568
+{col 5}{txt}Method: principal factors{col 52}Retained factors = {res}       2
+{col 5}{txt}Rotation: (unrotated){col 52}Number of params = {res}      11
+
+{txt}{col 5}{hline 13}{c TT}{hline 60}
+{col 5}     Factor  {c |} {ralign 12:Eigenvalue}   Difference        Proportion   Cumulative
+{col 5}{hline 13}{c +}{hline 60}
+{col 5}{ralign 11:Factor1}  {c |}{res}      0.85389      0.31282            1.0310       1.0310
+{txt}{col 5}{ralign 11:Factor2}  {c |}{res}      0.54107      0.51786            0.6533       1.6844
+{txt}{col 5}{ralign 11:Factor3}  {c |}{res}      0.02321      0.17288            0.0280       1.7124
+{txt}{col 5}{ralign 11:Factor4}  {c |}{res}     -0.14967      0.03951           -0.1807       1.5317
+{txt}{col 5}{ralign 11:Factor5}  {c |}{res}     -0.18918      0.06197           -0.2284       1.3033
+{txt}{col 5}{ralign 11:Factor6}  {c |}{res}     -0.25115            .           -0.3033       1.0000
+{txt}{col 5}{hline 13}{c BT}{hline 60}
+{col 5}LR test: independent vs. saturated:  chi2({res}15{txt}) ={res}  269.07{txt} Prob>chi2 ={res} 0.0000
+
+{txt}Factor loadings (pattern matrix) and unique variances
+
+{space 4}{hline 13}{c  TT}{hline 10}{hline 10}{c  TT}{hline 14}
+{space 4}{space 0}{ralign 12:Variable}{space 1}{c |}{space 1}{ralign 8:Factor1}{space 1}{space 1}{ralign 8:Factor2}{space 1}{c |}{space 1}{ralign 12:Uniqueness}{space 1}
+{space 4}{hline 13}{c   +}{hline 10}{hline 10}{c   +}{hline 14}
+{space 4}{space 0}{ralign 12:bg2cost1}{space 1}{c |}{space 1}{ralign 8:{res:{sf:  0.2470}}}{space 1}{space 1}{ralign 8:{res:{sf:  0.3670}}}{space 1}{c |}{space 1}{center 12:{res:{sf:    0.8043}}}{space 1}
+{space 4}{space 0}{ralign 12:bg2cost2}{space 1}{c |}{space 1}{ralign 8:{res:{sf: -0.3374}}}{space 1}{space 1}{ralign 8:{res:{sf:  0.3321}}}{space 1}{c |}{space 1}{center 12:{res:{sf:    0.7759}}}{space 1}
+{space 4}{space 0}{ralign 12:bg2cost3}{space 1}{c |}{space 1}{ralign 8:{res:{sf: -0.3764}}}{space 1}{space 1}{ralign 8:{res:{sf:  0.3756}}}{space 1}{c |}{space 1}{center 12:{res:{sf:    0.7173}}}{space 1}
+{space 4}{space 0}{ralign 12:bg2cost4}{space 1}{c |}{space 1}{ralign 8:{res:{sf: -0.3221}}}{space 1}{space 1}{ralign 8:{res:{sf:  0.1942}}}{space 1}{c |}{space 1}{center 12:{res:{sf:    0.8586}}}{space 1}
+{space 4}{space 0}{ralign 12:bg2cost5}{space 1}{c |}{space 1}{ralign 8:{res:{sf:  0.4550}}}{space 1}{space 1}{ralign 8:{res:{sf:  0.2479}}}{space 1}{c |}{space 1}{center 12:{res:{sf:    0.7315}}}{space 1}
+{space 4}{space 0}{ralign 12:bg2cost6}{space 1}{c |}{space 1}{ralign 8:{res:{sf:  0.4760}}}{space 1}{space 1}{ralign 8:{res:{sf:  0.2364}}}{space 1}{c |}{space 1}{center 12:{res:{sf:    0.7176}}}{space 1}
+{space 4}{hline 13}{c  BT}{hline 10}{hline 10}{c  BT}{hline 14}
+
+{com}. rotate, oblique promax
+
+{txt}Factor analysis/correlation{col 52}Number of obs    = {res}     568
+{col 5}{txt}Method: principal factors{col 52}Retained factors = {res}       2
+{col 5}{txt}Rotation: oblique promax (Kaiser off){col 52}Number of params = {res}      11
+
+{txt}{col 5}{hline 13}{c TT}{hline 60}
+{col 5}     Factor  {c |}     Variance   Proportion    Rotated factors are correlated
+{col 5}{hline 13}{c +}{hline 60}
+{col 5}{ralign 11:Factor1}  {c |}{res}      0.75531       0.9120
+{txt}{col 5}{ralign 11:Factor2}  {c |}{res}      0.69865       0.8436
+{txt}{col 5}{hline 13}{c BT}{hline 60}
+{col 5}LR test: independent vs. saturated:  chi2({res}15{txt}) ={res}  269.07{txt} Prob>chi2 ={res} 0.0000
+
+{txt}Rotated factor loadings (pattern matrix) and unique variances
+
+{space 4}{hline 13}{c  TT}{hline 10}{hline 10}{c  TT}{hline 14}
+{space 4}{space 0}{ralign 12:Variable}{space 1}{c |}{space 1}{ralign 8:Factor1}{space 1}{space 1}{ralign 8:Factor2}{space 1}{c |}{space 1}{ralign 12:Uniqueness}{space 1}
+{space 4}{hline 13}{c   +}{hline 10}{hline 10}{c   +}{hline 14}
+{space 4}{space 0}{ralign 12:bg2cost1}{space 1}{c |}{space 1}{ralign 8:{res:{sf:  0.4428}}}{space 1}{space 1}{ralign 8:{res:{sf:  0.1682}}}{space 1}{c |}{space 1}{center 12:{res:{sf:    0.8043}}}{space 1}
+{space 4}{space 0}{ralign 12:bg2cost2}{space 1}{c |}{space 1}{ralign 8:{res:{sf: -0.0020}}}{space 1}{space 1}{ralign 8:{res:{sf:  0.4730}}}{space 1}{c |}{space 1}{center 12:{res:{sf:    0.7759}}}{space 1}
+{space 4}{space 0}{ralign 12:bg2cost3}{space 1}{c |}{space 1}{ralign 8:{res:{sf:  0.0014}}}{space 1}{space 1}{ralign 8:{res:{sf:  0.5320}}}{space 1}{c |}{space 1}{center 12:{res:{sf:    0.7173}}}{space 1}
+{space 4}{space 0}{ralign 12:bg2cost4}{space 1}{c |}{space 1}{ralign 8:{res:{sf: -0.0907}}}{space 1}{space 1}{ralign 8:{res:{sf:  0.3480}}}{space 1}{c |}{space 1}{center 12:{res:{sf:    0.8586}}}{space 1}
+{space 4}{space 0}{ralign 12:bg2cost5}{space 1}{c |}{space 1}{ralign 8:{res:{sf:  0.5059}}}{space 1}{space 1}{ralign 8:{res:{sf: -0.0513}}}{space 1}{c |}{space 1}{center 12:{res:{sf:    0.7315}}}{space 1}
+{space 4}{space 0}{ralign 12:bg2cost6}{space 1}{c |}{space 1}{ralign 8:{res:{sf:  0.5126}}}{space 1}{space 1}{ralign 8:{res:{sf: -0.0729}}}{space 1}{c |}{space 1}{center 12:{res:{sf:    0.7176}}}{space 1}
+{space 4}{hline 13}{c  BT}{hline 10}{hline 10}{c  BT}{hline 14}
+
+Factor rotation matrix
+
+{space 4}{hline 13}{c  TT}{hline 9}{hline 9}
+{space 4}{space 0}{ralign 12:}{space 1}{c |}{space 1}{ralign 7:Factor1}{space 1}{space 1}{ralign 7:Factor2}{space 1}
+{space 4}{hline 13}{c   +}{hline 9}{hline 9}
+{space 4}{space 0}{ralign 12:Factor1}{space 1}{c |}{space 1}{ralign 7:{res:{sf: 0.8276}}}{space 1}{space 1}{ralign 7:{res:{sf:-0.7098}}}{space 1}
+{space 4}{space 0}{ralign 12:Factor2}{space 1}{c |}{space 1}{ralign 7:{res:{sf: 0.5614}}}{space 1}{space 1}{ralign 7:{res:{sf: 0.7045}}}{space 1}
+{space 4}{hline 13}{c  BT}{hline 9}{hline 9}
+
+{com}. sortl
+{res}
+{txt}{p 0 0 2}Rotated factor loadings (pattern matrix) and unique variances sorted{p_end}
+
+{space 4}{hline 13}{c  TT}{hline 10}{hline 10}{c  TT}{hline 13}
+{space 4}{space 0}{ralign 12:Variable}{space 1}{c |}{space 1}{ralign 8:Factor1}{space 1}{space 1}{ralign 8:Factor2}{space 1}{c |}{space 1}{ralign 11:Uniqueness}{space 1}
+{space 4}{hline 13}{c   +}{hline 10}{hline 10}{c   +}{hline 13}
+{space 4}{space 0}{ralign 12:bg2cost6}{space 1}{c |}{space 1}{ralign 8:{res:{sf:  0.5126}}}{space 1}{space 1}{ralign 8:{res:{sf: -0.0729}}}{space 1}{c |}{space 1}{ralign 11:{res:{sf:     0.7176}}}{space 1}
+{space 4}{space 0}{ralign 12:bg2cost5}{space 1}{c |}{space 1}{ralign 8:{res:{sf:  0.5059}}}{space 1}{space 1}{ralign 8:{res:{sf: -0.0513}}}{space 1}{c |}{space 1}{ralign 11:{res:{sf:     0.7315}}}{space 1}
+{space 4}{space 0}{ralign 12:bg2cost1}{space 1}{c |}{space 1}{ralign 8:{res:{sf:  0.4428}}}{space 1}{space 1}{ralign 8:{res:{sf:  0.1682}}}{space 1}{c |}{space 1}{ralign 11:{res:{sf:     0.8043}}}{space 1}
+{space 4}{space 0}{ralign 12:bg2cost3}{space 1}{c |}{space 1}{ralign 8:{res:{sf:  0.0014}}}{space 1}{space 1}{ralign 8:{res:{sf:  0.5320}}}{space 1}{c |}{space 1}{ralign 11:{res:{sf:     0.7173}}}{space 1}
+{space 4}{space 0}{ralign 12:bg2cost2}{space 1}{c |}{space 1}{ralign 8:{res:{sf: -0.0020}}}{space 1}{space 1}{ralign 8:{res:{sf:  0.4730}}}{space 1}{c |}{space 1}{ralign 11:{res:{sf:     0.7759}}}{space 1}
+{space 4}{space 0}{ralign 12:bg2cost4}{space 1}{c |}{space 1}{ralign 8:{res:{sf: -0.0907}}}{space 1}{space 1}{ralign 8:{res:{sf:  0.3480}}}{space 1}{c |}{space 1}{ralign 11:{res:{sf:     0.8586}}}{space 1}
+{space 4}{hline 13}{c  BT}{hline 10}{hline 10}{c  BT}{hline 13}
+
+
+{title:Author}
+
+    Dirk Enzmann
+    http://www2.jura.uni-hamburg.de/instkrim/kriminologie/Mitarbeiter/Enzmann/Enzmann.html
+    dirk.enzmann@uni-hamburg.de

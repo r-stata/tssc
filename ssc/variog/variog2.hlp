@@ -1,0 +1,88 @@
+{smcl}
+{* 4mar2005}{...}
+{hline}
+help for {hi:variog2}
+{hline}
+
+{title:Semi-variogram for point-based data in two dimensions}
+
+{p 8 17 2}
+{cmd:variog2}
+{it:yvar} 
+{it:coord1} {it:coord2} 
+[{cmd:if} {it:exp}] 
+[{cmd:in} {it:range}] 
+, 
+{cmdab:w:idth(}{it:#}{cmd:)} 
+[
+{cmdab:g:enerate(}{it:newvar}{cmd:)}
+{cmdab:l:ags(}{it:#}{cmd:)} 
+{cmd:list} 
+{it:graph_options}
+]
+   
+   
+{title:Description} 
+
+{p 4 4 2} 
+{cmd:variog2} calculates, graphs, and optionally lists the first {cmd:lags}
+values of the semi-variogram for a series of observations in
+two spatial dimensions. That is, we have measurements of a response {it:yvar} 
+(rainfall, ore grade, soil depth) at points whose horizontal map coordinates
+are {it:coord1} and {it:coord2}. The response must be named first; the order
+of the two coordinate variables is immaterial. 
+
+{p 4 4 2} 
+The semi-variogram is a plot of the semi-variance
+
+       1                       2
+    {hline 8}   SUM    (y  - y )   = gamma(h)
+    2 #pairs  i, j in   i    j
+             same band 
+	     
+{p 4 4 2}against the lag or band number h = 1, ... , {cmd:lags}. In words, it shows 
+half the mean difference squared for pairs of points in various distance bands. 
+Given {cmd:width} w, 
+successive bands are for distances up to w, between w and 2w, between 2w and 3w, 
+and so forth. Note that the units of the semi-variogram are the units of the response 
+variable, squared. 
+
+
+{title:Options} 
+
+{p 4 8 2}{cmd:width()} specifies the width of successive distance bands in 
+the units linked to the coordinate variables. It is a required option. 
+
+{p 4 8 2}{cmd:generate(}{it:newvar}{cmd:)} saves the semi-variances in 
+{it:newvar}.
+
+{p 4 8 2}{cmd:lags()} specifies the number of lags.  If not specified, the first
+    int(_N/2) semi-variances are graphed: that is, the number of 
+    lags is about half the number of observations. 
+
+{p 4 8 2}{cmd:list} lists the semi-variances and the number of 
+pairs of measurements on which they are based. This may help in identifying
+parts of the variogram based on rather few pairs of data. 
+
+{p 4 8 2} 
+{it:graph_options} refers to any of the options of {help line}.
+
+
+{title:Examples} 
+
+{p 4 8 2}{cmd:. variog2 height easting northing, width(10)}{p_end}
+{p 4 8 2}{cmd:. variog2 height easting northing, w(10) list}{p_end}
+{p 4 8 2}{cmd:. variog2 height easting northing, w(10) recast(scatter)}
+
+
+{title:Author} 
+
+{p 4 4 2}Nicholas J. Cox, University of Durham, U.K.{break} 
+         n.j.cox@durham.ac.uk
+
+
+{title:Also see} 
+
+{p 4 13 2}
+On-line: help for {help variog} 
+

@@ -1,0 +1,38 @@
+// Sergiy Radyakin, August 2014
+
+VERSION 13.0
+MODAL
+SYNCHRONOUS_ONLY
+
+INCLUDE _std_large
+POSITION . . _dlgwd 200
+
+INCLUDE usexmlex_main
+INCLUDE usexmlex_about
+
+HELP help1, label("Help") view("help usexmlex")
+OK ok1 ,label("OK")
+CANCEL cancel1, label("Cancel")
+
+
+PROGRAM POSTINIT_PROGRAM
+BEGIN
+        put "usexmlex_dlgs"
+	stata hidden
+END
+
+
+PROGRAM command
+BEGIN
+        require main.fi_load
+        put "usexmlex "
+        put `"using ""' main.fi_load `"""'
+
+        put `", varloadlist(""' main.vl_var `"")"'
+
+        if main.ck_clear {
+          put " clear"
+        }
+		
+        stata
+END

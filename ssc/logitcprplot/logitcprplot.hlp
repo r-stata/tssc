@@ -1,0 +1,413 @@
+{smcl}
+{* 28jan2009}{...}
+{hi:help logitcprplot}
+{hline}
+
+{title:Title}
+
+{pstd}{hi:logitcprplot} {hline 2} Component-plus-residual plot for logistic
+    regression
+
+
+{title:Syntax}
+
+{p 8 15 2}
+    {cmd:logitcprplot} {varname} [{varlist}] {ifin}
+    [{cmd:,}
+    {help logitcprplot##opt:{it:options}}
+    ]
+
+
+{synoptset 24 tabbed}{...}
+{marker opt}{synopthdr:options}
+{synoptline}
+{synopt :{opt samp:le(#)}}plot a # percent sample of data points
+    {p_end}
+{synopt :{opt norl:ine}}suppress reference line (model fit)
+    {p_end}
+{synopt :{opth r:line(cline_options)}}affect rendition of reference line
+    {p_end}
+{synopt :{cmdab:rc:spline}[{cmd:(}{it:{help logitcprplot##rcopts:options}}{cmd:)}]}add a restricted cubic spline smooth
+    {p_end}
+{synopt :{cmdab:lp:oly}[{cmd:(}{it:{help logitcprplot##lpopts:options}}{cmd:)}]}add a local polynomial
+    smooth (Stata 10 required)
+    {p_end}
+{synopt :{cmdab:fp:fit}[{cmd:(}{it:{help logitcprplot##fpopts:options}}{cmd:)}]}add a fractional polynomial
+    fit
+    {p_end}
+{synopt :{cmdab:l:owess}[{cmd:(}{it:{help twoway_lowess:lowess_opts}}{cmd:)}]}add a lowess smooth
+    {p_end}
+{synopt :{cmdab:ps:pline}[{cmd:(}{it:{help logitcprplot##psopts:options}}{cmd:)}]}add a penalized spline smooth
+    ({helpb pspline} user command required)
+    {p_end}
+{synopt :{cmdab:rs:pline}[{cmd:(}{it:{help logitcprplot##rsopts:options}}{cmd:)}]}add a regression spline smooth
+    ({helpb uvrs} user command required)
+    {p_end}
+{synopt :{cmdab:run:ning}[{cmd:(}{it:{help logitcprplot##runopts:options}}{cmd:)}]}add a running line smooth
+    ({helpb running} user command required)
+    {p_end}
+{synopt :{cmdab:auto:smoo}[{cmd:(}{it:{help logitcprplot##autoopts:options}}{cmd:)}]}add an adaptive
+    variable span running line smooth
+    ({helpb autosmoo} user command required)
+    {p_end}
+{synopt :{it:{help scatter:scatter_options}}}options as defined in help {helpb scatter}
+    {p_end}
+{synopt :{opth "addplot(addplot_option:plot)"}}add other plots to the generated graph
+    {p_end}
+{synopt :{opth g:enerate(newvar)}}store partial logit residuals in {newvar}
+    {p_end}
+{synopt :{opt r:eplace}}overwrite existing variable
+    {p_end}
+{synopt :{opt nogr:aph}}suppress graph
+    {p_end}
+{synoptline}
+
+
+{title:Description}
+
+{pstd}
+    {cmd:logitcprplot} is used after {helpb logit} or {helpb logistic} for
+    graphing a component-plus-residual plot (a.k.a. partial residual plot)
+    for {varname} as suggested by Landwehr, Pregibon, and Shoemaker (1984;
+    also see, e.g., Fox 1997:458).
+
+{pstd}
+    Use {varlist} to specify additional terms to be taken into account when
+    computing the partial residuals and predictions. This is useful if a
+    variable enters the model repeatedly via different transformations
+    (e.g. polynomials).
+
+{pstd}
+    Use {it:if} and {it:in} to restrict the sample to specific
+    observations. This can be useful, for example, if a model contains
+    interaction terms. In any case, the sample will be restricted to the
+    estimation sample of the fitted model.
+
+{pstd}
+    Whether {cmd:logitcprplot} can be applied after weighted models
+    depends on specified options: no weights are allowed with
+    the {cmd:lowess}, {cmd:pspline}, {cmd:running}, and {cmd:autosmoo} options;
+    {cmd:fweight}s are allowed with the
+    {cmd:lpoly} option; {cmd:fweight}s and {cmd:pweight}s are allowed with
+    the {cmd:rcspline}, {cmd:fpfit}, and {cmd:rspline} options.
+
+{pstd}
+    The {cmd:rcspline} option has been inspired by the {cmd:rcspline} command by Nick Cox (see
+        {net "describe rcspline, from(http://fmwww.bc.edu/repec/bocode/r/)":ssc describe rcspline}). Furthermore,
+    some of {cmd:logitcprplot}'s code has been adapted from official Stata's
+    {helpb mkspline} command.
+
+{pstd}
+    Partial residual plots using the pre Stata 8 graphics engine
+    are available as {cmd:lprplot} from the SSC Archive (see
+        {net "describe lprplot, from(http://fmwww.bc.edu/repec/bocode/l/)":ssc describe lprplot})
+    and {cmd:lpartr} in the Stata Technical Bulletin (Hilbe 1992; see {net stb 10 sqv6:net stb 10 sqv6}).
+
+
+{title:Dependencies}
+
+{pstd}
+    The {cmd:sample()} option requires the {cmd:gsample} and {cmd:moremata}
+    user packages to be installed on the system (Jann 2005, 2006). See
+        {net "describe gsample, from(http://fmwww.bc.edu/repec/bocode/g/)":ssc describe gsample}
+    and
+        {net "describe moremata, from(http://fmwww.bc.edu/repec/bocode/m/)":ssc describe moremata}.
+
+{pstd}
+    The {cmd:pspline} option requires the {cmd:pspline} user command to be
+    installed on the system (Jann and Gutierrez 2008). See
+        {net "describe pspline, from(http://fmwww.bc.edu/repec/bocode/p/)":ssc describe pspline}.
+
+{pstd}
+    The {cmd:rspline} option requires the {cmd:uvrs} user command to be
+    installed on the system (Royston and Sauerbrei 2007). See
+        {net sj 7-1 st0120:net sj 7-1 st0120}
+
+{pstd}
+    The {cmd:running} option requires the {cmd:running} user command to be
+    installed on the system (Sasieni 1995, Sasieni and Royston 1998, Sasieni,
+    Royston, and Cox 2005). See
+        {net sj 5-2 sed9_2:net sj 5-2 sed9_2}
+
+{pstd}
+    The {cmd:autosmoo} option requires the {cmd:autosmoo} user command to be
+    installed on the system (Sasieni 1998). See
+        {net stb 41 gr27:net stb 41 gr27}
+
+
+{title:Options}
+
+{phang}
+    {opt sample(#)} causes only a {it:#} percent random sample of
+    observations to be plotted. {it:#} is a number between 1 and 100.
+    {cmd:sample()} also restricts the estimation sample for the
+    computationally intensive {cmd:lowess} and {cmd:lpoly} smooths. It does
+    not, however, restrict the estimation sample for the other smoothers.
+
+{pmore}The {cmd:sample()} option requires {cmd:gsample} and {cmd:moremata}
+    to be installed on the system (see
+        {net "describe gsample, from(http://fmwww.bc.edu/repec/bocode/g/)":ssc describe gsample}
+    and
+        {net "describe moremata, from(http://fmwww.bc.edu/repec/bocode/m/)":ssc describe moremata}).
+
+{phang}
+    {opt norline} suppresses the reference line (i.e. the partial linear
+    predictions from the model).
+
+{phang}
+    {opt rline(cline_options)} specifies details about the rendition of reference
+    line. See help {it:{help cline_options}}.
+
+{marker rcopts}{phang}
+    {cmdab:rcspline}[{cmd:(}{it:options}{cmd:)}] adds a
+    restricted cubic spline smooth to the plot. Options are:
+
+{phang2}
+    {cmd:ci}[{cmd:(}{it:area_options}{cmd:)}] to plot a confidence interval(*)
+    for the restricted cubic spline smooth with
+    options as described in help {it:{help area_options}}.
+
+{phang2}
+    {opt level(#)} to set the confidence level, as a percentage,
+    for the plotted confidence interval. The default is {cmd:level(95)} or
+    as set by {helpb set level}.
+
+{phang2}
+    {cmd:displayknots} to display a table containing the values of the knots
+    for the restricted cubic spline.
+
+{phang2}
+    {opt nknots(#)} to specify the number of knots that are used for
+    the restricted cubic spline. {it:#} must be between 3 and 7 unless
+    the knot locations are specified using {cmd:knots()}. The default number
+    of knots is 5. See {bf:[R] mkspline} for details on how the knot
+    positions are determined.
+
+{phang2}
+    {opt knots(numlist)} to specify the exact location of the knots. The
+    values must be given in increasing order.
+
+{phang2}
+    {it:cline_options} to affect the rendition of the restricted cubic
+    spline smooth. See help {it:{help cline_options}}.
+
+{marker lpopts}{phang}
+    {cmdab:lp:oly}[{cmd:(}{it:options}{cmd:)}] adds a
+    local polynomial smooth to the plot (Stata 10 required). Options are:
+
+{phang2}
+    {cmd:ci} to plot a confidence interval(*) for local polynomial smooth.
+
+{phang2}
+    {it:lpolyci_options} as described in {helpb twoway lpolyci} (if {cmd:ci}
+    is specified).
+
+{phang2}
+    {it:lpoly_options} as described in {helpb twoway lpoly}.
+
+{marker fpopts}{phang}
+    {cmdab:fp:fit}[{cmd:(}{it:options}{cmd:)}] adds a
+    fractional polynomial fit to the plot. Options are:
+
+{phang2}
+    {cmd:ci} to add a confidence interval(*) for fractional polynomial fit.
+
+{phang2}
+    {it:fpfitci_options} as described in {helpb twoway fpfitci} (if {cmd:ci}
+    is specified).
+
+{phang2}
+    {it:fpfit_options} as described in {helpb twoway fpfit}
+
+{phang}
+    {cmdab:l:owess}[{cmd:(}{it:options}{cmd:)}] adds a
+    lowess smooth to the plot. Options are as described in
+    {helpb twoway lowess}.
+    {p_end}
+
+{marker psopts}{phang}
+    {cmdab:pspline}[{cmd:(}{it:options}{cmd:)}] adds
+    penalized spline smooth to the plot using the {helpb pspline}
+    user command (Jann and Gutierrez 2008; see
+    {net "describe pspline, from(http://fmwww.bc.edu/repec/bocode/p/)":ssc describe pspline}). Options
+    are {cmd:degree()}, {cmd:nknots()}, {cmd:knots()}, {cmd:estopts()}, and {cmd:nopenalty}
+    as described in help {helpb pspline}.
+
+{marker rsopts}{phang}
+    {cmdab:rspline}[{cmd:(}{it:options}{cmd:)}] adds a
+    regression spline smooth to the plot using the {helpb uvrs} user command
+    (Royston and Sauerbrei 2007; see
+    {net sj 7-1 st0120:net sj 7-1 st0120}). Options are:
+
+{phang2}
+    {cmd:ci}[{cmd:(}{it:area_options}{cmd:)}] to plot a confidence interval(*)
+    for the regression spline smooth with
+    options as described in help {it:{help area_options}}.
+
+{phang2}
+    {opt level(#)} to set the confidence level, as a percentage,
+    for the plotted confidence interval. The default is {cmd:level(95)} or
+    as set by {helpb set level}.
+
+{phang2}
+    {cmd:alpha()}, {cmd:degree()}, {cmd:df()}, and {cmd:knots()} as described in
+    help {helpb uvrs}.
+
+{phang2}
+    {cmd:regressopts()} containing any options of {helpb regress} to be
+    passed through to the regression spline model.
+
+{marker runopts}{phang}
+    {cmdab:running}[{cmd:(}{it:options}{cmd:)}] adds a
+    running line smooth to the plot using the {helpb running} user command
+    (Sasieni 1995, Sasieni and Royston 1998, Sasieni,
+    Royston, and Cox 2005; see
+    {net sj 5-2 sed9_2:net sj 5-2 sed9_2}). Options are:
+
+{phang2}
+    {cmd:ci}[{cmd:(}{it:area_options}{cmd:)}] to plot a confidence interval(*)
+    for the running line smooth with
+    options as described in help {it:{help area_options}}.
+
+{phang2}
+    {opt level(#)} to set the confidence level, as a percentage,
+    for the plotted confidence interval. The default is {cmd:level(95)} or
+    as set by {helpb set level}.
+
+{phang2}
+    {cmd:double}, {cmd:knn()}, {cmd:mean}, {cmd:repeat()}, {cmd:span()},
+    and {cmd:twice} as described in help {helpb running}.
+
+{marker autoopts}{phang}
+    {cmdab:autosmoo}[{cmd:(}{it:options}{cmd:)}] adds an adaptive
+    variable span running line smooth to the plot using the {helpb autosmoo}
+    user command (Sasieni 1998; see
+    {net stb 41 gr27:net stb 41 gr27}). Options are
+    {cmd:kmin()}, {cmd:kmax()}, and {cmd:repeat()} as described in
+    help {helpb autosmoo}.
+
+{phang}
+    {it:scatter_options} are any of the options documented in
+    help {helpb twoway scatter}
+
+{phang}
+    {opt addplot(plot)} provides a way to add other plots to the generated graph;
+    see {manhelpi addplot_option G}.
+
+{phang}
+    {opth generate(newvar)} stores the partial logit residuals in {newvar}.
+
+{phang}
+    {opt replace} permits {cmd:generate()} to overwrite an existing variable.
+
+{phang}
+    {opt nograph} suppresses drawing the graph.
+
+{phang}
+    (*) The confidence intervals computed by the {cmd:rcspline}, {cmd:lpoly},
+    {cmd:fpfit}, {cmd:running}, and {cmd:rspline} options assume the partial
+    logit residuals to be known and are therefore somewhat too narrow.
+
+
+{title:Examples}
+
+        {com}. {stata "use http://www.stata-press.com/data/r9/lbw.dta"}
+
+        . {stata logit low age lwt smoke ht ui ptl}
+
+        . {stata logitcprplot age, rcspline fpfit lowess}
+
+        . {stata logitcprplot age, lpoly}{txt} /*Stata 10 required*/{com}
+
+        . {stata logitcprplot age, rcspline(ci)}
+
+        . {stata logitcprplot age, rcspline(ci) sample(10)}{txt} /*-gsample- and -moremata- required*/{com}
+
+        . {stata generate agesq = age^2}
+
+        . {stata logit low age agesq lwt smoke ht ui ptl}
+
+        . {stata logitcprplot age agesq, rcspline(ci)}{txt}
+
+
+{title:References}
+
+{phang}
+    Fox, J. 1997. Applied Regression Analysis, Linear Models, and
+    Related Methods. Thousand Oaks, CA: Sage.
+
+{phang}
+    Hilbe, J. 1992. sqv6: Smoothed partial residual plots for logistic
+    regression. Stata Technical Bulletin 10:27.
+
+{phang}
+    Jann, B. 2005. moremata: Stata module (Mata) to provide various functions. Available from
+    http://ideas.repec.org/c/boc/bocode/s455001.html.
+
+{phang}
+    Jann, B. 2006. gsample: Stata module to draw a random sample. Available from
+    http://ideas.repec.org/c/boc/bocode/s456716.html.
+
+{phang}
+    Jann, B., and R. Gutierrez. 2008. pspline: Stata module providing a
+    penalized spline scatterplot smoother based on linear mixed model
+    technology. Available from http://ideas.repec.org/c/boc/bocode/s456972.html.
+
+{phang}
+    Landwehr, J. M., D. Pregibon, and A. C. Shoemaker. 1984. Graphical
+    Methods for Assessing Logistic Regression Models. Journal of the
+    American Statistical Association 79:61-71.
+
+{phang}
+    Royston, P., and W. Sauerbrei. 2007. Multivariable modeling with
+    cubic regression splines: A principled approach. The Stata Journal
+    7:45-70.
+
+{phang}
+    Sasieni, P. 1995. sed9: Symmetric nearest neighbor linear
+    smoothers. Stata Technical Bulletin 24:10-14.
+
+{phang}
+    Sasieni, P. 1998. gr27: An adaptive variable span running line
+    smoother. Stata Technical Bulletin 41:4-7.
+
+{phang}
+    Sasieni, P., and P. Royston. 1998. sed9.1: Pointwise confidence intervals
+    for running. Stata Technical Bulletin 41:17-23.
+
+{phang}
+    Sasieni, P., P. Royston, and N. J. Cox. 2005. sed9_2: Software
+    update: Symmetric nearest neighbour linear smoothers. Stata Journal 5(2): 285.
+
+
+{title:Author}
+
+{pstd}
+    Ben Jann, ETH Zurich, jannb@ethz.ch
+
+{pstd}
+    Thanks for citing this software as follows:
+
+{pmore}
+    Jann, B. 2008. logitcprplot: Stata module to graph component-plus-residual
+    plot for logistic regression. Available from
+    http://ideas.repec.org/c/boc/bocode/s456969.html.
+
+
+{title:Also see}
+
+{psee}
+    Online:  help for
+    {helpb logit},
+    {helpb logistic},
+    {helpb regress postestimation##cprplot:cprplot},
+    {helpb mkspline},
+    {helpb lpoly},
+    {helpb fracpoly},
+    {helpb lowess};
+    {helpb gsample},
+    {helpb rcspline},
+    {helpb pspline},
+    {helpb uvrs},
+    {helpb running},
+    {helpb autosmoo} (if installed)

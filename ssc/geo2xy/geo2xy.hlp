@@ -1,0 +1,520 @@
+{smcl}
+{* *! version 1.1.0  30jan2017}{...}
+{cmd:help geo2xy}
+{hline}
+
+{title:Title}
+
+{phang}
+{bf:geo2xy} {hline 2} Convert latitude and longitude to cartesian (x,y) coordinates using map projections
+
+
+{title:Syntax}
+
+{p 8 16 2}
+{cmd:geo2xy}
+{it:lat_var lon_var} 
+{ifin} 
+{cmd:,}
+{c -(}{opt gen:erate(y_lat x_lon)}{c |}{opt replace}{c )-}
+[ 
+{opt proj:ection}{cmd:(}{help geo2xy##proj_name:proj_name}
+[,{help geo2xy##proj_name:proj_opts}]{cmd:)}
+{opt ti:ssot} ]
+
+
+{synoptset 36 tabbed}{...}
+{synopthdr}
+{synoptline}
+{p2coldent :* {opt gen:erate(y_lat x_lon)}}New variable names for the projected coordinates (note the order!){p_end}
+{p2coldent :* {opt replace}}Replace the values in {it:lat_var lon_var} with the projected coordinates{p_end}
+{synopt :{opt proj:ection(proj_name [,proj_opts])}}Specifies a projection and, optionally, projection parameters{p_end}
+{synopt :{opt ti:ssot}}Append Tissot's indicatrices (grid of circles){p_end}
+{synoptline}
+{pstd}* Either {opt gen:erate(y_lat x_lon)} or {opt replace} is required.
+{p2colreset}
+
+
+{marker proj_name}{...}
+{pstd}
+The following projections are currently supported (click on the projection
+name for projection options and additional help):
+
+{synoptset 32 tabbed}{...}
+{synopthdr :proj_name}
+{synoptline}
+{synopt :{it:{help geo2xy_web_mercator:web_mercator}}}Web Mercator projection - spherical model{p_end}
+{synopt :{it:{help geo2xy_mercator_sphere:mercator_sphere}}}Mercator projection - spherical model{p_end}
+{synopt :{it:{help geo2xy_mercator:mercator}}}Mercator projection - ellipsoid model{p_end}
+{synopt :{it:{help geo2xy_equidistant_cylindrical:equidistant_cylindrical}}}Equidistant cylindrical projection - spherical model{p_end}
+{synopt :{it:{help geo2xy_albers_sphere:albers_sphere}}}Albers equal-area conic projection - spherical model{p_end}
+{synopt :{it:{help geo2xy_albers:albers}}}Albers equal-area conic projection - ellipsoid model{p_end}
+{synopt :{it:{help geo2xy_lambert_sphere:lambert_sphere}}}Lambert conformal conic projection - spherical model (by Michael Stepner){p_end}
+{synopt :{it:{help geo2xy_picard:picard}}}Picard's variant of the Equidistant cylindrical projection - spherical model{p_end}
+{synoptline}
+{p2colreset}{...}
+
+
+{title:Description}
+
+{pstd}
+{cmd:geo2xy} transforms the geographic coordinates stored in the variables 
+{it:lat_var} and {it:lon_var}
+to cartesian (x,y) coordinates using a map projection transformation. 
+Input coordinates must be in signed decimal degrees, 
+positive for north and east, and negative for south and west. Latitudes 
+range from -90 to 90 and longitudes from -180 to 180.
+
+{pstd}
+If no projection is specified, {cmd:geo2xy} will apply a {it:{help geo2xy_web_mercator:web_mercator}}
+projection. This is the same projection that most web mapping applications 
+(Google Maps, Bing Maps, etc.) use. 
+
+{pstd}
+All map projections distort the location of features on the map in some way.
+The {opt ti:ssot} option provides a convenient way to visualize these
+distorsions by overlaying a grid of circles with identical radii (Tissot's indicatrices)
+over the area of the map. 
+
+{pstd}
+{cmd:geo2xy} cannot be used to convert projected coordinates
+back to geographic latitude and longitude or to convert from
+one projection to another.
+
+
+{title:A note about shapefiles}
+
+{pstd}
+If you are trying to make a map in Stata, the boundaries of the features
+you want to represent are likely to come from a shapefile. 
+This is a vector data format that describes geographic features using points, 
+lines, and polygons. 
+
+{pstd}
+A shapefile is a collection
+of files, none of which can be easily imported into Stata.
+The user-written command {cmd:shp2dta}
+(from SSC, {it:{stata ssc describe shp2dta:click to install}})
+can extract from a shapefile
+the geographic coordinates of each feature (the coordinates dataset)
+and the feature's attributes (the database dataset, with one observation
+per feature). 
+
+{pstd}
+{cmd:shp2dta} does not import the shapefile's
+metadata but files with a ".prj" or 
+".xml" extension are in plain text format and can be viewed easily with
+a text editor or by using Stata's {help type} command to list the file's
+content.
+Look at the content of the file with a ".prj" extension to find out
+if the shapefile contains geographic coordinates (lat/lon) or projected
+coordinates. 
+If the content starts with {cmd:GEOGCS}, the shapefile contains 
+lat/lon coordinates. 
+If the content starts with {cmd:PROJCS}, the shapefile contains 
+projected coordinates.
+
+
+{title:Ancillary datasets}
+
+{pstd}
+The {cmd:geo2xy} distribution package includes shapefile data for
+boundaries of countries, Canadian provinces, and U.S. states.
+The original shapefiles were converted to Stata
+datasets using {cmd:shp2dta}
+(from SSC, {it:{stata ssc describe shp2dta:click to install}}).
+In order to run {cmd:geo2xy} examples, you need to 
+download these ancillary datasets using the following command:
+
+{cmd}{...}
+	. {stata `"net get geo2xy, from("http://fmwww.bc.edu/repec/bocode/g")"'}{txt}
+
+{pstd}
+Note that the ancillary datasets will be downloaded to Stata's
+current directory. If you change directory later on, you will have
+to download the datasets again.
+
+
+{title:How to create a map in Stata}
+
+{pstd}
+To create a map in Stata, you generate a twoway graph and 
+plot x and y coordinates. The {cmd:spmap}
+(from SSC, {it:{stata ssc describe spmap:click to install}})
+user-written program has a rich feature set and handles
+the logistics of putting the map together. The following example
+creates a map of the state of Michigan using {cmd:spmap}.
+
+{space 8}{hline 27} {it:example do-file content} {hline 27}
+{cmd}{...}
+{* example_start - spmap_MI}{...}
+	use "geo2xy_us_data.dta", clear
+ 
+	spmap if _ID == 11 using "geo2xy_us_coor.dta", id(_ID) name(spmap_MI, replace)
+{* example_end}{...}
+{txt}{...}
+{space 8}{hline 80}
+{space 8}{it:({stata geo2xy_run spmap_MI using geo2xy.hlp, requires("geo2xy_us_data.dta" "geo2xy_us_coor.dta") preserve:click to run})}
+
+{pstd}
+Those familiar with Michigan's geography will notice that the proportions
+are wrong, the state appears stretched horizontally. That's because
+{cmd:spmap} simply plots coordinates as they are, with one unit of {it:x} being equal to
+one unit of {it:y}. Since lines of longitudes (meridians) converge at the poles,
+a difference of 1 degree of longitude at the equator represents a much longer
+distance than the same difference at 45 degrees of latitude.
+
+{pstd}
+To make a map with more familiar proportions, you need to apply a map projection.
+The following example uses {cmd:geo2xy}'s default projection
+({it:{help geo2xy_web_mercator:web_mercator}}).
+In this example, the projected coordinates replace the geographic coordinates,
+and the dataset is saved under a different name to avoid overwriting the original coordinates
+dataset:
+
+{space 8}{hline 27} {it:example do-file content} {hline 27}
+{cmd}{...}
+{* example_start - spmap_MI_xy}{...}
+	use "geo2xy_us_coor.dta", clear
+
+	geo2xy _Y _X, replace
+
+	save "xy_coor.dta", replace
+
+	use "geo2xy_us_data.dta", clear
+
+	spmap if _ID == 11 using "xy_coor.dta", id(_ID) name(spmap_MI_xy, replace)
+{* example_end}{...}
+{txt}{...}
+{space 8}{hline 80}
+{space 8}{it:({stata geo2xy_run spmap_MI_xy using geo2xy.hlp, requires("geo2xy_us_data.dta" "geo2xy_us_coor.dta") preserve:click to run})}
+
+{pstd}
+You can also use Stata's graph commands to produce a map. 
+In the coordinates dataset, a polygon starts with an observation
+where the coordinates are missing. That's followed by an observation
+for each point in the polygon. The polygon's last point has
+the same coordinates as the first non-missing point, which closes the
+polygon. In the following example, the polygons are drawn using
+{helpb line:[G-2] graph twoway line} and the {opt cmissing(n)} connect option is used to prevent
+Stata from connecting consecutive polygons. It's important when
+building the graph to respect the map's proportions. In the example
+below, the width of the graph is set to 6 inches and the height
+is calculated using the aspect ratio (height/width) that is returned by {cmd:geo2xy}.
+The rest of the graph options remove labels, legend, 
+and adjust plot and graph regions.
+
+{space 8}{hline 27} {it:example do-file content} {hline 27}
+{cmd}{...}
+{* example_start - MI_web_mercator}{...}
+	use "geo2xy_us_coor.dta", clear
+
+	geo2xy _Y _X if _ID == 11, gen(ylat xlon)
+	
+	// show the projection details and compute the graph's height
+	return list
+	local yheight = 6 * `r(aspect)'
+
+	line ylat xlon, lwidth(vthin) lcolor(gray) cmissing(n) ///
+		xsize(6) ysize(`yheight') ///
+		ylabel(minmax, nogrid) yscale(off) ///
+		xlabel(minmax, nogrid) xscale(off) ///
+		plotregion(margin(small)) graphregion(margin(small)) ///
+		legend(off) name(MI_web_mercator, replace)
+{* example_end}{...}
+{txt}{...}
+{space 8}{hline 80}
+{space 8}{it:({stata geo2xy_run MI_web_mercator using geo2xy.hlp, requires("geo2xy_us_coor.dta") preserve:click to run})}
+
+{pstd}
+You can also overlay additional {cmd:twoway} plots when creating your map
+in Stata. For example, {cmd:geo2xy}'s {opt tissot} option appends to the
+data in memory polygons that approximate the shape of circles.
+The following example creates a map
+of the 48 conterminous U.S. states
+with an overlay of Tissot's indicatrices
+(the shapefile's {cmd:_ID} for Alaska, Puerto Rico, Hawaii are 14, 39, 42 respectively).
+Note that the {opt tissot} polygons generated by {cmd:geo2xy} do not have a feature
+identifier (e.g. {cmd:_ID} is missing). 
+
+{space 8}{hline 27} {it:example do-file content} {hline 27}
+{cmd}{...}
+{* example_start - US48_web_mercator_t}{...}
+	use "geo2xy_us_coor.dta", clear
+
+	geo2xy _Y _X if !inlist(_ID, 14, 39, 42), gen(ylat xlon) tissot
+
+	// show the projection details and compute the graph's height
+	return list
+	local yheight = 6 * `r(aspect)'
+
+	line ylat xlon if !mi(_ID), lwidth(vthin) lcolor(gray) cmissing(n) ///
+	||  ///
+	line ylat xlon if mi(_ID), lwidth(vthin) lcolor(eltblue) cmissing(n) ///
+		xsize(6) ysize(`yheight') ///
+		ylabel(minmax, nogrid) yscale(off) ///
+		xlabel(minmax, nogrid) xscale(off) ///
+		plotregion(margin(small)) graphregion(margin(small)) ///
+		legend(off) name(US48_web_mercator_t, replace)
+{* example_end}{...}
+{txt}{...}
+{space 8}{hline 80}
+{space 8}{it:({stata geo2xy_run US48_web_mercator_t using geo2xy.hlp, requires("geo2xy_us_coor.dta") preserve:click to run})}
+
+{pstd}
+All {opt tissot} polygon points are
+at same great-circle distance from the circle's center point.
+The center points for these polygons are located on a coordinate grid
+and the same radius is used for all circles.
+The circles help to understand the inevitable distortions that come
+with any map projection. With a 
+{it:{help geo2xy_web_mercator:web_mercator}}
+projection, {cmd:geo2xy}'s default,
+meridians (longitude lines that go from pole to pole)
+are represented as parallel vertical lines and features are stretched 
+as they get closer to the poles. Circles retain their shape
+but they are larger if closer to the pole. 
+
+{pstd}
+For additional examples of how to create maps in Stata, see
+{cmd:geo2xy}'s {it:{help geo2xy_fun_with_maps:Fun with maps}} help file.
+
+
+{title: Which projection to use}
+
+{pstd}
+If you do not request a specific projection, {cmd:geo2xy} will
+use a {it:{help geo2xy_web_mercator:web_mercator}} projection.
+The map created
+will have a familiar look because it does exactly what
+Google Maps and other web mapping services do.
+A Mercator projection is used for navigation
+because it represents a line of constant bearing as a straight
+line on the map. Shapes are preserved locally (circles appear
+round) but at the cost of size distorsions towards the pole.
+
+{space 8}{hline 27} {it:example do-file content} {hline 27}
+{cmd}{...}
+{* example_start - world_Google}{...}
+	use "geo2xy_world_coor.dta", clear
+
+	geo2xy _Y _X, gen(ylat xlon) tissot
+
+	// show the projection details and compute the graph's height
+	return list
+	local yheight = 6 * `r(aspect)'
+
+	line ylat xlon if !mi(_ID), lwidth(vthin) lcolor(gray) cmissing(n) ///
+	||  ///
+	line ylat xlon if mi(_ID), lwidth(vthin) lcolor(eltblue) cmissing(n) ///
+		xsize(6) ysize(`yheight') ///
+		ylabel(minmax, nogrid) yscale(off) ///
+		xlabel(minmax, nogrid) xscale(off) ///
+		plotregion(margin(small)) graphregion(margin(small)) ///
+		legend(off) name(world_Google, replace)
+{* example_end}{...}
+{txt}{...}
+{space 8}{hline 80}
+{space 8}{it:({stata geo2xy_run world_Google using geo2xy.hlp, requires("geo2xy_world_coor.dta") preserve:click to run})}
+
+{pstd}
+If you are creating thematic maps in Stata,
+it makes sense to choose an equal-area projection. 
+If you use an {it:{help geo2xy_albers:Albers equal-area conic projection}} projection,
+the area of a shape on the map is proportional to the area of the shape on earth.
+
+{space 8}{hline 27} {it:example do-file content} {hline 27}
+{cmd}{...}
+{* example_start - US48_albers_t}{...}
+	use "geo2xy_us_coor.dta", clear
+
+	geo2xy _Y _X if !inlist(_ID, 14, 39, 42), gen(ylat xlon) projection(albers) tissot
+
+	// show the projection details and compute the graph's height
+	return list
+	local yheight = 6 * `r(aspect)'
+
+	line ylat xlon if !mi(_ID), lwidth(vthin) lcolor(gray) cmissing(n) ///
+	||  ///
+	line ylat xlon if mi(_ID), lwidth(vthin) lcolor(eltblue) cmissing(n) ///
+		xsize(6) ysize(`yheight') ///
+		ylabel(minmax, nogrid) yscale(off) ///
+		xlabel(minmax, nogrid) xscale(off) ///
+		plotregion(margin(small)) graphregion(margin(small)) ///
+		legend(off) name(US48_albers_t, replace)
+{* example_end}{...}
+{txt}{...}
+{space 8}{hline 80}
+{space 8}{it:({stata geo2xy_run US48_albers_t using geo2xy.hlp, requires("geo2xy_us_coor.dta") preserve:click to run})}
+
+{pstd}
+Some countries adopt a particular projection when creating
+maps of their boundaries and you may want to use the same
+representation for your map. 
+For example, Statistics Canada uses a
+{it:{help geo2xy_lambert_sphere:Lambert conformal conic projection}}
+with 
+{it:{browse "http://www.statcan.gc.ca/pub/92-195-x/2011001/other-autre/mapproj-projcarte/m-c-eng.htm":specific parameters}}. 
+
+{space 8}{hline 27} {it:example do-file content} {hline 27}
+{cmd}{...}
+{* example_start - canada_lambert_t}{...}
+	use "geo2xy_Canada_coor.dta", clear
+	
+	geo2xy _Y _X , gen(ylat xlon) proj(lambert_sphere, 49 77 0 -91.866667) tissot
+	
+	// show the projection details and compute the graph's height
+	return list
+	local yheight = 6 * `r(aspect)'
+
+	line ylat xlon if !mi(_ID), lwidth(vthin) lcolor(gray) cmissing(n) ///
+	||  ///
+	line ylat xlon if mi(_ID), lwidth(vthin) lcolor(eltblue) cmissing(n) ///
+		xsize(6) ysize(`yheight') ///
+		ylabel(minmax, nogrid) yscale(off) ///
+		xlabel(minmax, nogrid) xscale(off) ///
+		plotregion(margin(small)) graphregion(margin(small)) ///
+		legend(off) name(canada_lambert_t, replace)
+{* example_end}{...}
+{txt}{...}
+{space 8}{hline 80}
+{space 8}{it:({stata geo2xy_run canada_lambert_t using geo2xy.hlp, requires("geo2xy_Canada_coor.dta") preserve:click to run})}
+
+{pstd}
+The help file for the {it:{help geo2xy_albers:albers}} projection
+shows an example of how to generate a map of
+the 48 conterminous states using the 
+{it:{browse "https://egsc.usgs.gov/isb//pubs/MapProjections/projections.html":USGS-recommended}}
+standard parallels. 
+See {cmd:geo2xy}'s {it:{help geo2xy_fun_with_maps:Fun with maps}} help file
+for an example of a composite map of the 50 U.S. states with Alaska
+and Hawaii projected separately using 
+{it:{browse "https://egsc.usgs.gov/isb//pubs/MapProjections/projections.html":USGS-recommended}}
+standard parallels. 
+
+
+{title:Stored results}
+
+{pstd}
+{cmd:geo2xy} stores the following in {cmd:r()} for all projections:
+
+{synoptset 20 tabbed}{...}
+{p2col 5 20 24 2: Macros}{p_end}
+{synopt:{cmd:r(ratio)}}aspect ratio to use when creating a map using Stata's graph commands{p_end}
+{synopt:{cmd:r(model)}}spheroid model for the projection{p_end}
+{synopt:{cmd:r(pname)}}full name of the projection{p_end}
+{p2colreset}{...}
+{pstd}
+
+{pstd}
+Additional projection-specific results are also returned. See
+the projection's {help geo2xy##proj_name:help} for more detail.
+
+
+{title:References}
+
+{pstd}
+Deetz, Charles Henry, and Oscar Sherman Adams. 
+{it:Elements of map projection with applications to map and chart construction. No. 68}. 
+US Government Printing Office, 1921.
+
+{pstd}
+ESRI, 
+{it:ESRI Shapefile Technical Description}, 
+An ESRI White Paper, Jul. 1998.
+[{it:{browse "https://www.esri.com/library/whitepapers/pdfs/shapefile.pdf":download}}]
+
+{pstd}
+National Imagery and Mapping Agency,
+{it}
+Department of Defense World Geodetic System 1984 - 
+Its Definition and Relationships with Local Geodetic Systems{sf},
+NIMA Technical Report 8350.2, Third Edition, 2000.
+[{it:{browse "http://earth-info.nga.mil/GandG/publications/tr8350.2/wgs84fin.pdf":download}}]
+
+{pstd}
+Snyder, John P., 
+{it:Map projections: A working manual}.
+U.S. Geological Survey Professional Paper 1395, 1987.
+[{it:{browse "http://pubs.er.usgs.gov/publication/pp1395":download}}].
+
+{pstd}
+U.S. Department of the Interior; U.S. Geological Survey,
+{it:{browse "https://egsc.usgs.gov/isb//pubs/MapProjections/projections.html":Map Projections}}.
+Web page, reviewed 1/30/2017.
+
+{pstd}
+Veness, Chris,
+{it:{browse "http://www.movable-type.co.uk/scripts/latlong.html":Calculate distance, bearing and more between Latitude/Longitude points}}.
+Web page, reviewed 1/30/2017.
+
+
+{title:Source and licensing information for ancillary datasets}
+
+{pstd}
+The data for the boundaries of countries was downloaded from
+{it:{browse "http://www.naturalearthdata.com/downloads/110m-cultural-vectors/110m-admin-0-countries/":Natural Earth}}
+by clicking on the 
+{it:{browse "http://www.naturalearthdata.com/http//www.naturalearthdata.com/download/110m/cultural/ne_110m_admin_0_countries_lakes.zip":Download without boundary lakes}}
+button. This is a small
+scale map (1:110,000,000) of the world. The site claims that the data are
+in the public domain.
+
+{pstd}
+The U.S. state boundaries were downloaded from the U.S. Census 
+{it:{browse "http://www.census.gov/geo/maps-data/data/cbf/cbf_state.html":Cartographic Boundary Shapefiles - States}}
+by clicking on the
+{it:{browse "http://www2.census.gov/geo/tiger/GENZ2015/shp/cb_2015_us_state_20m.zip":cb_2015_us_state_20m}}
+link ("2015 Cartographic Boundary File, State for United States, 1:20,000,000").
+The shapefile 
+was produced by the Geographic Products Branch, Geography Division, U.S. Census Bureau,
+U.S. Department of Commerce. 
+The shapefile includes the statement: "These products are 
+free to use in a product or publication".
+        
+{pstd}
+The Canadian provinces boundaries were downloaded from
+{it:{browse "http://geogratis.gc.ca/api/en/nrcan-rncan/ess-sst/f77c2027-ed4a-5f6e-9395-067af3e9fc1e.html":Atlas of Canada - Base Maps Scale 1:7,500,000}}
+by clicking on the 
+{it:{browse "http://ftp.geogratis.gc.ca/pub/nrcan_rncan/vector/atlas/base/7.5m_g_shp.zip":Download ZIP (shp) through HTTP}}
+ link.
+The shapefile was produced by the Canada Centre for Mapping and Earth Observation, Earth Sciences Sector, Natural Resources Canada, Government of Canada.
+The Stata datasets contain information licensed under the {it:{browse "http://open.canada.ca/en/open-government-licence-canada":Open Government Licence - Canada}}.
+
+
+{title:Acknowledgements}
+
+{pstd}
+Thanks to Luca Aguzzoni who asked about
+{it:{browse "http://www.statalist.org/forums/forum/general-stata-discussion/general/989012-spmap-guidance-is-it-possible-to-draw-circles-around-dot":drawing circles on a map}}
+on Statalist.
+My proof of concept solution evolved into {cmd:geocircles}
+which begs for map projections in Stata. This led to {cmd:geo2xy},
+which then, keeping with the circle theme, led to the Tissot's indicatrices option.
+
+{pstd}
+The idea of incorporating Tissot's indicatrices comes from the 
+{it:{browse "http://en.wikipedia.org/wiki/Map_projection":Map projection}}
+and
+{it:{browse "http://en.wikipedia.org/wiki/Tissot's_indicatrices":Tissot's indicatrices}}
+articles on Wikipedia.
+
+{pstd}
+Thanks to Michael Stepner <stepner@mit.edu> for coding the 
+{it:{help geo2xy_lambert_sphere:Lambert conformal conic projection}}
+and for producing the corresponding help file.
+
+
+{title:Author}
+
+{pstd}Robert Picard{p_end}
+{pstd}picard@netbox.com{p_end}
+
+
+{title:Also see}
+
+{psee}
+SSC:  {stata "ssc des geocircles":geocircles}, {stata "ssc des geodist":geodist}, {stata "ssc des geonear":geonear},
+{stata "ssc des shp2dta":shp2dta}, {stata "ssc des spmap":spmap}, {stata "ssc des mergepoly":mergepoly},
+{stata "ssc des maptile":maptile}
+{p_end}

@@ -1,0 +1,256 @@
+{smcl}
+{* 07Apr2011/06Apr2011/25Nov2010/11Feb2010/30dec2006/06sep2006/03aug2006}{...}
+{hline}
+help for {cmd:betafit postestimation}
+{hline}
+
+{title:Title}
+
+{p2colset 5 31 34 2}{...}
+{p2col :{hi:betafit postestimation} {hline 2}}Postestimation tools for
+betafit{p_end}
+{p2colreset}{...}
+
+
+{title:Description}
+
+{p 4 4 2}This file documents postestimation tools for {help betafit}. 
+
+{p 4 4 2}{helpb betafit postestimation##dbetafit:dbetafit} displays discrete changes and 
+marginal effects after {help betafit}.
+
+{p 4 4 2}The following standard postestimation commands are also available:
+
+{synoptset 14 tabbed}{...}
+{p2coldent :command}description{p_end}
+{synoptline}
+INCLUDE help post_estat
+INCLUDE help post_estimates
+INCLUDE help post_lincom
+INCLUDE help post_lrtest
+INCLUDE help post_mfx
+{synopt :{helpb margins}}marginal means, predictive margins, marginal effects, and average marginal effects{p_end}
+INCLUDE help post_nlcom
+{synopt :{helpb betafit postestimation##predict:predict}}predictions and residuals{p_end}
+INCLUDE help post_predictnl
+INCLUDE help post_suest
+INCLUDE help post_test
+INCLUDE help post_testnl
+{synoptline}
+{p2colreset}{...}
+
+
+{marker dbetafit}{...}
+{hline}
+help for {cmd:dbetafit}
+{hline}
+
+{title:Syntax for dbetafit}
+
+{p 8 17 2}
+{cmd:dbetafit} 
+[{cmd:,} 
+{cmd:at(}{it:variables_and_values}{cmd:)} 
+]
+
+
+{title:Description}
+
+{p 4 4 2}{cmd:dbetafit} displays changes in predicted dependent variable for
+three types of discrete changes in explanatory variables and two types of 
+marginal effects:
+
+{p 8 8 2}{cmd:Discrete changes}
+
+{p 8 8 2}{cmd:Min --> Max} shows the change in predicted dependent variable 
+when an explanatory variable changes from its minimum value to its maximum
+value, while keeping all other variables at their specified values (by 
+default their means). This is the only effect shown for indicator or dummy 
+variables (variables with only two distinct values).
+
+{p 8 8 2}{cmd:+-SD/2} shows the change in predicted dependent variable when an 
+explanatory variable moves from half a standard deviation below its specified 
+value (by default the mean) to half a standard deviation above its specified 
+value, while keeping all other variables at their specified values. In other 
+words, it shows the effect of a standard deviation change in an explanatory 
+variable, centred on the specified value, on the predicted dependent 
+variable.
+
+{p 8 8 2}{cmd:+-1/2} shows the change in predicted dependent variable when an 
+explanatory variable moves from half a unit below its specified value to half 
+a unit above its specified value, while keeping all other variables at their 
+specified values. In other words, it shows the effect of a unit change in 
+explanatory variable, centred on the specified value, on the predicted 
+dependent variable.
+
+{p 8 8 2}{cmd:Marginal effects}
+
+{p 8 8 2}{cmd:MFX at x} shows the marginal effect of each (non-indicator or non-dummy) variable,
+while keeping all variables at their specified values. The marginal effect is 
+the change in predicted dependent variable for a unit change in the explanatory 
+variable, assuming that the effect does not change over that interval.
+
+{p 8 8 2}{cmd:Max MFX} is the maximum marginal effect. Marginal effects change
+depending on which values of the explanatory variables they are evaluated for. The 
+maximum marginal effect shows the marginal effect you would get if you had 
+chosen those values of the explanatory variables that would maximize the marginal
+effect. The marginal effect is maximum if the predicted proportion is .5; hence
+this may lie outside the range of the observed data. 
+
+{p 4 4 2} {cmd:dbetafit} is only allowed after {cmd:betafit} in the alternative
+parameterization, i.e. if one or both {cmd:muvar()} and {cmd:phivar()} is 
+specified or if the {cmd:alternative} option is specified. {helpb mfx} can be
+used to get marginal effects after {cmd:betafit} in both the conventional and the
+alternative parametrization.
+
+
+{title:Options}
+
+{p 4 8 2}{cmd:at(}{it:variables_and_values}{cmd:)} is used to specify at which 
+values of the explanatory variables the effects are calculated. 
+{it:variables_and_values} is an alternating list of variables and either numeric 
+values or mean, median, min, max, p1, p5, p10, p25, p50, p75, p90, p95, p99. The default
+is mean for all variables. The statistics p1, p5, ..., p99, are the 1st, 5th, ..., 99th 
+percentiles.
+
+
+{title:Examples}
+
+{cmd}
+    use http://fmwww.bc.edu/repec/bocode/c/citybudget.dta, clear
+
+    betafit governing, mu(minorityleft noleft houseval popdens)
+
+    dbetafit, at(minorityleft 0 noleft 0)
+{txt}
+{p 4 4 2}({stata "betafit_ex":click to run}){p_end}
+
+
+{title:Author of {cmd:dbetafit}}
+
+{p 4 4 2}Maarten L. Buis,{break}Universitaet Tuebingen{break}maarten.buis@uni-tuebingen.de
+
+
+{marker predict}{...}
+{hline}
+help for {cmd:predict}
+{hline}
+
+{title:Syntax for predict}
+
+{p 8 16 2}
+{cmd:predict} {dtype} {newvar} {ifin} 
+[{cmd:,} {it:statistic} {opt var(varname)} ]
+
+{synoptset 14 tabbed}{...}
+{synopthdr :statistic}
+{synoptline}
+{synopt :{opt p:roportion}}proportion (the default){p_end}
+{synopt :{cmd:xb}}xb, fitted values{p_end}
+{synopt :{cmd:stdp}}standard error of the prediction{p_end}
+{synopt :{cmd:sd}}standard deviation{p_end}
+{synopt :{cmd:alpha}}alpha in the conventional parameterization{p_end}
+{synopt :{cmd:beta}}beta in the conventional parameterization{p_end}
+{synopt :{cmd:mu}}mu in the alternative parameterization, equivalent to {opt proportion}{p_end}
+{synopt :{cmd:phi}}phi in the alternative parameterization{p_end}
+{p2coldent :* {opt pe:arson}}Pearson residuals{p_end}
+{p2coldent :* {opt work:ing}}working residuals{p_end}
+{p2coldent :* {opt part:ial}}partial residuals{p_end}
+{p2coldent :* {opt scr:esidual}}score residuals{p_end}
+{synopt :{opt sc:ore}}first derivative of the log likelihood with respect to the linear 
+predictor. {p_end}
+{synoptline}
+{p2colreset}{...}
+INCLUDE help unstarred
+
+
+{title:Options for predict}
+
+{phang}
+{opt proportion} (the default) calculates the proportions.
+
+{phang}
+{opt xb} calculates the linear prediction.
+
+{phang}
+{opt stdp} calculates the standard error of the linear prediction.
+
+{phang}
+{opt sd} calculates the estimated standard deviation of the depedent variable.
+
+{phang}
+{cmd:alpha} calculates alpha in the conventional parameterization. This can be specified after estimating 
+a model using {cmd:betafit}, regardless of the parameterization used. 
+
+{phang}
+{cmd:beta} calculates beta in the conventional parameterization. This can be specified after estimating 
+a model using {cmd:betafit}, regardless of the parameterization used.
+
+{phang}
+{cmd:phi} calculates phi in the alternative parameterization. This can be specified after estimating 
+a model using {cmd:betafit}, regardless of the parameterization used.
+
+{phang}
+{opt pearson} calculates the Pearson residuals, the raw residuals scaled 
+by the estimated standard deviation of the predicted proportion.  
+
+{phang}
+{opt working} calculates the working residuals as discussed on page 53 of {help betafit_postestimation##hardin:Hardin and Hilbe (2007)}.
+
+{phang}
+{opt partial} calculates the partial residuals as discussed on page 54 of 
+{help betafit_postestimation##hardin:Hardin and Hilbe (2007)}. This requires that
+one of the explanatory variables is specified in the {opt var()} option.
+
+{phang}
+{opt scresidual} calculates the score residuals 
+(see {help betafit_postestimation##rocha:Rocha and Simas (forthcoming)}) or 
+"standardized weighted residuals 1" 
+(see {help betafit_postestimation##espinheira:Espinheira et al. (2008)}). 
+These residuals tend to 
+be more symmetric and normal/Gaussian-like, making them easier to interpret than Pearson residuals.  
+
+{phang}
+{opt score} calculates the first derivative of the log likelihood with respect
+to the linear predictions.
+
+
+{title:References}
+
+{marker cox}{...}
+{p 4 8 2}
+Cox, Nicholas J. 2005.  Speaking Stata: The protean quantile plot. 
+{it:The Stata Journal} 5(3): 442-460.
+{browse "http://www.stata-journal.com/article.html?article=gr0018"}
+
+{marker espinheira}{...}
+{p 4 8 2}
+Espinheira, Patr{c i'}cia L., Ferrari, Silvia L.P., and Cribari-Neto, Francisco. 2008. 
+On beta regression residuals. {it:Journal of Applied Statistics} 35(4): 407-419.
+
+{marker hardin}{...}
+{p 4 8 2}
+Hardin, James W. and Hilbe, Joseph M. 2007. {it:Generalized Linear Models and Extensions} (2nd edition).
+College Station, TX: Stata Press.
+
+{marker rocha}{...}
+{p 4 8 2}
+Rocha, Andr{c e'}a V. and Simas, Alexandre B. (forthcoming). 
+Influence diagnostics in a general class of beta regression models. 
+{it:Mathematics and Statistics}.
+
+{marker winter}{...}
+{p 4 8 2}
+Winter, Nicholas J.G. 2005. Stata tip 23: Regaining control over axis ranges.
+{it:The Stata Journal} 5(3): 467-468.
+{browse "http://www.stata-journal.com/article.html?article=gr0019"}
+
+
+{title:Also see}
+
+{p 4 13 2}
+Online: help for {helpb betafit}, {helpb estimates}, {helpb lincom}, 
+{helpb lrtest}, {helpb mfx}, {helpb nlcom}, {helpb predict}, {helpb predictnl},
+{helpb suest}, {helpb test}, {helpb testnl}
+{p_end}
+

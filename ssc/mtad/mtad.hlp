@@ -1,0 +1,84 @@
+{smcl}
+
+{cmd:help mtad}
+{hline}
+
+{title:Title}
+
+{p2colset 5 12 14 2}{...}
+{p2col:{hi:mtad} {hline 1}}Multinomial Test of Agglomeration and Dispersion{p_end}
+{p2colreset}{...}
+
+{title:Syntax}
+
+{opt mtad} {it:varlist}{cmd:,} {cmdab:mkt:(}{it:varname}{cmd:)} [{it:options}]
+
+{synoptset 20 tabbed}{...}
+{marker options}{...}
+{synopthdr :options}
+{synoptline}
+{synopt :{opt mkt(integer)}}market identifier{p_end}
+{synopt :{opt wide}}specifies one observation per market{p_end}
+{synopt :{opt probs(numlist)}}user provided baseline probabilties{p_end}
+{synopt :{opt niter(integer)}}number of monte carlo draws{p_end}
+
+{title:Description}
+
+{p 4 4 2}
+{cmd:mtad} calculates a multinomial test-statistic for agglomeration or dispersion. 
+See Shane Greenstein and Marc Rysman (2005). "Testing for Agglomeration and Dispersion." Economics Letters 86(3): 405-411.
+
+{p 4 4 2}
+Given a cross-section of "markets" this statistic indicates whether "plants" from two or more "industries" are more/less 
+concentrated than would be observed under a random allocation.
+
+{p 4 4 2}
+If wide is not specified (the default), each observation represents a plant, and varlist must be a single categorical variable
+that indicates the industry of that plant/observation.
+
+{p 4 4 2}
+In wide mode, each observation represents a market and varlist must contain two or more count variables 
+that indicate the number of plants for each industry in that market/observation.
+
+
+{title:Options}
+
+{p 4 8 2}{cmd:mkt(}{it:varname}{cmd:)} is required, and specifies the
+(numeric) identifier variable for the cross-section of markets/groups. 
+
+{p 4 8 2}{cmd:wide} is optional. If wide is specified, each observation
+represents a single market. If wide is not specified (the default)  each observation
+represents a single plant.
+
+{p 4 8 2}{cmd:probs(}{it:numlist}{cmd:)} is optional and can only be used in wide mode. This option allows the user to
+specify a known baseline probability of observing a plant in each industry. If this option is not used, {cmd:mtad} assumes
+that the probabilities of each plant-type correspond to the unconditional mean of that plant type in the data set.  
+The order of probabilities in {cmd:probs(}{it:numlist}{cmd:)} must correspond to the order of industires in {it:varlist}, and the probabilities must sum to 1.
+
+{p 4 8 2}{cmd:niter(}{it:integer}{cmd:)} allows the user to specify the number of draws used in a Monte Carlo simulation to calcultae the mean and std deviation
+of the sample likelihood under random choice. The default is 50.
+
+
+{title:Saved Results}
+
+{synoptset 15 tabbed}{...}
+{p2col 5 15 19 2: Scalars}{p_end}
+{synopt:{cmd:r(logl)}} likelihood of observed data{p_end}
+{synopt:{cmd:r(elogl)}} simulated likelihood under random assignment{p_end}
+{synopt:{cmd:r(sd)}} standard deviation of simulated likelihood{p_end}
+
+{p2col 5 15 19 2: Macros}{p_end}
+{synopt:{cmd:r(mtad)}} String equal to "Agglomeration/Dispersion" if r(elogl) is greater/less than r(logl){p_end}
+
+{title:Examples}
+{p 4 8 2}{cmd:. sysuse bplong.dta}{p_end}
+{p 4 8 2}{cmd:. mtad sex, mkt(agegrp)}
+
+{p 4 8 2}{cmd:. gen male = (sex==0)}{p_end}
+{p 4 8 2}{cmd:. gen female = (sex==1)}{p_end}
+{p 4 8 2}{cmd:. collapse (sum) male female, by(agegrp)}{p_end}
+{p 4 8 2}{cmd:. mtad male female, mkt(agegrp) wide prob(0.5 0.5) niter(250)}
+
+
+{pstd} To report bugs or give comments, please contact Timothy Simcoe
+<tsimcoe@bu.edu>.

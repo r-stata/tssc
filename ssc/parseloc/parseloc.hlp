@@ -1,0 +1,79 @@
+{smcl}
+{* *! version 1.0.0  11mar2015}{...}
+{cmd:help parseloc}
+{hline}
+
+{title:Title}
+
+{p2colset 5 16 18 2}{...}
+{p2col:{hi: parseloc} {hline 2} Parse the specified geolocation variable in the format as captured by Survey Solutions into four separate coordinate variables.}
+{p_end}
+{p2colreset}{...}
+
+
+{title:Syntax}
+
+{p 8 12 2}
+{opt parseloc}
+{it:locationvar}
+[{cmd:,}
+{opt lat:itude(newvarname)}
+{opt lon:gitude(newvarname)}
+{opt alt:itude(newvarname)}
+{opt acc:uracy(newvarname)}
+]
+
+
+{title:Description}
+
+{pstd}
+Survey Solutions data collection system produces files where GPS location is saved as a run-together 
+string, containing 4 components with various separators. {opt parseloc} generates new variables 
+containing individual components of the GPS location. The format of the input variable should correspond
+to output format used by Survey Solutions versions 2.2 to 4.0.
+
+{pstd}
+Variable names of the generated components are optional. Variable names {it:latitude}, {it:longitude}, 
+{it:altitude}, and {it:accuracy} will be used by default for corresponding components unless the user 
+specifies other names.
+
+{pstd}
+Any component can be suppressed by specifying {it:"0"} (zero) instead of the corresponding variable name.
+
+{pstd}
+All generated variables are formatted and labelled according to their meaning.
+
+{pstd}
+Note that when multiple GPS locations are captured and stored in the same file, specifying variable names 
+for components becomes mandatory. Each generated variable will contain meta information linking it to 
+the source variable name and label (when available).
+
+
+{title:Author}
+
+{phang}
+{opt parseloc} was written by {it:Sergiy Radyakin}, sradyakin(at)worldbank.org{p_end}
+
+
+{title:Examples}
+
+The following example will decompose the variable {it:gps} into the four components named {it:latitude}, {it:longitude}, {it:altitude}, and {it:accuracy}:
+
+{phang}{cmd:. parseloc gps}{p_end}
+
+The next example will decompose the variable location into three components named latitude, longitude, and altitude. Accuracy will be suppressed:
+
+{phang}{cmd:. parseloc location, accuracy(0)}{p_end}
+
+The following web-example will import the data and parse the location variable to generate the four components:
+
+{phang}{cmd:. {stata `"do "http://www.radyakin.org/stata/parseloc/parseloc_demo.do""': do "http://www.radyakin.org/stata/parseloc/parseloc_demo.do"}}{p_end}
+
+
+{title:Also see}
+
+{psee}
+Online: {browse "http://worldbank.org/capi": Survey Solutions}
+{psee}
+Online: {browse "http://www.radyakin.org/stata/parseloc/parseloc.htm": parseloc homepage}
+

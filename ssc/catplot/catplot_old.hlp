@@ -1,0 +1,131 @@
+{smcl}
+{* 16may2004}{...}
+{hline}
+help for {hi:catplot}
+{hline}
+
+{title:Plots of frequencies, fractions or percents of categorical data} 
+
+{p 8 17 2} 
+{cmd:catplot} 
+{c -(}{cmd:bar}{c |}{cmd:hbar}{c |}{cmd:dot}{c )-} 
+{it: catvar1} [{it:catvar2} [{it:catvar3}]]
+[{it:weight}]
+[{cmd:if} {it:exp}] 
+[{cmd:in} {it:range}]
+[ 
+{cmd:,}
+{c -(}{cmdab:fr:action}{c |}{cmdab:fr:action(}{it:varlist}{cmd:)}{c |}{cmdab:perc:ent}{c |}{cmdab:perc:ent(}{it:varlist}{cmd:)}{c )-}
+{cmdab:miss:ing} 
+{cmd:sort}
+{cmdab:des:cending} 
+{it:graph_options}
+]
+
+
+{title:Description}
+
+{p 4 4 2}
+{cmd:catplot} shows frequencies (or optionally fractions or percents) 
+of the categories of one, two or three categorical variables. The first named 
+variable is innermost on the display; that is, its categories vary fastest. 
+The syntaxes {cmd:catplot bar}, {cmd:catplot hbar} and {cmd:catplot dot} are specified 
+to indicate use of {help graph_bar:graph bar}, {help graph_bar:graph hbar}
+and {help graph_dot:graph dot} respectively. The choice is a matter of personal 
+taste, although in general horizontal displays make it easier to identify names 
+or labels of categories. 
+
+{p 4 4 2}{cmd:fweight}s, {cmd:aweight}s and {cmd:iweight}s may be specified. 
+
+
+{title:Remarks} 
+
+{p 4 4 2}The default display with {cmd:bar} and {cmd:hbar} is 
+graphically conservative, reflecting the view that height of bars 
+and text indicating categories are the best ways of conveying 
+information. If you wish also to have bars in different colours, 
+specify the option {cmd:asyvars}, which differentiates the categories
+of the {it:first} named variable {it:catvar1}. If you wish also 
+to stack bars of different colours, specify the further option 
+{cmd:stack}. 
+
+{p 4 4 2}The default display with {cmd:dot} is similarly conservative. 
+If you wish to have point symbols in different colours, 
+specify the option {cmd:asyvars}, which differentiates the categories
+of the {it:first} named variable {it:catvar1}. If you wish also 
+to use different point symbols, use the further option {cmd:marker()}. 
+
+
+{title:Options} 
+
+{p 4 8 2}{cmd:fraction} indicates that all frequencies should be shown 
+as fractions (with sum 1) of the total frequency of all values being
+represented in the graph.
+
+{p 4 8 2}{cmd:fraction(}{it:varlist}{cmd:)} indicates that all frequencies 
+should be shown as fractions (with sum 1) of the total frequency for each 
+distinct category defined by the combinations of {it:varlist}. For example, 
+given a variable {cmd:sex} with two categories male and female, the fractions 
+shown for male would have sum 1 and those for female would have sum 1. 
+
+{p 4 8 2}{cmd:percent} indicates that all frequencies should be shown 
+as percents (with sum 100) of the total frequency of all values being
+represented in the graph.
+
+{p 4 8 2}{cmd:percent(}{it:varlist}{cmd:)} indicates that all frequencies 
+should be shown as percents (with sum 100) of the total frequency for each 
+distinct category defined by the combinations of {it:varlist}. 
+For example, 
+given a variable {cmd:sex} with two categories male and female, the percents
+shown for male would have sum 100 and those for female would have sum 100. 
+
+{p 4 8 2}Only one of these {cmd:fraction}[{cmd:()}] and 
+{cmd:percent}[{cmd:()}] options may be specified. 
+
+{p 4 8 2}{cmd:missing} specifies that any missing values of any of the 
+variables specified should also be included within their own categories. 
+
+{p 4 8 2}{cmd:sort} specifies that values shown should be sorted 
+in each category (higher values at the bottom of each category). 
+Sorting is applied to all variables shown. 
+
+{p 4 8 2}{cmd:descending} specifies that sorted values should 
+be shown in descending order (higher values at the top of 
+each category). 
+
+{p 4 8 2}{it:graph_options} refers to options of 
+{help graph_bar:graph bar},
+{help graph_bar:graph hbar} or {help graph_bar:graph dot} as appropriate.
+{cmd:by()} is one useful example. 
+
+{title:Examples}
+
+{p 4 8 2}{inp:. sysuse auto}
+
+{p 4 8 2}{inp:. catplot hbar rep78 foreign}{p_end}
+{p 4 8 2}{inp:. catplot bar rep78, by(foreign) percent(foreign)}{p_end}
+{p 4 8 2}{inp:. gen himpg = mpg > 25}{p_end}
+{p 4 8 2}{inp:. catplot hbar himpg rep78 foreign}
+
+{p 4 8 2}{inp:. catplot hbar rep78 foreign, percent(foreign) bar(1, bcolor(blue))  blabel(bar, position(outside) format(%3.1f)) ylabel(none) yscale(r(0,60))}
+
+{p 4 8 2}{inp:. catplot hbar rep78, sort}{p_end}
+{p 4 8 2}{inp:. catplot hbar rep78, sort desc}
+
+
+{title:Author}
+
+{p 4 4 2}Nicholas J. Cox, University of Durham{break} 
+         n.j.cox@durham.ac.uk
+
+	 
+{title:Acknowledgements} 
+
+{p 4 4 2}Vince Wiggins provided very helpful comments.
+Fred Wolfe asked for sorting. David Schwappach provided 
+feedback on limitations. 
+
+
+{title:Also see}
+
+{p 4 13 2}On-line:  help for {help histogram}{p_end}

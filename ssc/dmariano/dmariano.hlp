@@ -1,0 +1,73 @@
+{smcl}
+{* 04feb2003}{...}
+{hline}
+help for {hi:dmariano}{right:(StataList distribution 27jun2006)}
+{hline}
+
+{title:Diebold-Mariano comparison of predictive accuracy}
+
+{p 8 14}{cmd:dmariano} {it:actual pred1 pred2} 
+[{cmd:if} {it:exp}] [{cmd:in} {it:range}] [{cmd:,maxlag({it:lags})} {cmd:crit}({it:criterion}) {cmd:kernel}({it:kernel}) ]
+
+{p}{cmd:dmariano} is for use with time-series data.  You must {cmd:tsset} your
+data before using {cmd:dmariano}; see help {help tsset}.
+
+{p} {it:actual, pred1, pred2} may contain time-series operators; see help {help varlist}.
+
+
+{title:Description}
+
+{p}{cmd:dmariano} calculates a measure of predictive accuracy proposed by Diebold
+and Mariano (DM, 1995). Given an actual series and two competing predictions, 
+one may apply a loss criterion (such as squared error or absolute error)
+and then calculate a number of measures of predictive accuracy that allow the
+null hypothesis of equal accuracy to be tested. The S(1) measure, calculated in this routine,
+tests that the mean difference between the loss criteria for the two predictions
+is zero, using a long-run estimate of the variance of the difference series.
+
+{p}
+
+{title:Options}
+
+{p 0 4}{cmd:maxlag} specifies the maximum order of the lag to be used in 
+calculating the long-run variance of the difference series from its autocovariance
+function. If it is not provided, the maximum lag order will be calculated from the 
+Schwert criterion as a function of the sample size.
+
+{p 0 4}{cmd:crit} specifies the loss criterion to be used. It currently may take
+on values MSE, MAE and MAPE. If not specified, MSE is assumed.
+
+{p 0 4}{cmd:kernel} specifies the kernel to be used in calculating the long-run
+variance. It currently may take on values uniform and bartlett. As in the case of Newey-West standard errors, the weights of
+the Bartlett kernel guarantee that variance estimates will be positive
+definite. If not specified, the uniform kernel is employed.
+
+{title:Examples}
+
+{p 8 12}{stata "use http://fmwww.bc.edu/ec-p/data/macro/barclaymonthly.dta,clear":. use http://fmwww.bc.edu/ec-p/data/macro/barclaymonthly.dta,clear}
+
+{p 8 12}{stata "dmariano bbjpysp bbjpy1f bbjpy2f, max(6)":. dmariano bbjpysp bbjpy1f bbjpy2f, max(6)}
+
+{p 8 12}{stata "dmariano bbjpysp bbjpy1f bbjpy2f, crit(MAE) kernel(bartlett)":. dmariano bbjpysp bbjpy1f bbjpy2f, crit(MAE) kernel(bartlett)}
+
+{p 8 12}{stata "dmariano D.bbjpysp D.bbjpy1f D.bbjpy2f if tin(1987m12,1996m12), max(2) crit(MAPE)":. dmariano D.bbjpysp D.bbjpy1f D.bbjpy2f if tin(1987m12,1996m12), max(2) crit(MAPE)}
+
+{title:References}
+
+Diebold, Francis and Roberto Mariano, "Comparing Predictive Accuracy,"
+Journal of Business and Economic Statistics, 13:3, 253-263, 1995.
+
+{title:Author}
+
+Christopher F Baum, Boston College, USA, baum@bc.edu
+
+{title:Acknowledgements}
+Thanks to Oliver Jones for suggesting the addition of the MAPE loss criterion.
+Thanks to Somchai Amornthum for pointing out a flaw in the calculation of the
+long-run variance component of the test statistic.
+
+{title:Also see}
+
+{p 0 19}On-line:  help for {help predict}
+ {p_end}
+

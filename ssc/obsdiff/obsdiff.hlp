@@ -1,0 +1,74 @@
+{smcl}
+{* Apr2011}{...}
+{hline}
+help for {hi:obsdiff}
+{hline}
+
+{title: Identify differences in values across observations for a variable.}
+
+{p 4 8 2} 
+{cmd:obsdiff}
+{it:varlist} 
+[{cmd:if} {it:exp}] 
+[{cmd:using} {it:newfile}]
+[
+{cmd:,} 
+{cmdab:r:ows(}{it:numlist}{cmd:)}
+{cmdab:rep:lace} 
+{cmdab:all} ]
+{break} 
+ 
+{title:Description}
+
+{p 2 2 4}
+{cmd:obsdiff} lists the differences among observations/records in a varlist. 
+This program is particularly useful for data where observations are near duplicates and you 
+need to identify the variables that differ. In this way, {cmd:obsdiff} operates similar
+to {help duplicates list} except that it lists {bf:differences} (not duplicates) for the 
+{it:varlist} in the range of observations/records specified in the option {opt rows}.  The 
+output can be saved to a text file with the {opt using} option.
+
+{title: Options} 
+
+{p 4 8 2}
+{cmdab:r:ows(}{it:numlist}{cmd:)} required unless {opt all} is specified.  This option
+identifies the range of rows or observations that should be examined for differences for
+each variable in the {it: varlist}.  The format for the {it: numlist} is explained 
+in {help numlist}.
+
+{p 4 8 2}
+{cmdab:rep:lace} overwrites {it: newfile}.txt, if it exists.
+
+{p 4 8 2}
+{cmdab:all} is used in place of the {opt range} option to indicate that all observations 
+should be examined for differences among the variables in the {it: varlist}.  Same as specifying
+{bf: rows(1/`=_N')}.
+
+{p 4 8 2}
+{cmd:if} is allowed.
+
+{p 4 8 2}
+{bf:{it: `r(diff_vars)'}} contains a list of variables in {it: varlist} with differences in 
+the specified {opt rows}.
+
+{title: Examples}
+
+{p 4 8 2}{cmd:. sysuse auto, clear}{p_end}
+{p 4 8 2}{cmd:. obsdiff make for rep78 , r(8/12)}{p_end}
+{p 4 8 2}{cmd:. di "`r(diff_vars)'" } {p_end}
+
+{p 4 8 2}{cmd:. obsdiff for rep78, all}{p_end}
+{p 4 8 2}{cmd:. obsdiff rep78 if for==0, r(1/10)} {p_end}
+{p 4 8 2}{cmd:. obsdiff rep78 if for==1 using "obsdiff_log", all replace}{p_end}
+
+
+{title:Author}
+
+{p 4 4 2}Eric A. Booth, Texas A&M University {break} 
+         ebooth@ppri.tamu.edu {break} 
+		 {browse "http://www.eric-a-booth.com"}
+		 
+{title:Also see}
+
+{p 4 8 2}On-line:  help for {help list:list}; {help duplicates list:duplicates list}; {help unique:unique}(if installed)
+

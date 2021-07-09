@@ -1,0 +1,158 @@
+//Revised 10/24/2010
+//Version 3.0
+
+VERSION 10.0
+POSITION . . 370 190
+
+DIALOG main, label("TRISS (A TRAUMA AND INJURY SEVERITY SCORE)") tabtitle("Main") 
+BEGIN
+   GROUPBOX gb_in_out_files 10 10  350 90,                              ///
+            label("Select Input and Output Files")
+   FILE     fn_in           20 35 330 20,                               ///
+            label("Browse Input File")                                  ///
+            error("Input File Name")                                    ///
+            buttonwidth(100)                                            ///
+            filter("Stata Dataset (*.dta)|*.dta|All Files (*.*)|*.*") 
+   FILE     fn_out          20 65 330 20,                               ///
+            label("Browse Output File")                                 ///
+            error("Output File Name")                                   ///
+			buttonwidth(100)                                            ///
+            save                                                        ///
+            filter("Stata Dataset (*.dta)|*.dta|All Files (*.*)|*.*")
+END
+
+DIALOG triss_var_names, label("TRISS Variable Names") tabtitle("TRISS Variable Names") 
+BEGIN
+   GROUPBOX gb_triss_var_names 10 10  350 130,                ///
+            label("TRISS Variable Names")
+   EDIT     ed_rts             20 30  50  20,                 ///
+            error("RTS Variable Name")                        ///
+            default("rts")
+   TEXT     tx_rts             75 30  200 20,                 ///
+            label("Revised Trauma Score")
+   EDIT     ed_iss             20 55  50  20,                 ///
+            error("Injury Severity Score Variable Name")      ///
+            default("xiss")
+   TEXT     tx_iss             75 55  200 20,                 ///
+            label("Injury Severity Score")
+   EDIT     ed_age             20 80  50  20,                 ///
+            error("Age Variable Name")
+   TEXT     tx_age             75 80  200 20,                 ///
+            label("Age")
+   EDIT     ed_blunt_pen       20 105 50  20,                 ///
+            label("Blunt\Penetrating Trauma Variable Name")   ///
+            default("bluntpen")
+   TEXT     tx_blunt_pen       75 105 200 20,                 ///
+            label("Blunt\Pen Trauma")
+END
+
+DIALOG triss_coefficients, label("TRSS Coefficients") tabtitle("TRISS Coefficients") 
+BEGIN
+   GROUPBOX gb_triss_coefficients 10  10 350 160,         ///
+            label("TRISS Coefficients")
+   TEXT     tx_blunt_coeff_cat    83  35 60  20,          ///
+            label("BLUNT")
+   TEXT     tx_pen_coeff_cat      165 35 60  20,          ///
+            label("PEN")
+   TEXT     tx_constant           20  60 50  20,          ///
+            label("Constant")
+   EDIT     ed_blunt_constant     75  60 50  20,          ///
+            error("Blunt Trauma Constant")                ///
+            default("-1.2470")                            ///
+            numonly
+   EDIT     ed_pen_constant       150 60 50  20,          ///
+            error("Penetrating Trauma Constant")          ///
+            default("-0.6029")                            ///
+            numonly
+   TEXT     tx_rts_coeff          20  85 50  20,          ///
+            label("RTS")
+   EDIT     ed_blunt_rts_coeff    75  85 50  20,          ///
+            error("Blunt Trauma RTS Coefficient")         ///
+            default("0.9544")                             ///
+            numonly
+   EDIT     ed_pen_rts_coeff      150 85 50  20,          ///
+            error("Penetrating Trauma RTS Coefficient")   ///
+            default("1.1430")                             ///
+            numonly
+   TEXT     tx_iss_coeff          20  110 50 20,          ///
+            label("ISS")
+   EDIT     ed_blunt_iss_coeff    75  110 50 20,          ///
+            error("Blunt Trauma ISS Coefficient")         ///
+            default("-0.0768")                            ///
+            numonly                                       ///
+            nomemory
+   EDIT     ed_pen_iss_coeff      150 110 50 20,          ///
+            error("Penetrating Trauma ISS Coefficient")   ///
+            default("-0.1516")                            ///
+            numonly
+   TEXT     tx_age_coeff          20  135 50 20,          ///
+            label("Age")
+   EDIT     ed_blunt_age_coeff    75  135 50 20,          ///
+            error("Blunt Trauma Age Coefficient")         ///
+            default("-1.9052")                            ///
+            numonly
+   EDIT     ed_pen_age_coeff      150 135 50 20,          ///
+            error("Penetrating Trauma Age Coefficient")   ///
+            default("-2.6676")                            ///
+            numonly
+END
+
+OK ok1, label("OK")
+CANCEL can1, label("Cancel")
+SUBMIT sub1, label("Submit")
+HELP hlp1, view("help triss")
+RESET res1
+COPY copy1
+
+PROGRAM command
+BEGIN
+   require main.fn_in
+   require main.fn_out
+   require triss_var_names.ed_rts
+   require triss_var_names.ed_iss
+   require triss_var_names.ed_age
+   require triss_var_names.ed_blunt_pen
+   require triss_coefficients.ed_blunt_constant
+   require triss_coefficients.ed_blunt_rts_coeff
+   require triss_coefficients.ed_blunt_iss_coeff
+   require triss_coefficients.ed_blunt_age_coeff
+   require triss_coefficients.ed_pen_constant
+   require triss_coefficients.ed_pen_rts_coeff
+   require triss_coefficients.ed_pen_iss_coeff
+   require triss_coefficients.ed_pen_age_coeff
+   put "triss "
+   put `"""'
+   put main.fn_in
+   put `"""'
+   put " "
+   put `"""'
+   put main.fn_out
+   put `"""'
+   put " "
+   put triss_var_names.ed_rts
+   put " "
+   put triss_var_names.ed_iss
+   put " "
+   put triss_var_names.ed_age
+   put " "
+   put triss_var_names.ed_blunt_pen
+   put " "
+   put triss_coefficients.ed_blunt_constant
+   put " "
+   put triss_coefficients.ed_blunt_rts_coeff
+   put " "
+   put triss_coefficients.ed_blunt_iss_coeff
+   put " "
+   put triss_coefficients.ed_blunt_age_coeff
+   put " "
+   put triss_coefficients.ed_pen_constant
+   put " "
+   put triss_coefficients.ed_pen_rts_coeff
+   put " "
+   put triss_coefficients.ed_pen_iss_coeff
+   put " "
+   put triss_coefficients.ed_pen_age_coeff
+END
+
+
+

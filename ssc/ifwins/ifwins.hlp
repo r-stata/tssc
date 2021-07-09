@@ -1,0 +1,86 @@
+{smcl}
+{* *! version 1.0  25Feb2009}{...}
+{hline}
+help for {hi:ifwins} {right:manual:  {hi:[R] none}}
+{right:dialog:  {hi: none}    }
+{hline}
+
+
+{title:subset dataset by if exp before subsetting by in range}
+
+{p 8 17 2}{cmd:ifwins}
+{ifin}
+{cmd::} {it:stata_cmd}{p_end}
+
+        
+{title:Description}
+
+{p 4 4 2}{cmd:ifwins} is a prefix command that runs most any Stata command that does not
+modify the dataset in memory (e.g. {help generate:generate}, {help replace:replace}, etc.).  
+{cmd:ifwins} will have {help if:if} subset the dataset before {help in:in} subsets the dataset.  
+This is the opposite of what happens when both {help if:if} and {help in:in} are used in the 
+same Stata command. For example, the following code will first subset the dataset to the first 
+10 observations and then subset the dataset to the specified condition:{p_end}
+
+{p 4 8 2}{cmd:. sysuse auto}{p_end}
+{p 4 8 2}{cmd:. list  if foreign == 1 in 1/10}{p_end}
+
+{p 4 4 2}Since the auto.dta dataset is sorted by the variable {cmd:foreign}, the above code will 
+not list any observations because in the first 10 observations {cmd:foreign == 0} .  So, {help if:if}
+looses and {help in:in} wins when "battling" over which one subsets the dataset before the other one does.{p_end}
+
+{p 4 4 2}If you want to run a Stata command on a certain number of observations when a certain condition exists, 
+you would have to:{p_end}
+
+{p 4 8 2}{cmd:. preserve}{p_end}
+{p 4 8 2}{cmd:. keep if foreign == 1 }{p_end}
+{p 4 8 2}{cmd:. list in 1/10 make turn weight }{p_end}
+{p 4 8 2}{cmd:. restore}{p_end}
+
+{p 4 4 2}
+or use {cmd:ifwins} as a prefix to the desired Stata command:{p_end}
+
+{p 4 8 2}{cmd:. ifwins  if foreign == 1 in 1/10 : list make turn weight }{p_end}
+
+{p 4 4 2}The above will {help list:list} up to the first 10 observations of when the variable {cmd:foreign}
+is equal to 1 (one).  So now {help if:if} wins!...but {help in:in} is still helpful.{p_end}
+
+{title:Remarks}
+
+{p 4 4 2}{help if:if} and {help in:in} are not allowed in the Stata command {cmd:ifwins} is specified to run.{p_end}
+ 
+{p 4 4 2}Since {cmd:ifwins} (when not running the {help list:list}, {help browse:browse}, {help edit:edit} commands) 
+temporarily subsets the dataset before 
+running the submitted Stata command the observations numbers will not be the same as in the original dataset.  
+So, the {help _variables:system variables} {help _n:_n} and {help _N:_N} as well as the {help creturn:c(N)} macro 
+variable are reset to the subsetted dataset before the specified Stata command is run by {cmd:ifwins}. Also, 
+{cmd:ifwins} will never return the error message "Obs. nos. out of range {search r(198):r(198)}" if the 
+range specified is at least within the number of observations in the dataset.  {cmd:ifwins}
+corrects ranges specified by {help in:in} to at least 1 observation of the specified condition since
+it is hard to know how many observations will be available after the {help if:if} condition subsets
+the dataset.{p_end}
+
+{p 4 4 2}The {help list:list}, {help browse:browse}, {help edit:edit} commands are the only exceptions to the note above.
+{p_end}
+
+{title:Examples}
+
+{p 4 8 2}{cmd:. ifwins  if mpg < 25  in -10/L : list make turn weight }{p_end}
+
+{p 4 8 2}{cmd:. ifwins  if income > 1000000 in 1/200 : summarize x1 x2 x3 x4 year89 year90 }{p_end}
+
+
+{title:Author}
+
+{p 4 4 2}
+Dan Blanchette {break}
+The Carolina Population Center {break}
+University of North Carolina - Chapel Hill, USA {break}
+dan_blanchette@unc.edu{p_end}
+
+
+{title:Also see}
+
+{p 4 13 2}On-line: {help if:if} and {help in:in}{p_end}
+
+

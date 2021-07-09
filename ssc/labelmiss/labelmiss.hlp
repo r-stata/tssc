@@ -1,0 +1,192 @@
+{smcl}
+{* 04.03.2001, help to version 1.1 of the program}
+{hline}
+help for {hi:labelmiss}{right: Stas Kolenikov, skolenik@unc.edu}
+{hline}
+
+{title:Label the missing data}
+
+{p 8 16}{cmd:labelmiss} [{it:varlist}] {it:mval} "{it:text}" [ {it:mval} "{it:text}" ...] 
+, modify
+
+{p}{hi:labelmiss} changes the labels of the missing data for 
+selected variables.
+{it:mval} is one of the missing values, either the system missing value {hi:.}
+or the extended missing values {hi:.a}, {hi:.b}, etc.
+
+
+{title:Options}
+
+{p 0 4}
+{hi:modify}
+allows Stata to overwrite the existing label, thus indicating your understanding 
+that the labels are going to be modified. It is not optional. If you want to 
+be able to recover your original labels, or you would want to define differential
+labels for different variables, see {help label}, and {hi:label save}, in particular.
+
+
+{title:Example}
+
+{p}Suppose we have the data in the following form:
+
+{com}. li id obsw cluster x1-x3 in 1/12
+{txt}
+     {c TLC}{hline 6}{c -}{hline 11}{c -}{hline 9}{c -}{hline 9}{c -}{hline 12}{c -}{hline 12}{c TRC}
+     {c |} {res}  id        obsw   cluster        x1           x2           x3 {txt}{c |}
+     {c LT}{hline 6}{c -}{hline 11}{c -}{hline 9}{c -}{hline 9}{c -}{hline 12}{c -}{hline 12}{c RT}
+  1. {c |} {res}1001   13.823839         1       Yes          N/A      Refused {txt}{c |}
+  2. {c |} {res}1002   12.876063         1       Yes          Yes          Yes {txt}{c |}
+  3. {c |} {res}1003     16.9282         1       Yes          Yes   Don't know {txt}{c |}
+  4. {c |} {res}1004   16.752894         1       Yes          Yes      Refused {txt}{c |}
+  5. {c |} {res}1005   13.399568         1        No   Don't know           No {txt}{c |}
+     {c LT}{hline 6}{c -}{hline 11}{c -}{hline 9}{c -}{hline 9}{c -}{hline 12}{c -}{hline 12}{c RT}
+  6. {c |} {res}1006   14.806043         1   Refused          Yes           No {txt}{c |}
+  7. {c |} {res}1007   13.447599         1       Yes          Yes           No {txt}{c |}
+  8. {c |} {res}1008   18.986893         1        No   Don't know   Don't know {txt}{c |}
+  9. {c |} {res}1009   12.729379         1        No      Refused           No {txt}{c |}
+ 10. {c |} {res}1010   13.667414         1        No           No      Refused {txt}{c |}
+     {c LT}{hline 6}{c -}{hline 11}{c -}{hline 9}{c -}{hline 9}{c -}{hline 12}{c -}{hline 12}{c RT}
+ 11. {c |} {res}1011   13.124903         1        No          Yes          Yes {txt}{c |}
+ 12. {c |} {res}1012   13.391117         1        No   Don't know           No {txt}{c |}
+     {c BLC}{hline 6}{c -}{hline 11}{c -}{hline 9}{c -}{hline 9}{c -}{hline 12}{c -}{hline 12}{c BRC}
+
+. li id obsw cluster x1-x3 in 1/12, nolab
+{txt}
+     {c TLC}{hline 6}{c -}{hline 11}{c -}{hline 9}{c -}{hline 4}{c -}{hline 4}{c -}{hline 4}{c TRC}
+     {c |} {res}  id        obsw   cluster   x1   x2   x3 {txt}{c |}
+     {c LT}{hline 6}{c -}{hline 11}{c -}{hline 9}{c -}{hline 4}{c -}{hline 4}{c -}{hline 4}{c RT}
+  1. {c |} {res}1001   13.823839         1    1    8    7 {txt}{c |}
+  2. {c |} {res}1002   12.876063         1    1    1    1 {txt}{c |}
+  3. {c |} {res}1003     16.9282         1    1    1    9 {txt}{c |}
+  4. {c |} {res}1004   16.752894         1    1    1    7 {txt}{c |}
+  5. {c |} {res}1005   13.399568         1    2    9    2 {txt}{c |}
+     {c LT}{hline 6}{c -}{hline 11}{c -}{hline 9}{c -}{hline 4}{c -}{hline 4}{c -}{hline 4}{c RT}
+  6. {c |} {res}1006   14.806043         1    7    1    2 {txt}{c |}
+  7. {c |} {res}1007   13.447599         1    1    1    2 {txt}{c |}
+  8. {c |} {res}1008   18.986893         1    2    9    9 {txt}{c |}
+  9. {c |} {res}1009   12.729379         1    2    7    2 {txt}{c |}
+ 10. {c |} {res}1010   13.667414         1    2    2    7 {txt}{c |}
+     {c LT}{hline 6}{c -}{hline 11}{c -}{hline 9}{c -}{hline 4}{c -}{hline 4}{c -}{hline 4}{c RT}
+ 11. {c |} {res}1011   13.124903         1    2    1    1 {txt}{c |}
+ 12. {c |} {res}1012   13.391117         1    2    9    2 {txt}{c |}
+     {c BLC}{hline 6}{c -}{hline 11}{c -}{hline 9}{c -}{hline 4}{c -}{hline 4}{c -}{hline 4}{c BRC}
+
+. lab li yesno
+{txt}yesno:
+{res}           1 Yes
+           2 No
+           7 Refused
+           8 N/A
+           9 Don't know
+{txt}
+
+{p}You want to convert your data to missing values, so that you can smoothly run
+your analyses, but you don't want to lose your information on what the particular missing data means.
+If you {help:mvdecode} your data, your labels are lost:
+
+{com}. mvdecode x* , mv(7 = .a \ 8 = .b \ 9 = .c )
+          {txt}x1:{res}{col 15}1{txt} missing value generated
+          x2:{res}{col 15}5{txt} missing values generated
+          x3:{res}{col 15}5{txt} missing values generated
+
+{com}. li id obsw cluster x1-x3 in 1/12
+{txt}
+     {c TLC}{hline 6}{c -}{hline 11}{c -}{hline 9}{c -}{hline 5}{c -}{hline 5}{c -}{hline 5}{c TRC}
+     {c |} {res}  id        obsw   cluster    x1    x2    x3 {txt}{c |}
+     {c LT}{hline 6}{c -}{hline 11}{c -}{hline 9}{c -}{hline 5}{c -}{hline 5}{c -}{hline 5}{c RT}
+  1. {c |} {res}1001   13.823839         1   Yes    .b    .a {txt}{c |}
+  2. {c |} {res}1002   12.876063         1   Yes   Yes   Yes {txt}{c |}
+  3. {c |} {res}1003     16.9282         1   Yes   Yes    .c {txt}{c |}
+  4. {c |} {res}1004   16.752894         1   Yes   Yes    .a {txt}{c |}
+  5. {c |} {res}1005   13.399568         1    No    .c    No {txt}{c |}
+     {c LT}{hline 6}{c -}{hline 11}{c -}{hline 9}{c -}{hline 5}{c -}{hline 5}{c -}{hline 5}{c RT}
+  6. {c |} {res}1006   14.806043         1    .a   Yes    No {txt}{c |}
+  7. {c |} {res}1007   13.447599         1   Yes   Yes    No {txt}{c |}
+  8. {c |} {res}1008   18.986893         1    No    .c    .c {txt}{c |}
+  9. {c |} {res}1009   12.729379         1    No    .a    No {txt}{c |}
+ 10. {c |} {res}1010   13.667414         1    No    No    .a {txt}{c |}
+     {c LT}{hline 6}{c -}{hline 11}{c -}{hline 9}{c -}{hline 5}{c -}{hline 5}{c -}{hline 5}{c RT}
+ 11. {c |} {res}1011   13.124903         1    No   Yes   Yes {txt}{c |}
+ 12. {c |} {res}1012   13.391117         1    No    .c    No {txt}{c |}
+     {c BLC}{hline 6}{c -}{hline 11}{c -}{hline 9}{c -}{hline 5}{c -}{hline 5}{c -}{hline 5}{c BRC}
+
+{p}Here's how {hi:labelmiss} fixes it:
+
+{com}. labelmiss .a "Refused" .b "N/A" .c "Don't know" , modify
+{txt}
+{com}. li id obsw cluster x1-x3 in 1/12 
+{txt}
+     {c TLC}{hline 6}{c -}{hline 11}{c -}{hline 9}{c -}{hline 9}{c -}{hline 12}{c -}{hline 12}{c TRC}
+     {c |} {res}  id        obsw   cluster        x1           x2           x3 {txt}{c |}
+     {c LT}{hline 6}{c -}{hline 11}{c -}{hline 9}{c -}{hline 9}{c -}{hline 12}{c -}{hline 12}{c RT}
+  1. {c |} {res}1001   13.823839         1       Yes          N/A      Refused {txt}{c |}
+  2. {c |} {res}1002   12.876063         1       Yes          Yes          Yes {txt}{c |}
+  3. {c |} {res}1003     16.9282         1       Yes          Yes   Don't know {txt}{c |}
+  4. {c |} {res}1004   16.752894         1       Yes          Yes      Refused {txt}{c |}
+  5. {c |} {res}1005   13.399568         1        No   Don't know           No {txt}{c |}
+     {c LT}{hline 6}{c -}{hline 11}{c -}{hline 9}{c -}{hline 9}{c -}{hline 12}{c -}{hline 12}{c RT}
+  6. {c |} {res}1006   14.806043         1   Refused          Yes           No {txt}{c |}
+  7. {c |} {res}1007   13.447599         1       Yes          Yes           No {txt}{c |}
+  8. {c |} {res}1008   18.986893         1        No   Don't know   Don't know {txt}{c |}
+  9. {c |} {res}1009   12.729379         1        No      Refused           No {txt}{c |}
+ 10. {c |} {res}1010   13.667414         1        No           No      Refused {txt}{c |}
+     {c LT}{hline 6}{c -}{hline 11}{c -}{hline 9}{c -}{hline 9}{c -}{hline 12}{c -}{hline 12}{c RT}
+ 11. {c |} {res}1011   13.124903         1        No          Yes          Yes {txt}{c |}
+ 12. {c |} {res}1012   13.391117         1        No   Don't know           No {txt}{c |}
+     {c BLC}{hline 6}{c -}{hline 11}{c -}{hline 9}{c -}{hline 9}{c -}{hline 12}{c -}{hline 12}{c BRC}
+
+{com}. lab li yesno
+{txt}yesno:
+{res}           1 Yes
+           2 No
+           7 Refused
+           8 N/A
+           9 Don't know
+          .a Refused
+          .b N/A
+          .c Don't know
+{txt}
+
+{p}We have relabeled all the data, and the variables like {res:id}, {res:cluster} and {res:obsw}
+have received the default label {hi:misslab}:
+
+{com}. d id obsw cluster x1-x3
+
+              {txt}storage  display     value
+variable name   type   format      label      variable label
+{hline 79}
+{res}id             {txt} int    %10.0g      misslab    {res}Personal ID
+obsw           {txt} double %10.0g      misslab    {res}Ultimate weight
+cluster        {txt} byte   %10.0g      misslab    {res}PSU
+x1             {txt} byte   %10.0g      yesno      {res}Item 1
+x2             {txt} byte   %10.0g      yesno      {res}Item 2
+x3             {txt} byte   %10.0g      yesno      {res}Item 3
+{txt}
+
+{p}To get rid of this probably undesirable effect, we should have specified
+
+{com}. labelmiss x* .a "Refused" .b "N/A" .c "Don't know" , modify{txt}
+
+{p}Most of the time, the variables that you may want to leave untouched
+are in the beginning of the data set. If they are not, you can move them
+forward with {help order}. Also, if you want to keep the order of the
+variables, modfiy most of your variables, and leave some intact, you
+can use {help dellist} from Nick J. Cox's {help listutil} suite of
+list utilities:
+
+{com}. unab mylist : _all
+
+. dellist mylist , delete(id cluster obsw) exact
+
+. labelmiss `mylist' .a "Refused" .b "N/A" .c "Don't know" , modify{txt}
+
+
+{title:Author}
+
+{p}Stas Kolenikov, {browse "mailto:skolenik@unc.edu":skolenik@unc.edu}
+
+
+{title:See also}
+
+{p}{hi:Online}: help for {help missing}, {help label}, {help mvdecode}
+

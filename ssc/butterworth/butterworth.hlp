@@ -1,0 +1,95 @@
+{smcl}
+{* 23oct2004}{...}
+{hline}
+help for {hi:butterworth}              SSC distribution 03 July 2006
+{hline}
+
+{title:Apply Butterworth square-wave highpass filter to time series}
+
+{p 8 17}{cmd:butterworth}
+{it:varlist}
+[{cmd:if} {it:exp}]
+[{cmd:in} {it:range}] 
+{cmd:,} {cmdab:freq(}{it:#}{cmd:)}
+{cmdab:stub(}{it:abbrev}{cmd:)}
+[
+{cmdab:order(}{it:#}{cmd:)}
+]
+
+
+{p 4 4}You must {cmd:tsset} your data before using {cmd:butterworth}; see help {cmd:tsset}.
+If a panel calendar is in effect, the filter can be applied if a single panel is specified 
+using if or in qualifiers, or with the {cmd:by} prefix. {p_end}
+
+{p 4 4}{cmd:varlist} may contain time-series operators; see help {cmd:varlist}. {p_end}
+
+{p 4 4}{cmd:butterworth} filters one or more time series using the Butterworth square-wave 
+highpass filter described in Pollock (2000).
+The {cmd:freq()}  argument specifies the minimum period of oscillation
+of the desired component of the time series, where 
+2 < {it:freq}  < infinity. The {cmd:order()} of the filter may also be chosen; if 
+not specified, it defaults to 2.
+ {p_end}
+
+{title:Options}
+    
+{p 4 8}{cmd:freq(}{it:#}{cmd:)}  specifies the minimum 
+period of oscillation, in periods per cycle, to be retained in the time series, 
+and must be given. It must be greater than 2 (the reciprocal of the Nyquist
+frequency). Higher-frequency components of the series will be returned
+in the filtered series.
+
+{p 4 8}{cmd:stub(}{it:abbrev}{cmd:)}, which must be provided, specifies the "stub" from 
+which new variable names will be created. Variables created by {cmd:stub} must be new 
+variables. If the {it:varlist} contains time-series 
+operators, the dots in their names are replaced by underscores so that the resulting 
+new variables' names are legal. 
+
+{p 4 8}{cmd:order(}{it:#}{cmd:)}  specifies the order of the filter. If not 
+specified, it defaults to 2.
+
+{title:Examples}
+
+{p 4 8}{stata "webuse lutkepohl,clear" :. webuse lutkepohl,clear}{p_end}
+
+{p 4 8}{stata "butterworth investment, freq(6) stub(F)" :. butterworth investment, freq(6) phi stub(F)}{p_end}
+
+{p 4 8}{stata "butterworth investment income consumption, freq(12)  stub(filt)" :. butterworth investment income consumption, freq(12) stub(filt)}{p_end}
+
+{p 4 8}{stata "butterworth D.investment, freq(4) order(3) stub(fl)" :. butterworth D.investment, freq(4) order(3) stub(fl)}{p_end}
+
+{p 4 8}{stata "use http://fmwww.bc.edu/ec-p/data/hayashi/sheston91.dta,clear":. use http://fmwww.bc.edu/ec-p/data/hayashi/sheston91.dta,clear}{p_end}
+
+{p 4 8}{stata "drop if country>4":. drop if country>4}{p_end}
+
+{p 4 8}{stata "tsset":. tsset}{p_end}
+
+{p 4 8}{stata "by country: butterworth rgdppc, freq(3)  stub(SBY)":. by country: butterworth rgdppc, freq(3) stub(SBY)}{p_end}
+
+
+{title:Authors}
+
+{p 4 4}Christopher F. Baum, Boston College, USA{break} 
+       baum@bc.edu
+       
+{p 4 4}Martha Lopez, Boston College, USA{break} 
+       lopezmo@bc.edu
+
+{title:References}
+
+{p}D.S.G. Pollock, Trend estimation and de-trending via rational square-wave
+filters, Journal of
+Econometrics, 2000, 99, 317-334.{p_end}
+    
+{p}Pawel Kowal (2005). MATLAB implementation of commonly used filters,
+http://ideas.repec.org/c/wpa/wuwppr/0507001.html{p_end}
+
+{title:Acknowledgements} 
+
+{p 4 4}The Mata code of this routine was translated from MATLAB code made available by Pawel Kowal (2005).
+
+{title:Also see}
+
+{p 4 13}On-line: {help hprescott} (if installed), {help bking} (if installed), 
+{help cfitzrw} (if installed), {help tsset}
+

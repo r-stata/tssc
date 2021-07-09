@@ -1,0 +1,232 @@
+{smcl}
+{* Created March 2007, updated September 2008}{...}
+{hline}
+{cmd:help for wtpcikr}
+{hline}
+
+
+{title:Title}
+
+{p 4 4 2}{...}
+{bf:wtpcikr ---} {sf:Estimate Krinsky and Robb Confidence Intervals for Mean and Median Willingness to Pay (WTP)}
+{p2colreset}{...}
+
+{marker contents}{dlgtab: Table of Contents}
+{p 6 16 2}
+
+{p 2}{help wtpcikr##syntax:Syntax}{p_end}
+{p 2}{help wtpcikr##description:General description of {cmd:wtpcikr}}{p_end}
+{p 2}{help wtpcikr##options:Description of the options}{p_end}
+{p 2}{help wtpcikr##results:Saved results}{p_end}
+{p 2}{help wtpcikr##examples:Examples}{p_end}
+{p 2}{help wtpcikr##author:Author information}{p_end}
+{p 2}{help wtpcikr##citation:Citation}{p_end}
+{p 2}{help wtpcikr##refs:References}{p_end}
+{p 2}{help wtpcikr##acknow:Acknowledgments}{p_end}
+
+
+{marker syntax}{title:Syntax} 
+
+{phang}
+{cmd:wtpcikr} {varlist} [{opt if} {it: exp}] [{opt in} {it: range}] [{cmd:,}
+{opt reps(#)} {opt seed(#)} {opt l:evel(#)} {opt mym:ean(name)} {opt bm:at(name)} {opt vm:at(name)} 
+{opt eq:uation(name)} {opt expo:nential} {opt meanl:ist} {opt dots}
+{cmdab:sa:ving(}{it:filename} [{cmd:,} {stata "help prefix_saving_option":{it:saving_options}}]{cmd:)}]
+
+
+{synoptset 22 tabbed}
+{synopthdr}
+{synoptline}
+{syntab:Options}
+     
+{synopt :{opt reps(#)}}set the number of replications{p_end}
+{synopt :{opt seed(#)}}specify the seed number{p_end}
+{synopt :{opt l:evel(#)}}set the confidence level{p_end}
+{synopt :{opt mym:ean(name)}}supply a mean vector{p_end}
+{synopt :{opt bm:at(name)}}specify a vector of parameter estimates{p_end}
+{synopt :{opt vm:at(name)} }supply a variance covariance matrix{p_end}
+{synopt :{opt eq:uation(name)}}set the equation name{p_end}
+{synopt :{opt expo:nential}}exponential functional form{p_end}
+{synopt :{opt meanl:ist}}report the mean vector used in computation{p_end}
+{synopt :{opt dots}}display replication dots{p_end}
+{synopt:{help prefix_saving_option:{bf:saving(}{it:filename}{bf:, ...)}}}save
+        results to {it:filename}{p_end}
+
+{p2colreset}{...}
+
+{marker description}{dlgtab:Description}
+
+{pstd}
+{cmd:wtpcikr} computes mean and/or median willingness to pay (WTP), confidence intervals (CI) based on the Krinsky and Robb (1986) method, achieved significance levels (ASL) 
+for testing the null hypothesis that WTP<=0, and relative efficiency measures (Loomis and Ekstrand, 1998). The command supports both
+linear and exponential contingent valuation models estimated with or without covariates using the Stata commands {helpb probit}, {helpb logit}, and
+{helpb biprobit}. It can also be used for user-written maximum likelihood programs as long as the formulas for WTP measures apply. The user bears the responsibility as 
+to whether WTP formulas apply. Users are referred to Haab and McConnell (2002), pp. 52-57 and p. 104 for WTP models and mean/median WTP formulas, and pp. 110-112 for the Krinsky
+and Robb procedure. See also Park et al. (1991). 
+
+{pstd}It is crucial that the order of the variables in {varlist} after {cmd:wtpcikr} be the same as in {varlist} after the Stata estimation command. Equally important is 
+the assumption that the {hi: {it:bid variable}} follows the dependent variable in {varlist} after the estimation command and is the first variable specified in {varlist} 
+after {cmd:wtpcikr} (see examples below).
+
+{pstd}{cmd:wtpcikr} uses Mata to take random draws from multivariate normal distribution using the variance-covariance matrix {opt vmat} and the vector of parameter estimates
+{opt bmat} or the defaults to these options.
+
+{phang}For exponential logit models, mean WTP is not defined if sigma>1. Stata will issue a warning and only median WTP will be calculated if sigma>1. 
+
+
+{marker options}{dlgtab:Options for wtpcikr}
+
+{phang}
+{opt reps(#)} specifies the number of replications to be performed for the simulations. The default is {opt reps(5000)}. 
+
+{phang}
+{opt seed(#)} sets the random-number seed, which is defaulted to {opt seed(032007)}. This option is useful to ensure replicability of the results.
+
+{phang}
+{opt level(#)} sets the confidence level. The default is {opt level(95)}.
+
+{phang}
+{opt equation(name)} causes {cmd:wtpcikr} to choose a specific equation for which WTP measures and confidence interval are requested, 
+if there are multiple equations. This option is relevant for double bounded models estimated using the {cmd:biprobit} command   
+and user-written maximum likelihood programs which estimate ancillary parameters considered by Stata as equations. By default, computation is done
+using the first equation.
+
+{phang}
+{opt mymean(name)} specifies a vector containing sample means of independent variables (dimension 1 x k-1, k is the number of independent variables specified in {varlist} 
+after {cmd:wtpcikr}) to be used in the calculations. For models with covariates, by default, {cmd:wtpcikr} uses the sample means of the independent variables 
+specified in {varlist} except the bid variable. Using this option, the user can supply a mean vector indicating the mean value to be used for each independent variable in 
+{varlist} except the bid variable. This option may be of interest to adjust for the fact some socio-demographic characteristics of the sampled respondents
+sometimes differ from those of the general population in the study area. For example, secondary data from the Census Bureau on the socio-demographic characteristics of 
+the study area population may be combined with socio-demographic characteristics of the sampled respondents in calculating WTP measures and confidence intervals
+(see example below).
+
+{pmore}
+This option cannot be specified for constant-only models containing only a constant term and the bid variable as covariates. 
+
+{phang}
+{opt bmat(name)} specifies a vector of parameter estimates to be used. The default is the vector of estimated coefficients returned in e(b) by the estimation command.
+
+{phang}
+{opt vmat(name)} specifies a variance-covariance matrix to be used. The default is the variance-covariance matrix returned in e(V) by the estimation command.
+The {opt bmat(name)} and {opt vmat(name)} or {opt mymean(name)} options allow the user to trick {cmd:wtpcikr} to compute WTP measures and 
+CI for models not even estimated in Stata or for models estimated in Stata but without using the above-mentioned Stata commands. In this case, the user is reminded that
+in the vector of the parameter estimates {opt bmat}, the coefficients on the bid variable and the constant term must be listed in the first and last position respectively.
+The position of the {opt vmat} elements must match that of the {opt bmat} elements. The question as to which formula {cmd:wtpcikr} will use in the calculations is an 
+important one. By default, the formula corresponding to linear probit and logit models is used. If the user wants calculations to be done for an exponential logit model, 
+a simple logit model must be first estimated before running {cmd:wtpcikr} with the {opt exponential} option. 
+
+{phang}
+{opt exponential} specifies that functional form of the underlying model is exponential. If this option is not specified, 
+a linear functional form is assumed.
+
+{phang}
+{opt meanlist} requests that the vector containing the sample means of the explanatory variables used in the computation be displayed. Of course, this option cannot be used for 
+constant-only models and when the {opt mymean} option is specified.
+
+{phang}
+{opt dots} causes replication dots to be displayed. By default, replication dots are suppressed. 
+
+{phang}
+{cmd:saving(}{it:filename} [{cmd:,} {it:saving_options}]{cmd:)} specifies that results be saved to a Stata data file, {it:filename}.
+{it:saving_options} are the options of the Stata {stata "help prefix_saving_option":{bf:saving}} command. The data file will contain the variables
+{cmd:meanwtp} and/or {cmd:medianwtp}, depending on whether the {opt exponential} option was specified. The emprical distribution stored in {it:filename} can be useful
+in applying the {bf:complete combinatorial} method, for example, to test whether differences in WTP measures are statistically significant (See Poe et al., 2005). 
+Although not necessary (since a p-value is calculated), users can also use the stored dataset to calculate standard errors for WTP measures. 
+
+{pstd}If your {it:filename} (including its path) contains embedded spaces, remember to enclose it in double quotes.
+
+
+{marker results}{dlgtab:Saved results}
+
+{phang}
+{cmd:wtpcikr} returns most of the calculated results in local macros. After running {cmd:wtpcikr}, type in {help return list}, to see the saved results.
+
+
+{marker examples}{dlgtab:Examples}
+
+Linear Probit and bivariate probit with covariates
+{phang}{cmd:. probit y1 bid1 income age sex household knowledge env_org}{p_end}
+{phang}{cmd:. wtpcikr bid1 income age sex household knowledge env_org, reps(10000) meanl dots}{p_end}
+
+{phang}{cmd:. biprobit (y1 = bid1 income age sex household knowledge env_org) (y2 = bid2 income age sex household knowledge env_org)}{p_end}
+{phang}{cmd:. wtpcikr bid1 income age sex household knowledge env_org, reps(20000) equation(y1)}{p_end}
+
+{phang}{cmd:. biprobit (y1=bid1 income) (y2=bid2 income)}{p_end}
+{phang}{cmd:. matrix med_inc=(54)} // Suppose this is median income (in $1000) from Census data for study area{p_end}
+{phang}{cmd:. wtpcikr bid1 income, reps(50000) eq(y1) mym(med_inc) dots}{p_end}
+{phang}{cmd:. wtpcikr bid2 income, reps(50000) eq(y2) mym(med_inc) dots}{p_end}
+
+
+Exponential probit model
+{phang}{cmd:. gen lbid=ln(bid)}{p_end}
+{phang}{cmd:. probit ypay lbid income educ age sex dummy1 dummy2}{p_end}
+{phang}{cmd:. wtpcikr lbid income educ age sex dummy1 dummy2, reps(30000) expo}{p_end}
+
+{phang}To use median income (in $1000) and average years of schooling from Census data combined with sample mean of the rest of the variables from survey data{p_end}
+{phang}{cmd:. matrix matcens=[53, 12, 52, .61, .49, .72]} // Here a value is not supplied for the bid variable and the constant term {p_end}
+{phang}{cmd:. wtpcikr lbid income educ age sex dummy1 dummy2, reps(30000) mym(matcens) expo}{p_end}
+
+
+Linear constant-only model
+{phang}{cmd:. probit y1 bid}{p_end}
+{phang}{cmd:. wtpcikr bid, reps(40000) dots}{p_end}
+
+
+Exponential constant-only model
+{phang}{cmd:. gen lbid=ln(bid)}{p_end}
+{phang}{cmd:. probit y1 lbid}{p_end}
+{phang}{cmd:. wtpcikr lbid, reps(40000) expo dots}{p_end}
+
+
+To save in a Stata data file (myfile) mean and median WTP calculated in each replication 
+{phang}{cmd:. logit y1 lbid}{p_end}
+{phang}{cmd:. wtpcikr lbid, reps(20000) expo dots saving(C:\foldername\myfile)}{p_end}
+
+
+{marker author}{title:Author}
+
+{hi:P. Wilner Jeanty}, Post-Doctoral Researcher, Dept. of Agricultural, Environmental, and Development Economics, The Ohio State University (OSU).
+Send comments and suggestions to {browse "mailto:jeanty.1@osu.edu":jeanty.1@osu.edu}
+
+
+{marker citation}{title:Citation}
+
+Users should please cite the program in any published work as: 
+
+{hi:Jeanty, P. Wilner}. 2007. "{cmd:wtpcikr}: Constructing Krinsky and Robb Confidence Interval for Mean and Median Willingness to Pay (WTP) Using Stata."
+{it:North American Stata Users' Group Meetings 2007}, 8. 
+
+
+{marker refs}{title:References}
+
+{hi:Haab, T.C. and K.E. McConnell}. 2002. {it:Valuing Environmental Natural Resources:} {it:The Econometrics of Non-Market Valuation}. 
+Northampton, MA: Edward Elgar Publishing.
+
+{hi:Krinsky, I. and A.L. Robb}. 1986. "On Approximating the Statistical Properties of Elasticities." {it:Review of Economic and Statistics} 68: 715-719.
+
+{hi:Loomis, J. and E. Ekstrand}. 1998. "Alternative Approach for Incorporating Uncertainty When Estimating Willingness to Pay: The Case of the Mexican Spotted Owl." 
+{it:Ecological Economics} 27: 29-41
+
+{hi:Park, T, J.B. Loomis, and M. Creel}. 1991. "Confidence Interval for Evaluating Benefit Estimates from Dichotomous Choice Contingent Valuation Studies." 
+{it:Land Economics} 67: 64-73.
+
+{hi:Poe, G.L., K.L. Giraud, and J.B. Loomis}. 2005. "Computational Methods for Measuring the Difference of Empirical Distributions." 
+{it:American Journal of Agricultural Economics} 87:353-365.
+
+
+{marker acknow}{title:Acknowledgments}
+
+The author thanks Arne Risa Hole for sharing a preprint version of his {cmd:wtp} command. A grant from the US Dept. of Energy and support 
+from the Office of Energy Efficiency, Ohio Dept. of Development and from the AED Economics Dept. are gratefully acknowledged. 
+
+
+{title:See also}
+
+{psee}
+Manual:  {bf:[R] nlcom}
+
+{psee}
+Online:  {help nlcom}
+{p_end}
+
+

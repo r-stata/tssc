@@ -1,0 +1,35 @@
+d 'ESETRAN': module to transform estimates and standard errors in parmest resultssets
+d
+"d  esetran is designed for use in parmest resultssets, which have"
+d one observation per estimated parameter and data on parameter
+"d estimates.  It inputs 2 user-specified variables, containing the"
+"d estimates and the standard errors, and replaces them with the"
+d estimates and standard errors of the same parameters after a
+"d user-specified transformation, promoting their storage types to"
+d double precision if necessary.  Parameter values at the
+d boundaries of the parameter range (such as the logit of 1 or 0 or
+d the hyperbolic arctangent of 1 or -1) are set to sensible
+d non-missing boundary values.  The user can then use the parmcip
+d option of the parmest package to recalculate the t- and
+"d z-statistics, symmetric confidence limits and P-values for the"
+"d transformed parameters, and use endpoint transformations on the"
+d estimates and confidence limits to produce asymmetric confidence
+d intervals for back-transformed parameters.  This practice is
+d especially useful if the user has produced symmetric confidence
+"d intervals for scenario proportions and their differences, using"
+"d margins after a logistic regression, and needs to replace them"
+"d with asymmetric confidence intervals, which are more likely to"
+d have the correct coverage probability.
+d
+d KW: parmest
+d KW: resultssets
+d
+d Requires: Stata version 10
+d
+d Distribution-Date: 20180801
+d
+"d Author: Roger Newson, Department of Primary Care and Public Health, Imperial College London"
+d Support: email r.newson@@imperial.ac.uk
+d
+f esetran.ado
+f esetran.sthlp

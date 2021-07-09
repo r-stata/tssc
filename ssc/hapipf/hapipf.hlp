@@ -1,0 +1,199 @@
+{smcl}
+{hline}
+help for {hi:hapipf}
+{hline}
+
+
+{title:Haplotype frequency using an EM algorithm and log-linear modelling}
+
+{p 8 27}
+{cmdab:hapipf}
+[{it:varlist}] [{cmd:using}] [{hi:if}{it:  exp}] 
+,
+{cmdab:ipf}{cmd:(}{it:string}{cmd:)}
+[
+{cmdab:ldim}{cmd:(}{it:varlist}{cmd:)}
+{cmd:start}
+{cmdab:dis:play} 
+{cmdab:known} 
+{cmdab:phase}{cmd:(}{it:varname}{cmd:)} 
+{cmdab:acc}{cmd:(}{it:#}{cmd:)} 
+{cmdab:ipfacc}{cmd:(}{it:#}{cmd:)} 
+{cmdab:nolog}
+{cmdab:model}{cmd:(}{it:#}{cmd:)}
+{cmdab:lrtest}{cmd:(}{it:#,#}{cmd:)} 
+{cmdab:convars}{cmd:(}{it:string}{cmd:)}
+{cmdab:confile}{cmd:(}{it:string}{cmd:)} 
+{cmdab:usew}{cmd:(}{it:string}{cmd:)} 
+{cmdab:savew}{cmd:(}{it:string}{cmd:)} 
+{cmdab:mv} 
+{cmdab:mvdel} 
+{cmdab:menu}
+{cmdab:rare}{cmd:(}{it:#}{cmd:)}
+{cmdab:cc}{cmd:(}{it:varname}{cmd:)}
+]
+
+{p}
+
+{title:Description}
+
+{p 0 0}
+This command calculates allele/haplotype frequencies using log-linear 
+modelling embedded within an EM algorithm. The EM algorithm handles the phase 
+uncertainty and the log-linear modelling allows testing for linkage 
+disequilibrium and disease association. These tests can be controlled
+for confounders using a stratified analysis specified by the log-linear model. 
+The log-linear model can also model the relationship between loci and hence 
+can group similar haplotypes.
+
+
+{p 0 0}
+The log-linear model is fitted using iterative proportional fitting which is 
+implemented in the STB command {hi:ipf.ado}  (the user will have to install this
+ function first). This algorithm can handle very large contingency tables and 
+converges to maximum likelihood estimates even when the likelihood is badly 
+behaved.
+
+
+{p 0 0}
+The {hi:varlist} consists of paired variables representing the alleles at each 
+locus. If phase is known then the pairs are the genotypes. When phase is 
+unknown the algorithm assumes Hardy Weinberg Equilibrium
+so that models are based on chromosomal data and not genotypic data.
+
+
+{p 0 0}
+This algorithm can handle missing alleles at the loci by using the {hi:mv} option.
+
+{title:Options}
+
+{p 0 0}
+{cmdab:menu} specifies that the commands syntax is determined using the window interface. In the window
+interface select the loci and disease variables and then press the APPLY button. There should be a choice of
+four models when there some loci and the disease variable are selected. Either press the "put in review window" button so the syntax is placed in the review window OR press "run command" button and that model will be fitted.
+
+
+{p 0 0}
+{cmdab:rare}{cmd:(}{it:#}{cmd:)} specifies that all haplotypes below this frequency 
+(a number between 0 and 1) are grouped into one category. NOTE that you must specify the
+saturated mode in the {cmdab:ipf} option and that you do not include the dependent variable in this
+model. This option will automatically fit firstly
+the saturated model to calculate haplotype frequencies and hence identify the
+groupings. Then with the grouped categories the independence and association models
+are fitted and a likelihood ratio test comparing the two is produced. The user
+must specify the outcome variable in the {cmdab:cc} option.
+
+{cmdab:cc}{cmd:(}{it:varname}{cmd:)} specifies the outcome variable when using the {hi:rare} option.
+
+{p 0 0}
+{cmdab:mv} specifies that the algorithm should replace missing data (".") with a copy
+  of each of the possible alleles at this locus. This is performed at the same
+  stage as the handling of the missing phase when the dataset is expanded into
+  all possible observations. If this option is not specified but some of the 
+  alleles do contain missing data the algorithm sees the symbol "." as another
+  allele.
+
+{cmdab:mvdel} specifies that people with missing alleles are deleted.
+
+{p 0 0}
+{cmdab:ldim}{cmd:(}{it:varlist}{cmd:)} specifies the variables that determine the dimension of the 
+  contingency table. By default the variables contained in the {hi:ipf()} option
+  define the dimension.
+
+{p 0 0}
+{cmdab:ipf}{cmd:(}{it:string}{cmd:)} specifies the log-linear model. It requires special syntax of
+   the form {hi:l1*l2+l3}. {hi:l1*l2} allows all the interactions
+   between the first two loci and locus 3 is independent of them.
+   This syntax is used in most books on Log-linear modelling.
+
+{p 0 0}
+{cmd:start} specifies that the starting posterior weights of the EM algorithm are 
+   chosen at random. The default is that every haplotype has equal weight.
+
+{p 0 0}
+{cmdab:dis:play} specifies whether the expected and imputed haplotype frequencies are
+  shown on the screen.
+
+{cmdab:known} specifies that phase is known.
+
+{p 0 0}
+{cmdab:phase}{cmd:(}{it:varname}{cmd:)} specifies a variable that contains 1's where phase is known
+   and 0's where phase is unknown.
+
+{p 0 4}
+{cmdab:acc}{cmd:(}{it:real}{cmd:)} specifies the convergence threshold of the change of the full log-likelihood.
+
+{cmdab:ipfacc}{cmd:(}{it:real}{cmd:)} specifies the convergence theshold of the change in the log-likelihood of the log-linear model.
+
+{cmdab:nolog} specifies whether the log-likelihood is displayed at each iteration.
+
+{p 0 0}
+{cmdab:model}{cmd:(}{it:#}{cmd:)} specifies a label for the log-linear model being fitted. This
+  label is used in the lrtest() option.
+
+{p 0 0}
+{cmdab:lrtest}{cmd:(}{it:#,#}{cmd:)} performs a likelihood ratio test using two models that have
+  been labelled in the {hi:model()} option.
+
+{cmdab:convars}{cmd:(}{it:string}{cmd:)} specifies a list of variables in the constraints file.
+
+{cmdab:confile}{cmd:(}{it:string}{cmd:)} specifies the name of the constraints file.
+
+{cmdab:usew}{cmd:(}{it:string}{cmd:)} specifies that the starting weights come from an external data file.
+
+{p 0 0}
+{cmdab:savew}{cmd:(}{it:string}{cmd:)} specifies that the final set of weights is saved to a data file. 
+Thus {hi: hapipf} can be run once with the {hi:savew()} option and then to replicate the same analysis quicker the user can specify the {hi:usew()} option with the {hi:savew()} datafile.
+
+{title:Examples}
+
+{p 0 0}
+Take a dataset with 3 loci, the pairs of alleles at locus 1 are the variables
+ass1 and ass2, the pairs of alleles at locus 2 are the variables
+bss1 and bss2 and the pairs of alleles at locus 3 are the variables
+drss1 and drss2. Note the {hi:ipf()} option requires the log-linear model that 
+contains lj terms which represent locus j. 
+
+{p 0 0}
+The indicator variable for whether a person
+is a case or control is caco. To test whether the haplotypes are associated
+with disease is the likelihood ratio test comparing the models 
+l1*l2*l3*caco and l1*l2*l3+caco. The following stata commands perform this
+test.
+
+{inp:.hapipf ass1 ass2 bss1 bss2 drss1 drss2, ipf(l1*l2*l3*caco) model(0) display}
+{inp:.hapipf ass1 ass2 bss1 bss2 drss1 drss2, ipf(l1*l2*l3+caco) model(1) lrtest(0,1) display}
+
+{p 0 0}
+If there are too many rare haplotypes they can be grouped by the following command and the
+likelihood ratio test is calculated for the two models above.
+
+{inp:.hapipf ass1 ass2 bss1 bss2 drss1 drss2, ipf(l1*l2*l3) cc(caco) rare(0.05)}
+
+{p 0 0}
+To identify haplotype blocks. Lets say we have 5 loci and that the first block contains the
+first three loci and the second block contains the last two loci then you can compare the 
+following models
+
+{inp:.hapipf a1 a2 b1 b2 c1 c2 d1 d2 e1 e2, ipf(l1*l2*l3*l4*l5) model(0) display}
+{inp:.hapipf a1 a2 b1 b2 c1 c2 d1 d2 e1 e2, ipf(l1*l2*l3+l4*l5) model(1) lrtest(0,1) display}
+
+
+{title:Author}
+
+{p}
+Adrian Mander, Glaxo Smithkline, Harlow, UK.
+
+Email {browse "mailto:adrian.p.mander@gsk.com":adrian.p.mander@gsk.com}
+
+{title:Also see}
+
+On-line: help for 
+Quantitative Trait {help qhapipf} (if installed),
+Profile likelihoods {help profhap} (if installed),
+Log-linear modelling {help ipf} (if installed), 
+Haplotype blocks {help hapblock} (if installed), 
+Haplotype blocks {help swblock} (if installed). 
+
+
+

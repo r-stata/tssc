@@ -1,0 +1,151 @@
+{smcl}
+{* *! 24oct2006}{...}
+{hline}
+{cmd:help outsum}
+{hline}
+
+{title:Write formatted descriptive statistics to a text file}
+
+
+{p 8 16 2}
+{cmd:outsum} {varlist} {ifin} {weight} {helpb using} {it:filename} [{cmd:,} 
+{opt ap:pend} {opt nol:abel} {opt nopa:ren} {opt br:acket} {opt nonob:s} {opt nonot:es} 
+{opt replace} {opt com:ma} {opt quo:te} {opt ti:tle(textlist)} {opt ct:itle(textlist)} 
+{opt addn:ote(textlist)}]
+
+{p 4 6 2}
+{opt aweight}s, {opt fweight}s and {opt iweight}s are allowed; see {help weight}.
+
+
+
+{title:Description}
+
+{pstd}
+{opt outsum} writes means and standard deviations to an external text file, in 
+much the same way {helpb outreg} produces formatted regression output, i.e. it
+creates an ASCII text file with columns separated with tab characters and 
+standard deviations displayed in parentheses below the means. The major 
+difference is that the user must specify a {varlist} (using wildcards or 
+hyphenated syntax) directly. As in {helpb outreg}, the {helpb using} clause specifies the
+name of the new or existing ASCII file that will contain the means and 
+standard deviations.
+
+{pstd}
+The options are largely the same as for {helpb outreg}.
+
+
+{title:Options}
+
+{phang}
+{opt append} specifies that new descriptive statistic output be appended to an 
+    existing output file. In general, the same {opt outsum} options should be used 
+    in the original output and each appended column. The notes at the bottom 
+    of the table explaining the standard deviations are correct for the 
+    first column of descriptive statistics in the output file. If 
+    subsequently appended results change the use of parentheses or brackets, 
+    the notes will not be appropriate for all the columns. This problem can 
+    be addressed with a combination of {opt nonotes} and {opt addnote}.
+
+{phang}
+{opt nolabel} specifies that variable names rather than variable labels be used to 
+    identify coefficients.
+
+{phang}
+{opt noparen} specifies that no parentheses be placed around standard deviations.
+
+{phang}
+{opt bracket} specifies that square brackets [] be used rather than parentheses ()
+    around standard deviations.
+
+{phang}
+{opt nonobs} specifies that the number of observations in the dataset not be 
+    reported.
+
+{phang}
+{opt nonotes} specifies that notes explaining the standard deviations not be 
+    included.
+
+{phang}
+{opt replace} specifies that it is okay to replace filename if it already exists.
+
+{phang}
+{opt comma} specifies that the ASCII file output be separated by commas rather than 
+    by tabs. This can cause problems if any of the user-defined text has 
+    commas in it (such as variable labels, {opt title}, {opt ctitle}, {opt addstat}, 
+    or {opt addnote}). If that is the case, consider using {opt quote} as well.
+
+{phang}
+{opt quote} specifies that string variables be enclosed in double quotes.
+
+{phang}
+{opt title(textlist)} specifies a title or titles at the top of the regression 
+    table. The maximum title length is 80 characters. Additional characters 
+    will be cut off. When descriptive statistics are appended together, the 
+    table title must be specified in the first outsum call; titles specified 
+    in subsequent {opt outsum} {opt ... append} calls will be ignored. Note that when 
+    converting the {opt outsum} text output to a table in a word processor or a 
+    spreadsheet, it is easier to leave out the title row out of the text 
+    selected for conversion.
+
+{phang}
+{opt ctitle(textlist)} specifies the title above the column of means and standard 
+    deviations. By default if no column title is specified, the label or name 
+    of the variable is displayed.
+
+{phang}
+{opt addnote(textlist)} specifies user-added notes to be displayed in new lines at 
+    the bottom of the {opt outsum} table. When descriptive statistics are appended 
+    together, {opt addnote} must be specified in the first {opt outsum} call; addnotes 
+    specified in subsequent {opt outsum ... append} calls will be ignored. {opt addnote} 
+    is consistent with {opt nonotes}. A blank line can be inserted by including "" 
+    as a note.
+
+
+{title:Examples}
+
+{phang}{cmd:. use http://stata-press.com/data/r9/auto.dta, clear}
+
+{phang}(1978 Automobile Data)
+
+{phang}{cmd:. outsum mpg foreign weight using auto1, ctitle("Full sample")}
+
+{phang}{cmd:. type auto1.out}
+
+{txt:    Variable        Full sample}
+{txt:    Mileage (mpg)   21.2973}
+{txt:            (5.7855)}
+{txt:    Car type        .2973}
+{txt:            (.4602)}
+{txt:    Weight (lbs.)   3019.459}
+{txt:            (777.1936)}
+{txt:    Observations    74}
+{txt:    Standard deviations in parentheses  }
+
+{phang}{cmd:. outsum mpg weight using auto1 if foreign==0, append ctitle("Domestic")}
+
+{phang}{cmd:. type auto1.out}
+
+{txt:    Variable        Full sample     Domestic}
+{txt:    Mileage (mpg)   21.2973 19.8269}
+{txt:            (5.7855)        (4.7433)}
+{txt:    Car type        .2973   }
+{txt:            (.4602) }
+{txt:    Weight (lbs.)   3019.459        3317.115}
+{txt:            (777.1936)      (695.3637)}
+{txt:    Observations    74      52}
+{txt:    Standard deviations in parentheses    }
+
+
+{title:Author}
+
+{psee}
+Kerry L. Papps, Cornell University, USA
+
+{pstd}
+klp27@cornell.edu
+
+
+{title:Also see}
+
+{psee}
+On-line:  {helpb outreg}, {helpb outsheet}

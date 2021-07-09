@@ -1,0 +1,173 @@
+{smcl}
+{* 21feb2005/8mar2006}{...}
+{hline}
+help for {hi:spautoc}
+{hline}
+
+{title:Spatial autocorrelation (Moran and Geary measures)}
+
+{p 8 17 2}
+{cmd:spautoc}
+{it:xvar} 
+{it:neivar}
+[{cmd:if} {it:exp}] 
+[{cmd:in} {it:range}] 
+[, {cmdab:w:eight(}{it:strvar}) 
+{cmdab:lmea:n(}{it:newvar}{cmd:)} 
+{cmdab:lmed:ian(}{it:newvar}{cmd:)}]
+   
+   
+{title:Description} 
+
+{p 4 4 2} 
+{cmd:spautoc} calculates Moran and Geary measures of spatial autocorrelation
+for a spatial variable {it:xvar} and neighbourhood information given by
+{it:neivar}.
+
+
+{title:Remarks}
+                                                   
+{p 4 4 2}
+For n values of a spatial variable x defined for various locations, 
+which might be points or areas, calculate the deviations
+
+            _
+    z = x - x 
+
+{p 4 4 2} 
+and for pairs of locations i and j, define a weights matrix 
+
+    W = ( w   )
+           ij 
+	  
+{p 4 4 2} 	  
+describing which locations are neighbours in some precise sense. 
+For example, a weight might be assigned as 1 if i and j are contiguous areas 
+and 0 otherwise; or it might be a function of the distance between 
+i and j and/or the length of boundary shared by i and j.
+
+{p 4 4 2} 
+The Moran measure of autocorrelation is 
+
+         n   n                      n   n         n   2
+    n ( SUM SUM z  w   z  ) / ( 2 (SUM SUM w  )  SUM z  ) 
+        i=1 j=1  i  ij  j          i=1 j=1  ij   i=1  i 
+
+{p 4 4 2} 
+and the Geary measure of autocorrelation is 
+
+               n   n               2           n   n         n   2
+    (n - 1) ( SUM SUM w   (z  - z )  ) / ( 4 (SUM SUM w  )  SUM z  ) 
+              i=1 j=1  ij   i    j            i=1 j=1  ij   i=1  i 
+
+{p 4 4 2} 
+and these measures may used to test the null hypothesis of no spatial 
+autocorrelation, using both a sampling distribution assuming that x 
+is normally distributed and a sampling distribution assuming randomisation, 
+that is, we treat the data as one of n! assignments of the n values to 
+the n locations. 	    
+
+{p 4 4 2} 
+{cmd:spautoc} avoids the use of Stata's matrix language, to avoid any limit 
+on the number of locations which that would imply, and to avoid the need 
+to handle a matrix that would typically be very sparse. The price 
+paid is a data structure for the neighbourhood information that is 
+idiosyncratic by Stata standards. 
+
+{p 4 4 2}Here is a toy example: 
+
+    area            neighbours            value  	
+    {hline 4}            {hline 10}            {hline 5} 
+      1             2, 3 and 4              3 
+      2             1 and 4                 2
+      3             1 and 4                 2
+      4             1, 2 and 3              1
+	       
+{p 4 4 2}This would be matched by the data 
+
+    {cmd:_n} (obs no)    {cmd:x} (numeric variable)    {cmd:nei} (string variable) 
+    {hline 11}    {hline 20}    {hline 21} 
+         1                   3                    "2 3 4"
+         2                   2                      "1 4"
+         3                   2                      "1 4"
+         4                   1                    "1 2 3"
+
+{p 4 4 2} 
+That is, {cmd:nei} contains the observation numbers of the neighbours of 
+the location in the current observation, separated by spaces. Therefore, 
+the data must be in precisely this sort order when {cmd:spautoc} is called. 
+
+{p 4 4 2} 
+Note various assumptions made here: 
+
+{p 8 8 2} 
+1. The neighbourhood information can be fitted into at most a {cmd:str244}  
+variable. 
+
+{p 8 8 2} 
+2. If i neighbours j, then j also neighbours i and both facts are 
+specified. 
+
+{p 4 4 2} 
+By default this data structure implies that those locations listed 
+have weights in W that are 1, while all other pairs of locations are not 
+neighbours and have weights in W that are 0. 
+
+{p 4 4 2} 
+If the weights in W are not binary (1 or 0), use the {cmd:weights()} option. 
+The variable specified must be another string variable. 
+
+    {cmd:_n} (obs no)   {cmd:nei} (string variable)   {cmd:weight} (string variable)
+    {hline 11}   {hline 21}   {hline 24}
+         1                "2 3 4"             ".1234 .5678 .9012"
+    etc. 
+
+{p 4 4 2} 
+The weights matrix need not be symmetric.  
+    
+{p 4 4 2}     
+Again, the assumption here is that these weights can be fitted into 
+at most a {cmd:str244} variable. 
+
+
+{title:Options} 
+
+{p 4 8 2} 
+{cmd:weight()} specifies a string variable containing numeric weights, 
+as explained above. 
+
+{p 4 8 2} 
+{cmd:lmean()} and {cmd:lmedian()} specify that new variables 
+should be generated containing local means and local medians, that 
+is, means and medians of the neighbours of each location (not 
+including that location). Any weights specified will be used in 
+the calculation. 
+
+
+{title:Examples} 
+
+{p 4 8 2}{cmd:. spautoc cows nei}
+
+
+{title:References} 
+
+{p 4 8 2} 
+Cliff, A.D. and Ord, J.K. 1973. {it:Spatial autocorrelation.} London: Pion.
+
+{p 4 8 2} 
+Cliff, A.D. and Ord, J.K. 1981. {it:Spatial processes: models and applications.}
+London: Pion. 
+
+
+{title:Author} 
+
+
+{p 4 4 2}Nicholas J. Cox, Durham University, U.K.{break} 
+         n.j.cox@durham.ac.uk
+
+
+{title:Also see} 
+
+{p 4 13 2}
+On-line: help for {help dupneigh}, {help neigh}, {help numids} 
+

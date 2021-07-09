@@ -1,0 +1,242 @@
+{smcl}
+
+help for {cmd:nnmatch}
+
+
+{title:Nearest Neighbor Matching Estimation for Average Treatment Effects}
+
+{p 8 16}
+{cmd: nnmatch} {it: depvar treatvar varlist_nnmatch} [{bf:if} {it:exp}] [{bf:in} {it:range}] 
+[{bf:pw}] [{bf:, tc(}{it:ate} |{it:att} |{it:atc}{bf:)} {bf:m(}{it:#}{bf:)}  
+{cmdab:met:ric}{bf:(}{it:maha} |{it:matname}{bf:)} {cmdab:ex:act(}{it:varlist_ex}{bf:)}
+{cmdab:bias:adj(}{it:bias} |{it:varlist_adj}{bf:)} {cmdab:rob:ust(}{it:#_v}{bf:)}  
+{cmdab:pop:ulation} {cmdab:l:evel(}{it:#}{bf:)}
+{cmdab:k:eep(}{it:filename}{bf:) replace}]
+
+{p}
+{it:depvar}, {it:varlist_nnmatch}, and elements of {cmd:biasadj(}{it:varlist_adj}{bf:)} and 
+{cmd:exact(}{it:varlist_ex}{bf:)} must be numeric variables.
+{it:treatvar} must be a {0,1} variable.
+
+
+{title:Description}
+
+{p}
+{cmd:nnmatch} estimates the average treatment effect on {it:depvar} 
+by comparing outcomes between treated and control observations (as defined by {it:treatvar}), 
+using nearest neighbor matching across the variables defined in {it:varlist_nnmatch}. 
+{cmd:nnmatch} can estimate either the treatment effect for the treated observations, 
+for the controls, or for the sample as a whole.
+The program pairs observations to the closest {it:m} matches in the opposite treatment group 
+to provide an estimate of the counterfactual treatment outcome.  The program allows for
+matching over a multi-dimensional set of variables({it:varlist_nnmatch}), giving options 
+for the weighting matrix to be used in determining the optimal matches.  It also allows
+exact matching (or as close as possible) on a subset of variables. In addition, the program 
+allows for bias correction of the treatment effect, and estimation of either the sample or
+population variance, with or without assuming a constant treatment effect (homoskedasticity). 
+Finally it allows observations to be used as a match more than once, thus making the order of 
+matching irrelevant.  See Imbens et al. (Stata Journal 2004) for greater detail.
+
+
+{title:Options}
+
+{p 0 4}
+{cmd:tc(}{it:ate|att|atc}{bf:)} specifies which treatment effect is to be estimated: 
+
+{p 4 4 15}
+{it:ate}: the average treatment effect, 
+{p_end}
+{p 4 4 15}
+{it:att}: the average treatment effect for the treated, or 
+{p_end}
+{p 4 4 15}
+{it:atc}: the average treatment effect for the controls.  
+
+{p 4 4}
+If no option is specified, the average treatment effect, {it:ate}, is assumed. In this case
+all observations are matched to their nearest {it:m} neighbors of the opposite treatment group.
+In estimating the {it:att} or {it:atc}, only the treated or controls, respectively, are matched.
+
+{p 0 4}
+{cmd:m(}{it:#}{bf:)} specifies the number of matches to be made per observation. If two observations
+of the opposite treatment group
+are equally close to that being matched, both will be used.  Thus the number of matches per observation will be 
+greater than or equal to {it:m}.  If the average treatment effect is selected, {it:m} must be less than or equal to
+the smaller of {it:N0} and {it:N1}, where {it:N0} is the number of control observations in the dataset, and {it:N1} is the 
+number of treatment observations.  If {cmd:tc(}{it:att}{bf:)} is selected, {bf:m} need only be less than or equal to
+{it:N0}; if {cmd:tc(}{it:atc}{bf:)} is selected, {bf:m} must be less than or equal to {it:N1}. 
+If {cmd:m(}{it:#}{bf:)} is not specified, 1 is assumed.  
+
+{p 0 4}
+{bf:metric(}{it:maha|matname}{bf:)} specifies the weighting matrix to be used when {it:k}, 
+the number of elements of {it:varlist_nnmatch}, is greater than 1. 
+The {cmd:metric} option specifies the relative weight to be placed 
+on each variable in {it:varlist_nnmatch} in defining nearest neighbor matches. 
+Two options are available:
+
+{p 4 8 15}
+(1) {cmd:metric(}{it:maha}{bf:)} specifies the Mahalanobis metric, the inverse of the sample
+variance/covariance matrix of the {it:k} variables in {it:varlist_nnmatch}.
+{p_end}
+{p 4 8 15}
+(2) {cmd:metric(}{it:matname}{bf:)} allows for a user-defined weight matrix {it:matname}, 
+where {it:matname} is an already-specified {it:k}-dimensional, symmetric and positive semi-definite matrix.
+{p_end}
+
+{p 4 4 15}
+If no option is specified, the default is to use the {it:k} x {it:k} diagonal matrix of the inverse sample standard errors of the 
+{it:k} variables in {it:varlist_nnmatch}.  
+
+{p 0 4}
+{cmd:exact(}{it:varlist_ex}{bf:)} allows the user to specify exact matching (or as exact as possible)
+on one or more variables.  The exact-matching variables need not overlap with the elements of
+{it:varlist_nnmatch}.  In practice, however, the exact matching option adds these variables to the original 
+{it:k} x {it:k} {it:varlist_nnmatch} matrix, but in the weight matrix multiplies each exact element
+by 1000 relative to the weights placed on the elements of {it:varlist_nnmatch}.  (Regardless of the
+{cmd:metric()} option chosen for the {it:varlist_nnmatch} variables, the exact match variables
+are normalized via the default option - the inverse sample errors.)  Because for each matched 
+observation there may not exist members of the opposite treatment group with equal values of the
+exact-matching variables, matching may not be exact across the full dataset.  The output lists the 
+percentage of matches (across the paired observations, greater than or equal to {it:N}*{it:m} in
+number) that match exactly. 
+
+{p 0 4}
+{cmd:biasadj(}{it:bias} | {it:varlist_adj}{bf:)} The simple matching estimator estimates
+the average treatment effect by calculating the average, over the {it:N} observations being 
+matched, of the difference between the {it:depvar} outcome for observation {it:i}, and the 
+average outcomes for its {it:m} matches in the opposite treatment group. However, the simple 
+matching estimator will be biased if matching is not exact.  This option regression-adjusts 
+the results using either the original matching variable(s), {it:varlist_nnmatch} (if {cmd:baisadj(}{it:bias}{bf:)}
+ is selected), or a newly-specified set of variables, {it:varlist_adj}, (if {cmd:baisadj(}{it:varlist_adj}{bf:)} is chosen).
+
+{p 0 4}
+{cmd:robust(}{it:#_v}{bf:)} By default {cmd:nnmatch} assumes homoskedastic errors (a constant treatment
+effect).  However, the user can allow for heteroskedastic errors by selecting the {cmd:robust(}{it:#_v}{bf:)} option.  
+The program does this by conducting a second matching process (again across the elements of {it:varlist_nnmatch}), 
+this time matching observations in the same treatment group, to compare variability
+in outcomes ({it:depvar}) for observations with approximately the same {it:varlist_nnmatch} values.  
+{cmd:robust(}{it:#_v}{bf:)} allows the user to choose how many matches are used in this process.
+If {cmd:robust} is not selected, or {it:#_v} equals zero, homoskedastic errors are estimated.
+
+{p 0 4}
+{cmd:population} allows the user to specify the calculation of the population variance
+rather than the sample variance.  If {bf:population} is not selected, sample variance
+is assumed.
+
+{p 0 4}
+{cmd:level(}{it:#}{bf:)} specifies the confidence level, in percent, for confidence intervals.
+The default is {bf:level(95)} or as set by {bf:set level}.
+
+{p 0 4}
+{cmd:keep(}{it:filename}{bf:) replace} In the estimation process, {cmd:nnmatch} creates
+a temporary dataset holding, for each observation {it:i} being matched, a new observation 
+holding {it:i}'s outcome variable ({it:depvar}) and matching variable(s), {it:varlist_nnmatch}, 
+values, and the outcome and {it:varlist_nnmatch} values for its {it:m} closest matches.  
+Thus, the new dataset will hold at least (but potentially more than) {it:N}*{it:m} 
+observations.  If {cmd:biasadj(}{it:varlist_adj}{bf:)} or {cmd:exact(}{it:varlist_ex}{bf:)}
+are selected, the temporary dataset will also hold these values for each observation {it:i} and
+its match(es) {it:j}.  {cmd:keep(}{it:filename}{bf:)} allows the user to save this 
+temporary dataset.  
+
+{p 4 4}
+If {cmd:keep(}{it:filename}{bf:)} is selected, each observation of {it:filename}.dta will hold the following variables:
+
+{p 6 12 15}
+{it:t}:	The treatment group indicator, {it:treatvar}, for the observation being matched, {it:i}.
+{p_end}
+{p 6 12 15}
+{it:y}:	The observed outcome variable, {it:depvar}({it:i}).
+{p_end}
+{p 6 12 15}
+{it:x}:	The {it:varlist_nnmatch} values for observation {it:i}.  
+{p_end}
+{p 6 12 15}
+{it:id}: The identification code for the observation being matched, {it:i}. 
+{p_end}
+{p 12 12 15}
+(When the command {cmd:nnmatch} is given, the program creates a temporary variable, 
+{it:id} = {1,2,...N}, based on the original sort order.)  
+{p_end}
+{p 6 12 15}
+{it:index}:	The identification code for {it:j}, the match for observation {it:i}.
+{p_end}
+{p 6 12 15}
+{it:dist}:	The estimated distance between observation {it:i} and its match {it:j}, based on the
+{it: varlist_nnmatch} values of each and the selected weight matrix.
+{p_end}
+{p 6 12 15}
+{it:k_m}: The number of times observation {it:i} is itself used as a match for any observation {it:l}
+of the opposite treatment group, each time weighted by the total number of matches for the given observation
+{it:l}.
+{p_end}
+{p 12 12 15}
+(For example, if observation {it:i} is one of three matches for observation {it:l}, it receives a
+value of 1/3 for that match.  {it:k_m}({it:i}) is the sum, across all observations {it:l}, of this value.  
+Thus the sum of {it:k_m} across
+all observations {it:i} will equal {it:N} (or {it:N0} or {it:N1}, if the {it:atc} or {it:att}, respectively,
+are estimated).  Note that this value refers to {it:i}'s use as a match, not to its matches {it:j},
+so the value of {it:k_m} is equal across all observations in the temporary dataset that pertain to the 
+matching of observation {it:i}.
+{p_end}
+{p 6 12 15}
+{it:w_id}: Weight for observation {it:i}, if weights are selected.  
+{p_end}
+{p 6 12 15}
+{it:w_index}: Weight of observation {it:j}, the match for observation {it:i}, if weights are selected.  
+{p_end}
+{p 6 12 15}
+{it:`y'_0}:	The inferred {it:depvar} value if observation {it:i} were in the control group.  
+{p_end}
+{p 12 12 15}
+(If observation {it:i} is in fact a control observation, `y'_0 = `y'({it:i}).  If {it:i} is 
+a treated observation, `y'_0 = `y'({it:j}).)
+{p_end}
+{p 6 12 15}
+{it:`y'_1}: Inferred {it:depvar} value if {it:i} were in the treated group.
+{p_end}
+{p 6 12 15}
+{it:`x'_0m}: Values of {it:varlist_nnmatch} for {it:i}'s `control' observation.  Namely, if {it:i} is a
+control observation, {it:`x'_0m} = {it:x_i} for each element {it:x} of {it:varlist_nnmatch}.  If {it:i}
+is a treatment observation, {it:`x'_0m} will equal {it:x_j}.  
+{p_end}
+{p 6 12 15}
+{it:`x'_1m}: Values of {it:varlist_nnmatch} for {it:i}'s `treatment' observation.
+{p_end}
+{p 6 12 15}
+{it:`b'_0b}: Values of the bias-adjustment variables (if {cmd:biasadj(}{it:varlist_adj}{bf:)} is selected) 
+for {it:i}'s `control' observation, where {it:`b'} represents each element of the bias-adjustment variables.
+{p_end}
+{p 6 12 15}
+{it:`b'_1b}: Bias-adjustment variables for {it:i}'s `treatment' observation.
+{p_end}
+{p 6 12 15}
+{it:`e'_0e}: Values of the exact-matching variables (if {cmd:exact(}{it:varlist_ex}{bf:)} is selected) 
+for {it:i}'s `control' observation, where {it:`e'} represents each element of the exact-matching variables.
+{p_end}
+{p 6 12 15}
+{it:`e'_1e}: Exact-matching variables for {it:i}'s `treatment' observation.
+{p_end}
+
+{p 0 4}
+{cmd:replace} If {cmd:keep(}{it:filename}{bf:)} is selected, and {it:filename}.dta already
+exists, {cmd:replace} must be selected for {it:filename}.dta to be saved.
+
+
+{title:Weights}
+
+{p}
+{cmd:nnmatch} allows users to define weights, used as {it:pweights}.  In particular, when determining
+the {it:m} closest matches, if weights are selected, the program will choose the closet observations, 
+{it:j}, such that their summed weights are equal to or just exceed {it:m}.  If robust standard errors
+are chosen, a similar approach will be taken in choosing the closest matches in the variance calculation step.
+
+
+{title:Examples: match}
+
+nnmatch y t x1 x2
+nnmatch y t x1, m(3)
+nnmatch y t x1 x2, tc(att)
+nnmatch y t x1 x2, tc(atc) met(maha) bias(bias) robust(4)
+nnmatch y t x1 x2, met({it:matname}) bias(x1 x3) keep(artdata) replace
+nnmatch y t x1 x2 [w=w], met({it:matname}) bias(x1 x3) exact(x4) pop
+

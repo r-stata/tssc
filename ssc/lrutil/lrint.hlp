@@ -1,0 +1,116 @@
+.-
+help for ^lrint^ - plotting interactions
+from logistic regression
+.-
+
+Code fragment that shows how to plot interactions terms in a more 
+meaningful way.
+----------------------------
+To plot interactions easily, use this code fragment as an example.
+It plots odds ratios for age separately for men and women because there 
+is an interaction.
+
+The outline is:
+1. Estimate the model
+2. Use lincom to estimate odds ratios at interesting
+   levels of the covariates
+3. Store the results in a  matrix.
+4. Plot the result using lrplot.
+
+Code fragment
+--------------------------------
+*This is the model that we will use
+*Nb! Need to use logit, not logistic. 
+*Because we need coefficients, not odds ratios.
+	xi: logit response i.agek6 i.region i.gender i.agek6*i.gender
+
+*Doing lrplot of this modell won't show the interactions
+*in a very meaningful way.
+
+	matrix interac=J(10,3,0)
+	matname interac or ci1 ci2 , col(.) explicit
+
+*Loop over the age categories
+	tokenize "1 2 3 4 5"
+	local i=1
+	while "`1'" ~= "" {
+
+*Get the age labels from the variable labels
+	local age : word `1' of `agelab'
+	local agelab : label(agek6) `i'
+
+*This gets the odds ratios for males
+	lincom Ialder_`1' + 0*IaXg_`1'_2 + 0*Igend_2
+*store it
+	local j = `i'
+	matrix interac[`j',1]=exp(`r(estimate)')
+	matrix interac[`j',2]=exp(`r(estimate)'-invnorm(0.975)*`r(se)')
+	matrix interac[`j',3]=exp(`r(estimate)'+invnorm(0.975)*`r(se)')
+
+*Change the names, put an M in front
+	matname interac M`agelab', row(`j') explicit
+
+*This gets the odds ratios for females
+	local j2 = `j'+5
+	lincom Ialder_`1' + 1*IaXg_`1'_2 + 1*Igend_2
+	matrix interac[`j2',1]=exp(`r(estimate)')
+	matrix interac[`j2',2]=exp(`r(estimate)'-invnorm(0.975)*`r(se)')
+	matrix interac[`j2',3]=exp(`r(estimate)'+invnorm(0.975)*`r(se)')
+
+*Change the names, put an F in front
+	matname interac F`agelab', row(`j2') explicit
+
+	macro shift 1
+	local i = `i'+1
+
+}
+*Now, get the "ordinary" odds ratios
+	xi: logit response i.region i.gender i.agek6 i.agek6*i.gender
+	lrmatx
+	matrix model=r(or),r(ci)
+*Now dump the interaction terms 
+*and change them for the ones we have computed.
+	mat model=model[1,1...]\interac
+	mat list model
+	lrplot , matrix(interac) legend
+--------------------------------
+
+Examples
+--------
+
+Running the above code fragment would give an 
+output as shown below. Plotting it would
+make it even more comprehensible.
+
+. mat list model
+
+model[11,3]
+              OR        CI1        CI2
+Region 1.4269215  1.3292502  1.5317695
+ M20-  .92925425  .78572297   1.099005
+ M30-   3.542234  2.8746373  4.3648713
+ M40-  4.4545944  3.4491897  5.7530647
+ M50-  6.9087427  4.8870581  9.7667603
+ M60-  17.627967  9.9837942  31.124962
+ K20-  1.4874388   1.257866  1.7589109
+ K30-  7.5201636  5.3426979  10.585075
+ K40-  8.0254746  5.5639844  11.575921
+ K50-  9.7568924  6.4523842  14.753763
+ K60-   18.68952  10.637149  32.837572
+
+See also
+--------
+@lrplot@ to plot a model with or without interactions
+@lrmatx@ to store coefficients as matrices for
+         manipulation.
+
+Author
+-------
+    Jan Brogger, University of Bergen, Norway
+    jan.brogger@@med.uib.no
+
+Shameless plug :)
+--------------
+ I am looking for internship & residency  in internal 
+ medicine/pulmonary medicine US/EU. Am doing PhD in respiratory 
+ epidemiology now. 

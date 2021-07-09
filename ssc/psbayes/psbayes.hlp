@@ -1,0 +1,135 @@
+{smcl}
+{* 16aug2004}{...}
+{hline}
+help for {hi:psbayes}
+{hline}
+
+{title:Pseudo-Bayes smoothing of cell frequencies} 
+
+{p 8 17 2} 
+{cmd:psbayes}
+{it:datavar}
+[{it:priorvar}] 
+[{cmd:if} {it:exp}] 
+[{cmd:in} {it:range}]
+[ 
+{cmd:, by(}{it:rowvar} [{it:colvar} [{it:layervar}]]{cmd:)}
+{cmdab:g:enerate(}{it:newvar}{cmd:)}
+{cmdab:p:rob} 
+{it:tabdisp_options} 
+]
+
+
+{title:Description}
+
+{p 4 4 2} 
+{cmd:psbayes} takes {it:datavar}, which should be a set of frequencies, and
+shrinks or smooths it towards a set of frequencies implied by prior
+probabilities. This will have the effect of replacing sampling
+zeros by positive estimates whenever the priors are positive.
+
+{p 4 4 2} 
+For a set of data frequencies n_i, summing to n, and a set of prior
+probabilities q_i, the smoothed estimates are n * p_i, where
+
+                 n   n_i       k
+        p_i =  {hline 5} {hline 3}  +  {hline 5} q_i,
+               n + k  n      n + k
+
+{p 4 4 2} 
+and shrinkage is tuned by the constant
+
+              n{c 178}  - SUM ( n_i{c 178})
+        k = {hline 20}.
+            SUM (n_i - n * q_i){c 178}
+
+{p 4 4 2} 
+These estimates minimise the total mean square error between
+estimated and estimand probabilities. For more details, see the
+References.
+
+{p 4 4 2} 
+If {it:priorvar} is specified, it must sum to 1 for the data used. If
+{it:priorvar} is not specified, it is taken to be a set of equal
+probabilities.
+
+
+{title:Options} 
+
+{p 4 8 2} 
+{cmd:by(}{it:rowvar colvar layervar}{cmd:)} indicates that {it:datavar}
+refers to a table with rows (and columns if specified 
+(and layers if specified)) indexed by the variable(s) named, which will structure a display of
+cell estimates using {help tabdisp}. If {cmd:by()} is not specified, cell
+estimates will be displayed according to observation numbers.
+
+{p 4 8 2}
+{cmd:generate(}{it:newvar}{cmd:)}
+generates a new variable containing results.
+
+{p 4 8 2} 
+{cmd:prob} indicates that probabilities rather than estimated frequencies
+are to be shown (and if desired kept).
+
+{p 4 8 2} 
+{it:tabdisp_options} are options of {help tabdisp}. 
+Default {cmd:center format(%9.1f)}.
+
+
+{title:Examples}
+
+{p 4 8 2}{cmd:. psbayes f prior, by(row col) g(sf)} 
+
+{p 4 8 2}{cmd:. contract foreign rep78, zero nomiss}{p_end}
+{p 4 8 2}{cmd:. psbayes _freq, by(foreign rep78) prob}
+
+
+{title:Author}
+
+{p 4 4 2}Nicholas J. Cox, University of Durham, U.K.{break} 
+         n.j.cox@durham.ac.uk
+
+
+{title:References} 
+
+{p 4 8 2}
+Agresti, A. 2002. {it:Categorical data analysis.} Hoboken, NJ: John Wiley.
+
+{p 4 8 2}
+Bishop, Y.M.M., Fienberg, S.E. and Holland, P.W. 1975. 
+{it:Discrete multivariate analysis.} Cambridge, MA: MIT Press.
+
+{p 4 8 2}
+Fienberg, S.E. and Holland, P.W. 1970. Methods for eliminating zero
+counts in contingency tables. In Patil, G.P. (ed.) 
+{it:Random counts in scientific work. Volume 1: Random counts in models and structures.} 
+Pennsylvania State University Press, University Park, 233{c -}260.
+
+{p 4 8 2}
+Fienberg, S.E. and Holland, P.W. 1972. On the choice of flattening
+constants for estimating multinomial probabilities. 
+{it:Journal of Multivariate Analysis} 2: 127{c -}134.
+
+{p 4 8 2}
+Fienberg, S.E. and Holland, P.W. 1973. Simultaneous estimation of
+multinomial cell probabilities. 
+{it:Journal, American Statistical Association} 68: 683{c -}691.
+
+{p 4 8 2}
+Good, I.J. 1965. 
+{it:The estimation of probabilities: an essay on modern Bayesian methods.}
+MIT Press, Cambridge, MA.
+
+{p 4 8 2}
+Sutherland, M., Holland, P.W. and Fienberg, S.E. 1975. Combining Bayes
+and frequency approaches to estimate a multinomial parameter. In
+Fienberg, S.E. and Zellner, A. (eds) 
+{it:Studies in Bayesian econometrics and statistics in honor of Leonard J. Savage.}
+North-Holland, Amsterdam, 585{c -}617.
+
+
+{title:Also see}
+
+{p 4 13 2} 
+On-line:  help for {help tabdisp} 
+

@@ -1,0 +1,92 @@
+.-
+help for ^denton7, dentonmq7^                       
+.-
+
+Interpolate a quarterly flow series from annual totals via proportional Denton method
+-------------------------------------------------------------------------------------
+
+    ^denton7^  varname  [if] [in], ^i^ndicator(varname) ^g^enerate(varname)
+    ^dentonmq7^  varname  [if] [in], ^i^ndicator(varname) ^g^enerate(varname)
+
+^denton^ is for use with quarterly time-series data; see @help tsset@. ^denton^
+may be used on a single time series of a panel which has been ^tsset^ or ^xtset^.
+
+Users of Stata 11 or 12 should use the new ^denton^ routine.
+
+Description
+-----------
+
+^denton7^ computes the proportional Denton method of interpolation of an
+annual flow time series by use of an associated "indicator series", 
+imposing the constraints that the interpolated series obeys the annual 
+totals. The method is described in IMF Chapter 6, Benchmarking (2001) as 
+"relatively simple, robust, and well-suited for large-scale applications."
+It may be particularly useful in cases where, due to sizable statistical
+discrepancy, quarterly series do not integrate to annual totals. The
+indicator series only contribute their pattern to the interpolation; 
+thus it is quite feasible to use both quarterly and annual flow series
+expressed at an annual rate. The interpolated series will be at a 
+quarterly rate. Although the procedure is usually applied to flow
+series (such as GDP), it may be applied to stock series if they are
+differenced and then integrated via generate..sum(), after adding their
+initial value.
+
+^denton7^ is a least squares approach, in which the quarterly estimates 
+to be derived are the parameters, and the sum of squares involved are 
+the first differences of the X/I ratio: the ratio of the interpolated
+series (X) to the indicator series (I). The problem is a constrained 
+least squares problem which may be written as a Lagrangian expression
+in the minimand and the constraints, one of which is defined for each
+year's annual observation.
+
+The annual variable to be interpolated must be specified as ^varname^,
+and the quarterly indicator series with the ^i^ndicator option. 
+Both variables must be defined on a quarterly timeseries calendar. 
+Only the fourth-quarter values of the annual series will be referenced 
+by ^denton7^. Since the proportional Denton method requires that the 
+indicator variable is strictly positive, the indicator variable is 
+adjusted prior to use if it contains nonpositive values.
+
+You must specify one new variable to be created, with the ^gen^erate
+option. That variable will contain the interpolated series within the
+defined sample. Its observations over each calendar year will sum to
+the annual total given in the X series. That may be verified, as the
+routine indicates, by making use of ^tscollap^.
+
+Since the routine utilizes Stata's matrix language, it cannot handle
+timeseries with more observations than the current ^matsize^. It may be 
+necessary to ^set matsize^ to use a larger number of observations 
+(e.g. if it has been set at the default of 40).
+
+^dentonmq7^ performs the same procedure for a monthly flow series from
+quarterly totals. The quarterly series must be defined on a monthly 
+timeseries calendar. Only the third-month values of the quarterly
+series will be referenced by ^dentonmq7^. 
+
+Example
+-------
+
+        . ^denton7 aflow, ind(qflow) gen(qinterp)^
+        . ^denton7 aflow if tin(1970q1,1980q4), ind(qflow) gen(qinterp)^
+        . ^dentonmq7 qflow, ind(mflow) gen(minterp)^
+
+Reference
+---------
+
+Quarterly National Accounts Manual: Concepts, Data Sources, and Compilation 
+Adriaan M. Bloem, Robert J. Dippelsman, and Nils O. Maehle
+International Monetary Fund, 2001.
+http://www.imf.org/external/pubs/ft/qna/2000/Textbook/index.htm 
+
+
+Author
+------
+
+        Christopher F Baum, Boston College, USA
+        baum@@bc.edu
+
+
+Also see
+--------
+
+On-line:  help for @tsset@, (if installed) @tscollap@, @denton@

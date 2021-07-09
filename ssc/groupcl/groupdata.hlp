@@ -1,0 +1,81 @@
+{smcl}
+{* 12Jun2006}{...}
+{cmd:help groupdata}
+{hline}
+
+{title:Title}
+
+{p 4 8 2}
+{bf: groupdata -- Prepares data for grouped conditional logit regression}
+
+{title:Syntax}
+
+{p 8 17 2}
+{cmd:groupdata}
+{varlist} 
+{cmd:,} 
+{bind: {cmdab:d:ep:}({depvar}) {cmdab:gr:oupid:}(groupid) {cmdab:ch:oiceid:}(choiceid)}
+
+where:
+{it:groupid} is a unique group identifier
+{it:choiceid} is a unique choice identifier
+
+{title:Description}
+
+{p 4 4 2}
+{cmd:groupdata} converts the data set in memory to a new data set that can be used
+with commands that deal with multinomial type data such as grouped conditional
+logit {helpb multin} and dirichlet-multinomial regression {helpb dirmul}. 
+The dataset in memory must be in the format required by the command {helpb clogit}.
+Suppose you have a data set in the format required by clogit:
+
+y  x1  x2 gid cid
+0   0   4   1   1
+0   1   4   1   2
+1   1   6   1   3
+1   2   2   2   1
+0   1   4   2   2
+0   3   5   2   3
+0   0   4   3   1
+1   1   4   3   2
+0   1   6   3   3
+0   2   6   4   1
+1   3   7   4   2
+0   2   5   4   3
+0   1   5   4   4
+1   2   2   5   1
+0   1   4   5   2
+0   3   5   5   3
+
+After issuing the command
+
+{p 4 8 2}{cmd:. groupdata x1 x2, dep(y) groupid(gid) choiceid(cid)}
+
+your data will look like
+
+x1  x2  gid cid y
+0   4   1   1   0
+1   4   1   2   1
+1   6   1   3   1
+2   2   2   1   2
+1   4   2   2   0
+3   5   2   3   0
+2   6   4   1   0
+3   7   4   2   1
+2   5   4   3   0
+1   5   4   4   0
+
+{title:Examples}
+
+{p 4 8 2}{cmd:. groupdata age gender, dep(y) gr(id) ch(choice)}
+
+{title:Author}
+
+Paulo Guimaraes, Division of Research, University of South Carolina.
+Email: {browse "mailto:guimaraes@moore.sc.edu":guimaraes@moore.sc.edu} 
+
+{title:Also See}
+
+{p 4 13 2}
+{helpb multin}
+{helpb dirmul}

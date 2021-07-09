@@ -1,0 +1,393 @@
+
+/*  ellip_coefs.dlg 
+*! version 1.0.0  26apr2004 Anders Alexandersson
+
+  This dialog runs ellip 2.0.
+*/
+
+VERSION 8.0
+
+INCLUDE graph_header /* this includes std_graph.idlg, which includes
+                        _graph.idlg, which defines _dlgwd = 760 and
+			_dlght = 350 */
+INCLUDE header    /* CANCEL, SUBMIT, OK buttons */
+HELP hlp1, view("help ellip") /* A HELP button */
+RESET res1 /* a RESET button */
+
+DIALOG main, label("ellip 2.0 -- Graph confidence ellipses for " ///
+	 "regression coefficients") tabtitle("Main")
+BEGIN
+  INCLUDE _glist_def	// graph list definitions
+  
+  TEXT        tx_yvar   _lft     _top   _cwd1    ., ///
+                  label("Independent variable 1:")
+  VARNAME     vn_yvar   @        _ss    _vnwd    ., ///
+                  label("Independent variable 1")
+  
+  CHECKBOX    ck_xvar   _lft2    _top   _cwd1    ., 			/*
+  		*/ label("Independent variable 2:") 			/*
+  		*/ clickon("gaction main.vn_xvar.enable")				/*
+		*/ clickoff("gaction main.vn_xvar.disable")
+  VARNAME     vn_xvar   @ _ss    _vnwd    ., ///
+                   label("Independent variable 2")
+END
+
+INCLUDE gby       /* use as many or as few of these as you want */
+INCLUDE ifin
+
+DIALOG opt, tabtitle("Options")
+BEGIN
+   DEFINE   _x _lft
+   DEFINE   _cx _cwd1
+   DEFINE   _y _top
+   INCLUDE  _sp_level	// requires that macros _x, _cx and _y are DEFINEd
+ 
+  CHECKBOX ck_nogr  _lft2      _top      _cwd1      .,			/*
+		*/ label("Suppress graph")				/*
+		*/ option("replace") 					/*
+		*/ clickon("script graph_off")				/*
+		*/ clickoff("script graph_on")		
+
+
+// Calculate boundary constant --------------------------------------------
+  CHECKBOX ck_cons   _lft     _ls      _iwd      _ht4,		/*
+  		*/ groupbox					/*
+		*/ clickon("program cons1_on")			/*
+		*/ clickoff("script cons1_off")			/*
+		*/ label("Calculate boundary constant:")
+  TEXT     tx_cons1 _ilft     _ss       _cwd2     .,		/*
+		*/ label("Specify constant directly or select a distribution:")
+  DEFINE   holdy @y
+  COMBOBOX cb_cons1 @         _ss       _vnwd     .,		/*
+		*/label("") default("f")			/*
+		*/dropdown contents("cons1") value("cons1v")		/*
+		*/onselchangelist(cons2_change)						
+
+  CHECKBOX ck_cons2  _lft2     holdy     _cwd2     .,		/*
+		*/ clickon("gaction opt.ed_cons2.enable")		/*
+		*/ clickoff("gaction opt.ed_cons2.disable")		/*
+		*/ label("Parameter for the distribution:") nomemory
+	
+  EDIT     ed_cons2 @  _ss       _vnwd     ., max(32)			/*
+		*/ label("Parameter for the distribution")		/*
+		*/ default("2")	
+
+// Choice of ellipse formula ---------------------------------------------
+  CHECKBOX ck_formula _lft    _xls     _cwd1      _ht4,			/*
+		*/ label("Choice of ellipse formula:")			/*
+		*/ groupbox						/*
+		*/ clickon("script formula_on")				/*
+		*/ clickoff("script formula_off")
+  DEFINE   y @y
+  RADIO    rb_mean   _ilft     _ss       _cwd3     .,			/*
+		*/ label("Angular distance acos(r)")			/*
+		*/ first						/*
+		*/ option("formula(acosr)")
+  RADIO    rb_cons  _ilft     _ss         @         .,			/*
+		*/ label("Rotation angle theta")			/*
+		*/ last							/*
+		*/ option("formula(theta)")
+
+
+// Options to be used with by() ------------------------------------------
+  CHECKBOX ck_by   _lft      _xls      _cwd1      _ht4,			/*
+		*/ label("Options to be used with by()")		/*
+		*/ groupbox						/*
+		*/ clickon("script by_on")				/*
+		*/ clickoff("script by_off")
+		
+  CHECKBOX ck_overlay  _ilft      _ss      _cwd3      .,		/*
+		*/ label("Overlay -- cannot be used with by(, total)")	/*
+		*/ option("overlay")
+  CHECKBOX ck_total _ilft     _ss     60     .,				/*
+  		*/ label("Total")					/*
+		*/ option("total")					/*
+ 		*/ clickon("script total_on")		/*
+		*/ clickoff("script total_off")
+  TEXT     tx_total    100    @         50   .,				/*
+		*/ label("Label:") right				
+  EDIT     ed_total    160    @         200     .,			/*
+		*/ label("Total label")					/*
+		*/ option("tlabel")					/*		
+		*/ default("Total")
+
+
+// Generate new variables ------------------------------------------------
+  CHECKBOX ck_gen   _lft      _xls      _iwd      _ht2h,		/*
+		*/ label("Generate new variables:")			/*
+		*/ groupbox						/*
+		*/ clickon("script gen_on")				/*
+		*/ clickoff("script gen_off")
+  EDIT     ed_newy _indent   _ms       _vnwd      .,			/*
+		*/ label("Y-axis values")				/*
+		*/ max(32)
+  TEXT     tx_newy _vnsep    @         _vnr2b     .,			/*
+		*/ label("Y-axis values")
+				
+  EDIT     ed_newx  _vnsep    @         _vnwd     .,			/*
+		*/ label("X-axis values")				/*
+		*/ max(32)
+  TEXT     tx_newx  _vnsep    @         _vnr2b    .,			/*
+		*/ label("X-axis values")
+  CHECKBOX ck_replac _vnsep   @         220      .,			/*
+		*/ label("Replace variables if they exist")		/*
+		*/ option("replace") nomemory
+
+// Range of ellipse -------------------------------------------------------
+  CHECKBOX ck_range _lft2     y         _cwd1     _ht9,			/*
+		*/ label("Range of ellipse") groupbox			/*
+		*/ clickon("script range_on")				/*
+		*/ clickoff("script range_off")				/*
+		*/ option("range")				
+  EDIT     ed_from  _ilft2    _ls       _spwd     .,			/*
+		*/ label("")						/*
+		*/ numonly default("literal 0")				/*
+		*/ option("from")
+  TEXT     tx_from  _spsep    @         _en7r2b   .,			/*
+		*/ label("Radians from which ellipse runs")
+		
+  EDIT     ed_to    _ilft2    _ls         _spwd     .,			/*
+		*/ label("")						/*
+		*/ numonly default(`=2*c(pi)')				/*
+		*/ option("to")
+  TEXT     tx_to    _spsep    @         _en7r2b   .,			/*
+		*/ label("Radians to which ellipse runs")		
+  DEFINE   holdx @x		
+  SPINNER  sp_npoints _ilft2   _ls         _spwd     .,   		/*
+		*/ option("npoints") min(20) max(100000000) default(400)	/*
+		*/ label("")
+  TEXT     tx_npoints _spsep  @         _ckspr2   .,   		/*
+		*/ label("Number of ellipse points")
+
+
+// Error variance ratio --------------------------------------------------
+  CHECKBOX ck_evr _lft2     _xls     _cwd2     .,				/*
+ 		*/ clickon("gaction opt.ed_evr.enable")			/*
+		*/ clickoff("gaction opt.ed_evr.disable")		
+  EDIT     ed_evr    _cksep    @         _spwd     .,			/*
+		*/ label("")						/*		
+		*/ numonly default(1)					/*
+		*/ option("evr")
+  TEXT     tx_evr    _spsep    @         _en7r2b   .,			/*
+		*/ label("Error variance ratio")																										
+END
+
+
+INCLUDE _glist_sc // graph list scripts
+	
+SCRIPT graph_on		/* turn on all the graphs tabs */
+BEGIN
+	script gby_enable
+	script gyxview_enable
+	script gr_twoway_enable
+END
+
+SCRIPT graph_off	/* turn off all the graphs tabs */
+BEGIN
+	script gby_disable
+	script gyxview_disable
+	script gr_twoway_disable
+END
+
+SCRIPT gen_on
+BEGIN
+  opt.ed_newx.enable
+  opt.tx_newx.enable
+  opt.ed_newy.enable
+  opt.tx_newy.enable
+  opt.ck_replac.enable
+END
+
+SCRIPT gen_off
+BEGIN
+  opt.ed_newx.disable
+  opt.tx_newx.disable
+  opt.ed_newy.disable
+  opt.tx_newy.disable
+  opt.ck_replac.disable  
+END
+
+PROGRAM cons1_on
+BEGIN
+	call gaction opt.cb_cons1.enable
+	call gaction opt.tx_cons1.enable
+	call gaction opt.ck_cons2.disable
+	call gaction opt.ed_cons2.disable	
+END
+
+SCRIPT cons1_off
+BEGIN
+	opt.tx_cons1.disable
+	opt.cb_cons1.disable
+	opt.ck_cons2.disable
+	opt.ed_cons2.disable
+END
+
+
+LIST cons1
+BEGIN
+  "Default: c = 2 * F(2,n-2)"
+  "sd: c = #^2 standard deviations"
+  "f: c = 2 * F(#,n-#)"
+  "fadj: c =2 * F(2,n-#)"
+  "f_scheffe: c = # * F(#,n-#)"
+  "t2: c = T2 = #(n-1)/n(n-#) * F(#,n-#)"
+  "pt2: c = T2 * (n+1)/n"
+  "chi2: c = chi2(#)"
+  "chi2_n: c = chi2(#) / n"
+  "pchi2_n: c = chi2(#) * (n+1)/n"
+END
+
+LIST cons1v
+BEGIN
+  "f"		// default
+  "sd"
+  "f"		// specified
+  "fadj"
+  "f_scheffe"
+  "t2"
+  "pt2"
+  "chi2"
+  "chi2_n"
+  "pchi2_n"
+END
+
+
+LIST cons2_change
+BEGIN
+  opt.ck_cons2.disable	// i-action 1: if default, then disable cons2  	
+  opt.ck_cons2.enable	// i-action 2
+  opt.ck_cons2.enable	// i-action 3
+  opt.ck_cons2.enable	// i-action 4
+  opt.ck_cons2.enable	// i-action 5
+  opt.ck_cons2.enable	// i-action 6 
+  opt.ck_cons2.enable	// i-action 7
+  opt.ck_cons2.enable	// i-action 8
+  opt.ck_cons2.enable	// i-action 9
+  opt.ck_cons2.enable	// i-action 10       
+END
+
+
+SCRIPT formula_on
+BEGIN
+  opt.rb_mean.enable
+  opt.rb_cons.enable
+END
+
+SCRIPT formula_off
+BEGIN
+  opt.rb_mean.disable
+  opt.rb_cons.disable
+END
+
+SCRIPT range_on
+BEGIN
+  opt.ed_from.enable
+  opt.tx_from.enable
+  opt.ed_to.enable
+  opt.tx_to.enable  
+  opt.sp_npoints.enable
+  opt.tx_npoints.enable  
+END
+
+SCRIPT range_off
+BEGIN
+  opt.ed_from.disable
+  opt.tx_from.disable  
+  opt.ed_to.disable
+  opt.tx_to.disable  
+  opt.sp_npoints.disable
+  opt.tx_npoints.disable   
+END
+
+SCRIPT by_on
+BEGIN
+  opt.ck_overlay.enable
+  opt.ck_total.enable
+END
+
+SCRIPT by_off
+BEGIN
+  opt.ck_overlay.disable
+  opt.ck_total.disable    
+END
+
+SCRIPT total_on
+BEGIN
+  opt.tx_total.enable
+  opt.ed_total.enable
+END
+
+SCRIPT total_off
+BEGIN
+  opt.tx_total.disable
+  opt.ed_total.disable    
+END
+
+
+// gconnected.idlg may change James Hassell wrote
+INCLUDE ellip_connected		// Connected: connect_options
+INCLUDE ellip_plopts 		// Pool: pool(#) & plopts(line_options)
+
+INCLUDE ellip_pcopts		// Pool connect: pcopts(connect_options)
+	
+// omit -INCLUDE gconnected_chlist- because there is no need for recast()
+
+INCLUDE ellip_dlopts		// Reference line: dlopts(line_options)
+INCLUDE gr_twoway
+
+
+PROGRAM command
+BEGIN
+	put "ellip "
+	varlist main.vn_yvar [main.vn_xvar]
+	INCLUDE _ifin_pr
+	beginoptions
+		put "coefs "
+		INCLUDE _level_opt_pr
+		option opt.ck_nogr
+		if opt.ck_cons {
+			require opt.cb_cons1
+			put "constant("opt.cb_cons1			
+			if opt.ck_cons2 {
+				require opt.ed_cons2
+				put " " opt.ed_cons2
+			}
+			put ") "
+		}
+		if opt.ck_formula {
+			option radio(opt rb_mean rb_cons)
+		}
+		if opt.ck_by {
+                	option opt.ck_overlay
+			option opt.ck_total
+			if opt.ck_total {
+				optionarg opt.ed_total
+			}
+		}					
+		if opt.ck_range {
+			optionarg opt.ed_from
+			optionarg opt.ed_to
+			optionarg opt.sp_npoints
+		}
+		if opt.ck_evr {
+			optionarg opt.ed_evr
+		}					
+		if opt.ck_gen {	/* generate(ynewvar xnewvar) */
+			require opt.ed_newy opt.ed_newx
+			put "generate("
+			put opt.ed_newy
+			put " "
+			put opt.ed_newx
+			put ")"
+			option opt.ck_replac
+		}		
+		put " " /program ellip_connected_output	// connect_options
+		put " " /program ellip_plopts_output 	// pool() & plopts()
+		put " " /program ellip_pcopts_output	// pcopts()	
+		put " " /program ellip_dlopts_output	// dlopts()			
+		put " " /program gr_twoway_output
+		put " " /program gby_output
+	endoptions
+END
+  

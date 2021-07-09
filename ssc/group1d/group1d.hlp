@@ -1,0 +1,175 @@
+{smcl}
+{* 24 May 2007}{...}
+{hline}
+help for {hi:group1d}
+{hline}
+
+{title:Grouping or clustering in one dimension} 
+
+{p 8 17 2} 
+{cmd:group1d} 
+{it:varname}
+[{cmd:if} {it:exp}]
+[{cmd:in} {it:range}] 
+{cmd:,}
+{cmdab:m:ax(}{it:#}{cmd:)}
+[
+{cmdab:g:enerate(}{it:specification}{cmd:)}
+]
+
+
+{title:Description}
+
+{p 4 4 2}
+{cmd:group1d} groups or clusters values of {it:varname}, 
+taken to be ordered in one dimension.
+Natural examples are the values of a variable sorted from smallest to
+largest, the values of a time series, or the values of a spatial series
+along or down a profile, transect, core, borehole, etc. n values are
+clustered into one or more contiguous groups, the (k - 1) boundaries
+between k groups being chosen to minimise the sum of the within-cluster
+sums of squared deviations from cluster means over the comb(n - 1, k - 1) 
+possible clusterings. The clustering produced is guaranteed optimal,
+but it may not be unique. 
+
+
+{title:Remarks} 
+
+{p 4 4 2}
+{cmd:group1d} ignores missing values of {it:varname} and any
+observations not satisfying any {cmd:if} or {cmd:in} conditions
+specified. Otherwise it takes the current sort order of observations to
+convey the ordering desired.  For easier interpretation of results,
+{help drop} any unwanted observations or {help sort} them to the end of
+your dataset. 
+
+{p 4 4 2} 
+Cluster analysis with a single variable makes perfect sense whenever
+there is some dimension along which values can be arranged.  This could
+be a measurement scale, time or space.  Given ordered data, there might
+be interest in looking for relative breaks within a frequency
+distribution (antimodes, in one terminology). A time series could be
+divided into spells, epochs, periods, whatever, ideally with relatively
+small differences within subseries and relatively large differences
+between subseries.  The same problem arises whenever a single spatial
+dimension (horizontal or vertical) is to be subdivided.  In geological
+and other sciences, this is often studied under the heading of zonation. 
+
+{p 4 4 2} 
+Note that any formal clustering should always be accompanied by
+appropriate plotting of the data (for example, using a dot or quantile
+or line plot), which indeed may make clear either that breaks are
+obvious (so that formal clustering is merely decorative) or that
+convincing breaks do not exist (so that formal clustering may be
+pointless). 
+
+{p 4 4 2}
+Consider a toy example of values ordered by magnitude: 
+
+	14 15 16 23 24 25 56 57 58 
+
+{p 4 4 2}
+where it is evident that a three-group clustering 
+
+	14 15 16 | 23 24 25 | 56 57 58 
+
+{p 4 4 2} 
+is sensible. Whether the ordering is on the values themselves, or in time or in
+space, the data can always be laid out in one dimension, which gives special
+structure to the problem. Thus, although more general clustering methods can be
+used, that special structure ideally should be exploited. k groups devised for
+n values are defined by placing {bind:(k - 1)} markers (in the example above,
+{bind:k - 1} = 2); there are {bind:(n - 1)} possible places to put them. There
+are thus comb(n - 1, k - 1) possible clusterings. However, if k is free to
+vary, then the total number of possible clusterings is {bind:2^(n - 1)}, as
+each value can be in the same group as each neighbour, or not.  For even modest
+n, that is a large number. 
+
+{p 4 4 2} 
+The problem can be made precise (Fisher 1958; Hartigan 1975) by placing
+markers to minimise, for a given number of groups, the 
+
+	sum over groups of variability around group centres. 
+
+{p 4 4 2} 
+A sum of squared deviations from group means will spring to mind as the
+most obvious possibility, and this is implemented in {cmd:group1d}.  Sum
+of absolute deviations from group medians, and other measures, might
+well be entertained. 
+
+{p 4 4 2} 
+Hartigan (1975) shows how a dynamic programming approach makes such
+computation straightforward. {cmd:group1d} owes its origin to Hartigan's
+original Fortran.  
+
+
+{title:Vignettes} 
+
+{p 4 4 2}
+Walter Dummer Fisher (1916{c -}1995) was an American economist and
+econometrician. He gained a first degree in history from Harvard in 1937
+and a doctorate from Chicago in economics on the demand for lemons in
+1943. Fisher worked in the Department of Agriculture, the United States
+Air Force, the University of California, Kansas State University, the
+National Bureau of Economic Research and Northwestern University.
+
+{p 4 4 2} 
+John Anthony Hartigan (1937{c -} ) is an Australian statistician. He was
+born in Sydney, gained degrees in mathematics from the University of
+Sydney and in statistics from Princeton, and has worked at Princeton,
+Cambridge and (since 1969) Yale. Hartigan's interests include
+classification and clustering, Bayesian statistics and statistical
+computing and graphics. He has been credited with the invention of the
+scatter plot matrix.
+
+
+{title:Options} 
+
+{p 4 8 2}{cmd:max()} specifies the maximum number of clusters to
+determine.  Optimal clusterings for fewer clusters will automatically be
+shown.  It is usual to set {cmd:max()} to rather larger than you desire and
+inspect results for indications of a good number of clusters. This
+option is required. Note that the amount of calculation by the program
+increases with the maximum specified. 
+
+{p 4 8 2}{cmd:generate()} specifies that one or more new variables are
+to be produced specifying cluster membership. The specification rule is
+best explained by example. {cmd:generate(g3=3 g4=4)} specifies that new
+variable {cmd:g3} should be generated showing the membership of the
+3-group clustering and new variable {cmd:g4} should be generated showing
+the membership of the 4-group clustering. The values of the new
+variables will be 1, 2, 3 and 1, 2, 3, 4 respectively indicating
+membership of groups 1, 2, 3 or 4. The specification for each new
+variable should not include spaces and the specifications for two or
+more variables should be separated by spaces. This option may be 
+used in a second application of {cmd:group1d} after a first has
+indicated an interesting or useful grouping. 
+
+
+{title:Examples}
+
+{p 4 8 2}{cmd:. group1d myvar, max(4)}{p_end}
+{p 4 8 2}{cmd:. group1d myvar, max(3) gen(g3=3)}{p_end}
+
+
+{title:Author}
+
+{p 4 4 2}Nicholas J. Cox, Durham University{break} 
+n.j.cox@durham.ac.uk
+
+
+{title:References} 
+
+{p 4 8 2}Barry, D. 2005.
+A conversation with John Hartigan.
+{it:Statistical Science} 20: 418{c -}430.
+
+{p 4 8 2}Fisher, W.D. 1958. On grouping for maximum homogeneity. 
+{it:Journal, American Statistical Association}
+53: 789{c -}98 [will be accessible to some via www.jstor.org]
+
+{p 4 8 2}Hartigan, J.A. 1975. 
+{it:Clustering algorithms.}
+New York: John Wiley. Ch.6. 
+
+

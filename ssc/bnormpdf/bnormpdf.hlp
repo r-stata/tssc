@@ -1,0 +1,72 @@
+{smcl}
+{* 08 Jan 2004}{...}
+{hline}
+help for {hi:bnormpdf} {right: (version 1.1.0) }
+{hline}
+
+{title:Bivariate normal density function}
+
+{p 7 16 2}{cmd:bnormpdf}
+{it:x1_var x2_var}
+[{cmd:if} {it:exp}]
+[{cmd:in} {it:range}],
+{cmdab:d:ensity:(}{it:newvar}{cmd:)}
+[ {cmd:m1(}{it:#}{cmd:)}
+{cmd:m2(}{it:#}{cmd:)}
+{cmd:s1(}{it:#}{cmd:)}
+{cmd:s2(}{it:#}{cmd:)}
+{cmdab:r:ho(}{it:#}{cmd:)}
+{cmdab:replace}
+{cmdab:dou:ble} ]
+
+
+{title:Description}
+
+{p 4 4 2}
+{cmd:bnormpdf} generates a new variable with the bivariate normal density for
+the supplied variables {it:x1} and {it:x2}, with the joint distribution:
+
+{p 8 8 2}({it:X1},{it:X2}) ~N( {cmd:m1}, {cmd:m2}, {cmd:s1}^2, {cmd:s2}^2, {cmd:rho})
+
+
+{title:Options}
+
+{p 4 8 2}{cmd:m1(}{it:#}{cmd:)} and {cmd:m2(}{it:#}{cmd:)} specify the expected values for {it:X1}
+and {it:X2}.  The default for each is 0.
+
+{p 4 8 2}{cmd:s1(}{it:#}{cmd:)} and {cmd:s2(}{it:#}{cmd:)}, the standard deviations for {it:X1} and {it:X2}, must be postive numbers.
+The default for each is 1.
+
+{p 4 8 2}{cmd:rho(}{it:#}{cmd:)}, the correlation, must be: {it:-1 < rho < 1}. The default is 0.
+
+{p 4 8 2}{cmd:replace} allows an existing variable specified by {cmd:density()} to be overwritten.
+
+{p 4 8 2}{cmd:double} specifies an 8 byte (double) storage type for the {cmd:density()} variable.
+    The default storage type is float (4 byte).
+
+
+{title:References}
+
+{p 4 8 2} Bickel PH, Doksum KA. {it:Mathematical Statistics.} p.23-24.
+Holden-Day.  Oakland. 1977.
+
+
+{title:Examples}
+
+{p 4 8}{inp:. bnormpdf x1 x2, dens(pdf_a) }
+
+{p 4 8}{inp:. bnormpdf x1 x2, rho(.2) dens(pdf_b) double}
+
+{p 4 8}{inp:. bnormpdf x1 x2, m1(.5) m2(1) s1(2) s2(1) rho(.2) dens(pdf_b) double replace}
+
+
+{title:Author}
+
+        Gary Longton, Fred Hutchinson Cancer Research Center, Seattle
+        glongton@fhcrc.org
+
+
+{title:Also see}
+
+{p 0 9}On line: help for
+{help probfun}

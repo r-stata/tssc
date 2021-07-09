@@ -1,0 +1,146 @@
+{smcl}
+{* 18jul2003/21jul2004/27sept2005/9nov2005/12mar2006/27mar2006/19mar2007/1july2008}{...}
+{hline}
+help for {hi:parplot}
+{hline}
+
+{title:Parallel coordinates plots}
+
+{p 8 17 2}
+{cmd:parplot}
+{it:varlist}
+[{cmd:if} {it:exp}]
+[{cmd:in} {it:range}]
+[
+{cmd:,}
+{cmd:by(}{it:byvar} [{cmd:, } {it: suboptions}]{cmd:)}
+{cmdab:hor:izontal}
+{* 9nov2005 identify(varname)}{...} 
+{cmdab:o:ver(}{it:varname}{cmd:)} 
+{cmdab:tr:ansform(}{it:transform}{cmd:)}
+{cmd:variablelabels}
+{cmd:plot(}{it:plot}{cmd:)}
+{cmd:addplot(}{it:plot}{cmd:)}
+{it:graph_options}
+]
+
+
+{title:Description}
+
+{p 4 4 2}{cmd:parplot} produces a parallel coordinates plot of {it:varlist}.
+Each variable is plotted on a separate vertical or horizontal scale and 
+the values for each observation are shown by connected line segments.  
+An observation will be ignored if it has missing values for any variable 
+in {it:varlist} (and by default, if {cmd:by()} is specified, for {it:byvar}).
+
+{p 4 4 2}Such plots have a long history under various guises. Wegman (1990)
+gave a definitive account for a statistical readership.  Cooke and van
+Noortwijk (2000) discuss their use, under the name cobweb plots, in sensitivity
+analysis.  Robbins (2005) gives examples in an introductory text. Andrienko and
+Andrienko (2005) give further examples and extensions. 
+
+
+{title:Options} 
+
+{p 4 8 2}{cmd:by()} specifies that a separate plot should be drawn 
+for each value of {it:byvar}. See help on {help by_option} and
+note, among other possibilities, the {it:suboptions} {cmd:total} and
+{cmd:missing}. 
+
+{p 4 8 2}{cmd:horizontal} draws variable scales horizontally. The 
+default is vertical. 
+
+{p 4 8 2}{cmd:over()} specifies a variable to be used to identify 
+different categories. Different pens will be used for different categories, 
+and it is possible to specify different marker symbols, line patterns, 
+and so forth. 
+
+{p 4 8 2}{cmd:transform()} specifies a transformation to be applied to 
+each variable before plotting. Each transformation may be specified by 
+as little as one letter, {cmd:m}, {cmd:c}, {cmd:s} or {cmd:r}. 
+
+{p 8 8 2}{cmd:maxmin} specifies transforming to {bind:(value - minimum)} /
+{bind:(maximum - minimum)}, which is the default. Values shown thus vary from 0
+to 1. 
+ 
+{p 8 8 2}{cmd:centered} or {cmd:centred} specifies transforming to 
+{bind:(value - median)} / {bind:max(maximum - median, median - minimum)}. 
+Each median thus is shown at 0 and values shown vary from (possibly) -1 to
+(possibly) 1. Note that transformed values for any given variable will attain
+both -1 and 1 if and only if maximum - median = median - minimum. This 
+transform was used by Gleason (1996). 
+ 
+{p 8 8 2}{cmd:standardized} or {cmd:standardised} specifies transforming to
+{bind:(value - mean) / SD}. Each mean thus is shown at 0. 
+
+{p 8 8 2}{cmd:raw} specifies no transform, i.e. data are shown as supplied. 
+This may be a good choice for variables expressed in the same units.
+
+{p 4 8 2}{cmd:variablelabels} specifies that multiple variables be labelled by 
+their variable labels. The default is to use variable names. 
+
+{p 4 8 2}{cmd:plot(}{it:plot}{cmd:)} provides a way to add other plots to the 
+generated graph; see help {help plot_option:plot option}. (Stata 8 only.) 
+
+{p 4 8 2}{cmd:addplot(}{it:plot}{cmd:)} provides a way to add other plots to 
+the generated graph; see help {help addplot_option:addplot option}. 
+(Stata 9 up.) 
+
+{p 4 8 2}{it:graph_options} are options of 
+{help twoway_connected:twoway connected}. 
+
+       
+{title:Examples} 
+
+{p 4 8 2}{cmd:. sysuse census, clear}
+
+{p 4 8 2}{cmd:. foreach v in death divorce marriage {c -(}}{p_end}
+{p 4 8 2}{cmd:. {space 8}gen r_`v' = log10(`v' / pop)}{p_end}
+{p 4 8 2}{cmd:. {c )-}}
+
+{p 4 8 2}{cmd:. foreach t in maxmin centred standardised raw {c -(}}{p_end}
+{p 4 16 2}{cmd:. {space 8}parplot r_* , tr(`t') by(region, caption(logarithmic scales) title(US states 1980) t1(`t' scaling)) hor yla(1 "deaths" 2 "divorces" 3 "marriages", ang(h))}{p_end}
+{p 4 8 2}{cmd:. {space 8}more}{p_end}
+{p 4 8 2}{cmd:. {c )-}} 	
+
+{p 4 8 2}{cmd:. sysuse auto, clear}{p_end}
+{p 4 8 2}{cmd:. gen gpm = 1 / mpg}{p_end}
+{p 4 8 2}{cmd:. parplot gpm weight disp, xsc(r(0.8 3.2)) yla(, ang(h)) over(foreign) ms(oh dh) clp(_ ".#")}{p_end}
+{p 4 8 2}{cmd:. parplot gpm weight disp, hor ysc(r(0.8 3.2)) yla(, ang(h)) over(foreign) ms(oh dh) clp(_ ".#")}
+
+
+{title:Acknowledgments}
+
+{p 4 4 2}The {cmd:parcoord} program written by John R. Gleason for
+Stata 4 (Gleason 1996) was a most valuable start for this program.
+	
+{p 4 4 2}Vince Wiggins made very helpful comments. Ian S. Evans supplied
+the Andrienko reference. Scott Merryman found a bug. Garry Anderson provoked an update of the help. 
+
+
+{title:Author}
+
+{p 4 4 2}Nicholas J. Cox, Durham University, U.K.{break} 
+n.j.cox@durham.ac.uk
+
+
+{title:References}
+
+{p 4 8 2}Andrienko, G. and N. Andrienko. 2005. Blending aggregation and 
+selection: adapting parallel coordinates for the visualization of large
+datasets. {it:Cartographic Journal} 42: 49{c -}60. 
+
+{p 4 8 2}Cooke, R.M. and J.M. van Noortwijk. 2000. Graphical methods.
+In Santelli, A., K. Chan and E.M. Scott (eds) 
+{it:Sensitivity analysis.} Chichester: John Wiley, 245{c -}264.
+
+{p 4 8 2}Gleason, J.R. 1996. Graphing high-dimensional data using parallel 
+coordinates. {it:Stata Technical Bulletin} 29: 10{c -}14 
+({it:STB Reprints} 5: 53{c -}60). 
+
+{p 4 8 2}Robbins, N.B. 2005. {it:Creating More Effective Graphs.} 
+Hoboken, NJ: Wiley. 
+
+{p 4 8 2}Wegman, E.J. 1990. Hyperdimensional data analysis using parallel 
+coordinates. {it:Journal, American Statistical Association} 85: 664{c -}675.
+

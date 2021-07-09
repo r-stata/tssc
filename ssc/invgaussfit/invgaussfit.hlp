@@ -1,0 +1,142 @@
+{smcl}
+{* 14dec2006}{...}
+{hline}
+help for {hi:invgaussfit}
+{hline}
+
+{title:Fitting a two-parameter inverse Gaussian distribution by maximum likelihood}
+
+{p 8 17 2}
+{cmd:invgaussfit} 
+{it:varname} 
+[{it:weight}] 
+[{cmd:if} {it:exp}]
+[{cmd:in} {it:range}] 
+[{cmd:,} 
+{cmdab:mu:var(}{it:varlist1}{cmd:)}
+{cmdab:lambda:var(}{it:varlist2}{cmd:)} 
+{cmdab:r:obust}
+{cmdab:cl:uster(}{it:clustervar}{cmd:)}  
+{cmdab:l:evel(}{it:#}{cmd:)}
+{it:maximize_options} ]
+
+{p 4 4 2}{cmd:by} {it:...} {cmd::} may be used with 
+{cmd:invgaussfit}; see help {help by}. 
+
+{p 4 4 2}{cmd:fweight}s and {cmd:aweight}s are allowed; 
+see help {help weights}.
+
+
+{title:Description}
+
+{p 4 4 2} {cmd:invgaussfit} fits by maximum likelihood a two-parameter
+inverse Gaussian distribution to a distribution of a variable
+{it:varname}. The distribution has probability density function for
+variable x > 0, location parameter m > 0 and scale parameter
+l > 0 of {bind:(l / 2 pi x^3)^(1/2) exp((-l (x - m)^2 / 2 m^2 x))}. 
+
+
+{title:Options}
+
+{p 4 8 2}{cmd:muvar(}{it:varlist1}{cmd:)} and
+{cmd:lambdavar(}{it:varlist2}{cmd:)} allow the user to specify each parameter as
+a function of the covariates specified in the respective variable list. A
+constant term is always included in each equation. 
+
+{p 4 8 2}{cmd:robust} specifies that the Huber/White/sandwich estimator of
+variance is to be used in place of the traditional calculation; see 
+{hi:[U] 20.14 Obtaining robust variance estimates}.  {cmd:robust} combined with
+{cmd:cluster()} allows observations which are not independent within cluster
+(although they must be independent between clusters). 
+
+{p 4 8 2}{cmd:cluster(}{it:clustervar}{cmd:)} specifies that the observations
+are independent across groups (clusters) but not necessarily within groups.
+{it:clustervar} specifies to which group each observation belongs; e.g.,
+{cmd:cluster(personid)} in data with repeated observations on individuals.  See
+{hi:[U] 20.14 Obtaining robust variance estimates}.  Specifying {cmd:cluster()}
+implies {cmd:robust}.
+
+{p 4 8 2}{cmd:level(}{it:#}{cmd:)} specifies the confidence level, in percent,
+for the confidence intervals of the coefficients; see help {help level}.
+
+{p 4 8 2}{cmd:nolog} suppresses the iteration log.
+
+{p 4 8 2}{it:maximize_options} control the maximization process; see 
+help {help maximize}. If you are seeing many "(not concave)" messages in the 
+log, using the {cmd:difficult} option may help convergence.
+
+{title:Remarks} 
+
+{p 4 4 2}The inverse Gaussian appears in various guises in other 
+Stata model fit commands, but none is identical to that here. {help glm} 
+with identity link and inverse Gaussian family is similar except that 
+the parameterisation is different; the scale parameter is there treated as 
+ancillary, and thus the definition of likelihood is quite different; and 
+{cmd:glm} does not allow the scale parameter to depend on covariates. 
+Various programs by Joseph Hilbe (Hilbe 2000 and later work on SSC 
+accessible using {help findit} and {help ssc}) wire in log link
+functions. Finally, the use of inverse Gaussian as one way of modelling 
+frailty in {help streg} differs yet again. Note, however, that 
+the program {help geninvgauss} by Roberto Gutierrez in his {cmd:gendist} 
+package (accessible using {cmd:findit}) that produces random deviates from an inverse Gaussian uses
+the same parameterisation, and the same names mu and lambda, as that
+here. 
+
+
+{title:Saved results}
+
+{p 4 4 2}In addition to the usual results saved after {cmd:ml}, {cmd:invgaussfit}
+also saves the following, if no covariates have been specified: 
+
+{p 4 4 2}{cmd:e(mu)} and {cmd:e(lambda)} are the estimated inverse 
+Gaussian parameters.
+
+{p 4 4 2}The following results are saved regardless of whether covariates have
+been specified:
+
+{p 4 4 2}{cmd:e(b_mu)} and {cmd:e(b_lambda)} are row vectors containing the
+parameter estimates from each equation. 
+
+{p 4 4 2}{cmd:e(length_b_mu)} and {cmd:e(length_b_lambda)} contain the lengths
+of these vectors. If no covariates are specified in an equation, the
+corresponding vector has length equal to 1 (the constant term); otherwise, the
+length is one plus the number of covariates.
+
+	
+{title:Examples}
+
+{p 4 8 2}{cmd:. invgaussfit mpg}
+
+
+{title:Authors}
+
+{p 4 4 2}Nicholas J. Cox, Durham University{break}n.j.cox@durham.ac.uk
+
+{p 4 4 2}Stephen P. Jenkins, University of Essex{break}stephenj@essex.ac.uk
+
+
+{title:References}
+
+{p 4 8 2}
+Evans, M., Hastings, N. and Peacock, B. 2000. {it:Statistical distributions.}
+New York: John Wiley.
+
+{p 4 8 2}
+Hilbe, J. 2000. 
+Two-parameter log-gamma and log-inverse Gaussian models. 
+{it:Stata Technical Bulletin} 53: 31{c -}32
+({it:STB Reprints}  9: 273{c -}275).
+
+{p 4 8 2} 
+Johnson, N.L., Kotz, S. and Balakrishnan, N. 1994. 
+{it:Continuous univariate distributions: Volume 1.} New York: John Wiley.
+
+
+{title:Also see}
+
+{p 4 13 2}
+Online: help for 
+{help pinvgauss} (if installed), 
+{help qinvgauss} (if installed) 
+{help invgausscf} (if installed) 
+

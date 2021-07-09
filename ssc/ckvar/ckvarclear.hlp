@@ -1,0 +1,67 @@
+{smcl}
+{* September 5, 2007 @ 13:35:16}{...}
+{hi:help ckvarclear} 
+{hline}
+
+{title:Title}
+
+{pstd}
+{cmd:ckvarclear} - clears characteristics used by ckvar 
+{p_end}
+
+{title:Syntax}
+{* put the syntax in what follows. Don't forget to use [ ] around optional items}
+{p 8 16 2}
+   {cmd: ckvarclear}
+   [{varlist}] 
+[  {cmd:,}
+   {opt stubs(stubs to clear)}
+	]
+{p_end}
+
+{title:Description}
+
+{pstd}
+This is a helper command for {help ckvar} which clears characteristics used for
+validation or scoring. Its main use is when experimenting with {help ckvar}.
+{p_end}
+
+{title:Options}
+
+{phang}{cmd:stubs} specifies that {help chchar##stubs:stubs} (or prefixes) whose
+characteristics should be cleared. Its default value is {cmd:valid}.
+{p_end}
+
+{title:Example(s)}
+
+{phang}{cmd:. ckvarclear}{p_end}
+{phang2}Clears all characteristics whose names start with {hi:valid_}
+from all variables in the dataset.
+{p_end}
+
+{phang}{cmd:. ckvarclear foo bar, stubs(valid score)}{p_end}
+{phang2}Clears all characteristics whose names start with {hi:valid_}
+and {hi:score} from the two variables {hi:foo} and {hi:bar}.
+{p_end}
+
+{title:Notes}
+
+{pstd}
+Clearing characteristics from just a few of the variables could cause
+{help ckvar} to have problems.
+{p_end}
+
+{title:Also see}
+
+{psee}
+Online: help for {help ckvar}, {help ckvaredit}, {help ckvardo}, and {help dochar}.
+{p_end}
+
+{title:Author}
+
+{pstd}
+Bill Rising, StataCorp{break}
+email: brising@stata.com{break}
+web: {browse "http://homepage.mac.com/brising":http://homepage.mac.com/brising}
+{p_end}
+

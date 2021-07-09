@@ -1,0 +1,114 @@
+{smcl}
+{* 15jan2008}{...}
+{cmd:help usespss}{right:dialogs:  {bf:{dialog usespss:usespss}}  }
+{hline}
+
+{title:Title}
+
+{p2colset 5 17 19 2}{...}
+{p2col : {cmd: usespss} {hline 2} Use SPSS dataset}
+{p2colreset}{...}
+
+What is supported:
+-------------------------------
+{phang} files in SPSS-system format (*.sav) {p_end}
+{phang} platforms: Windows or Unix/Mac {p_end}
+{phang} compressed and non-compressed data {p_end}
+{phang} long variable names {p_end}
+{phang} variable labels {p_end}
+{phang} value labels for numerical variables {p_end}
+{phang} extended missing values {p_end}
+{phang} variable formatting (for numerical variables only) {p_end}
+{phang} types optimization {p_end}
+
+What is (currently) NOT supported:
+----------------------------------------
+{phang} SPSS portable format files {p_end}
+{phang} SPSS/PC format files {p_end}
+{phang} DEC PDP files {p_end}
+{phang} value labels for short strings (not supported by Stata) {p_end}
+{phang} information regarding weighting in SPSS file {p_end}
+
+
+{title:Syntax}
+
+{phang}Load SPSS-format dataset{p_end}
+
+{p 8 12 2}
+{cmd: usespss} using
+{it:filename}
+[{cmd:,}
+{opt clear} {opt saving(filename)} {opt iff(condition)} {opt inn(condition)} {opt memory(memsize)} {opt lowmemory(memsize)}]
+
+
+{phang}Describe SPSS-format dataset{p_end}
+
+{p 8 12 2}
+{cmd: desspss} using
+{it:filename}
+[{cmd:,}
+{opt clear}]
+
+
+{p 4 6 2}
+Note that if your {it:filename} contains embedded spaces, enclose it in double quotes.
+
+
+{title:Description}
+
+{pstd}
+{opt usespss} loads an SPSS-format dataset into memory.  Extension must be specified in {it:filename}. The word "using" may be omitted in the current version of usespss, but is likely to be required in the later versions.
+
+{pstd}
+Version 1.0 does not allow a subset of the variables to be read. If and in conditions must be specified within {opt iff} and {opt inn} options.
+
+{title:Options}
+
+{phang}
+{opt clear} specifies that it is okay to replace the data in memory,
+even though the current data have not been saved to disk. {p_end}
+
+{phang}
+{opt saving} specifies that a particular filename must be used for the result of the conversion. One command{p_end}
+
+{phang}{cmd:. usespss using "filename.sav",saving("filename.dta")}{p_end}
+
+{phang}is generally faster than the following sequence{p_end}
+
+{phang}{cmd:. usespss using "filename.sav"}{p_end}
+{phang}{cmd:. save "filename.dta"}{p_end}
+
+{phang}
+{opt memory(memsize)} specifies that immediately after conversion the memory size must be set to {it: memsize} megabytes. {opt memory()} implies {opt clear}.
+{p_end}
+
+
+{phang}
+{opt lowmem(memsize)} specifies that during conversion Stata must allocate {it: memsize} megabytes. {opt lowmem()} is ignored if {opt memory} is not specified. Default value for {opt lowmem()} is 1 megabyte. {opt lowmem()} is supposed to be lower than {opt memory()}.
+{p_end}
+
+
+{title:Author}
+
+{p 4} Sergiy Radyakin {p_end}
+{p 4} DECRG, The World Bank, Washington DC, USA {p_end}
+{p 4} sradyakin(at)worldbank.org {p_end}
+
+
+{title:Examples}
+
+{phang}{cmd:. desspss using "myfile.sav"}{p_end}
+
+{phang}{cmd:. usespss using "myfile.sav",}{p_end}
+{phang}{cmd:. usespss using "myfile.sav", clear}{p_end}
+{phang}{cmd:. usespss using "myfile.sav", clear saving("myfile.dta")}{p_end}
+{phang}{cmd:. usespss using "myfile.sav", clear iff(myvar<threshold) inn(1/500)}{p_end}
+{phang}{cmd:. usespss using "myfile.sav", clear saving("myfile.dta") lowmem(10) memory(300)}{p_end}
+
+{title:Also see}
+
+{psee}
+
+Online: {helpb use}, {helpb sysuse}, {helpb fdause}
+
+

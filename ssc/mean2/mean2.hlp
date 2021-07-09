@@ -1,0 +1,94 @@
+{smcl}
+{* 26jan2010}{...}
+{cmd:help mean2}
+{hline}
+
+{title:Title}
+
+{p2colset 5 15 22 2}{...}
+{p2col :{hi:mean2} {hline 2}}Makes a table of estimate means with subpopulation differences{p_end}
+{p2colreset}{...}
+
+
+{title:Syntax}
+
+{p 8 14 2}{cmd:mean2} {ifin} {weight},
+{it:options}
+
+
+{title:Description}
+
+{pstd}
+{cmd:mean2} provides a fast and easy way to make a table of estimate means with subpopulation differences. 
+
+
+{title:Options}
+
+{phang}
+{cmd:replace} is required because will be replacing any existing file
+
+{phang}
+{cmd:over( )} one variable specifying subpopulations
+
+{phang}
+{opt cat:egory( )} two cateogires of subpopulations, see examples below
+
+{phang}
+{cmd:svy} specify survey means
+
+{phang}
+{opth vce(vcetype)} {it:vcetype} may be {opt boot:strap} or {opt jack:knife}{p_end}
+
+{phang}
+{opth cl:uster(varname)} adjust standard errors for intragroup correlation{p_end}
+
+{phang}
+{cmd:excel} specifies excel output
+
+{phang}
+{cmd:word} specifies word output
+
+{phang}
+{cmd:tex} specifies tex output
+
+
+{title:Remarks}
+
+{pstd}
+{cmd:mean2} is based on {help mean}. You will also need to install the latest versions of {help outreg2} and 
+{help sxpose} from ssc. There must be at least two variables specified in the {help varlist}.
+
+
+{title:Acknowledgement}
+
+{pstd}
+sxpose is by Nick Cox. 
+
+
+{title:Examples for Version 11 or later}
+
+{phang}. use http://www.stata-press.com/data/r11/nhanes2f{p_end}
+{phang}. svyset psuid [pweight=finalwgt], strata(stratid){p_end}
+{phang}. mean2 height age weight smsa using myfile.txt, over(sex) cat(Male Female) svy excel replace{p_end}
+
+{phang}Basically the above codes produces the same stuff as this:{p_end}
+{phang}. svy: mean height age weight smsa, over(sex){p_end}
+
+{phang}Plus the statistical differences computed by something like this:{p_end}
+{phang}. lincom [height]Male - [height]Female{p_end}
+
+{phang}You get the idea.{p_end}
+
+
+{title:Examples for Version 9 or later}
+
+{phang}. clear{p_end}
+{phang}. use http://www.stata-press.com/data/r9/nhanes2f{p_end}
+{phang}. mean2 height age weight smsa using myfile.txt, over(sex) cat(Male Female) svy excel replace{p_end}
+
+
+{title:Also see}
+
+{psee}
+Manual:  {bf:[R] mean}
+

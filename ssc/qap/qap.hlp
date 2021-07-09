@@ -1,0 +1,202 @@
+.-
+help for ^qap^
+.-
+
+Quadratic Assignment Procedure
+------------------------------
+
+   ^qap^  progname rowvar colvar permvars [^,^ ^r^eps^(^#^)^
+               ^sa^ving^(^filename^)^  ^replace^ ^leave^ ^doub^le ^ev^ery^(^#^)^
+               ^ar^gs^(^...^)^ ^cmd(^command^)^ ^st^ats^(^statistic list^)^ ^cap^ture
+               ^ti^mevar^(^varlist^)^ ^gr^oupvr^(^varlist^)^
+               ^d^ots ^cou^nt ^noi^sily ^debug^ no^tab^le no^disp^]
+
+
+Description
+-----------
+
+^qap^ implements the quadratic assignment procedure, a simulation-based
+method for determining confidence intervals for parameter estimates
+when the data set is dyadic.  It generates ^reps()^ QAP samples and
+runs the user-defined program ^progname^ on each sample.
+
+The original data set should represent a square matrix of pairwise
+observations.  The full matrix or the upper or lower triangle (for symmetric
+matrices) can be used.  The qap command is modelled on the
+bstrap command and uses many of the same options.
+
+The QAP sample is a transformation of the data set corresponding to
+a permutation of rows and columns (with rows and columns being permuted
+the same way), where ^permvars^ are assigned new row/column numbers and
+all other variables are kept in the original row/column.
+
+Each permutation sample then corresponds to the null hypothesis of no
+association between ^permvars^ and the other variables, and the total QAP
+sample allows estimation of confidence intervals around the parameter
+estimates under the null hypothesis.
+
+The qap program uses Stata's built-in random number generator in the
+creation of the permuted samples.  To get reproducible results,
+set the random-number seed by typing ^set seed^ # before running ^qap^.
+see help @generate@.
+
+
+Parameters
+----------
+
+^progname^ is the estimation program to be called for each QAP iteration.
+This can be either a user-supplied program, or the built-in program _qap.
+If progname is given as ^_qap^, the ^cmd^ and ^stats^ options are required,
+and the command specified in the ^cmd^ option will be run for each sample,
+with the statistics specified in the ^stats^ list saved.
+
+^rowvar^ is a numeric variable giving the row subscript of the observation.
+The rows must be numbered sequentially from 1 to N, where N is the
+number of rows and columns in the matrix.
+
+^colvar^ is a numeric variable giving the column.  The columns must be
+numbered sequentially from 1 to N.
+
+The values of ^rowvar^ and ^colvar^ must define all observations of a full
+square matrix or the upper or lower triangular part.  In most applications,
+the diagonal values are not used in the estimation.  For a full square
+matrix, the diagonal observations must be included in the data set, and
+the dependent variable should be set to missing.  (For a triangular
+data set, observations on the diagonal may be included or excluded.)
+
+^permvars^ is a list of variables that will be permuted in each sample.
+All other variables will be kept with their original row and column.
+Normally, permvars should contain only the dependent variable and
+a weight variable, if used.
+
+QAP Options
+-----------
+
+^reps(^#^)^ specifies the number of QAP replications to be performed.  The
+    default is ^500^.
+
+Options for the output file
+---------------------------
+
+^saving(^filename^)^ creates a Stata data file (^.dta^ file) containing the QAP
+    distribution for each user-specified statistic.
+
+^replace^ indicates that the file specified by ^saving()^ may be overwritten.
+
+^double^ specifies that the bootstrap results for each replication are to be
+    stored as ^double^s, meaning 8-byte reals.  By default, they are stored as
+    ^float^s, meaning 4-byte reals.  See help @datatypes@.
+
+^every(^#^)^ specifies that results are to be written to disk every #th replica-
+    tion.  ^every()^ should only be specified in conjunction with ^saving()^ when
+    performing bootstraps that take a very long time.  This will allow recovery
+    of partial results should your computer crash; see help @postfile@.
+
+^leave^ keeps the QAP sample data set in memory, overwriting the original
+    data set.
+
+Options for panel and multi-group data
+--------------------------------------
+
+^timevar^ is used for panel data.  In this case, the data set should contain
+the same number of observations for each cell in the matrix, indexed by the
+variable(s) in ^timevar^.  When the permutations are done, all observations
+corresponding to a cell in the matrix are kept together, and sorted
+by the ^timevar^ variable(s).  This preserves any autocorrelation and/or
+within-cell dependence of the variables.
+
+^groupvr^ is used for data sets containing multiple independent matrices,
+possibly of different sizes.  In this case, each level of the ^groupvr^
+variables should contain a complete matrix, and the type of matrix (full
+matrix or upper or lower triangular) must be the same in each group.  For
+data sets of this form, the matrix in each group is permuted independently.
+This is not appropriate for panel data, because the permuted samples will
+not contain the same dependence structure as the original data set.
+
+Options for the estimation program
+----------------------------------
+
+^args(^...^)^ specifies any arguments to be passed to ^progname^.  The
+    first query call is then of the form "progname ^?^ ..." and subsequent calls
+    of the form "progname postname ...".  This is not used by the built-in
+    program _qap.
+
+^cmd(^...^)^ specifies the estimation command to be run at each iteration
+    if program _qap is used.
+
+^stats(^statistic list^)^ specifies the names of the statistics to be
+    saved if program _qap is used.  To save a coefficient estimate, use
+    _b[varname].  To save other statistics, use the names in "Saved Results"
+    in the Stata documentation.  E.g., for the -regress- command, the
+    R-squared is saved in e(r2) and the F statistic in e(F).
+
+^capture^ prevents program _qap from aborting if ^progname^ fails to produce
+    estimates for any specified statistic in the ^stats^ list in any
+    of the randomized samples.  This can be used in cases of
+    data-dependent multicollinearity or convergence problems.  In this case,
+    one or more of the statistics will have missing values for some samples.
+
+Options for output/tracing/debugging
+------------------------------------
+
+^noisily^ requests that any output from ^_qap^ or the user-defined ^progname^
+    and brief messages about program operation be displayed.
+
+^dots^ requests a dot be placed on the screen at the beginning of each replica-
+    tion, thus providing feedback.
+
+^count^ displays the iteration number at the beginning of each iteration.
+
+^debug^ displays large amounts of debugging output.
+
+^notable^ prevents display of the detailed summary statistics for the QAP
+    sample.  The actual value's percentile in the QAP distribution is
+    still printed.
+
+^nodisp^ prevents display of the actual value's percentile in the QAP
+    distribution.  If both ^notable^ and ^nodisp^ are specified, there is
+    no printed output, but a data set of QAP values will be created if the
+    ^saving^ option is used.
+
+Notes
+-----
+
+^progname^ must have the following outline:
+
+	^program define^ progname
+                ^version^ #  /* version_number */
+		^if "`1'" == "?" {^
+			^global S_1 "^variable names^"^
+			^exit^
+		^}^
+		perform calculation of statistics on data in memory
+		^post `1'^ results
+	^end^
+
+There must be the same number of results following ^post `1'^ as variable names
+following ^global S_1^.
+
+Example of ^qap^
+--------------
+
+Assume that the data set in memory has N^^2 observations corresponding
+to a square matrix of information on dyads, with variables
+^rownum^ and ^colnum^ identifying the rows and columns.
+It is desired to find QAP confidence intervals for the parameter estimates
+and the R-square of a regression model:
+
+        reg outcome var1 var2
+
+The program is:
+
+        qap _qap rownum colnum outcome, saving(qapsampl) replace /*
+           */ cmd(reg outcome var1 var2) stats(_b[var1] _b[var2] e(r2))
+
+If the original data set corresponds to a symmetric matrix, the qap
+program will run more quickly if only the lower or upper triangle is
+used.  E.g., prior to running ^qap^, give the command:
+
+        drop if rownum >= colnum        /* Save only upper triangle */
+
+On-line:  help for @postfile@,@bstrap@
+

@@ -1,0 +1,140 @@
+{smcl}
+{* 30mar2005}{...}
+{hline}
+help for {hi:hdquantile}
+{hline}
+
+{title:Harrell-Davis estimator of quantiles}
+
+{p 8 17 2}{cmd:hdquantile}
+{it:varlist}
+[{cmd:if} {it:exp}]
+[{cmd:in} {it:range}] 
+{cmd:,}
+{cmdab:g:enerate(}{it:newvarlist}{cmd:)} 
+[ {cmd:a(}{it:#}{cmd:)} {cmd:by(}{it:byvarlist}{cmd:)} ]
+
+{p 8 17 2}{cmd:hdquantile}
+{it:varlist}
+[{cmd:if} {it:exp}]
+[{cmd:in} {it:range}] 
+{cmd:,}
+{cmd:p(}{it:numlist}{cmd:)}
+[ {cmdab:m:atname(}{it:matrix_name}{cmd:)} {it:matrix_list_options} ]
+
+{p 8 17 2}{cmd:hdquantile}
+{it:varname}
+[{cmd:if} {it:exp}]
+[{cmd:in} {it:range}] 
+{cmd:,}
+{cmd:p(}{it:numlist}{cmd:)}
+[ {cmd:by(}{it:byvarlist}{cmd:)} {cmdab:m:atname(}{it:matrix_name}{cmd:)}  
+{it:matrix_list_options} ]
+
+
+{title:Description}
+
+{p 4 4 2}{cmd:hdquantile} estimates quantiles using the method of Harrell
+and Davis (1982). There are two main syntaxes, depending on which 
+of the {cmd:generate()} and {cmd:p()} options is specified. 
+
+{p 4 4 2}If the option {cmd:generate()} is specified, as many quantiles 
+are there are non-missing values for all the variables specified are 
+estimated. Given n order statistics y_(i) such that y_(1) <= ... <= y_(n), 
+quantiles are calculated at the plotting positions 
+{bind:(i - a)/(n - 2a + 1)}, where a may be tuned using the {cmd:a()} 
+option. By default a = 0.5. The {cmd:by()} option is permissible 
+with this syntax. 
+
+{p 4 4 2}If the option {cmd:p()} is specified, selected quantiles 
+for the percent points in {cmd:p()} are estimated and displayed (and optionally saved) 
+as a matrix. This matrix may be either for one or more variables or for 
+one variable grouped according to the {cmd:by()} option. 
+
+{title:Remarks}
+
+{p 4 4 2}The quantile for cumulative proportion p is estimated as 
+a weighted mean of all order statistics y_(i) with weights 
+
+{p 8 8 2}{cmd:ibeta}((n + 1)p, (n + 1)(1 - p), i/n) 
+   - {cmd:ibeta}((n + 1)p, (n + 1)(1 - p), (i - 1)/n)  
+
+{p 4 8 2}See {help ibeta()}. 
+
+
+{title:Options}
+
+{p 4 8 2}Either {cmd:generate()} or {cmd:p()} must be specified. 
+
+{p 4 8 2}{cmd:generate()} specifies the names of as many new 
+variables as there are variables in {it:varlist} to hold 
+estimates of quantiles. 
+
+{p 8 8 2}{cmd:a()} specifies a in the formula for plotting position. The
+default is a = 0.5, giving {bind:(i - 0.5) / n}. Other choices include a = 0,
+giving {bind:i / (n + 1)}, and a = 1/3, giving {bind:(i - 1/3) / (n + 1/3)}. 
+This is relevant only with {cmd:generate()}. 
+
+{p 4 8 2}{cmd:p()} specifies one or more integers between 1 and 99 
+indicating percent points (plotting positions) for which quantiles 
+should be estimated. Thus {cmd:p(25(25)75)} specifies estimation 
+for the 25%, 50% and 75% percent points, or for plotting positions
+0.25, 0.50, 0.75. 
+
+{p 8 8 2}{cmd:matname()} specifies the name of a matrix in which to save
+the results of calculations. This is relevant only with {cmd:p()}. 
+
+{p 8 8 2}{it:matrix_list_options} are options of 
+{help matrix_utility:matrix list} tuning the display of the 
+matrix of quantiles. This is relevant only with {cmd:p()}.  
+
+{p 4 8 2}{cmd:by()} specifies one or more variables defining distinct groups
+for which quantiles should be estimated. Under {cmd:by()} the group size n 
+and the ranking from 1 to n are determined within each group.
+
+
+{title:Examples} 
+
+{p 4 8 2}{cmd:. hdquantile length width height, gen(Qlength Qwidth Qheight)}
+
+{p 4 8 2}{cmd:. hdquantile length, by(grade) gen(Qlength)}
+
+{p 4 8 2}{cmd:. hdquantile length, p(10 25 50 75 90)}
+
+{p 4 8 2}{cmd:. hdquantile length, p(10 25 50 75 90) m(Qmatrix)}
+
+
+{title:Author}
+
+{p 4 4 2}Nicholas J. Cox, University of Durham, U.K.{break} 
+n.j.cox@durham.ac.uk
+
+
+{title:References}
+
+{p 4 8 2}Harrell, F.E. and C.E. Davis. 1982. 
+A new distribution-free quantile estimator. 
+{it:Biometrika} 69: 635{c -}640. 
+
+{p 4 8 2}Sheather, S.J. and J.S. Marron. 1990. 
+Kernel quantile estimators. 
+{it:Journal, American Statistical Association} 85: 410{c -}416.
+
+{p 4 8 2}Dielman, T.E., C. Lowry and R. Pfaffenberger. 
+1994. A comparison of quantile estimators. 
+{it:Communications in Statistics {c -} Simulation and Computation} 
+23: 355{c -}371. 
+
+{p 4 8 2}Hutson, A.D. and M.D. Ernst. 2000. 
+The exact bootstrap mean and variance of an {it:L}-estimator. 
+{it:Journal, Royal Statistical Society B} 62: 89{c -}94. 
+
+{p 4 8 2}Ernst, M.D. and A.D. Hutson. 2003. 
+Utilizing a quantile function approach to obtain exact bootstrap solutions.
+{it:Statistical Science} 18: 231{c -}240. 
+
+
+{title:Also see} 
+
+{p 4 13 2}Online:  help for {help qplot} (if installed) 
+

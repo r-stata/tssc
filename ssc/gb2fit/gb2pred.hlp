@@ -1,0 +1,97 @@
+{smcl}
+{* April 2004}{...}
+{hline}
+help for {hi:gb2pred}{right:Stephen P. Jenkins (April 2004)}
+{hline}
+
+{title:Prediction following fitting of a GB2 distribution}
+
+{p 8 17 2}{cmd:gb2pred} [{cmd:if} {it:exp}] [{cmd:in} {it:range}] [ {cmd:,}
+	{cmdab:a:val(}{it:value list1}{cmd:)} {cmdab:b:val(}{it:value list2}{cmd:)} 
+	{cmdab:p:val(}{it:value list3}{cmd:)} {cmdab:q:val(}{it:value list4}{cmd:)}
+	{cmdab:abpq:val(}{it:value list}{cmd:)} {cmdab:poor:frac(}{it:#}{cmd:)} 
+	{cmdab:cdf(}{it:cdfname}{cmd:)} {cmdab:pdf(}{it:pdfname}{cmd:)} ]
+	
+{title:Description}
+
+{p 4 4 2}
+{cmd:gb2pred} calculates statistics summarizing a 4 parameter 
+Generalized Beta of the Second Kind distribution which has been fitted 
+using {cmd:gb2fit} to sample observations on variable {it:var}. 
+{cmd:gb2pred} is usually used when the model parameters have been specified as functions of 
+covariates in {cmd:gb2fit}. Here users specify particular covariate values, which implies
+values of the model parameters, and thence statistics can be calculated, 
+together with the fitted c.d.f. and p.d.f. The statistics produced by default are 
+quantiles, Lorenz ordinates, the mode, mean, standard deviation, variance, and 
+half the coefficient of variation squared. The command can be repeated using a 
+different set of covariate values.
+
+{title:Options}
+
+{p 4 8 2}{cmd:aval(}{it:value list1}{cmd:)}, {cmd:bval(}{it:value list2}{cmd:)}, 
+	{cmd:pval(}{it:value list3}{cmd:)} and
+	{cmd:qval(}{it:value list4}{cmd:)} are required if the original model was
+	estimated with covariates. In this case, the user must specify 
+	a value for each covariate included in the original model, and in the same 
+	order. The last element in each equation must always be 1 (corresponding 
+	to the intercept term). Where there is more than one element per equation,
+	they must be separated by commas. 
+
+{p 4 8 2}{cmd:abpqval(}{it:value list}{cmd:)} can be used instead of the previous option 
+	if the same covariates appeared in each parameter equation.
+
+{p 4 8 2}{cmd:poorfrac(}{it:#}{cmd:)} displays the estimated proportion with values of {it:var} 
+	less than the cut-off specified by {it:#}.
+
+{p 4 8 2}{cmd:cdf(}{it:cdfname}{cmd:)} creates a new variable {it:cdfname} containing the
+	estimated GB2 c.d.f. value F(x) for each x.
+
+{p 4 8 2}{cmd:pdf(}{it:pdfname}{cmd:)} creates a new variable {it:pdfname} containing the
+	estimated GB2 p.d.f. value f(x) for each x.
+
+{p 8 8 2}Options {cmd:if} and {cmd:in} have an effect only if options {cmd:cdf} or {cmd:pdf} are specified.
+
+
+{title:Saved results}
+
+{p 4 4 2}The following are saved, some contingent on the relevant options being specified:
+
+{p 4 4 2}{cmd:e(bba)}, {cmd:e(bbb)}, {cmd:e(bbp)}, and {cmd:e(bbq)} are the estimated GB2 
+parameters. (If the original model included no covariates, these contain the parameters
+originally estimated. If covariates were included, these contain the parameters 
+evaluated at the values of the covariates specified here.)
+
+
+{p 4 4 2}{cmd:e(cdfvar)} and {cmd:e(pdfvar)} are the variable names specified for the
+c.d.f. and the p.d.f.
+
+{p 4 4 2}
+{cmd:e(mode)}, {cmd:e(mean)}, {cmd:e(var)}, {cmd:e(sd)}, and {cmd:e(i2)}
+are the estimated mode, mean, variance, standard deviation, and half coefficient of 
+variation squared. {cmd:e(pX)}, and {cmd:e(LpX)} are the quantiles, and Lorenz 
+ordinates, where X = {1, 5, 10, 20, 25, 30, 40, 50, 60, 70, 75, 80, 90, 95, 99}. 
+
+
+{title:Examples}
+
+{p 4 8 2}{inp:. gb2fit x }
+
+{p 4 8 2}{inp:. gb2pred }
+
+{p 4 8 2}{inp:. gb2fit x, a(age sex) b(age sex) p(age sex) q(age sex)}
+
+{p 4 8 2}{inp:. gb2pred, a(40,2,1) b(40,2,1) p(40,2,1) q(40,2,1) }
+
+{p 4 8 2}{inp:. gb2pred, abpq(50,2,1) poorfrac(100) }
+
+
+{title:Author}
+
+{p 4 4 2}Stephen P. Jenkins <stephenj@essex.ac.uk>, Institute for Social
+and Economic Research, University of Essex, Colchester CO4 3SQ, U.K.
+
+
+{title:Also see}
+
+{help gb2fit}
+

@@ -1,0 +1,100 @@
+{smcl}
+{* APR2011}{...}
+{hline}
+help for {hi:num2words}
+{hline}
+
+{title:Convert Numbers to Words}
+
+{p 4 8 2} 
+{cmd:num2words}
+{it:numvar} 
+[{cmd:if} {it:exp}] 
+[{cmd:in} {it:range}] 
+[
+{cmd:,} 
+{cmdab:g:enerate(}{it:newvar}{cmd:)}
+{cmdab:rou:nd} 
+{cmdab:ord:inal} ]
+{break} 
+ 
+{title:Description}
+
+{p 4 4 2}
+{cmd:num2words} converts numbers (including real and ordinal numbers) in a single {it:numvar} to text. 
+It is useful for converting numbers to text for insertion in graph or table titles, captions, or labels; 
+value or variable labels; charactersics or notes; 
+or, this utility can convert numbers to words for inclusion in the text of a document created from Stata
+via commands like {help file write}, {help texdoc}(if installed), or {help rtfutil}(if installed).
+
+{p 4 4 2}
+{cmd:num2words} converts:
+
+{p 8 2 1} 
+1. positive or negative numbers, including fractional numbers;
+
+{p 8 2 1} 
+2. numbers up to 999 trillion (15 places to the left of the decimal); 
+
+{p 8 2 1} 
+3. fractional numbers up to the millionths place (6 places to the right of the decimal);
+
+{p 4 4 2}
+Converted text will be automatically truncated if the conversion is longer than Stata's character limit for string variables 
+(See help {help limits} and help {help data_types} for more).  
+
+
+
+{title:Options} 
+
+{p 4 8 2}
+{cmdab:g:enerate()} specifies the new string variable containing the converted text for {it:numvar}.  
+If no variable name is specified the default is {it:numvar}2.
+
+{p 4 8 2}
+{cmdab:rou:nd} tells {cmd:num2words} to ignore fractional part during conversion to text.  
+
+{p 4 8 2}
+{cmdab:ord:inal} adds the appropriate suffix to the cardinal number (fractional part ignored) to form
+ordinal number (421 converted to 421st or 2 converted to 2nd).
+
+{p 4 8 2}
+{cmd:if} and {cmd:in} are allowed.
+
+
+{title:Examples}
+
+//Create some data//
+{p 4 8 2}{cmd:. clear}{p_end}
+{p 4 8 2}{cmd:. set obs 10}{p_end}
+{p 4 8 2}{cmd:. g x = round(runiform()*100, .05)}{p_end}
+{p 4 8 2}{cmd:. g x2 = int(runiform()*100) }{p_end}
+{p 4 8 2}{cmd:. replace x = -2.5 in 1 }{p_end}
+
+//Convert Numbers to Text//
+{p 4 8 2}{cmd:. num2words x, g(x_converted) }{p_end}
+{p 4 8 2}{cmd:. num2words x, g(x_rounded) round }{p_end}
+{p 4 8 2}{cmd:. replace x_converted = proper(x_rounded) }{p_end}
+{p 4 8 2}{cmd:. num2words x, g(x2_ordinal) ordinal }{p_end}
+
+//Use Converted Text in Graph//
+{p 4 8 2}{cmd:. egen mx = mean(x) }{p_end}
+{p 4 8 2}{cmd:. num2words mx, round }{p_end}
+{p 4 8 2}{cmd:. gr bar x  , over(x2_ordinal, sort(1)) ///  }{p_end}
+{p 8 8 2}{cmd:	 note({bf: X for Obs 2 is `=x_rounded[2]'}) ///  }{p_end}
+{p 8 8 2}{cmd:	 text(60 20 `"Mean is `=mx2'"',  box ) }{p_end}
+
+
+{title:Author}
+
+{p 4 4 2}Eric A. Booth, Texas A&M University {break} 
+         ebooth@ppri.tamu.edu {break} 
+		 {browse "http://www.eric-a-booth.com"}
+		 
+{title:Also see}
+
+{p 4 8 2}On-line:  help for {help string_functions:string_functions};
+{help toroman:toroman} (if installed); 
+{help fromroman:fromroman} (if installed); 
+ {help tostring:tostring}
+

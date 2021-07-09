@@ -1,0 +1,206 @@
+{smcl}
+{* *! version 1.0.6  10Oct2011}{...}
+
+{title:Title}
+
+{p2colset 5 28 30 2}{...}
+{p2col:{manlink R tabmult} {hline 2}}Extension of tabulate tables, save results in XML format{p_end}
+{p2colreset}{...}
+
+{marker syntax}{...}
+{title:Syntax}
+
+{p 8 17 2}
+{cmdab:tabmult}
+{ifin}
+{weight}
+{cmd:,} [cat{cmd:(}{varlist}{cmd:)} cont{cmd:(}{varlist}{cmd:)}] by{cmd:(}{varlist}{cmd:)} [{cmd:}{it:{help tabmult##options:options}}]
+
+{pstd}
+Multiple two-way tables for all possible combinations {c -} a convenience tool. Saves results in XML format.
+
+{synoptset 20 tabbed}{...}
+{synopthdr}
+{synoptline}
+{syntab:{help tabmult##main:Main}}
+{synopt:{opt c:ol}}report relative frequency within its column of each cell {p_end}
+{synopt:{opt r:ow}}report relative frequency within its row of each cell {p_end}
+{synopt:{opt sc:ol}}report relative frequency supercolum total {p_end}
+{synopt:{opt sr:ow}}report relative frequency superrow total {p_end}
+{synopt:{opt m:issing}}treat missing values like other values {p_end}
+{synopt:{cmdab:statc:ont:(}{it:{help tabmult##statname:statname}} [{it:...}]{cmd:)}} report specified statistics {p_end}
+
+{syntab:{help tabmult##output:Output}}
+{synopt:{opt save(["]filename["])}}name and path for the output file {p_end}
+{synopt:{opt replace}}overwrite existing {it:filename} {p_end}
+{synopt:{opt append}}if workbook {it:filename} exists, add a new sheet, otherwise create a new workbook {p_end}
+{synopt:{opt sh:eet(name [, sh_opts])}}worksheet where the table is outputted{p_end}
+
+{p2col 10 34 40 8:{cmdab:col:or(}{it:#}{cmd:)}}specify tab color for a worksheet{p_end}
+{p2col 10 34 40 8:{cmdab:nog:ridlines}}hide gridlines on a worksheet{p_end}
+
+{synopt:{opt savem:at(name [, sm_opts])}}save estimates to a matrix{p_end}
+
+{p2col 10 34 40 8:{cmd:replace}}if matrix {it:name} already exists replace it. The default is to append{p_end}
+{p2col 10 34 40 8:{cmd:exit}}after writing the matrix exit {cmd:tabmult} without creating an output file{p_end}
+
+
+{marker description}{...}
+{title:Description}
+
+{pstd}
+{cmd:tabmult} collects multiple two-way tabulation tables of frequency counts or percentages between each variable in the categorial ({cmd:cat}) {varlist}
+and each variable in the {cmd:by} {varlist}, and calculates averages for variables in the continuous ({cmd:cont}) {varlist} by categories of each 
+variable in the {cmd:by} {varlist}. It also aligns, re-arranges, and saves Stata results directly into XML format that could be opened with Microsoft Excel or OpenOffice Calc.
+
+{title:Options}
+{* MAIN *}
+{marker main}{...}
+{dlgtab:Main}
+
+{phang}
+{opt col} displays the relative frequency of each cell within its column in a two-way table.
+
+{phang}
+{opt row} displays the relative frequency of each cell within its row in a two-way table.
+
+{phang}
+{opt scol} displays the relative frequency of supercolumn total.
+
+{phang}
+{opt srow} displays the relative frequency of superrow total.
+
+{phang}
+{opt missing} requests that missing values be treated like other values in calculations of counts, percentages.
+
+{phang}
+{cmd:statcont(}{it:{help tabmult##statname:statname}} [{it:...}]{cmd:)}
+   specifies the statistics to be displayed; the default is equivalent to
+   specifying {cmd:statcont(mean)} or {cmd:statcont(count)} depending on whether "row" and/or "col" options are specified.  ({opt statc()} is a synonym for
+   {opt statcont()}.)  Multiple statistics may be specified
+   and are separated by white space, such as {cmd:statcont(mean sd)}.
+   Available statistics are
+
+{marker statname}{...}
+{synoptset 17}{...}
+{synopt:{space 4}{it:statname}}definition{p_end}
+{space 4}{synoptline}
+{synopt:{space 4}{opt me:an}} mean{p_end}
+{synopt:{space 4}{opt co:unt}} count of nonmissing observations{p_end}
+{synopt:{space 4}{opt n}} same as {cmd:count}{p_end}
+{synopt:{space 4}{opt su:m}} sum{p_end}
+{synopt:{space 4}{opt ma:x}} maximum{p_end}
+{synopt:{space 4}{opt mi:n}} minimum{p_end}
+{synopt:{space 4}{opt r:ange}} range = {opt max} - {opt min}{p_end}
+{synopt:{space 4}{opt sd}} standard deviation{p_end}
+{synopt:{space 4}{opt v:ariance}} variance{p_end}
+{synopt:{space 4}{opt cv}} coefficient of variation ({cmd:sd/mean}){p_end}
+{synopt:{space 4}{opt sem:ean}} standard error of mean ({cmd:sd/sqrt(n)}){p_end}
+{synopt:{space 4}{opt sk:ewness}} skewness{p_end}
+{synopt:{space 4}{opt k:urtosis}} kurtosis{p_end}
+{synopt:{space 4}{opt p1}} 1st percentile{p_end}
+{synopt:{space 4}{opt p5}} 5th percentile{p_end}
+{synopt:{space 4}{opt p10}} 10th percentile{p_end}
+{synopt:{space 4}{opt p25}} 25th percentile{p_end}
+{synopt:{space 4}{opt med:ian}} median (same as {opt p50}){p_end}
+{synopt:{space 4}{opt p50}} 50th percentile (same as {opt median}){p_end}
+{synopt:{space 4}{opt p75}} 75th percentile{p_end}
+{synopt:{space 4}{opt p90}} 90th percentile{p_end}
+{synopt:{space 4}{opt p95}} 95th percentile{p_end}
+{synopt:{space 4}{opt p99}} 99th percentile{p_end}
+{synopt:{space 4}{opt iqr}} interquartile range = {opt p75} - {opt p25}{p_end}
+{synopt:{space 4}{opt q}} equivalent to specifying {cmd:p25 p50 p75}{p_end}
+{space 4}{synoptline}
+{p2colreset}{...}
+
+{* OUTPUT *}
+{marker output}{...}
+{dlgtab:Output}
+
+{phang} {* SAVE *}
+{opt save(["]filename["])} specifies a name for XML file where tables are outputted. If {opt save(["]filename["])} is
+omitted, the output will be saved in {cmd:stata_tabmult.xml} located in the current working directory. Use {opt append} and
+{opt replace} options to instruct {cmd:tabmult} to append a table into the new worksheet of the existing file or to
+replace the existing file.
+
+{phang} {* REPLACE *}
+{opt replace} permits to overwrite the existing XML file.
+
+{phang} {* APPEND *}
+{opt append} if XML file already exists, a new sheet will be added to it where the output table will be saved.
+Otherwise the new file will contain one sheet with the output.
+
+{phang}{bf:NOTE:} You need to close XML file opened in Excel or Calc for {cmd:tabmult} to save new tables there. If XML
+file is still opened, {cmd:tabmult} reports an error message:{err: file can not be saved at this location}.
+
+{phang} {* SHEET *}
+{opt sheet(name)}
+You can output several tables into the different sheets of XML file (workbook). Excel or Calc files could contain
+multiple worksheets within a single document (workbook). {cmd:sheet()} option specifies the name for the new sheet
+where the table will be outputted. If not specified, a worksheet named {it:Sheet1} will be added.
+
+{pmore}
+A valid Excel worksheet name must have no more than 31 characters. The worksheet name cannot contain any of the
+following: : \ / ? * [ or ] and can not be left blank.
+
+{phang} {* SAVEMAT *}
+{opt savemat(name)} saves tabulation results in a matrix. If {it:name} exists and option {opt replace} was not
+used then additional rows will be appended to that matrix. In this case number of columns in the existing matrix
+and the one to be appended must be the same. The output matrix will contain frequency and/or mean of the variables specified
+in the syntax.
+
+
+{marker limits}{...}
+{title:Limits}
+
+{pstd}
+Similar to {manhelp tab R}, each two-way tables may have a maximum of 1,200 rows and 80 columns (Stata/MP and
+Stata/SE), 300 rows and 20 columns (Stata/IC), or 160 rows and 20 columns
+(Small Stata). For larger tables, you might need to adjust the matrix size in Stata, see {manhelp matsize R} and {manhelp table R}. 
+
+
+{marker examples}{...}
+{title:Examples}
+
+    {hline}
+    Setup
+{phang2}{cmd:. webuse citytemp2}
+
+{pstd}Multiple two-way tables of frequencies{p_end}
+{phang2}{cmd:. tabmult, cat(region agecat) cont(heatdd cooldd tempjan tempjuly) by(division)}
+
+{pstd}Multiple two-way tables of frequencies including missing observations{p_end}
+{phang2}{cmd:. tabmult, cat(region agecat) cont(heatdd cooldd tempjan tempjuly) by(division) m}
+
+{phang2}{cmd:. tabmult, cat(region agecat) cont(heatdd cooldd tempjan tempjuly) by(division) srow scol m}
+
+{pstd}Include row percentages and means for continuous variables{p_end}
+{phang2}{cmd:. tabmult, cat(region agecat) cont(heatdd cooldd tempjan tempjuly) by(division) row save(Table1.xls)}
+
+{phang2}{cmd:. tabmult, cat(agecat) cont(heatdd cooldd tempjan tempjuly) by(division region) row m save(Table1.xls) replace}
+
+{pstd}Include column percentages and means, medians for continuous variables{p_end}
+{phang2}{cmd:. tabmult, cat(region agecat) cont(heatdd cooldd tempjan tempjuly) by(division) col save(Table1.xls) replace}
+
+{phang2}{cmd:. tabmult, cat(region agecat) cont(heatdd cooldd tempjan tempjuly) by(division) statc(mean med) col save(Table1.xls) replace}
+
+{phang2}{cmd:. tabmult, cat(agecat) cont(heatdd cooldd tempjan tempjuly) by(division region) col m save(Table1.xls) sheet(missing) append}
+
+{phang2}{cmd:. tabmult, cat(agecat) cont(heatdd cooldd tempjan tempjuly) by(division region) col m sr sc save(Table1.xls) sheet(totals) append}
+
+   {hline}
+
+{title:Acknowledgements}
+
+{pstd}
+Some functionality ideas were adopted from {cmd:xml_tab} by Michael Lokshin and Zurab Sajaia.
+
+{title:Author}
+
+{p 4}Minh Cong Nguyen{p_end}
+{p 4}World Bank, 2012{p_end}
+{p 4}mnguyen3@worldbank.org{p_end}
+
+{title:Version}
+
+{p 4} This is version 1.0.6 released May., 2012.{p_end}

@@ -1,0 +1,78 @@
+{smcl}
+{* 23 May 2007}{...}
+{hline}
+help for {hi:firstdigit}
+{hline}
+
+{title:First digits of numeric variables} 
+
+{p 8 17 2} 
+{cmd:firstdigit} 
+{it:varlist}
+[{cmd:if} {it:exp}]
+[{cmd:in} {it:range}] 
+[{cmd:,}
+{cmdab:all:obs}
+{cmdab:per:cent}
+]
+
+{p 8 17 2}{cmd:firstdigit}
+{it:varname}
+[{cmd:if} {it:exp}]
+[{cmd:in} {it:range}] 
+[{cmd:,}
+{cmd:by(}{it:byvar}{cmd:)}
+{cmdab:miss:ing} 
+{cmdab:per:cent}
+]
+
+{p 4 4 2}{cmd:by ... :} may also be used with {cmd:firstdigit}: see help on
+{help by}.
+
+
+{title:Description}
+
+{p 4 4 2}
+{cmd:firstdigit} tabulates and analyses the first digits of numeric variables.
+It also tests Benford's law that digits d = 1,..,9 occur with probabilities
+log10(1 + 1/d). Thus given data of 12, 345, 6789, etc., it would extract 1, 3,
+6, etc., tabulate the frequencies of the digits 1 to 9 and give a chi-square
+test of the law. Use {cmd:return list} to see returned results. 
+
+
+{title:Options} 
+
+{p 4 8 2}{cmd:allobs} specifies use of the maximum possible number of
+observations for each variable. The default is to use only those
+observations for which all variables in {it:varlist} are not missing. 
+
+{p 4 8 2}{cmd:by()} specifies a variable defining distinct groups for
+which statistics should be calculated. {cmd:by()} is allowed only with a
+single {it:varname}. The choice between {cmd:by:} and {cmd:by()} is
+partly one of precisely what kind of output display is required. The
+display with {cmd:by:} is clearly structured by groups while that with
+{cmd:by()} is more compact. To show statistics for several variables and
+several groups with a single call to {cmd:firstdigit}, the display with
+{cmd:by:} is essential.
+
+{p 4 8 2}{cmdab:miss:ing} specifies that with the {cmd:by()} option
+observations with missing values of {it:byvar} should be included in
+calculations. The default is to exclude them. 
+
+{p 4 8 2}{cmd:percent} specifies that observed and expected frequency 
+distributions should be shown as percents. This naturally has no
+effect on the chi-square test which is carried out on the frequencies
+themselves. 
+
+
+{title:Examples}
+
+{p 4 8 2}{cmd:. firstdigit myvar}{p_end}
+{p 4 8 2}{cmd:. firstdigit myvar, percent}
+
+
+{title:Author}
+
+{p 4 4 2}Nicholas J. Cox, Durham University{break} 
+n.j.cox@durham.ac.uk
+

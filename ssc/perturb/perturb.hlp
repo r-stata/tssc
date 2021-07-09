@@ -1,0 +1,312 @@
+{smcl}
+{.-}
+help for {cmd:perturb} {right: {browse "mailto:John_Hendrickx@yahoo.com":John Hendrickx}}
+{.-}
+
+{title:perturb}
+
+{p 8 27}
+{cmd:perturb} : {it:any_stata_command} ,
+  {cmdab:popt:ions(}{it:options}{cmd:)}
+  [{it:command_options}]
+
+{p}
+Where {cmd:poptions} can contain the following options:
+
+{p 8 27}
+{cmdab:pv:ars(}{it:varlist}{cmd:)}
+{cmdab:pr:ange(}{it:numlist}{cmd:)}
+{cmdab:u:niform}
+{cmdab:pf:actors(}{it:varlist}{cmd:)}
+{cmdab:pc:nttabs(}{it:string}{cmd:)}
+{cmdab:ad:just}
+{cmdab:b:estmod}
+{cmdab:q:list(}{it:numlist}{cmd:)}
+{cmdab:u:list(}{it:numlist}{cmd:)}
+{cmdab:d:istlist(}{it:numlist}{cmd:)}
+{cmdab:a:ssoc(}{it:string}{cmd:)}
+{cmdab:s:tatitics(}{it:string}{cmd:)}
+{cmdab:f:ormat(}{it:string}{cmd:)}
+{cmd:save(}{it:string}{cmd:)}
+{cmdab:n:iter(}{input:integer} 100{cmd:)}
+{cmdab:m:isclass(}{it:numlist}{cmd:)}
+{cmdab:v:erbose}
+
+{title:Description}
+
+{p}
+{cmd:perturb} is a tool for assessing ill-conditioning, i.e. the
+impact of small random changes (perturbations) to variables on
+parameter estimates. It is an alternative to collinearity diagnostics
+such as
+{help vif}, {help collin}, {help coldiag}, {help coldiag2}.
+{cmd:perturb} works with any model, not just linear regression and is
+suitable for models with categorical variables, interactions, or
+non-linear transformations of the independent variables.
+
+{p}
+{cmd:perturb} works by adding a small random "perturbation" value to
+selected independent variables, then re-estimating the model. This
+process is repeated {it:niter} times, after which a summary of the
+means, standard deviation, minimum and maximum of the parameter
+estimates is displayed. If collinearity is a serious problem in the
+data, then the estimates will be unstable and vary strongly.
+
+{p}
+{cmd:perturb} can be used with categorical variables. Categorical
+variables are reclassified according to a table of reclassification
+probabilities. There could for example be a 95% probability that each
+case is recoded to the same category, otherwise it is assigned to one
+of the others. Reclassification probabilities can be specified in the
+{cmd:pcnttabs} option. These are adjusted such that the expected
+frequencies of the reclassified variable are the same as the original
+and an {it:appropriate} pattern of association is imposed between the
+original and the reclassified variable. See {help reclass} for further
+details.
+
+{p}
+If a model contains interaction or nonlinear transformation then
+perturbations are only added to the main effects/untransformed
+variables. {cmd:perturb} shows how the perturbations indirectly affect
+estimates of the derived terms whereas other collinearity diagnostics
+basicly treat interactions and transformations as separate independent
+variables.
+
+{title:Options}
+
+{p 0 4}
+{cmd:pvars} Contains a list of variables to be perturbed. Random
+values are added to the variable, after which the model is
+re-estimated.
+
+{p 0 4}
+{cmd:prange} Contains a list of values determining the magnitude of
+perturbations. There should be as many {it:prange} values as
+{it:pvars} variables.
+
+{p 0 4}
+{cmd:uniform} By default, the random perturbations are drawn from a
+normal distribution N(0,{it:x}), where {it:x} is the {it:prange} value
+corresponding with the {it:pvars} variable in question. If the option
+{cmd:uniform} is specified, then the random perturbations are drawn
+from a uniform distribution U(-{it:x}/2,{it:x}/2) instead.
+
+{p 0 4}
+{cmd:pfactors} Contains a list of categorical variables to be
+perturbed.
+
+{p 0 4}
+{cmd:pcnttabs} Contains a list of values corresponding with each entry
+in {cmd:pfactors}. List elements can be numbers, row or column
+matrices or square matrices. If matrices are specified, their
+dimensions should correspond with the number of categories of the
+{it:pfactor} in question.
+
+{p 4 4}
+If a number is specified, its value should be between 0 and 100. The
+number should indicate the percentage of cases that will be
+reclassified to the same category. Note that this value is only used
+to derive initial reclassification probabilities and that the adjusted
+values will be somewhat different; see {help reclass} for details.
+
+{p 4 4}
+A row or column matrix can also be specified with different values for
+each category of the {it:pfactor} entry. These values must be between
+0 and 100 and indicate the probability of reclassification to the same
+category for each category. See {help reclass} for further details.
+
+{p 4 4}
+If a square matrix is specified, it should specify initial
+reclassification probabilities with the original variable in the rows
+and the reclassified variable in the columns. Values need not add to
+100 over the columns, this is handled by {help reclass}. A square
+matrix is taken to indicate that the {it:pfactor} entry is an ordered
+variable.
+
+{p 0 4}
+{cmd:adjust} By default, the reclassification probabilities are
+adjusted such that the expected frequencies of the reclassified
+variable are the same as those of the original when the {cmd:pcnttabs}
+option is used. Use {cmd:noadjust} to suppress this and use the
+percentages specified in the {cmd:pcnttabs} option unmodified.
+{cmd:noadjust} implies {cmd:nobestmod}.
+
+{p 0 4}
+{cmd:bestmod} By default, an appropriate pattern of association is
+imposed between the original and the reclassified variable when the
+{cmd:pcnttab} option is used. Use {cmd:nobestmod} to avoid this. The
+reclassification probabilities will be adjusted to make the expected
+frequencies of the reclassified variable equal to those of the
+original but they will otherwise be close approximations of the values
+specified in the {cmd:pcnttab} option.
+
+{p 0 4}
+{cmd:qlist} Contains values for the multiplicative {cmd:q} parameter
+corresponding with each entry in {cmd:pfactors}. See {help reclass}
+for further details.
+
+{p 0 4}
+{cmd:ulist} Contains values for multiplicative {cmd:u} corresponding
+with each entry in {cmd:pfactors}. See {help reclass} for further
+details.
+
+{p 0 4}
+{cmd:distlist} Contains values for {cmd:dist} corresponding with each
+entry in {cmd:pfactors}. See {help reclass} for further details.
+
+{p 0 4}
+{cmd:assoc} For users familiar with loglinear mobility models. Defines
+association patterns corresponding with each entry in {it:pfactors}.
+Each entry should refer to a {cmd:program} in which the variable
+{cmd:paras} is defined in terms of the variables {cmd:orig} and
+{cmd:dest} to produce a loglinear pattern of associaton. If
+{cmd:assoc} is defined, {cmd:qlist} and {cmd:ulist} are ignored.
+
+{p 0 4}
+{cmd:statistics} Specify summary statistics to be produced by
+{help tabstat}. See the corresponding option in {cmd:tabstat} for
+valid values. The default is {hi:mean st min max}.
+
+{p 0 4}
+{cmd:format} A valid format for specifying results of {help tabstat}
+and {help reclass}. The default is %8.3f.
+
+{p 0 4}
+{cmd:save} Specify a valid filename to save the coefficients as a
+dataset for further analysis
+
+{p 0 4}
+{cmd:misclass} maintained for compatability with version 1.Translated
+by {cmd:reclass} into
+{cmd:pcnttab(100-}{it:misclass}{cmd:) noadjust}.
+
+{p 0 4}
+{cmd:niter} Indicates the number of times to re-estimate the model.
+Default is 100.
+
+{p 0 4}
+{cmd:verbose} Used to print debugging information.
+
+{title:Transformations}
+
+{p}
+Transformations are specified as global variables {input:$ptrans1},
+{input:$ptrans2}, {input:$ptrans}{it:n}. These global variables
+specify one variable as a function of others using a syntax suitable
+for a {input:replace} statement. For example:
+
+{input:global ptrans1 "exp2=exp^2"}
+{input:#delimit ;}
+{input:perturb: reg ses fses*eyr educyr*eyr fses*exp educyr*exp exp2,}
+{input:poptions(pvars(eyr exp) prange(5 5)) beta;}
+{input:#delimit cr}
+
+{title:Categorical variables}
+
+{p}
+In a perturbation analysis, categorical variables are reclassified
+with a high probability for each case to remain in the same category.
+The easiest way to do this is to specify an initial table of
+reclassification probabilities using the {cmd:pcnttabs} option. These
+initial probabilities will be adjusted so that there is an appropriate
+pattern of association between the original and the reclassified
+variable and that the expected frequency distribution of the
+reclassified variable is identical to that of the original. See
+{help reclass} for further details.
+
+{p}
+Dummy variables for the categorical variables can be created using the
+builtin {help xi} command or with {help xi3} or {help desmat},
+available from the {help ssc} archives. The {cmd:defcon} and
+{cmd:desrep} options will be recognized if {cmd:desmat} is used. For
+example:
+
+{input:char eyr[pzat] dir  }
+{input:#delimit ;  }
+{input:mat p=(96, 4, 1, 0\  }
+{input:        4,91, 4, 1\  }
+{input:        1, 4,91, 4\  }
+{input:        0, 1, 4,96);  }
+{input:perturb: desmat: reg ses fegp6 expc eyr, defcon(dev) desrep(all)}
+{input:   poptions(pvars(eyr) prange(2.5) pfac(expc fegp6) pcnt(p 96)}
+{input:   save("tstdat") replace ) ;  }
+
+{p}
+The same example using {cmd:xi3}:
+
+{input:perturb: xi3: reg ses e.fegp6 e.expc eyr,  }
+{input:   poptions(pvars(eyr) prange(2.5) pfac(expc fegp6) pcnt(p 96));}
+
+{p}
+In these examples, the matrix {cmd:p} contains initial
+reclassification probabilities for the variable {cmd:expc}. For the
+variable {cmd:fegp6}, the initial probability of reclassification to
+the same category is 96% for all categories.
+
+{title:Remarks}
+
+{p}
+{cmd:perturb} saves the coefficients for each interation in a matrix.
+On completion, the matrix is transformed to data and summarized to
+show the mean, standard deviation, minimum and maximum of the
+parameter estimates for the {it:perturbed} variables. {cmd:perturb}
+restores the data to its original state before exiting but the
+estimates for each iteration are saved in the result
+{result:r(perturb)}. The summary statistics are saved as
+{result:r(StatTot)}. Optionally, the dataset of coefficients can saved
+for subsequent analysis. Note that {cmd:perturb} modifies the output
+of {cmd:tabstat} and prints variable labels instead of variable names.
+The results using the saved dataset will not have this feature
+
+{p}
+{cmd:perturb} can be used with estimation procedures other than
+{help regress}. On the other hand, collinearity is a result of extreme
+(multiple) correlation among independent variables. Collinearity could
+therefore be diagnosed by running {cmd:regress} with an arbitrary
+dependent variable to use {cmd:perturb}, {help vif} and/or
+{help collin} to assess collinearity. This will certainly be a faster
+solution since maximum likelihood procedures require iterative
+solutions whereas ols regression does not. It is possible though that
+ML procedures are more sensitive to collinearity, in which case
+{cmd:perturb} would be the preferred solution.
+
+{title:Saved results}
+
+{p 0 4}
+{cmd:r(perturb)}
+{break}A matrix of coefficients (columns) over the iterations (rows)
+
+{p 0 4}
+{cmd:r(StatTot)}
+{break}A matrix of summary statistics produced by {help tabstat}.
+
+{title:References}
+
+{p 0 4}
+Belsley, D.A. (1991).
+{it:Conditioning diagnostics, collinearity and weak data in regression}.
+New York: John Wiley & Sons.
+
+{p 0 4}
+{browse "http://www.xs4all.nl/~jhckx/perturb/":http://www.xs4all.nl/~jhckx/perturb/}
+
+Direct comments to: {browse "mailto:John_Hendrickx@yahoo.com":John Hendrickx}
+
+{p}
+{cmd:perturb} is available at
+{browse "http://ideas.uqam.ca/ideas/data/bocbocode.html":SSC-IDEAS}.
+Use {help ssc} {cmd:install perturb} to obtain the latest version.
+
+{p}
+{net search collin:collin}, {net search coldiag:coldiag}, and
+{net search coldiag2:coldiag2}
+are also available from SSC. Click on a name to install or use
+{cmd:ssc install}
+
+{title:Also see}
+{p 0 21}
+On-line: help for
+  {help vif}, {help collin}, {help coldiag}, {help coldiag2},
+  {help reclass}
+{p_end}
+

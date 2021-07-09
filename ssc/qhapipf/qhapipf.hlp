@@ -1,0 +1,243 @@
+{smcl}
+{* 21August2006}{...}
+{cmd:help qhapipf}
+{hline}
+
+{title:Title}
+
+    {hi: Analysis of Quantitative traits using regression and log-linear modelling when phase is unknown}
+
+{title:Syntax}
+
+{p 8 17 2}
+{cmdab:qhapipf} {varlist} [if] [using]
+[{cmd:,} {it:options}]
+
+{synoptset 20 tabbed}{...}
+{synopthdr}
+{synoptline}
+{syntab:Main}
+{synopt:{opt qt:}({help varname})}specifies the dependent variable. {p_end}
+{synopt:{opt ipf:}({it:string})}specifies the log-linear model for haplotype frequencies. {p_end}
+{synopt:{opt reg:ress}({it:string})}specifies the regression model for the quantitative trait. {p_end}
+{synopt:{opt start}}specifies that the starting posterior weights of the EM algorithm are 
+chosen at random. {p_end}
+{synopt:{opt dis:play}}specifies whether to output parameter estimates. {p_end}
+{synopt:{opt known}}specifies that phase is known. {p_end}
+{synopt:{opt phase}({help varname})}specifies a variable that identifies whether phase is known for a subset of subjects. {p_end}
+{synopt:{opt acc}({it:real})}specifies the convergence threshold of the change of the full log-likelihood. {p_end}
+{synopt:{opt ipfacc}({it:real})}specifies the convergence theshold of the change in the log-likelihood of the log-linear model. {p_end}
+{synopt:{opt nolog}}specifies that the likelihood output is supressed. {p_end}
+{synopt:{opt model}({it:#})}specifies a label for the log-linear model being fitted. {p_end}
+{synopt:{opt lrtest}({it:numlist})}performs a likelihood ratio test between the two models saved by the {hi: model()} option. {p_end}
+{synopt:{opt convars}({it:string})}specifies a list of variables in the constraints file. {p_end}
+{synopt:{opt confile}({it:string})}specifies the name of the constraints file. {p_end}
+{synopt:{opt mv}}specifies that missing data will be imputed. {p_end}
+{synopt:{opt mvdel}}specifies that subjects with missing data will be deleted. {p_end}
+{synopt:{opt hap}({it:string})}specifies the haplotype of interest. {p_end}
+{synopt:{opt menu}}specifies that the command is run through a window interface. {p_end}
+{synoptline}
+{p2colreset}{...}
+
+
+{title:Description}
+
+{p 0 0}
+This command models the relationship between a normally distributed continuous
+variable in a population-based random sample and individuals' haplotype.
+This command uses an EM algorithm to resolve haplotype phase. Covariates 
+are constructed from the haplotype and used in a regression model. Additionally
+the EM algorithm also handles missing typings assuming MAR.
+
+{p 0 0}
+There are two distinct models the log-linear model for haplotype
+frequencies. Further details of this procedure are found in the
+stata command {cmd:hapipf}. Haplotype frequencies are estimated under
+the assumption of Hardy-Weinberg Equilibrium.
+
+{p 0 0}
+The regression model relates the haplotypes to the quantitative trait.
+This model is specified in {cmd:regress()} with the dependent variable specified
+by the {cmd:qt()} option. 
+
+{p 0 0}
+The regresssion model takes a syntax to specify the dummy variables for the regression
+model. The syntax can specify within-loci, between-loci and between-chromosome effects.
+
+{title:Latest Version}
+
+{p 0 0}
+The latest version is always kept on the SSC website. To install the latest version click
+on the following link 
+
+{stata ssc install qhapipf, replace}.
+
+{title:Options}
+
+{p 0 0}
+{opt ipf:}({it:string}) specifies the log-linear model for the haplotype frequency model.
+ It requires special syntax of
+the form {hi:l1*l2+l3}. {hi:l1*l2} allows all the interactions
+between the first two loci and locus 3 is independent of them.
+This syntax is used in most books on Log-linear modelling, "-" terms and brackets are not allowed.
+
+{p 0 0}
+{opt reg:ress}({it:string}) specifies the regression model. 
+The program then creates "dummy"
+variables for all the effects. A fuller description of this option is given in the
+examples.
+
+{p 0 0}
+{cmdab:start} specifies that the starting posterior weights of the EM algorithm are 
+chosen at random.
+
+{cmdab:dis:play} specifies whether to output parameter estimates.
+
+{cmdab:known} specifies that phase is known.
+
+{p 0 0}
+{cmdab:phase}{cmd:(}{it:varname}{cmd:)} specifies a variable that identifies whether phase is known for a subset of subjects. The
+variable must contain 1 where phase is known and 0 where phase is unknown.
+
+{p 0 0}
+{cmdab:acc}{cmd:(}{it:real}{cmd:)} specifies the convergence threshold of the change of the full log-likelihood.
+
+{p 0 0}
+{cmdab:ipfacc}{cmd:(}{it:real}{cmd:)} specifies the convergence theshold of the change in the log-likelihood of the log-linear model.
+
+{p 0 0}
+{cmdab:model}{cmd:(}{it:integer}{cmd:)} specifies a label for the log-linear model being fitted. This
+label is used in the {hi: lrtest()} option.
+
+{p 0 0}
+{cmdab:lrtest}{cmd:(}{it:#,#}{cmd:)} performs a likelihood ratio test between the two models saved by the {hi: model()} option.
+
+{cmdab:convars}{cmd:(}{it:string}{cmd:)} specifies a list of variables in the constraints file.
+
+{cmdab:confile}{cmd:(}{it:string}{cmd:)} specifies the name of the constraints file.
+
+{p 0 0}
+{cmdab:mv} specifies that the algorithm should replace missing locus data (".") with a copy of each 
+of the possible alleles at this locus. This is performed at the same stage as the handling of the 
+missing phase when the dataset is expanded into all possible observations. If this option is not 
+specified but some of the alleles do contain missing data the algorithm sees the symbol "." as 
+another allele.
+
+{p 0 0}
+{cmdab:hap}{cmd:(}{it:string}{cmd:)} specifies the haplotype of interest. The dummy variables in the
+  regression are all related to this haplotype. If the user does not slect
+  a particular haplotype then one is randomly chosen. 
+
+{p 0 0}
+{cmdab:mvdel} specifies that all subjects with missing alleles are deleted.
+
+{cmdab:menu} specifies that the command is run through a window interface.
+
+{cmdab:qt}{cmd:(}{it:varname}{cmd:)} specifies the dependent variable in the regression model.
+
+{opt nolog} specifies that the likelihood output is supressed. 
+
+{p}
+
+{title:Examples of Singlepoint Analyses}
+
+To execute the menu interface version of this command type
+
+{inp:. qhapipf,menu}
+
+{p 0 0}
+For the examples I shall assume there are three loci a, b and c . 
+The pairs of alleles are contained in the 6 variables a1, a2, b1, b2, c1 and c2. 
+Let the quantitative trait variable be y. 
+
+{p 0 0}
+All the models described here all assume that the saturated model is fitted for the haplotype frequencies. For a single locus {hi:a} this saturated model is specified
+by the option {hi:ipf(l1)}. Given this the regression models are specified in the
+{hi:regress()} option and the more common models are described below. All the regression
+models assume that there are two alleles per locus, multiple alleles are recoded by
+the algorithm in terms of an allele of interest and all the rest are the reference group.
+
+{p 0 0}
+The one parameter constant model is specified by {hi: reg(1)}.
+To add an additional parameter that is the additive effect of the allele of interest the model
+is specified by the option {hi: reg([l1+l1])}, where {hi: l1} represents the first locus in the {hi: varlist}.
+This is the one-locus single-point additive model (one-locus SAM).The terms between the [] 
+brackets represent the within locus model, in the SAM the two chromosomes are independent 
+but have the same parameter for the allele of interest effect. If the allelic effect 
+depended on the chromosome then there would be two parameters and this is specified by 
+the option {hi: reg([l1a+l1b])}, this is the effect of parental imprinting is not additive. 
+Additionally the within-locus between-chromosome interaction can be included by
+replacing the {hi:+} symbol with {hi:*}. This parameter is usually called the dominance parameter.
+The two models become {hi: reg([l1*l1])} and {hi: reg([l1a*l1b])},respectively.
+
+{p 0 0}
+The commands to fit these models are given below.
+
+{inp:. qhapipf a1 a2, ipf(l1) reg(1) qt(y)}
+{inp:. qhapipf a1 a2, ipf(l1) reg([l1+l1]) qt(y)}
+{inp:. qhapipf a1 a2, ipf(l1) reg([l1a+l1b]) qt(y)}
+{inp:. qhapipf a1 a2, ipf(l1) reg([l1*l1]) qt(y)}
+{inp:. qhapipf a1 a2, ipf(l1) reg([l1a*l1b]) qt(y)}
+
+To test whether locus a is associated with the quantitative trait compare the
+two regression models {hi:1} and {hi:[l1+l1]}
+
+{inp:. qhapipf a1 a2, ipf(l1) reg([l1+l1]) model(0) qt(y)}
+{inp:. qhapipf a1 a2, ipf(l1) reg(1) model(1) lrtest(0,1) qt(y)}
+
+{title:Examples of Multipoint Analyses}
+
+{p 0 0}
+When modelling more than one locus there are additionally between-loci interaction terms.
+The within-loci interactions are specified within the [] brackets and the between-loci 
+interactions are specified between the [] brackets.
+The two-locus SAM now becomes the model {hi: [l1+l1]+[l2+l2]}, where the two loci are independent
+specified by the ``+'' symbol between the two sets of brackets. 
+An extension of this model would allow one between-loci interaction (or ``haplotype'' effect),
+this is the two-locus multipoint additive model (two-locus MAM), this model is specified by
+the option {hi: reg([l1+l1]x[l2+l2])}. Note that the {hi: x} symbol purely says that there is a
+between loci interaction and that the "haplotype" effect is additive. This would be a 
+4 parameter regression model: the constant term, the first locus additive effect, the second locus
+additive effect and an additive haplotype effect. There is one other between chromosome "haplotype" 
+effect which is when the "haplotype" can be formed between chromosomes. This model would be
+specified by the option {hi: reg([l1+l1]*[l2+l2])} and now the "haplotype" effect would not be
+additive.
+
+{p 0 0}
+The saturated model that ignores parental
+imprinting is specified by the option {hi: reg([l1*l1]*[l2*l2])}. This model contains
+between-chromosome interactions. Between-chromosome interactions can be further divided into
+within-loci between-chromosome interactions (dominance parameters) and all between-loci
+between-chromsome interactions. The full saturated model including parental
+imprinting is specified by the option {hi: reg([l1a*l1b]*[l2a*l2b])}.
+
+The commands to fit these models are given below
+
+2-point SAM
+{inp:. qhapipf a1 a2 b1 b2, ipf(l1*l2) reg([l1+l1]+[l2+l2]) qt(y)}
+2-point MAM
+{inp:. qhapipf a1 a2 b1 b2, ipf(l1*l2) reg([l1+l1]x[l2+l2]) qt(y)}
+2-point MAM (non-additive haplotype effect)
+{inp:. qhapipf a1 a2 b1 b2, ipf(l1*l2) reg([l1+l1]*[l2+l2]) qt(y)}
+2-point saturated model
+{inp:. qhapipf a1 a2 b1 b2, ipf(l1*l2) reg([l1*l1]*[l2*l2]) qt(y)}
+2-point saturated model with parental imprinting
+{inp:. qhapipf a1 a2 b1 b2, ipf(l1*l2) reg([l1a*l1b]*[l2a*l2b]) qt(y)}
+
+{p 0 0}
+The algorithm calculates the haplotype frequencies internally and the log-linear
+model option {hi: ipf()} specifies this model. Generally it is taken to be
+the saturated model. It may be advantageous to use an intermediate model to
+reduce the number of parameters in the full joint likelihood. This can also
+be tested using this command using the likelihood ratio test.
+
+{title:Author}
+
+{p}
+Adrian Mander, MRC Human Nutrition Research, Cambridge, UK.
+
+Email {browse "mailto:adrian.mander@mrc-hnr.cam.ac.uk":adrian.mander@mrc-hnr.cam.ac.uk}
+
+{title:Also see}
+
+On-line: help for {help hapipf} (if installed), {help ipf} (if installed). 

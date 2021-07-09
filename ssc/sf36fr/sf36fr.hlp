@@ -1,0 +1,60 @@
+{smcl}
+{* 5May2013}{...}
+{hline}
+help for {hi:sf36fr}{right:Jean-Benoit Hardouin}
+{hline}
+
+{title:Computation of the score of the French SF36 questionnaire}
+
+{p 8 14 2}{cmd:sf36fr} {it:varlist} [{it:if}] [,{cmdab:v2} {cmd:save}({it:prefix}) {cmd:saveref}({it:prefix}) {cmd:saveimp}({it:prefix}) {cmdab:rep:lace} {cmd:age}({it:varname}) {cmdab:sex}({it:varname}) {cmdab:det:ails}]
+
+
+{title:Description}
+
+{p 4 4 2}{cmd:sf36fr} computes the scores of the French versions of the SF36 questionnaire based on the algorithm of the version 1.3. By default, version 1.3 of the questionnaire is assumed.
+For data provided using the version 2 of the SF36 questionnaire, this algorithm is adapted.
+
+{title:Options}
+
+{p 4 8 2}{it:varlist} must contain the name of the 36 variables representing the 36 items of the questionnaire in the same order than in the questionnaire.
+
+{p 4 8 2}{cmd:v2} is required if the version 2 of the SF36 questionnaire is used.
+
+{p 4 8 2}{cmd:save}({it:prefix}) saves the scores in new variables. The names of this variable are {it:prefix} followed by the names of the dimensions (PF RP BP GH VT SF RE MH PCS MCS).
+
+{p 4 8 2}{cmd:saveref}({it:prefix}) saves the scores of reference in new variables. The names of this variable are {it:prefix} followed by the names of the dimensions (PF RP BP GH VT SF RE MH PCS MCS).
+
+{p 4 8 2}{cmd:saveimp}({it:prefix}) saves the imputed values of each items in variables using the string as prefix followed the name of each items.
+
+{p 4 8 2}{cmdab:rep:lace} allows replacing the variables defined with the {cmd:save} and {cmd:saveref} options if required.
+
+{p 4 8 2}{cmd:age}({it:varname}) and {cmd:sex}({it:varname}) define the age and sex of the individuals in order to compute more precisely the scores of reference.
+
+{p 4 8 2}{cmdab:det:ails} displays tables of incoherencs and comparison between computed scores and scores of reference.
+
+
+{title:Example}
+
+	{cmd:. sf36fr sf36_1 - sf36_11d} 
+
+	{cmd:. sf36fr sf36_1 - sf36_11d, v2 save(score) details replace}
+
+	{cmd:. sf36fr sf36_1 - sf36_11d, v2 save(score) details saveref(scoreref) age(age) sex(sexe)}
+
+
+{title:Reference}
+
+{p 4 8 2}{cmd:Leplège A, Ecosse E, Pouchot J, Coste J, Perneger T} (2001). Le questionnaire MOS-SF36 - Manuel de l'utilisateur et guide d'interprétation des scores. Estem: Paris.
+
+
+{title:Author}
+
+{p 4 8 2}Jean-Benoit Hardouin, PhD, assistant professor{p_end}
+{p 4 8 2}EA 4275 "Biostatistics, Clinical Research and Subjective Measures in Health Sciences"{p_end}
+{p 4 8 2}University of Nantes - Faculty of Pharmaceutical Sciences{p_end}
+{p 4 8 2}1, rue Gaston Veil - BP 53508{p_end}
+{p 4 8 2}44035 Nantes Cedex 1 - FRANCE{p_end}
+{p 4 8 2}Email:
+{browse "mailto:jean-benoit.hardouin@univ-nantes.fr":jean-benoit.hardouin@univ-nantes.fr}{p_end}
+{p 4 8 2}Website {browse "http://www.anaqol.org":AnaQol}
+

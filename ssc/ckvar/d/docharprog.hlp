@@ -1,0 +1,126 @@
+{smcl}
+{* September 19, 2007 @ 13:13:31}{...}
+{hi:help docharprog} 
+{hline}
+
+{title:Title}
+
+{pstd}
+Putting Simple Programs in Characteristics
+{p_end}
+
+{title:Description}
+
+{pstd}
+Stata's {help char:characteristics} allow metadata to be attached to individual
+variables and to the data set itself. Metadata is a great
+idea, since it goes wherever the variable goes. This can be exploited,
+for validation (see {help ckvar}) by allowing Stata
+commands to be attached directly to variables themselves. The
+{help dochar} program runs the code; this help file tells how to write
+the code so that it will execute properly.
+{p_end}
+
+{pstd}
+The point of view for this help file is
+that of writing simple validation rules, so the programs (or snippets)
+will typically be called as such. Do not let this deter you from using
+{help dochar} for other purposes!
+{p_end}
+
+{title:Remarks}
+
+{pstd}
+{help dochar} will run a series of commands, separated by semi-colons
+(;), which are stored in a {help char:characteristic}. This is its
+main purpose. Because {help dochar} was originally written to aid in
+data validation, however, it can also
+recognize some other non-Stata constructions which are useful for
+specifying ranges of values. These are mentioned at
+{help docharprog##validvalid:the end of this file}.
+{p_end}
+
+{pstd}
+The {help char:characteristics} 
+may be (and really should be) edited by using the {help docharedit}
+utility, as it is much less error-prone. There are some tips at the
+end of this file for 
+{help docharprog##editByHand:editing by hand},
+which could be of some use for changing the
+{help char:characteristics} in a do or ado file.
+{p_end}
+
+{pstd}
+Writing mini do-files which are stored within
+{help char:characteristics} is like writing any other do-file, with
+just a couple of things to note:
+{p_end}
+
+{pin}
+It is best to use a the local {help macro} {cmd:`self'} to refer to the
+variable which holds the {help char:characteristic}. This will keep
+the mini do file from breaking if the variable is renamed.
+Do not fear {c -}{c -} it is OK to use `self' exactly as it stands (with
+the open and close quotes) within the program. 
+{p_end}
+
+{pin}
+If you use branching or looping without using the {cmd:slow} option
+when invoking {help dochar},
+Stata will complain about not finding curly braces
+({c -(} or {c )-}), even if they are not needed. You could even get into an
+infinite loop!
+Thus, it is probably best to use as {help cond()} command in place
+of {help ifcmd:if} commands, when possible. If looping is really
+needed, go ahead and use it, but be sure to the {cmd:slow} option when using
+{help dochar}. You do not need to worry if writing mini do-files for {help ckvar},
+because it works around this limitation. 
+{p_end}
+
+{pin}
+How {cmd:dochar} echos results to the screen depends on whether the
+{cmd:slow} option is used. If the {cmd:slow} option is not invoked,
+then output appears as expected. If the {cmd:slow} option is invoked,
+output will appear if an only if the {cmd:loud} option is also
+invoked, in which case the mini-do file will also appear in the
+Results window. This is because the {cmd:slow} option writes the
+mini-do file to disk and then either {help:run}s it or {help:do}es it.
+This behavior might change in a future version, but it currently seems too
+esoteric to cause much worry.
+{p_end} 
+
+{pstd}
+{help dochar} can be useful when called from within do or ado
+files. Such files are often filled with temporary names, such as those
+given to temporary variables. Names and values can be passed through
+{help dochar} by using the {cmd:tempnames} option. If local names are
+passed through in such a fashion, refer to the local macros by
+{cmd:`}{it:lclname}{cmd:'} when editing the file via {help docharedit}.
+If you are editing by hand, prevent immediate expansion by putting a backslash
+in front of the open quote: {cmd:\`}{it:lclname}{cmd:'}.
+{p_end}
+
+{marker editByHand}{...}
+{pstd}
+To program mini-do files by hand, take care to use the construction
+{cmd:\`self'} in place of {cmd:`self'}. This will ensure that Stata
+does not immediately expand the `self' macro before assigning the
+command to the characteristic. Clearly, this needs to be done for all
+other local macros which might be used in the mini do-file.
+{p_end}
+
+INCLUDE help ckvar_rule_syntax
+
+{title:Also see}
+
+{psee}
+Online: {help dochar}, {help docharedit}
+{p_end}
+
+{title:Author}
+
+{pstd}
+Bill Rising, StataCorp{break}
+email: brising@stata.com{break}
+web: {browse "http://homepage.mac.com/brising":http://homepage.mac.com/brising}
+{p_end}

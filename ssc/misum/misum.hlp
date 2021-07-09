@@ -1,0 +1,131 @@
+{smcl}
+{* version 1.0.4 05jul2011}{...}
+{cmd:help misum}
+{hline}
+
+{title:Title}
+
+{p 5}
+{cmd:misum} {hline 2} Summary statistics in MI dataset 
+
+{title:Syntax}
+
+{p 8 44}
+{cmd:misum} [{varlist}] {ifin} {weight} [{cmd:, m(}{it:numlist}{cmd:)}
+{opt d:etail} {cmd:{ul:for}}{cmd:mat(}{help format:%fmt}{cmd:)} 
+{opt mat:rix(name)}]
+
+
+{p 12}
+{helpb by} is allowed
+
+{p 12 12}{cmd:aweights}, {cmd:fweights} and {cmd:iweights} are allowed. 
+However, {cmd:iweights} are not allowed with {opt detail}. See 
+{help summarize}
+
+
+{title:Description}
+
+{pstd}
+{cmd:misum} calculates summary statistics in MI datasets. Results from 
+{help summarize} are combined, applying Rubin's combination rules. 
+
+
+{title:Options}
+
+{dlgtab:Options}
+
+{phang}
+{opt m(numlist)} combines results from imputed datasets {it:numlist}. 
+Numbers of imputed datasets must be given in ascending order.
+
+{phang}
+{opt d:etail} calculates additional statistics and returns them in 
+{cmd:r()}. See {help summarize}.
+
+{phang}
+{opt for:mat(%fmt)} displays results in specified format.
+
+{phang}
+{opt mat:rix(name)} returns the result matrix in 
+{cmd:r(}{it:name}{cmd:)}.
+
+
+{title:Remarks}
+
+{pstd}
+{cmd:misum} calls {help summarize} for each imputed dataset. The 
+returned results are added up and divided by {it:M}, where {it:M} is 
+the number of imputed datasets. The standard deviation is calculated as 
+the square root of the variance.
+
+{pstd}
+{cmd:misum} requires the data to be {help mi_styles:{it:flong style}} 
+(also see {help mi set}, {help mi convert}). The data may also be in 
+{cmd:ice} format (Royston 2005).
+
+
+{title:Example}
+
+{pstd}{ul:Use with {help mi} (Stata 11 or higher)}
+
+	. sysuse auto
+
+	. mi set flong
+
+	. mi register imputed rep78
+
+	. mi impute regress rep78 = price mpg weight ,add(5)
+
+	{cmd:. misum rep78 price mpg}
+
+{pstd}{ul:Use with {cmd:ice} (Stata 9.2 or higher)}
+
+	. sysuse auto ,clear
+
+	. ice rep78 price mpg weight ,clear m(5) cmd(regress)
+
+	{cmd:. misum rep78 price mpg}
+
+
+{title:Saved results}
+
+{pstd}
+{cmd:misum} calls {help summarize} and saves any results returned for 
+each variable. It therefore saves the following in {cmd:r()}:
+
+{pstd}
+Scalars{p_end}
+	{cmd:r({it:varname_stat})}	(avarage) {it:stat} for {it:varname} returned by {help summarize}
+
+{pstd}
+Matrices{p_end}
+	{cmd:r({it:name})}		result matrix ({opt matrix} only)
+
+
+{title:Acknowledgments}
+
+{pstd}
+Sebastian Pink suggested downward compatibility with Stata 9.2 and data in 
+{cmd:ice} format.
+
+{title:References}
+
+{pstd}
+Royston, P. (2005) Multiple imputation of missing values: update. Stata 
+Journal 5 (2), 188-201.
+
+
+{title:Author}
+
+{pstd}Daniel Klein, University of Bamberg, klein.daniel.81.@gmail.com
+
+
+{title:Also see}
+
+{psee}
+Online: {helpb mi}, {help summarize}{p_end}
+
+{psee}
+if installed: {helpb ice}
+{p_end}

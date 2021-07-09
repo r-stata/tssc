@@ -1,0 +1,277 @@
+{smcl}
+{* *! version 1.0.2 18Jan2012}{...}
+{cmd:help isa}
+{hline}
+
+{title:Title}
+
+{p2colset 9 19 21 2}{...}
+{p2col: {cmd:isa} {hline 2}}Imbens' (2003) sensitivity analysis{p_end}
+{p2colreset}{...}
+
+
+{title:Syntax}
+
+{p 8 15 2}
+{cmd:isa}
+{depvar}
+{it:treatmentvar}
+[{indepvars}]
+{ifin}
+{weight}
+{cmd:,} {opt tau(real)} [{it:options}]
+
+{synoptset 26 tabbed}{...}
+{synopthdr}
+{synoptline}
+{syntab:Model}
+{p2coldent:* {opth tau(real)}}the target size of the coefficient of the treatment variable.{p_end}
+{synopt:{opth obs:ervation(int)}}the number of observations; default is {cmd: observation(20)}{p_end}
+{synopt:{opth res:olution(int)}}the number of iterations for each fixed value of alpha; default is {cmd: resolution(20)}{p_end}
+{synopt:{opth mina:lpha(real)}}the minimum value of alpha in the iterations; default is {cmd: minalpha(0)}{p_end}
+{synopt:{opth maxa:lpha(real)}}the maximum value of alpha in the iterations; default is {cmd: maxalpha(10)}{p_end}
+{synopt:{opth mind:elta(real)}}the minimum value of delta in the iterations; default is {cmd: mindelta(0)}{p_end}
+{synopt:{opth maxd:elta(real)}}the maximum value of delta in the iterations; default is {cmd: maxdelta(5)}{p_end}
+{synopt:{opt nodots}}suppresses display of iteration dots.{p_end}
+
+{syntab:SE/Robust}
+{synopt :{opth vce(vcetype)}}{it:vcetype} may be {opt oim},
+{opt r:obust}, {opt cl:uster} {it:clustvar}, or {opt opg}{p_end}
+
+{syntab:Graph}
+{synopt:{opt nograph}}suppresses the figure{p_end}
+{synopt:{opt noplot}}suppresses the plots of the partial R-sq of each control variable in the figure {p_end}
+{synopt:{opth nplots(int)}}specifies the number of control variables plotted on the graph; default is {cmd: nplots(5)}. The first {it:n} variables in {it:indepvars} are selected.{p_end}
+
+{syntab:Advanced}
+{synopt:{opth prec:ision(real)}}the percentage error from {opt tau(real)} within which iteration ends; default is {cmd: precision(0.1)}{p_end}
+{synopt:{opth smina:lpha(real)}}the minimum value of alpha in the 2nd run of the iterations; default is {cmd: aminalpha(0)}{p_end}
+{synopt:{opth smaxa:lpha(real)}}the maximum value of alpha in the 2nd run of the iterations; default is {cmd: amaxalpha(10)}{p_end}
+{synopt:{opth smind:elta(real)}}the minimum value of delta in the 2nd run of the iterations; default is {cmd: amindelta(0)}{p_end}
+{synopt:{opth smaxd:elta(real)}}the maximum value of delta in the 2nd run of the iterations; default is {cmd: amaxdelta(5)}{p_end}
+{synopt:{opth ml_iterate(int)}}specifies the number of iterations in each MLE; default is {cmd: ml_iterate(5)}{p_end}
+{synopt:{opt skipr:angecheck}}skips the check of initial values of minalpha, minalpha, minalpha and minalpha.{p_end}
+{synopt:{opt showr:angecheck}}shows the results of the rangecheck performed in Step 2.{p_end}
+{synopt:{opt quick}}directs -{cmd: isa}- to switch the role of {opt alpha} and {opt delta} at an earlier point than default.{p_end}
+{synopt:{opt tstat(real)}}the target size of the t-value of the treatment variable.{p_end}
+
+{synoptline}
+{p2colreset}{...}
+{p 4 6 2}* {opt tau(real)} is required.{p_end}
+{p 4 6 2}* The value of {opt tau(real)} must be positive and smaller than the original treatment effect.{p_end}
+{p 4 6 2}At least one {indepvars} is required.{p_end}
+{p 4 6 2}{it:treatmentvar} must be binary.{p_end}
+{p 4 6 2}{cmd:aweight}s and {cmd:fweight}s are allowed; see {help weight}.{p_end}
+{p 4 6 2}{cmd:aweight} in -{cmd:logit}- is no longer supported in the current version of Stata. Thus, -{cmd:isa}- uses -{cmd:logit}- in version 9.{p_end}
+
+
+{title:Description}
+
+{pstd}
+-{cmd:isa}- produces a figure for the sensitivity analysis developed by Imbens (2003).
+Observational studies cannot control for the bias due to the omission of unobservables.
+The sensitivity analysis provides a benchmark about how strong assumption about unobservables researchers need to make to maintain the causal interpretation.
+
+{pstd}
+Specifically, Imbens (2003) set up the situation in which researchers can manipulate the magnitude of the bias by changing the coefficient of an unobservable on a treatment variable ({opt alpha}) and that on an outcome variable ({opt delta}).
+Thus, there exist a number of pairs of {opt alpha} and {opt delta} that change the treatment effect by a given size.
+In principle, Imbens' (2003) sensitivity analysis presents the contour of an equal bias having {opt alpha} in the horizontal axis and {opt delta} in the vertical axis.
+
+{pstd}
+-{cmd:isa}- automatically maximizes the likelihood function developed by Imbens (2003), find such pairs with an efficient algorithm, and draw a contour by connecting these pairs.
+How to interpret the resulting figure is explained below in {opt Example:.}
+
+
+{title:Options}
+
+{dlgtab:Model}
+
+{phang}
+{opt tau(real)} specifies the target size of the coefficient of the treatment variable.
+For example, if a researcher finds the treatment effect of 1.7 and wants to know the strength of the confounding by an unobservable that halves the coefficient, s/he should set {opt tau(0.85)}.
+The contour in the figure represents the set of partial effects of an unobservable that changes the coefficient to 0.85.
+
+{phang}
+{opt observation(int)} specifies the number of points at which the value of {opt alpha} in the horizontal axis is fixed.
+The values of alpha are automatically selected based on the number of {opt observation} and the range of {opt alpha}.
+In the 2nd run, the roles of {opt alpha} and {opt delta} are switched.
+In general, a larger value of {opt observation(int)} results in a better figure at the cost of computation time. 
+
+{phang}
+{opt resolution(int)} specifies the number of iterations in finding the value of {opt delta} for each fized value of {opt alpha}. The algorithm searches {opt delta} by splitting the range of {opt delta} into half in each iteration.
+Thus, the resolution specifies how fine estimate about {opt delta} a researcher wants to obtain.
+For example, when the range of {opt delta} is [0,8], {opt resolution(1)} only tells us whether the value of {opt delta} lies in [0,4) or [4,8] while {opt resolution(3)} provides the value of {opt delta} at  one-unit precision, say [3,4) or [4,5].
+Default is {cmd: resolution(20)}.
+In the 2nd run, the roles of {opt alpha} and {opt delta} are switched.
+In general, a larger value of {opt resolution(int)} results in a more accurate figure at the cost of computation time. 
+
+{phang}
+{opt minalpha(real)} and {opt maxalpha(real)} specify the range of {opt alpha} within which the values of {opt alpha} are searched.
+In Imbens (2003), {opt alpha} denotes the coefficient of unobservable in the treatment assignment equation and is represented by the horizontal axis.
+In the first run, -{cmd:isa}- fixes the value of {opt alpha} at {opt observation(int)} different points and, for each value of alpha,
+finds {opt delta} that changes the treatment effect to a given amount by changing its value.
+In the second run, {opt alpha} plays the same role as {opt delta} in the first run.
+
+{phang}
+{opt mindelta(real)} and {opt maxdelta(real)} specify the range of {opt delta} within which the values of {opt delta} are searched.
+In Imbens (2003), {opt delta} denotes the coefficient of unobservable in the outcome equation and is represented by the vertical axis.
+In the first run, for each value of alpha, -{cmd:isa}- finds {opt delta} that changes the treatment effect to a given amount by changing its value.
+The value of {opt delta} is searched until the range of {opt delta} is halved by {opt resolution(int)} times,
+or the updated treatment effect is close enough to the target value.
+In the second run, {opt alpha} plays the same role as {opt delta} in the first run.
+
+{dlgtab:SE/Robust}
+
+{phang}
+{opt vce(vcetype)} "specifies the type of standard error reported, which includes types that are derived from asymptotic theory, that are robust to some kinds of misspecification that allow for intragroup correlation;
+see {helpb vce_option:[R] vce_option}."
+(*cited from Stata manual.)
+
+
+{dlgtab:Advanced}
+
+{phang}
+{opt precision(real)} specifies the percentage error from {opt tau(real)} at which iteration ends.
+The default is {cmd: precision(0.1)}, which means that when a researcher sets {opt tau(.314)}, for each fixed value of alpha(1st run) and delta(2nd run),
+-{cmd:isa}- stop iteration and move to the next value if the t-statistics of the treatment effect take any value between .313686(99.9% of .314) and .314314(100.1% of .314).
+There is a trade off between computational time and accuracy, but the default value should be sufficiently small.
+
+{phang}
+{opt sminalpha(real)} and {opt smaxalpha(real)} specify the range of {opt alpha} within which the values of {opt alpha} are searched in the second run.
+In the second run, for each value of delta, -{cmd:isa}- finds {opt alpha} that changes the treatment effect to a given amount by changing its value.
+The value of {opt alpha} is searched until the range of {opt alpha} is halved by {opt resolution(int)} times, or the updated treatment effect is close enough to the target value.
+Researchers may set these options if they want to narrow down the range of {opt alpha} in the second run.
+
+{phang}
+{opt smindelta(real)} and {opt smaxdelta(real)} specify the range of {opt delta} within which the values of {opt delta} are searched in the second run.
+In the second run, -{cmd:isa}- fixes the value of {opt delta} at {opt observation(int)} different points and, for each value of delta,
+finds {opt alpha} that changes the treatment effect to a given amount by changing its value.
+Researchers may set these options if they want to increase the range of {opt delta} in the second run because needed to set the narrow range for {opt delta} in the 1st run.
+
+{phang}
+{opt skiprangecheck} skips the range check of initial values of minalpha, minalpha, minalpha and minalpha.
+This option should be specified if researchers are certain about their specification of the initial values.
+(e.g., when researchers ran -{cmd:isa_search}- before running -{cmd:isa}-.)
+
+{phang}
+{opt showrangecheck} shows the results of the range check performed in Step 2.
+This option helps users figure out how much change in {opt alpha} or {opt delta} is necessary for the program to pass the range check.
+If the dataset is small or highly unbalanced, -{cmd:isa_search}- is better option to specify the values of {opt alpha} and {opt delta}.
+
+{phang}
+{opt quick} directs -{cmd: isa}- to move to the next step when the contour plots are more likely to be found if it switches the role of {opt alpha} and {opt delta}.
+Specifically, -{cmd:isa}- moves to the next step if it cannot find {opt delta} smaller than 75% of the target value for a given fixed {opt alpha} or {opt delta}.
+For small, unbalanced data, it is possible, however, that this option mistakenly skips the rest of iterations due to the finding of irrelevant contour.
+
+{phang}
+{opt tstat(real)} specifies the target size of the t-statistics of the treatment variable.
+Because the standard errors produced by -isa- are not accurate, the users should use -gsa- if they want to draw the bound in terms of test statistics.
+See Harada (2012) for the detail.
+
+
+{title:Example}
+
+{pstd}
+The example below evaluates the effect of union membership on hourly wage assuming that union membership is a treatment variable.
+
+{phang}. {stata sysuse nlsw88:sysuse nlsw88}{p_end}
+{phang}. {stata xi i.race:xi i.race}{p_end}
+{phang}. {stata rename _Irace_2 black:rename _Irace_2 black}{p_end}
+{phang}. {stata rename _Irace_3 other:rename _Irace_3 other}{p_end}
+{phang}. {stata xi i.industry:xi i.industry}{p_end}
+{phang}. {stata rename _Iindustry_5 mnfctr:rename _Iindustry_5 mnfctr}{p_end}
+{phang}. {stata isa wage union grade mnfctr south black age other married c_city, tau(.314):isa wage union grade mnfctr south black age other married c_city, tau(.314)}{p_end}
+
+{pstd}
+If covariates in the model capture all factors that affect the wage and the likelihood of becoming a union member, the treatment effect is unbiased.
+However, researchers might be worry about the possibility that some unobserved individual predispositions affect the decision of becoming a union membership and the wage.
+In the original model, union membership increases the hourly wage by .628 , so I set {opt tau(.314)}, which reduces the treatment effect into half.
+
+{pstd}
+In 10 minutes or so, -{cmd:isa}- produces the figure with a convex contour and several plots below the contour. 
+This contour indicates the statistical power that an unobservable needs to have for the treatment effect to become half.
+For example, an unobservable needs to have the partial R-squares of 0.025 in the outcome equation and 0.1 in the treatment assignment equation to halve the treatment effect.
+Several plots provide further information about the strength of this assumption.
+These plots represent the partial R-squares when each of them is omitted from the models.
+In other words, these plots show the statistical power of each covariate.
+
+{pstd}
+For instance, the plots of {opt grade} (years of education) and {opt mnfctr} (manufacturing sector job) are located near the contour.
+This indicates that if there is an unobservable of which effects on the outcome variable and the treatment variable are as strong as the effects of {opt grade} and {opt mnfctr}, the treatment would become half.
+Whether this assumption is strong or weak depends on researchers substantive knowledge.
+For example, if a researcher believes that an unobservable that is comparable to education is unlikely to exist, the treatment effect of union membership would be fairly robust to against unobserved confounders.
+
+
+{title:Tips}
+
+{pstd}
+1. Do not set {opt maxalpha} and {opt maxdelta} too large.
+This increases the probability that -{cmd:isa}- finds the irrelevant contour, which messes up the algorithm.
+Default values often specify the reasonable range.
+
+{pstd}
+2. If -{cmd:isa}- produces oddly-shaped, too-short, or no contour, try -{cmd:isa_search}-.
+If a contour is almost OK but you want a better contour,
+you may only need to adjust some options such as {opt observation}, {opt resolution}, {opt minalpha}, {opt maxalpha}, {opt mindelta}, and {opt maxdelta}.
+
+{pstd}
+3. After -{cmd:isa_search}-, if setting {opt minalpha}, {opt maxalpha}, {opt mindelta}, and {opt maxdelta} according to the result of -{cmd:isa_search}- still does not produce a good contour,
+set {opt sminalpha}, {opt smaxalpha}, {opt smindelta}, and {opt smaxdelta}.
+However, this does not necessarily mean that setting these options always increases the probability of producing a good contour.
+Therefore, try both with and without these options.
+
+{pstd}
+4. You can manually drop problematic observations that produce the irrelevant contour(s) and reproduce the contour using -{cmd:isa_graph}-.
+
+{pstd}
+5. Without setting {opt sminalpha}, {opt smaxalpha}, {opt smindelta}, and {opt smaxdelta},
+the options "{opt skip} {opt obs(200)}" may help produce a contour.
+In this case, you probably need to drop some problematic results manually.
+
+
+{title:Saved results}
+
+{pstd}
+-{cmd:isa}- saves the following variables.
+The graph can be reproduced using these saved variables.
+The results of {it: _n} th iteration are recorded in the {it: _n} th row:
+
+{synoptset 20 tabbed}{...}
+{synopt:{cmd:isa_tau}}the updated treatment effect when the coefficients of unobservable are {opt alpha} and {opt delta}{p_end}
+{synopt:{cmd:isa_se}}the standard error of the updated treatment effect{p_end}
+{synopt:{cmd:isa_t}}the t-statistics of the updated treatment effect{p_end}
+{synopt:{cmd:isa_alpha}}the value of alpha{p_end}
+{synopt:{cmd:isa_delta}}the value of delta{p_end}
+{synopt:{cmd:isa_partial_rsq_y}}the partial r-square of an unobservable in the outcome equation{p_end}
+{synopt:{cmd:isa_partial_rsq_t}}the partial r-square of an unobservable in the treatment assignment equation{p_end}
+{synopt:{cmd:isa_converge}}identifier of whether the estimation achieved convergence or not{p_end}
+{synopt:{cmd:isa_partial_rsq_yx}}the partial r-square of the {it: k} th covariate in the outcome equation{p_end}
+{synopt:{cmd:isa_partial_rsq_tx}}the partial r-square of the {it: k} th covariate in the treatment assignment equation{p_end}
+{synopt:{cmd:isa_plotvar}}the name of the {it: k} th covariate{p_end}
+
+
+{title:Also see}
+
+{psee}
+{space 2}Help:  {help isa_search} and {help isa_graph}
+
+
+{title:Reference}
+
+{pstd}
+{browse "https://files.nyu.edu/mh166/public/docs/quick_guide_isa.pdf":Here} is the link for the quick guide by the author of the program.
+
+{pstd}
+If you use this program, please cite:
+
+{pstd}
+Imbens, Guido W. 2003. "Sensitivity to Exogeneity Assumptions in Program Evaluation." {it:The American Economic Review} 93(2):126-132.
+
+{pstd}
+Harada, Masataka "Generalized Sensitivity Analysis." {it:Working paper}.
+
+
+{title:Contact}
+
+{pstd}
+Please feel free to contact Masataka Harada(masatakaharada@nyu.edu) for any feedback or comments.

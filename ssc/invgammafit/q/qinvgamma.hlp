@@ -1,0 +1,145 @@
+{smcl}
+{* 19dec2006}{...}
+{hline}
+help for {hi:qinvgamma} 
+{hline}
+
+{title:Quantile-quantile plot for data versus fitted inverse gamma distribution}
+
+{p 8 17 2}
+{cmd:qinvgamma}
+{it:varname} 
+[{cmd:if} {it:exp}]
+[{cmd:in} {it:range}] 
+[{it:weight}] 
+[{cmd:,} 
+{cmdab:g:rid} 
+{cmd:param(}{it:# #}{cmd:)} 
+{cmd:show(}{it:condition}{cmd:)} 
+{cmdab:gen:erate(}{it:newvar}{cmd:)} 
+{it:graph_options} ]
+
+{p 4 4 2}
+where {it:graph_options} are
+
+{p 8 8 2}
+{cmd:rlopts(}{it:cline_options}{cmd:)}
+{cmd:plot(}{it:plot}{cmd:)} (Stata 8 only) 
+{cmd:addplot(}{it:plot}{cmd:)} (Stata 9 only)  
+{it:scatter_options}
+{it:twoway_options}
+
+{p 4 4 2}{cmd:fweight}s and {cmd:aweight}s are allowed; see help {help weights}. 
+
+
+{title:Description}
+
+{p 4 4 2}
+{cmd:qinvgamma} plots the quantiles of {it:varname} against the quantiles of a
+two-parameter inverse gamma distribution with probability density function 
+for variable x > 0, shape parameter a > 0 and scale parameter
+b > 0 of {bind:(b^a / Gamma(a)) x^(-a - 1) exp(-b / x)}. 
+By default, maximum likelihood estimation is carried out, using 
+{help invgammafit}, which should be installed separately. 
+
+
+{title:Remarks} 
+
+{p 4 4 2}In the majority of cases, {cmd:qinvgamma} will be used to fit an 
+inverse gamma
+distribution on the fly and to assess that fit. In some cases, it may be of
+interest to compare data with an inverse gamma distribution with known or 
+hypothesised
+parameters, which may be specified using the {cmd:param()} option. In all cases
+it is important not only to specify any {cmd:if} or {cmd:in} restrictions, but
+also to specify relevant weights, which will (unless constant) affect the
+configuration of the plot. 
+
+{p 4 4 2}Stata programmers will find appended to the code various 
+Mata functions for the inverse gamma that may be useful in other 
+circumstances. 
+
+
+{title:Options}
+
+{p 4 8 2}{cmd:grid} adds grid lines at the .05, .10, .25, .50, .75, .90, and .95
+quantiles. 
+
+{p 4 8 2}{cmd:param()} may be used to supply parameter values (namely, shape
+and scale parameters) directly for use in estimation of fitted quantiles. 
+a and b should be provided as separate values in precisely that order.
+
+{p 4 8 2}{cmd:show()} may be used to specify 
+that you wish to restrict the graph according to some condition, say 
+looking at one tail of the distribution only. Note that {cmd:if} 
+and {cmd:in} should not be used for this purpose. 
+
+{p 4 8 2}{cmd:generate()} specifies the name of a new variable to hold values 
+of fitted inverse gamma quantiles. 
+
+{p 4 8 2}{it:graph_options} are
+{cmd:rlopts(}{it:cline_options}{cmd:)},
+{cmd:addplot(}{it:plot}{cmd:)} (Stata 9 only), 
+{cmd:plot(}{it:plot}{cmd:)} (Stata 8 only), 
+{it:scatter_options}, and
+{it:twoway_options}. 
+
+{p 4 8 2}
+{cmd:rlopts(}{it:cline_options}{cmd:)} affect the rendition of the reference
+line; see help {help cline_options}.
+
+{p 4 8 2}
+{cmd:addplot(}{it:addplot}{cmd:)} provides a way to add other plots to the generated
+graph; see help {help addplot_option}.
+
+{p 4 8 2}
+{cmd:plot(}{it:plot}{cmd:)} provides a way to add other plots to the generated
+graph; see help {help plot_option}.
+
+{p 4 8 2}
+{it:scatter_options} affect the rendition of the plotted points; see help
+{help scatter}.
+
+{p 4 8 2}
+{it:twoway_options} are any of the options documented in help
+{help twoway_options} excluding {cmd:by()}.  These include options for titling
+the graph (see help {help title_options}) and options for saving the graph to
+disk (see help {help saving_option}).
+
+
+{title:Examples}
+
+{p 4 8 2}{cmd:. qinvgamma spacing}
+
+{p 4 8 2}{cmd:. qinvgamma spacing, param(20 3)}
+
+{p 4 8 2}{cmd:. qinvgamma spacing, gen(spacing_g)} 
+
+
+{title:Author}
+
+{p 4 4 2}Nicholas J. Cox, Durham University, U.K.{break} 
+n.j.cox@durham.ac.uk
+
+
+{title:References}
+
+{p 4 8 2}
+Evans, M., Hastings, N. and Peacock, B. 2000. {it:Statistical distributions.}
+New York: John Wiley.
+
+{p 4 8 2}
+Kleiber, C. and Kotz, S. 2003. 
+{it:Statistical size distributions in economics and actuarial sciences.} 
+Hoboken, NJ: John Wiley. 
+
+
+{title:Also see}
+
+{p 4 13 2}
+Online:  help for 
+{help invgammafit},  
+{help pinvgamma} (if installed), 
+{help graph}, 
+{help diagplots} 
+

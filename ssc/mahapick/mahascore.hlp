@@ -1,0 +1,409 @@
+{smcl}
+{* 26feb2008; rev 1apr2008, 2011dec16, 2012feb9, 2012feb17; 2012nov12 deleted one char}
+{hline}
+help for {hi:mahascore}
+{hline}
+
+{title:Generate a Mahalanobis distance measure}
+
+{p 8 17 2}
+{cmd:mahascore}
+{it:varlist} [{it:weight}] {cmd:,} {cmd:gen(}{it:newvar}{cmd:)}
+[
+{cmd:refobs(}{it:#}{cmd:)}
+{cmd:refvals(}{it:refvalsmat}{cmd:)}
+{cmd:refmeans}
+{cmd: treated(}{it:treatedvar}{cmd:) }
+{cmdab:invcov:armat(}{it:invcovarmat}{cmd:)}
+{cmdab:compute:_invcovarmat}
+{cmdab:unsq:uared}
+{cmdab:eucl:idean}
+{cmdab:disp:lay(}{it:display_options}{cmd:)}
+{cmdab:verb:ose}
+{cmd:float}
+{cmdab:nocovtrlim:itation}
+{cmdab:nomeantrlim:itation}
+]
+
+{title:Description}
+
+{p 4 4 2}
+{cmd:mahascore} generates a (squared, by default) Mahalanobis distance measure between every
+observation and a single tuple of reference values which can be one of...{p_end}
+{p 8 8 2}{c -} the tuple of values in a specified reference observation, using the {cmd:refobs} option;{p_end}
+{p 8 8 2}{c -} a tuple of values passed in, using the {cmd:refvals} option;{p_end}
+{p 8 8 2}{c -} the means of the variables of {it:varlist}, using the {cmd:refmeans} option.{p_end}
+
+{p 4 4 2}
+{cmd:mahascore} is used by {help mahascores} and {help mahapick}, but may be used
+independently as well.
+
+{p 4 4 2}
+{it:varlist} (the "covariates") is a list of numeric variables on which to build
+the distance measure.
+These variables should be of numeric significance, not categorical; any
+categorical variables should be replaced by a set of indicator variables.
+
+{p 4 4 2}
+Weights are allowed, but apply only under the 
+{cmd:compute_invcovarmat} and {cmd:refmeans} options.
+
+{p 4 4 2}
+By default, the result is actually the square of the Mahalanobis
+distance measure. You can use the {cmd:unsquared} option to give you the
+proper unsquared value.
+But note that in most usages, the resulting values are used in comparisons
+or sortings; the proportional magnitude is not significant, so the squared
+values are just as good.
+
+{col 12}{hline}
+{p 12 12 12}
+{hi:Technical note:} As of 26mar2008, {cmd:mahascore} is revised to produce
+a true Mahalanobis measure; previously, it produced the normalized Euclidean
+measure. See the {cmd:euclidean} option for further explanation.
+{p_end}
+{col 12}{hline}
+
+{title:Options}
+
+{p 4 4 2}
+In what follows, let {it:p} denote the number of variables in {it:varlist}.
+
+{p 4 4 2}
+{cmd:gen(}{it:newvar}{cmd:)} is required; it specifies the new variable which will contain
+the generated distance measure. Its default type is double.
+
+{p 4 4 2}
+{cmd:float} specifies that the type of {it:newvar} will be float, rather than
+double.
+
+{p 4 4 2}
+{cmd:refobs(}{it:#}{cmd:)} specifies an integer in the range 1 to _N,
+indicating the reference observation. For example, if {it:#} = 12, then the
+generated measure will be calculated between each observation and observation
+12.
+
+{p 4 4 2}
+{cmd:refvals(}{it:refvalsmat}{cmd:)} enables you to pass in a tuple of
+values to use as the comparison values; i.e., the distances will be measured
+between each observation and this tuple. {it:refvalsmat} must be
+a column vector (a {it:p}-by-1 matrix) whose entries correspond to
+the variables in {it:varlist}, and whose rownames equal the names in
+{it:varlist} in the same order.
+An example of how to do this is given below.
+
+{p 4 4 2}
+{cmd:refmeans} specifies that the tuple of reference values shall be be the
+means
+of the variables of {it:varlist}; this is often referred to as the centroid
+of {it:varlist}.
+Note that the means are computed subject to weighting, as well as limitation by
+{it:treatedvar} if the {cmd:treated()} option is specified.
+(But see {cmd:nomeantrlimitation}.)
+Also, see the discussion of multivariate outliers in the {ul:Remarks}
+section.
+
+{p 4 4 2}
+{cmd:refobs()}, {cmd:refvals()}, and {cmd:refmeans} are alternatives; one of
+them must be specified.
+
+{p 4 4 2}
+{cmd:invcovarmat(}{it:invcovarmat}{cmd:)} specifies the name of a matrix
+to be used in the computation described under {ul:Remarks}. It is presumably the
+inverse covariance matrix of {it:varlist}, but the only requirement is that
+it be a square {it:p}-by-{it:p} matrix, and both the row and column names
+must equal the names in {it:varlist} in the same order as in {it:varlist}.
+
+{p 4 4 2}
+You can use {help covariancemat} to help construct the inverse covariance matrix;
+it should be followed by a {cmd: mat} ... {cmd: = inv()} operation.
+An example is given below, in the {ul:Examples} section.
+See further discussion of the purpose of this option, under {ul:Remarks}.
+
+{p 4 4 2}
+{cmd:compute_invcovarmat} specifies that you want the inverse covariance
+matrix to be computed, rather than passed in (via {cmd:invcovarmat()}).
+This computation is subject to weighting, as well as limitation by
+{it:treatedvar} if the {cmd:treated()} option is specified.
+(But see {cmd:nocovtrlimitation}.)
+Note that this will call {help covariancemat}, which computes covariances
+limited to observations with all variables of {it:varlist} nonmissing.
+(I.e., it is potentially different from the pairwise computation of covariances.)
+
+{p 4 4 2}
+{cmd:invcovarmat()} and {cmd:compute_invcovarmat} are alternatives; one of
+them must be specified. If both are specified, then {cmd:compute_invcovarmat}
+takes precedence.
+
+
+{p 4 4 2}
+{cmd:treated(}{it:treatedvar}{cmd:)}
+specifies a numeric variable that
+distinguishes the "treated" observations, with values of 0 and non-zero
+signifying not-treated and treated, respectively. See {help mahapick} for an
+explanation of the concept of the treated set.
+This option affects only the actions of the {cmd:compute_invcovarmat} and
+{cmd:refmeans} options; these computations are limited to the 
+set of observations for which {it:treatedvar} is non-zero, if {cmd:treated()}
+is specified. See {cmd:nocovtrlimitation} and {cmd:nomeantrlimitation} for
+how to control those limitations.
+
+{p 4 4 2}
+{cmd:euclidean} takes effect only if {cmd:compute_invcovarmat} is also specified.
+It specifies that the off-diagonal elements of the covariance
+matrix are to be replaced with zeroes, which yields the normalized Euclidean
+distance measure. (This option applies only with {cmd:compute_invcovarmat}
+because the zeroing of off-diagonal elements is done to the covariance
+matrix {c -} i.e., prior to inversion.
+If you prefer this measure and are providing the matrix via the {cmd:invcovarmat()}
+option, you should zero-out the off-diagonal elements prior to inverting
+{c -} or directly construct a matrix of reciprocal variances.
+Note that if the diagonal elements of a matrix are c1, c2, ..., c{it:p}, and
+all other elements are zero, then its inverse consists of 1/c1, 1/c2, ..., 1/c{it:p}
+on the diagonal and zero elsewhere.)
+See more about this under {ul:Remarks}.
+
+{p 4 4 2}
+{cmd:display(}{it:display_options}{cmd:)} turns on the display of certain
+data structures used in the computation. If {it:display_options} contains
+{cmd:covar}, then the covariance matrix is listed;
+if it contains {cmd:invcov}, then the inverse covariance matrix is listed;
+if it contains {cmd:means} and the {cmd:refmeans} option was specified, then the vector of means
+is listed. Any other content is ignored.
+
+{p 4 4 2}
+If the inverse covariance matrix is displayed, it may be either
+{it:invcovarmat} or that which is computed as directed by the
+{cmd:compute_invcovarmat} option.
+This may be useful in debugging or just to assure
+you that the same set of (inverse) covariances are being used in repeated calls.
+
+{p 4 4 2}
+{cmd:unsquared} modifies the results to be the unsquared values, that is, the
+square roots of the default values.
+
+{p 4 4 2}
+{cmd:verbose} specifies that a line will be written, indicating some of the
+options specified.
+
+{p 4 4 2}
+{cmd:nocovtrlimitation} specifies that the covariance computation
+(for {cmd:compute_invcovarmat}) not be limited to treated observations.
+
+{p 4 4 2}
+{cmd:nomeantrlimitation} specifies that the mean computation
+(for {cmd:refmeans}) not be limited to treated observations.
+
+{p 4 4 2}
+Specifying both {cmd:nocovtrlimitation} and {cmd:nomeantrlimitation}
+is equivalent to not specifying {cmd:treated()}. Thus, it makes sense to use
+only one of them, if any.
+
+
+{title:Remarks}
+
+{p 4 4 2}
+The (squared) distance measure generated is the matrix product d'Xd, where d is a vector
+of differences in the set of variables, and X is either the inverse of the
+covariance matrix of {it:varlist}, or is a specified matrix that is provided via
+the {cmd:invcovarmat()} option.
+
+{p 4 4 2}
+The difference vector d is taken between each
+observation and the tuple of reference values. That is,
+d= (v1-{it:ref1} \ v2-{it:ref2} \ ... \ v{it:p}-{it:refp}), where v1 v2 ... v{it:p}
+are the variables of {it:varlist}, and {it:ref1}, {it:ref2},... {it:refp}
+are the reference values. In particular, under the {cmd:refobs(}{it:#}{cmd:)}
+option, {it:ref1}=v1[{it:#}], {it:ref2}=v2[{it:#}], etc.
+
+{p 4 4 2}
+Thus, the generated value is the sum of all the possible products of
+pairs of elements of d, weighted by corresponding elements of X.
+This includes components that are the
+squares of elements of d, weighted by the elements on the diagonal of X, plus
+other products (of differing elements of d), weighted by the off-diagonal
+elements of X.
+
+{p 4 4 2}
+Note that the generated value (for each observation) is a single number, though
+technically it is a 1-by-1 matrix. It is expected to be >=0 if X is truly an
+inverse covariance matrix, as such matrices are known to be positive semi-definite.
+However, if X is an arbitrary matrix, then there is no guarantee that the
+result will be nonnegative.
+
+{p 4 4 2}
+There are two purposes for the {cmd:invcovarmat()} option.
+First, it can save unnecessary repeated calculations whenever
+{cmd:mahascore} is repeatedly called on the same dataset {c -} which is
+typically done as you step through a set of reference observations. Secondly,
+you may want to compute the inverse covariance matrix in some way
+not provided for. For example, you might compute the inverse covariance matrix
+on some large set of observations, and then run {cmd:mahascore} on
+a subset or several subsets {c -} but using this common set of covariances.
+This latter situation occurs in {help mahapick} when using the
+{cmd:sliceby()} option. (If it were not for this option
+then the covariances would be recalculated on each subset {c -}
+differently.)
+
+{p 4 4 2}
+The {cmd:refvals()} option is expected to be rarely used. Potentially, it may
+save unnecessary repeated calculations {c -} analogous to one of the uses
+of {cmd:invcovarmat()}.
+Another use might be if you want the reference means and the inverse covariance
+matrix to be computed differently in regard to how they are affected by
+the {cmd: treated()} option or weights.
+
+{p 4 4 2}
+The {cmd:refmeans} option can be useful in detecting multivariate
+outliers: tuples of values that are judged to be outliers when all the
+variables are considered together, but where the
+values are not necessarily outliers when the variables are
+considered separately.
+See http://matlabdatamining.blogspot.com/2006/11/mahalanobis-distance.html
+for an explanation of this phenomenon.
+
+{p 4 4 2}
+The {cmd:euclidean} option, combined with {cmd:compute_invcovarmat}, yields
+the normalized Euclidean distance. It can be considered as a simplified version
+of the true Mahalanobis measure, and is less thorough in that it ignores
+correlations between different variables of {it:varlist}.
+It suffers from the flaw that highly correlated variables can act together
+as one variable but with disproportional weight. Another way to characterize
+it is that it presumes that the data are configured in ellipsoids that are
+oriented parallel to the axes. Also, it may fail to detect multivariate
+outliers.
+
+{p 4 4 2}
+The normalized Euclidean measure is probably less desirable than the true
+Mahalanobis measure; it is provided as
+a comparison measure, and it replicates the behavior of the earlier
+{cmd:mahascore} and {cmd:mahapick} programs. Some experimentation has shown
+that, while the values of the two measures are different, they may often yield
+orderings (i.e., if you {help sort} on these measures) that are similar.
+Of course, this phenomenon may be highly data-dependent, and may vary especially
+if highly correlated variables are present.
+
+{col 12}{hline}
+{p 12 12 12}
+{hi:Technical note:}
+The non-normalized Euclidean measure is not provided for by {cmd:mahascore},
+but is available in {help matrix dissimilarity} (beginning with Stata 9).
+It suffers from sensitivity to the scale of measurment; e.g., is income in
+dollars or thousands of dollars? The normalized Euclidean measure is a first
+step in improving this measure in that it corrects the
+problem of measurement scale. The true Mahalanobis measure goes one step
+further in that it accounts for correlation between variables.
+{p_end}
+{col 12}{hline}
+
+
+
+{p 4 4 2}
+If any of these conditions occur, then the resulting measure will be missing.
+
+{p 8 8 2}
+Any covariate (variable in {it:varlist}) is missing in either the reference
+observation or the observation for which the measure is being calculated.
+(Thus, if any covariate is missing in the reference observation, then the
+result will be universally missing.)
+
+{p 8 8 2}
+Any of the inverse covariance elements are missing.
+This would cause the result to be universally missing.
+
+{p 4 4 2}
+If the inverse covariance matrix is computed on a very small set of
+observations, it may not be valid and may yield strange results. It
+might fail to be positive semi-definite, and can yield negative measures.
+(It may also cause the {cmd:unsquared} option to have a real effect on
+comparisons and sortings of the results.)
+
+{p 4 4 2}
+This computes a measure based on a single tuple of reference values:
+the values in a specified reference observation, the means of {it:varlist},
+or an explicit tuple of values. Thus, it generates a single variable.
+In some situations (e.g., searching for multivariate outliers), that
+may be all you need, but in other situations, you may want to obtain the distance
+measures with respect to a multitude of reference observation, thus generating
+what is logically a rectangular array of values.
+(This is why there is a provision to pass in the inverse
+covariance matrix, rather than recomputing the same matrix for each step.)
+You may or may not want to
+keep all these values; you may want to make use of the values for one
+reference observation, discard them and go on to the next reference
+observation.
+Users who wish to do these sorts of operations should consider
+{help mahascores} or {help mahapick}. {cmd:mahascores} stores all the values
+from a multitude of reference values; {cmd:mahapick} selects several
+observations deemed to be closest matches (lowest scores). (The latter is
+an example of using the score values and then discarding them.)
+
+{p 4 4 2}
+It may help to understand two distinct types of weightings that can occur in
+{cmd:mahascore}. Data weights, if specified,
+affect the computation of the inverse covariance matrix if {cmd:compute_invcovarmat}
+is specified, as well as the means calculation under {cmd:refmeans}.
+Once this inverse covariance matrix has been established, it serves as a
+set of weights for computing the distance measure.
+The former weighting is observation-oriented; the latter is variable-oriented.
+
+
+{title:Examples}
+
+{p 4 8 2}
+{cmd:. mahascore income age numkids, gen(dist1) refobs(12) invcovarmat(`v')}
+
+{p 4 8 2}
+{cmd:. mahascore income age numkids, gen(dist2) refobs(`j')}
+{cmd:treated(assisted) compute_invcov}
+
+{p 4 4 2}
+To create your own inverse covariance matrix:
+
+{p 4 8 2}
+{cmd:. local vars "income age numkids"}{p_end}
+{p 4 8 2}
+{cmd:. covariancemat `vars' in 1/15, covarmat(M)}{p_end}
+{p 4 8 2}
+{cmd:. mat MINV = inv(M)  // or possibly invsym(M)}{p_end}
+{p 4 8 2}
+{cmd:. forvalues j = 1/15 {c -(}}{p_end}
+{p 4 8 2}
+{cmd:.  mahascore `vars', gen(dist`j') refobs(`j') invcovarmat(MINV)}{p_end}
+{p 4 8 2}
+{cmd:. {c )-}}
+
+{p 4 4 2}
+To create your own reference values:
+
+{p 4 8 2}
+{cmd:. local vars "income age numkids"}{p_end}
+{p 4 8 2}
+{cmd:. matrix V = (20000 \ 25 \ 2)}{p_end}
+{p 4 8 2}
+{cmd:. matrix rownames V = `vars'}{p_end}
+{p 4 8 2}
+{cmd:. mahascore `vars', gen(dist) refvals(V) compute}{p_end}
+
+
+{title:Acknowledgement}
+{p 4 4 2}
+The author wishes to thank Joseph Harkness, formerly of The
+Institute for Policy Studies
+at Johns Hopkins University for guidance in developing this program,
+as well as Heiko Giebler of Wissenschaftszentrum Berlin fur Sozialforschung
+GmbH, for suggesting further improvements.
+
+
+{title:Author}
+{p 4 4 2}
+David Kantor; initial development was done at The Institute for Policy Studies,
+Johns Hopkins University.
+Email {browse "mailto:kantor.d@att.net":kantor.d@att.net} if you observe any
+problems.
+
+
+{title:Also See}
+{p 4 4 2}
+{help mahapick}, {help mahascores}, {help mahascore2}, {help covariancemat}, {help variancemat},
+{help screenmatches}, {help stackids}.

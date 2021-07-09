@@ -1,0 +1,226 @@
+{smcl}
+{* 2007-02-26}{...}
+{cmd:help jnsn} and {cmd:help jnsni} {right:Version 1.2 2007-01-17}
+{hline}
+
+
+{title:Title}
+
+{p2colset 5 13 13 2}{...}
+{p2col:{hi:jnsn} {hline 2}}Fit Johnson's system of transformations by moment matching{p_end}
+{p2col:{hi:jnsni}}{p_end}
+{p2colreset}{...}
+
+
+{title:Syntax}
+
+{p 8 17 2}
+{cmd:jnsn}
+{varname}
+{ifin}
+{weight}
+[{cmd:,} {it:jnsn-specific option}] [{it:common options}]
+
+{p 8 17 2}
+{cmd:jnsni}
+{cmd:,} {it:jnsni-specific options} [{it:common options}]
+
+{synoptset 20 tabbed}{...}
+{synopthdr}
+{synoptline}
+{syntab:{cmd:jnsn}-specific Option}
+{synopt:{opth g:enerate(newvar)}}create variable named {it:newvar} that is the fitted normal transformation of {varname}{p_end}
+
+{syntab:{cmd:jnsni}-specific Options}
+{synopt:{opt mean(#)}}mean of the variable to be transformed; this is required{p_end}
+{synopt:{opt sd(#)}}standard deviation of the variable to be transformed; this is required{p_end}
+{synopt:{opt skew:ness(#)}}coefficient of skewness of the variable to be transformed{p_end}
+{synopt:{opt kurtosis(#)}}coefficient of kurtosis of the variable to be transformed{p_end}
+
+{syntab:Common Options}
+{synopt:{opt tol:erance(#)}}tolerance differentiating distributions{p_end}
+{synopt:{opt sbiter:ate(#)}}iteration criterion for fitting bounded distributions{p_end}
+{synopt:{opt moiter:ate(#)}}outer-loop iteration limit for estimating moments (used in fitting bounded distributions){p_end}
+{synopt:{opt motol:erance(#)}}outer-loop convergence criterion for estimating moments (used in fitting bounded distributions){p_end}
+{synopt:{opt miiter:ate(#)}}inner-loop iteration limit for estimating moments (used in fitting bounded distributions){p_end}
+{synopt:{opt mitol:erance(#)}}inner-loop convergence criterion for estimating moments (used in fitting bounded distributions){p_end}
+{synoptline}
+{p2colreset}{...}
+{p 4 6 2}
+{cmd:by} may be used with {cmd:jnsn}; see {helpb by}.{p_end}
+{p 4 6 2}
+{cmd:aweight}s and {cmd:fweight}s are allowed with {cmd:jnsn}; see {help weight}.
+
+
+{title:Description}
+
+{pstd}
+{cmd:jnsn} fits the Johnson system of distributions (Johnson, 1949) for transforming {varname} 
+to a standard normal deviate.  {cmd:jnsni} is the immediate form of the command, and allows the user to specify 
+mean, standard deviation, and coefficients of skewness and kurtosis of a hypothetical variable or of one in a 
+dataset that is not at-hand.  {cmd:jnsn} and {cmd:jnsni} implement what is known as {it:Algorithm AS 99} (Hill, 
+Hill and Holder, 1976), which fits parameters of Johnson system functions by moment matching.
+
+
+{title:Options}
+
+{dlgtab:Main}
+
+{phang}
+{cmd:generate} creates {it:newvar} containing values of the normal deviate as defined by the fitted transformation 
+coefficients.
+
+{phang}
+{cmd:mean} and {cmd:sd} mean and standard deviation are used in all cases.{p_end}
+
+{phang}
+{cmd:skewness} and {cmd:kurtosis} coefficients of skewness and kurtosis are those that would be returned by {help summarize}.  
+If these are not supplied, then they default to zero and three.
+
+{phang}
+{cmd:tolerance} tolerance criterion used in discriminating distributions; defaults to 0.01.
+
+{phang}
+{cmd:sbiterate} maximum number of iterations in fitting bounded distributions; defaults to 50.
+
+{phang}
+{cmd:moiterate} maximum number of outer-loop iterations in higher moment estimation used for fitting bounded distributions; 
+defaults to 50.
+
+{phang}
+{cmd:motolerance} criterion for convergence of the outer-loop interations in higher moment estimation used for fitting 
+bounded distributions; defaults to 0.00001.
+
+{phang}
+{cmd:miiterate} maximum number of inner-loop iterations  in higher moment estimation used for fitting bounded distributions; 
+defaults to 50.
+
+{phang}
+{cmd:mitolerance} criterion for convergence of the inner-loop interations in higher moment estimation used for fitting 
+bounded distributions; defaults to 0.00000001.
+
+
+{title:Remarks}
+
+{pstd}
+Johnson's system comprises several functions intended to transform a variable into a standard normal deviate.  The choice 
+of which of the functions to use in the transformation of a given variable is made on the basis of the distribution 
+characteristics of the variable to be transformed.  Each of the functions has up to four parameters, which are usually 
+named {it:gamma}, {it:delta}, {it:xi} and {it:lambda}.  Four of the functions are given below.  In each case, 
+{it:z} is distributed {it:N}(0,1),and {it:y} is defined as
+
+{pmore}
+{it:y} = ({it:x} - {it:xi}) / {it:lambda}
+
+{pstd}
+where {it:x} is the variable to be transformed.
+
+{pmore}
+SN (Normal distribution)
+
+{pmore2}
+{it:z} = {it:y}
+
+{pmore}
+SL (log-normal distribution)
+
+{pmore2}
+{it:z} = {it:gamma} + {it:delta} * {it:ln}({it:y})
+
+{pmore}
+SU (Unbounded distribution)
+
+{pmore2}
+{it:z} = {it:gamma} + {it:delta} * {it:asinh}({it:y})
+
+{pmore}
+SB (Bounded distribution)
+
+{pmore2}
+{it:z} = {it:gamma} + {it:delta} * {it:ln}({it:y} /  (1 - {it:y}))
+
+{pstd}
+The Johnson SN transformation is the trivial case where the variable to be transformed is already normally distributed.  
+Here, {it:xi} and {it:lambda} are the only two paramters involved, and represent the mean and standard deviation.  The 
+Johnson SL case is tranformation of a variable that is bounded on one side.  For this distribution, {it:xi} is the 
+bound, and {it:lambda} is either one (positive skew) or negative one (negative skew).  The Johnson SU case is 
+transformation of an unbounded distribution.  A simplified version of this transformation is known as the Inverse
+Hyperbolic Sine (IHS) transformation.  The Johnson SB case is for variables whose distribution is bounded on both ends.  
+Here, {it:xi} lies just beneath the minimum of {it:x}'s distribution, and {it:lambda} is such that {it:lambda} - {it:xi} 
+lies just above the maximum of {it:x}'s distribution.  Parameters for this case are the most difficult to fit.  In all 
+cases in which it is involved, the parameter space for {it:delta} is strictly positive.
+
+{pstd}
+Selection of the transformation function is made on the basis of the location of the variable's coefficients of skewness and 
+kurtosis on the plane defined by their joint parameter space.  Two lines are defined in this plane for the purpose of 
+selecting a transformation function.  One is the "log-normal" line emanating from (0,3).  (See the references for
+the parametric equations that define the log-normal line.)  The other is the boundary line, defined as coefficient of 
+kurtosis = squared coefficient of skewness + 1.  A skewness-kurtosis pair lying within {cmd:tolerance} of (0,3) will be fit 
+as SN.  A pair within {cmd:tolerance} of the log-normal line will be fit as SL.  A pair lying above the log-normal line will 
+be fit as SU.  A skew-kurtosis pair within {cmd:tolerance} of the boundary is fit as ST, which is not listed above.  A pair 
+lying between the two lines is fit as SB.  ST is not a Johnson transformation, but rather a special case created by 
+Hill, Hill and Holder (T stands for "two-ordinate").
+
+{pstd}
+Once the transformation function has been chosen, the function's parameters are fitted.  Fitting for SN, SL and ST are 
+noniterative and unproblematic.  Fitting for SU is iterative, but convergence is usually unproblematic.  Fitting of the 
+SB case is more difficult.  Suboptimum fit and failure to fit are not unusual.  Although {cmd:jnsn} does not screen for 
+adequacy of fit, it does detect failures to fit and then resorts to an alternative transformation (often SU or SL) chosen 
+on the basis of the best match of sample skewness and kurtosis to those for a variable subject to the fall-back 
+transformation.
+
+{pstd}
+Johnson transformations involve only the first four moments of the distribution of the variable to be transformed.  Its 
+transformation of a variable to the standard normal deviate is thus approximate.  If interest lies in the extremes or tails 
+of the distribution, the approximation might not be adequate.
+
+{title:Notes}
+
+{pstd}
+{cmd:jnsn} and {cmd:jnsni} return the transformation function selected in the return macro r(johnson_type).  They return the fitted parameter 
+estimates in return scalars r(gamma), r(delta), r(xi) and r(lambda), and convergence exceptions in the return macro 
+r(fault).  Coefficients for parameters that are not used in a transformation, such as {it:gamma} and {it:delta} in type SN, 
+are set to default values, typically, zero for {it:gamma} and one for {it:delta}.  For ST cases, {it:xi} and {it:lambda} are 
+set to the ordinates on the skewness-kurtosis plane, {it:delta} is set to the proportion of values at {it:lambda}, and 
+{it:gamma} is set to zero.
+
+{pstd}
+Default values for tolerances and iteration maximums are those in the FORTRAN-66 source code accompanying the article by 
+Hill, Hill and Holder (1976).
+
+{pstd}
+{cmd:jsn} calls {help summarize} to obtain mean, standard deviation, and skewness and kurtosis coefficients.  It then feeds 
+them to {cmd:jnsni}.
+
+
+{title:References}
+
+{pstd}
+I. D. Hill, R. Hill and R. L. Holder, Fitting Johnson curves by moments. {it:Applied Statistics} {bf:25}:180{c 150}89, 1976.
+
+{pstd}
+N. L. Johnson, Systems of frequency curves generated by methods of translation. {it:Biometrika} {bf:36}:149{c 150}76, 1949.
+
+
+{title:Examples}
+
+{phang}{cmd:. jnsn mpg}
+
+{phang}{cmd:. jnsni , mean(0.5) sd(0)}
+
+
+{title:Author}
+
+{pstd}
+Joseph Coveney
+jcoveney@bigplanet.com
+
+
+{title:Also see}
+
+{psee}
+Manual:  {bf:[R] summarize}, {bf:[R] boxcox}, {bf:[R] lnskew0}, {bf:[R] ladder}
+
+{psee}
+Online:  {helpb jnsw}, {helpb ajv}, {helpb transint}, {helpb summarize}, {helpb boxcox}, {helpb lnskew0}, {helpb ladder}, 
+{helpb xriml}

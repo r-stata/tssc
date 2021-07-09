@@ -1,0 +1,433 @@
+{smcl}
+{* 22mar2008, rev 1apr2008, 2012feb17; 2012nov12 (one erroneous char deleted)}
+{hline}
+help for {hi:mahascores}
+{hline}
+
+{title:Generate a set of Mahalanobis distance measures}
+
+{p 8 17 2}
+{cmd:mahascores}
+{it:varlist} [{it:weight}] {cmd:,}
+[
+{cmd:idvar(}{it:idvar}{cmd:)}
+{cmd:varprefix(}{it:varprefix}{cmd:)}
+{cmd:genmat(}{it:genmat}{cmd:)}
+{cmd:genfile(}{it:filename}{cmd:)}
+{cmd:name1(}{it:name1}{cmd:)}
+{cmd:name2(}{it:name2}{cmd:)}
+{cmd:scorevar(}{it:scorevar}{cmd:)}
+{cmd:replace}
+{cmd:treated(}{it:treatedvar}{cmd:)}
+{cmdab:invcov:armat(}{it:invcovarmat}{cmd:)}
+{cmdab:compute:_invcovarmat}
+{cmdab:disp:lay(}{it:display_options}{cmd:)}
+{cmd: full all}
+{cmdab:unsq:uared} {cmdab:eucl:idean} {cmdab:verb:ose} {cmd:float}
+{cmdab:trans:pose}
+{cmdab:nocovtrlim:itation}
+]
+
+
+{title:Description}
+
+{p 4 4 2}
+{cmd:mahascores} generates a Mahalanobis distance measure
+between every pair of observations, or possibly between selected pairs of
+observations (under the {cmd:treated()} option).
+By default, the result is actually the square of the proper Mahalanobis
+measure. You can use the {com:unsquared} option to give you the
+unsquared value, but note that in most cases, the resulting values are used
+in comparisons or sortings; the proportional magnitude is not significant,
+so the squared values are just as good.
+
+{p 4 4 2}
+{it:varlist} (the "covariates") is a list of numeric variables on which to build
+the distance measure.
+These variables should be of numeric significance, not categorical; any
+categorical variables should be replaced by a set of indicator variables.
+
+{p 4 4 2}
+See {help mahascore} for an explanation of the Mahalanobis measure.
+
+{p 4 4 2}
+Weights are allowed, but apply only under the {cmd:compute_invcovarmat} option.
+
+{p 4 4 2}
+There are three means of getting the output:{p_end}
+{p 8 10 2}{c -} a set of generated variables, using the {cmd:varprefix()} option;{p_end}
+{p 8 10 2}{c -} a matrix, using the {cmd:genmat()} option;{p_end}
+{p 8 10 2}{c -} a separate file, using the {cmd:genfile()} option.
+
+{title:Options}
+
+{p 4 4 2}
+In what follows, let {it:p} denote the number of variables in {it:varlist}.
+
+{p 4 4 2}
+{cmd:idvar(}{it:idvar}{cmd:)} is an identifying variable which is used to mark
+the components of the output:{p_end}
+{p 8 10 2}{c -} with the {cmd:varprefix()} option, its values become part
+of the new variable names;{p_end}
+{p 8 10 2}{c -} with the {cmd:genmat()} option, its values are used as
+matrix row and column names;{p_end}
+{p 8 10 2}{c -} with the {cmd:genfile()} option, its values go into the
+primary and secondary identifying variables.
+
+{p 4 4 2}
+{it:idvar} can be of any type, but it must
+be a single variable. If the existing identifying scheme consists of
+multiple variables, you should devise a way to combine them uniquely into a
+single variable. Numbers are acceptable, but they should be integers.
+
+{p 4 4 2}
+It is desirable and often essential (depending on the output
+options) that {it:idvar} uniquely identify observations.
+Under the the {cmd:varprefix()} option,
+it is essential that the contents of {it:idvar} be acceptable as suffixes on
+variable names; avoid embedded spaces and characters that are not acceptable
+in variable names.
+
+{col 12}{hline}
+{p 12 12 12}
+{hi:technical notes:}
+
+{p 12 12 12}
+With the {cmd:varprefix()} option, illegal characters, embedded spaces,
+or non-unique values may result in a fatal error.
+
+{p 12 12 12}
+With the {cmd:genmat()} option, embedded spaces may cause the row or column
+names to "slip over" to the wrong row or column. Non-unique values do not
+cause an immediate error, but may cause confusing labelling of the columns
+and rows and may cause errors in later use of the matrix.
+
+{p 12 12 12}
+With the {cmd:genfile()} option, the form of the values in {it:idvar} is not
+critical, but if they don't uniquely identify observations, then it will be
+difficult to use the resulting file.
+{p_end}
+{col 12}{hline}
+
+{p 4 4 2}
+{cmd:idvar()} is optional. If it is omitted then the following
+values are used:{p_end}
+{p 8 10 2}{c -} with the {cmd:varprefix()} option, 1, 2, etc., that is, the
+variable names are {it:varprefix}1, {it:varprefix}2, etc;{p_end}
+{p 8 10 2}{c -} with the {cmd:genmat()} option, obs1, obs2, etc. as row and
+column names;{p_end}
+{p 8 10 2}{c -} with the {cmd:genfile()} option, 1, 2, etc.{p_end}
+{p 4 4 2}But note that these numbers refer to the observations in the present
+order and become meaningless after a {help sort}. Thus, the {cmd:idvar()}
+provides a more secure way of identifying the results.
+
+{p 4 4 2}
+The {cmd:varprefix()}, {cmd:genmat()}, and {cmd:genfile()} options are
+nonexclusive alternatives for obtaining the output; at least one of them
+must be used.
+
+{p 4 4 2}
+{cmd:varprefix(}{it:varprefix}{cmd:)} specifies that the results will be
+placed in a set of new variables, one for each observation.
+These variables will be named with a common prefix {it:varprefix}, and
+the remainder of the names are the values in {it:idvar}, or the observation
+numbers if {cmd:idvar()} is omitted. See the notes regarding acceptable content
+for {it:idvar}, above.
+Note that this option can generate a potentially very large set of
+variables {c -} as many as there are observations (thus, constituting a square
+array of values), though that may set be reduced under the {cmd:treated()} option.
+(See remarks under treated() for more on that matter.)
+The default type for these variables is double.
+
+{p 4 4 2}
+{cmd:genmat(}{it:genmat}{cmd:)} specifies that the results will be placed in
+a matrix named {it:genmat}. The row and column names will be taken from the
+values in {it:idvar}, or will be obs1, obs2, etc., if {cmd:idvar()} is omitted.
+See the notes regarding acceptable content for {it:idvar}, above.
+If {it:genmat} already exists as a matrix, it will be
+overwritten. See additional remarks under {cmd:treated()} regarding which
+rows and columns will be included.
+
+{p 4 4 2}
+{cmd:genmat()} potentially creates a very large matrix. You may need to
+{help set matsize} to a large value to enable this matrix to be created.
+
+{p 4 4 2}
+{cmd:genfile(}{it:filename}{cmd:)} specifies that the results will be placed in
+a separate dataset in long form. See {help reshape} for an explanation of
+long form.
+
+{p 6 6 2}
+Under the {cmd:genfile()} option, the resulting file is a Stata
+dataset with these variables:
+
+{p 10 12 2}
+A primary and secondary id variable which refer to observations in the dataset
+from which the measures were derived.
+
+{p 10 12 2}
+A variable to hold the distance measure, measured between the observations
+identified in the primary and secondary id variables. The default name is
+_score, and its default type is double.
+
+{p 6 6 2}
+The types, content, and default names of the primary and secondary id variables depend on
+whether {cmd:idvar()} is specified:
+
+{p 10 10 2}
+If {cmd:idvar()} is specified, then these variables
+are of the same type as {it:idvar}, and contain values from {it:idvar}
+corresponding to the pertinant observations.
+Their default names are _refid and {it:idvar}.
+
+{p 10 10 2}
+If {cmd:idvar()} is omitted, then
+they are integer types, and contain the corresponding observation numbers.
+Their default names are _refobs and _obs.
+
+{p 4 4 2}
+Note that each of the three output options has two distinct entities that locate a
+distance measure value. We will identify one as primary and the other as
+secondary. The primary entities are...
+
+{p 6 6 2}
+for {cmd:varprefix()}, the variables generated;{p_end}
+{p 6 6 2}
+for {cmd:genmat()}, the rows of the matrix;{p_end}
+{p 6 6 2}
+for {cmd:genfile()}, the primary id variable.
+
+{p 4 4 2}
+The secondary entities are...
+
+{p 6 6 2}
+for {cmd:varprefix()}, the observations of the dataset (with values placed
+in the generated variables);{p_end}
+{p 6 6 2}
+for {cmd:genmat()}, the columns of the matrix;{p_end}
+{p 6 6 2}
+for {cmd:genfile()}, the secondary id variable.
+
+{p 4 4 2}
+Thus, the distance measure represents a difference measured from from the
+observation identified by the primary entity to the observation identified by
+the secondary entity; the distance in the other direction is the same.
+Consequently, the distinction between the primary and secondary entities
+often becomes immaterial, due to the symmetry of the situation.
+However, there is a situation where we choose to make a distinction, and the
+resulting set of values is asymmetric. In particular,
+this occurs under the {cmd:treated()} option, which will be described below.
+
+
+{title:Options for use with {cmd:genfile}}
+
+{p 4 4 2}
+{cmd:name1(}{it:name1}{cmd:)} allows you to specify the name for
+the primary id variable. The default name depends on whether {cmd:idvar()}
+is specified, as explained above.
+
+{p 4 4 2}
+{cmd:name2(}{it:name2}{cmd:)} allows you to specify the name for
+the secondary id variable. The default name depends on whether {cmd:idvar()}
+is specified, as explained above.
+
+{p 4 4 2}
+{cmd:scorevar(}{it:scorevar}{cmd:)} allows you to specify the name of
+the distance measure variable. The default name is _score.
+
+{p 4 4 2}
+{cmd:replace} specifies that if the file already exists, it will be replaced.
+
+
+{title:More Options}
+
+{p 4 4 2}
+{cmd:invcovarmat(}{it:invcovarmat}{cmd:)} specifies the name of a matrix
+to be used in the computation of the distance measure. It is presumably the
+inverse covariance matrix of {it:varlist}, but the only requirement is that
+it be a square {it:p}-by-{it:p} matrix, and both the row and column names
+must equal the names in {it:varlist} in the same order as in {it:varlist}.
+
+{p 4 4 2}
+{cmd:invcovarmat(}{it:invcovarmat}{cmd:)} is expected to be rarely used; it
+is provided in case
+the user wishes to supply an existing inverse covariance matrix, or one
+computed in some special way not provided for by the available options.
+Additionally, it might enable some efficiency advantage if repeated calls are
+made requiring the same inverse covariance matrix. For most usages, however,
+you probably want the {cmd:compute_invcovarmat} option
+
+{p 4 4 2}
+{cmd:compute_invcovarmat} specifies that you want the inverse covariance
+matrix to be computed, rather than passed in (via {cmd:invcovarmat()}).
+This computation is subject to weighting, as well as limitation by
+{it:treatedvar} if the {cmd:treated()} option is specified.
+(But see {cmd:nocovtrlimitation}.)
+Note that this will call {help covariancemat}, which computes covariances
+limited to observations with all variables of {it:varlist} nonmissing.
+(I.e., it is potentially different from the pairwise computation of covariances.)
+
+{p 4 4 2}
+{cmd:invcovarmat()} and {cmd:compute_invcovarmat} are alternatives; one of
+them must be specified. If both are specified, then {cmd:compute_invcovarmat}
+takes precedence.
+
+
+{p 4 4 2}
+{cmd:treated(}{it:treatedvar}{cmd:)} specifies a numeric variable that
+distinguishes the "treated" observations, with values of 0 and non-zero
+signifying non-treated and treated, respectively. See {help mahapick} for an
+explanation of the concept of the treated set.
+This option affects the action of the {cmd:compute_invcovarmat} in that
+the computation is limited to the 
+set of observations for which {it:treatedvar} is non-zero, if
+{cmd:treated()} is specified.
+See {cmd:nocovtrlimitation} for how to control that limitation.
+
+{p 4 4 2}
+{cmd:treated()} also potentially limits the set of values that are output.
+In generic terms, the default action is that primary entities are associated
+with (limited to) the treated observations,
+and the secondary entities are associated with (limited to) the non-treated
+observations. (One exception: the secondary entities of the {cmd:varprefix()}
+option {c -} the placing of values in the generated variables {c -} are never
+limited in this way.) More specifically,
+
+{p 6 6 2}
+With {cmd:varprefix()}, only the variables corresponding to the treated observations
+will be generated.
+
+{p 6 6 2}
+With {cmd:genmat()}, only the rows corresponding to treated cases are generated;
+only the columns corresponding to non-treated cases are generated.
+
+{p 6 6 2}
+With {cmd:genfile}, only observations with primary id corresponding to
+treated cases, and with secondary id corresponding to non-treated cases are
+generated.
+
+{p 4 4 2}
+The rationale is that, with {cmd:treated()}, you would only be interested in
+distance measurments from a treated observation to a non-treated. (And these
+limitations save space as well.)
+
+{p 4 4 2}
+The {cmd:all} option lifts these limitations entirely; both the primary and
+secondary entities will range over all observations, yielding a
+square symmetric result.
+
+{p 4 4 2}
+The {cmd:full} option lifts the restriction on the secondary entities; all
+possible secondary id values or matrix columns are generated.
+(It has no effect on the {cmd:varprefix()} results, as the secondary entities
+for {cmd:varprefix()} are never limited by {cmd:treated()}.)
+
+{p 4 4 2}
+In other words,{p_end}
+{p 10 10 2}
+the variables generated, the rows of the matrix, or the primary id variable,
+correspond to...{p_end}
+{p 14 14 2}
+the treated observations, if {cmd:treated()} is specified without {cmd:all};{p_end}
+{p 14 14 2} all observations, otherwise.{p_end}
+{p 10 10 2}
+the colums of the matrix, or the secondary id variable correspond to...{p_end}
+{p 14 14 2}
+the non-treated observations, if {cmd:treated()} is specified without {cmd:all}
+or {cmd:full};{p_end}
+{p 14 14 2} all observations, otherwise.{p_end}
+
+{p 4 4 2}
+Note that {cmd:all} implies {cmd:full};
+there is no provision for generating all primary id values (or matrix rows)
+without also getting all secondary id values (or matrix columns).
+
+{p 4 4 2}
+{cmd:unsquared} modifies the results to be the unsquared values, that is, the
+square roots of the default values.
+
+{p 4 4 2}
+{cmd:euclidean} takes effect only if {cmd:compute_invcovarmat} is also specified.
+This specifies that the normalized Euclidean measure is to be used, rather
+than the true Mahalanobis measure {c -} meaning that the off-diagonal elements
+of the covariance matrix are replaced with zeroes prior to inverting. The result
+is a measure that accounts for the scale of measurement in each variable of
+{it:varlist}, but ignores correlation between the variables. This is probably
+not desirable, given the advantages of the true Mahalanobis measure, but is
+provided as an alternative and for comparison to (or emulation of) earlier
+releases of {help mahascore} and {help mahapick}. See {help mahascore} for
+more details on this matter.
+
+{p 4 4 2}
+{cmd:float} specifies that the type for the variables generated by
+{cmd:varprefix()} or for the distance measure (or {it:scorevar}) generated
+by {cmd:genfile()} will be float, rather than double. This has no effect on
+{cmd:genmat()}, as matrices always contain doubles.
+
+{p 4 4 2}
+{cmd:display(}{it:display_options}{cmd:)} turns on the display of certain
+data structures used in the computation. If {it:display_options} contains
+{cmd:covar}, then the covariance matrix is listed;
+if it contains {cmd:invcov}, then the inverse covariance matrix is listed.
+Any other content is ignored.
+
+{p 4 4 2}
+{cmd:verbose} takes effect only if {cmd:compute_invcovarmat} is also specified.
+This causes each call to {help mahascore} to be reported, along with
+information about what options were specified.
+
+{p 4 4 2}
+{cmd:transpose} specifies that the matrix (under {cmd:genmat()}) is to be
+transposed.
+
+{p 4 4 2}
+{cmd:nocovtrlimitation} specifies that the covariance computation
+(for {cmd:compute_invcovarmat}) not be limited to treated observations.
+
+{title:Remarks}
+
+{p 4 4 2}
+If the inverse covariance matrix is computed on a very small set of
+observations, it may not be valid and may yield strange results. It
+might fail to be positive semi-definite, and can yield negative measures.
+(It may also cause the {cmd:unsquared} option to have a real effect on
+comparisons and sortings of the results.)
+
+{p 4 4 2}
+Please see {help mahascore} for more information on the computation of
+the Mahalanobis measure.
+
+
+{title:Examples}
+
+{p 4 8 2}
+{cmd:. mahascores income age numkids edlevel, idvar(persno) varprefix(d1_)}
+{cmd:treated(assisted) compute_invcov}
+
+{p 4 8 2}
+{cmd:. mahascores income age numkids edlevel, idvar(persno) genmat(m1)}
+{cmd:treated(assisted) compute_invcov}
+
+{p 4 8 2}
+{cmd:. mahascores income age numkids edlevel, idvar(persno) genfile(dist1)}
+{cmd:compute_invcov scorevar(d1)}
+
+
+{title:Acknowledgement}
+{p 4 4 2}
+The author wishes to thank
+Heiko Giebler of Wissenschaftszentrum Berlin fur Sozialforschung
+GmbH, for suggestion leading to the development of this program.
+
+
+{title:Author}
+{p 4 4 2}
+David Kantor.
+Email {browse "mailto:kantor.d@att.net":kantor.d@att.net} if you observe any
+problems.
+
+
+{title:Also See}
+{p 4 4 2}
+{help mahascore}, {help mahascore2}, {help mahapick}, {help covariancemat}, {help variancemat},
+{help screenmatches}, {help stackids}.

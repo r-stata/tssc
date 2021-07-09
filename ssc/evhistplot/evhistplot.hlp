@@ -1,0 +1,112 @@
+{smcl}
+{* 5Jun2008}{...}
+{hline}
+help for {hi:evhistplot}
+{hline}
+
+{title:Plot individual event histories with one or two time scales (Lexis diagram)}
+
+{p 8 13 2}
+{cmd:evhistplot}
+{it:event_varlist}
+{ifin}
+{cmd:,} 
+{it:id({varname}) start(date_string) end(date_string)}
+[{it:evtype({varname}) birth({varname}) nsub(integer 100) agescale(real 365.25) {help scatter##options:scatter options}}]
+
+{title:Description}
+
+{p 4 4 2} {cmd:evhistplot} plots individual event histories with
+different event types indicated by differently colored dots resulting
+in one string of beads for each individual. Different event types may
+reside in different variables in {it:event_varlist}, or they may be
+identified in the {it:evtype({it:typevar})} option.
+
+{p 4 4 2} When {it:birth({varname})} is not specified, the individual
+histories are given as horizontal lines with calendar time on the
+X-axis. When {it:birth({varname})} is specified, the individual
+histories are plotted in a Lexis diagram with calendar time on the
+X-axis and age on the Y-axis.
+
+{p 4 4 2} 
+
+{title:Options}
+
+{p 4 8 2}{opt id(varname[, plot])} specifies the variable holding the
+identifier of each individual. If the option {it:plot} is given, then
+the original ID numbers are used on the Y-axis for identifying
+individuals in plots with horizontal lines. If the {it:plot} option is
+omitted, then the {it:n} individuals in the plot are associated with
+random integers 1,...,{it:n}.
+
+{p 4 8 2}{opt start(date_string)} specifies the starting time of
+the observation window. The date must be specified in the format of
+the {cmd:d({it:l})} function, cf. the help for {help d()}. All events
+before this date are omitted from the plot.
+
+{p 4 8 2}{opt end(date_string)} specifies the end time of
+the observation window. The date must be specified in the format of
+the {cmd:d({it:l})} function, cf. the help for {help d()}. All events
+after this date are omitted from the plot.
+
+{p 4 8 2}{opt evtype(varname)} is optional and specifies a variable
+holding the type of event recorded in the variable given as main
+argument. If more variables are given in {varlist}, then the event
+types refer to the first variable only of {varlist}. The remaining
+variables of {varlist} then each holds a unique type of events.
+
+{p 4 8 2}{opt birth(varname)} is optional and specifies a variable
+holding birth dates of individuals. If specified, a Lexis diagram is
+plotted with calendar time on the X-axis and age on the Y-axis.
+
+{p 4 8 2}{opt nsub(integer)} is optional and limits the number of
+individuals included in the plot to the specified count. Subjects are
+chosen at random for inclusion in the graph. If not specified, all
+subjects are included.
+
+{p 4 8 2}{opt agescale(real)} is optional and indicates the scale on
+the age axis of the Lexis diagram, ie. the Y-axis. Requires
+specification of {cmd:birth({varname})} to have effect. The default
+value corresponds to age in years, when variables hold date values.
+
+{p 4 8 2}{opt scatter_options} are optional and allow fine tuning of
+the resulting plot. In particular, the {opt msize} and {opt msymbol}
+options are useful for modifying the size and shape of markers used.
+
+
+{title:Examples}
+
+{p 4 4 2}Consider a dataset where the variable {it:recdate} holds
+dispensing dates for medications for a group of patients identified by
+a unique key in the variable {it:patid}. Dates of birth and death are
+held in variables with obvious names.
+
+{p 4 8 2}{cmd:. evhistplot recdate birthdate deathdate, id(patid) start(1jan1993) end(31dec2000)}
+(births and deaths are only plotted for those born in the observation window)
+
+{p 4 8 2}{cmd:. evhistplot recdate birthdate deathdate, id(patid) start(1jan1993) end(31dec2000) evtype(medictype)} 
+(different medications are plotted in different colors)
+
+{p 4 8 2}{cmd:. evhistplot recdate deathdate, id(patid) start(1jan1993) end(31dec2000) evtype(medictype) birth(birthdate)} (makes a Lexis-diagram)
+
+{p 4 4 2}The ancillary file -rrdat1_plot.do- shows how the commands
+can be used to plot individual event histories with respect to jobs
+and marriage.
+
+{title:Author}
+
+{p 4 4 2} Henrik Stovring 
+({browse "mailto:hstovring@health.sdu.dk":hstovring@health.sdu.dk}),
+Research Unit for General Practice, University of Southern Denmark,
+Denmark.
+
+{title:Also see}
+
+{p 4 13 2}
+
+{p 4 13 2} Online: help for {help twoway}, {help scatter}
+{p_end}
+
+
+
+

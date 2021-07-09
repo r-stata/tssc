@@ -1,0 +1,85 @@
+/*
+ lmnwhite
+*! VERSION 1.0 15jan2012
+*/
+VERSION 10.0
+INCLUDE _std_large
+DEFINE _dlght 300
+INCLUDE header
+HELP hlp1, view("help lmnwhite")
+RESET res1
+
+SCRIPT PREINIT
+BEGIN
+program parseMessage
+script se_createAsSvyOLS
+script se_setBias_on
+program svy_check_title
+END
+
+PROGRAM parseMessage
+BEGIN
+if __MESSAGE.contains("__MI__") {
+call script se_setMI_on
+}
+END
+
+SCRIPT POSTINIT
+BEGIN
+program check_bytab
+program se_setFinalInitState
+END
+
+PROGRAM check_bytab
+BEGIN
+if ! __MESSAGE.contains("__MI__") {
+call script sub_set_by_on
+}
+END
+
+DIALOG main, label("lmnwhite - OLS White Non Normality LM Test") ///
+	tabtitle("Main")
+BEGIN
+ DEFINE _x _xsetbu
+ DEFINE _y _top
+ INCLUDE _bu_tsset
+  
+ TEXT tx_yvar	_lft	+30	120	., ///
+	label("Dependent Variable:")
+ TEXT tx_xvar	_vlx	@	300	., ///
+	label("Independent Variables:")
+
+ VARNAME vn_yvar  _lft	 _ss	120 .,	 ///
+	label("Dependent Variable")
+ VARLIST vl_xvar  _vlx	 @	300 ., ///
+	label("Independent Variables")
+
+  CHECKBOX ck_nocons @         _ms       @         .,	/*
+		*/ label("Suppress constant term")	/*
+		*/ option("noconstant")			/*
+*/  
+
+ DEFINE _x _lft
+ DEFINE _cx _spr
+ DEFINE _y _xxls
+ INCLUDE _sp_level
+END
+
+INCLUDE byifin
+INCLUDE weights_fpai
+INCLUDE se
+
+PROGRAM command
+BEGIN
+ put "lmnwhite "
+ varlist main.vn_yvar main.vl_xvar 
+ put " " /program ifin_output
+ put " " /program weights_output
+ put /program by_output " "
+ put /program se_prefix_output " "
+ beginoptions
+ option main.ck_nocons
+ optionarg /hidedefault main.sp_level
+ put " " /program se_output
+ endoptions
+END

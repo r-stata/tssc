@@ -1,0 +1,58 @@
+{smcl}
+{* 25mar2010}{...}
+{hline}
+help for {hi:cleanlog}       {right:version 1.5 25mar2010}
+{hline}
+
+{title:Cleans command syntxax out of log files}
+
+{p 8 14}{cmd:cleanlog using} {it:logfilename} {cmd:,}
+	{cmdab:s:aving(}{it:outputfilename}{cmd:)}
+	[{cmd:replace} {cmdab:nohead:er}] 
+	
+
+{title:Description}
+
+{p}{cmd:cleanlog} takes a plain text or SMCL log file as input and writes a 
+new log file cleaned of all command syntax. It also removes some extraneous material
+such as the lines of dots sometimes displayed for entertainment purposes. It also 
+optionally removes the log "headers". Note that if {cmd:cleanlog} does not remove all of
+the extraneous material you might like it to, some commands, like {cmd:bootstrap},
+have their own options for reducing the amount of output they produce.
+
+
+{title:Options}
+
+{p 0 4}{cmd:saving(}{it:outputfilename}{cmd:)} specifies the name of the cleaned
+log file to be written. This is a required option. {p_end}
+ 
+{p 0 4}{cmd:replace} allows the user to overwrite a previous cleaned log. It does
+not overwrite the original uncleaned log.
+
+{p 0 4}{cmd:noheader} removes the "headers" (i.e., the log file path, type and date)
+created in the log file by the log command.
+ 
+
+{title:Examples}
+
+{p 8 12}{inp:. cleanlog using test.log, s(test_clean.log)}{break}
+
+{p 8 12}{inp:. cleanlog using test.smcl, s(test_clean.smcl)}{break}
+
+
+{title:Author}
+
+{p 8 8 8}Lee E. Sieswerda {break}
+Thunder Bay District Health Unit {break}
+Lee.Sieswerda@tbdhu.com
+
+
+{title:Acknowledgements} 
+
+{p 8 8 8}Nicholas J. Cox made significant improvements to the code. {break}
+Richard Tucker suggested the addition of the {cmd:noheader} option. {break}
+Ronnie Babigumira noticed a flaw wherein numbered lines were inappropriately deleted.
+{p}
+
+  Manual: {hi:[R] file}
+

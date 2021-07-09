@@ -1,0 +1,100 @@
+{smcl}
+{* 15aug2003}{...}
+{hline}
+help for {hi:ndbci}
+{hline}
+
+{title:Confidence intervals for means}
+
+{p 19 23 2}{cmd:ci}{space 2}{it:varname} [{cmd:if} {it:exp}]{cmd:,} 
+    {cmdab:e:xposure:(}{it:varname)} [{cmdab:l:evel:(}{it:#}{cmd:)}
+    {cmdab:f:ormat(}{it:format}{cmd:)} {cmdab:b:ygroup:(}{it:varname}{cmd:)}{break}
+    {cmdab:p:er(}{it:1, 10, 100, 1000, 10000, 100000}{cmd:)}
+    {cmdab:o:utcome(}{it:description}{cmd:)} {cmdab:g:roup(}{it:description}{cmd:)}
+    {break}{cmd:col1(}{it:number}{cmd:)} {cmd:col2(}{it:number}{cmd:)}]
+
+    
+{title:Description}
+
+{p 4 4 2}
+{cmd:ndbci} computes rates and Poison confidence intervals for a single variable. 
+In contrast to Stata's {cmd:ci}, {cmd:ndbci} calculates rates and confidence intervals 
+for each level of a grouping variable. {cmd:ndbci} allows formatting of the output and 
+naming of the group and outcome variables. {cmd:ndbci} also formats output 
+for 1, 10, 100, 1000, 10000 and 100000 person years. 
+
+
+{title:Options}
+
+{p 4 8 2}{cmd:level(}{it:#}{cmd:)} specifies the confidence level, in percent,
+for confidence intervals; see help {help level}.
+
+
+{p 4 8 2}{cmd:exposure(}{it:varname}{cmd:)} is required. {it:varname} contains 
+the total exposure (typically a time or an area) during which the number of 
+events recorded in {it:varname} were observed.
+
+{p 4 8 2}{cmd:per(}{it:1, 10, 100, 1000, 10000, 100000}{cmd:)} person years. 1 
+year is the default value, assuming exposure is calculated in years.
+
+{p 4 8 2}{cmd:outcome(}{it:description}{cmd:)} is an optional name or phrase to 
+replace dependent variable name. Default is to use the dependent variable name.
+
+{p 4 8 2}{cmd:bygroup(}{it:grouping variable}{cmd:)} requests an analysis for 
+each level of the grouping variable.
+
+{p 4 8 2}{cmd:format(}{it:format}{cmd:)} formats output. Default format is 
+9.2f.
+
+{p 4 8 2}{cmd:group(}{it:optional description for grouping variable}{cmd:)} adds a 
+description to the display in place of the grouping variable name.
+
+{p 4 8 2}{cmd:col1(}{it:number}{cmd:)} adds or subtracts (-) spaces just before 
+{cmd:exposure} to aid in proper placement of the output. Default is 0.
+
+{p 4 8 2}{cmd:col2(}{it:number}{cmd:)} adds or subtracts spaces just before 
+{cmd:rate} to aid in proper placement of the output. Default is 0.
+
+
+
+
+{title:Examples}
+
+    {cmd:. ndbci cycl if lpuse, exposure(_ndbtime) per(100000)} 
+
+                                      Years   100000 yr   --Poisson  Exact --
+  Outcome    |  Group       Count   Exposure     Rate    [95% Conf. Interval]
+-------------+---------------------------------------------------------------
+  cyclospr   |     All       189    26316.50     718.18     619.44    828.19
+
+
+
+    {cmd:. ndbci cycl if lpuse, exposure (_ndbtime) bygroup(edcat) level(90) ///}
+    {space 2}{cmd:per(1000) outcome(Vanquished) format(%9.1f) group(Education) col2(-3) col1(-1)}
+    
+                                      Years     1000 yr   --Poisson  Exact --
+  Outcome    |  Education   Count   Exposure     Rate    [90% Conf. Interval]
+-------------+---------------------------------------------------------------
+ Vanquished  |      0-8        4      784.0      5.1        1.7      11.7
+ Vanquished  |     8-11       12     2274.0      5.3        3.0       8.5
+ Vanquished  |       12       56     9335.0      6.0        4.7       7.5
+ Vanquished  |    13-15       54     6608.5      8.2        6.4      10.3
+ Vanquished  |  16 or >       58     6819.0      8.5        6.8      10.6
+     
+
+{title:Acknowledgement}
+
+{p 4 4 2}
+This ado file is a partial wrapper for Stata's {cmd:ci}.
+
+
+{title:Also see}
+
+    Manual:  {hi:[R] ci}
+
+{p 4 13 2}
+Online:  help for {help ci}
+
+Author Fred Wolfe 
+       fwolfe@arthritis-research.org
+

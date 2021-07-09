@@ -1,0 +1,132 @@
+.-
+help for ^stcascoh^                                            [ec]  Nov 21, 2008
+.-
+
+Create a dataset suitable for case-cohort analysis
+--------------------------------------------------
+
+    ^stcascoh^ [varlist] [^if^ exp] [^in^ range] ^, a^lpha^(^#^)^ [ ^gr^oup^(^varnames^)^
+                         ^gen^erate^(^varlist^)^ ^ep^s^(^#^)^ ^se^ed(#) ^nosh^ow ]
+
+^stcascoh^ is for use with survival-time data; see help @st@. You must ^stset^ data with
+an ^id()^ variable before using this command; see help @stset@.
+
+
+Description
+-----------
+
+^stcascoh^ is used to create the appropriate dataset for a case-cohort analysis by
+sampling the cohort at the time of entry (subcohort) and including all failures, whether they occur in
+the random sample or not (non subcohort cases). To this aim, ^stcascoh^ expands the observations who fail in two
+parts: (1) time interval (t0,t-eps]  and  (2) time interval (t-eps,t].
+The following variables are added to the dataset:
+
+^ _subco^    coded  0  for subcohort member with no failure
+                  1  for subcohort members who failed
+                  2  for non subcohort cases
+^ _wBarlow^  log-weights of records as in Barlow scheme
+^ _wSelPre^  log-weights of records as in Self and Prentice scheme.
+
+The names of the new variables can be changed by specifying the ^gen()^ option.
+varlist defines the variables to be retained in the final dataset. If varlist is not specified, all variables
+are carried over into the resulting dataset.
+
+^stcascoh^ shows two summary tables: the first one describes the subcohort membership
+vs. failure in the cohort; the second displays the risk sets with three controls or less
+to check whether the subcohort becomes small due to many failures or censorings.
+
+In the new dataset, non-subcohort cases cannot rely on the original ^stset^ declaration.
+At the end of the module, ^stset^ is invoked  to fix entry and exit time to the present
+_t0 and _t variables.
+
+Randomness in the sampling is obtained using Stata uniform() function. Seed can be specified
+by a ^seed()^ option. Observations not meeting ^if^ and ^in^ criteria are dropped even if
+they fail.
+
+The resulting dataset can be analyzed using ^stselpre^ or ^stcox^.
+^stselpre^ fits proportional hazards model according with Prentice and Self-Prentice methods. 
+Self-Prentice model based variance is estimated.
+When using ^stcox^, ^robust^ option is needed to estimate the approximate variance as proposed by Lin
+and Ying and Barlow. In this case, analysis can be performed using three methods:
+
+1- Prentice: ^stcox varlist, robust^
+2- Self and Prentice: ^stcox varlist, offset(_wSelPre) robust^
+3- Barlow: ^stcox varlist, offset(_wBarlow) robust^
+
+
+
+Options
+-------
+
+^alpha(^#^)^ specifies the sampling fraction. Sampling fraction can be expressed as real or
+    integer.
+
+^group(^varlist^)^ specifies that the ^alpha^ sample is to be drawn within each set of values
+    of varlist, thus maintaining the proportion of each group. 
+
+^generate(^varlist^)^ specifies variable names for three generated variables.
+
+^eps(^#^)^ specifies a typically small number so that a case that is in the risk at time
+    set  at t is represented in the expanded data by an "infinitesimal" episode (t-eps,t].
+    ^eps^ should be set to a number that is small compared to the measurement unit of time.
+    ^eps^ defaults to 1E-3.       
+
+^seed(^#^)^ specifies seed for random sampling.
+
+^noshow^ prevents ^stcascoh^ from showing the names of the key ^st^ variables.
+
+
+
+Tip: if the cohort has already been sampled
+-------------------------------------------
+
+^stcascoh^ can be used to prepare the dataset for case-cohort analysis when the cohort 
+has been previously sampled. The steps are as follows:
+
+1) Divide the data set in two files: the first one for subcohort observations, the second for additional cases.
+
+2) Appropriately -stset- the new files.
+
+3) Process the subcohort file with -stcascoh- setting alpha just below 1 (i.e. .999) and save this file.
+   Do some assert to verify that _subco _wSelpre are coded as you expect.
+
+4) Process the additional cases file with -stcascoh- setting alpha = 0 and save this second file.
+   Also for this file some -assert- is appropriate to verify that _subco _wSelpre are coded as you expect.
+
+5) Append the two files you generated.
+
+6) Adapt the Barlow weights. Suppose you sampled 1000 out of 16000 subjects. You should type
+   ^replace _wBarlow=ln(16000/1000) if _wBarlow>0^
+
+
+
+Examples
+--------
+
+        . ^stcascoh, alpha(20)^
+        . ^stcascoh afe yfe ln_exp, alpha(0.3) gen(mycohort) group(race) seed(987654321)^
+
+
+Also see
+--------
+
+ Manual:  ^[R] stcox  [R] sttocc^
+On-line:  help for @stcox@ @stselpre@ @sttocc@
+
+
+
+Reference
+---------
+
+Barlow WE, Ichicawa L, Rosner D, and Izumi S: Analysis of Case-Cohort Designs.
+           Journal Clinical Epidemiology 1999; 52: 1165-1172.
+
+
+Author
+------
+
+      Enzo Coviello
+      Unita' di Epidemiologia  e Statistica Az. USL BA/1 
+      70053 Andria (Bari)
+      Italy
+      enzo.coviello@@alice.it

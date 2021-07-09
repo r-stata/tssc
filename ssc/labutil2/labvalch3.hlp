@@ -1,0 +1,209 @@
+{smcl}
+{* version 1.0.9 20aug2012}{...}
+{cmd:help labvalch3}
+{hline}
+
+{title:Title}
+
+{p 5}
+{cmd:labvalch3} {hline 2} Change text in value labels
+
+
+{title:Syntax}
+
+{p 8}
+{cmd:labvalch3} [{it:lblname-list}] {cmd:,} {it:transformation-option} 
+[ {it:options} ]
+
+
+{synoptset 21 tabbed}{...}
+{synopthdr}
+{synoptline}
+{syntab :{it:transformation-options}}
+{synopt:{opt u:pper}}change value labels to uppercased characters
+{p_end}
+{synopt:{opt l:ower}}change value labels to lowercased characters
+{p_end}
+{synopt:{opt pre:fix(stub)}}prefix value labels with {it:stub}{p_end}
+{synopt:{opt suff:ix(stub)}}suffix value labels with {it:stub}{p_end}
+{synopt:{opt sub:st(this that)}}in value labels change {it:this} to 
+{it:that}{p_end}
+{synopt:{opt bef:ore(before)}}remove {it:before} and any text following
+{p_end}
+{synopt:{opt aft:er(after)}}remove {it:after} and any text preceding
+{p_end}
+{synopt:{opt noexc:lude}}do not remove {it:before} or {it:after}{p_end}
+{synopt:{opt strfcn(strfcn(args))}}apply 
+{help string_functions:string function} 
+{it:strfcn}{cmd:(}{it:args}{cmd:)} to value labels{p_end}
+{synopt:{opt sy:mbol(char)}}use {it:char} as placeholder in 
+{it:args}.
+{p_end}
+
+{syntab:{it:selection-options}}
+{synopt:{opt val:id(numlist)}}change value labels associated with valid 
+numbers{p_end}
+{synopt:{opt inv:alid(numlist)}}do not change value labels associated 
+with invalid numbers{p_end}
+{synoptline}
+
+
+{title:Description}
+
+{pstd}
+{cmd:labvalch3} changes text in value labels specified in 
+{it:lblname-list}. If {it:lblname-list} is not specified, all value 
+labels in memory are changed.
+
+{pstd}
+If more than one transformation option is specified, {cmd:labvalch3} 
+applies options in the following order. 
+
+{phang2}1. {it:before} or {it:after} select text {p_end}
+{phang2}2. all occurrences of {it:this} are changed to {it:that}{p_end}
+{phang2}3. value labels are changed to upper- or lowercased characters
+{p_end}
+{phang2}4. {help string_functions:string function} 
+{it:strfcn}{cmd:(}{it:args}{cmd:)} is 
+applied{p_end}
+{phang2}5. prefix and/or suffix is added{p_end}
+
+{pstd}
+{hi:Reminder:} modifiactions affect all variables that have the same 
+value label as one of the value labels (or variables - see 
+{help labvalch3##r:Remarks}) in {it:lblname-list} attached.
+
+
+{title:Options}
+
+{dlgtab:Transformation options}
+
+{phang}
+{opt upper} changes value labels to uppercased characters. May not be 
+specified with {opt lower}.
+
+{phang}
+{opt lower} changes value labels to lowercased characters. May not be 
+specified with {opt upper}.
+
+{phang}
+{opt prefix(stub)} prefixes value labels with {it:stub}. May be 
+combined with {opt suffix()}.
+
+{phang}
+{opt suffix(stub)} suffixes value labels with {it:stub}. May be 
+combined with {opt prefix()}.
+
+{phang}
+{opt subst(this that)} substitutes all occurrences of {it:this} in 
+value labels with {it:that}. Use double quotes if {it:this} or 
+{it:that} contain embedded spaces. {it:that} may be empty ({hi:""}), 
+meaning remove {it:this}. Value labels in which {it:this} is 
+not found are left unchanged.
+
+{phang}
+{opt before(before)} removes {it:before} and any text following from 
+value labels. Thus, value labels will be changed to contain any text 
+preceding {it:before}. Value labels in which {it:before} is not found 
+are left unchanged. May not be specified with {opt after}.
+
+{phang}
+{opt after(after)} removes {it:after} and any text preceding from value 
+labels. Thus, value labels will be changed to contain any text 
+following {it:after}. Value labels in which {it:after} is not found are 
+left unchanged. May not be specified with {opt before}.
+
+{phang}
+{opt noexclude} prevents {cmd:labvalch3} from removing {it:before} or 
+{it:after} from value labels. Specifying {cmd:before(e) noexclude} will 
+change value label {hi:Domestic} to {hi:Dome}. Specifying 
+{cmd:before(e)} will change value label {hi:Domestic} to {hi:Dom}.
+
+{phang}
+{opt strfcn(strfcn(args))} applies any 
+{help string_functions:string function} to value labels. In {it:args} 
+use placeholder {hi:@} to refer to value labels. The general from of 
+this option is 
+{cmd:strfcn(}{help string_functions:{it:strfcn}}{cmd:("@"}
+[{cmd:,} {it:args}]{cmd:))}.
+
+{phang}
+{opt symbol(char)} uses {it:char} as placeholder for value labels in 
+{it:args}. Default placeholder is {hi:@}. May only be specified with 
+{opt strfcn}.
+
+{dlgtab:Selection Options}
+
+{phang}
+{opt valid(numlist)} changes value labels associated with numbers 
+specified in {it:numlist}.
+
+{phang}
+{opt invalid(numlist)} does not change value labels associated with 
+numbers specified in {it:numlist}.
+
+{marker r}
+{title:Remarks}
+
+{pstd}
+Also this is no longer shown in the syntax diagram, {it:lblname-list} 
+is actually {it:namelist} and allows variable names. Thus, the syntax 
+diagram reads
+
+{p 8}
+{cmd:labvalch3} [{it:lblname-list}|{varlist}] 
+{cmd:,} {it:transformation-option} 
+[ {it:options} ]
+
+{pstd}
+The reason this is no longer shown, is that specifying variable names 
+to refer to value label names violates Stata conventions. If variable 
+{hi:foo} has value label {hi:foobar} attached, specifying {hi:foo} in 
+{it:varlist}, modifies value label {hi:foobar}. The modifications also 
+affect variable {hi:bar}, if {hi:bar} has value label {hi:foobar} 
+attached. I thank Daniel Possenriede for bringing this to may 
+attention again.
+
+
+{title:Examples}
+
+{phang2}{cmd:. sysuse auto}{p_end}
+{phang2}{cmd:. labvalch3 origin ,suffix(" Automobile")}{p_end}
+{phang2}{cmd:. labvalch3 foreign ,subst("Automobile" "Car")}
+{p_end}
+{phang2}{cmd:. labvalch3 ,upper}{p_end}
+{phang2}{cmd:. labvalch3 ,strfcn(proper("@"))}{p_end}
+{phang2}{cmd:. labvalch3 origin ,before(e) valid(1)}{p_end}
+
+	
+{title:Acknowledgments}
+
+{pstd}
+This ado was suggested by Dimitriy V. Masterov on 
+{browse "http://www.stata.com/statalist/archive/2011-05/msg00384.html":Statalist}.
+
+{pstd}
+The name {cmd:labvalch3} is in line with {cmd:labvalch} from 
+{cmd:labutil} package (see {stata findit labutil:labutil}) by Nick Cox, 
+who also originated the tranformation options in his {cmd:labvarch}. 
+
+{pstd}
+Number 3 is chosen as a follow up on the ad hoc solution {cmd:labvalch2} 
+by Eric Booth (available under the link above). Also, {cmd:labvalch3} 
+changes the third element in {help label:label define} {it:lblname} # 
+{hi:{it:label}}.
+
+
+{title:Author}
+
+{pstd}Daniel Klein, University of Kassel, klein.daniel.81@gmail.com
+
+{title:Also see}
+
+
+{psee}
+Online: {help label}, {help string_functions:string functions}{p_end}
+
+{psee}
+if installed: {help labvalch}, {help labnoeq}, {help strrec}, 
+{help labvarch}, {help labutil2}{p_end}

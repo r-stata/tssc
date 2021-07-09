@@ -1,0 +1,211 @@
+* scheme-scientific.scheme 
+* intended for presenting data in a "scientific-looking" graph
+* author: Ariel Linden
+
+*!  version 1.0  01aug2018
+
+* s1/s2 scheme family with a naturally white background 
+#include s2mono
+
+// background white
+color background            white
+
+// Legend outside lower right corner; 1 column; short signatures; no borders
+clockdir legend_position	4
+* gridringstyle legend_ring	0 //place inside plot area
+numstyle legend_cols		1
+numstyle legend_rows		0
+gsize legend_key_xsize		5
+yesno legend_col_first		no
+yesno legend_row_first		yes
+linestyle legend			none
+
+margin axis_title small
+graphsize x 6
+
+// no extended axes 
+yesno extend_axes_low       no
+yesno extend_axes_high      no
+yesno extend_axes_full_low  no
+yesno extend_axes_full_high	no
+
+// no plotregion
+linestyle  plotregion		none
+
+// horizontal display of values on Y axis
+anglestyle vertical_tick	horizontal
+
+// Axis titles are a bit larger and with more distance
+gsize axis_title			medium
+margin axis_title			small
+
+// Title margins have a bit more distance
+margin heading				small
+margin subheading			small
+
+// Marker styles (organized in pairs)
+symbol p					circle
+symbol p1					circle	
+symbol p2					circle_hollow
+symbol p3					square
+symbol p4					square_hollow
+symbol p5					diamond
+symbol p6					diamond_hollow
+symbol p7					triangle
+symbol p8					triangle_hollow
+symbol p9					plus
+symbol p10					x
+symbol p11					smcircle
+symbol p12					smcircle_hollow
+symbol p13					smsquare
+symbol p14					smsquare_hollow
+symbol p15					smx
+
+// Black markers and outlines
+color p						black
+color p1					black
+color p2					black
+color p3					black
+color p4					black
+color p5					black
+color p6					black
+color p7					black
+color p8					black
+color p9					black
+color p10					black
+color p11					black
+color p12					black
+color p13					black
+color p14					black
+color p15					black
+
+
+// fill colors are a bit lighter than s2mono
+* bar
+color p1bar      gs14
+color p2bar      gs10
+color p3bar      gs12
+color p4bar      gs8
+color p5bar      gs16
+color p6bar      gs13
+color p7bar      gs10
+color p8bar      gs7
+color p9bar      gs4
+color p10bar     gs0
+color p11bar     gs14
+color p12bar     gs10
+color p13bar     gs12
+color p14bar     gs0
+color p15bar     gs16
+
+* area
+color p1area      gs14
+color p2area      gs10
+color p3area      gs12
+color p4area      gs8
+color p5area      gs16
+color p6area      gs13
+color p7area      gs10
+color p8area      gs7
+color p9area      gs4
+color p10area     gs0
+color p11area     gs14
+color p12area     gs10
+color p13area     gs12
+color p14area     gs0
+color p15area     gs16
+
+* pie
+color p1pie      gs14
+color p2pie      gs10
+color p3pie      gs12
+color p4pie      gs8
+color p5pie      gs16
+color p6pie      gs13
+color p7pie      gs10
+color p8pie      gs7
+color p9pie      gs4
+color p10pie     gs0
+color p11pie     gs14
+color p12pie     gs10
+color p13pie     gs12
+color p14pie     gs0
+color p15pie     gs16
+
+* box
+color p1box      gs14
+color p2box      gs10
+color p3box      gs12
+color p4box      gs8
+color p5box      gs16
+color p6box      gs13
+color p7box      gs10
+color p8box      gs7
+color p9box      gs4
+color p10box     gs0
+color p11box     gs14
+color p12box     gs10
+color p13box     gs12
+color p14box     gs0
+color p15box     gs16
+
+
+// turn grids off
+yesno draw_major_grid        no
+yesno draw_minor_grid        no
+yesno draw_majornl_grid      no
+yesno draw_minornl_grid      no
+yesno draw_major_hgrid       no
+yesno draw_minor_hgrid       no
+yesno draw_majornl_hgrid     no
+yesno draw_minornl_hgrid     no
+yesno draw_major_vgrid       no
+yesno draw_minor_vgrid       no
+yesno draw_majornl_vgrid     no
+yesno draw_minornl_vgrid     no
+yesno draw_major_nl_vgrid    no
+yesno draw_minor_nl_vgrid    no
+yesno draw_majornl_nl_vgrid  no
+yesno draw_minornl_nl_vgrid  no
+yesno draw_major_nl_hgrid    no
+yesno draw_minor_nl_hgrid    no
+yesno draw_majornl_nl_hgrid  no
+yesno draw_minornl_nl_hgrid  no
+yesno draw_major_nt_vgrid    no
+yesno draw_minor_nt_vgrid    no
+yesno draw_majornl_nt_vgrid  no
+yesno draw_minornl_nt_vgrid  no
+yesno draw_major_nt_hgrid    no
+yesno draw_minor_nt_hgrid    no
+yesno draw_majornl_nt_hgrid  no
+yesno draw_minornl_nt_hgrid  no
+yesno draw_major_nlt_vgrid   no
+yesno draw_minor_nlt_vgrid   no
+yesno draw_majornl_nlt_vgrid no
+yesno draw_minornl_nlt_vgrid no
+yesno draw_major_nlt_hgrid   no
+yesno draw_minor_nlt_hgrid   no
+yesno draw_majornl_nlt_hgrid no
+yesno draw_minornl_nlt_hgrid no
+yesno extend_grid_low        no
+yesno extend_grid_high       no
+yesno extend_minorgrid_low   no
+yesno extend_minorgrid_high  no
+yesno extend_majorgrid_low   no
+yesno extend_majorgrid_high  no
+yesno grid_draw_min          no
+yesno grid_draw_max          no
+yesno grid_force_nomin       no
+yesno grid_force_nomax       no
+
+* Turn grids off for bar, dot and box plots
+axisstyle bar_super          horizontal_nolinetick
+axisstyle dot_super          horizontal_nolinetick
+axisstyle bar_group          horizontal_nolinetick
+axisstyle dot_group          horizontal_nolinetick
+axisstyle bar_scale_horiz    horizontal_nogrid
+axisstyle bar_scale_vert     vertical_nogrid
+axisstyle dot_scale_horiz    horizontal_nogrid
+axisstyle dot_scale_vert     vertical_nogrid
+axisstyle box_scale_horiz    horizontal_nogrid
+axisstyle box_scale_vert     vertical_nogrid

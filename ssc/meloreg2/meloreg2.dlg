@@ -1,0 +1,168 @@
+/*
+ meloreg2
+*! VERSION 1.0 15jan2012
+*/
+VERSION 10.0
+INCLUDE _std_large
+DEFINE _dlght 310
+INCLUDE header
+HELP hlp1, view("help meloreg2")
+RESET res1
+
+DIALOG main, label("meloreg2 - Minimum Expected Loss (MELO) IV Regression") ///
+	tabtitle("Main")
+BEGIN
+ DEFINE _x _xsetbu
+ DEFINE _y _top
+ INCLUDE _bu_tsset
+
+  TEXT tx_dv 		_lft	+17    140  	.,	///
+	label("Dependent Variable:")
+  TEXT tx_iv		160 	@     330 	.,	///
+	label("Independent Variables:")
+  VARNAME vn_dv		_lft 	_ss  	140	.,	///
+	ts						///
+	label("Dependent Variable")
+  VARLIST vl_iv		160	@  	330	.,	///
+	fv ts						///
+	allowcat					///
+	label("Independent Variables")
+  TEXT tx_vars2 	_lft	_ls    140  	.,	///
+	label("Endogenous Variables:")
+  TEXT tx_ivars		160 	@     330 	.,	///
+	label("ALL Instrumental Variables:")
+  VARLIST vl_vars2	_lft 	_ss  	140	.,	///
+	ts						///
+	label("Endogenous Variables")
+  VARLIST vl_ivars	160	@  	330	.,	///
+	fv ts						///
+	allowcat					///
+	label("ALL Instrumental Variables")
+
+  GROUPBOX gb_estimator	_lft	_ls	_ibwd	_ht13 ,	///
+	label("Options")
+ CHECKBOX ck_dn   _ilft  _ms  @  ., option("dn") /*
+*/ label("Divisor (N) instead of (N-K) for DF") 
+ CHECKBOX ck_nocons _ilft  _ms 400  ., option("noconstant") /*
+*/ label("noconstant: Suppress Constant Term from RHS Equation")
+ CHECKBOX ck_nocong _ilft  _ms 400  ., option("noconexog") /*
+*/ label("noconexog: Suppress Constant Term from both RHS and Instrumental Equations")
+*/
+ TEXT tx_predict _ilft _ms   150 .,	///
+	label("Predicted Variable")
+ TEXT tx_resid   _ilft2 @     150 .,	///
+	label("Residuals Variable")
+ VARNAME vn_predict _ilft _ss   150  .,	///
+	label("predict") 		///
+	option(predict)
+ VARNAME vn_resid   _ilft2 @     150  .,	///
+	label("resid") 			///
+	option(resid)
+END
+
+DIALOG est2, tabtitle("Weight")
+BEGIN
+  TEXT tx_wv 		_ilft	_top    140  	., ///
+	label("Weighted Variable (X)")
+  VARNAME vn_wv		_ilft 	_ss  	140	., ///
+	ts					 ///
+	label("Weighted Variable")		 ///
+	option("wvar")
+  CHECKBOX ck_model2  _lft    _xls   _ibwd    _ht19 , ///
+	groupbox				 ///
+	onclickon(script ck_model2_on)		 ///
+	onclickoff(script ck_model2_off)	 ///
+	label("Weighted Variable Type:")
+  RADIO    rb_w1  _ilft     _ss     300    ., 	/*
+	*/ label("Yh - Predicted Value (Default)") /*
+	*/ first			/*
+	*/ option("weights(yh)")		/*
+*/
+  RADIO    rb_w2  _ilft     _ss     300    ., 	/*
+	*/ label("Yh^2 - Predicted Value Squared") /*
+	*/ option("weights(yh2)")			/*
+*/
+  RADIO    rb_w3  _ilft     _ss     300    ., 	/*
+	*/ label("abs(E) - Residual Absolute Value") /*
+	*/ option("weights(abse)")			/*
+*/
+  RADIO    rb_w4  _ilft     _ss     300    ., 	/*
+	*/ label("E^2 - Residual Squared") /*
+	*/ option("weights(e2)")			/*
+*/
+  RADIO    rb_w5  _ilft     _ss     300    ., 	/*
+	*/ label("log(E^2) - Log Residual Squared") /*
+	*/ option("weights(le2)")			/*
+*/
+  RADIO    rb_w6  _ilft     _ls     300    ., 	/*
+	*/ label("(X) Variable") /*
+	*/ option("weights(x)")			/*
+*/
+  RADIO    rb_w7  _ilft     _ss     300    ., 	/*
+	*/ label("(1/X) Inverse Variable") /*
+	*/ option("weights(xi)")			/*
+*/
+  RADIO    rb_w8  _ilft     _ss     300    ., 	/*
+	*/ label("(X^2) Squared Variable") /*
+	*/ option("weights(x2)")			/*
+*/
+  RADIO    rb_w9  _ilft     _ss     300    ., 	/*
+	*/ label("(1/X^2) Inverse Squared Variable") /*
+	*/ last					/*
+	*/ option("weights(xi2)")			/*
+*/
+END
+
+SCRIPT ck_model2_on
+BEGIN
+ est2.rb_w1.enable
+ est2.rb_w2.enable
+ est2.rb_w3.enable
+ est2.rb_w4.enable
+ est2.rb_w5.enable
+ est2.rb_w6.enable
+ est2.rb_w7.enable
+ est2.rb_w8.enable
+ est2.rb_w9.enable
+END
+SCRIPT ck_model2_off
+BEGIN
+ est2.rb_w1.disable
+ est2.rb_w2.disable
+ est2.rb_w3.disable
+ est2.rb_w4.disable
+ est2.rb_w5.disable
+ est2.rb_w6.disable
+ est2.rb_w7.disable
+ est2.rb_w8.disable
+ est2.rb_w9.disable
+END
+
+PROGRAM command_sub
+BEGIN
+ varlist main.vl_vars2
+ put "="
+ varlist main.vl_ivars
+END
+
+INCLUDE byifin
+
+PROGRAM command
+BEGIN
+ put /program by_output " "
+ put "meloreg2 "
+ varlist main.vn_dv [main.vl_iv]
+ put "("
+ put /program command_sub
+ put ")"
+ put " " /program ifin_output
+ beginoptions
+ option main.ck_dn
+ option main.ck_nocons
+ option main.ck_nocong
+option radio(est2 rb_w1 rb_w2 rb_w3 rb_w4 rb_w5 rb_w6 rb_w7 rb_w8 rb_w9)
+optionarg est2.vn_wv
+optionarg main.vn_predict
+optionarg main.vn_resid
+endoptions
+END

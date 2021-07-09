@@ -1,0 +1,113 @@
+{smcl}
+{* 5jan2011}{...}
+{hline}
+help for {hi:couliari}
+{hline}
+
+{title:Apply Corbae-Ouliaris frequency domain filter to time series}
+
+{title:Syntax}
+
+{p 8 16 2}{cmd:couliari}
+{it:varlist}
+[{cmd:if} {it:exp}]
+[{cmd:in} {it:range}] 
+{cmd:,} {cmd:s(}{it:#}{cmd:)}
+{cmd:e(}{it:#}{cmd:)}
+{cmd:stub(}{it:abbrev}{cmd:)}
+
+{pstd }{cmd:couliari} is for use with time-series data. You must {cmd:tsset} your data before using {cmd:couliari}; 
+see help {cmd:tsset}. {cmd:couliari} supports the {cmd:by} prefix, which may be used to operate on each time series in a panel.
+
+{pstd }{cmd:varlist} may contain time-series operators; see help {cmd:varlist}.
+
+{title:Description}
+
+{pstd}{cmd:couliari} applies the frequency domain filter of Corbae, Ouliaris and Phillips (2002) and Corbae and Ouliaris (2006) to one or more time series in 
+{it:varlist}. Series can be stationary, or can have a unit root. It tends to produce output similar to the Baxter-King (1999)
+filter, though without the end-point issue (it estimates end-points directly). The filtered series and smoothed series are
+placed in new variables, specified with the {cmd:stub()} option. The smoothed variables are identified by "_sm" in their names. 
+The {cmd:s()} and {cmd:e()} arguments can either specify the minimum period of oscillation and maximum period of oscillation of 
+the desired component of the time series, with 2 < {it:s} < {it:e} < infinity, or the desired frequencies,
+with 0 < {it:s} < {it:e} <= 1. {cmd:couliari} does not allow gaps within the observations of the time series.
+
+{title:Options}
+
+{phang}{cmd:s(}{it:#}{cmd:)} and {cmd:e(}{it:#}{cmd:)} specify the minimum and maximum period of oscillation to be retained in the
+time series, either as the number of periods or as the frequencies expressed as fractions of pi. {cmd:s(}{it:#}{cmd:)} 
+and {cmd:e(}{it:#}{cmd:)} are required. For quarterly data, common values are 6 and 32 periods (frequencies 1/16 and 1/3) , 
+which preserve the components of the data with period between 1.5 and 8.0 years. For monthly data, common values are 18 and 
+96 periods (frequencies 1/48 and 1/9), which preserves the component of the data with period between 1.5 and 8.0 years. For
+annual data, common values are 2 and 8 (frequencies 1/4 and 1).
+
+{phang}{cmd:stub(}{it:abbrev}{cmd:)}, which must be provided, specifies the "stub" from which new variable names will be created. Variables created by {cmd:stub} must be new variables. If the {it:varlist} contains time-series 
+operators, the dots in their names are replaced by underscores so that the resulting new variables' names are legal.
+ 
+{title:Examples}
+
+{pstd}{stata "webuse lutkepohl,clear" :. webuse lutkepohl,clear}
+
+{pstd}{stata "couliari investment, s(6) e(32) stub(FD)" :. couliari investment, s(6) e(32) stub(FD)}
+
+{pstd}Same as above, expressing {cmd:s()} and {cmd:e()} as fractions of pi
+
+{pstd}{stata "couliari investment, s(1/16) e(1/3) stub(FDpi)" :. couliari investment, s(1/6) e(1/3) stub(FDpi)}
+
+{pstd}Several variables
+
+{pstd}{stata "couliari investment income consumption, s(6) e(32) stub(filt)" :. couliari investment income consumption, s(6) e(32) stub(filt)}
+
+{pstd}Time series operators
+
+{pstd}{stata "couliari D.investment, s(4) e(12) stub(fl)" :. couliari D.investment, s(4) e(12) stub(fl)}
+
+{pstd}Application in a panel:
+
+{pstd}{stata "use http://fmwww.bc.edu/ec-p/data/hayashi/sheston91.dta,clear":. use http://fmwww.bc.edu/ec-p/data/hayashi/sheston91.dta,clear}
+
+{pstd}{stata "drop if country>4":. drop if country>4}
+
+{pstd}{stata "tsset":. tsset}
+
+{pstd}{stata "by country:couliari rgdppc, s(2) e(8) stub(fd)":. by country:couliari rgdppc, s(2) e(8) stub(fd) k(3)}
+
+{pstd}{stata "egen double fd_sm = rowtotal(fd_rgdppc_sm_*)" :. egen double fd_sm = rowtotal(fd_rgdppc_sm_*)}
+
+{pstd}{stata "drop fd_rgdppc_sm_*" :. drop fd_rgdppc_sm_*}
+
+{pstd}{stata "egen double fd_res = rowtotal(fd_rgdppc_*)" :. egen double fd_res = rowtotal(fd_rgpdpc_*)}
+
+{pstd}{stata "drop fd_rgdppc_*" :. drop fd_rgdppc_*}
+
+
+{title:Author}
+
+{pstd}Jorge P{c e'}rez, Inter-American Development Bank{break} 
+       jperezperez@iadb.org
+       
+{title:References}
+
+{pstd}Baxter, Marianne and Robert G. King (1999). "Measuring Business Cycles: Approximate Band-Pass Filters for Economic 
+Time Series", {it: Review of Economics and Statistics} 81(4), pp. 575-593.
+
+{pstd}Corbae, Dean, Sam Ouliaris and Peter C.B. Phillips (2002). "Band Spectral Regression with Trending-Data", {it: Econometrica} 70 (3), pp. 
+1067-1109.
+
+{pstd}Corbae, Dean and Sam Ouliaris (2006). "Extracting Cycles from Non stationary Data", {it: Econometric Theory and Practice: Frontiers of Analysis and Applied Research} Cambridge Cambridge and New York.
+
+{pstd}Ouliaris, Sam (2009) "Ideal Band Pass Filter For Stationary/Non-Stationary Series" 
+http://forums.eviews.com/viewtopic.php?f=15&t=1513
+
+{title:Acknowledgements} 
+
+{pstd} This command was translated from Eviews code in Ouliaris(2009). The stata syntax was drawn from the commands {cmd:bking}
+ and {cmd:hprescott} by Christopher F. Baum and Martha Lopez.
+
+{title:Disclaimer}
+
+{pstd} This program is provided without warranty of any kind. The author is not responsible for any cost derived by the usage
+ of this program.
+
+{title:Also see}
+
+{pstd}{help bking} (if installed), {help hprescott} (if installed), {help tsset}

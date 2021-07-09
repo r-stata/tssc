@@ -1,0 +1,195 @@
+{smcl}
+{* 19Aug2008}{...}
+{hline}
+help for {hi:metaeff}
+{hline}
+
+{title:Title}
+
+{p2colset 5 16 18 2}{...}
+{p2col :{hi:metaeff} {hline 2}}Meta-analysis module for effect sizes calculations{p_end}
+{p2colreset}{...}
+
+
+{title:Syntax}
+
+{p 4 8 2}
+{cmd:metaeff}
+{it:varname1}
+{it:varname2}
+{ifin}
+[{cmd:,} {it:{help collapse##options:options}}]
+
+{p 4 4 2}
+where
+
+{p 6 6 2}
+{it:varvame1} the variable corresponding to the estimated effect sizes.
+
+{p 6 6 2}
+{it:varvame2} the variable corresponding to the estimated standard errors of the effect sizes.
+
+{synoptset 20 tabbed}{...}
+{marker options}{...}
+{synopthdr}
+{synoptline}
+{syntab :Options}
+{synopt :{opth ni(varname)}}specifies the number of units in the intervention group
+{p_end}
+{synopt :{opth nc(varname)}}specifies the number of units in the control group
+{p_end}
+{synopt :{opth i(varname)}}specifies the number of events in the intervention group
+{p_end}
+{synopt :{opth c(varname)}}specifies the number of events in the control} group
+{p_end}
+{synopt :{opth orval(varname)}}specifies the odds ratio
+{p_end}
+{synopt :{opth ci95lo(varname)}}specifies the lower end of 95% confidence interval of the mean difference or odds ratio
+{p_end}
+{synopt :{opth ci95up(varname)}}specifies the upper end of 95% confidence interval of the mean difference or odds ratio
+{p_end}
+{synopt :{opth md(varname)}}specifies the mean difference (not standardised)
+{p_end}
+{synopt :{opth meani(varname)}}specifies the mean of the intervention group
+{p_end}
+{synopt :{opth meanc(varname)}}specifies the mean of the control group
+{p_end}
+{synopt :{opth sdi(varname)}}specifies the standard deviation in the intervention group
+{p_end}
+{synopt :{opth sdc(varname)}}specifies the standard deviation in the control group
+{p_end}
+{synopt :{opth ci95loi(varname)}}specifies the lower end of the 95% confidence interval of the mean for the intervention group
+{p_end}
+{synopt :{opth ci95upi(varname)}}specifies the upper end of the 95% confidence interval of the mean for the intervention group
+{p_end}
+{synopt :{opth ci95loc(varname)}}specifies the lower end of the 95% confidence interval of the mean for the control group
+{p_end}
+{synopt :{opth ci95upc(varname)}}specifies the upper end of the 95% confidence interval of the mean for the control group
+{p_end}
+{synopt :{opth p(varname)}}specifies the p value for a two-sample t-test
+{p_end}
+{synopt :{opth t(varname)}}specifies the t value for a two-sample t-test (assumes df=ni+nc-2)
+{p_end}
+{synopt :{opt or}}selects odds ratio (1b) over the default risk difference method (1a), when ni, nc, i & c are available
+{p_end}
+{synopt :{opt owrite}}specifies that {it:varvame1} and {it:varvame2} will be overwritten, if they already exist in the dataset
+{p_end}
+{synopt :{opt infovar}}provides information on the method selected (for each case) in a new string variable _method
+{p_end}
+
+
+{title:Description}
+
+{p 4 4 2}
+The {cmd:metaeff} command provides a way to calculate the effect sizes (and the respective standard errors)
+of research studies, for use with meta-analysis methods (see {cmd:{help meta}}, {cmd:{help metan}} & {cmd:{help metaan}}).
+The methods used for the calculations have been derived from the Cochrane Collaboration handbook. The calculated effect sizes are
+standardised mean differences and binary data are transformed towards that end. {cmd:metaeff} is meant to be used for meta-analysing studies
+with various types of outcomes; if all studies provide binary outcomes then {cmd:metaeff} should not be used since better approaches exist and a
+transformation is not required.
+
+{p 4 4 2}
+{hi:Dichotomous data}
+
+{p 6 4 2}
+{hi:Method 1a}, based on Risk Difference. Requires {hi:ni}, {hi:nc}, {hi:i} & {hi:a}.
+
+{p 6 4 2}
+{hi:Method 1b}, based on Odds Ratio. Requires {hi:ni}, {hi:nc}, {hi:i} & {hi:a}.
+
+{p 6 4 2}
+{hi:Method 2}, based on Odds Ratio. Requires {hi:ni}, {hi:nc}, {hi:orval}, {hi:ci95lo} & {hi:ci95up}.
+
+{p 4 4 2}
+{hi:Continuous data}
+
+{p 6 4 2}
+{hi:Method 3}, based on Mean Difference. Requires {hi:ni}, {hi:nc}, {hi:md} or ({hi:meani} and {hi:meanc}) , {hi:ci95lo} & {hi:ci95up}.
+
+{p 6 4 2}
+{hi:Method 4}, based on Mean Difference. Requires {hi:ni}, {hi:nc}, {hi:md} or ({hi:meani} and {hi:meanc}), {hi:sdi} & {hi:sdc}.
+
+{p 6 4 2}
+{hi:Method 5}, based on Mean Difference. Requires {hi:ni}, {hi:nc}, {hi:md} or ({hi:meani} and {hi:meanc}), {hi:ci95loi}, {hi:ci95upi}, {hi:ci95loc}, {hi:ci95upc}.
+
+{p 6 4 2}
+{hi:Method 6}, based on Mean Difference. Requires {hi:ni}, {hi:nc}, {hi:md} or ({hi:meani} and {hi:meanc}) & {hi:p} or {hi:t}.
+
+{p 4 4 2}
+{hi:Dichotomous or Continuous data}
+
+{p 6 4 2}
+{hi:Method 7}, based on z-value. Requires {hi:ni}, {hi:nc} & {hi:p} or {hi:t}.
+
+
+{title:Remarks}
+
+{p 4 4 2}
+Some methods are more accurate than others and have been prioritised accorgingly (in case user has provided input that allows
+2 or more methods to be selected). For dichotomous data the method order is {hi:2}, {hi:1a}, {hi:1b}, {hi:7} and for continuous
+data {hi:4}, {hi:5}, {hi:3}, {hi:6} & finally {hi:7}. Methods {hi:6} and (especially) {hi:7} should only be used if no other
+method can be selected (due to distibutional assumptions and the use of the reported p-value is usually inaccurate). The methods are described
+in Kontopantelis and Reeves, 2009 and have been prioritised according to expected precision: that is, the expectation that the effect size and
+associated variance computed from the input data will be accurate. As a general rule, the fewer the number of mathematical transformations involved
+in getting from the 'raw data' to the statistical parameters used as input for the method, the higher the expected precision.
+
+{title:Examples}
+
+{p 4 8 2}
+{cmd:. metaeff eff SEeff, ni(ivsize) nc(clsize) i(ivevents) c(ivevents)}
+
+{p 4 8 2}
+{cmd:. metaeff eff SEeff, ni(ivsize) nc(clsize) i(ivevents) c(ivevents) or owrite}
+
+{p 4 8 2}
+{cmd:. metaeff eff2 SEeff2, ni(ivsize) nc(clsize) md(meandiff) sdi(ivsd) sdc(clsd)}
+
+{p 4 8 2}
+{cmd:. metaeff eff SE, ni(ivsize) nc(clsize) meani(ivmean) meanc(clmean) ci95loi(ivlo) ci95upi(ivup) ci95loc(cllo) ci95upc(clup)}
+
+{p 4 8 2}
+{cmd:. metaeff eff SEeff, ni(ivsize) nc(clsize) t(tvalue)}
+
+
+{title:Authors}
+
+{p 4 4 2}
+Evangelos Kontopantelis, National Primary Care Research and Development Centre,
+
+{p 29 4 2}
+University of Manchester, e.kontopantelis@manchester.ac.uk
+
+{p 4 4 2}
+David Reeves, Health Sciences Primary Care Research Group, University of Manchester
+
+
+{title:References}
+
+{p 4 4 2}
+Cochrane Collaboration handbook: {browse "http://www.cochrane.org/resources/handbook":http://www.cochrane.org/resources/handbook/}
+Kontopantelis, E. and Reeves D. 2009.  A Meta-Analysis add-in for Microsoft Excel.  Journal of Statistical Software.
+
+
+{title:Also see}
+
+{p 4 4 2}
+STB: STB-44 sbe24
+
+{p 4 4 2}
+help for {help metaan}, {help metan7} (if installed)
+
+{p 4 4 2}
+{help metannt} (if installed), {help meta} (if installed)
+
+{p 4 4 2}
+{help metacum} (if installed), {help metareg} (if installed)
+
+{p 4 4 2}
+{help metabias} (if installed), {help metatrim} (if installed)
+
+{p 4 4 2}
+{help metainf} (if installed), {help galbr} (if installed)
+
+{p 4 4 2}
+{help metafunnel} (if installed)
+

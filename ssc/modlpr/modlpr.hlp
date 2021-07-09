@@ -1,0 +1,112 @@
+{smcl}
+{* 19oct2004}{...}
+{hline}
+help for {hi:modlpr}
+{hline}
+
+
+{title:Estimate long memory in a timeseries via Modified Log-Periodogram Regression}
+
+{p 8 17}{cmd:modlpr}
+{it:varname}
+[{cmd:if} {it:exp}]
+[{cmd:in} {it:range}] 
+[{cmd:,} {cmdab:powers(}{it:numlist}{cmd:)}
+[
+{cmdab:not:rend}
+]
+
+{p 4 4}{cmd:modlpr} is for use with time-series data. 
+You must {cmd:tsset} your data before using {cmd:modlpr}; see help {cmd:tsset}. 
+{cmd:modlpr} supports the {cmd:by} prefix, which may be used to operate on each 
+time series in a panel. Alternatively, the {cmd:if} qualifier may be used to specify 
+a single time series in a panel.
+
+{title:Description}
+
+{p 4 4}{cmd:modlpr} 
+computes a modified form of the Geweke/Porter-Hudak (GPH, 1983) 
+estimate of the long memory (fractional integration) parameter, {it:d}, of a 
+timeseries, proposed by Phillips (1999, 2007). If a series
+exhibits long memory, it is neither stationary (I[0]) nor is it a unit 
+root (I[1]) process; it is an I({it:d}) process, with {it:d} a real number. However,
+distinguishing unit-root behavior from fractional integration may be
+problematic, given that the GPH estimator is inconsistent against {it:d}>1 
+alternatives. {p_end}
+
+{p 4 4}
+This weakness of the GPH estimator (see {cmd:gphudak^}) is solved by Phillips' 
+Modified Log Periodogram Regression estimator, in which the dependent 
+variable is modified to reflect the distribution of {it:d} under the null 
+hypothesis that {it:d}=1. The estimator gives rise to a test statistic for {it:d}=1 
+which is a standard normal variate under the null. Phillips suggests (p.11) 
+that deterministic trends should be removed from the series before application 
+of the estimator. By default, a linear trend is extracted from the series.
+This may be suppressed with the {cmd:notrend} option.{p_end}
+
+{p 4 4}
+A choice must be made of the number of harmonic ordinates to be included
+in the spectral regression. The regression slope estimate is an estimate of
+the slope of the series' power spectrum in the vicinity of the zero 
+frequency; if too few ordinates are included, the slope is calculated from
+a small sample. If too many are included, medium and high-frequency components
+of the spectrum will contaminate the estimate. A choice of root(T), or 
+{cmd:power} = 0.5 is often employed. To evaluate the robustness of the estimates,
+a range of power values (from 0.4 - 0.75) is commonly calculated as well.
+{cmd:modlpr} uses the default power of 0.5. A {it:numlist} of powers may be given.{p_end}
+
+{p 4 4}
+The command displays the d estimate, number of ordinates, conventional 
+standard error and P-value, as well as the test statistic ({cmd:zd}) for
+the test of {it:d}=1, and its p-value. These values are returned in a matrix, 
+e(modlpr), formatted for display. {cmd: ereturn list} for details. If {cmd:modlpr}
+is used in a panel context and the returned results are to be saved, 
+the {cmd:if} qualifier should be used rather than the {cmd:by} prefix to loop
+over panels.{p_end}
+
+
+{title:Examples}
+
+{p 4 8}{stata "use http://fmwww.bc.edu/ec-p/data/Mills2d/fta.dta, clear" :. use http://fmwww.bc.edu/ec-p/data/Mills2d/fta.dta, clear}{p_end}
+
+{p 4 8}{stata "modlpr ftap" :. modlpr ftap}{p_end}
+
+{p 4 8}{stata "modlpr ftap, power( 0.5 0.55:0.8)" :. modlpr ftap, power( 0.5 0.55:0.8)}{p_end}
+
+{p 4 8}{stata "webuse grunfeld, clear" :. webuse grunfeld, clear}{p_end}
+
+{p 4 8}{stata "modlpr invest if company==6" :. modlpr invest if company==6}{p_end}
+
+{p 4 8}{stata "by company: modlpr invest" :. by company: modlpr invest}{p_end}
+
+{title:Authors}
+
+{p 4 4}Christopher F. Baum, Boston College, USA{break} 
+       baum@bc.edu
+       
+{p 4 4}Vince Wiggins, StataCorp LP{break} 
+        vwiggins@stata.com
+
+{title:References}
+      
+{p}Geweke, J. and Porter-Hudak, S.,  The Estimation and Application
+      of Long Memory Time Series Models, J. of Time Series Analysis,
+      1983, 221-238.{p_end}
+
+{p}Phillips, Peter C.B., Discrete Fourier Transforms of Fractional
+      Processes, 1999. Unpublished working paper No. 1243, Cowles 
+      Foundation for Research in Economics, Yale University.
+      http://cowles.econ.yale.edu/P/cd/d12a/d1243.pdf{p_end}
+      
+{p}Phillips, Peter C.B., Unit Root Log Periodogram Regression,
+      Journal of Econometrics, 2007, 138:104-124. Also available as
+      Unpublished working paper No. 1244, Cowles Foundation for 
+      Research in Economics, Yale University.
+      http://cowles.econ.yale.edu/P/cd/d12a/d1244.pdf{p_end}
+      
+{title:Also see}
+
+{p 4 13}On-line: {help regress}, {help time}, {help tsset}, {help ac}, 
+{help corrgram} {help gphudak} (if installed), {help roblpr} (if installed)
+        
+

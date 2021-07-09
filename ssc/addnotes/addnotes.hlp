@@ -1,0 +1,49 @@
+{smcl}
+{* 29 Nov 2005}{...}
+{* Jeff Arnold}{...}
+{hline}
+help for {hi:addnotes}
+{hline}
+
+{title:Add notes to text files}
+
+{p 8 16 2}{cmdab:addnotes }{cmd:using }{it:filename },{cmd:data}
+{cmdab:var:iables(}{it:varlist}{cmd:) }{cmd:text(}{it:string}{cmd:)}
+
+{title:Description}
+
+{p 4 4 2}
+{cmd:addnotes} appends additional text to the end of any text file.  This can
+be used to add notes to the end of output of commands such as {cmd:outsheet} or
+{cmd:outreg} which produce text files.
+
+{title:Options}
+
+{p 4 8 2}{cmd:data} will write the {help label:dataset labels} to the end of
+the text file as "Data: {it:dataset label}. 
+
+{p 4 8 2}{cmd:variables(}{varlist}{cmd:)} will write the {help
+label:variable labels} of each variable specified, one variable per line, in
+the format, "{it:varname}:{it: variable label}"
+
+{p 4 8 2}{cmd:text(}{it:string}{cmd:)} will write whatever is specified to the
+end of the textfile.  This string follows the syntax for writing ASCII text to
+a file with the {help file} command.
+
+{title:Examples: addnotes}
+
+{p 4 8 2}{cmd:. sysuse auto}{p_end}
+{p 4 8 2}{cmd:. outsheet using auto.csv}{p_end}
+{p 4 8 2}{cmd:. addnotes, variables(make price)}{p_end}
+{p 4 8 2}{cmd:. addnotes, text("Car Types are domestic or foreign")}
+
+{title:Author}
+
+{p 4 4 2}Jeffrey Arnold {p_end}
+{p 4 4 2}Payments Studies Function, Federal Reserve Bank of New York {p_end}
+{p 4 4 2}{browse "mailto:jeffrey.arnold@ny.frb.org":jeffrey.arnold@ny.frb.org} 
+
+{title:Also see}
+
+{p 4 13 2}
+Online:  help for {help file}, {help outsheet}, {help outfile}

@@ -1,0 +1,35 @@
+
+
+VERSION 11
+INCLUDE _std_medium
+POSITION . . 420 _dlght
+
+DIALOG main, title("WELCOM: Package Manager")
+BEGIN
+
+        BUTTON   bt_install      90  20  240  30, ///
+                label("Install/Update WELCOM Package")    onpush(program install_tax)
+				
+        BUTTON   bt_check @        _xls  @         @,  ///
+                label("Check for Updates") onpush(program check_tax_ver)
+
+        BUTTON   bt_refs      @        _xls  @         @, ///
+                label("Basic WELCOM References") onpush(view browse "http://dasp.ecn.ulaval.ca/webwel/manuals.htm")
+        BUTTON   bt_www         @        _xls  @         @, label("Go to WELCOM Website") onpush(view browse http://dasp.ecn.ulaval.ca/webwel/welcom.html)
+
+END
+
+
+		
+PROGRAM check_tax_ver
+BEGIN
+	put "_welcom_vers"
+	stata
+END
+
+		
+PROGRAM install_tax
+BEGIN
+	put "_welcom_inst"
+	stata
+END

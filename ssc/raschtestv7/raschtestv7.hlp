@@ -1,0 +1,219 @@
+{smcl}
+{* 25june2009}{...}
+{hline}
+help for {hi:raschtest} and {hi:raschtestv7}{right:Jean-Benoit Hardouin}
+{hline}
+
+{title:Estimation of the parameters of a Rasch model, tests and specific graphs}
+
+{p 8 14 2}{cmd:raschtestv7} {it:varlist} [{cmd:if} {it:exp}] [{cmd:in} {it:range}]
+, {cmdab:id}({it:varname})  [{cmdab:meth:od}({it:keyword}) {cmdab:nold}  {cmdab:iterate}({it:#})
+{cmdab:t:est}({it:keyword}) {cmdab:diff:iculties}({it:vector})
+{cmdab:mean:diff} {cmdab:d:etails} {cmd:group}({it:numlist}) {cmdab:autog:roup}
+{cmdab:cov:ariates}({it:varlist}[,{cmd: ss1 ss3}])
+{cmdab:dir:save}({it:directory}) {cmdab:files:save} {cmdab:pause}
+{cmdab:rep:lace} {cmdab:nodraw} {cmdab:icc}
+{cmdab:inf:ormation} {cmdab:split:test} {cmdab:fit:graph}
+{cmdab:genlt}({it:newvarname}[,{cmdab:rep:lace}]) {cmdab:gensco:re}({it:newvarname})
+{cmd:genfit}({it:newvarlist}) {cmd:genres}({it:string})
+{cmdab:com:p}({it:varname})
+{cmdab:dif}({it:varlist})
+{cmdab:tr:ace} {cmdab:time}]
+
+{p 8 14 2}{cmd:raschtest} {it:varlist} [{cmd:if} {it:exp}] [{cmd:in} {it:range}]
+[, {it:options_of_raschtestv7} {cmdab:gra:ph}]
+
+{p 8 14 2}{it:varlist} is a list of two existing binary variables or more.
+
+{title:Description}
+
+{p 4 8 2}{cmd:raschtest} estimates the parameters of a Rasch model. The estimation
+method can be chosen between conditional maximum likelihood (CML), marginal
+maximum likelihood (MML) and generalized estimating equations (GEE). {cmd:raschtest}
+offer a set of tests, to valuate the fit of the data to the Rasch model, or detect
+non homogeneous items (Andersen Z test, First order test (Q1, R1c, R1m, or Wright
+Panchapakesan), U test, Split test) and indexes (OUTFIT and INFIT per items or per
+individuals). Several graphical representations can be easily obtained: comparison
+of the observed and theorical Item Characteristic Curves (ICC), Map difficulty
+parameters/Scores, results of the split tests, and information function.
+
+{title:Options}
+
+{p 4 8 2}{cmd:method} specifies the used method to estimate the difficulty
+parameter among CML ({cmd:method}({it:cml}) - by default), MML ({cmd:method}({it:mml}))
+or GEE ({cmd:method}({it:gee})).
+
+{p 4 8 2}{cmd:nold} avoids the Listwise Deletion of the individuals with missing data.
+By default, all the individuals with one or more missing data are omited.
+
+{p 4 8 2}{cmd:iterate} allows defining the maximal number of iterations of the maximisation algorithm.
+By default, this number is fixed to 200.
+
+{p 4 8 2}{cmd:test} specifies the tests to use among {cmd:test}({it:R}) (by
+default, for the R1c or the R1m test), {cmd:test}({it:WP}) (for the Wright-
+Panchapakesan test) and {cmd:test}({it:Q}) (for the Q1 test).
+
+{p 4 8 2}{cmd:difficulties} allows fixing the values of the difficulties parameters of the items.
+The vector must be a row vector and must contain as many values as items.
+This option is available only with {cmd:method}({it:mml}).
+
+{p 4 8 2}{cmd:meandiff} centers the difficulty parameters (only with
+{cmd:method}({it:cml})): by default for the CML estimations, the difficulty
+parameter to the last item is fixed to 0. With {cmd:meandiff}, only the
+diagonal elements of the covariance matrix of these parameters are estimated.
+
+{p 4 8 2}{cmd:details} displays for each group of scores a table containing the
+observed and expected number of positive responses and the contribution of this
+group to the global first-order statistic.
+
+{p 4 8 2}{cmd:group} specifies groups of scores, by defining the superior
+limits of each group (note that the score "0" and this one corresponding to the
+number of items are always isolated).
+
+{p 4 8 2}{cmd:autogroup} automatically creates groups of scores (with at least
+30 individuals per group).
+
+{p 4 8 2}{cmd:covariates} allows introducing covariates on the model. The {cmd:ss1} and
+{cmd:ss3} options allows computing the type 1 and type 3 sums of squares to explain the
+variance of the latent trait by these covariates. This option is available only with {cmd:method}({it:mml}).
+
+{p 4 8 2}{cmd:dirsave} specifies the directory where the graphs will be saved
+(by default, the directory defined in c(pwd)).
+
+{p 4 8 2}{cmd:filessave} saves all the graphs in .gph files (by default, the
+graphs are not saved).
+
+{p 4 8 2}{cmd:pause} allows to made a pause between the displaying of each graph.
+
+{p 4 8 2}{cmd:replace} specifies that the existing graphical files will be
+replaced.
+
+{p 4 8 2}{cmd:nodraw} avoids displaying of the graphs.
+
+{p 4 8 2}{cmd:icc} displays, for each item, the observed and expected (under the Rasch
+model) ICC in a graph.
+
+{p 4 8 2}{cmd:graph} represents in the same graph the distributions of the
+difficulty parameters, this one of the scores, and [with {cmd:method}({it:mml}) or
+{cmd:method}({it:gee})] the expected distribution of the latent trait, in
+function of the latent trait.
+
+{p 4 8 2}{cmd:information} represents the information function for the set of
+the items in function of the latent trait.
+
+{p 4 8 2}{cmd:splittest} represents, for each item, the CML estimations of the
+difficulty parameters for the others items in the two sub-samples defined by
+the individuals who have positively respond to the splitting item for the first
+group, and by the individuals who have negatively respond to the splitting item
+for the second one.
+
+{p 4 8 2}{cmd:fitgraph} represents four graphs. The first one concerns the
+OUTFIT indexes for each item, the second one, the INFIT indexes for each item,
+the third one the OUTFIT indexes for each individual, and the last one the
+INFIT indexes for each individual.
+
+{p 4 8 2}{cmd:genlt} creates a new variable containing, for each individual,
+the estimated value of the latent trait. The {cmd:replace} option allows replacing
+an existing variable.
+
+{p 4 8 2}{cmd:genscore} creates a new variable containing, for each individual,
+the value of the score.
+
+{p 4 8 2}{cmd:genres} creates new variables containing, for each individual,
+the value of the residuals. This option defines the prefix to these new variables
+which will be followed by the name of each item.
+
+{p 4 8 2}{cmd:genfit} creates several new variables. {it:newvarlist}
+contains two words. The first one represents "outfit" and the second one "infit".
+This option generates two variables with this names for the OUTFIT and INFIT
+indexes for each individual, and the variables "outfitXX" (by replacing "outfit"
+by the first word) for the contribution of the item XX to the OUTFIT index (Note
+that the new variables contain unstandardized OUTFIT and INFIT indices, even
+the program displays standardized statistics in the results table and with the
+{cmd:fitgraph} option).
+
+{p 4 8 2}{cmd:comp} tests the equality of the means of the latent trait for two
+groups of individuals defined by a binary variable (only with {cmd:method}({it:mml})
+or {cmd:method}({it:gee})).
+
+{p 4 8 2}{cmd:dif} tests the Differential Item Functioning (DIF) on a list of
+variables by likelihood ration tests. For each variable defined in the list,
+the items parameters are estimated in each groups defined by this variable,
+and the test considers the null assumption: the estimations are the same in each group.
+The statistic of the test follows a chi-square distribution under the null assumption.
+The variable defined in the {cmd:dif} option must have 10 or less modalities, coded
+from 0 or 1 to an integer k<=10. This option is available only with {cmd:method}({it:cml}).
+
+{p 4 8 2}{cmd:trace} displays more outputs during the running of the module.
+
+{p 4 8 2}{cmd:time} displays the number of seconds to run the module.
+
+{title:Outputs}
+
+{p 4 8 2}{cmd:e(N)}: Number of observations
+
+{p 4 8 2}{cmd:e(ll)}: (Marginal) Log-likelihood
+
+{p 4 8 2}{cmd:e(cll)}: Conditional log-likelihood
+
+{p 4 8 2}{cmd:e(AIC)}: Akaike Information Criterion
+
+{p 4 8 2}{cmd:e(PSI)} and {cmd:e(PSIadj)}: Personal Separation Indexes (only for {cmd:meth}({it:mml})
+
+{p 4 8 2}{cmd:e(sigma)}: Estimated standard deviation of the latent trait
+
+{p 4 8 2}{cmd:e(sesigma)}: Standard error of the estimated standard deviation of the latent trait
+
+{p 4 8 2}{cmd:e(beta)}: Estimated difficulty parameters
+
+{p 4 8 2}{cmd:e(Varbeta)}: Covariance matrix of the estimated difficulty parameters
+
+{p 4 8 2}{cmd:e(theta)}: Estimated values for the latent trait for each value of the score
+
+{p 4 8 2}{cmd:e(Varbeta)}: Covariance matrix for the estimated values for the latent trait for each value of the score
+
+{p 4 8 2}{cmd:e(itemFit)}: Statistics of fit for each item (first order statistic, degree of freedom, p-value, OUTFIT index, INFIT index, and (if {cmd:method}({it:cml})) U-test statistic
+
+{p 4 8 2}{cmd:e(globalFit)}: Global first order test (statistic, degrees of freedom, p-value)
+
+{p 4 8 2}{cmd:e(AndersenZ)}: Andersen LR Z test (first order statistic, degree of freedom, p-value) (if {cmd:method}({it:cml}))
+
+{p 4 8 2}{cmd:e(DIF)}: DIF LR Z test (statistic, degree of freedom, p-value for each variable defined in {cmd:dif}) (if {cmd:method}({it:cml}))
+
+{p 4 8 2}{cmd:e(Zcomp)} and {cmd:e(pZcomp)}: Statistics of test and associated p-value for the test of comparison of the two population defined with the {cmd:comp} option.
+
+{p 4 8 2}{cmd:e(betacovariates)}, {cmd:e(Vbetacovariates)}, {cmd:e(zcovariates)} and {cmd:e(pcovariates)}: respectivelly the estimated values of the parameters associated to the covariates, the covariance matrix of the estimations, the statistics of the tests to compare the parameters to 0 and the associated p-values (only with the {cmd:covariates} option)
+
+{title:Examples}
+
+{p 4 8 2}{cmd: . raschtest item1-item9, id(id)} /*estimates the parameters by CML approach*/
+
+{p 4 8 2}{cmd: . raschtest item*, id(id) method(gee) information icc dirsave(c:\graphs) filesnames(graphs)}
+/*estimates the parameters by GEE, draw the information graph and the ICCs and
+save the graphical representations under gph files*/
+
+{p 4 8 2}{cmd: . raschtest item1 item4 item7 item 18 item23 item35-item39 , id(id) group(2 3 4 5) test(WP) split graph}
+/*creates groups of score (1 and 2, 3, 4, 5 and more) to compute the Wright
+Panchapakesan tests, computes the split test, and represent the map difficulty
+parameters/scores*/
+
+{p 4 8 2}{cmd: . matrix diff=(-1,-.5,0,.5,1)}{p_end}
+{p 4 8 2}{cmd: . raschtest item1-item5 , id(id) diff(diff) covariable(group sex age,ss1 ss3) nold}
+/*difficulties parameters are fixed, 3 covariables are introduced, no listwise deletion*/
+
+{title:Author}
+
+{p 4 8 2}Jean-Benoit Hardouin, PhD, assistant professor{p_end}
+{p 4 8 2}EA 4275 "Team of Biostatistics, Clinical Research and Subjective Measures in Health Sciences"{p_end}
+{p 4 8 2}University of Nantes - Faculty of Pharmaceutical Sciences{p_end}
+{p 4 8 2}1, rue Gaston Veil - BP 53508{p_end}
+{p 4 8 2}44035 Nantes Cedex 1 - FRANCE{p_end}
+{p 4 8 2}Email:
+{browse "mailto:jean-benoit.hardouin@univ-nantes.fr":jean-benoit.hardouin@univ-nantes.fr}{p_end}
+{p 4 8 2}Websites {browse "http://www.anaqol.org":AnaQol}
+and {browse "http://www.freeirt.org":FreeIRT}
+
+{title:Also see}
+
+{p 4 13 2}Online: help for {help xtlogit}, {help clogit} and {help geekel2d} and {help gllamm} if installed.{p_end}
+

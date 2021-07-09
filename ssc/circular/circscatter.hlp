@@ -1,0 +1,76 @@
+{smcl}
+{* 6may2004}
+{hline}
+help for {hi:circscatter}
+{hline}
+
+{title:Scatter plot for circular data with wrapping round of data} 
+
+{p 8 17 2} 
+{cmdab:circsc:atter}
+{it:varlist}
+[{it:weight}] 
+[{cmd:if} {it:exp}] 
+[{cmd:in} {it:range}]
+[
+{cmd:,}
+{cmdab:x:circ}
+{cmdab:y:circ}
+{cmdab:p:ad(}{it:#}{it:)}
+{it:scatter_options} ]
+
+{p 4 4 2}
+{cmd:aweight}s, {cmd:fweight}s and {cmd:iweight}s are allowed; see 
+help on {help weights}. 
+
+{p 4 4 2}The abbreviation {cmd:circsc} (only) is allowed. 
+
+
+{title:Description}
+
+{p 4 4 2} 
+{cmd:circscatter} produces a scatter plot for {it:varlist} with some wrapping round
+of data. It is applicable when at least one of the variables in 
+{it:varlist} is a circular variable taking on values between 0 and 360 degrees.
+
+
+{title:Options} 
+
+{p 4 8 2}{cmd:xcirc} means that the last variable named in {it:varlist}
+specifies a circular variable.
+
+{p 4 8 2}{cmd:ycirc} means that the first variable named in {it:varlist}
+specifies a circular variable.
+
+{p 4 4 2}{cmd:xcirc} and {cmd:ycirc} may be specified together.
+
+{p 4 8 2}
+{cmd:pad()} places a pad of {it:#} degrees at each axis end. Data less than or
+equal to {it:#} degrees are copied at the right or top end of the axis for an
+interval of 360 to {bind:360 + {it:#}} degrees. Data more than 
+{bind:360 - {it:#}} degrees are copied at the left or bottom end of the axis for 
+an interval of -{it:#} to 0 degrees. The default is 180, so that a full two 
+cycles are shown.
+
+{p 4 8 2}{it:scatter_options} are any of the options allowed with 
+{help scatter}.     
+
+
+{title:Examples} 
+
+{p 4 8 2}{cmd:. circscatter wallpdf deg, xcirc} 
+
+{p 4 8 2}{cmd:. circscatter wallasp axisasp, xcirc ycirc} 
+
+
+{title:Author} 
+
+{p 4 4 2}Nicholas J. Cox, University of Durham, U.K.{break} 
+         n.j.cox@durham.ac.uk
+
+
+{title:Also see} 
+
+{p 4 17 2} 
+On-line: help for {help scatter}
+

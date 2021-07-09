@@ -1,0 +1,196 @@
+{smcl}
+{* version 1.0.8 18aug2012}{...}
+{cmd:help labmv}
+{hline}
+
+{title:Title}
+
+{p 5}
+{cmd:labmv} {hline 2} Change numeric values to extended missing values 
+preserving value labels
+
+
+{title:Syntax}
+
+{p 8}
+{cmd:labmv} [{varlist}] {ifin} 
+{cmd:, mv(}{it:{help numlist}} | {it:#} [{it:mvc}] {it: ...}{cmd:)} 
+[{it:options}]
+
+
+{p 5}
+where {it:mvc} is one of the {help missing:extended missing value} 
+codes {hi:.a}|{hi:.b}|...|{hi:.z}
+
+
+{title:Description}
+
+{pstd}
+{cmd:labmv} changes numeric values in a specified {it:varlist} to 
+extended missing values, preserving their value labels. If no {it:mvc} 
+is specified, numeric values are changed to consecutive extended 
+missing value codes, starting with {hi:.a}. Thus, the first numeric 
+value specified will be coded {hi:.a}, the second {hi:.b} and so on. 
+In value labels, any text associated with numeric values will be 
+detached from these values and instead be associated with the 
+corresponding missing value code.
+
+{pstd}
+Up to 26 numeric values may be specified in {opt mv}. If {it:varlist} 
+is not specified it defaults to {hi:_all}. 
+
+{pstd}
+{hi:Reminder:} modifiactions in value labels affect all variables that 
+have the same value label as one of the variables in {it:varlist} 
+attached.
+
+
+{title:Options}
+
+{phang}
+{cmd:mv(}{it:numlist} | {it:#} [{it:mvc}]{cmd:)} is a required option 
+and specifies numeric values to be changed to extended missing value 
+codes. The numeric value preceding {it:mvc} is changed to {it:mvc}. 
+See {help labmv##r:Remarks}.
+
+{phang}
+{opt all:vars} changes numeric values to extended missing values in all 
+variables that have the same value label as one of the variables in 
+{it:varlist} attached.
+
+{phang}
+{opt nodel:ete} prevents {cmd:labmv} from deleting value labels that 
+are changed. If specified numeric missing values and extended missing 
+value codes will be associated with the same text.
+
+{phang}
+{opt f:mvc(mvc)} specifies the first extended missing value code to be 
+used. Default is {hi:.a}. Note that the maximum number of values 
+allowed in {opt mv} is potentially reduced if {it:mvc} > {hi:.a}.
+
+{phang}
+{opt en:code} changes extended missing value codes to numeric values, 
+preserving value labels and, thus, reversing the default behavior. The 
+first missing value code (default {hi:.a}) is changed to the first 
+value specified in {opt mv} and so on. In {opt mv}, {it:mvc} is changed 
+to the numeric value follwing {it:mvc}. See {help labmv##r:Remarks}.
+
+{phang}
+{opt c:urrent} changes value labels in the current 
+{help label language} only.
+
+{marker r}
+{title:Remarks}
+
+{phang}
+{cmd:labmv} changes one numeric value to one extended missing value 
+code. In  
+
+{phang2}{cmd:labmv ,mv(1/3)}{p_end}
+
+{pstd}
+values {hi:1}, {hi:2} and {hi:3} are changed to {hi:.a}, {hi:.b} and 
+{hi:.c} respectively. This is the same as
+
+{phang2}{cmd:labmv ,mv(1 .a 2 .b 3 .c)}{p_end}
+
+{pstd}
+Specifying {it:mvc} changes the numeric value preceding {it:mvc} 
+to {it:mvc}. In
+
+{phang2}{cmd:labmv ,mv(1/3 .f)}{p_end}
+
+{pstd} 
+only value {hi:3} is changed to {hi:.f}. Values {hi:1} and {hi:2} are 
+changed to {hi:.a} and {hi:.b} respectively.
+
+{pstd}
+To reverse the above, type
+
+{phang2}{cmd:labmv ,mv(1 2 .f 3) encode}{p_end}
+
+{pstd}
+Option {opt fmvc} may be specified if {it:mvc} is specified in 
+{opt mv}. The line 
+
+{phang2}{cmd:labmv ,mv(1/3 .f) fmvc(.y)}{p_end}
+
+{pstd}
+changes values {hi:1} and {hi:2} to {hi:.y} and {hi:.z} respectively. 
+Value {hi:3} is changed to {hi:.f}. 
+
+{pstd}
+More confusing specifications are allowed. In
+
+{phang2}{cmd:labmv ,mv(1/3 .f) fmvc(.e)}{p_end}
+
+{pstd}
+values {hi:1} and {hi:2} are changed to {hi:.e} and {hi:.g} 
+respectively. Since value {hi:3} is followed by {hi:.f} it is 
+changed to {hi:.f}.
+
+
+{title:Example}
+
+{phang2}{cmd:. sysuse nlsw88}{p_end}
+{phang2}{cmd:. tab1 race married}{p_end}
+{phang2}{cmd:. label list racelbl marlbl}{p_end}
+
+{pstd}
+Decode missing values{p_end}
+{phang2}{cmd:. labmv race married ,mv(1 2)}{p_end}
+{phang2}{cmd:. tab1 race married}{p_end}
+{phang2}{cmd:. tab1 race married ,missing}{p_end}
+{phang2}{cmd:. label list racelbl marlbl}{p_end}
+
+{pstd}
+Encode missing values{p_end}
+{phang2}{cmd:. labmv race married ,mv(1 2) encode}{p_end}
+{phang2}{cmd:. tab1 race married}{p_end}
+{phang2}{cmd:. label list racelbl marlbl}{p_end}
+
+
+{title:Saved results}
+
+{pstd}
+{cmd:labmv} saves the following in {cmd:r()}:
+
+{pstd}
+Macros{p_end}
+{synoptset 15 tabbed}{...}
+{synopt:{cmd:r(values)}}numeric values{p_end}
+{synopt:{cmd:r(mvc)}}extended missing value codes{p_end}
+{synopt:{cmd:r(varlist)}}changed variables (if any){p_end}
+{synopt:{cmd:r(lblnamelist)}}changed value labels (if any){p_end}
+{synopt:{cmd:r(k)}}number of numeric values{p_end}
+{synopt:{cmd:r(minmvc)}}minimum extended missing value code{p_end}
+{synopt:{cmd:r(maxmvc)}}maximum extended missing value code{p_end}
+{synopt:{cmd:r(languages)}}label languages 
+(multilingual datasets only){p_end}
+
+
+{title:Acknowledgments}
+
+{pstd}
+{cmd:labmv} is strongly inspired by {help nepsmiss} 
+(Jan Skopek, Daniel Bela).
+
+{pstd}
+Daniel Possenriede suggested user-defined missing value codes in 
+{opt mv}.
+
+
+{title:Author}
+
+{pstd}Daniel Klein, University of Kassel, klein.daniel.81@gmail.com
+
+
+{title:Also see}
+
+{psee}
+Online: {help mvdecode}, {help label}
+{p_end}
+
+{psee}
+if installed: {help labelmiss}, {help nepsmiss}, {help labutil2}
+{p_end}

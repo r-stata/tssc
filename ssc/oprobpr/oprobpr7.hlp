@@ -1,0 +1,231 @@
+{smcl}
+{.-}
+help for {cmd:oprobpr} {right:Nick Winter}
+{.-}
+
+{title:Displaying predicted probabilities from ordered probit & logit}
+
+{p 5 15 2}
+{cmdab:oprobpr}
+{it:yvar xvar} 
+[{it:weight}] [{cmd:if} {it:exp}] [{cmd:in} {it:range}] 
+[{cmd:,}
+{cmdab:a:djust(}{it:varlist}{cmd:)}
+{cmdab:x:act(}{it:varlist}{cmd:)}
+{cmdab:po:ly(}{it:#}{cmd:)}
+{cmdab:f:rom(}{it:#}{cmd:)} {cmdab:t:o(}{it:#}{cmd:)} {cmdab:inc(}{it:#}{cmd:)}
+{bind:{cmdab:pl:ot(}{it:pspec}[{cmd:,} ...]}{cmd:)}
+{cmdab:s:ymbol(}{it:s...s}{cmd:)}
+{bind:{cmdab:c:onnect(}{it:c}[{cmd:[}{it:p}{cmd:]}] ... {it:c}[{cmd:[}{it:p}{cmd:]}]{cmd:)}}
+{bind:{cmdab:lab:els(}{it:lab}[{cmd:,}{it: ...}]{cmd:)}}
+{cmdab:k:eys}
+{bind:{cmdab:te:xt(}{it:x y text} [{cmd:\}{it:...}]{cmd:)}}
+{cmdab:cmd(}{it:cmd_name}{cmd:)}
+{cmdab:nol:ist} {cmdab:nop:lot} {cmdab:nom:odel}
+{bind:{cmdab:save:(}{it:filename}[{cmd:, replace}]}{cmd:)}}
+{cmdab:mod:eloptions(}{it:options}{cmd:)}
+{it:graph_options}
+
+
+{title:Description}
+
+{p 0 5 2}
+{cmd:oprobpr} estimates an ordered dependent variable model on a continuous X
+   variable and an optional set of covariates, then lists and graphs the 
+   predicted probabilities from this model against the X variable, 
+   holding the covariates constant.  Optionally, quadratic or quadratic 
+   and cubic terms can be added to the model, as well as interaction terms 
+   between X and one or more other covariates. 
+
+{p 0 5 2}
+By default all response categories are listed and plotted; the {cmd:plot()} 
+   option allows the user to control plotting of only some categories, or
+   combinations of categories. {cmd:labels()} allows control of the labelling 
+   of the plotted lines.
+
+{p 0 5 2}
+{cmd:oprobpr} is originally based on {help logpred} published by Joanne Garrett
+   and of {help probpred} published by Mead Over in sg42.2: STB 42. Unlike 
+   those commands, {cmd:oprobpr}, does not include confidence intervals in the list 
+   or graph.
+
+
+{title:Options}
+
+{p 0 5 2}
+{cmd:adjust(}{it:varlist}{cmd:)} specifies the other covariates in the model.  For the 
+   calculation of probabilities, by default these
+   are set to their mean, based on the observations used in the analysis. They can
+   be set to other values, e.g. {cmd:a(}mpg=50 foreign=1 weight{cmd:)}.
+
+{p 0 5 2}
+{cmd:xact(}{it:varlist}{cmd:)} indicates that the variables in {it:varlist} (a subset of 
+   {cmd:adjust()}) should also enter the model in interaction with {it:xvar}. The 
+   interaction terms are created and entered in the model automatically.
+
+{p 0 5 2}
+{cmd:poly(}{it:#}{cmd:)} indicates that {it:xvar} enters the model as a polynomial.  Quadratic
+   and cubic models are allowed.  They are indicated by {cmd:poly(}2{cmd:)} and 
+   {cmd:poly(}3{cmd:)},
+   respectively. The polynomial terms are created and entered in the 
+   model automatically.
+
+{p 0 5 2}
+{cmd:from(}{it:#}{cmd:)} specifies the lowest value of {it:xvar} for which a prediction is to be
+   calculated.  The default is to use the minimum of {it:xvar} in the data.
+
+{p 0 5 2}
+{cmd:to(}{it:#}{cmd:)} specifies the highest value of {it:xvar} for which a prediction is to be
+   calculated.  The default is to use the maximum of {it:xvar} in the data.
+
+{p 0 5 2}
+{cmd:inc(}{it:#}{cmd:)} specifies the increment between adjacent values of {it:xvar}.  The default
+   is to set an increment such that eleven probabilities are calculated.
+
+{p 0 5 2}
+{cmd:plot(}{it:n,...,n}{cmd:)} controls which categories of the dependent variable
+   are plotted and listed. The default is to list and plot probabilities 
+   for all categories. For example, {cmd:p(}1,3,4{cmd:)} would result in categories 
+   1, 3 and 4 only being listed and plotted.
+
+{p 5 5 2}
+   {cmd:plot()} also allows categories to be combined. So, for example, 
+   {cmd:p(}1+2,3,4+5+6{cmd:)} would plot three lines: one that is the sum of probabilities
+   for categories one and two, one that is the probability of category three,
+   and one that is the sum of categories 4 through 6.
+
+{p 0 5 2}
+{cmd:symbol()} indicates what symbol should be used for the lines. The
+	syntax is identical to the graph command's {help grsym:symbol()} option.
+	By default, the lines have no symbols.
+	
+{p 0 5 2}{cmd:connect()} specifies the line style with which to draw the
+	lines. The default is to connect cubic splines with solid lines.
+	The syntax is identical to the graph command's {help grsym:connect()}
+	option.
+
+{p 0 5 2}{cmd:labels()} specifies text labels with which to label the lines.
+	By default, simple categories are labeled with the appropriate 
+   value label from the dependent variable, if available. Otherwise, they are
+   labelled {bind:"Cat 1"}, {bind:"Cat 2"} ... , through {bind:"Cat n"}. 
+   For example, 
+   {cmd:s(}Low,Medium,High{cmd:)} would label the lines "Low", "Medium",
+   and "High". To leave a line unlabeled, indicate a "." for its label.
+
+{p 0 5 2}{cmd:text()} specifies lines of text to be added to the graph. 
+	X and y coordinates should be specified in terms of the graph metric, followed
+	by the text to be inserted. Multiple text specifications may be separated
+	with a backslash, e.g. {cmd:text(24 .6 First string \ 30 .2 More text)}
+	would insert "First string" at 24,0.6 and "More text" at 30,0.2 on the graph.
+
+{p 0 5 2}{cmd:keys} specifies that Stata's default graph keys should be displayed,
+	rather than the default title line. Note that specific keys can be specified
+	manually with the {help graxes:key1} through {help graxes:key4} options, and
+	titles may be specified manually with the {help graxes:t1title} and
+	{help graxes:t2title} options.
+
+{p 0 5 2}
+{cmd:command} specifies the estimation command to be used. Valid options are
+   {help oprobit}, {help ologit}, {help svyoprobit}, and {help svyologit}. 
+   The default is oprobit.
+
+{p 0 5 2}
+{cmd:nomodel} suppresses the display of the estimated model.
+
+{p 0 5 2}
+{cmd:nolist} suppresses the list of predicted values.
+
+{p 0 5 2}
+{cmd:noplot} suppresses the graph of predicted values.
+
+{p 0 5 2}
+{cmd:save(}{it:filename}{cmd:)} saves the prediction data set. This is useful 
+	for conducting additional analysis of the predicted values. (Note that the 
+	{help graph} option {cmd:saving()} is different, and may be used to save 
+	the resulting {it:graph}.)
+
+{p 0 5 2}
+{cmd:modeloptions} specifies options to be included in the running of the model,
+   such as {help robust}.
+
+{p 0 5 2}
+{it:graph_options} can be any valid options for a twoway graph. Particularly
+	helpful are {cmd:xlabel}, {cmd:ylabel}, 
+	{cmd:saving(}{it:filename}{cmd:)}, {cmd:titles}, and the rest.
+
+
+{title:Examples}
+
+{p 5 10 2}
+{cmd:. oprobpr rep78 mpg, adj(weight gear_ratio foreign) noplot}
+
+{p 5 5 2}
+Calculates the predicted probabilities of 1978 repair ratings (rep78)
+for various values of mpg, adjusted for weight, gear ratio and 
+foreign; mpg ranges in 10 steps according to its minimum and maximum 
+in the data; displays model and predicted values but not the graph.
+
+
+{p 5 10 2}
+{cmd:. oprobpr rep78 mpg, adj(weight gear_ratio foreign=0)}
+
+{p 5 5 2}
+Same as above, except predictions are for foreign==0 instead of for 
+the sample average of foreign.  Graph and predictions are displayed.
+
+
+{p 5 10 2}
+{cmd:. oprobpr rep78 mpg, adj(weight gear_ratio foreign=0)}
+{cmd:xact(weight) poly(3) cmd(olog)}
+
+{p 5 5 2}
+Same as above, except that the interaction term weight*mpg is included
+in the model using the xact(weight) option, and terms for mpg-squared 
+and mpg-cubed are included using poly(3).  Model estimated is ordered
+logit rather than ordered probit.
+
+
+{p 5 10 2}
+   {cmd:. oprobpr rep78 mpg, adj(weight gear_ratio foreign=0) p(1,3+4,5)}
+{cmd:lab(Low,Med&High,Very High) c(s[.] s[-] s) ylab(0,.5,1)}
+
+{p 5 5 2}
+        Same as above but only lists and plots categories 1, the sum of
+        3 and 4, and 5 of rep78, and labels them "Low", "Med&High", and "Very High",
+        respectively.  The connect() options indicates that the first
+        two lines are drawn with 
+        short and long dashes, and the ylabel() option labels the y-axis 
+	appropriately for predicted probabilities.  Note that any other option 
+	which works on the {help graph} command will also work here.
+
+
+{p 5 10 2}
+{cmd:. oprobpr rep78 mpg, f(30) t(50) adj(weight gear_ratio) xlab ylab nolist}
+
+{p 5 5 2}
+        Calculates the predicted probability over the range 30 to 50 of
+	mpg, rather than the range of mpg in the data set. Displays the
+	model and the graph, but omits the list of predictions.
+
+
+{title:Author}
+
+     Nick Winter
+     Cornell University
+     nw53@cornell.edu
+
+
+{title:Also see}
+
+{p 0 10 2}
+{bind:    }STB:  {hi:STB-42 sg42.2, STB-26 sg42, STB-24 sg33}
+{p_end}
+{p 0 10 2}
+{bind: }Manual:  {hi:[R] oprobit, oprobitp, ologit, ologitp}
+{p_end}
+{p 0 10 2}
+On-line:  help for {help predict}, {help oprobit}, {help ologit}, 
+	  {help probpred} (if installed), {help regpred2} (if installed), 
+	  {help logpred} (if installed), {help adjmean} (if installed), 
+	  {help adjprop} (if installed)
+{p_end}

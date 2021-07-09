@@ -1,0 +1,30 @@
+d 'MCQSCORE': module to score the Monetary Choice Questionnaire using logistic regression
+d
+d MCQScore scores the Monetary Choice Questionnaire (questions in
+"d standard order), which uses a hyperbolic decay function to"
+d summarize the degree to which time discounts the value of a
+d delayed reward.   The scale parameter k is used as a measure of
+"d impulsivity.   Conventional scoring requires a lot of hand labor,"
+d identifying  indifference points where a subject's behavior
+d changes from  preferring an immediate to a delayed reward.
+"d Instead, we use  logistic regression to identify a contour where"
+"d the probability of  choosing either reward is 0.5, identifying in"
+d turn the corresponding  hyperbolic function.  Logistic regression
+"d is applied to raw binary  choices from the survey, modeling the"
+d probability of choosing the  delayed reward in response to time
+d and a transformation of the reward  ratio.  The estimate of k is
+d obtained as a ratio of the two betas.   Output will include log-k
+"d estimates for small, medium, and large  delayed reward sizes, a"
+"d pooled log-k estimate and the component betas,  and optionally, a"
+d jackknife estimate of standard error for the pooled  log-k
+d estimate and a bias-reduced estimate.
+d
+d Distribution-Date: 20040415
+d
+"d Author: E. Paul Wileyto, Tobacco Use Research Center, School of Medicine, U. of Pennsylvania"
+d Support: email epw@@mail.med.upenn.edu
+d
+f mcqscore.ado
+f mcqscore.hlp
+f mcq_lik.ado
+f mcq2long.ado

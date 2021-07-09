@@ -1,0 +1,85 @@
+.-
+help for ^tablepc^
+.-
+
+Percent calculation prior to ^table^
+----------------------------------
+
+    ^tablepc^ varlist [^if^ exp] [^in^ range] [weight], ^g^enerate^(^newvar^)^ 
+    [ ^by(^byvarlist^)^ ]
+
+
+Description
+-----------
+
+^tablepc^ is a utility for calculating percents prior to their display   
+by ^table^. ^table^ will not show percents through any built-in option, 
+but it will show them if supplied with an appropriate variable generated 
+beforehand. The varlist specified to ^tablepc^ should be that which is 
+to be specified immediately afterwards to ^table^. 
+
+
+Remarks
+-------
+
+This is just a work-around possibly useful so long as ^table^ does not 
+support direct display of percents. 
+
+The advantages of ^table^ over ^tabulate^ include specification of format 
+and being able to include a wider variety of summary measures. 
+
+
+Options
+-------
+
+^generate(^newvar^)^ specifies the name of the new variable to hold 
+    percents. It is a required option. 
+
+^by(^byvarlist^)^ will usually specify a single variable defining groups 
+    for separate calculation of percents. Commonly, this will be the 
+    variable which will go on the rows or the columns of the table. 
+
+
+Examples
+--------
+
+    Table percents: compare  
+
+    . ^tablepc foreign rep78, gen(pc)^
+    . ^table foreign rep78, c(sum pc) format(%2.1f)^  
+
+    with 
+
+    . ^tab foreign rep78, cell nofreq^ 
+    
+    Row percents: compare  
+
+    . ^tablepc foreign rep78, by(foreign) gen(pc1)^
+    . ^table foreign rep78, c(sum pc1) format(%2.1f)^  
+
+    with 
+
+    . ^tab foreign rep78, row nofreq^ 	
+    
+    Column percents: compare  
+
+    . ^tablepc foreign rep78, by(rep78) gen(pc2)^
+    . ^table foreign rep78, c(sum pc2) format(%2.1f)^  
+
+    with 
+
+    . ^tab foreign rep78, col nofreq^ 	
+
+
+Author
+------
+
+         Nicholas J. Cox, University of Durham, U.K.
+         n.j.cox@@durham.ac.uk
+
+
+Also see
+--------
+
+On-line: help for @table@, @tabulate@
+

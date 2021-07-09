@@ -1,0 +1,382 @@
+{smcl}
+{* version 1.2.2 23aug2012}{...}
+{cmd:help todummy}
+{hline}
+
+{title:Title}
+
+{p 5}
+{cmd:todummy} {hline 2} Create dummy variables
+
+
+{title:Syntax}
+
+{p 8}
+{cmd:todummy} {varlist} {ifin} 
+{cmd:,} { {opt v:alues(vlist)}|{hi:{it:keyword}} } [{it:options}]
+
+
+{p 5}
+where {it:vlist} is a list of values specified in one or more 
+{it:{help numlist}s} of the form
+
+{p 8}
+[{cmd:=}]{it:{help numlist}} 
+[{cmd:\} [{cmd:=}]{it:{help numlist}} {it:...}]
+
+
+{synoptset 21 tabbed}{...}
+{synopthdr}
+{synoptline}
+{p2coldent:* {opt v:alues(vlist)}}specify values to be coded 1
+{p_end}
+{synopt:{opt p:ercentile}}interpret {it:vlist} as list of percentiles
+{p_end}
+{synopt:{opt c:ut}}interpret {it:vlist} as cutpoints
+{p_end}
+
+{syntab:*{it:Keywords}}
+{synopt:{opt l:evels}}create one dummy for each level of the original 
+variable
+{p_end}
+{synopt:{opt med:ian}}assign value 1 if the original variable is 
+greater or equal to the 50th percentile
+{p_end}
+{synopt:{opt q}}create one dummy for each quartile of the original 
+variable
+{p_end}
+
+{syntab:{it:Names}}
+{synopt:{opt g:enerate(namelist)}}create dummies 
+{it:name{hi:1}}, {it:name{hi:2}}, ...
+{p_end}
+{synopt:{opt pre:fix(pre)}}use {it:pre} as prefix for created dummies
+{p_end}
+{synopt:{opt suff:ix(suff)}}use {it:suff} as suffix for created dummies
+{p_end}
+{synopt:{opt stub(stub)}}use {it:stub{hi:1}}, {it:stub{hi:2}}, ... as 
+dummies' names
+{p_end}
+{synopt:{opt replace}}replace existing variables with dummies
+{p_end}
+{synopt:{opt nonam:es}}do not use value labels as variable names 
+({opt levels})
+{p_end}
+
+{syntab:{it:Labels}}
+{synopt:[{ul:{cmd:r}}]{opt l:abel(lbllist)}}use {it:label{hi:1}}, 
+{it:label{hi:2}}, ... as variable labels
+{p_end}
+{synopt:{opt novarl:abel}}do not assign variable labels
+{p_end}
+
+{syntab:{it:Missing values}}
+{synopt:{opt m:issing}}create dummy for missings ({opt levels}) or copy 
+missing values
+{p_end}
+
+{syntab:{it:Advanced}}
+{synopt:{opt nosk:ip}[{cmd:(}drop{cmd:)}]}do not skip creation of 
+existing dummies
+{p_end}
+{synopt:{opt ro(rel. operator)}}specify 
+{help operator:relational operator}
+{p_end}
+{synopt:{opt noexc:lude}}use all observations to create dummies, even 
+if excluded by {hi:if} and/or {hi:in} qualifiers  
+{p_end}
+{synoptline}
+{p 5}* one of {opt values()} or {hi:{it:keyword}} must be specified
+
+
+{title:Description}
+
+{pstd}
+{cmd:todummy} creates indicator variables (also called dummies) from 
+variables in {it:varlist}. There may either one or multiple dummies 
+be created from each variable. If one dummy per variable is created, 
+default names are {it:{hi:d_}varname}.
+
+{marker opt}
+{title:Options}
+
+{phang}
+{opt values(vlist)} assigns value 1 if the original variable equals the 
+values specified in {it:vlist}, 0 otherwise. There will be as many 
+dummies per variable as there are {it:numlists} in {it:vlist}. The 
+first created dummy will be coded 1 if the original variable equals the 
+values in the first {it:numlist}, the second dummy will be 1 if the 
+original variable equals the values in the second {it:numlist} and so 
+on. If more than one dummy is created the default names are 
+{it:varname{hi:J}}, where {it:{hi:}J} indicates the number of the dummy 
+created from the original variable. The dummies will not have variable 
+labels. Non-integer values and missing values (i.e. {hi:.}, {hi:.a}, 
+{hi:.b}, ..., {hi:.z}) are allowed in {it:numlists}. If {it:numlist} 
+has missing values, the created dummy will {hi:not} have missing 
+values.
+
+{phang}
+{opt percentile} interprets {it:vlist} as a list of percentiles (which 
+must be between 0 and 100). If a {it:numlist} contains only one 
+percentile, the created dummy variable will be coded 1 if the original 
+variable is greater or equal to this percentile. Specifying {it:k} 
+percentiles, where {it:k} > 1, will result in {it:k} + 1 dummies 
+created. The first dummy will be coded 1 if the original variable is 
+lower than or equal to the first specified percentile, the second dummy 
+will be coded 1 if the original variable takes on values between the 
+first and the second percentile and so on. An equal sign ({bf:=}) in 
+front of a {it:numlist} causes the first and last dummy not to be 
+created. Thus, specifying {it:k} percentiles will result in {it:k} - 1 
+dummies. If more than one dummy per variable is created, default names 
+are {it:varname{hi:J}}, where {it:J} indicates the number of the dummy 
+created from the original variable. The dummies' variable labels are 
+{it:varname} ({it:P}), where {it:P} indicates the values of the 
+percentiles the dummy represents.
+
+{phang}
+{opt cut}  interprets {it:vlist} as cutpoints. If a {it:numlist} 
+contains only one value, the created dummy variable will be coded 1 if 
+the original variable is greater or equal to this value. Specifying 
+{it:k} values, where {it:k} > 1, will result in {it:k} + 1 dummies 
+created. The first dummy will be coded 1 if the original variable is 
+lower than or equal to the first specified value, the second dummy will 
+be coded 1 if the original variable falls into the range between the 
+first and the second value and so on. An equal sign ({bf:=}) in front 
+of a {it:numlist} causes the first and last dummy not to be created. 
+Thus, specifying {it:k} values will result in {it:k} - 1 dummies. If 
+more than one dummy per variable is created, default names are 
+{it:varname{hi:J}}, where {it:J} indicates the number of the dummy 
+created from the original variable. The dummies' variable labels are  
+{it:varname} ({it:R}), where {it:R} indicates the range of values the 
+dummy represents. Values may contain missings (i.e. {hi:.}, {hi:.a}, 
+{hi:.b}, ..., {hi:.z}) and non-integers. If {it:numlist} has missing 
+values, the created dummies will {hi:not} have missing values.
+
+{phang}
+{opt levels} creates one dummy for each level of the original variable. 
+This is similar to what {help tabulate} does (note however, that only 
+numerical variables are allowed with {cmd:todummy}). Extended missing 
+values ({hi:.a}, {hi:.b}, ..., {hi:.z}) are copied from the original 
+variable. Value labels from the original variable are used as variable 
+names for the created dummies. If there are no value labels, default 
+names are {it:varname{hi:J}}, where {it:{hi:}J} indicates the number of 
+the dummy created from the original variable. The dummies' variable 
+labels are {it:varname} ({it:L}), where {it:L} is the level.
+
+{phang}
+{opt median} assigns value 1 if the original variable is greater or 
+equal to its median. The created dummies will not have variable labels.
+
+{phang}
+{opt q} creates one dummy for each quartile of the original variable. 
+Thus, four dummies will be created from each variable. The first dummy 
+will be coded 1 if the original variable is lower than or equal to 
+its 25th percentile, the second dummy will be 1 if the original 
+variable takes on values between the 25th and 50th percentile, and so 
+on. The dummies' variable labels are {it:varname} ({it:P}), where 
+{it:P} indicates the values of the percentile the dummy represents.
+
+{phang}
+{opt generate(namelist)} creates dummies {it:name}{hi:{it:1}}, 
+{it:name}{hi:{it:2}}, ... . The number of names specified must equal 
+the number of dummies to be created.
+
+{phang}
+{opt prefix(pre)} uses {it:pre} as prefix for created dummies. If 
+{opt generate} and {opt suffix} are not specified, default prefix is 
+{it:d_}, if one dummy per variable is to be created. Option 
+{opt prefix} may be combined with {opt generate}, {opt suffix} and 
+{opt stub}.
+
+{phang}
+{opt suffix(suff)} uses {it:suff} as suffix for created dummies. The 
+option may be combined with {opt generate}, {opt prefix} and 
+{opt stub}.
+
+{phang}
+{opt stub(stub)} uses {it:stub}{hi:{it:J}} as dummies' names. Here 
+{it:J} is the number of the created dummy per variable. The number of 
+stubs specified must equal the number of variables in {it:varlist}. 
+The option may be combined with {opt prefix} and {opt suffix}.
+
+{phang}
+{opt replace} replaces existing variables in {it:varlist} with 
+dummies. May not be specified with {opt generate}, {opt prefix}, 
+{opt suffix} or {opt stub}. If more than one dummy per variable is 
+created, {opt replace} is not allowed.
+
+{phang}
+{opt nonames} does not use value labels as dummies' names. If 
+specified, dummies' names are {it:varname{hi:{it:J}}}, where {it:J} 
+indicates the number of the dummy created from the original variable. 
+Value labels will be used as variable labels for the created dummies. 
+Only allowed with {opt levels}.
+
+{phang}
+[{cmd:r}]{opt label(lbllist)} specifies variable labels for the created 
+dummies. If more dummies are created than names are specified, the 
+dummies will not be labeled. Specifying {opt rlabel} allows re-using 
+the labels for each original variable, meaning that dummies created 
+from {it:varname1} will have the same labels as dummies created from 
+{it:varname2}. Specify {it:{bf:"}lbl{bf:"}} if {it:lbl} contains 
+embedded spaces. 
+
+{phang}
+{opt novarlabel} does not use variable labels for the dummies. May 
+not be specified with [{cmd:r}]{opt label}.
+
+{phang}
+{opt missing} creates a dummy for missing values in the original 
+variable if specified with {opt levels}. If specified with 
+{opt values}, {opt median}, or {opt q} it causes missing values 
+({hi:.}, {hi:.a}, {hi:.b}, ..., {hi:.z}) to be copied from the original 
+variable. These values will by default be coded as system missings (.) 
+if {it:numlist} has no missing values. If {it:numlist} has missing 
+values, there will {hi:not} be missing values in the created dummies, 
+unless {opt missing} is specified.
+
+{phang}
+{opt noskip}[{cmd:(}drop{cmd:)}] specifies how to handle existing 
+dummies. In some cases {cmd:todummy} checks the existence of 
+dummy names 'on the fly', meaning not until the dummies are created. 
+If a dummy's name already exists in the dataset, default is to skip 
+the creation of this dummy. This is not considered an error. Therefore 
+a message is displayed but the program will not terminate. Specifying 
+{opt noskip} will create a dummy in these cases, choosing a valid 
+variable name. If {opt noskip(drop)} is specified, the existing 
+variable will be {help drop}ped before creating the dummy. Note that 
+this option differs from {opt replace}, which allows variables 
+specified in {it:varlist} to be replaced with dummies. 
+
+{phang}
+{opt ro(rel. operator)} specifies the relational operator used with 
+{opt percentile} or {opt cut}. Default is {hi:>=}, meaning value 1 is 
+assigned if the original variable is greater or equal to the specified 
+value. Specifying {opt ro} has no effect if more than one dummy per 
+variable is created.
+
+{phang}
+{opt noexclude} specifies that observations excluded by the {hi:if} 
+and/or {hi:in} qualifiers are to be used to calculate the percentile 
+or get the levels of the original variable. Only allowed with 
+{opt percentile} or {opt levels}.
+
+
+{title:Examples}
+
+{phang2}
+{cmd: . sysuse nlsw88 ,clear}
+
+{pstd}
+Create a dummy variable indicating observations with wages above the 
+median wage.
+
+{phang2}
+{cmd:. todummy wage ,values(50) percentile}
+{p_end}
+
+{pstd}
+Do the same using a {it:keyword} instead of {opt values} and 
+{opt percentile}
+
+{phang2}
+{cmd:. todummy wage ,median}
+{p_end}
+
+{pstd}
+Create three dummy variables, the first indicating persons older than 
+45, the second indicating persons older than 40 and a third indicating 
+persons between ages 38 and 40.
+
+{phang2}
+{cmd:. todummy age ,values(45 \ 40 \ = 38 40) cut}
+{p_end}
+
+{pstd}
+Create a dummy indicating persons working less than 40 hours.
+
+{phang2}
+{cmd:. todummy hours ,values(40) cut ro(<) generate(workhrs)}
+{p_end}
+
+{pstd}
+Create 3 x 4 dummies, representing the four quartiles for the 
+variables age, wage and hours.
+
+{phang2}
+{cmd:. todummy age wage hours ,q rlabel("1st Q" "2nd Q" "3rd Q" "4th Q")}
+{p_end}
+
+{pstd}
+Create two dummies, one indicating managers, the second indicating 
+sales.
+
+{phang2}
+{cmd:. todummy occupation ,values(2 \ 3) generate(managers sales)}
+{p_end}
+
+{pstd}
+Create a dummy for each level of race. Dummies names are white, black 
+and other.
+
+{phang2}
+{cmd:. todummy race ,levels}
+{p_end}
+
+{pstd}
+Create two dummies, one indicating whites, the other indicating blacks 
+or others.
+
+{phang2}
+{cmd:. todummy race ,values(1 \ 2 3) generate(white other)}
+{p_end}
+
+
+{title:Remarks}
+
+{pstd}
+Major changes have been introduced in version 1.2.0 21jul2011 of the 
+program. The most important one regards the handling of missing 
+values. In the current version missing values in the original variable 
+will, in some cases, be coded 0 in the created dummies. This was not 
+the case in versions prior to 1.2.0. Make sure to specify option 
+{opt missing} to prevent this behavior if you do not find it 
+convenient. Also option {opt noexclude} has changed. The default now 
+is to only use observations not excluded by the {hi:if} and/or {hi:in} 
+qualifiers, calculating percentiles and getting the levels of 
+variables. It was the other way round in earlier versions.
+
+{pstd}
+Old syntax is still supported if compatible with new functionalities. 
+No longer supported are options {opt binary} (introduced in version 
+1.1.1) and {opt cut(numlist)} if {it:numlist} contains more than one 
+number. Also, in the current version, at least one option must be 
+specified.
+
+{pstd}
+An older version (1.1.2 21may2011) of {cmd:todummy} is available from 
+the author.
+
+
+{title:Acknowledgments}
+
+{pstd}
+The programs {help dummies} by Nicholas J. Cox and {help dummieslab} by 
+Philippe Van Kerm and Nick Cox were inspiring. The latter is especially 
+useful to create dummies for each level of the original variable in a 
+more sophisticated way.
+
+
+{title:Author}
+
+{pstd}Daniel Klein, University of Kassel, klein.daniel.81@gmail.com
+
+
+{title:Also see}
+
+{psee}
+Online: {help tabulate}{p_end}
+
+{psee}
+if installed: {help dummies2}, {help dummieslab}, {help dummies}
+{p_end}

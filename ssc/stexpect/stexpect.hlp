@@ -1,0 +1,254 @@
+{smcl}
+{* 24feb2005}{...}
+{hline}
+help for {hi:stexpect}{right:EC}
+{hline}
+
+{title:Compute and tabulate Expected Survival}
+
+{p 8 15 2}{cmd:stexpect} [ {it:newvarname} ] [{cmd:if} {it:exp}] [{cmd:in} {it:range}]
+	{cmd:,} {cmd:ratevar(}{it:varname}{cmd:)} [{cmdab:out:put(}{it:filename}
+	[{cmd:,replace}]{cmd:)} [ {cmdab:met:hod(}{it:#}{cmd:)} {cmd:at(}{it:numlist}{cmd:)}
+	{cmd:by(}{it:varlist}{cmd:)} {cmdab:np:oints(}{it:#}{cmd:)} {cmdab:noli:st}]
+
+
+{p 4 4 2}
+{cmd:stexpect} is for use with survival-time data; see help {help st}. You must {cmd:stset} 
+your data using the {cmd:id()} option before using this command; see help {help stset}. 
+
+{p 4 4 2}
+{cmd:stexpect} tabulates the expected survival probability. You must specify
+in {cmd:ratevar(}{it:varname}{cmd:)} the reference rate variable.
+
+{title:Description}
+
+{p 4 4 2}
+Expected survival is used to produce an overall survival curve. This is then added to the 
+Kaplan-Meier plot of the study group for visual comparison between these subjects and the 
+population at large. Before estimating the expected survival we have to specify a different 
+follow-up time for the study group according to three common methods of computing it.{p_end}
+
+{p 4 4 2}
+In the Ederer or "exact" method the subjects in the study cohort are not censored or dead 
+before the end of a stated follow-up time. Let us assume that the subjects of the cohort are
+enrolled from 1985 to 1990 and that we want to estimate the expected survival until ten years
+from the start of the follow-up. If {it:entrydate} is a decimal date, we set {it:timevar} as
+follows:
+
+{p 4}{cmd:. gen survtime = entrydate + 10}{p_end}
+
+     
+{p 4 4 2}
+In the Hakulinen method, follow up time is the actual censoring time for those patients who 
+are censored and the maximum potential follow up for those who die, i.e. the most optimistic 
+last contact date. In the previous example let the follow-up be terminated June 30, 2000, 
+{it:status} is 1 if the subject dies and 0 otherwise, {it:exitdate} is the actual follow-up time. Then 
+
+{p 4 8 2}{cmd:. gen survtime = cond(status,2000.5,exitdate)}{p_end}
+
+
+{p 4 4 2}
+Conditional method (or Ederer II) is simpler in respect of this, because follow-up time is what 
+it actually is, either the subject dies or not, i.e.:
+
+{p 4 8 2}{cmd:. gen survtime = exitdate}{p_end}
+
+
+{p 4 4 2}
+Combining the observed survival function produced by {cmd:sts generate} and the expected
+survival estimated with {cmd:stexpect}, it is easy to achieve the relative survival function, 
+the preferred survival measure in cancer registry activity. In a context of population-based cancer 
+registry data, due to the large number of cases frequently involved, {cmd:stexpect} memory requirements 
+can exceed the available RAM. In this case the expected survival function can still be estimated using 
+the {cmd:npoints(}{it:#}{cmd:)} option.
+
+
+
+{title:Options}
+
+{p 4 8 2}
+{cmd:ratevar(}{it:varname}{cmd:)} is not an option. It specifies a reference rate variable.{p_end}
+
+{p 4 8 2}
+{cmd:output(}{it:filename} [{cmd:,replace}]{cmd:)} saves a dataset in {it:filename}.  
+The file contains the expected survival probability, the time to which it
+refers and the number at risk. If not specified in {it:newvarname}, expected survival 
+will be stored in a variable named Survexp.{p_end}
+
+{p 4 8 2}
+{cmd:method(}{it:#}{cmd:)} defines the method to be used according to the following numerical
+codes: 
+{break}	1 = Ederer 
+{break}	2 = Conditional (Ederer II) 
+{break} 3 = Hakulinen
+{break}Hakulinen is the default.{p_end}
+
+{p 4 8 2}
+{cmd:at(}{it:numlist}{cmd:)} specifies time intervals at which the expected survival is to be
+computed. It is not an option if {cmd:method(}{it:1}{cmd:)} (Ederer) is chosen. If, using the 
+other methods, {cmd:at(}{it:numlist}{cmd:)} is omitted an estimate is returned for each
+unique survival time.{p_end}
+
+{p 4 8 2}
+{cmd:by(}{it:varlist}{cmd:)} specifies up to 5 by variables and produces separate estimates 
+for each group identified by equal values of the {cmd:by()} variable(s) taking on integer or string values. {p_end}
+
+{p 4 8 2}
+{cmd:npoints(}{it:#}{cmd:)} specifies the number of the points at which to calculate 
+intermediate results, evenly spaced  over the range of the survival times. The usual 
+calculation is done  at each unique follow-up time. Therefore {cmd:stexpect} may require 
+great amounts of memory. For large datasets specifying {cmd:npoints(}{it:#}{cmd:)} 
+can reduce the amount of memory and computation required. {p_end}
+          
+{p 4 8 2}
+{cmd:nolist} suppresses the output.  This is used only when saving results to
+a file specified by {cmd:output()}.{p_end}
+
+{title:Example}
+
+{p 4 4 2}
+The following example uses the {hi:mgus} data, downloadable from prof. T. Therneau's web page 
+at {browse "http://www.mayo.edu/hsr/people/therneau/book/book.html"}.
+File {hi:survexp.us} freely available within R package has been used as source of the US
+reference rates. They have been transformed in annual rates and saved as a Stata data file 
+named {hi:usrate}. Both files are included in the package.{p_end}
+
+{p 4 4 2}
+The example illustrates how to plot the observed and the expected survival estimated
+using both Ederer's method and Hakulinen's method. When Conditional method is applied, Conditional 
+and Hakulinen's expected survival are plotted together with the observed survival.{p_end}
+
+{ul:Observed Survival}
+        {cmd:.use mgusexample,clear}
+        {cmd:.stset time, failure(status) scale(365.25)}
+        {cmd:.sts gen kaplan = s,by(sex)}
+        {cmd:.gen kapmale=kaplan if sex==1}
+        {cmd:.gen kapfemale=kaplan if sex==2}
+        {cmd:.label var kapmal "S(males)"}
+        {cmd:.label var kapfem "S(females)"}
+        {cmd:.preserve}
+
+
+{ul:Ederer Method}
+        In this example the stated follow-up time is 30 years.  
+        {cmd:.gen survederer=30 *365.25}
+        {cmd:.stset survederer, f(status) id(id) scale(365.25) noshow}
+        
+        Usually, to use reference population rates, data have to be splitted 
+        by age band and calendar year and then merged with a suitable file where
+        reference rates are stored.
+        {cmd:.stsplit fu, at(0(1)30)}
+        {cmd:.gen year = yeardiagnosis + fu}
+        {cmd:.gen age = agediagnosis + fu}
+        {cmd:.sort year age sex}
+        {cmd:.merge year age sex using usrate, uniqus nokeep}
+        
+        Now expected survival is saved in a file named mgusederer
+        {cmd:.stexpect ederer, ratevar(rate) at(0(1)30) out(mgusederer,replace) method(1) by(sex)}
+
+	Note that t_exp is the time at which expected survival has been estimated
+        {cmd:.use mgusederer,clear}
+        {cmd:.gen edermale = ederer if sex==1}
+        {cmd:.gen ederfemale = ederer if sex==2}
+        {cmd:.save mgusederer,replace}
+        {cmd:.restore,preserve}
+
+	The two files are joined
+        {cmd:.append using mgusederer}
+
+        {cmd:.twoway (line kapmale kapfemale _t, sort c(J J) clc(blue*1.3 red*1.3)) ///}
+	    {cmd:(lowess edermale t_exp, bw(.3) clc(blue*1.3)) ///}
+            {cmd:(lowess ederfemale t_exp, bw(.3) clc(red*1.3)), ///}	
+            {cmd:xti("Years of Follow Up") yti("Survival") xla(0(5)30) ///}
+            {cmd:legend(label(3 "Expexted males") label(4 "Expected females") pos(7) ring(0) col(1)) ///}
+            {cmd:t1t("MGUS example") t2t("Ederer Method")}
+
+{hline}
+
+{ul:Hakulinen Method}
+	In this study the follow-up was closed at 1st august 1990.
+	Then, the potential follow-up if death occurs is determined as the
+	difference between this date and the date of diagnosis.
+
+        {cmd:.use mgusexample,clear}
+        {cmd:.gen survhakulinen = cond(status,mdy(8,1,1990) - datediagnosis, time)}
+        {cmd:.stset survhakulinen, f(status) id(id) scale(365.25) noshow}
+        {cmd:.stsplit fu, at(0(1)30)}
+        {cmd:.gen year = yeardiagnosis + fu}
+        {cmd:.gen age = agediagnosis + fu}
+        {cmd:.sort year age sex}
+        {cmd:.merge year age sex using usrate, uniqus nokeep}
+        {cmd:.stexpect hakulinen, ratevar(rate) at(0(1)30) out(mgushakulinen,replace) by(sex)}
+        {cmd:.use mgushakulinen,clear}
+        {cmd:.gen hakulmale = hakulinen if sex==1}
+        {cmd:.gen hakulfemale = hakulinen if sex==2}
+        {cmd:.save mgushakulinen,replace}
+        {cmd:.restore, preserve}
+        {cmd:.append using mgushakulinen}
+        {cmd:.twoway (line kapmal kapfem _t, sort c(J J) clc(blue*1.3 red*1.3)) ///}
+        	{cmd:(lowess hakulmale t_exp, bw(.3) clc(blue*1.3)) ///}
+        	{cmd:(lowess hakulfemale t_exp, bw(.3) clc(red*1.3)), ///}
+        	{cmd:xti("Years of Follow Up") yti("Survival") xla(0(5)30) ///}
+        	{cmd:legend(label(3 "Expexted males") label(4 "Expected females") pos(7) ring(0) col(1)) ///}
+        	{cmd:t1t("MGUS example") t2t("Hakulinen Method")}
+
+{hline}
+
+{ul:Conditional Method}
+        {cmd:.use mgusexample,clear}
+
+Actual Follow up
+        {cmd:.stset time, f(status) id(id) scale(365.25) noshow}
+        {cmd:.stsplit fu, at(0(1)30)}
+        {cmd:.gen year = yeardiagnosis + fu}
+        {cmd:.gen age = agediagnosis + fu}
+        {cmd:.sort year age sex}
+        {cmd:.merge year age sex using usrate, uniqus nokeep}
+        {cmd:.stexpect conditional, ratevar(rate) at(0(1)30) out(mgusconditional,replace) by(sex) method(2)}
+        {cmd:.use mgusconditional,clear}
+        {cmd:.gen condmale = conditional if sex==1}
+        {cmd:.gen condfemale = conditional if sex==2}
+        {cmd:.save mgusconditional,replace}
+        {cmd:.restore}
+        {cmd:.append using mgushakulinen}
+        {cmd:.append using mgusconditional}
+        {cmd:.twoway (line kapmale kapfemale _t,sort c(J J) clc(blue*1.3 red*1.3)) ///}
+        	{cmd:(lowess hakulmale t_exp, bw(.3) clc(blue*1.3)) ///}
+        	{cmd:(lowess hakulfemale t_exp, bw(.3) clc(red*1.3)) ///}
+        	{cmd:(lowess condmale t_exp, bw(.3) clc(black) clp(shortdash)) ///}
+        	{cmd:(lowess condfemale t_exp, bw(.3) clc(black) clp(shortdash)), ///}
+        	{cmd:xti("Years of Follow Up") yti("Survival") xla(0(5)30) ///}
+        	{cmd:legend(label(3 "Hakulinen males") label(4 "Hakulinen females") ///}
+                {cmd:label(5 "Conditional males") label(6 "Conditional females") pos(2) ring(0) col(1)) ///}
+        	{cmd:t1t("MGUS example") t2t("Conditional vs Hakulinen Method")}
+
+
+{p 4 4 2}        	
+Setting mgusexample.dta and usrate.dta in one of your {cmd:`"`c(adopath)'"'} directory you
+can run this example.
+
+	  {it:({stata "mgus_example mgusexample: Ex_MGUS":click to run})}
+
+
+
+{title:References}
+
+{p 4 4 2} Therneau TM., Grambsch PM., Modeling Survival Data Extending the Cox Model,
+p. 261 - 287. Springer, 2000.
+
+
+
+{title:Author}
+
+{p 4 4 2}
+Enzo Coviello, Department of Prevention ASL BA/1, Minervino Murge, IT.
+Email: {browse "mailto:enzo.coviello@tin.it":enzo.coviello@tin.it}
+
+
+{title:Also see}
+
+{p 4}
+Manual: {hi:[ST] sts generate}, {hi:[ST] strate}
+
+{p 4}
+Online: help for {help sts generate}, {help strs}, {help strate}, {help stsplit} 

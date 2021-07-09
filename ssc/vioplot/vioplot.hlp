@@ -1,0 +1,117 @@
+{smcl}
+{cmd:help vioplot} {right:Nicholas Winter and Austin Nichols}
+{hline}
+
+{title:Title}
+
+{p2colset 5 16 22 2}{...}
+{p2col :{hi:vioplot} {hline 2}}Violin Plots{p_end}
+{p2colreset}{...}
+
+
+{title:Syntax}
+
+{p 8 16 2}
+{opt vioplot} {varlist} {ifin} {weight}
+   [{cmd:,} {it:options}]
+
+{synoptset 32 tabbed}{...}
+{synopthdr}
+{synoptline}
+{syntab:Group options}
+{synopt :{opt o:ver}{bf:(}{it:varname}[, {it:over_options}]{bf:)}}categories; option may be repeated twice{p_end}
+{synopt :{space 3}{opt m:issing}}keep missing values as a category for this overvar{p_end}
+{synopt :{space 3}{opt t:otal}}add total group (can only be specified in one over() option){p_end}
+{synopt :{space 3}{opt nolab:el}}do not use value labels to label category axis{p_end}
+
+{synopt :{opt nof:ill}}omit empty categories{p_end}    
+
+
+{syntab:Orientation}
+{synopt :{opt vert:ical}}orient densities vertically (the default){p_end}
+{synopt :{opt hor:izontal}}orient densities horizontally{p_end}
+
+{syntab:Number of cases}
+{synopt :{opt ob:s}}include number of observations per category{p_end}
+{synopt :{opt ob:s}{bf:(alt)}}move display of obs to the opposite axis; implies option obs{p_end}
+
+{syntab:{help kdensity} options}
+{synopt :{opt k:ernel(kernel)}}specify kernel function; default is kernel(epanechnikov){p_end}
+{synopt :{opt bw:idth(#)}}half-width of kernel{p_end}
+
+{syntab:Scaling & labelling}
+{synopt :{opt barw:idth(#)}}width of bars as percentage of default{p_end}
+{synopt :{opt ds:cale(#)}}width of densities as percentage of default{p_end}
+
+{synopt :{opt yg:ap(#)}}gap between y variables as percentage of default{p_end}
+{synopt :{opt og:ap(#)}}gap between 2d level over categories as percentage of default{p_end}
+{synopt :{opt noyl:abel}}use {it:yvar} names rather than labels for legending{p_end}
+
+{syntab:Graph appearance}
+{synopt :{opt den:sity}{bf:(}{it:{help area_options}}{bf:)}}options affecting the plotting of the densities{p_end}
+{synopt :{opt bar:}{bf:(}{it:{help barlook_options}}{bf:)}}options affecting the plotting of the bars{p_end}
+{synopt :{opt line:}{bf:(}{it:{help connect_options:line_options}}{bf:)}}options affecting the plotting of the spikes{p_end}
+{synopt :{opt med:ian}{bf:(}{it:{help scatter##marker_options:marker_options}}{bf:)}}options affecting the plotting of the medians{p_end}
+{synopt :{opt obsopt:s}{bf:(}{it:{help scatter##marker_label_options:marker_label_options}}{bf:)}}options affecting the plotting of observation counts{p_end}
+
+{synopt :{it:{help twoway_options}}}Options affecting the graph as a whole{p_end}
+
+
+{title:Description}
+
+{pstd}
+{cmd:vioplot} displays a violin plot for one or more variables, optionally by categories formed
+by one or two other variables.  Violin plots are a modification of {help graph box:box} plots that 
+add plots of the estimated {help kdensity:kernel density} to the summary statistics displayed by 
+box plots. They were first suggested by Hintze and Nelson (1998).
+
+{pstd}
+Violin plots include a marker for the median of the data, a box indicating the interquartile range, and spikes 
+extending to the upper- and lower-adjacent values, as in standard box plots.  Overlaid with this modified
+box plot is a density, estimated by {help kdensity}.
+
+{pstd}
+{cmd:vioplot} allows
+aweights, fweights, and pweights; see {help weight}.
+
+
+{title:Reference}
+
+{phang}
+Hintze, Jerry L., and Ray D. Nelson. 1998. 
+"Violin Plots: A Box Plot-Density Trace Synergism." 
+{it:The American Statistician} 52(2):181-84.
+
+
+{title:Examples}
+
+{phang2}{cmd:sysuse auto, clear}
+
+{phang2}{cmd:vioplot mpg, over(rep78)}
+
+{phang2}{cmd:vioplot mpg, over(rep78) over(foreign)}
+
+{phang2}{cmd:vioplot mpg, over(rep78, missing) over(foreign)}
+
+{phang2}{cmd:vioplot mpg, over(rep78) over(foreign) nofill}
+
+{phang2}{cmd:vioplot mpg, over(rep78) horizontal name(myplot) title("Violin Plot of Mileage") subtitle("By repair record") ytitle(Repair Record) ylab(, angle(horiz)) scheme(s2mono)}
+
+{phang2}{cmd:vioplot gear head, over(foreign) scheme(s2color)}
+
+{phang2}{cmd:vioplot gear head, over(rep78) legend( ring(0) pos(2) cols(1)) xtitle("Categories of Repair Record") scheme(s2color)}
+
+{phang2}{cmd:vioplot gear head, over(rep78, m) over(foreign, total) scheme(s2color)}
+
+{title:Authors}
+
+{phang}Nick Winter{p_end}
+{phang}University of Virginia{p_end}
+{phang} {p_end}
+
+
+{phang}Austin Nichols{p_end}
+{phang}Urban Institute{p_end}
+{phang}Washington DC{p_end}
+{phang}austinnichols@gmail.com{p_end}
+

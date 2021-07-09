@@ -1,0 +1,74 @@
+// Revised 10/24/2010
+// Version 3.0
+
+VERSION 10.0
+POSITION . . 340 330
+
+DIALOG main, label("ICISS") 
+BEGIN
+   GROUPBOX gb_dx_prefix_infile  10 10  320  60,                        ///
+            label("Diagnosis Code Variable Name Prefix (Input File)")
+   EDIT     ed_dx_prefix_infile  20 35  50   20,                        ///
+            error("Diagnosis Code Variable Name Prefix (Input File)")
+   TEXT     tx_dx_prefix_infile  75 35  245  20,                        ///
+            label("Enter diagnosis code prefix")
+   GROUPBOX gb_dx_name_srr_table 10 80  320  60,                        ///
+            label("Diagnosis Code Variable Name (SRR\SRRi Table)")
+   EDIT     ed_dx_name_srr_table 20 105 50   20,                        ///
+            error("Diagnosis Code Variable Name (SRR\SRRi Table)")      ///
+            default("dx")
+   TEXT     tx_dx_name_srr_iciss 75 105 245  20,                        ///
+            label("Enter diagnosis code variable name")
+   GROUPBOX gb_srr_table_file    10 150 320  60,                        ///
+            label("Select SRR\SRRi Table File")
+   FILE     fn_srr_table         20 175 300  20,                        ///
+            label("Browse SRR\SRRi Table File")                         ///
+            error("SRR\SRRi Table File Name")                           ///
+            buttonwidth(150)                                            ///
+            filter("Stata Dataset (*.dta)|*.dta|All Files (*.*)|*.*") 
+   GROUPBOX gb_in_out_files      10 220 320  90,                        ///
+            label("Select Input and Output Files")
+   FILE     fn_in                20 245 300  20,                        ///
+            label("Browse Input File")                                  ///
+            error("Input File Name")                                   ///
+            buttonwidth(100)                                            ///
+            filter("Stata Dataset (*.dta)|*.dta|All Files (*.*)|*.*")
+   FILE     fn_out               20 275 300  20,                        ///
+            label("Browse Output File")                                 ///
+            error("Output File Name")                                   ///
+            buttonwidth(100)                                            ///
+            save                                                        ///
+            filter("Stata Dataset (*.dta)|*.dta|All Files (*.*)|*.*")
+END
+
+OK ok1, label("OK")
+CANCEL can1, label("Cancel")
+SUBMIT sub1, label("Submit")
+HELP hlp1, view("help iciss")
+RESET res1
+COPY copy1
+
+PROGRAM command
+BEGIN
+   require main.ed_dx_prefix_infile
+   require main.ed_dx_name_srr_table
+   require main.fn_srr_table
+   require main.fn_in
+   require main.fn_out
+   put "iciss "
+   put `"""'
+   put main.fn_in
+   put `"""'
+   put " "
+   put `"""'
+   put main.fn_out
+   put `"""'
+   put " "
+   put `"""'
+   put main.fn_srr_table
+   put `"""'
+   put " "
+   put main.ed_dx_prefix_infile
+   put " "
+   put main.ed_dx_name_srr_table
+END

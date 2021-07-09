@@ -1,0 +1,116 @@
+{smcl}
+{* 28feb2011}{...}
+{hline}
+help for {hi:grmarg}{right:- v001 28feb2011 jx }
+{hline}
+
+{title:Marginal effects and their differences from binary regressions}
+
+{p 8 15 2}{cmd:grmarg} [if] [in] [{cmd:,}
+{cmd:x(}{it:variables_and_values}{cmd:)}
+{cmd:rest(}{it:stat}{cmd:)}
+{cmdab:l:evel(}{it:#}{cmd:)}
+{cmdab:del:ta}
+{cmdab:boot:strap}
+{cmdab:r:eps(}{it:#}{cmd:)}
+{cmdab:si:ze(}{it:#}{cmd:)}
+{cmd:save}
+{cmd:diff}
+{cmdab:noba:se}
+{cmd:all match dots}
+{cmd:dydxmat(}{it:matrix_kxk}{cmd:)}]
+
+{p 4 4 2}
+where {it:variables_and_values} is an alternating list of variables
+and either numeric values or mean, median, min, max, upper, lower,
+previous and {it:stat} is either mean, median, min, max, upper, lower,
+previous, grmean(group mean), mrmedian, grmin, grmax.
+
+{title: Description}
+
+{p 4 4 2}
+{cmd:grmarg} is a command that returns marginal effects, differences in
+marginal effects and their confidence intervals using both {help bootstrap} and {help delta} methods
+
+{title: Options}
+
+{p 4 8 2}
+{cmd:x(}{it:variables_and_values}{cmd:)} sets the values of independent
+variables for calculating predicted values (marginal effects). The list must alternate variable
+names and either numeric values or types of {cmd:stat}.
+
+{p 4 8 2}
+{cmd:rest(}{it:stat}{cmd:)} sets the independent variables not specified
+in {cmd:x(}{it:variables_and_values}{cmd:)} to one of the types of {cmd:stat}.
+
+{p 4 8 2}
+{cmd:level()} sets the {help level} of the confidence interval for predicted
+values or probabilities for the commands for which these are provided. The default
+is 95.
+
+{p 4 8 2}
+{cmdab:del:ta} calculates confidence intervals by the delta method using analytical derivatives. 
+This method works with cloglog, logistic, logit and probit.
+
+{p 4 8 2}
+{cmdab:boot:strap} computes confidence intervals using the bootstrap method. This method takes 
+roughly 1,000 times longer to compute than other methods. This method works with cloglog, logistic,
+logit, and probit.
+
+
+{p 4 8 2}
+{cmd:reps(}{it:#}{cmd:)} specifies the number of bootstrap replications
+to be performed.  The default is 1000.
+
+{p 4 8 2}
+{cmd: size(}{it:#}{cmd:)} specifies the size of the samples to be drawn.
+The default is e(N), the same size as the estimation sample.
+
+{p 4 8 2}
+{cmd:save} saves current values of independent variables and predictions
+for computing changes using the diff option.
+
+{p 4 8 2}
+{cmd:diff} computes difference between current predictions and those that
+were saved.
+
+{p 4 8 2}
+{cmd:nobase} suppresses inclusion of the base values of x in the output.
+
+{p 4 8 2}
+{cmd:all} specifies that any calculation of means, medians, etc., should
+use the entire sample instead of the sample used to estimate the model.
+
+{p 4 8 2}
+{cmd:match} requests {cmd:grmarg} to resample from each category group
+of the dependent variable in proportion of the resample size to the original
+sample size.
+
+{p 4 8 2}
+{cmd:dots} requests a dot be placed on the screen at the beginning of each
+replication, thus providing entertainment when a large number of reps() are
+requested. It also prints out the percent replications finished.
+
+{p 4 8 2}
+{cmd:dydxmat(}{it:matrix_kxk}{cmd:)} supplies a matrix by users of dy/dx or 
+dxb/dx, where there is polynomial or interaction terms.
+
+{title:Examples}
+
+{p 4 4 2}
+To compute the predicted marginal effects, differences in marginal effects, and their confidence intervals using the delta method
+for a logit model. All independent variables are held at their means except for black and education specifed in x().
+
+{p 4 8 2}{cmd:.logit vote black educ income}
+
+{p 4 8 2}{cmd:.grmarg, x(black=1 educ=16) save}
+
+{p 4 8 2}{cmd:.grmarg, x(black=0 educ=16) diff}
+
+{p 4 8 2}
+ :::
+
+{hline}
+
+{p 2 4 2}Authors: Jun Xu{p_end}
+

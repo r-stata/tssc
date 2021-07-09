@@ -1,0 +1,164 @@
+{smcl}
+{* *! version 4.0 10july2011}{...}
+{cmd:help spdir}
+{hline}
+
+{title:Title}
+
+{title:spdir - Creates {it}directed dyad{bf} contagion spatial effect variable}
+
+
+{title:Syntax}
+
+{p 8 17 2}
+{cmdab:spdir}
+lagvar {ifin}, {opt w:eightvar(varname)} {opt s:ource(varname)} {opt t:arget(varname)} {opt link(options)}
+
+ [{cmd:}{it:options}]
+
+{synoptset 20 tabbed}{...}
+{synopthdr}
+{synoptline}
+{synopt:{opt time(varname)}}contains the numeric time variable{p_end}
+{synopt:{opt excl:usive}}exclusive directed dyad contagion{p_end}
+{synopt:{opt nor:owst}}spatial effect variable not row-standardized{p_end}
+{synopt:{opt nom:erge}}no automatic merge of spatial effect variable into original dataset{p_end}
+{synopt:{opt se:name(name)}}name to be given to created spatial effect variable{p_end}
+{synopt:{opt label:name(name)}}name of label given to spatial effect variable{p_end}
+{synopt:{opt file:name(name)}}name of file to which spatial effect variable saved{p_end}
+{synoptline}
+{p2colreset}{...}
+
+
+{title:Description}
+
+{pstd}
+{cmd: spdir} generates a directed dyad contagion spatial effect variable for analysis of spatial dependence in directed dyad data.
+It can create spatial effect variables for spatial lag, spatial-x and spatial error models.
+See Neumayer and Plümper (2010) for an exposition of all possible forms of contagion in directed dyad data.
+See Plümper and Neumayer (2010) for a discussion of model specification in the analysis of spatial dependence.
+
+{title:Additional information}
+
+{pstd}
+See {browse "http://personal.lse.ac.uk/neumayer/spdir.htm"}.
+
+{title:Arguments}
+
+{phang}
+{opt lagvar} is the variable to be spatially lagged. It is the directed dyadic dependent variable in spatial lag models, a selected independent
+variable in spatial-x models and a saved regression residual in spatial error models.
+
+{phang}
+{opt w:eightvar(varname)} is the weighting or connectivity variable linking source unit {it}i{sf} with target unit {it}j{sf}. It must be numeric
+and must not contain negative values. It may or may not be directed.
+
+{phang}
+{opt s:ource(varname)} is the identifying variable of source unit {it}i{sf}. It can be a numeric or string variable.
+
+{phang}
+{opt t:arget(varname)} is the identifying variable of target unit {it}j{sf}. It can be a numeric or string variable.
+
+{title:Options}
+
+{phang}
+{opt link(options)} is required. The following options are allowed: {it}ik{sf}, {it}ki{sf}, {it}im{sf}, {it}mi{sf}, 
+{it}jm{sf}, {it}mj{sf}, {it}jk{sf}, {it}kj{sf}.
+Option {it}ik{sf} requests that the virtually transformed weighting variable {opt w:eightvar(varname)} is to represent connectivity from source unit {it}i{sf}
+to other source units {it}k{sf}. 
+Option {it}ki{sf} requests connectivity from other source units {it}k{sf} to source unit {it}i{sf}. 
+Option {it}im{sf} requests connectivity from source unit {it}i{sf} to target units {it}m{sf}. 
+Option {it}mi{sf} requests connectivity from target units {it}m{sf} to source unit {it}i{sf}. 
+Option {it}jm{sf} requests connectivity from target unit {it}j{sf} to other target units {it}m{sf}. 
+Option {it}mj{sf} requests connectivity from other target units {it}m{sf} to target unit {it}j{sf}. 
+Option {it}jk{sf} requests connectivity from target unit {it}j{sf} to source units {it}k{sf}. 
+Option {it}kj{sf} requests connectivity from source units {it}m{sf} to target unit {it}j{sf}. 
+Which of these options is appropriate depends on the specific hypothesis of spatial dependence to be tested.
+Researchers can request the sum or product of any two of these connectivities by listing the first one, then either + or * and then the second link.
+For example, option {it}ik+jm{sf} requests that the weighting matrix represents the {it}sum{sf} of connectivities invoked by {it}ik{sf} and {it}jm{sf}.
+Option {it}ik*kj{sf} requests that the weighting matrix represents the product of connectivities invoked by {it}ik{sf} and {it}kj{sf}. The order
+does not matter, i.e., option {it}ik+jm{sf} is the same as option {it}jm+ik{sf}. The same links cannot be combined with each other, i.e., {it}ik+ik{sf} is not an allowed option.
+
+{phang}
+{opt time(varname)} is an optional argument. If users wish to generate a time-varying spatial effect variable, then the numeric time variable must be stated here.
+
+{phang}
+{opt excl:usive} specifies that all dyads containing either {it}i{sf} or {it}j{sf} as either source or target are excluded from having a spatial
+effect on dyad {it}ij{sf}.
+
+{phang}
+{opt nor:owst} requests that the generated spatial effect variable is not row-standardized.
+See Plümper and Neumayer (2010) for an explanation and discussion of row-standardization.
+Row-standardization is the default option.
+
+{phang}
+{opt nom:erge} requests that the generated spatial effect variable is not automatically merged into the original data set.
+
+{phang}
+{opt se:name(name)} names the generated spatial effect variable. In the default option,
+if the weighting matrix is row-standardized, then the generated spatial effect variable is called SE_var_dirdyad_rowst. If the weighting matrix
+is not row-standardized, then the spatial effect variable is called SE_var_dirdyad_norowst. 
+Any previously existing variable with the same name will be replaced.
+
+{phang}
+{opt label:name(name)} names the label of the generated spatial effect variable. The default label given is
+"Directed dyad contagion spatial effect variable".
+
+{phang}
+{opt file:name(name)} requests that a dataset containing the generated spatial effect variable is saved
+in the current working directory under the defined name. In the default option, if the weighting matrix
+is row-standardized, then a file is saved in the current working directory called SE_file_dirdyad_rowst.
+If the weighting matrix is not row-standardized, then the saved file is called SE_file_dirdyad_norowst. 
+Any previously existing file with the same name will be replaced.
+
+
+
+{title:References}
+
+{pstd}
+Neumayer, Eric and Plümper, Thomas. 2010. Spatial Effects in Dyadic Data. {it}International Organization{sf} 64 (1), pp. 145-165.
+
+{pstd}
+Plümper, Thomas and Eric Neumayer. 2010. Model Specification in the Analysis of Spatial Dependence. {it}European Journal of Political Research{sf} 49 (3), pp. 418-442.
+
+{title:Examples}
+
+{phang}{cmd:. spdir y, w(exports) s(source_country) t(target_country) link(ik) sename(se_dirdyad) filename(dirdyad_file)}
+
+{phang}{cmd:. spdir y, w(exports) s(source_country) t(target_country) time(year) link(jm) norowst}
+
+{phang}{cmd:. spdir y, w(exports) s(source_country) t(target_country) time(year) link(ik*jm) nomerge}
+
+
+{title:Authors}
+
+{pstd}
+Eric Neumayer{p_end}
+{pstd}
+Department of Geography and Environment{p_end}
+{pstd}
+London School of Economics and Political Science (LSE){p_end}
+{pstd}
+London WC2A 2AE, UK{p_end}
+{pstd}
+e.neumayer@lse.ac.uk{p_end}
+{pstd}
+{browse "http://personal.lse.ac.uk/neumayer"}{p_end}
+
+{pstd}
+Thomas Plümper{p_end}
+{pstd}
+Department of Government{p_end}
+{pstd}
+University of Essex{p_end}
+{pstd}
+Wivenhoe Park{p_end}
+{pstd}
+Colchester CO4 3SQ, UK{p_end}
+{pstd}
+tpluem@essex.ac.uk{p_end}
+{pstd}
+{browse "http://www.polsci.org/pluemper/"}{p_end}
+
+
+

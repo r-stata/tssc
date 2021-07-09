@@ -1,0 +1,137 @@
+/*
+
+es_trade.dlg
+
+*!version 1.0.1 08mar2013
+
+*/
+
+VERSION 12
+
+POSITION . . 400 280
+RESET res1
+
+SCRIPT trade_PREINIT
+BEGIN
+	create ARRAY trade_selvars
+	create BOOLEAN trade_des_error
+	create DOUBLE trade_selvar_nums 
+END
+	
+DIALOG trade, label("EventStudy - deal with the trade file")		///
+	tabtitle("TradeFile")
+BEGIN	
+	TEXT  tx_tradefile 15 20 360 ., 								///
+		label("Select trade file on the disk:")
+	
+	FILE  fi_tradefile @ +20 @ .,  									///
+		error("TradeFileName")  									///
+		filter("Stata Dataset (*.dta)|*.dta|All Files (*.*)|*.*")	///
+		defext(dta) label("Browse...") nomemory    				    
+		                         
+		
+	BUTTON bu_selecttradetvar @ +30 80	., 						    ///
+		label("Confirm") onpush(program populate_cb_trade)			///
+		tooltip("Confirm choosing the trade data file")
+
+	TEXT tx_selecttradevar +85 @ 300 .,                             ///
+		label("Click to Confirm the trade file")
+
+	GROUPBOX group_trade -85 +40	360	 150,            		    ///
+		label("Choose the Right Variable Name")
+
+		TEXT  tx_tradefirmid +10 +30 180 ., 							///
+			label("variable for firm id")
+		COMBOBOX cb_tradefirmid  +190 @ 140 .,              			///
+			label("firm id") nomemory                  			///
+			contents(trade_selvars) dropdown   			
+	
+		TEXT  tx_tradedate -190 +30 180 ., 						    ///
+			label("variable for trade date")
+		COMBOBOX cb_tradedate +190 @ 140 .,             			///
+			label("trade date")  nomemory               			///
+			contents(trade_selvars) dropdown  				
+	
+		TEXT  tx_traderit -190 +30 180 .,          			    ///
+			label("variable for stock return")
+		COMBOBOX cb_traderit +190 @ 140 .,           			///
+			label("stock return")  nomemory                  			///
+			contents(trade_selvars) dropdown   			
+
+		TEXT tx_tradermt -190 +30 180 .,          			    ///
+			label("variable for market return")
+		COMBOBOX cb_tradermt +190 @ 140 .,    					///
+			label("market return")  nomemory 			    ///
+			contents(trade_selvars) dropdown 				
+		
+END
+
+
+OK ok1
+SUBMIT sub1, uaction(command)
+CANCEL can1, uaction(command)
+COPY COPY1
+
+
+SCRIPT trade_repopulate
+BEGIN
+	trade.cb_tradefirmid.repopulate
+	trade.cb_tradedate.repopulate
+	trade.cb_traderit.repopulate
+	trade.cb_tradermt.repopulate
+END
+
+PROGRAM populate_cb_trade
+BEGIN
+
+	require trade.fi_tradefile
+	call create STRING dlgName
+	call dlgName.setvalue class _dlg_rsrcname
+
+	put "es_trade_wrk_dlg using "
+	put `"""'
+	put trade.fi_tradefile
+	put `"""'
+	put ","
+	put "clsname(" dlgName ")"
+	stata hidden
+
+	if trade_des_error{
+		stopbox stop "Variables not specified"
+	}
+	else{
+		call script trade_repopulate
+	}
+END
+
+
+PROGRAM command
+BEGIN
+
+	require trade.fi_tradefile
+	require trade.cb_tradefirmid
+	require trade.cb_tradedate
+	require trade.cb_traderit
+	require trade.cb_tradermt
+	
+	// call create ARRAY arr_trade_return
+	call create STRING str_trade_return
+
+	call str_trade_return.setvalue  ///
+		class trade.fi_tradefile.value
+	call str_trade_return.append "*"
+	call str_trade_return.append    ///
+		class trade.cb_tradefirmid.value
+	call str_trade_return.append "*"
+	call str_trade_return.append   ///
+		class trade.cb_tradedate.value
+	call str_trade_return.append "*"
+	call str_trade_return.append   ///
+		class trade.cb_traderit.value
+	call str_trade_return.append "*"
+	call str_trade_return.append   ///
+		class trade.cb_tradermt.value
+
+	put str_trade_return
+
+END

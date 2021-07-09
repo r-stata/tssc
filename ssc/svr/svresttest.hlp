@@ -1,0 +1,38 @@
+{smcl}
+{hline}
+help for {hi:svresttest}
+{hline}
+
+{title:Testing combinations of statistics after {cmd:svrest}
+
+{p 4 25}{cmd:svresttest} {it:test_specification_involving_stats}
+
+
+{title:Description}
+
+{p}{cmd:svresttest} is a kludge to make {help svytest} (and the underlying {help test}
+	work after {help svrest}.  {cmd:svrest} names the estimates "stat1" "stat2", etc.
+	{cmd:svytest} requires that variables of those names exist for expressions,
+	such as {cmd:svytest stat1=stat2}.
+
+{p}This program creates empty variables with those names, as necessary,
+	so that {cmd:svytest} will run.
+
+{p}Specify the test (ie, the {it:test_specification_involving_stats}) exactly
+	as you would for {cmd:svytest}.
+
+
+{title:Examples}
+
+{p 25 40}{inp:. svrest "regress mpg price weight" "_b[price]/_b[weight] _b[price]-_b[weight]"}{p_end}
+{p 25 40}{inp:. svresttest stat1=stat2}{p_end}
+
+{p 25 40}The first command runs {cmd:svrest}, and creates two estimated statistics, which are named
+	"stat1" and "stat2".  Then the equality of these two (rather silly) statistics is tested.
+
+
+{title:Author}
+
+	Nick Winter
+	Cornell University
+	nw53@cornell.edu

@@ -1,0 +1,86 @@
+.-
+help for ^chitesti6^
+.-
+
+Chi-square test for univariate frequency distributions
+------------------------------------------------------
+
+    ^chitesti6^ #obs1 #obs2 [...] [ ^\^ #exp1 #exp2 [...] ]
+    [ ^, nfit(^#^) replace^ ]
+
+Description
+-----------
+
+The input for ^chitesti6^ must consist of
+
+    either a single row of values
+    
+    or two rows of values separated by a backslash ^\^.
+
+The first row is taken to be observed frequencies, which must be zeros
+or positive integers. The second row, if present, is taken to be
+expected frequencies under some hypothesis, which must be positive.
+These may be given either as numbers or as arithmetic expressions
+without embedded spaces. If the second row is not present, the expected
+frequencies are taken to be equal, i.e. equal to the mean of the
+observed frequencies.
+
+The display includes the Pearson chi-square statistic and its P-value
+for a test of the hypothesis, the likelihood-ratio chi-square statistic
+and its P-value, observed frequencies, expected frequencies, classic
+residuals (observed - expected), and Pearson residuals, defined as
+(observed - expected) / sqrt(expected).
+
+Any cells with expected frequencies less than 5 are flagged.
+
+^chitesti6^ requires ^chitest^ to be installed. 
+
+
+Options
+-------
+
+^nfit^ indicates the number of parameters that have been estimated from
+    the data. This number will be subtracted from (number of cells - 1)
+    to give the number of degrees of freedom. The default is 0.
+
+^replace^ indicates that the observed and expected frequencies are to be
+    left as the current data in place of whatever data were there. These
+    variables will be called ^observed^ and ^expected^.
+
+
+Examples
+--------
+
+        . ^chitesti6 315 108 101 32 \ 312.75 104.25 104.25 34.75^
+
+        . ^chitesti6 315 108 101 32 \ 556*9/16 556*3/16 556*3/16 556*1/16^
+
+        . ^chitesti6 315 108 101 32 \ 312.75 104.25 104.25 34.75,^
+          ^replace^
+
+
+Saved values
+------------
+
+    r(k)       number of classes in distribution
+    r(df)      degrees of freedom
+    r(chi2)    Pearson chi-square
+    r(p)       P-value of Pearson chi-square
+    r(chi2_lr) likelihood-ratio chi-square
+    r(p_lr)    P-value of likelihood-ratio chi-square
+    r(emean)   mean expected frequency
+
+
+Author
+------
+
+         Nicholas J. Cox, University of Durham, U.K.
+         n.j.cox@@durham.ac.uk
+
+
+Also see
+--------
+
+ Manual:  [U] 22 Immediate commands, [R] tabulate 
+On-line:  help for @immed@, @tabulate@, @chitest@
+

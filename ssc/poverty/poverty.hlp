@@ -1,0 +1,125 @@
+.-
+help for ^poverty^                                           (Philippe Van Kerm)
+.-
+
+Poverty Measures
+----------------
+
+      ^poverty^ varname [^if^ exp] [^in^ range] ^[^weight^]^ [^, ^options]
+
+^aweight^s and ^fweight^s are allowed; see help @weights@.
+
+
+Description
+-----------
+
+^poverty^ computes a series of poverty measures based on the (income)
+distribution described by varname.
+
+The poverty measures that can be computed by ^poverty^ are: 
+
+ headcount ratio     aggregate poverty gap    poverty gap ratio
+ income gap ratio    Watts index              Sen index
+ Takayama index      Thon index, 
+
+and series of Foster, Greer and Thorbecke indices with parameters :
+                   0.5, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5
+              Clark et al. indices with parameters :
+                   0.1, 0.25, 0.5, 0.75, 0.9
+
+
+The poverty line is either directly specified by the user or computed relative
+to the median of varname (half or two-third), see under "options" below.
+
+
+Options
+-------
+
+^l^ine^(^#^)^ sets the value of the poverty line. If # is set equal to -1, the
+    poverty line is computed as half the median of varname. If # is set equal
+    to -2, it is computed as two-third of the median of varname. Default is -1.
+
+^g^en^(^newvarname^)^ creates a new variable that takes on the value of 1 for
+    all observations identified as poor and 0 for observations identified as
+    non-poor. "newvarname" is set to missing for observations with missing 
+    "varname" or falling outside the ^if in^ statements.
+    
+^A^ll requests that all possible measures are computed and reported. 
+    By default, no measure is produced.
+
+
+The following options specify the measures to be computed and reported.
+	^H^    : headcount ratio [FGT(0)]     
+	^APG^  : aggregate poverty gap
+	^PGR^  : poverty gap ratio [FGT(1)]
+	^IGR^  : income gap ratio 
+	^W^    : Watts index 
+	^S^    : Sen index 
+	^TA^k  : Takayama index
+        ^TH^on : Thon index
+        ^FGT1^ : Foster, Greer and Thorbecke -FGT(0.5)-
+	^FGT2^ : Foster, Greer and Thorbecke -FGT(1.5)-
+	^FGT3^ : Foster, Greer and Thorbecke -FGT(2)-
+	^FGT4^ : Foster, Greer and Thorbecke -FGT(2.5)-
+	^FGT5^ : Foster, Greer and Thorbecke -FGT(3)-
+	^FGT6^ : Foster, Greer and Thorbecke -FGT(3.5)-
+	^FGT7^ : Foster, Greer and Thorbecke -FGT(4)-
+	^FGT8^ : Foster, Greer and Thorbecke -FGT(4.5)-
+	^FGT9^ : Foster, Greer and Thorbecke -FGT(5)-
+	^CHU1^  : Clark, Ulph and Hemming index with beta of 0.10
+	^CHU2^  : Clark, Ulph and Hemming index with beta of 0.25
+	^CHU3^  : Clark, Ulph and Hemming index with beta of 0.50
+	^CHU4^  : Clark, Ulph and Hemming index with beta of 0.75
+	^CHU5^  : Clark, Ulph and Hemming index with beta of 0.90
+
+
+Saved Results
+-------------
+
+    S_1  = total number of observations in the data
+    S_2  = number of observations used to compute the indices
+    S_3  = weighted number of observations
+    S_4  = value of the poverty line
+    S_5  = weighted number of observations identified as poor
+
+(the following results are only available if the measure has been requested)
+    S_6  = headcount ratio [FGT(0)]     
+    S_7  = aggregate poverty gap
+    S_8  = poverty gap ratio [FGT(1)]
+    S_9  = income gap ratio 
+    S_10 = Watts index
+    S_11 = FGT(0.5)
+    S_12 = FGT(1.5)
+    S_13 = FGT(2)
+    S_14 = FGT(2.5)
+    S_15 = FGT(3)
+    S_16 = FGT(3.5)
+    S_17 = FGT(4)
+    S_18 = FGT(4.5)
+    S_19 = FGT(5)
+    S_20 = Clark et al. index (0.10)
+    S_21 = Clark et al. index (0.25)
+    S_22 = Clark et al. index (0.5)
+    S_23 = Clark et al. index (0.75)
+    S_24 = Clark et al. index (0.90)
+    S_25 = Sen index
+    S_26 = Thon index
+    S_27 = Takayama index
+
+
+
+Author
+------
+
+	Philippe VAN KERM <philippe.vankerm@@fundp.ac.be>
+	University of Namur, Department of Economics
+	Rempart de la Vierge 8
+	B-5000 Namur, Belgium.
+
+
+Also see
+--------
+
+    	on-line: @povdeco@ if installed
+
+

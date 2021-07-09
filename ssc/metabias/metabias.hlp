@@ -1,0 +1,151 @@
+{smcl}
+{hline}
+help for {cmd:metabias}{right: (Roger Harbord, Ross Harris, Jonathan Sterne)}
+{hline}
+
+{title:Updated tests for bias in meta-analysis}
+
+{p 8 14}
+   {cmd: metabias}
+   {it:varlist} 
+   [{cmd:if} {it:exp}]
+   [{cmd:in} {it:range}]
+   [{cmd:,}
+	{cmdab:egg:er}
+	{cmdab:pet:ers}
+	{cmdab:har:bord}
+	{cmdab:beg:g}
+	{cmdab:g:raph}
+	{cmdab:nof:it}
+	{cmdab:or}
+	{cmdab:rr}
+	{cmdab:l:evel(}{it:#}{cmd:)}
+	{cmd:z(}{it:newvar}{cmd:)}
+	{cmd:v(}{it:newvar}{cmd:)}
+	{it:graph_options}
+	]
+{p_end}
+
+
+{p}
+{cmd:by} {it:...} {cmd::} may be used with {cmd:metabias}; see help {help by}.
+
+
+{title:Description}
+
+{p}
+{cmd:metabias} performs updated regression tests for funnel-plot asymmetry in meta-analysis.
+The Harbord test regresses Z/sqrt(V) against sqrt(V),
+where Z is the efficient score
+and V is Fisher's information (the variance of Z under the null hypothesis).
+The Peters test regresses the intervention effect estimate on 1/n with weights dh/n,
+where n is the total sample size, d is the number experiencing the event and h is the number not experiencing the event.
+These may be calculated for the log-odds or log-risk ratio,
+from 2x2 tables of binary outcomes.
+
+{p}
+The Egger test is also implemented, and performs a linear regression of the intervention effect
+estimates on their standard errors, weighting by 1/(variance of the intervention effect estimate).
+The latter is recommended for intervention effects measured as mean differences, but can suffer from false-positive test results when analysing odds ratios due to the mathematical association between the log odds ratio and its standard error.
+For completeness, the Begg test is also implemented; although this is widely accepted to be redundant as it suffers the same statistical problems as the Egger test but has lower power.
+
+{p}
+{it:varlist} should contain either four or two variables. When four variables are given these are assumed to be cell counts for the  2x2 table in the order cases and non-cases for the experimental group followed by cases and non-cases for the control group, i.e., {it:d1 h1 d0 h0}, as in {help metan}. 
+When two variables are specified these are assumed to be the effect estimate and its standard error, i.e., {it:theta se_theta}; it is recommended that ratio-based effect estimates are log-transformed as for {help metan}.
+{p_end}
+
+
+{title:Options}
+
+{p 0 4}{cmd:egger peters harbord begg} requests that the original Egger test, the Peters test, or Harbord’s modified test be used. Note that there is no default: one test must be chosen, and only one test. 
+{p_end}
+
+{p 0 4}{cmd:graph} displays a Galbraith plot (the standard normal deviate of intervention
+effect estimate against its precision) for the original Egger test, or a modified Galbraith plot of Z / sqrt(V) vs. sqrt(V) for Harbord’s modified test. Note that there is no corresponding Galbraith plot for the Peters test.
+{p_end}
+
+{p 0 4}{cmd:nofit} suppresses 
+the fitted regression line
+and confidence interval around the intercept.
+{p_end}
+
+{p 0 4}{cmd:or} uses odds ratios as the effect estimate of interest (the default)
+{p_end}
+
+{p 0 4}{cmd:rr} specifies that risk ratios be used rather than odds ratios. 
+Note that this is not available for the Peters test.
+{p_end}
+
+{p 0 4}{cmd:level(}{it:#}{cmd:)} specifies the confidence level,
+in percent,
+for confidence intervals of the coefficients. The default is the user-specified
+default contained in {help level} (which, in turn, is by default 95%).
+{p_end}
+
+{p 0 4}{it:graph_options} are options allowed by {help twoway_scatter}.
+In particular, options for specifying  marker labels may well be useful; 
+see {help marker_label_options}.  {help legend_option:legend}{cmd:(off)} is another possibility.
+{p_end}
+
+
+{title:Examples}
+
+{p 8 12}{cmd:. metabias d1 h1 d0 h0, or harbord}
+{p_end}
+{p 8 12}{cmd:. metabias tdeath tnodeath cdeath cnodeath, or harbord graph mlabel(trial)}
+{p_end}
+{p 8 12}{cmd:. metabias eventint noeventint eventcon noeventcon, or peters }
+{p_end}
+{p 8 12}{cmd:. metabias theta se_theta, egger}
+{p_end}
+
+
+{title:History and note on dialog box}
+
+{p}
+This version of {cmd:metabias} revises and extends the previous package by Thomas Steichen
+first released as {net stb 41 sbe19:sbe19} in STB 41 and updated through to {net sj 3-4 sbe19_5:sbe19.5}.
+We are grateful for Tom's permission to release this version under the same name.
+The previous program is included in the present package as {help metabias6},
+which unlike the revised version has an accompanying dialog box.
+
+
+{title:References}
+
+{p}
+Begg CB, Mazumdar M. 1994.  
+Operating characteristics of a rank correlation test for publication bias.  
+Biometrics 50: 1088-1101.
+
+{p}
+Egger M, Smith GD, Schneider M, Minder C. 1997.  
+Bias in meta-analysis detected by a simple, graphical test.  
+BMJ 315: 629-634.
+
+{p}
+Harbord RM, Egger M, Sterne JA.  2006.
+A modified test for small-study effects 
+in meta-analyses of controlled trials with binary endpoints.  
+Statistics in Medicine 25: 3443-3457.
+
+{p}
+Peters JL, Sutton AJ, Jones DR, Abrams KR, Rushton L.  2006.
+Comparison of two methods to detect publication bias in meta-analysis.  
+JAMA 295: 676-680.
+
+
+{title:Also see}
+
+{p 0 21}
+On-line:  help for {help metabias6},
+{help metan} (if installed), {help metafunnel} (if installed), {help confunnel} (if installed)
+{p_end}
+
+
+{title:Authors}
+
+Roger Harbord, Department of Social Medicine, University of Bristol, UK
+Ross Harris, Department of Social Medicine, University of Bristol, UK
+Jonathan Sterne, Department of Social Medicine, University of Bristol, UK
+
+{hi:Help-file last updated}: 8 January 2009

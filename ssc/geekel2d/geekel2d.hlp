@@ -1,0 +1,78 @@
+{smcl}
+{* 2july2005}{...}
+{hline}
+help for {hi:geekel2d}{right:Jean-Benoit Hardouin}
+{hline}
+
+{title:Estimation of the parameters of undimensional and bidimensional IRT models}
+
+{p 8 14 12}{cmd:geekel2d} {it:varlist} [{cmd:,} {cmdab:coef}({it:matrixname}) {cmdab:nbit}({it:#}) {cmdab:critconv}({it:#}) {cmdab:ll} {cmdab:quad}({it:#}) {cmdab:novar}]
+
+{p 8 14 12}{it:varlist} is a list of two existing dichotomous variables or more.
+
+{title:Description}
+
+{p 4 8 2}{cmd:geekel2d} estimates, by Generalized Estimating
+Equations (GEE), the parameters of the model defined by Kelderman (1994) with
+one or two dimensions and dichotomic items. This model includes the Rasch model
+and the One Parameter Logistic Model (OPLM) for the unidimensional models, the
+Multidimensional Generalized Rasch Model (MGRM) and the Multidimensional
+Completely Sufficient Rasch Model (MMSRM) for the two-dimensional models.
+
+{title:Options}
+
+{p 4 8 2}{cmd:coef} is the name of a matrix which contains the coeficients B. This
+matrix relies the items and the latent traits. Each row represents an item and
+there is  as many colmuns than the supposed number of latent traits (one or two). 
+The coefficients are choosen, in general, among the first intergers, but 
+{cmd:geekel2d} allows using real coefficients. By default, the Rasch model is
+supposed (the matrix {cmd: coef} is a vector of 1).
+
+{p 4 8 2}{cmd:nbit} defines the maximal number of iterations in the estimation
+algorithm. By default, this number is fixed to 30.
+
+{p 4 8 2}{cmd:critconv} is the value of the convergence criterion, calculated
+as the square of the cross-product of the vector containing the difference
+between two successive iterations of the parameters estimations. By default,
+this criterion is fixed to 1e-15.
+
+{p 4 8 2}{cmd:ll} estimates the marginal log-likelihood and the Akaike
+Information Criterion (AIC) by Gauss-Hermite quadratures.
+
+{p 4 8 2}{cmd:quad} defines the number of nodes of quadratures.
+
+{p 4 8 2}{cmd:novar} avoids to compute the standards errors of the estimators (faster).
+
+{title:Remarks}
+
+{p 4 8 2}For detailed informations on the Kelderman model, see Kelderman and
+Rijkes (1994) or Adams and al. (1997).
+
+{p 4 8 2}{cmd:geekel2d} don't allows using of polytomous items.
+
+{p 4 8 2}The {cmd:ghquadm} Stata module is needed (use {cmd:findit ghquadm} to obtain it).
+
+
+{title:Example}
+
+{p 4 8 2}{cmd:. geekel2d item1 item2 item3 item4} /*Rasch model*/
+
+{p 4 8 2}{cmd:. matrix B=(1,0\1,0\0,1\0,1)}
+
+{p 4 8 2}{cmd:. geekel2d item1 item2 item3 item4 , coef(B) nbit(50) critconv(1e-30)}
+
+
+{title:References}
+
+{p 4 8 2}Kelderman H. and Rijkes C. P. M., Loglinear multidimensional IRT models for polytomously scored items. {it:Psychometrika}, 1994, {it:59}, 149-176.
+
+{p 4 8 2}Adams R. J., Wilson M. R. and Wang W., The multidimensional random coefficient multinomial logit model. {it:Applied Psychological Measurement}, 1997, {it:21}, 1-23.
+
+{title:Author}
+
+{p 4 8 2}Jean-Benoit Hardouin, Regional Health Observatory (ORS) - 1, rue Porte
+Madeleine - BP 2439 - 45032 Orleans Cedex 1 - France. You can contact the
+author at 
+{browse "mailto:jean-benoit.hardouin@orscentre.org":jean-benoit.hardouin@orscentre.org}
+and visit the websites {browse "http://anaqol.free.fr":AnaQol} 
+and {browse "http://freeirt.free.fr":FreeIRT}

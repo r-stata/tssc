@@ -1,0 +1,114 @@
+{smcl}
+{* September 19, 2007 @ 13:18:45}{...}
+{hi:help dochar} 
+{hline}
+
+{title:Title}
+
+{pstd}
+{cmd:dochar} - Running Stata commands stored in characteristics
+{p_end}
+
+{title:Syntax}
+{* put the syntax in what follows. Don't forget to use [ ] around optional items}
+{p 8 16 2}
+   {cmd:dochar }
+{* taken from char.hlp of 08feb2005}{...}
+   {it:evarname}{cmd:[}{it:charname}{cmd:]}
+   [[{cmd:"}]{it:text}[{cmd:"}]]
+   {cmd:,}
+[{opt self(varname)}
+	{opt temp:names(special name list)}
+	{cmd:loud}
+   {cmd:tmpfile}{...}
+	]
+{p_end}
+
+{title:Description}
+
+{pstd}
+{cmd:dochar} is a utility for running commands stored as
+{help char:characteristics}, in Stata parlance, {cmd:do}ing
+{cmd:char}acteristics. This can be used to attach simple
+do files to the dataset or to
+particular variables. This can be of great use for
+{help ckvar:data validation}. Warning: this could seem a bit obscure, but as long
+as you understand {help macro}s well, it could be very useful. See
+{help docharprog} for the details of programming with chars.
+{p_end}
+
+{title:Options}
+
+{phang}{cmd:self} By default, {cmd:dochar} uses the local
+{help macro} `self' to refer to the variable to which the
+characteristic is attached. It does this so that the command will
+still run if the variable is {help rename}d. Sometimes, but rarely, it
+is worth using the {cmd:self} option to override the default with
+another variable name (for example, this is used for recursion
+within {cmd:dochar}).
+{p_end}
+
+{phang}
+{cmd:tempnames} is a method for passing values of local {help macro}s to the 
+commands stored in the {help char:characteristics}. This facilitates
+{cmd:dochar} being able to be used from within do or ado files which have
+any locally named items. The {cmd:tempnames} are passed as a
+space-delimited list of items, each of which is of the form
+{it:lclname}:{it:value}. This means that passing the local macro bleen would be done as
+{cmd:bleen:`bleen'}, and passing the temporary variable `foo' would be done as
+{cmd:foo:`foo'}.
+{p_end}
+
+{phang}
+{cmd:loud}
+is primarily for debugging code which is run via {cmd:dochar}. It
+echos information at critical places, so that it is possible to see
+exactly what steps are being executed. Think of it as similar to using
+a {cmd:set} {help trace} {cmd:on} when running a do-file.
+{p_end}
+
+{phang}
+{cmd:tmpfile}
+writes the characteristic as a temporary do file, and then executes
+the do file. This is worthwhile if the characteristic needs to have
+any commands which use curly braces ({c -(} and {c )-}). If {cmd:loud}
+is specified, the temporary file is executed using {help do}, so every
+step is echoed to the results window. If {cmd:loud} is not specified,
+then the temporary file is executed using the {help run} command, so
+all output (including that from display statements) is silenced.
+{p_end}
+
+{title:Examples}
+
+{phang}{cmd:. dochar bling[valid_check]}{break}
+runs the list of commands stored in the characteristic {cmd:bling[error_check]}
+{p_end}
+
+{phang}
+{cmd:. dochar foo[bar], tempnames(aVar:`aVar' aMacro:`aMacro')}{break}
+runs the list of commands stored in the characteristic {cmd:foo[bar]},
+allowing the use of the temporary variable {cmd:aVar} and local macro {cmd:aMacro}
+inside the mini-do-characteristic. Note that some care is needed when
+using local macros in characteristics. See {help docharprog} for more direction.
+{p_end}
+
+{title:Notes}
+
+{pstd}
+To see how these are used, take a peek at {help docharprog},
+{help ckvar_overview} and {help ckvaredit}.
+{p_end}
+
+{title:Also see}
+
+{psee}
+Online: {help docharedit}, {help docharprog}
+{p_end}
+
+{title:Author}
+
+{pstd}
+Bill Rising, StataCorp{break}
+email: brising@stata.com{break}
+web: {browse "http://homepage.mac.com/brising":http://homepage.mac.com/brising}
+{p_end}

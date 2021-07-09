@@ -1,0 +1,152 @@
+{smcl}
+{* version 1.0.8 09nov2012}{...}
+{cmd:help labellist}
+{hline}
+
+{title:Title}
+
+{p 5}
+{cmd:labellist} {hline 2} List value labels and more
+
+
+{title:Syntax}
+
+{p 8}
+{cmd:labellist} [{it:namelist}] 
+[{cmd:,} {opt nom:ising} {opt la:bels} {opt rc0} {opt ret:urnall} ]
+
+
+{p 5 5}
+where {it:namelist} is a {varlist}, a list of value label names, or a 
+combination of the two. If {it:name} is both, a variable name and a 
+value label name, it is treated as the former.
+
+
+{title:Description}
+
+{pstd}
+{cmd:labellist} lists value label names, values and corresponding 
+labels. This information is returned in {cmd:r()}. For variables, 
+the variable label, if any, is also returned. 
+
+{pstd}
+If {it:namelist} is not specified it defaults to {hi:_all}, meaning 
+all variables in the dataset. Any variables in {it:namelist} that do 
+not have a value label attached are ignored, as are any empty value 
+labels.
+
+
+{title:Options}
+
+{phang}
+{opt nomissing} excludes (extended) missing values in value labels. 
+
+{phang}
+{opt labels} specifies that {hi:_all} in {it:namelist} be interpreted 
+as all value labels in memory. It has no effect otherwise.
+
+{phang}
+{opt rc0} prevents {cmd:labellist} from stopping if one of the results 
+cannot be returned in {cmd:r()}, because {it:varname} or {it:lblname} 
+is too long. Long names will be abbreviated. The limit for variable 
+names is 23 characters, for value label names it is 25 characters.
+
+{phang}
+{opt returnall} returns the value label names, values and labels for 
+all variables in {it:namelist} in 
+{cmd:r(}{hi:{it:varname_}labels}/{hi:values}/{hi:lblname}{cmd:)}. If 
+more than one variable is specified, {opt returnall} is implied. This 
+option is retained from an older version of the program and is seldom 
+used.
+
+
+{title:Example}
+
+{phang2}{cmd:. sysuse nlsw88}{p_end}
+{phang2}{cmd:. labellist race married}{p_end}
+{phang2}{cmd:. return list}{p_end}
+{phang2}{cmd:. labellist race marlbl}{p_end}
+{phang2}{cmd:. return list}{p_end}
+
+
+{title:Saved results}
+
+{pstd}
+{cmd:labellist} saves the following in {cmd:r()}:
+
+{pstd}
+For variables{p_end}
+
+{pstd}
+Macros{p_end}
+{synoptset 23 tabbed}{...}
+{synopt:{cmd:r(}[{hi:{it:varname_}}]{cmd:labels)}}labels{p_end}
+{synopt:{cmd:r(}[{hi:{it:varname_}}]{cmd:values)}}values{p_end}
+{synopt:{cmd:r(}[{hi:{it:varname_}}]{cmd:lblname)}}value label name
+{p_end}
+{synopt:{cmd:r(}[{hi:{it:varname_}}]{cmd:varlabel)}}variable label
+{p_end}
+
+{pstd}
+For value labels{p_end}
+
+{pstd}
+Macros{p_end}
+{synoptset 23 tabbed}{...}
+{synopt:{cmd:r({it:lblname_}}{cmd:labels)}}labels{p_end}
+{synopt:{cmd:r({it:lblname_}}{cmd:values)}}values{p_end}
+
+{pstd}
+Additionally{p_end}
+
+{pstd}
+Scalars{p_end}
+{synoptset 23 tabbed}{...}
+{synopt:{cmd:r({it:lblname_}}{cmd:min)}}minimum nonmissing value{p_end}
+{synopt:{cmd:r({it:lblname_}}{cmd:max)}}maximum nonmissing value{p_end}
+{synopt:{cmd:r({it:lblname_}}{cmd:nemiss)}}number of extended missing 
+values{p_end}
+{synopt:{cmd:r({it:lblname_}}{cmd:k)}}number of mapped values, 
+including missing{p_end}
+
+{pstd}
+Macros{p_end}
+{synoptset 23 tabbed}{...}
+{synopt:{cmd:r(lblnamelist)}}list of specified value label names 
+(if any){p_end}
+{synopt:{cmd:r(varlist)}}unabbreviated list of specified variable 
+names (if any){p_end}
+
+
+{title:Acknowledgments}
+
+{pstd}
+The concept is borrowed from Ben Jann's 
+{stata findit labelsof:labelsof}. 
+
+{pstd}
+The approach taken is inspired by Austin Nichols, who also encouraged 
+me to make myself familiar with Mata.
+
+{pstd}
+The name {cmd:labellist} is borrowed from official Stata's 
+{help label list}, as is the output.
+ 
+{pstd}
+Timea Partos suggested option {opt nomissing}.
+
+
+{title:Author}
+
+{pstd}
+Daniel Klein, University of Kassel, klein.daniel.81@gmail.com
+
+
+{title:Also see}
+
+{psee}
+Online: {help label}{p_end}
+
+{psee}
+if installed: {help labelsof}, {help lablist}, {help labutil2}
+{p_end}

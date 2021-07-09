@@ -1,0 +1,291 @@
+{smcl}
+{* *! version 2.0.0  04dec2011}{...}
+{cmd:help dthaz}
+{hline}
+
+
+{title:Title}
+
+{p2colset 5 14 16 2}{...}
+{p2col:{hi:dthaz} {hline 2}}Discrete-time hazard and survival probability estimates{p_end}
+{p2colreset}{...}
+
+
+{title:Syntax}
+
+{p 8 12 2}
+{cmd:dthaz}
+[{indepvars}]
+{ifin}
+{weight}
+[{cmd:,} {it:options}]
+            
+{synoptset 28 tabbed}{...}
+{synopthdr}
+{synoptline}
+{syntab:Model}
+{synopt :{opt sp:ecify(numlist)}}specify values for predicted population values{p_end}
+{synopt :{opt tp:ar(#)}}select alternative parameterizations of time{p_end}
+{synopt :{opt tr:uncate(#)}}truncate the maximum time of length to event{p_end}
+{synopt :{opt pretrunc(#)}}ignore some initial time periods in the model{p_end}
+{synopt :{opth l:ink(dthaz##linkname:linkname)}}link function; default is logit hazard{p_end}
+
+{syntab:SE/Robust}
+{synopt :{opth clus:ter(varname)}}adjust standard errors for intragroup
+correlation{p_end}
+
+{syntab:Reporting}
+{synopt :{opt d:isplay(#)}}limit the maximum displayed period{p_end}
+{synopt :{opt level(#)}}set confidence level; default is {cmd:level(95)}{p_end}
+{synopt :{opt m:odel}}output model estimate{p_end}
+{synopt :{opt suppress}}switch off {cmd:dthaz} output{p_end}
+
+{syntab:Graph options}
+{synopt :{opt gr:aph(#)}}conditional hazard, survival, or cumulative incidence curves{p_end}
+{synopt :{it:{help twoway_options}}}graph twoway options{p_end}
+
+{syntab:Miscellaneous}
+{synopt :{opt copyleft}}display license information{p_end}
+{synoptline}
+{p2colreset}{...}
+
+{marker linkname}{...}{synoptset 23}{...}{synopthdr :linkname}{synoptline}{synopt :{opt logit}}logit hazard{p_end}{synopt :{opt probit}}probit hazard{p_end}{synopt :{opt cloglog}}complimentary log log hazard{p_end}{synoptline}{p2colreset}{...}
+
+{p 4 6 2}
+{opt fweights}, {opt iweights}, and {opt pweights} are allowed; see {help weight}.
+
+
+{title:Description}
+
+{pstd}
+{cmd:dthaz} estimates the hazard and survival probabilities of the population, given
+the specified model by means of a logit link (default) or by a complementary 
+log-log link. This program requires data in {help prsnperd:person-period}
+format, and person-period variables may be created using {cmd:prsnperd}.
+
+{pstd}
+Typed with no {it:varlist} and with no {cmd:tpar()} option, {cmd:dthaz} estimates 
+baseline conditional hazard (h) and survival probabilities (S) for the sample. These estimates 
+correspond exactly with actuarial estimates of sample hazard and sample survival functions.
+Specifying numeric predictors in {it:varlist} and the required set of associated 
+values with the {cmd:specify()} option adds them to the model following as follows (for logit hazard):
+
+{p 8}
+h_i = 1/(1+e^-(a_i*d_i + BX_i))
+
+{pstd}
+Where:
+
+{p 8 8}
+a_i is the effect of the ith time period, d_i,{break}
+B is a vector of effects for a vector of predictors X_i during the ith time period, and
+
+{p 8}
+S_i = (1-h_1)*(1-h_2) * ¥ ¥ ¥ * (1-h_i).
+
+
+{pstd}
+The reported conditional hazard and survival probabilities are accompanied by 
+standard errors approximated using a first order application of the delta method 
+(Dinno and Kim, 2011). The normally approximated confidence intervals 
+drawn using the {cmd:graph()} option are obtained by application of these 
+standard errors with the alpha specified by {cmd:level()}.
+
+{title:Options}
+
+{dlgtab:Model}
+
+{phang}{cmd:{ul on}sp{ul off}ecify(}{it:numlist}{cmd:)} The user must specify 
+which category of population members the hazard and survival estimates are to 
+be calculated. Currently, if specifications are made with this option, they 
+must be made for each of the variables specified in {it:varlist}. Specifications
+may be separated by spaces, commas or both.
+
+{phang}{cmd:{ul on}tp{ul off}ar(}{it:#}{cmd:)} The user may select alternative 
+parameterizations of time. Such time parameterizations allow a parsimonious 
+smoothing of the effects of time, and are as follows:
+
+{p 5 8}-1 Fully discrete time parameterization. This setting is the default, and 
+reflects unique effects of time for each period.
+
+{p 6 8}0 Constant time parameterization. This model constrains the effect of time to
+be constant across all periods. The model includes a prespecified constant 
+term, is used in the following models, and permits model nesting.
+
+{p 6 8}N Polynomial time parameterization. This model constrains the effect of 
+time as a polynomial function of order N. If the representation of time is 
+over-specified (i.e. has more predictors than the number of periods in the dataset, 
+or than the number the analysis has been truncated to) then the user will be warned
+and the parameterization will be reset to its maximum. Lower order models nest
+within higher order ones. N > 0.
+
+{p 5 8}-2 Root time parameterization. This model constrains the effect of time as a
+square-root function of period (plus constant plus linear terms)
+
+{phang}{cmd:{ul on}t{ul off}runcate(}{it:#}{cmd:)} The user may truncate the 
+maximum time of length to event to this number. The estimate will censor data 
+for time periods beyond this point. Negative values and values greater than the 
+maximum period value are ignored.
+
+{p 8 8}Note: Specifying this option for the baseline model will produce 
+exactly the same estimates as for the untruncated model for the given periods, 
+since baseline estimates are always equal to the sample hazard and sample 
+survival functions.
+
+{p 4 8 2}{cmd:pretrunc(}{it:#}{cmd:)} The user may discard early time periods from 
+the new dataset. For example, when pre-truncating with a value of 2, the period 
+that would be indicated by _d3 becomes _d1 instead, and the value of _period 
+would be decreased by 2. The dataset is preserved when using this option{p_end}
+
+{p 4 4}Note: Specifying values of {cmd:truncate} greater than the one 
+minus the maximum value of {it:length-to-event} (or specifying negative values) 
+produces the same dataset as one with no value of {cmd:truncate} specified. Also,
+{cmd:truncate} and {cmd:pretrunc} cannot be combined when their values would 
+result in fewer than two periods. Discrete time survival analyses conducted 
+upon pre-truncated datasets are, in effect analyses conducted upon separate 
+populations from the not pre-truncated datasets {it:if the conditional hazard}
+{it:during the pre-truncated periods is greater than zero}. The author suggests 
+that an analyst may desire to perform a pre-truncated analysis either because 
+there are no events during initial periods, or because she is interested in 
+analyzing a surviving sub-population at a later starting period. However, in 
+cases where events occurred during the pre-truncated periods, a survival 
+analysis cannot be said to generalize to the population of the not 
+pre-truncated dataset. In cases where events occur in initial periods, but at 
+rates that are too few to provide reliable estimates for these periods, the 
+analyst should both employ a sensitivity analysis to describe differences 
+between models on pre-truncated and not pre-truncated datasets, but also 
+examine the characteristics of anomalous individuals--qualitative data may 
+particularly help illuminate how these persons differ from the majority of 
+individuals who remain in the pre-truncated dataset.{p_end}
+
+{phang}{cmd:{ul on}l{ul off}ink(}{it:linkname}{cmd:)} switches between different models of the 
+hazard function: logit, probit or complimentary log log hazards. The default
+logit hazard model is described above. The general discrete time probit 
+hazards model is:
+
+{p 12}
+h = Phi(a_i*d_i + B*X_i)
+
+{p 8 8 2}
+Where Phi() is the inverse of the cumulative distribution function of the 
+standard normal distribution, and the parameters follow the same conventions 
+described for the logit hazard model above.
+
+{phang}The cloglog {cmd:{ul on}l{ul off}ink} option produces estimates under 
+an assumption of proportional hazards. The general discrete time complimentary 
+log log hazard model is:
+
+{p 12}
+h = 1-exp(-exp(a_i*d_i + B*X_i))
+
+{p 8 8 2}
+Where the parameters follow the same conventions described for the logit hazard 
+model above.
+
+{dlgtab:SE/Robust}
+
+{phang}{cmd:{ul on}clus{ul off}ter(}{it:varname}{cmd:)} The user may adjust 
+the standard errors of the estimates for person-level (between person) variance 
+in repeated measures designs by specifying the {it:id} variable used to 
+construct the person-period dataset.
+
+{dlgtab:Reporting}
+
+{phang}{cmd:{ul on}d{ul off}isplay(}{it:#}{cmd:)} The user may limit the 
+maximum period for hazard and survival probabilities to this number. This 
+option only affects which values are displayed. The estimated and values 
+returned in r(Hazard) remain as for the maximum period of the person-period 
+dataset. Negative values and values greater than the maximum period value are 
+ignored.
+
+{phang}
+{opt level(#)}; see {helpb estimation options##level():[R] estimation options}.
+
+{phang}{cmd:{ul on}m{ul off}odel} This option includes the estimated model in 
+the output.
+
+{phang}{cmd:suppress} Switches off {cmd:dthaz} output. Graphs still display if 
+selected. The estimated model is displayed if the {cmd:model} option is turned 
+on.
+
+{dlgtab:Graph options}
+
+{phang}{cmd:{ul on}gr{ul off}aph(}{it:#}{cmd:)} Users may opt to graph 
+conditional hazard probabilities (1), survival probabilities (2), both (3) 
+or (4) cumulative incidence probabilities (i.e. 1 - survival) against discrete 
+time periods. Graphing options available to {help prsnperd:grtwoway} are 
+available. The default setting is no graph.
+
+{p 4 4}Note: the {cmd:{ul on}gr{ul off}aph()} option does not yet plot 
+confidence intervals in Stata 7.
+
+{dlgtab:Miscellaneous}
+
+{phang}{cmd:copyleft} {cmd:dthaz} is free software, licensed under the GPL. The {cmd:copyleft} option displays
+the copying permission statement for {cmd:dthaz}. The full license can be obtained 
+by typing:
+
+{p 12 8 2}
+{inp: . net describe dthaz, from (http://www.doyenne.com/stata)}
+
+{phang}      
+and clicking on the {net "describe dthaz, from (http://www.doyenne.com/stata)":click here to get} link for the ancillary file.
+
+
+{title:Examples}
+
+{p 4 8}{inp:. dthaz}{p_end}
+
+{p 4 8}{inp:. dthaz sex region, specify(0 6) truncate(6)}{p_end}
+
+{p 4 8}{inp:. dthaz sex educate class, sp(1, 12, 0) gr(3)}{p_end}
+
+{p 4 8}{inp:. dthaz party age, sp(0 1) model link(cloglog)}{p_end}
+
+{p 4 8}{inp:. dthaz, tp(3)}{p_end}
+
+
+{title:Author}
+
+Alexis Dinno
+Portland State University
+alexis dot dinno at pdx dot edu
+
+Please contact me with any questions, bug reports or suggestions for improvement.
+
+My thanks to Dr. Suzanne Graham.
+
+
+{title:References}
+
+{p 4 8}
+Dinno A and Kim JS. 2011. "Approximating Confidence Intervals About Discrete-Time Survival/Cumulative Incidence Estimates Using the Delta Method." Unpublished (manuscript available on request)
+
+{p 4 8}
+Singer JD and Willett JB. 2003. {it:Applied Longitudinal Data Analysis: Modeling Change and Event Occurence}. Oxford, UK: Oxford University Press. 672 pages.
+
+{p 4 8}
+Willet JB and Singer JD. 1991. "From Whether to When: New Methods for Studying Student Dropout and Teacher Attrition." {it:Review of Educational Research}. 61: 407-450
+
+{p 4 8}
+Singer JD and Willett JB. 1991. "Modeling the Days of Our Lives: Using Survival Analysis When Designing and Analyzing Longitudinal Studies of Duration and Timing of Events." {it:Psychological Bulletin.} 110: 268-290
+
+
+{title:Saved results}
+
+{pstd}
+In addition to the results returned by the estimation commands {cmd:logistic}, {cmd:probit} and {cmd:cloglog}, {cmd:dthaz} saves the following in {cmd:e()}:
+
+{synoptset 20 tabbed}{...}
+{p2col 5 20 24 2: Matrices}{p_end}
+{synopt:{cmd:e(Hazard)}}Conditional hazard vector for the specified group{p_end}
+{synopt:{cmd:e(HazardSE)}}Standard error vector for the conditional hazards{p_end}
+{synopt:{cmd:e(Survival)}}Survival probability vector for the specified group{p_end}
+{synopt:{cmd:e(SurvivalSE)}}Standard error vector for the survival probabilities{p_end}
+{p2colreset}{...}
+
+
+{title:Also See}
+
+{psee}
+{space 2}Help: {help prsnperd:prsnperd}, {help msdthaz:msdthaz}

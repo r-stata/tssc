@@ -1,0 +1,84 @@
+{smcl}
+{* 24aug2006/1sep2006}{...}
+{hline}
+help for {hi:sdline}
+{hline}
+
+{title:SD line (reduced major axis)}
+
+{p 8 17 2}
+{cmd:sdline}
+{it:yvar}
+{it:xvar}
+[{cmd:if} {it:exp}] 
+[{cmd:in} {it:range}]
+[
+{cmd:,}
+{cmdab:gen:erate(}{it:ysdlvar}{cmd:)}
+{cmd:nograph}
+{it:graph_options}
+] 
+
+
+{title:Description}
+
+{p 4 4 2} 
+{cmd:sdline} produces a scatter plot of {it:yvar} versus {it:xvar}
+with the SD line or reduced major axis superimposed.
+
+{p 4 4 2}
+This line goes through the intersection of the means (mean of {it:xvar}, mean
+of {it:yvar}) and has slope
+
+{p 8 8 2}sign of corr({it:xvar}, {it:yvar}) * (SD of {it:yvar}) / (SD of {it:xvar}) 
+
+
+{title:Options}
+
+{p 4 8 2} 
+{cmd:generate()} saves the values of {it:yvar} predicted from the SD line
+    as a new variable.
+
+{p 4 8 2}{it:graph_options} are options allowed with {help twoway scatter}. 
+The default options include {cmd:ms(oh none) connect(none l) sort}. 
+Know that the data points are plotted first and the SD line second 
+by {cmd:twoway scatter}. These options include {help plot_option} 
+(Stata 8 only) and {help addplot_option} (Stata 9). 
+
+{p 4 8 2}{cmd:nograph} suppresses the graph and is for situations in which only the
+numerical results for the SD line are desired.
+
+
+{title:Examples}
+
+{p 4 8 2}{cmd:. sdline length width}{p_end}
+{p 4 8 2}{cmd:. sdline length width, gen(length_sd)}{p_end}
+{p 4 8 2}{cmd:. sdline length width, addplot(lfit length width)}
+
+
+{title:Saved results} 
+
+{p 4 4 2}{cmd:r(N)}{space 12}number of observations{break} 
+         {cmd:r(ymean)}{space 8}mean of {it:yvar}{break}
+         {cmd:r(ysd)}{space 10}SD of {it:yvar}{break}
+         {cmd:r(xmean)}{space 8}mean of {it:xvar}{break}
+         {cmd:r(xsd)}{space 10}SD of {it:xvar}{break}
+         {cmd:r(slope)}{space 8}slope of SD line{break}
+
+
+{title:Author}
+
+{p 4 4 2}Nicholas J. Cox, Durham University, U.K.{break} 
+         n.j.cox@durham.ac.uk
+
+
+{title:Acknowledgements}
+
+{p 4 4 2}Allan Reese found typos in this help. 
+
+
+{title:Also see}
+
+{p 4 13 2}
+On-line: {help twoway scatter}
+

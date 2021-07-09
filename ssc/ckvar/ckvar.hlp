@@ -1,0 +1,203 @@
+{smcl}
+{* September 19, 2007 @ 14:17:56}{...}
+{hi:help ckvar} 
+{hline}
+
+{title:Title}
+
+{phang}
+{cmd:ckvar} - Data Validation (or Scoring) using Rules
+{p_end}
+
+{title:Syntax}
+{* put the syntax in what follows. Don't forget to use [ ] around optional items}
+{p 8 16 2}
+   {cmd:ckvar}
+   [{varlist}],
+[ 	{c -(} {opt val:id} | {opt sc:ore} {c )-}
+	{opt key(varlist)}
+	{opt markd:up(newvar)}
+	{opt nov:ars}
+   {opt keepgoing}
+   {opt brief}
+   {opt progress}
+   {opt stub(str)}
+	{opt droplabels}
+   {opt nopreserve}
+   {opt loud}
+	]
+{p_end}
+
+{title:Description}
+
+{pstd}
+{cmd:ckvar} is a utility command which can be used to validate or score values of variables.
+It does this by reading the validation or scoring rules from {help char:characteristics}  which are attached to the variables themselves, instead of relying on external do or ado files.
+{cmd:ckvar} can also be used to check for duplicate observations based on a key, and can mark groups of duplicated keys.
+{p_end}
+
+{pstd}
+This help file explains the syntax of the
+{cmd:ckvar} command itself.
+{p_end}
+
+{pstd}To see how to set or edit the rules used by {cmd:ckvar}, look at the help for {help ckvaredit}. (No knowledge of {help char:characteristics} is needed.)
+{p_end}
+
+{pstd}To see an overview of the purpose of
+{cmd:ckvar}, please look {help ckvar_overview:here}.
+{p_end}
+
+{pstd}To see the details of how {cmd:ckvar} is implemented, and what {help char:charateristics} it uses to validate or score a dataset, please look {help ckchar:here}.
+{p_end}
+
+{title:Options}
+
+{phang}
+{cmd:valid} and {cmd:score} tell whether to run validation
+(i.e. error-checking) routines or scoring routines associated with the
+specified variables. Only one can be specified. The {cmd:valid} option
+is the default. When validatating, a new variable will be produced
+for each variable which has at least one error; all observations are
+either valid or invalid. When scoring, a new score variable will be
+produced for every variable scored, and there is no assumption of just
+two possible outcomes.
+{p_end}
+
+{phang}
+{cmd:key} allows checking for observations with duplicate keys.  The {it:varlist} here 
+defines the variable(s) which together are supposed to define unique
+identifiers for the observations of the dataset (in database terms: the fields which define the
+key). These variables must already exist.
+{p_end}
+
+{phang}
+{cmd:markdup} allows unique marking of groups of duplicate observations so that 
+they can be investigated more easily.  The variable name given here 
+must be that of a new variable.  After the duplicate check has been run, this variable
+contains a 0 for observations which are not part of a group of 
+duplicates and non-negative integer for each observation which is 
+part of a group of duplicates.  Each group has its own number to make
+the comparisons easier.
+{p_end}
+
+{phang}
+{cmd:novars} may be specified together with {cmd:key} if all that is
+desired were a check for duplicates. Specifying this option will
+ignore all validation routines.
+{p_end}
+
+{phang}
+{cmd:keepgoing} tells {cmd:ckvar} to keep running, even if programming
+errors are encountered. This can be used to find all problematic
+characteristics at once. All variables that can be checked are checked.
+All variables with fatal errors are noted.
+{p_end}
+
+{phang}
+{cmd:brief} shortens the validation table produced after the variables are checked by eliminating
+rows for variables which either are completely valid or which do not get validated.
+This is intended for those concentrating on tracking down errors rather than documenting
+their existence. 
+{p_end}
+
+{phang}
+{cmd:progress} echos the name of each variable as it is being
+validated or scored. This is useful for detecting runaway processes,
+though it clutters the screen when checking datasets with many variables.
+{p_end}
+
+{phang}
+{cmd:stub} overrides the usual stub for the
+{help char:characteristics} used by {cmd:ckvar}. By default,
+validation routines use characteristics starting with {cmd:valid},
+while scoring routines use characteristics starting with
+{cmd:score}. The {cmd:stub} option is intended to allow multiple
+possible scoring routines on the same dataset.
+{p_end}
+
+{phang}
+{cmd:droplabels} instructs {cmd:ckvar} to drop value labels
+associated with variables generated when checking errors. This would
+be very rarely used, except when debugging validation or scoring routines.
+{p_end}
+
+{phang}
+{cmd:nopreserve} prevents the dataset from being {help preserve}d before
+running {cmd:ckvar}. By default, the dataset is preserved so that if
+there are problems with the validation or scoring, it is returned to
+its pristine state, without any extra variables. If the data set is
+large, {cmd:nopreserve} can save time.
+{p_end}
+
+{phang}
+{cmd:loud} causes output from the underlying {help dochar} program to be echoed
+to the screen. Its only use is for debugging. 
+{p_end}
+
+{title:Examples}
+
+{phang}{cmd:. ckvar}{p_end}
+{phang2}
+checks all the variables which have validation routines,
+generating indicator variables for variables which have bad data. If there
+are any errors, the total number of errors will be stored in a variable called
+{cmd:error__total}.
+{p_end}
+
+{phang}{cmd:. ckvar, score}{p_end}
+{phang2}
+does the same, but scores all the variables, generating one score
+variable for every variable which has a scoring routine. In this case
+the total will be stored in a variable called {hi:score__total}.
+{p_end}
+
+{phang}{cmd:. ckvar this that theOther}{p_end}
+{phang2}
+checks the three variables {cmd:this}, {cmd:that}, and {cmd:theOther}
+for errors. If there are errors, the total count of errors for each observation is
+put into the new variable {cmd:error__total}.
+{p_end}
+
+{phang}{cmd:. ckvar, key(ssn date_of_visit) markdup(duplicates)}{p_end}
+{phang2}
+runs all the validation routines and checks to see if there are any
+observations which have the same combination of {cmd:ssn} and
+{cmd:date_of_visit}. If there are any
+duplicates, the variable {cmd:duplicates} will mark groups of duplicates
+with different numbers. Finally, if there are any errors, the total number
+of errors found in each observation will be stored in the (new) variable {cmd:error__total}
+{p_end}
+
+{phang}{cmd:. ckvar, key(ssn date_of_visit) markdup(duplicates) novars}{p_end}
+{phang2}
+checks only to see if there are any observations which have both the
+same {cmd:ssn} and the same {cmd:date_of_visit}. Once again, if there are any
+duplicates, the variable {cmd:duplicates} will mark groups of duplicates
+with different numbers. Finally, the {cmd:novars} option states that
+no error checking or scoring is to be done in this case.
+{p_end}
+
+{title:Notes}
+
+{pstd}
+You do not need any understanding of {help char:characteristics} to
+use {cmd:ckvar}, even if you need very complicated rules.
+{helpb ckvaredit} provides a dialog box which allows the rules to be
+entered and edited in a natural fashion.
+{helpb ckvardo} allows the rules to be dumped into a do file for
+application to another dataset.
+If you are, however interested in understanding the naming
+conventions for the characteristics, look at {helpb ckchar}.
+If you are truly masochistic, and would like to see how to program
+complicated rules by hand, first look at {helpb dochar}, and
+then at {helpb docharprog}. 
+{p_end}
+
+{title:Author}
+
+{pstd}
+Bill Rising, StataCorp{break}
+email: brising@stata.com{break}
+web: {browse "http://homepage.mac.com/brising":http://homepage.mac.com/brising}
+{p_end}

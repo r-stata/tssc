@@ -1,0 +1,185 @@
+{smcl}
+{* 14feb2005}{...}
+{hline}
+help for {hi:fsum}
+{hline}
+
+{title:Summary statistics} 
+
+{p 8 16}{cmd:fsum} 
+[{it:varlist}] 
+[{cmd:weight} {it:fweight aweight}]  
+[{cmd:if} {it:exp}]  
+[{cmd:in} {it:range}] 
+[ {cmd:,}
+{cmdab:s:tats(}{it:n miss abspct mean vari sd se p1 p5 p10 p25 p50 median p75 p90 p95 p99  min max lci uci sum}{cmd:)}  
+{cmdab:a:ddstats(}{it:optional statistic}{cmd:)} 
+{cmdab:f:ormat(}{it:format}{cmd:)} 
+{cmdab:p:ctvar(}{it:varlist}{cmd:)} 
+{cmd:not(}{it:varlist}{cmd:)} 
+{cmdab:com:plete} 
+{cmdab:l:abel} 
+{cmdab:v:arname} 
+{cmdab:u:selabel} 
+{cmdab:d:ecsum} 
+{cmdab:cat:var(}{it:optional categorical variable}{cmd:)} 
+{cmdab:mcat:var(}{it:optional categorical variable}{cmd:)} 
+] 
+
+
+{title:Description}
+
+{p}{cmd:fsum} provides summary statistics, including N, # missing, percent 
+missing, mean, variance, standard deviation, standard error, P1, P5, P10 P25, median, 
+P75, P90 P95, P99, minimum, maximum, confidence intervals, sum, and percent for 0/1 
+variables. It can also display categories of a variable in a manner similar 
+to tabulate. {cmd:fsum} allows Stata labels and special user-defined labels. 
+Display width is automatically adjusted for variable and label length. Column 
+width is adjustable by format, and variable labels are available optionally. 
+
+{title:Remarks}
+
+{p}{cmd:fsum} is a general purpose summary statistic program. Its display can 
+be formatted with appropriate labels and variable formats so that its output can
+be pasted into a word processor without the need for further alterations within 
+the word processor.
+
+{p}{cmd:fsum} makes use of 3 potential "labels" to identify each variable. 
+Stata abbreviation of varnames can lead to names that are not suitable
+for presentation tables or, in some instances, many not be easily readable. 
+Substitution of variable labels for varnames many not be a complete solution, 
+for variables labels may be informative yet not suitable for publication tables.
+
+{p}{cmd:fsum} provides a facility to use 2 labels: the Stata variable label and
+a user-defined label. The user-defined label is actually a variable 
+characteristic (char) in the format of {cmd:char} varname[tlabel] description-. 
+See below for a description of entering user-defined labels.
+
+{p}{cmd:fsum} will use as its default use the user-defined label if it exists. 
+If it does not exist, {cmd:fsum} will use "varname". However, if the -uselabel- 
+option is specified, {cmd:fsum} will use the Stata variable label before using 
+varname, but it will do this after first looking for the user-defined label.
+
+{p}By default, {cmd:fsum} reports N, mean, standard deviation, minimum and 
+maximum, essentially mimicking -summarize-. However, many additional statistics are 
+optionally available, including N, # missing, percent missing, mean, standard 
+deviation, standard error, variance, median, p1, p5, p10, p25, p75, p90. p95, p99, 
+minimum, maximum, confidence intervals, sum, and percent for 0/1 variables.
+
+{p} Percent calculation and reporting is done automatically if the variable for 
+percent calculation is either 1) entered in the {cmd:pctvar()} option or 
+2) a "%" sign is found in the user specified label. The ability to calculate 
+percentages in this way can save a great deal of time in the creation of 
+presentation tables, as non-related statistics are left blank.
+
+{p} If the varlist variable is also entered in {cmd:catvar()} or {cmd:mcatvar()} 
+a tabulation of categories for the variable will be performed. If a "%" sign or 
+the word "code" is found in the user specified label, only N, and mean (expressed 
+as a percentage) will be displayed (miss and abspct can also be optionally 
+displayed). Otherwise the full range of selected statistics will be displayed.
+
+{p} If the {cmd:label} option is specified, {cmd:fsum} will display the Stata 
+variable labels at the right of the screen. If the {cmd:varname} option is 
+specified, {cmd:fsum} will display the Stata varnames at the right side of 
+the screen, Both options cannot be selected at the same time.
+
+{p}The default variable format is %9.2f. This results in a compact output. If 
+the variable width exceeds this format, the result will be automatically 
+displayed in exponential form. However, changing the format with the {cmd:format()} 
+option, will automatically re-space the output and can allow results with greater
+output widths to be displayed. The format can be entered as f(w.d) or f(%w.ds).
+
+{p}If the {cmd:sum} statistic is selected it is automatically formatted as %n.0f. 
+However, this can optionally be changed to display the general default format/
+
+{title:Options}
+
+{p}{cmd:stats(statistic name)} allows individual specification of requested 
+statistics. Default is to display N, mean, standard deviation, minimum and 
+maximum. Allowed stats are N mean vari sd p1, p5, p10, p25, (p50), median, p75, p90, p95, 
+p99,,se, min, max, uci, lci, sum, miss, abspct. abspct is percent missing.
+
+{p}{cmd:addstats(statistic name)} allows individual statistics to be added to
+the default so as to avoid having to type all stats() when only one or a 
+few additional statistics are needed. If you request p10 you should also request p1.
+
+{p}Variable names entered in {cmd:pctvar(varlist)} will be treated as 0/1
+categorical variables, and results will be presented as a percent. Variables will 
+also be treated as a percent if the the % sign is in the user-defined label.
+
+{p}{cmd:complete} indicates that observations with missing values for the varlist
+will be excluded.
+
+{p}{cmd:label} requests that the Stata variables be displayed at the right
+of the table.
+
+{p}{cmd:not} requests that the varnames be excluded. This is useful in handling variables 
+that differ by stubs or suffixes.
+
+{p}{cmd:varname} requests that the varnames be displayed at the right
+of the table.
+
+{p}{cmd:uselabel} requests that the Stata variable labels be used for the 
+"variable name" if the user-defined label is not present.
+
+{p}{cmd:catvar} requests that a tabulation of categories for varname be 
+performed. If a "%" sign or the word "code" is found in the user specified 
+label, only N, miss, abspct, and mean will be displayed. Otherwise the full 
+range of selected statistics will be displayed.
+
+{p}{cmd:mcatvar} acts similarly to {cmd:catvar} except that it display missing 
+observations as a separate category.
+
+{p}The {cmd:format} option allows any formatting desired. The default format is 
+%9.2f.
+
+{p}{cmd:decsum} requests that the normal format be applied to the {cmd:sum} statistic. The 
+default if to apply %n.0f.
+
+
+{title:User-defined labels}
+
+{p}User-defined labels provide the opportunity to make word processor ready 
+tables. In addition, they can trigger identification of a variable as one for
+which percent should be calculated if the % sign is part of the label. User 
+defined labels are actually variable characteristics in the form of 
+{cmd:char varname[tlabel] description}. See help for {help char}. 
+Characteristics (labels) are saved with the data set.
+They can be entered from the keyboard with the {cmd:char} command. Since such 
+labels will probably be used repeatedly, they can be entered in a do file or 
+program and called when needed. An example of do file commands is shown directly 
+below"
+
+{p 4 8}{inp:char haq_disa[tlabel] "HAQ (0-3)"} {p_end}
+{p 4 8}{inp:char sex[tlabel] "Sex (% male)"} {p_end}
+{p 4 8}{inp:char age[tlabel] "Age (years)"} {p_end}
+{p 4 8}{inp:char ethorig[tlabel] "Ethnic origin (code)"} {p_end}
+
+{p}As an aid, the program {cmd:nlabel} is provided. This program provides a simple way to create a series of 
+labels at the same time.
+
+
+{title:Examples}
+
+{p 4 8}{inp:. fsum} {p_end}
+{p 4 8}{inp:. fsum age sex income haq, f(10.3) s(n abspct mean median p95 sum)} {p_end}
+{p 4 8}{inp:. fsum age sex esr pcs, s(N mean median lci uci sum), l u} {p_end}
+{p 4 8}{inp:. fsum age sex ethorig pcs,mcat(ethorig) cat(sex)} {p_end}
+{p 4 8}{inp:. fsum t*, not(totinc) f(%9.1f)} {p_end}
+
+{title:Acknowledgements}
+
+{p}Nick Cox made helpful suggestions that improved the program.
+
+{title:Author}
+
+    Fred Wolfe, National Data Bank for Rheumatic Diseases, Wichita, KS  
+    fwolfe@arthritis-research.org
+
+
+{title:Also see}
+
+{p 0 19}On-line:  help for {help summarize}, {help tabstat}, {help univar} if installed, 
+{help nlabel} if installed. 
+{p_end}
+  

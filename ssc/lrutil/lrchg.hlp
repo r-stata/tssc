@@ -1,0 +1,94 @@
+.-
+help for ^lrchg^
+.-
+
+Calculates change in coefficients between logistic models 
+----------------------------
+
+    ^lrchg^ , store(n)
+	or
+    ^lrchg^ , contr(n m)
+
+
+Description
+-----------
+
+^lrchg^ displays the coefficients in two logistic models, and
+calculates the proportion of change in coefficients between two
+models.
+
+This is useful in logistic regression modelling in epidemiology.
+
+Use 
+    ^lrchg^ , store(1) 
+    ^lrchg^ , store(2) 
+    ^lrchg^ , contr(1 2) 
+
+to store two models, then contrast them.
+
+Options
+-------
+
+store(n)
+   Stores logistic regression results in a variable coeffn
+   Use before contrasting two models.
+
+contr(n m)
+   Contrasts two models previously stored.         
+
+nocoeff
+   Drop the calculations of changes in coefficients.
+   
+Examples
+--------
+
+. xi: logistic response i.agek6 i.gend i.agek6*i.gend i.regio 
+. lrchg, store(0)
+. xi: logistic response i.agek6 i.gend i.agek6*i.gend
+. lrchg, store(1)
+. lrchg, contr(0 1)
+
+Likelihood ratio tests and change in coefficients
+between logistic regression models
+--------------------------------------------------
+Diff. in LL =           99.855
+Diff. in df  =               1
+P-value      =          0.0000
+
+Change in common coefficients 
+between models 0 and 1:
+
+ Coefficient   Model 0      Model 1   %change
+--------------------------------------------------
+ Iage_1         0.9293       0.8923       4.0
+ Iage_2         1.2648       1.2064       4.6
+ Igend_2        1.6332       1.6133       1.2
+ IaXg_1_2       0.9801       0.9834      -0.3
+ IaXg_2_2       0.9768       0.9848      -0.8
+--------------------------------------------------
+ Iregio_2       0.9293       0.0000      uniq
+
+Remarks 
+-------
+Presently the coefficients are stored in matrices named
+coeff`n'. This shouldn't cause any problems, but it is
+not elegant.
+
+It might be better to use -estimates hold-  but will 
+have to get back to this.
+
+The author wonders what to do if there are zero degrees 
+of freedom ?
+
+Inspired by the program lrdrop1 by Zhiqiang Wang.
+
+Author
+-------
+    Jan Brogger, University of Bergen, Norway
+    jan.brogger@@med.uib.no (21 May 2000)
+
+Shameless plug :)
+--------------
+ I am looking for internship & residency  in internal 
+ medicine/pulmonary medicine US/EU. Am doing PhD in respiratory 
+ epidemiology now. 

@@ -1,0 +1,79 @@
+{smcl}
+{* 29may2007}{...}
+help for {cmd:starjas}
+{hline}
+
+{title:Title}
+
+{p2colset 5 20 22 2}{...}
+{p2col :{hi:starjas} {hline 2}}Arjas plot to check proportional hazards assumption{p_end}
+{p2colreset}{...}
+
+
+{title:Syntax}
+
+{p 8 15 2}
+{cmd:starjas} {varname} [{cmd:if} {it:exp}] [{cmd:in} {it:range}] [{cmd:,} {cmdab:adj:ust(}{it:varlist}{cmd:)} 
+{cmdab:lev:elplot(}{it:# [#] ..}{cmd:)} {cmd:atobs(}{it:#}{cmd:)} {cmdab:rrgla:nce(}{it:#}{cmd:)} {it:twoway_options} ]
+ 
+{synoptset 29 tabbed}
+{synopthdr}
+{synoptline}
+{syntab:Options}
+{synopt :{opt adj:ust}}specify the variables fitted in the Cox model before checking if {varname} is proportional{p_end}
+{synopt :{opt lev:elplot}}specify the levels of {varname} to be displayed in the plot{p_end}
+{synopt :{opt atobs}}restrict the plot to the first {it:#} events{p_end}
+{synopt :{opt rrgla:nce}}draw a line approximately corresponding in the case of binary covariate to a {it:#} relative risk{p_end}
+
+{syntab :Y-Axis, X-Axis, Caption, Legend}
+{synopt :{it:{help twoway_options}}}some of the options documented in 
+{bind:{bf:[G]} {it:twoway_options}}{p_end}
+{syntab :Add plot}
+{synopt :{opth "plot(addplot_option:plot)"}}add other plots to generated graph{p_end}{synoptline}
+{p2colreset}{...}
+
+{p 4 6 2}You must {cmd:stset} your data before using {cmd:starjas}; see {helpb stset}.{p_end}
+
+
+{title:Description}
+
+{p}{cmd:starjas} graphs Arjas plot by one categorical variable declared in {varname}.{p_end}
+
+{p}Arjas plots allow to check if a covariate should be included in a proportional hazards model 
+and if it has proportional hazards effect.{p_end}
+{p}If a covariate does not need to be in the model, then for each level a roughly 45° line through origin should be plotted. 
+Otherwise Arjas plot will give curves which are approximately linear but with slope differing from 1.{p_end}
+{p}If a covariate has a nonproportional effect on the hazard rate, then the curves will differ nonlinearly from
+45° line. Assume an indicator variable having only two values, the curve for the level 1 should be concave
+if the hazard ratio is increasing in {it: t} whereas the curve for the level 0 should be convex.{p_end}
+
+
+
+{title:Examples}
+
+{p 12 20}{inp: use "C:\Data\BMT", clear}{p_end}
+{p 12 20}{inp: starjas MTX, legend(pos(5) ring(0)) lw(medthick)}{p_end}
+{p 12 20}{inp: starjas Z7cat, adjust(MTX Z1-Z6) legend(pos(5) ring(0)) lc(green navy red brown)}{p_end}
+
+{p}Downloading ancillary files in one of your {cmd:`"`c(adopath)'"'} directory you can run this example.{p_end}
+
+	  {it:({stata "arjas_example BMT":click to run})}
+
+
+{title:Also see}
+
+{p 1 10}Manual:  {hi:{bind:[S] st stcox}}{p_end}
+
+{p 1 10}Online:  {help stcox postestimation}, {help stcox diagnostics}{p_end}
+
+
+
+{title:References}
+
+{p}Klein JP, and Moeschberger ML: Survival Analysis: techniques for Censored and Truncated Data - 2nd ed. (2003), p. 369 - 374.
+Springer{p_end}
+
+
+{title:Authors}
+
+{p}Enzo Coviello ({browse "mailto:enzo.coviello@alice.it":enzo.coviello@alice.it}){p_end}

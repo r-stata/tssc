@@ -1,0 +1,201 @@
+{smcl}
+{* 01Aug2012/26May2010}{...}
+{hline}
+help for {hi:zoib}
+{hline}
+
+{title:Fitting a zero one inflated beta distribution by maximum likelihood}
+
+{p 8 17 2}
+{cmd:zoib} 
+{it:depvar }[{it:indepvars}] 
+{weight} 
+{ifin}
+[{cmd:,} 
+{cmdab:onei:nflate(}{it:varlist_o}{cmd:)} 
+{cmdab:zeroi:nflate(}{it:varlist_z}{cmd:)} 
+{cmd:nozero}
+{cmd:noone}
+{cmdab:phi:var(}{it:varlist_p}{cmd:)} 
+{cmdab:r:obust}
+{cmdab:cl:uster(}{it:clustervar}{cmd:)}  
+{cmdab:l:evel(}{it:#}{cmd:)} 
+{it:maximize_options} 
+]
+
+{p 4 4 2}{cmd:by} {it:...} {cmd::} may be used with {cmd:zoib}; see help
+{help by}. 
+
+{p 4 4 2}{cmd:fweight}s, {cmd:pweight}s, and {cmd:aweight}s are allowed; 
+see help {help weights}.
+
+{p 4 4 2}When using Stata version 11 or higher, {it:indepvars}, 
+oneinflate(), zeroinflate(), and phivar() may contain factor variables; 
+see {help fvvarlist}.
+
+
+
+{title:Description}
+
+{p 4 4 2} {cmd:zoib} fits by maximum likelihood a zero one inflated beta
+distribution to a distribution of a variable {it:depvar}. {it:depvar}
+ranges between 0 and 1: for example, it may be a proportion.  It will 
+estimate the probabilities of having the value 0 and/or 1 as separate
+processes.  The logic is that we can often think of proportions of 
+0 or 1 as being qualitatively different and generated through a different 
+process as the other proportions. 
+
+{p 4 4 2}The zero one inflated beta distribution consists of three parts:
+
+{col 9}a probability that {it:depvar} = 0
+{col 9}a probability that {it:depvar} = 1
+{col 9}the distribution of depvar given that 0 < {it:depvar} < 1
+
+{p 4 4 2}This means that the likelihood is:
+
+{col 9}[1-(Pr({it:depvar = 0})] * [1-Pr({it:depvar = 1})] * Beta({it:depvar} | mu, phi) if 0 < {it:depvar} < 1
+{col 9}Pr({it:depvar} = 0) if {it:depvar = 0}
+{col 9}Pr({it:depvar} = 1) if {it:depvar = 1}
+
+{p 4 4 2}The zero inflation and one inflation parts of this model are
+by default included whenever the dependent variable contains the value
+0 and 1 respectively, and excluded otherwise. The user can force the
+exclusion of the of these parts by specifying the {cmd:nozero} and
+{cmd:noone} options. 
+
+{p 4 4 2} The the effects on the log odds of having the value 0 or 1 on 
+the variable {it:depvar} are represented in the {cmd:zeroinflate} and
+{cmd:oneinflate} equations respectively. The remaining proportions are
+modelled using a beta-distribution useing the parameterization discussed
+in (e.g. Ferrari and Cribari-Neto 2004, Paolino 2001, or Smithson and 
+Verkuilen 2006). These effects are also reported on the logit scale.
+
+{p 4 4 2}
+An alternative to {cmd:zoib} is to assume the proportions represent rare 
+events that did not have had the time to get a single realization, so the 
+0s and 1s are created via the same process as all the other proportions.  
+In this case one can use a fractional logit model as proposed by Papke and
+Wooldridge (1996), which can be estimated using {cmd:glm}, see: 
+{browse "http://www.stata.com/support/faqs/stat/logit.html"}.
+
+{title:Options}
+
+{p 4 8 2} {cmd:zeroinflate()} specifies the variables the influence the 
+log odds of having the value 0 on {it:depvar}. This option can only be
+specified if the value 0 exists in {it:depvar}.
+
+{p 4 8 2} {cmd:oneinflate()} specifies the variables the influence the 
+log odds of having the value 1 on {it:depvar}. This option can only be
+specified if the value 1 exists in {it:depvar}.
+
+{p 4 8 2} {cmd:nozero} specifies that no zero inflation equation is to
+be estimated. This implies that all observations with the value 0 on
+{it:depvar} will be ignored.
+
+{p 4 8 2} {cmd:noone} specifies that no one inflation equation is to
+be estimated. This implies that all observations with the value 1 on
+{it:depvar} will be ignored.
+
+{p 4 8 2} {cmd:phivar()} allow the user to specify each the scale parameter
+for the beta part of the zero one inflated beta distribution as a function 
+of the covariates specified in the respective variable list. A constant 
+term is always included in each equation.
+
+{p 4 8 2}{cmd:robust} specifies that the Huber/White/sandwich estimator
+of variance is to be used in place of the traditional calculation; see
+{hi:[U] 23.14 Obtaining robust variance estimates}.  {cmd:robust}
+combined with {cmd:cluster()} allows observations which are not
+independent within cluster (although they must be independent between
+clusters). 
+
+{p 4 8 2}{cmd:cluster(}{it:clustervar}{cmd:)} specifies that the observations
+are independent across groups (clusters) but not necessarily within groups.
+{it:clustervar} specifies to which group each observation belongs; e.g.,
+{cmd:cluster(personid)} in data with repeated observations on individuals.  See
+{hi:[U] 23.14 Obtaining robust variance estimates}.  Specifying {cmd:cluster()}
+implies {cmd:robust}.
+
+{p 4 8 2}{cmd:level(}{it:#}{cmd:)} specifies the confidence level, in percent,
+for the confidence intervals of the coefficients; see help {help level}.
+
+{p 4 8 2}{cmd:nolog} suppresses the iteration log.
+
+{p 4 8 2}{it:maximize_options} control the maximization process; see 
+help {help maximize}. If you are seeing many "(not concave)" messages in the 
+log, using the {cmd:difficult} option may help convergence.
+
+
+{title:Examples}
+
+{cmd}
+    use k401.dta, clear
+
+    replace totemp = totemp/100
+
+    zoib prate mrate totemp age sole,       ///
+         oneinflate( mrate totemp age sole) 
+
+    mfx
+{txt}
+
+
+{title:Author}
+
+{p 4 4 2}Maarten L. Buis, WZB{break}maarten.buis@wzb.eu
+
+
+{title:References}
+
+{p 4 4 2}
+Cook, D.O.,  Kieschnick, R. and McCullough, B.D. 2008. Regression analysis of proportions 
+in finance with self selection. {it:Journal of Empirical Finance} 15(5):860{c -}867.
+
+{p 4 4 2}
+Evans, M., Hastings, N. and Peacock, B. 2000. {it:Statistical distributions.}
+New York: John Wiley.
+
+{p 4 4 2}
+Ferrari, S.L.P. and Cribari-Neto, F. 2004.
+Beta regression for modelling rates and proportions. 
+{it:Journal of Applied Statistics} 31(7): 799{c -}815.
+
+{p 4 4 2}
+Johnson, N.L., Kotz, S. and Balakrishnan, N. 1995.
+{it:Continuous univariate distributions: Volume 2.} New York: John Wiley.
+
+{p 4 4 2}
+MacKay, D.J.C. 2003. 
+{it:Information theory, inference, and learning algorithms.} 
+Cambridge: Cambridge University Press (see p.316). 
+{browse "http://www.inference.phy.cam.ac.uk/itprnn/book.pdf":http://www.inference.phy.cam.ac.uk/itprnn/book.pdf}
+
+{p 4 4 2}
+Papke, L.E. and Wooldridge, J.M. 1996.
+Econometric Methods for Fractional Response Variables with an Application to 
+401(k) Plan Participation Rates. {it:Journal of Applied Econometrics} 11(6):619{c -}632.
+
+{p 4 4 2}
+Paolino, P. 2001.
+Maximum likelihood estimation of models with
+beta-distributed dependent variables. {it:Political Analysis} 9(4): 325{c -}346.
+{browse "http://polmeth.wustl.edu/polanalysis/vol/9/WV008-Paolino.pdf":http://polmeth.wustl.edu/polanalysis/vol/9/WV008-Paolino.pdf}
+
+{p 4 4 2}
+Smithson, M. and Verkuilen, J. 2006.
+A better lemon squeezer? Maximum likelihood regression with beta-distributed dependent variables.
+{it:Psychological Methods} 11(1): 54{c -}71.
+
+
+{title:Acknowledgement}
+
+{p 4 8 2}
+Jeroan Allison helpfully identified a bug in a pervious version of the {cmd:predict} function of {cmd:zoib}.
+
+
+{title:Also see}
+
+{p 4 13 2}
+Online: help for {help zoib postestimation}, {help glm}
+
+{p 4 13 2}
+If installed: {help betafit}, {help dirifit}, {help fmlogit}

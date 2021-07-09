@@ -1,0 +1,148 @@
+/*
+fdrisk dialog version 1.00 , 19.03.2020, Sven-Kristjan Bormann
+for fdrisk version 1.00 
+
+To install in User Statistics menu via Stata commands:
+  
+  . window menu append item "stUserStatistics" "SGPV False Confirmation/Discovery Risk (&fdrisk)" "db fdrisk"
+
+  . window menu refresh
+
+To permanently install, place the commands in your -profile.do- file.
+*/
+
+VERSION 12.0
+POSITION . . 420 470
+INCLUDE _std_large
+OK ok1,      label("OK")
+CANCEL can1, label("Cancel")
+SUBMIT sub1, label("Submit") 
+HELP hlp1,   view("help fdrisk")  
+RESET res1
+COPY copy1
+
+
+LIST nullweights_list
+BEGIN
+	Point
+	Uniform
+	TruncNormal
+END
+
+LIST altweights_list
+BEGIN
+	Uniform
+	TruncNormal
+END
+
+
+LIST inttype_list
+BEGIN
+	confidence
+	likelihood
+END
+
+LIST sgpval_list
+BEGIN
+	0
+	1
+END
+
+DIALOG main, label("Fdrisk 1.00 - False discovery/confirmation risk (Fdr/Fcr)") tabtitle("Main")
+BEGIN
+
+
+	GROUPBOX gb_null	   _lft  _top   270     110, label("Null-Hypothesis Interval")
+	TEXT tx_nulllo 		   +10   _ss    80       ., label("Lower Bound") 
+	EXP ex_nulllo		    @     _ss   250      ., label("Expression")  option(nulllo) ///
+													tooltip("Set lower bound of the null-hypothesis interval") error(Lower Bound null-hypothesis interval)
+										   
+	TEXT tx_nullhi 		    20   +20     80      ., label("Upper Bound")
+	EXP ex_nullhi	 	    @	 _ss    250      ., label("Expression") option(nullhi) ///
+													tooltip("Set upper bound of the null-hypothesis interval") error(Upper Bound null-hypothesis interval)
+	
+	TEXT tx_sgpval           300  -60       140   ., label("Set Fdr/Fcr:")
+	COMBOBOX cb_sgpval       @  _ss      40   20, option(sgpval) content(sgpval_list) dropdownlist  default(0) tooltip("If you choose 0, the False Discovery Risk will be calculated. If you choose 1, the False Confirmation Risk will be calculated.")
+	
+	TEXT tx_se			    300   _ss   80      ., label("Standard Error")
+	EDIT ed_se			    @     _ss     @     ., option(stderr) default(1) numonly error(Standard error) tooltip("Standard error of the point estimate")
+	
+	TEXT tx_nullspace      10    _xls    200    ., label("Null hypothesis parameter space:")
+	EXP ex_nullspace       @    _ss    400    ., option(nullspace) error(Nullspace) label("Expression") ///
+												tooltip("Support of the null probability distribution.")
+	
+	TEXT tx_nullweights     10    _ls    @    ., label("Null hypothesis distribution:")
+	COMBOBOX cb_nullweights @    _ss     100    ., dropdown content(nullweights_list) option(nullweights) error(Nullweights) ///
+													tooltip("The probability distribution for the null parameter space.")
+	
+	//FRAME fr_altspace		5  	+20		410		120
+	TEXT tx_altspace     	10   _ls     200    ., label("Alternative hypothesis parameter space:")
+	EXP ex_altspace        	@   _ss      400    ., option(altspace) error(Altspace) label("Expression") tooltip("Support for the alternative probability distribution")
+	
+	TEXT tx_altweights      @   _ls      200    ., label("Alternative hypothesis distribution:")
+	COMBOBOX cb_altweights  @   _ss      @    ., dropdown content(altweights_list) option(altweights) error(Altweights) tooltip("Probability distribution for the alternative parameter space")
+	
+	TEXT tx_inttpye       	@  _xxls      @    ., label("Interval type:")
+	COMBOBOX cb_inttype     @  _ss      @    ., dropdown content(inttype_list) option(inttype) error(Interval type) 
+	
+	TEXT tx_intlevel 		 @  _ls      @    ., label("Interval level:")
+	EDIT ed_intlevel         @  _ss      @    ., option(intlevel) error(Interval level)
+	
+	TEXT tx_pi0           +250  -70     120   ., label("Prior probability of H0:")
+	EDIT ed_pi0              @  _ss     100   ., option(pi0) default(0.5) numonly tooltip("This value can be only between 0 and 1 (exclusive).")
+	
+	
+	
+	
+END
+
+/*
+PROGRAM pi0_check // not sure if it is reasonable to check this boundary within the dialog or within the command
+BEGIN
+	if !(main.ed_pi0.ge(0) & main.ed_pi0.lt(1){
+		stop stopbox "Option pi0 takes only values between 0 and 1 (exclusive)"
+	}
+	else{
+			optionarg main.ed_pi0
+	}
+END
+*/
+
+PROGRAM command
+BEGIN
+	put "fdrisk "
+	beginoptions
+		require main.ex_nulllo
+		optionarg main.ex_nulllo
+		
+		require main.ex_nullhi
+		optionarg main.ex_nullhi
+		
+		require main.ed_se
+		optionarg main.ed_se
+		
+		require main.ex_nullspace
+		optionarg main.ex_nullspace
+		
+		require main.cb_nullweights
+		optionarg main.cb_nullweights 
+		
+		require main.ex_altspace
+		optionarg main.ex_altspace
+		
+		require main.cb_altweights
+		optionarg main.cb_altweights 
+		
+		require main.cb_inttype
+		optionarg main.cb_inttype 
+		
+		require main.ed_intlevel
+		optionarg main.ed_intlevel
+		
+		optionarg main.ed_pi0
+
+		optionarg main.cb_sgpval
+	endoptions
+
+END
+

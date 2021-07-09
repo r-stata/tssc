@@ -1,0 +1,77 @@
+
+.-
+help for ^wosload^
+.-
+
+Load datasets from Web of Science data
+----------------------------------------------------------
+
+ ^wosload^ filename1 filename2... 
+ 
+Description
+-----------
+
+^wosload^
+Loads textfiles from Web of Science (Wos).  Downloaded 
+files from from WoS are saved as "Full record" (with or 
+without Cited References) to "Tab-delimited (Win)"-files. 
+^wosload^ imports the address fields in multiple variables, 
+so that the address field has no limit on its length. 
+All other fields are limited  to Stata's standard 
+244 character length. Variables that go beyond 244 
+characters, for example the abstract variable,will be
+truncated. Variables are labeled in accordance with the
+definitions provided by Thompson Reuters available here: 
+
+http://images.webofknowledge.com/WOKRS53B4/help/WOK/hswosﬁeldtags.html.
+
+Before textfiles from Wos can be loaded by Stata hey
+need to be converted from UTF-16 text format. Open the text
+file using a text editor and save it in a format other than
+UTF-16. Only then can the files can be used by ^wosload^.
+
+
+Note
+----
+
+For a more extensive description of this program see:
+
+Bornmann, L. & Ozimek, A. (in press). Stata commands for 
+importing bibliometric data and processing author address 
+information. Journal of Informetrics 
+
+
+
+
+Examples
+--------
+
+ . ^wosload "C:\Documents\web_of_science_file1" "C:\Documents\web_of_science_file2" "C:\Documents\web_of_science_file3"^
+ 
+ . ^cd "C:\Documents"^
+ . ^wosload "web_of_science_file1" "web_of_science_file2" "web_of_science_file3"^
+
+ . ^cd "C:\Documents"^
+ . ^wosload web_of_science_file1 web_of_science_file2 web_of_science_file3^
+
+
+
+See Also
+-------
+^wosaddress^, ^groupdist^, ^geocode^
+
+
+Authors
+-------
+
+      Adam Ozimek
+      Econsult Corporation
+      ozimek@econsult.com
+      
+      Lutz Bornmann
+      Max Planck Society
+      bornmann@gv.mpg.de
+      
+
+
+

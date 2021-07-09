@@ -1,0 +1,62 @@
+*Version October 2015
+----------------------
+basic syntax:
+
+egi var, in(industry) st(state)index(#) mult(weight_var) by(year)
+
+Description:
+
+EGI calculates Ellision and Glaeser's index of geographical concentration of various 
+industries. The module computes industry and region specific share of employment and 
+also suitable for survey data where information up to plant level is available. EGI 
+also evaluate other components of Ellision and Glaeser's index like square deviation 
+of employment share  and Herfindhal index of plant level employment concentration. 
+
+Ellision and Glaeser's index
+
+EGIi = (GIi - HIi)/(1-HIi)
+
+where, GIi = Sum of squared deivation of ith industry's state employment share from
+a measure Ss. 
+
+Ss = employment share ith state in the average industry. 
+
+Hi = Herfindhal style measure of the plant level concentration of employment in ith 
+industry. 
+
+EGI syntax return and store the Ellision and Glaeser's index for each industry variety 
+as a new variable. By choosing suitable index option it may also return other components. 
+Option 
+ 
+
+Option
+-------
+by(varlist): allows groups defined by `varlist' e.g. (year)
+
+mult : allows for computing weighted index
+
+Examples:
+----------
+egi worker , in(nic2) st(stcode) index(EGI) by(year) mult(mult)
+egi worker , in(nic2) st(stcode) index(HHI) by(year)
+egi worker , in(nic2) st(stcode) index(GI) 
+egi worker , in(nic2) st(stcode) index(SS) 
+
+Author:
+Jay Dev Dubey
+Jawaharlal Nehru University
+New Delhi					
+jaydevdubeyster@gmail.com
+
+Acknowladgemnt:
+---------------
+Pritam Datta (PHFI)
+
+References:
+---------------
+
+Ellison, Glenn, and Edward L. Glaeser. Geographic concentration in US manufacturing industries: 
+a dartboard approach. No. w4840. National Bureau of economic research, 1994.
+
+Dumais, Guy, Glenn Ellison, and Edward L. Glaeser. "Geographic concentration as a dynamic process." 
+Review of Economics and Statistics 84.2 (2002): 193-204.

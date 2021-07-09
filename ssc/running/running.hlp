@@ -1,0 +1,261 @@
+{smcl}
+{* 01apr2005/3dec2008}{...}
+{hline}
+help for {hi:running}{right:(SJ9-1: sed9_3; SJ5-2: sed9_2; STB-41: sed9_1; STB-24: sed9)}
+{hline}
+
+{title:Symmetric nearest neighbour smoothing} 
+
+{p 8 17 2}
+{cmd:running}
+{it:yvar} 
+[{it:xvar}] 
+[{cmd:if} {it:exp}] 
+[{cmd:in} {it:range}] 
+[{it:weight}] 
+[{cmd:,} 
+{cmd:ci} 
+{cmdab:d:ouble} 
+{c -(} 
+{cmdab:k:nn(}{it:#} | {it:knnvar}{cmd:)} 
+{c |} 
+{cmdab:sp:an(}{it:#}{cmd:)} 
+{c )-} 
+{cmdab:log:it} 
+{cmdab:m:ean}
+{cmdab:r:epeat(}{it:#}{cmd:)}
+{cmdab:tw:ice} 
+{cmd:genb(}{it:bvar}{cmd:)} 
+{cmdab:gen:erate(}{it:newvar}{cmd:)} 
+{cmd:gense(}{it:sevar}{cmd:)} 
+{cmd:replace}
+{cmdab:ciop:ts(}{it:rarea_options}{cmd:)} 
+{cmdab:lineop:ts(}{it:line_options}{cmd:)} 
+{cmdab:nog:raph}
+{cmd:nopts}
+[{cmdab:no:}]{cmdab:vj:itter} 
+{cmdab:sc:atter(}{it:scatter_options}{cmd:)}  
+{cmd:plot(}{it:plot}{cmd:)} 
+{cmd:addplot(}{it:plot}{cmd:)} 
+{it:twoway_options}
+]
+
+
+{title:Description} 
+
+{p 4 4 2} 
+{cmd:running} smooths {it:yvar} on {it:xvar}. By default the smoothed version
+is a running line: a running mean is also available.  A graph is given of
+{it:yvar} together with its smooth plotted against {it:xvar}, unless
+suppressed. If {it:xvar} is not provided, {it:yvar} is smoothed against the
+current order of observations.
+
+{p 4 4 2} 
+Only analytic weights ({cmd:aweight}s) are allowed; see {help weights}.
+
+
+{title:Options} 
+
+{title:{it:Smoothing options}} 
+
+{p 4 8 2}
+{cmd:ci} produces a pointwise confidence interval for the smoothed values of
+{it:yvar}.  The width is determined by the current value of the macro
+${cmd:S_level}. Not available with {cmd:twice}, {cmd:repeat()} or {cmd:logit}.
+
+{p 4 8 2} 
+{cmd:double} doubles the value of {cmd:repeat()}.  If {cmd:repeat()} is not
+specified, {cmd:double} is equivalent to {cmd:repeat(2)}. 
+
+{p 4 8 2} 
+{cmd:knn(}{it:#} | {it:knnvar}{cmd:)} controls the number {it:k} of nearest
+neighbours used on each side of the smoothed point. You may specify a constant
+{it:#} or a variable {it:knnvar}. The value {it:#} is stored in {cmd:r(knn)}.
+The greater the value, the greater the smoothing. You are not allowed to
+specify both {cmd:span()} and {cmd:knn()}.
+
+{p 4 8 2} 
+{cmd:logit} transforms the smooth and plots the {it:y} axis on a logit scale.
+Values of 0 and 1 are plotted just above and outside the range of the smoothed
+curve.
+
+{p 4 8 2} 
+{cmd:mean} specifies running-mean least-squares smoothing; default is
+running-line.
+
+{p 4 8 2} 
+{cmd:repeat(}{it:#}{cmd:)} specifies the number of times the data are to be
+smoothed. The default {it:#} is 1.  Increasing {it:#} increases the time it
+takes to calculate the smooth but improves the smooth.  {cmd:repeat(2)}
+corresponds to "smoothing the smooth". The value of {it:#} may not exceed 7.
+
+{p 4 8 2} 
+{cmd:span(}{it:#}{cmd:)} controls the span or proportion of the data to
+be used in the symmetric nearest neighbours. 
+If {cmd:span()} is specified and {it:n} is the number of observations,
+the argument of 
+{cmd:knn()} is defined to be {bind:({it:n} * {cmd:span} - 1) / 2}. 
+{cmd:span} must be in the range (0,2]. (It must be less than 1 when
+using {cmd:mean}.)  Span 2 corresponds to fitting a straight line.
+The value of {it:#} is stored in {cmd:r(span)}.
+You are not allowed to specify both {cmd:span()} and {cmd:knn()}.
+
+{p 4 8 2}
+{cmd:twice} carries out Tukey's 'twicing' procedure whereby
+residuals from the original fit are smoothed and added back to the fit
+to obtain the final smooth ("smoothing the rough" or "reroughing" in
+Tukey's terminology). The result is somewhat rougher than would have
+been obtained without the application of twicing, but may be a better
+fit to the data.
+
+{title:{it:Saving results options}} 
+
+{p 4 8 2} 
+{cmd:genb(}{it:bvar}{cmd:)} creates {it:bvar} containing the local slope
+estimates. They constitute a local estimate of the derivative of the smoothed
+values of {it:yvar} with respect to {it:xvar}. Not available with {cmd:mean},
+{cmd:twice}  or {cmd:logit}.
+
+{p 4 8 2} 
+{cmd:generate(}{it:newvar}{cmd:)} creates {it:newvar} containing the smoothed
+values of {it:yvar}.  Note that {it:newvar} will be on a logit scale if
+{cmd:logit} is used.
+
+{p 4 8 2} 
+{cmd:gense(}{it:sevar}{cmd:)} creates {it:sevar} containing the pointwise
+standard error of smoothed values of {it:yvar}.  Not available with
+{cmd:twice}, {cmd:repeat()} or {cmd:logit}.
+
+{p 4 8 2}
+{cmd:replace} allows variables specified by any of the
+{cmd:generate()}, {cmd:genb()}, {cmd:gense()} options to be replaced
+if they already exist.
+
+{title:{it:Graphics options}} 
+
+{p 4 8 2}{cmd:ciopts()} are options of {help twoway rarea}. 
+These should be specified to control the rendering of the confidence
+interval.  
+
+{p 4 8 2} 
+{cmd:lineopts()} are options of {help twoway line}.  
+These should be specified to control the rendering of the smoothed
+lines.  
+
+{p 4 8 2} 
+{cmd:nograph} suppresses the graph. 
+
+{p 4 8 2} 
+{cmd:nopts} suppresses the scatter plot of {it:yvar}. Only the smoothed
+line (and if {cmd:ci} is specified, the pointwise CI) is plotted.
+
+{p 4 8 2} 
+{cmd:novjitter} specifies no vertical jittering of 0 and 1 values. The 
+default with {cmd:logit} is that they are jittered vertically only. Note 
+that {cmd:jitter()} may be specified within {cmd:scatter()}, but that this 
+specifies standard Stata jittering which is both vertical and horizontal.
+
+{p 4 8 2}
+{cmd:scatter(}{it:scatter_options}{cmd:)} are options of 
+{help scatter}.  These should be specified to control the rendering of the
+original data points. The default includes {cmd:ms(oh)} ({cmd:ms(p)}
+with over 299 observations). 
+
+{p 4 8 2}{cmd:plot(}{it:plot}{cmd:)} provides a way to add other plots to the 
+generated graph; see help {help plot_option:plot}. (Stata 8 only) 
+
+{p 4 8 2}{cmd:addplot(}{it:plot}{cmd:)} provides a way to add other plots to the
+generated graph; see help {help addplot_option:plot}. (Stata 9 up) 
+
+{p 4 8 2}{it:twoway_options} are other options of {help twoway}. 
+
+
+{title:Remarks} 
+
+{p 4 4 2} 
+Subsets of 2{it:k} + 1 observations are used for calculating smoothed values for
+each point in the data except for end points, for which smaller uncentred
+subsets are used.  The subsets consist of the closest {it:k} points with
+{it:xvar} values less than or equal to that of the given point, the point
+itself, and the closest {it:k} points with {it:xvar} values greater than or
+equal to the given point.
+
+{p 4 4 2}
+It should be noted that since the neighbourhoods are asymmetric in the tails,
+the running mean is subject to bias in the tails. Other than in the tails,
+using {cmd:mean} will produce the same result as using the default smooth
+whenever the {it:xvar} values are evenly spaced.  
+
+{p 4 4 2} 
+{cmd:repeat(3)}, for instance, first smooths {it:yvar} creating {it:yhat1},
+say; next {it:yhat1} is smoothed creating {it:yhat2}, and finally {it:yhat2}
+is smoothed creating {it:yhat3}.  
+
+{p 4 4 2}
+See Royston and Cox (2005) for a multivariable implementation of {cmd:running}. 
+
+
+{title:Examples} 
+
+{p 4 8 2} 
+{cmd:. running mpg weight}
+
+{p 4 8 2}
+{cmd:. running mpg weight, span(0.75) ci}
+
+{p 4 8 2}
+{cmd:. running mpg weight, knn(5) generate(fit) gense(sfit) replace}
+
+{p 4 8 2}
+{cmd:. running mpg weight, twice}
+
+
+{title:Authors} 
+
+{p 4 4 2}Peter Sasieni{break} 
+	 Queen Mary, University of London{break} 
+	 peter.sasieni@cancer.org.uk 
+
+{p 4 4 2}Patrick Royston{break} 
+         MRC Clinical Trials Unit{break} 
+	 patrick.royston@ctu.mrc.ac.uk 
+	 
+{p 4 4 2}Nicholas J. Cox{break} 
+	 Durham University{break} 
+	 n.j.cox@durham.ac.uk 
+
+
+{title:References} 
+
+{p 4 8 2} 
+Royston, P. and Cox, N.J. 2005. 
+A multivariable scatterplot smoother
+{it:Stata Journal} 5(3): 405{c -}412. 
+{browse "http://www.stata-journal.com/sjpdf.html?articlenum=gr0017":http://www.stata-journal.com/sjpdf.html?articlenum=gr0017}
+
+{p 4 8 2} 
+Sasieni, P. 1995. 
+Symmetric nearest neighbor linear smoothers. 
+{it:Stata Technical Bulletin} 24: 10{c -}14 
+({it:STB Reprints} Vol. 4, 97{c -}101). 
+{browse "http://www.stata.com/products/stb/journals/stb24.pdf":http://www.stata.com/products/stb/journals/stb24.pdf}
+
+{p 4 8 2} 
+Sasieni, P. and Royston, P. 1998. 
+Pointwise confidence intervals for running. 
+{it:Stata Technical Bulletin} 41: 17{c -}23 
+({it:STB Reprints} Vol. 7, 156{c -}163). 
+{browse "http://www.stata.com/products/stb/journals/stb41.pdf":http://www.stata.com/products/stb/journals/stb41.pdf}
+
+{p 4 8 2}
+Sasieni, P., Royston, P. and Cox, N.J. 2005. 
+Software update for running. 
+{it:Stata Journal} 5(2): 285. 
+{browse "http://www.stata-journal.com/sjpdf.html?articlenum=up0011":http://www.stata-journal.com/sjpdf.html?articlenum=up0011}
+
+
+{title:Also see} 
+
+{p 4 13 2}Manual:  {hi:[R] lowess}, {hi:[R] lpoly}, {hi:[R] smooth} 
+
+{p 4 13 2}Online:  help for {help lowess}, {help lpoly}, {help smooth}, {help mrunning} (if installed) 

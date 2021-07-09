@@ -1,0 +1,314 @@
+{smcl}
+{* 20Oct2006; prior versions 23mar2004; 22Mar2004; 17Mar2004; 16Mar2004; 04mar2004; 29Oct2003}
+{hline}
+help for {hi:collapseunique}
+{hline}
+
+{title:Collapse a dataset to unique observations of a specified set of basis variables}
+
+{p 8 17 2}
+{cmd:collapseunique}
+[{it:varlist}]
+[{cmd:if} {it:exp}]
+[{cmd:in} {it:range}] [{cmd:, by(}{it:byvars}{cmd:)}
+{cmd:testsep} {cmd:fast} {cmdab:emptyv:arlist}]
+
+
+{title:Description}
+
+{p 4 4 2}
+{cmd:collapseunique} performs an action that is similar to that of
+{help collapse}, but rather than summarizing over a multitude of values, it
+yields the unique values within by-groups, provided that
+the values are indeed unique.
+
+{p 4 4 2}
+{it:varlist} is the set of variables you want to collect which are supposedly
+functionally dependent on {it:byvars}.
+
+{p 4 4 2}
+{cmd:by(}{it:byvars}{cmd:)} specifies
+the "basis" on which you are reducing the dataset {c -} the
+variables on which {it:varlist} is supposedly functionally dependent.
+
+{p 4 4 2}
+{cmd:collapseunique} tests to be sure that all of the variables in
+{it:varlist} are functionally dependent on {it:byvars}.  If that test passes,
+then the dataset is reduced to one observation per unique value (or unique
+tuple of values)
+of {it:byvars}, and only those variables mentioned in {it:varlist} or
+{it:byvars} are retained.  Thus, it generally reduces both observations and
+variables.
+Note that in making this reduction, there is no ambiguity of which
+{it:varlist} values to choose, because of the functional dependency.
+
+{p 4 4 2}
+Other variables (those not mentioned in {it:varlist} or
+{it:byvars}) are dropped, since they might not be functionally dependent on
+{it:byvars}, and thus, would, if retained, 
+have no logical connection to the corresponding {it:byvars} values;
+such variables would have an arbitrary representative value
+retained in the reduction step, and could be inconsistent in repeated runs.
+
+{p 4 4 2}
+After this successfully runs, the resulting dataset will be sorted by
+{it:byvars} (providing it exists), which also becomes a key for the
+resulting dataset.  (A key is a set of variables
+that uniquely identify obserations.  Thus, in a typical usage, you would not
+have {it:byvars} as the key for the
+starting dataset, since, in that case, the dataset is already "reduced".)
+
+{p 4 4 2}
+See {help funcdep} for a further explanation of functional dependency.
+
+
+{title:Additional Options}
+
+{p 4 8 2}
+{cmd:testsep} performs the functional dependency test of {it:varlist} one
+variable at a time; the default is to test them all at once.  The difference
+is that if the test fails, and if {it:varlist} contains multiple variables,
+then under {cmd:testsep}, you will be able to tell which variable(s) caused
+the failure.  (When exploring data for functional dependency, it may be useful
+to first use {help funcdep}.)
+
+{p 8 8 2}
+It is less efficient to use {cmd:testsep}, but the difference is negligible
+on small datasets.  Also, {cmd:testsep} will generate more output noise.
+
+{p 4 8 2}
+{cmd:fast} has the same effect as the {cmd:fast} option in {help collapse};
+it specifies that {cmd:collapseunique} not do extra work (a {help preserve})
+so that it can restore the original data should the user press {hi:Break}
+{c -} or, additionally, if the functional dependency test fails.
+Thus, it is faster for large datasets, but is potentially dangerous.
+See more on this subject under {ul:{bf:Remarks}}.
+
+{p 4 8 2}
+{cmdab:emptyv:arlist} is required if {it:varlist} is absent or is
+a subset of {it:byvars}; it is ignored otherwise.  This is a safeguard
+against accidentally reducing the
+data; it confirms that you truly intend to reduce to the unique values in
+{it:byvars}.  (Without this safeguard, it would be easy to accidentally
+clobber the data.)
+
+
+{title:Remarks}
+
+{p 4 4 2}
+The purpose of {cmd:collapseunique} is to extract embedded functional
+dependency information,
+which you may subsequently want to {help save} in a separate dataset.  Thus, it
+facilitates data normalization.  More on this later.  There are other possible
+uses, which will be explained under {ul:{bf:Examples}}.
+
+{p 4 4 2}
+A simple example may help illustrate the action of this command:
+
+{com}. list, noobs
+{txt}
+  {c TLC}{hline 3}{c -}{hline 3}{c -}{hline 3}{c TRC}
+  {c |} {res}a   b   c {txt}{c |}
+  {c LT}{hline 3}{c -}{hline 3}{c -}{hline 3}{c RT}
+  {c |} {res}6   4   7 {txt}{c |}
+  {c |} {res}9   4   7 {txt}{c |}
+  {c |} {res}1   6   5 {txt}{c |}
+  {c |} {res}2   6   5 {txt}{c |}
+  {c |} {res}4   6   5 {txt}{c |}
+  {c |} {res}2   8   5 {txt}{c |}
+  {c BLC}{hline 3}{c -}{hline 3}{c -}{hline 3}{c BRC}
+
+{com}. collapseunique c, by(b)
+{txt}{it:(output omitted)}
+
+{com}. list, noobs
+{txt}
+  {c TLC}{hline 3}{c -}{hline 3}{c TRC}
+  {c |} {res}b   c {txt}{c |}
+  {c LT}{hline 3}{c -}{hline 3}{c RT}
+  {c |} {res}4   7 {txt}{c |}
+  {c |} {res}6   5 {txt}{c |}
+  {c |} {res}8   5 {txt}{c |}
+  {c BLC}{hline 3}{c -}{hline 3}{c BRC}
+
+{p 4 4 2}
+At this point, you can save this table, and
+then go back and remove c
+from the original table.  The resulting two tables constitute a
+{it:normalized} version of the original table, where you have "factored out"
+the functional dependency of c on b.  (Note that in this example,
+c is functionally dependent on b, but not vice-versa.)
+
+{p 4 4 2}
+You would not normally specify {it:varlist} and {it:byvars} such that
+an overlap exists between them, however there is no harm in having one.
+Any variables common to both are removed from {it:varlist} at the outset.
+This can potentially make {it:varlist} empty (if it is a subset of {it:byvars}).
+
+{p 4 4 2}
+{it:varlist} may be absent (or it may become empty due to
+editing as described above), in which case the dataset
+is reduced to the unique tuples of values in {it:byvars}.
+Note the requirement of the {cmdab:emptyv:arlist} option in this case.
+(An absent {it:varlist}
+does not default to {cmd:_all}.  Note also, that an empty {it:varlist}
+is always functionally dependent on any {it:byvars}.)
+
+{p 4 4 2}
+{cmd:by(}{it:byvars}{cmd:)} may be absent, in which case the whole dataset is
+treated as one by-group, and is reduced to a single observation containing
+{it:varlist}, provided that the
+values of {it:varlist} are constant over the whole set.
+
+{p 4 4 2}
+Either {it:varlist} or {it:byvars} may be absent, but not both.
+
+{p 4 4 2}
+{cmd:collapseunique} differs from {help collapse} in that it may refuse to
+do any action at all, depending on the content of the data, whereas
+{cmd:collapse} does not have such a sensitivity to the data.
+
+{p 4 4 2}
+{cmd:collapseunique} treats missing values (including the extended missing
+values) as distinct.
+
+{p 4 4 2}
+Note regarding {cmd:fast}: If the functional dependency test fails,
+or if the user presses {hi:Break},  the dataset is {help restore}d to its
+original state, unless {cmd:fast} is specified.  {cmd:collapseunique} starts
+by filtering on any {cmd:if} or {cmd:in} qualifiers that may be present.
+Therefore, under {cmd:fast},
+if the functional dependency test fails or the user presses {hi:Break},
+the dataset is left in the state as screened by the {cmd:if} or {cmd:in}
+qualifiers, if any.
+
+
+{title:Examples}
+
+{p 6 6 2} {cmd:. collapseunique county_median_income, by(state county)}
+
+{p 6 6 2} {cmd:. collapseunique family_income family_size , by(familyid year)}
+
+
+{p 4 4 2}
+Another use of {cmd:collapseunique} is to reduce a dataset to one
+observation per
+by-group after creating aggregate measures such as those generated by
+{help egen} functions, though in many cases, the result could be
+achieved in one command using {help collapse} (and {cmd:collapse} has some
+additional advantages such as the ability to take weights).
+
+{p 6 6 2} {cmd:. egen meanincome= mean(income), by(state)}{p_end}
+{p 6 6 2} {cmd:. egen maxincome= max(income), by(state)}{p_end}
+{p 6 6 2} {cmd:. collapseunique meanincome maxincome, by(state)}{p_end}
+
+{p 4 4 2}
+The foregoing set of commands could be replaced by one {help collapse} command.
+But there are some types of aggregations that are not handled by
+{cmd:collapse}, for example,
+
+{p 6 6 2} {cmd:. egen kurtincome= kurt(income), by(state)}{p_end}
+{p 6 6 2} {cmd:. collapseunique kurtincome, by(state)}{p_end}
+
+
+{p 4 4 2}
+Yet another possible use of {cmd:collapseunique} is to eliminate duplicate
+observations:
+
+{p 6 6 2} {cmd:. collapseunique _all, by(recordid)}{p_end}
+
+{p 4 4 2}
+The prior example presumes a variable (recordid) which would be key if it
+weren't for the duplicate obserevations.  If you just want to reduce to
+all unique observations, you could do...
+
+{p 6 6 2} {cmd:. collapseunique, by(_all) emptyvarlist}{p_end}
+
+
+{title:Additional Remarks}
+
+{p 4 4 2}
+One way to understand the action of {cmd:collapseunique} is to note that...
+
+{p 6 6 2} {cmd:. collapseunique a, by(k)}
+
+{p 4 4 2}
+is roughly equivalent to...
+
+{p 6 6 2} {cmd:. collapse (max) maxa=a (min) mina=a , by(k)}{p_end}
+{p 6 6 2} {cmd:. assert maxa==mina}{p_end}
+{p 6 6 2} {cmd:. rename maxa a}{p_end}
+{p 6 6 2} {cmd:. drop mina}{p_end}
+
+{p 4 4 2}
+where the dataset is {help restore}d if the {help assert} fails.  (Code to
+handle that situation is not shown here.  Also, to properly use the latter
+technique would require the transferrence
+of labels onto the new a.  These examples may not be equivalent if a contains
+missing values.)
+
+{p 4 4 2}
+You may ask, what is the difference between these two?:
+
+{p 6 6 2} {cmd:. collapseunique a b c, by(k)}
+
+{p 6 6 2} {cmd:. collapseunique, by(k a b c) emptyvarlist}
+
+{p 4 4 2}
+The answer is that the first example may or may not execute, depending on the
+data; the second will always execute (assuming that k, a, b, and c are variables).
+If the first example does
+execute successfully, then the two examples will yield the same reduced
+dataset (putting aside the nominal sort order).
+
+{p 4 4 2}
+Be aware that functional dependency can arise "by accident", in which case
+it may be inappropriate to apply a {cmd:collapseunique} operation.
+See {help funcdep} for more on this matter.  
+
+{p 4 4 2}
+{cmd:collapseunique} has some similarity to {help contract}.
+
+{p 4 4 2}
+This calls {help funcdep} (another program by the same author)
+to perform the functional dependency test.
+
+{p 4 4 2}
+This is written for Stata 8; a version for Stata 6 also exists.
+
+{col 12}{hline}
+{p 12 12 12}
+{hi:technical note:} As noted, {it:varlist} is initially reduced by removing
+any variables it has in common with {it:byvars}.  There is no intrinsic need
+for this, but it improves efficiency and closes a loophole in the
+{cmd:emptyvarlist} safeguard.
+{p_end}
+{col 12}{hline}
+
+
+{title:On Normalization}
+
+{p 4 4 2}
+Data normalization is the process of taking a table and possibly splitting it
+into multiple tables, each of which is "normal" in that it contains no
+functional dependency between non-key variables.
+To help understand this, consider the common procedure of
+merging higher-level information onto lower-level data, such as
+merging family-based information onto a set of person-based observations.
+Normalization reverses this process.
+Non-normal datasets can be convenient in analysis, but are considered as
+poor design in the primary storage of data.  Also, once data are normalized,
+you can more easily construct new analysis sets by recombining the normalized
+datasets.
+
+
+{title:Author}
+
+{p 4 4 2}
+David Kantor.  Email {browse "mailto:kantor.d@att.net":kantor.d@att.net} if you observe any
+problems.
+
+
+{title:Also see}
+
+{p 4 4 2} {help funcdep}, {help collapse}, {help contract}, {help duplicates}

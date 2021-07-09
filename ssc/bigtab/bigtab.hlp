@@ -1,0 +1,50 @@
+{smcl}
+{hline}
+Help for {hi:bigtab}
+{hline}
+
+{title:Produce frequency tables for many values}
+
+{p 8 17}{cmd:bigtab} [{it:varlist}] [{cmd:,} {cmdab:r:ow} {cmdab:c:ol} {cmdab:noc:um} {cmdab:z:ero} {cmd:nomiss} {cmdab:sav:ing()} {cmdab:sep:by()} {cmdab:all:lab} {cmdab:nol:abel}]
+
+{title:Description}
+
+{p}{cmd:bigtab} Can be used when you either get a "too many values" error from the {cmd:tabulate}
+command, want a three-way crosstab, or want to save the frequencies to a separate file.
+Up to three variables may be requested
+{p_end}
+
+{title:Options}
+
+{p 0 4}{cmd:row}    will produce row percentages.{p_end}
+
+{p 0 4}{cmd:col}    will prodcue column percentages.{p_end}
+
+{p 0 4}{cmd:nocum}  will suppress display of cumulative frequencies and cumulative percents.{p_end}
+
+{p 0 4}{cmd:zero}   specifies that combinations with frequency zero are wanted (see the {cmd:contract} command).{p_end}
+
+{p 0 4}{cmd:nomiss} specifies that observations with missing values on any of the variables in varlist will be dropped. If not specified, all observations possible are used (see the {cmd:contract} command).{p_end}
+
+{p 0 4}{cmd:saving()} specifies the name of an output data set.
+
+{p 0 4}{cmd:sepby()} specifies where divider lines, if any, should be drawn.  Variables from {it:varlist} can be specified.  If this option is left out, then no divider lines will be drawn. (see the {cmd:list} command). {p_end}
+
+{p 0 4}{cmd:alllab} specifies that all defined labels, even if not observed in the data should be included. {p_end}
+
+{p 0 4}{cmd:nolabel} specifies that value labels should not be used in the display (see the list command).{p_end}
+
+{title:Examples}
+
+{p 8 12}{inp:. bigtab var1}{p_end}
+{p 8 12}{inp:. bigtab var1 var2 var3}{p_end}
+{p 8 12}{inp:. bigtab var1 var2, row col nocum}{p_end}
+{p 8 12}{inp:. bigtab var1 var2, saving(freqdata)}{p_end}
+{p 8 12}{inp:. bigtab var1 var2, sep(var1)} {p_end}
+{title:Author}
+Paul H. Bern, Princeton University
+pbern@princeton.edu
+
+{title:See Also}
+Manual: {hi:[R] tabulate}, {hi:[R] contract}, {hi:[R] list}
+{p 0 19}On-line:  help for {help tabulate}, {help contract}, {help list}

@@ -1,0 +1,98 @@
+{smcl}
+{* version 1.0.1 13oct2011}{...}
+{cmd:help dslab}
+{hline}
+
+{title:Title}
+
+{p 5}
+{cmd:dslab} {hline 2} Search for string in value labels
+
+
+{title:Syntax}
+
+{p 8}
+{cmd:dslab} {it:{help strings:string}} 
+[{it:{help strings:string}} [{it:...}] ] 
+[{cmd:,} {opt not} {opt match} {opt case:sensitive} 
+{cmd:{ul:var}iables(}{it:{help varlist}}{cmd:)} {opt a:lpha}]
+
+
+{title:Description}
+
+{pstd}
+{cmd:dslab} searches {it:string} among all value labels in memory. In 
+value labels any text associated with integers is searched. If a match 
+is found all variables that have the respective value label attached 
+are {help describe}d. 
+
+{pstd}
+The program is a hybrid combining elements of official Stata's 
+{help ds} and {help lookfor}. Enclose {it:string} in double quotes 
+to search for a phrase. 
+
+
+{title:Options}
+
+{phang}
+{opt not} finds value labels in which {it:string} is {hi:not} found. 
+
+{phang}
+{opt match} searches for {it:stringpattern} (see {help strmatch()}). If 
+{opt match} is specified wildcards {hi:*} and {hi:?} are allowed in 
+{it:string}, where the former means 0 or more characters the latter 
+means exactly one character. 
+
+{phang}
+{opt casesensitive} performs a case sensitive search.
+
+{phang}
+{opt variables(varlist)} searches {it:string} in value labels attached 
+to {it:varlist}. Note that variables not in {it:varlist} are still 
+described if they have the same value labels attached as variables in 
+{it:varlist}.
+
+{phang}
+{opt alpha} describes variables in alphabetical order.
+
+
+{title:Examples}
+
+{phang2}. sysuse nlsw88{p_end}
+{phang2}{cmd:. dslab other}{p_end}
+{phang2}{cmd:. dslab other ,not}{p_end}
+
+{phang2}{cmd:. dslab work}{p_end}
+{phang2}{cmd:. dslab *work*}{p_end}
+{phang2}{cmd:. dslab *work* ,match}{p_end}
+
+{phang2}{cmd:. dslab not col}{p_end}
+
+
+{title:Saved results}
+
+{pstd}
+{cmd:dslab} saves the following in {cmd:r()}
+
+{pstd}
+Macros{p_end}
+{synoptset 15 tabbed}{...}
+{synopt:{cmd:r(lbllist)}}value labels in which {it:string} is found
+{p_end}
+{synopt:{cmd:r(varlist)}}variables that have the respective value 
+labels attached{p_end}
+
+
+{title:Author}
+
+{pstd}Daniel Klein, University of Bamberg, klein.daniel.81@gmail.com
+
+
+{title:Also see}
+
+{psee}
+Online: {help ds}, {help lookfor}, {help label}{p_end}
+
+{psee}
+if installed: {help lookforit}, {help labmatch}, {help labutil2}
+{p_end}

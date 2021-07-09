@@ -1,0 +1,111 @@
+{smcl}
+{* *! version 1.0  27Apr2008}{...}
+{hline}
+help for {hi:rii} {right:manual:  {hi:[R] none}}
+{right:dialog:  {hi: none}    }
+{hline}
+
+
+{title:Repeated-Imputation Inference}
+
+{p 8 17 2}{cmd:rii}
+{ifin}
+{cmd:,} {cmdab:imp:var(}{it:varname}{cmd:)}
+[{cmd:robust}]
+{cmd::}{it: estimate command}{p_end}
+
+        
+{title:Description}
+
+{p 4 4 2} {cmd:rii} is a prefix command that runs multiple imputations of a model based on the 
+value of the multiple imputation variable.  {cmd:rii} has been tested on: 
+{help probit:probit}, {help tobit:tobit}, {help cnreg:cnreg}, and 
+{help regress:regress}. {cmd:rii} uses the repeated-imputation inference (RII) technique 
+to derive OLS regression coefficients, estimates of the standard error of the coefficients, 
+test statistics for individual coefficients and a model test statistic.  RII is based on 
+Bayesian theory, and is applicable to linear and nonlinear models, and to models estimated 
+by both least squares and maximum likelihood.  The RII technique incorporates the variability 
+in the data due to missing data into the estimate of the standard error of the mean.{p_end}
+
+{p 4 8 2}Note: The command submitted to {cmd:rii} cannot contain an {cmd:if} or {cmd:in} since 
+{cmd:rii} subsets the data to each value of the imputation variable.  {cmd:if} and/or {cmd:in}
+can be use in {cmd:rii} like so:{p_end}
+
+{p 4 8 2} {cmd:. rii if mvar <= 5 in 1/50000 , imp(mvar): regress y x1 x2 x3 x4 year89 year90}{p_end}
+
+{p 4 8 2} {cmd:. rii if mvar <= 5 , imp(mvar): regress y x1 x2 x3 x4 year89 year90}{p_end}
+
+{p 4 8 2} {cmd:. rii in 1/50000 , imp(mvar): regress y x1 x2 x3 x4 year89 year90}{p_end}
+
+{title:Paper rii is based on} 
+
+{p 4 4 2}Montalto, Catherine Phillips & Sung, Jaimie. (1996). Multiple imputation in the 1992 
+Survey of Consumer Finances.  Financial Counseling and Planning, Vol. 7, pp. 133-46.{p_end}
+
+{title:Options}
+
+{p 4 8 2}{cmdab:imp:var(}{it:varname}{cmd:)} is a required option that specifies a numeric variable 
+that identifies the multiple imputations with which to run the submitted command.{p_end}
+
+{title:Saved results}
+
+{p 4 4 2}{cmd:rii} saves the following in {cmd:e()}:{p_end}
+
+{synoptset 20 tabbed}{...}
+{p2col 5 20 24 2: Scalars}{p_end}
+{synopt:{cmd:e(N_imps)}}number of imputations{p_end}
+{synopt:{cmd:e(N)}}number of observations{p_end}
+
+{p2col 5 20 24 2: Macros}{p_end}
+{synopt:{cmd:e(depvar)}}name of dependent variable{p_end}
+{synopt:{cmd:e(prefix)}}{cmd:rii}{p_end}
+{synopt:{cmd:e(command)}}command run by rii{p_end}
+{synopt:{cmd:e(cmdline)}}command as typed{p_end}
+{synopt:{cmd:e(cmdname)}}name of command run by rii{p_end}
+{synopt:{cmd:e(cmd)}}name of command run by rii{p_end}
+{synopt:{cmd:e(properties)}}{cmd:b V}{p_end}
+
+{p2col 5 20 24 2: Matrices}{p_end}
+{synopt:{cmd:e(b)}}coefficient vector{p_end}
+{synopt:{cmd:e(V)}}variance-covariance matrix of the estimators{p_end}
+{synopt:{cmd:e(obs_per_imp)}}number of observations per imputation{p_end}
+
+{p2col 5 20 24 2: Functions}{p_end}
+{synopt:{cmd:e(sample)}}marks estimation sample{p_end}
+
+{title:Examples}
+
+{p 4 8 2} {cmd:. rii , imp(mvar): probit x1 x2 x3, robust }{p_end}
+
+{p 4 8 2} {cmd:. rii if mvar < 6, imp(mvar): tobit amtspt x1 x2 x3 x4, ll(0) ul(25000) }{p_end}
+
+{p 4 8 2} {cmd:. rii , imp(mvar): cnreg y x1 x2 x3 x4 year89 year90, censored(cen) }{p_end}
+
+{p 4 8 2} {cmd:. rii , imp(mvar): reg y x1 x2 [pweight=pop] }{p_end}
+
+{p 4 4 2}Instead of using {help dprobit:dprobit} use {help probit:probit} and then run {help mfx:mfx}:{p_end}
+
+{p 4 8 2} {cmd:. rii , impvar(mvar): probit y x1 x2 x3 }{p_end}
+
+{p 4 8 2} {cmd:. mfx}{p_end}
+
+
+{title:Authors}
+
+{p 4 4 2}
+David T. Robinson {break}
+Center for Entrepreneurship and Innovation {break}
+Duke University's Fuqua School of Business {break}
+davidr@duke.edu {break}
+Dan Blanchette {break}
+The Carolina Population Center {break}
+University of North Carolina - Chapel Hill, USA {break}
+dan_blanchette@unc.edu{p_end}
+
+
+
+{title:Also see}
+
+{p 4 13 2}On-line: {help probit:probit}, {help tobit:tobit}, {help cnreg:cnreg}, and {help regress:regress}{p_end}
+
+

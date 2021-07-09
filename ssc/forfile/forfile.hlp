@@ -1,0 +1,80 @@
+.-
+help for ^forfile^
+.-
+
+Executes command for each matching file
+----------------------------
+
+    ^forfile^ [filespec] [ ^, d^ir^(^directory^) a^sis ^l^ist cmd('" cmd1 @ | cmd2 @ "') more]
+
+Description
+-----------
+
+^forfile^ executes a command for each file matching a 
+file pattern.
+ 
+If no command is specified, it does -graph using-
+If no filespec is specified, it uses *.gph
+
+
+filespec can take one of the following forms:
+
+             (nothing) -- treated as ^*.gph^
+ ^*^                                   ^*.gph^
+ ^*.gph^                               ^*.gph^
+ name                                name^.gph^
+ name.^gph^                            name^.gph^
+ name^*^                               name^*.gph^
+ name^*.gph^                           name^*.gph^
+
+
+Options
+-------
+
+^dir(^directory^)^ specifies a directory or folder in which to look.
+    The default is the current directory as indicated by ^cd^.
+
+^asis^ specifies that graphs should be shown as is. By default, each
+    graph is shown with its filename shown as a ^t1title^. ^asis^ turns
+    off this feature.
+
+^list^ specifies that graph filenames should be listed in alphanumeric 
+   order. Note that by default (and necessarily) the results of a ^dir^ 
+   command are shown on the monitor, although not necessarily in 
+   alphanumeric order. 
+
+^cmd^ executes this command for each file. 
+   Put @ where you want the file name replaced
+   Put | as separators between commands
+
+Remarks 
+-------
+
+Except under Unix, any log file open when ^showgph^ is invoked is closed 
+temporarily, and the results of a call to ^dir^ are logged to a temporary 
+file. Thus such results will not be shown in the log file. The ^list^ option 
+should be used if it is desired to have a list of graph filenames in the 
+current log file. 
+
+Under Unix, the system ^ls^ is used to write to a temporary file and any 
+log file open is not affected. 
+
+
+Examples
+--------
+
+    . ^forfile *.gph , cmd(`"graph using "@" "')^
+    . ^forfile *.gph , d(\a\folder\) cmd(`"graph using "@" | gphprint"')^
+
+
+Authors
+-------
+
+    Jan Brogger, University of Bergen, Norway
+    jan.brogger@@med.uib.no
+
+Acknowledgement
+--------------
+    Based on showgph by Nick Cox and Jan Brogger
+
+

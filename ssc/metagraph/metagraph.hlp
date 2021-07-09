@@ -1,0 +1,105 @@
+{smcl}
+{hline}
+help for {hi:metagraph}
+{hline}
+
+{title:Produce the Forrest plot after a Meta-Analysis}
+
+{p 8 27}
+{cmdab:metagraph}
+{it:(theta se_theta [other_variable]) } 
+,
+{cmdab:i:d}{cmd:(}{it:varname}{cmd:)}
+[
+{cmd:eform}
+{cmd:x}{cmd:(}{it:numlist}{cmd:)}
+{cmdab:t:extscale}{cmd:(}{it:#}{cmd:)}
+{cmdab:ms:cale}{cmd:(}{it:#}{cmd:)}
+{cmdab:l:evel}{cmd:(}{it:#}{cmd:)}
+{cmdab:ml:ine}
+{cmdab:c:ombined}{cmd:(}{it:# # #}{cmd:)}
+{help twoway_options}
+]
+
+{p}
+
+{title:Description}
+
+{p 0 0}
+This command constructs the Forrest plot after a  meta-analysis. Either this command is run immediately after running the command {hi:meta} or the user will have to input the combined estimate and confidence limits using the {hi:combined} option.
+The graph requires the parameter estimates and standard errors as the first two variables in the varlist additional a third variable can be included that will be displayed next to the study identifiers specified in the {hi:id()} option. This means that if required the sample sizes per study can be displayed or any other information. Note that the weights used to calculate the size of the study specific estimate symbol are inverse variance weights.
+
+{p 0 0}
+The order of the study identifiers will determine the order of confidence intervals and estimates to be drawn. The data is not sorted into a different order.
+
+{p 0 0}
+Most {hi:twoway} options are allowed in conjunction with this command. The main exceptions are that options related to the y-axes 1-3 are reserved.
+
+{p 0 0}
+If there are values for {it:theta} that are missing the program will assume that the study id is actually a subtitle for proceeding values. To suppress this the missing data must be removed. 
+
+
+{title:Options}
+
+{p 0 0}
+{cmdab:i:d}{cmd:(}{it:varname}{cmd:)} specifies the variable containing the study id.
+
+{p 0 0}
+{cmd:eform} specifies that the confidence intervals are based on the exponential form of the estimate.
+
+{p 0 0}
+{cmd:x}{cmd:(}{it:numlist}{cmd:)} specifies the tick labels on the x-axis
+
+{p 0 0}
+{cmdab:t:extscale}{cmd:(}{it:#}{cmd:)} specifies the size of the text representing the study names/labels. Note that this is set optimally for about 30 studies and may need to be altered with fewer or more studies.
+
+{p 0 0}
+{cmdab:ms:cale}{cmd:(}{it:#}{cmd:)} specifies the relative size of the symbols representing the study specific estimates. Note that this is preset but may need altering if the study specific plotting symbols overlap. This is controlled by the range of the study-specific variances.
+
+{p 0 0}
+{cmdab:l:evel}{cmd:(}{it:#}{cmd:)} specifies the significance level used for the confidence intervals, the default is 95%
+
+{p 0 0}
+{cmdab:ml:ine} specifies that a dashed line is drawn at the pooled estimate.
+
+{p 0 0}
+{cmdab:c:ombined}{cmd:(}{it:# # #}{cmd:)} specifies the pooled estimate, lower confidence interval and upper confidence interval, respectively. Note that either these values are obtained after using {hi:meta} or they are specified, if neither are done then the program will exit.
+
+{title:Examples}
+
+{p 0 0}
+Make sure that the values from the meta-analysis are on the same scale as the metagraph. Note in both the following commands there is an {hi:eform} option.
+
+{inp:.meta  RiskRatio  SE, id(study) eform}
+
+{p 0}
+{inp:.metagraph RiskRatio SE, id(study) ms(0.16) t(0.65) eform x(0.5 1 2 4 8) title(My graph)) xtitle(Odds Ratio)}
+
+{p 0 0}
+To display the sample sizes the third variable must be used. Thus an additional column is added to the invisible y-axis containing sample sizes. 
+Column headings for the study identifier and sample size can be specified using the {hi:text} option from the {hi:twoway} command. The values below were specific to the dataset used here.
+
+{p 0 0}
+{inp:.metagraph RiskRatio SE n, id(study) ms(0.16) t(0.65) eform x(0.5 1 2 4 8) l(90) text(33 0.41  "Sample Size", size(small)) text(33 0.17 "Study ID", size(small)) xtitle(Odds Ratio)}
+
+{p 0 0}
+Rather than rely on the previous {hi:meta} command the combined estimate here is specified as 2 with confidence interval (1,3).
+
+{inp:.metagraph RiskRatio SE, id(study) ms(0.16) t(0.65) eform x(0.5 1 2 4 8) l(90) combined(2 1 3)}
+
+
+{title:Author}
+
+{p}
+Adrian Mander, MRC Human Nutrition Research, Cambridge, UK.
+
+Email {browse "mailto:adrian.mander@mrc-hnr.cam.ac.uk":adrian.mander@mrc-hnr.cam.ac.uk}
+
+{title:Also see}
+
+Related commands
+
+HELP FILES 	Installation status		SSC installation links		Description
+
+{help meta}		(if installed)			(none available)  	Meta Analysis command
+

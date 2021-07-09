@@ -1,0 +1,408 @@
+{smcl}
+{* 10may2006/16may2006/24may2006/12oct2006/25feb2007}{...}
+{hline}
+help for {hi:shorth}
+{hline}
+
+{title:Descriptive statistics based on shortest halves}
+
+{p 8 17 2}{cmd:shorth}
+{it:varlist}
+[{cmd:if} {it:exp}]
+[{cmd:in} {it:range}] 
+[{cmd:,}
+{cmdab:p:roportion(}{it:#}{cmd:)}
+{cmdab:all:obs}
+{cmdab:f:ormat(}{it:format}{cmd:)}
+{cmdab:n:ame(}{it:#}{cmd:)}
+{cmdab:s:paces(}{it:#}{cmd:)} 
+{cmdab:t:ies} 
+]
+
+{p 8 17 2}{cmd:shorth}
+{it:varname}
+[{cmd:if} {it:exp}]
+[{cmd:in} {it:range}] 
+[{cmd:,}
+{cmdab:p:roportion(}{it:#}{cmd:)}
+{cmdab:all:obs}
+{cmd:by(}{it:byvar}{cmd:)}
+{cmdab:miss:ing} 
+{cmdab:f:ormat(}{it:format}{cmd:)}
+{cmdab:n:ame(}{it:#}{cmd:)}
+{cmdab:s:paces(}{it:#}{cmd:)} 
+{cmdab:t:ies} 
+{cmdab:g:enerate(}{it:specification}{cmd:)}
+]
+
+{p 4 4 2}{cmd:by ... :} may also be used with {cmd:shorth}: see help on
+{help by}.
+
+
+{title:Description}
+
+{p 4 4 2}{cmd:shorth} calculates descriptive statistics for {it:varlist}
+based on the shortest half of the distribution of each variable or group
+specified: the shorth, the mean of values in that shortest half; the 
+midpoint of that half, which is the least median of squares estimate of 
+location; and the length of the shortest half. 
+
+
+{title:Remarks}
+
+{p 4 4 2}The order statistics of a sample of n values of x are defined
+by  
+
+	x(1) <= x(2) <= ... <= x(n-1) <= x(n). 
+
+{p 4 4 2}Let h = {help floor():floor}(n / 2). Then the shortest half of
+the data from rank k to rank {bind:k + h} is identified to minimise
+
+	x(k + h) - x(k)  
+
+{p 4 4 2}over k = 1, ..., n - h. This interval we call the length of the
+shortest half. The "shorth" was named by J.W. Tukey and introduced in
+the Princeton robustness study of estimators of location by Andrews,
+Bickel, Hampel, Huber, Rogers and Tukey (1972, p.26) as the mean of
+x(k), ..., {bind:x(k + h)}. It attracted attention for its unusual
+asymptotic properties (pp.50{c -}52): on those, see also the later
+accounts of Shorack and Wellner (1986, pp.767{c -}771) and Kim and
+Pollard (1990). Otherwise it quickly dropped out of sight for about a
+decade. Incidentally, Hampel (1997) shows that results available to the
+Princeton study on asymmetric situations, but not fully analysed at the
+time, put the shorth in better light than was then appreciated.
+
+{p 4 4 2}Interest revived in such ideas when Rousseeuw (1984), building
+on a suggestion by Hampel (1975), pointed
+out that the midpoint of the shortest half {bind:(x(k) + x(k + h)) / 2}
+is the least median of squares (LMS) estimator of location for x. See
+Rousseeuw (1984) and Rousseeuw and Leroy (1987) for applications of LMS
+and related ideas to regression and other problems.  Note that this LMS
+midpoint is also called the shorth in some recent literature (e.g.
+Maronna, Martin and Yohai 2006, p.48). Further, the shortest half itself
+is also sometimes called the shorth, as the title of Gr{c u:}bel (1988)
+indicates. 
+
+{p 4 4 2}The length of the shortest half
+is a robust measure of scale or spread: see Rousseeuw and Leroy
+(1988), Gr{c u:}bel (1988), Rousseeuw and Croux (1993) and Martin and
+Zamar (1993) for further analysis and discussion. 
+
+{p 4 4 2}The length of the shortest half in a Gaussian (normal) with
+mean 0 and standard deviation 1 is in Stata language 2 * 
+{help invnorm():invnorm}(0.75), which is 1.349 to 3 d.p. Thus to estimate
+standard deviation from the observed length, divide by this Gaussian length. 
+
+{p 4 4 2}Some broad-brush comments follow on advantages and
+disadvantages of shortest half ideas, from the standpoint of practical
+data analysts as much as mathematical or theoretical statisticians.
+Whatever the project, it will always be wise to compare {cmd:shorth}
+results with standard summary measures (including other means, notably
+geometric and harmonic means) and to relate results to graphs
+of distributions. Moreover, if your interest is in the existence or
+extent of bimodality or multimodality, it will be best to look directly 
+at suitably smoothed estimates of the density function. 
+
+{p 4 4 2}1. {it:Simplicity}{space 1} The idea of the shortest half is
+simple and easy to explain to students and researchers who do not regard
+themselves as statistical specialists. It leads directly to two measures
+of location and one of spread that are fairly intuitive. It is also
+relatively amenable to hand calculation with primitive tools (pencil and
+paper, calculators, spreadsheets).
+
+{p 4 4 2}2. {it:Connections}{space 1} The similarities and differences
+between the length of the shortest half, the interquartile range and the
+median absolute deviation from the median (MAD) (or for that matter the 
+probable error) are immediate. Thus,
+shortest half ideas are linked to other statistical ideas that should
+already be familiar to many data analysts. 
+
+{p 4 4 2}3. {it:Graphic interpretation}{space 1} The shortest half can
+easily be related to standard displays of distributions such as
+cumulative distribution and quantile plots, histograms and stem-and-leaf
+plots. 
+
+{p 4 4 2}4. {it:Mode}{space 1} By averaging where the data are densest,
+the shorth and also the LMS midpoint introduce a mode flavour to summary
+of location.  When applied to distributions that are approximately
+symmetric, the shorth will be close to the mean and median, but more
+resistant than the mean to outliers in either tail and more efficient
+than the mean for distributions near Gaussian (normal) in shape. When
+applied to distributions that are unimodal and asymmetric, the shorth
+and the LMS will typically be nearer the mode than either the mean or
+the median.  Note that the idea of estimating the mode as the midpoint
+of the shortest interval that contains a fixed number of observations
+goes back at least to Dalenius (1965). See also Robertson and Cryer
+(1974), Bickel (2002) and Bickel and Fr{c u:}hwirth (2006) on other
+estimators of the mode. The half-sample mode estimator of Bickel and
+Fr{c u:}hwirth is especially interesting as a recursive selection of the
+shortest half. For a Stata implementation and more detail, 
+see {help hsmode} from SSC. 
+
+{p 4 4 2}5. {it:Outlier identification}{space 1} A resistant 
+standardisation such as (value - shorth) / length may help in 
+identifying outliers. For discussions of related ideas, see Carey {it:et al.}
+(1997) and included references. 
+
+{p 4 4 2}6. {it:Generalise to shortest fraction}{space 1} The idea can
+be generalised to proportions other than one-half. 
+
+{p 4 4 2}At the same time, note that 
+
+{p 4 4 2}7. {it:Not useful for all distributions}{space 1} When applied
+to distributions that are approximately J-shaped, the shorth will
+approximate the mean of the lower half of the data and the LMS midpoint
+will be rather higher. When applied to distributions that are
+approximately U-shaped, the shorth and the LMS midpoint will be within
+whichever half of the distribution happens to have higher average
+density. Neither behaviour seems especially interesting or useful, but
+equally there is little call for single mode-like summaries for J-shaped
+or U-shaped distributions; for J shapes, the mode is, or should be, the
+minimum and for U shapes, bimodality makes the idea of a single mode
+moot, if not invalid. 
+
+{p 4 4 2}8. {it:Interpretation under asymmetry}{space 1} If applied
+knowingly to asymmetric distributions, the query may be raised: What do
+you think you are estimating? That is, the target for an estimator of
+location is not well defined whenever there is no longer an unequivocal
+centre to a distribution. This is a good question.  Three possible
+answers: I am not estimating anything, but doing descriptive statistics.
+I am estimating the mode. What is being estimated should be defined in
+terms of the estimator (compare Huber 1972). 
+
+{p 4 4 2}9. {it:Ties}{space 1} The shortest half may not be uniquely
+defined. Even with measured data, rounding of reported values may
+frequently give rise to ties. What to do with two or more shortest
+halves has been little discussed in the literature. Note that tied
+halves may either overlap or be disjoint. 
+
+{p 8 8 2}The procedure adopted in {cmd:shorth} given t ties is to report
+the existence of ties and then to use the middlemost in order, except
+that that is in turn not uniquely defined unless t is odd.  The
+middlemost is arbitrarily taken to have position {help ceil():ceiling}(t
+/ 2) in order, counting upwards. This is thus the 1st of 2, the 2nd of 3
+or 4, and so forth. 
+
+{p 8 8 2}This tie-break rule has some quirky consequences. Thus with
+values -9 -4 -1 0 -1 4 9, there is a tie for shortest half between -4 -1
+0 1 and -1 0 1 4. The rule yields -1 as the shorth, not 0 as would be
+natural on all other grounds. Otherwise put, this problem can arise
+because for a window to be placed symmetrically around the order
+statistics that define the median the window length 1 + floor(n / 2)
+must be odd for odd n and even for even n, which is difficult to achieve
+given other desiderata, notably that window length should never decrease
+with sample size. 
+
+{p 8 8 2}Apart from reporting that the shortest half is indeterminate,
+other possibilities would be reporting the average of the union of tied
+halves or the average of the averages of the tied halves for the shorth,
+and similarly for the LMS midpoint. See for example Carey {it:et al.} 
+(1997), who average the midpoints. One merit of the tie-break rule here
+is that the shorth and LMS reported are always for a predictable number
+of values, by default 1 + floor(n / 2). 
+
+{p 4 4 2}10. {it:Rationale for window length}{space 1}  Why half is taken
+to mean 1 + floor(n / 2) also does not appear to be discussed. Evidently
+we need a rule that yields a window length for both odd and even n; it
+is preferable that the rule be simple; and there is usually some slight
+arbitrariness in choosing a rule of this kind. It is also important that
+any rule behave reasonably for small n: even if a program is not
+deliberately invoked for very small sample sizes the procedure used
+should make sense for all possible sizes. Note that, with this rule,
+given n = 1 the shorth is just the single sample value, and given n = 2
+the shorth is the average of the two sample values.   A further detail
+about this rule is that it always defines a slight majority, thus
+enforcing democratic decisions about the data.  However, there seems no
+strong reason not to use ceiling(n / 2) as an even simpler rule, except
+that all authors on the shorth appear to have followed 1 + floor(n / 2).
+
+{p 4 4 2}11. {it:Use with weighted data}{space 1} Identification of the
+shortest half would seem to extend only rather messily to situations in
+which observations are associated with unequal weights and is thus not
+attempted here. 
+
+{p 4 4 2}12. {it:Length when most values identical}{space 1} When at
+least half of the values in a sample are equal to some constant, the
+length of the shortest half is 0. So, for example, if most values are 0
+and some are larger, the length of the shortest half is not particularly
+useful as a measure of scale or spread. 
+
+
+{title:Options}
+
+{p 4 8 2}{cmdab:p:roportion(}{it:#}{cmd:)} specifies a proportion other
+than 0.5 defining a shortest fraction. That is the window length will be
+1 + floor(proportion * n). This is a rarely specified option. 
+
+{p 4 8 2}{cmd:allobs} specifies use of the maximum possible number of
+observations for each variable. The default is to use only those
+observations for which all variables in {it:varlist} are not missing. 
+
+{p 4 8 2}{cmd:by()} specifies a variable defining distinct groups for
+which statistics should be calculated. {cmd:by()} is allowed only with a
+single {it:varname}. The choice between {cmd:by:} and {cmd:by()} is
+partly one of precisely what kind of output display is required. The
+display with {cmd:by:} is clearly structured by groups while that with
+{cmd:by()} is more compact. To show statistics for several variables and
+several groups with a single call to {cmd:shorth}, the display with
+{cmd:by:} is essential.
+
+{p 4 8 2}{cmdab:miss:ing} specifies that with the {cmd:by()} option
+observations with missing values of {it:byvar} should be included in
+calculations. The default is to exclude them. 
+
+{p 4 8 2}{cmdab:f:ormat(}{it:format}{cmd:)} specifies a numeric format
+for displaying summary statistics. The default is %8.2g.
+
+{p 4 8 2}{cmdab:n:ame(}{it:#}{cmd:)} specifies a maximum length for
+showing variable names (or in the case of {cmd:by()} values or value
+labels) in the display of results. The default is 32. 
+
+{p 4 8 2}{cmdab:s:paces(}{it:#}{cmd:)} specifies the number of spaces to
+be shown between columns of results. The default is 2. 
+
+{p 4 8 2}{cmdab:t:ies} requests a specification of which intervals tie
+for shortest half. The ranks of the starting points k will be shown. 
+
+{p 4 8 2}{cmd:generate()} specifies one or more new variables to hold
+calculated results. {cmd:generate()} is allowed only with a single
+{it:varname}. This option is most useful when you want to save
+statistics calculated for several groups for further analysis. Note that
+{cmd:generate()} is not allowed with the {cmd:by:} prefix: use the
+{cmd:by()} option instead.  Values for the new variables will
+necessarily be identical for all observations in each group: typically
+it will be useful to select just one observation for each group, say by
+using {help egen:egen, tag()}. 
+
+{p 8 8 2}The specification consists of one or more space-separated
+elements {it:newvar}{cmd:=}{it:statistic}, where {it:newvar} is a new
+variable name and {it:statistic} is one of {cmd:shorth}, {cmd:min},
+{cmd:LMS} or {cmd:lms}, {cmd:max} and {cmd:length}. 
+
+
+{title:Examples} 
+
+{p 4 8 2}{cmd:. shorth price-foreign}
+
+{p 4 8 2}{cmd:. bysort rep78: shorth mpg}
+
+{p 4 8 2}{cmd:. shorth mpg, by(rep78) generate(s=shorth LMS=LMS)}
+
+
+{title:Saved results} 
+
+{p 4 4 2}(for last-named variable or group only)
+
+	r(N)         n
+	r(shorth)    shorth
+	r(min)       minimum in shortest half 
+	r(rank_min)  rank of minimum 
+	r(LMS)       LMS (midpoint of shortest half) 
+	r(max) 	     maximum in shortest half 
+	r(rank_max)  rank of maximum 
+	r(length)    length of shortest half 
+
+
+{title:Author}
+
+	{p 4 4 2}Nicholas J. Cox, Durham University, U.K.{break} 
+        n.j.cox@durham.ac.uk
+
+
+{title:References}
+
+{p 4 8 2}Andrews, D.F., P.J. Bickel, F.R. Hampel, P.J. Huber, W.H.
+Rogers and J.W. Tukey. 1972. 
+{it:Robust estimates of location: survey and advances.} 
+Princeton, NJ: Princeton University Press.
+
+{p 4 8 2}Bickel, D.R. 2002. 
+Robust estimators of the mode and skewness of continuous data. 
+{it:Computational Statistics & Data Analysis} 39: 153{c -}163. 
+
+{p 4 8 2}Bickel, D.R. and R. Fr{c u:}hwirth. 2006. 
+On a fast, robust estimator of the mode: comparisons to other estimators
+with applications. 
+{it:Computational Statistics & Data Analysis} 50: 3500{c -}3530. 
+
+{p 4 8 2}
+Carey, V.J., E.E. Walters, C.G. Wager and B.A. Rosner. 1997.
+Resistant and test-based outlier rejection: effects on
+Gaussian one- and two-sample inference. 
+{it:Technometrics} 39: 320{c -}330.
+
+{p 4 8 2} 
+Christmann, A., U. Gather and G. Scholz. 1994. 
+Some properties of the length of the shortest half. 
+{it:Statistica Neerlandica} 48: 209{c -}213.
+
+{p 4 8 2}Dalenius, T. 1965. 
+The mode {c -} A neglected statistical parameter.
+{it:Journal, Royal Statistical Society} A 128: 110{c -}117. 
+
+{p 4 8 2}Gr{c u:}bel, R. 1988. 
+The length of the shorth. 
+{it:Annals of Statistics} 16: 619{c -}628.
+
+{p 4 8 2}Hampel, F.R. 1975. 
+Beyond location parameters: robust concepts and methods. 
+{it:Bulletin, International Statistical Institute} 46: 375{c -}382. 
+
+{p 4 8 2}Hampel, F.R. 1997. 
+Some additional notes on the "Princeton robustness year". 
+In Brillinger, D.R., L.T. Fernholz and S. Morgenthaler (eds) 
+{it:The practice of data analysis: essays in honor of John W. Tukey.}
+Princeton, NJ: Princeton University Press, 
+133{c -}153. 
+
+{p 4 8 2}Huber, P.J. 1972. 
+Robust statistics: a review. 
+{it:Annals of Mathematical Statistics} 43: 1041{c -}1067. 
+
+{p 4 8 2}Kim, J. and D. Pollard. 1990. 
+Cube root asymptotics. 
+{it:Annals of Statistics} 18: 191{c -}219.
+
+{p 4 8 2}Maronna, R.A., R.D. Martin and V.J. Yohai. 2006. 
+{it:Robust statistics: theory and methods.} 
+Chichester: John Wiley. 
+
+{p 4 8 2}Martin, R.D. and R.H. Zamar. 1993. 
+Bias robust estimation of scale. 
+{it:Annals of Statistics} 21: 991{c -}1017. 
+
+{p 4 8 2}Robertson, T. and J.D. Cryer. 1974.
+An iterative procedure for estimating the mode.
+{it:Journal, American Statistical Association} 69: 1012{c -}1016. 
+
+{p 4 8 2}Rousseeuw, P.J. 1984. 
+Least median of squares regression.
+{it:Journal, American Statistical Association} 79: 871{c -}880. 
+
+{p 4 8 2}Rousseeuw, P.J. and C. Croux. 1993. 
+Alternatives to the median absolute deviation.
+{it:Journal, American Statistical Association} 88: 1273{c -}1283. 
+
+{p 4 8 2}Rousseeuw, P.J. and A.M. Leroy. 1987. 
+{it:Robust regression and outlier detection.}
+New York: John Wiley. 
+
+{p 4 8 2}Rousseeuw, P.J. and A.M. Leroy. 1988.
+A robust scale estimator based on the shortest half. 
+{it:Statistica Neerlandica} 42: 103{c -}116. 
+
+{p 4 8 2}Shorack, G.R. and J.A. Wellner. 1986. 
+{it:Empirical processes with applications to statistics.}
+New York: John Wiley.   
+
+
+{title:Also see}
+
+{p 4 13 2}
+Online:  
+{help egen}, 
+{help kdensity}, 
+{help means}, 
+{help hsmode} (if installed), 
+{help modes} (if installed)
+

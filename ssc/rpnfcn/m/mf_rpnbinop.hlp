@@ -1,0 +1,78 @@
+{smcl}
+{* 25jun2007}{...}
+{cmd:help mata add()}
+{cmd:help mata subtract()}
+{cmd:help mata product()}
+{cmd:help mata divide()}
+{hline}
+{* index rpn binary operators mata}{...}
+{* index add()}{...}
+{* index subtract()}{...}
+{* index product()}{...}
+{* index divide()}{...}
+
+{title:Title}
+
+{p 4 4 2} {bf:Fundamental arithmetic operations for use with rpnfcn()}
+
+
+{title:Syntax}
+
+{p 16 12 2}
+{bf:{ul:Command name}}{space 5} {ul:Argument}
+
+{p 16 12 2}
+{cmd:&add()}{space 11} NULL
+
+{p 16 12 2}
+{cmd:&subtract()}{space 6} NULL
+
+{p 16 12 2}
+{cmd:&product()}{space 7} NULL
+
+{p 16 12 2}
+{cmd:&divide()}{space 8} NULL
+
+
+{title:Description}
+
+{p 4 4 2} These functions perform the four fundamental arithmetic
+operations on the two top elements of the stack. They remove the top
+element and replaces the upper but one element with the result of the
+operation, i.e. the number of elements in the stack are reduced by one
+and the result is the new top element. All four perform their
+operations element-wise without checking for conformability as they
+rely on the Mata colon operators {cmd::+}, {cmd::-+}, {cmd::*}, and
+{cmd::/}, see {help m2_op_colon:Mata colon operators}.
+{cmd:&subtract()} subtracts the current top element of the stack
+element from the element just below, {cmd:&divide()} divides the
+upper but one element of the stack with the top element.
+
+
+{title:Source code}
+
+{p 4 4 2}
+{view rpnbinop.mata, adopath asis:rpnbinop.mata}
+
+{title:Author}
+
+{p 4 4 2}{browse "http://www.almen.dk/hstovring":Henrik Støvring},
+Research Unit of General Practice, University of Southern Denmark.
+Please email
+{browse "mailto:hstovring@health.sdu.dk":hstovring@health.sdu.dk}
+if you have comments, questions or observe any problems.
+
+
+{title:Also see}
+
+{p 4 13 2}
+Manual:  {hi:[M] Mata Reference Manual}
+
+{p 4 13 2}
+Online:  help for 
+{bf:{help mata:[M-0] mata}},
+{bf:{help mf_rpnfcn: Evaluation of algorithm matrix using RPN}},
+{bf:{help mf_rpnbinop:RPN stack manipulation functions}}, 
+{bf:{help mf_rpndist:RPN distribution functions}},
+{bf:{help mf_rpnint:RPN functions for integration}}
+{p_end}

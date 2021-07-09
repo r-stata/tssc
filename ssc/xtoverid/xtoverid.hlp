@@ -1,0 +1,290 @@
+{smcl}
+{* 1Feb2010}{...}
+{hline}
+help for {hi:xtoverid}
+{hline}
+
+{title:Tests of overidentifying restrictions after {cmd:xtreg}, {cmd:xtivreg}, {cmd:xtivreg2} and {cmd:xthtaylor}}
+
+{p 8 14}{cmd:xtoverid}{bind: [, {cmdab:r:obust}} {cmdab:cl:uster}{bind:{cmd:(}{it:varlist}{cmd:)} ]}
+
+{p}{cmd:xtoverid} does not support IV estimation with weights.
+
+{title:Description}
+
+{p}{cmd:xtoverid} computes versions of
+a test of overidentifying restrictions (orthogonality conditions)
+for a panel data estimation.
+For an instrumental variables estimation,
+this is a test of the null hypothesis that
+the excluded instruments are valid instruments,
+i.e., uncorrelated with the error term and correctly excluded
+from the estimated equation.
+The test statistic is distributed as chi-squared
+with degrees of freedom = L-K,
+where L is the number of excluded instruments
+and K is the number of regressors,
+and a rejection casts doubt on the validity of the instruments.
+A test of fixed vs. random effects
+is also a test of overidentifying restrictions,
+and {cmd:xtoverid} will report this test
+after a standard panel data estimation with {cmd:xtreg,re}.
+
+{p}If the original estimation reported classical (non-robust) standard errors,
+{cmd:xtoverid} will report Sargan's statistic.
+The version of this test that is robust to heteroskedasticity
+in the errors is Hansen's J statistic,
+which is what {cmd:xtoverid} reports if the original estimation
+was {cmd:robust} or if {cmd:xtoverid} is called with the {cmd:robust} option.
+Similarly, {cmd:xtoverid} will report an overidentification statistic
+that is robust to arbitrary heteroskedasticity and within-group correlation
+if the {cmd:cluster} option was used by the original estimation or
+by the call to {cmd:xtoverid}.
+Under the assumption of conditional homoskedasticity,
+Sargan's statistic becomes Hansen's J (see Hayashi (2000), p. 227-28),
+and hence the two statistics are sometimes referred to
+as the Sargan-Hansen or Hansen-Sargan statistic.
+The tests are implemented in {cmd:xtoverid}
+by calls to the {cmd:ivreg2} of Baum-Schaffer-Stillman.
+For further discussion and details of how the test is implemented,
+see help {help ivreg2} and Baum et al. (2003, 2006).
+
+{p}A test of fixed vs. random effects
+can also be seen as a test of overidentifying restrictions.
+The fixed effects estimator uses the orthogonality conditions
+that the regressors are uncorrelated with the idiosyncratic error e_it,
+i.e., E(X_it*e_it)=0.
+The random effects estimator uses the additional orthogonality conditions
+that the regressors are uncorrelated with the group-specific error u_i (the "random effect"),
+i.e., E(X_it*u_i)=0.
+These additional orthogonality conditions are overidentifying restrictions.
+The test is implemented by {cmd:xtoverid}
+using the artificial regression approach described by
+Arellano (1993) and Wooldridge (2002, pp. 290-91),
+in which a random effects equation is reestimated
+augmented with additional variables consisting of
+the original regressors transformed into deviations-from-mean form.
+The test statistic is a Wald test
+of the significance of these additional regressors.
+A large-sample chi-squared test statistic is reported
+with no degrees-of-freedom corrections.
+Under conditional homoskedasticity,
+this test statistic is asymptotically equivalent to
+the usual Hausman fixed-vs-random effects test;
+with a balanced panel,
+the artificial regression and Hausman test statistics are numerically equal.
+See Arellano (1993) for an exact statement
+and the example below for a demonstration.
+Unlike the Hausman version,
+the test reported by {cmd:xtoverid}
+extends straightforwardly to heteroskedastic- and cluster-robust versions,
+and is guaranteed always to generate a nonnegative test statistic.
+
+The remainder of this help file discusses how the variables are transformed
+prior to IV estimation and special issues that arise.
+
+{p}The official Stata routines {cmd:xtivreg} and {cmd:xthtaylor}
+work by transforming the variables in the regression,
+constructing the instruments,
+and then estimating a standard single equation IV estimation
+on the transformed variables;
+{cmd:xtoverid} works the same way,
+and includes an internal check that the IV estimation
+matches the original estimation
+for which the overidentification statistic is being requested.
+
+{p}For fixed-effects IV estimation ({cmd:xtivreg,fe} or {cmd:xtivreg2,fe}),
+the "within transformation" is first applied to the data,
+i.e., all variables have group means subtracted,
+and then an IV estimation is performed on the demeaned data.
+The between IV estimator ({cmd:xtivreg,be}) is an IV estimation on group means,
+the first differences IV estimator ({cmd:xtivreg,fd} or {cmd:xtivreg2,fd})
+is an IV estimation on first differences
+and the default G2SLS random-effects estimator ({cmd:xtivreg,re})
+is an IV estimation on variables subjected to the GLS transform.
+In all these estimators,
+the excluded instruments are subject to the same transformations
+as the regressors and dependent variable.
+Note that the overidentification statistic
+reported after a fixed effects estimation
+with either classical or {cmd:robust} standard errors
+will incorporate a degrees-of-freedom adjustment
+deriving from the degrees of freedom lost to the number of fixed effects.
+No adjustment is made (or is required) for a {cmd:cluster}-robust
+overidentification statistic.
+See {help xtivreg2} for further discussion and details.
+
+{p}The GLS IV estimators {cmd:xtivreg,ec2sls} and {cmd:xthtaylor}
+are slightly different:
+the dependent variables and regressors are subjected to the GLS transform,
+but the instrument sets are combinations of
+demeaned and group mean (or time-invariant) variables.
+The degrees of freedom of the overidentification statistic
+for the standard Hausman-Taylor estimator
+is K1-G2, where K1 is the number of exogenous time-varying variables
+and G2 is the number of endogenous time-invariant variables.
+In the Amemiya-MaCurdy version of the estimator
+(available via {cmd:xthtaylor,amacurdy}),
+the degrees of freedom will be T*K1-G2,
+where T is the length of the panel in the time dimension.
+For further discussion,
+see the Stata manual entries for these estimators
+or Baltagi (2005).
+
+{p}Note that following estimation by {cmd:xtivreg,ec2sls},
+the number of degrees of freedom of the overidentification statistic
+is not what is expected based on a simple count of instruments and endogenous variables
+when the equation includes an exogenous regressor.
+The reason is that in EC2SLS estimation as implemented in {cmd:xtivreg,ec2sls},
+the regressor is subject to the GLS transform
+and then, in the IV estimation on the transformed data,
+is treated as an {it:endogenous} regressor with
+both its demeaned and recentered transformation
+and its group mean transformation
+as {it:two} excluded instruments.
+When estimating using {cmd:xtivreg,ec2sls}
+on an unbalanced panel, therefore,
+including exogenous regressors increases the number
+of degrees of freedom of the overidentification statistic.
+The intuition is that exogenous regressors in EC2SLS estimation
+are overidentified for the same reason that exogenous regressors
+in a standard random effects estimation are overidentified (see above).
+See the examples below.
+
+
+{title:Options}
+
+{p 0 4}{cmd:robust} requests a heteroskedastic-robust overidentification statistic.
+
+{p 0 4}{cmd:cluster(}{it:varlist}{cmd:)} requests an overidentification statistic
+that is robust to arbitrary heteroskedasticity and within-group correlation,
+where the group is defined by {it:varlist}.
+If {cmd:ivreg2} version 3.0 or later is installed, 2-way clustering is supported;
+see help {help ivreg2} for details.
+
+{title:Examples}
+
+{phang}{stata webuse nlswork : . webuse nlswork}
+
+{phang}{stata tsset idcode year : . tsset idcode year}
+
+{phang}{stata gen age2=age^2 : . gen age2=age^2}
+
+{phang}{stata gen black=(race==2) : . gen black=(race==2)}
+
+{phang}{stata xtivreg ln_wage age (tenure = union south), fe i(idcode): . xtivreg ln_wage age (tenure = union south), fe i(idcode)}
+
+{phang}{stata xtoverid : . xtoverid}
+
+{phang}{stata xtoverid, robust : . xtoverid, robust}
+
+{phang}{stata xtoverid, cluster(idcode) : . xtoverid, cluster(idcode)}
+
+(Identical to overid stat from xtivreg2 with same options)
+{phang}{stata xtivreg2 ln_wage age (tenure = union south), fe cluster(idcode) : . xtivreg2 ln_wage age (tenure = union south), fe cluster(idcode)}
+
+(Compare overid stat degrees of freedom for G2SLS:)
+(2 (union, south) - 1 (tenure) = 1)
+{phang}{stata xtivreg ln_wage age (tenure = union south), re : . xtivreg ln_wage age (tenure = union south), re}
+
+{phang}{stata xtoverid : . xtoverid}
+
+(...with degrees of freedom for EC2SLS:)
+(6 (mean and mean-deviation of union, south, age) - 2 (GLS transform of tenure, age) = 4)
+{phang}{stata xtivreg ln_wage age (tenure = union south), ec2sls : . xtivreg ln_wage age (tenure = union south), ec2sls}
+
+{phang}{stata xtoverid : . xtoverid}
+
+(Changing the number of included exogenous variables changes the dof of the overid stat)
+(4 (mean and mean-deviation of union, south) - 1 (GLS transform of tenure) = 3)
+{phang}{stata xtivreg ln_wage (tenure = union south), ec2sls : . xtivreg ln_wage (tenure = union south), ec2sls}
+
+{phang}{stata xtoverid : . xtoverid}
+
+(Hausman-Taylor estimation)
+
+(dof = 2 (exogenous time-varying age, age2) - 1 (endogenous time-invariant grade) = 1)
+{phang}{stata xthtaylor ln_wage age age2 tenure hours black birth_yr grade, endog(tenure hours grade) i(idcode) : . xthtaylor ln_wage age age2 tenure hours black birth_yr grade, endog(tenure hours grade) i(idcode) }
+
+{phang}{stata xtoverid : . xtoverid}
+
+(Equivalence of xtoverid statistic and standard Hausman fixed-vs-random effects test)
+
+{phang}{stata webuse abdata : . webuse abdata}
+
+(Balanced panel)
+{phang}{stata xtreg n w k if year>=1978 & year<=1982, re : . xtreg n w k if year>=1978 & year<=1982, re}
+
+(Artificial regression overid test of fixed-vs-random effects)
+{phang}{stata xtoverid : . xtoverid}
+
+{phang}{stata di r(j) : . di r(j)}
+
+{phang}{stata est store re : . est store re}
+
+{phang}{stata xtreg n w k if year>=1978 & year<=1982, fe : . xtreg n w k if year>=1978 & year<=1982, fe}
+
+{phang}{stata est store fe : . est store fe}
+
+(In homoskedastic balanced panel case, Hausman test using sigma from FE estimation...)
+{phang}{stata hausman fe re, sigmaless : . hausman fe re, sigmaless}
+
+(... is numerically equal to the artificial regression overid statistic)
+{phang}{stata di r(chi2) : . di r(chi2)}
+
+(Artificial regression overid statistic readily extends to non-homoskedastic case)
+
+{phang}{stata xtreg n w k, re cluster(id) : . xtreg n w k, re cluster(id) }
+
+{phang}{stata xtoverid : . xtoverid}
+
+
+{title:Citation}
+
+{p}{cmd:xtoverid} is not an official Stata command.
+It is a free contribution to the research community, like a paper.
+Please cite it as such:{p_end}
+
+{phang}Schaffer, M.E., Stillman, S.  2010.  xtoverid:
+Stata module to calculate tests of overidentifying restrictions
+after xtreg, xtivreg, xtivreg2 and xthtaylor
+{browse "http://ideas.repec.org/c/boc/bocode/s456779.html":http://ideas.repec.org/c/boc/bocode/s456779.html}{p_end}
+
+
+{title:References}
+
+{p 0 4}Arellano, M. 1993. On the testing of correlated effects with panel data.
+Journal of Econometrics, Vol. 59, Nos. 1-2, pp. 87-97.
+
+{p 0 4}Baltagi, B. 2005. Econometric analysis of danel data.
+New York: Wiley.
+
+{p 0 4}Baum, C. F., Schaffer, M. E., Stillman, S.  2003. Instrumental variables and GMM:
+Estimation and testing.
+{browse "http://ideas.repec.org/a/tsj/stataj/v3y2003i1p1-31.html":The Stata Journal, Vol. 3, No. 1, pp. 1-31}.
+Unpublished working paper version:
+{browse "http://ideas.repec.org/p/boc/bocoec/545.html":Boston College Department of Economics Working Paper No 545}.
+
+{p 0 4}Baum, C. F., Schaffer, M. E., Stillman, S., 2006. Enhanced routines for 
+instrumental variables/GMM estimation and testing. Unpublished working paper,
+forthcoming.
+
+{p 0 4}Hayashi, F.  2000. Econometrics.  Princeton: Princeton University Press.
+
+{p 0 4}Wooldridge, J.M. 2002. Econometric Analysis of Cross Section and Panel Data.
+Cambridge, MA: MIT Press.
+
+
+{title:Authors}
+
+	Mark E Schaffer, Heriot-Watt University, UK
+	m.e.schaffer@hw.ac.uk
+
+	Steven Stillman, Motu Economic and Public Policy Research, NZ
+	stillman@motu.org.nz
+
+{title:Also see}
+
+{p 1 14}Manual:  {hi:[R] ivreg}{p_end}
+{p 0 19}On-line:  help for {help xtivreg}; {help xtivreg2} (if installed);
+{help xthtaylor}; {help ivreg2} (if installed);{p_end}

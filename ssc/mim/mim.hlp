@@ -1,0 +1,1110 @@
+{smcl}
+{* 11dec2009}{...}
+{cmd:help for mim}{right:P Royston, JC Galati, JB Carlin & IR White}
+{hline}
+
+
+{title:Title}
+
+{pstd}
+{hi:mim} {hline 2} A prefix command for analysing and manipulating multiply imputed datasets
+
+
+{title:Syntax}
+
+{phang2}{cmd:mim} [{cmd:,} {it: mim_options}] {cmd::} {it:command}{p_end}
+
+{phang2}{cmd:mim} [{cmd:,} {it: replay_options}]{p_end}
+
+
+{synoptset 21 tabbed}{...}
+
+{synopthdr:mim_options}
+{synoptline}
+{syntab:General}
+{p2coldent:* {opt cat:egory(cat_type)}}where {it:cat_type} is {opt fit}, {opt manip} or 
+{opt combine} - specify whether {it:command} is estimation, data manipulation
+or one whose (scalar) results are to be combined using Rubin's rules{p_end}
+{synopt:{opt noi:sily}}display output from execution of {it:command} within each of the imputed datasets
+
+{syntab:Estimation (valid only for estimation commands)}
+{synopt:{opt dot:s}}display progress dots during model fitting{p_end}
+{synopt:{opt from(#)}}fit model, starting from imputation {it:#}{p_end}
+{synopt:{opt to(#)}}fit model, ending with imputation {it:#}{p_end}
+{synopt:{opt st:orebv}}fills {cmd:e(b)}, {cmd:e(V)} etc. with multiple-imputation estimates{p_end}
+
+{syntab:Manipulation (valid only for data manipulation commands)}
+{p2coldent:+ {opt so:rtorder(varlist)}}one or more variables that uniquely identify the observations in
+a given imputed dataset following each execution of {it:command}{p_end}
+
+{syntab:Combination (valid for a wide range of Stata commands)}
+{synopt:{opt est(est_spec)}}specifies the scalar (called {it:est})
+to be combined across imputations{p_end}
+{synopt:{opt se(se_spec)}}specifies the standard error of {it:est}
+to be combined across imputations{p_end}
+{synopt:{opt byv:ar}}uses {help byvar} (rather than the default, {help statsby})
+to extract and store {it:est} and its SE in each imputation{p_end}
+
+{synoptline}
+{p 4 6 2}* only necessary for estimation and data manipulation commands not listed under {help mim##description:Description}{p_end}
+{p 4 6 2}+ not valid for {help append} and {help reshape}; MANDATORY for all other data manipulation commands.{p_end}
+
+
+{synopthdr:replay_options}
+{synoptline}
+{synopt:{opt cl:earbv}}clears {cmd:e(b)}, {cmd:e(V)} etc., but leaves other {cmd:mim} estimates intact{p_end}
+{synopt:{opt j(#)}}fills {cmd:e(b)}, {cmd:e(V)} etc. with estimates corresponding to imputed dataset {it:#}{p_end}
+{synopt:{opt mc:error}}displays a table of Monte Carlo standard errors for quantities in the table of regression coefficients{p_end}
+{synopt:{opt st:orebv}}same as for estimation, unless {cmd:j} option is specified{p_end}
+{synopt:{it:reporting_options}}level and eform options supported by {it:command}{p_end}
+{synoptline}
+
+{p 4 6 2}{cmd:xi} is allowed as a prefix to {cmd:mim}, but not as prefix to {it:command}, see {help xi}.{p_end}
+{p 4 6 2}{cmd:svy} is allowed as a prefix to {it:command}, see {help svy}.{p_end}
+{p 4 6 2}{cmd:version} is allowed as a prefix to {it:command}, see {help version}.{p_end}
+
+{p2colreset}{...}
+
+
+{marker description}{...}
+{title:Description}
+
+{pstd}
+{cmd:mim} is a prefix command for working with multiply-imputed (MIM) datasets, where
+{it:command} can be any of a wide range of Stata commands. The function that {cmd:mim}
+performs depends on the category of {it:command} passed to {cmd:mim}; either estimation,
+data manipulation, post estimation or utility. A limited range of commands can be used
+with {cmd:mim} without specifying the {cmd:category} mim_option. These are:
+
+{pin}
+{it:Estimation:}
+{help regress},
+{help mean},
+{help proportion},
+{help ratio},
+{help logistic},
+{help logit},
+{help ologit},
+{help mlogit},
+{help probit},
+{help oprobit},
+{help poisson},
+{help glm},
+{help binreg},
+{help nbreg},
+{help gnbreg},
+{help blogit},
+{help clogit},
+{help cnreg},
+{help mvreg},
+{help rreg},
+{help qreg},
+{help iqreg},
+{help sqreg},
+{help bsqreg},
+{help stcox},
+{help streg},
+{help xtgee},
+{help xtreg},
+{help xtlogit},
+{help xtnbreg},
+{help xtpoisson},
+{help xtmixed},
+{help "svy:regress"},
+{help "svy:mean"},
+{help "svy:proportion"},
+{help "svy:ratio"},
+{help "svy:logistic"},
+{help "svy:logit"},
+{help "svy:ologit"},
+{help "svy:mlogit"},
+{help "svy:probit"},
+{help "svy:oprobit"},
+{help "svy:poisson"},
+{help "stepwise"}
+
+{pin}
+{it:Post Estimation:}
+{help lincom},
+{help testparm},
+{help predict} 
+
+{pin}
+{it:Data Manipulation:}
+{help reshape},
+{help append},
+{help merge}
+
+{pin}
+{it:Utility:}
+{cmd:check},
+{cmd:genmiss}
+
+{pstd}
+With one exception, {it:command} is specified with its full usual syntax. The
+exception is {help merge}, where only one "using" file is allowed. Also,
+{it:command} may be one of two internal utility commands, {cmd:check} and
+{cmd:genmiss}, where the required syntaxes are
+
+{pin}{cmd:mim} {cmd::} {cmd:check} [{it:varlist}]{p_end}
+
+{pin}{cmd:mim} {cmd::} {cmd:genmiss} {it:varname}{p_end}
+
+{pstd}
+respectively (see {help mim##utility:Utility commands} for more details regarding these
+two commands).
+
+{pstd}
+Note that the {it:command} {opt stepwise} expects the synatx of Stata's
+{helpb stepwise} command, and is itself a 'prefix' command. It uses 
+P-values from Wald tests for deciding whether to include or exclude
+variables in a model.
+
+{pstd}
+Further Stata estimation and data manipulation commands can be used with {cmd:mim} by specifying
+the mim_option {cmd:category(}{it:mim_type}{cmd:)}, where {it:mim_type} may be {cmd:fit}
+for estimation commands, {cmd:manip} for data manipulation commands or {cmd:combine} for
+combining scalar estimates and their SE's according to Rubin's rules. See
+{help mim##combine_estimates:Combining estimates using Rubin's rules} 
+for more details of {cmd:mim, category(combine)}, and
+{help mim##combine_estimates_r:Combining estimates using Rubin's rules}
+for a warning about combining estimates in this way. Use of {cmd:mim} in these
+ways is at the user's discretion, and the results are not guaranteed.
+
+{pstd}
+The dataset structure used by {cmd:mim} is a stacked format. In Stata 11 it may
+be either the new {it:flong} style or that created by Royston's
+{help ice} (if installed) command. Details of the dataset format may be found under
+{help mim##format:mim dataset format} below. Also, please study the following
+remarks on how {cmd:mim} functions under different versions of Stata.
+
+{title:Options}
+
+{dlgtab:General}
+
+{phang}
+{cmd:category} specifies the type of command that is being passed to {cmd:mim}, either
+estimation (category {cmd:fit}) or data manipulation (category {cmd:manip}).
+
+{phang}
+{cmd:noisily} specifies that the results of the application of {it:command} to each of the
+individual imputed datasets should be displayed.
+
+{dlgtab:Estimation}
+
+{phang}
+{cmd:dots} specifies that progress dots should be displayed.
+
+{phang}
+{opt from(#)} fits the specified model from imputation {it:#} (i.e. for
+{cmd:_mi_m >= }{it:#}). {it:#} must be an integer between 1
+and {it:m}, the maximum value of {cmd:_mi_m} in the dataset.
+Default {it:#} is 1.
+
+{phang}
+{cmd:storebv} specifies that the standard list of returned results for estimation commands be
+filled using the multiple-imputation results. In particular this forces the multiple-imputation 
+coefficient and covariance matrix estimates into {cmd:e(b)} and {cmd:e(V)}, respectively, enabling
+application at the user's own discretion of Stata post-estimation commands that use these quantities
+directly (see {help mim##replay:Replay of estimation results [advanced]} for further details).
+
+{phang}
+{opt to(#)} fits the specified model between imputation {cmd:from()} and imputation {it:#}.
+{it:#} must be an integer between 2 and {it:m}, where
+{it:m} is the maximum value of {cmd:_mi_m}
+in the dataset. Note that if
+{it:#} > {it:m} then {it:#} is assumed to equal {it:m} and no 
+error is raised. Default {it:#} is {it:m}.
+
+{dlgtab:Manipulation}
+
+{phang}
+{cmd:sortorder} specifies a list of one or more variables that uniquely identify the
+observations in each of the datasets in a {cmd:mim}-compatible dataset; for data
+manipulation, this option must specify a list of variables that together uniquely identify the
+observations in each dataset AFTER {it:command} has been applied to the given dataset
+(note that {it:varlist} cannot include {cmd:_mi_id}, since the {cmd:_mi_m} and {cmd:_mi_id}
+variables are dropped from each dataset prior to the call to {it:command}).
+
+{dlgtab:Combination}
+
+{phang}
+{opt byvar} specifies that {cmd:byvar} be used to execute the required {it:stata_cmd}
+in each imputation and store the required statistic (and optionally, its SE) in new
+variable(s), to be combined by {cmd:mim} according to Rubin's rules. The default is to use
+{cmd:statsby}. Use of {opt byvar} affects the syntax of the options {opt est()}
+and {opt se()}, see below.
+
+{phang}
+{opt est(est_spec)} specifies the scalar {it:est} to be combined across
+imputations. {it:est_spec} depends on whether the {opt byvar} option is used
+or not. By default, {cmd:statsby} is used to compute {it:est} from
+{it:stata_cmd} according to {it:est_spec}.
+
+{pmore}
+The following table shows what {it:est_spec} looks like when the estimand,
+{it:est}, is a regression coefficient, its SE, or a quantity (usually a scalar)
+returned by {it:stata_cmd} in either an {cmd:e()} or an {cmd:r()} result:
+
+{center:{hline 63}}
+{center:  Type of estimand ({it:est})        {cmd:statsby} (default)        {cmd:byvar}     }
+{center:{hline 63}}
+{center:  Regression coefficient        [{it:eq}]{cmd:_b[}{it:varname}{cmd:]}        {opt b(varname)} }
+{center:  SE of regression coefficient  [{it:eq}]{cmd:_se[}{it:varname}{cmd:]}      {opt se(varname)} }
+{center:  Quantity returned in e()       {opt e(quantityname)}  {opt e(quantityname)} }
+{center:  Quantity returned in r()       {opt r(quantityname)}  {opt r(quantityname)} }
+{center:{hline 63}}
+
+{pmore}
+The optional {it:eq} refers to an 'equation'; {it:eq} may be {cmd:#}{it:#},
+where {it:#} is an equation number, or an equation name. {cmd:byvar} does not
+currently support multiple equations.
+
+{phang}
+{opt se(se_spec)} specifies the standard error of {it:est} to be used
+with Rubin's rules. Note that {opt se()} is optional; if omitted, only the 
+mean of {it:est} across imputations is calculated. {it:se_spec} follows
+the same rules as {it:est_spec} (see {opt est()} above).
+
+{dlgtab:Replay}
+
+{phang}
+{cmd:clearbv} specifies that the additional items returned using
+the {cmd:storebv} or {cmd:j} options be cleared, but that all other
+estimation results returned by {cmd:mim} be left intact.
+
+{phang}
+{opt j(#)} specifies that the standard results returned by estimation
+commands be filled using the estimates from the last fit of an estimation
+command applied to the {it:#}th imputed dataset, and that these estimates
+be replayed.
+
+{phang}
+{opt mcerror} displays a table of Monte Carlo standard errors for
+the quantities presented in the main table of multiple-imputation
+results. The MC standard errors measure the uncertainty in the estimated
+quantities due to the use of a finite number m of imputations.
+In general, MC error decreases as m is increased.
+The MC error for the regression coefficients is
+computed as the square root of the between-imputation variance
+(B) divided by the square root of the number of imputations.
+For the other quantities, jackknife estimates (leaving out one
+imputation each time) (Efron & Gong 1983) are presented.
+The {opt mcerror} option may not be combined with other replay
+options other than {it:reporting_options},
+nor may it be specified at model-fitting time.
+
+{phang}
+{cmd:storebv}, same as for estimation, unless the {cmd:j} option is specified.
+
+{phang}
+{it:reporting_options} specifies {opt level()} and {opt eform} options
+supported by {it:command}.
+
+
+{pstd}
+There are no {it:mim_options} for {cmd:mim: check} and {cmd:mim: genmiss}.
+{cmd:mim: predict} allows options appropriate to {cmd:predict}
+after {it:command} - see {help mim##mimpredict:Notes on mim: predict} for
+further information.
+
+
+{title:Remarks}
+
+{pstd}
+Remarks are presented under the headings
+{it:mim and Stata 11},
+{it:mim dataset format},
+{it:Display of regression results},
+{it:Combining estimates using Rubin's rules},
+{it:Notes on mim: predict},
+{it:Running mim in more than one instance of Stata},
+and {it:Score labels in -mlogit-}.
+
+    {title:mim and Stata 11}
+
+{pstd}
+With Stata 11, {cmd:mim} recognizes the 'old' ice-style format
+variables ({cmd:_mi} and {cmd:_mj}) and the new {cmd:mi}-style variables
+({cmd:_mi_id} and {cmd:_mi_m}). Note that multiply imputed data created
+by {help ice} can be imported into the {cmd:mi} {it:flong} style by
+using the command {help mi import ice}{cmd:, clear automatic}. The
+{opt automatic} option ensures that the imputed variables are
+correctly registered. If you omit the option, you may encounter
+difficulties.
+
+{pstd}
+If {cmd:mim} is called by a Stata version below 11.0, it recognizes only
+{cmd:_mi} and {cmd:_mj} as format variables. If called by Stata version 11.0
+or higher, {cmd:mim} first looks for {cmd:_mi} and {cmd:_mj}. If it
+fails to find them, it checks for an {cmd:mi}-style data structure
+and if necessary converts the data to style {it:flong} (see {help mi set}
+and {help mi convert}). Note that the {it:flong} style persists after {cmd:mim}
+has finished. Finally, if neither type of formatting is found,
+{cmd:mim} gives up and issues an error message.
+
+{pstd}
+In what follows, the format variables are called {cmd:_mi_id} and {cmd:_mi_m}
+with the implicit understanding that if the data are in the {cmd:ice} format, we
+mean {cmd:_mi} and {cmd:_mj}, respectively.
+
+{pstd}
+With Stata 11, if the data are in {cmd:mi} format and {cmd:mim} creates
+new variables, e.g. with the {cmd:mim: predict} {it:newvar} command,
+make sure you keep such variables unregistered. To avoid possible data
+loss in Stata 11 when working with {cmd:mim}, do NOT convert the data
+to a different {cmd:mi} style using {help mi convert}.
+
+{pstd}
+When {cmd:mim} starts, it checks and reports which format is being used.
+
+
+{marker format}{...}
+    {title:mim dataset format}
+
+{pstd}
+For a multiply-imputed dataset to be compatible with {cmd:mim}, the dataset must contain:
+
+{phang2}
+a numeric variable called {cmd:_mi_m} whose values identify the individual dataset to
+which each observation belongs,
+{p_end}
+{phang2}
+a numeric variable called {cmd:_mi_id} whose values identify the observations within
+each individual dataset.
+
+{pstd}
+Moreover, if the original data with missing values are to be stored in the dta file, then those
+observations must be identified with the value {cmd:_mi_m==0}, while imputed datasets are identified
+using positive {cmd:_mi_m} values. In particular, the dataset in the stack identified by
+{cmd:_mi_m==0} is ignored for the purpose of model fitting with {cmd:mim}. For convenience, a
+multiply-imputed dataset satisfying the above requirements is called a {cmd:MIM dataset}.
+
+{pstd}
+The requirements above have been kept as simple as possible. They allow a set of multiply-imputed datasets
+stored in separate files to be stacked into the format required by {cmd:mim} using only the
+basic data processing commands {cmd:generate}, {cmd:append} and {cmd:replace}. (Nevertheless,
+for convenience, a dedicated command {help mimstack} has been provided for this purpose.)
+
+{pstd}
+An example of a multiply imputed dataset in {cmd:mim}-compatible format is shown below. The
+original data consist of a completely observed variable y and a variable x with missing
+values in the 3rd, 4th and 6th observations, and there are 2 imputed copies of the original
+dataset in the stack.
+
+{center:  {cmd:_mi_m}      {cmd:_mi_id}       {cmd:y}        {cmd:x}    }
+{center:{hline 34}}
+{center:   0        1      1.1        105 }
+{center:   0        2      9.2        106 }
+{center:   0        3      1.1          . }
+{center:   0        4      2.3          . }
+{center:   0        5      7.5        108 }
+{center:   0        6      7.9          . }
+{center:   1        1      1.1        105 }
+{center:   1        2      9.2        106 } 
+{center:   1        3      1.1    109.796 } 
+{center:   1        4      2.3    110.456 } 
+{center:   1        5      7.5        108 } 
+{center:   1        6      7.9    102.243 } 
+{center:   2        1      1.1        105 } 
+{center:   2        2      9.2        106 }
+{center:   2        3      1.1    107.952 }
+{center:   2        4      2.3    115.968 }
+{center:   2        5      7.5        108 }
+{center:   2        6      7.9    114.479 }
+
+
+{marker display}{...}
+    {title:Display of regression results}
+
+{pstd}                                                                
+{opt mim} displays parameter estimates (obtained by Rubin's rules -   
+see {help mim##fitting:Model fitting}) and their standard  
+errors, taking into account between- and within-imputation variation. 
+Confidence intervals and test statistics for regression coefficients  
+are based on the t distribution with estimated degrees of freedom     
+(d.f.) obtained using the method of Barnard and Rubin. The final entry
+for each parameter estimate in the model is "FMI", standing for       
+"fraction of missing information". For each predictor, the FMI is a   
+function of the ratio of the between- to within-imputation variance of
+the estimated coefficient and its d.f.:                               
+                                                                      
+{pmore}FMI = [r + 2/(d.f. + 3)]/(r + 1)                                 
+                                                                      
+{pstd}                                                                
+where r is the "relative increase in variance due to non-response"    
+(Rubin). Since d.f. is always positive, FMI lies between 0 and 1, and 
+since d.f. is usually considerably larger than 3, FMI is approximately
+r/(r + 1).                                                              
+The larger the value of FMI, the greater the loss of information      
+(hence loss of precision) that has been induced in the estimated      
+coefficient by the missing data.                                      
+                                                                      
+{pstd}                                                                
+It is important to remember that the reported FMI is an {it:estimate}.
+For a small number of imputations, the estimate may be imprecise.     
+Just how imprecise may be gauged to some extent by increasing the     
+number of imputations, refitting the model in {opt mim} and inspecting
+the resulting FMI.                                                    
+
+{marker combine_estimates_r}{...}
+    {title:Combining estimates using Rubin's rules}
+
+{pstd}
+While statistical theory guarantees the asymptotic normality of
+regression coefficients estimated by maximum likelihood, the same guarantee
+does not apply in general. One should be aware that combining estimates
+across imputations using Rubin’s rules may not always make sense.
+In particular, it assumes that the sampling distribution of the
+estimate is approximately normal, with the corresponding SE (if supplied).
+It may be appropriate to transform the scale of the parameter
+(e.g. Fisher’s transform for the correlation coefficient) before obtaining
+MI combined estimates.
+
+
+{marker mimpredict}{...}
+    {title:Notes on mim: predict}
+
+{pstd}
+The syntax of {cmd:mim: predict} is
+
+{phang}{cmd:mim: predict} {it:newvarname} {cmd:,} [ {it:predict_options} ]
+
+{pstd}
+where {it:predict_options} are options appropriate to {cmd:predict} for
+{it:command}, the regression command just run by {cmd:mim}. Note that
+{cmd:mim: predict} can only predict one new variable ({it:newvarname})
+at a time. Thus syntaxes of {cmd:predict}
+that allow one to predict several variables at once are disallowed. The most
+obvious example is {cmd:mlogit}. For example, suppose {cmd:y} was a 3-level
+categorical outcome variable, coded 1, 2, 3, and a model of the form
+{cmd:mim: mlogit y} {it:explanatory_variables} had just been fit. The
+command
+
+{phang}{cmd:. mim: predict yhat1 yhat2 yhat3, xb}
+
+{pstd}
+would result in an error message ({cmd:too many variables specified}), whereas
+following regular {cmd:mlogit}, it would be valid. The solution with
+{cmd:mim: predict} is
+
+{phang}{cmd:. mim: predict yhat1, outcome(1) xb}{p_end}
+{phang}{cmd:. mim: predict yhat2, outcome(2) xb}{p_end}
+{phang}{cmd:. mim: predict yhat3, outcome(3) xb}{p_end}
+
+{pstd}
+The default action for {cmd:mim: predict} is the same as the default for
+{cmd:predict} after {it:command}. For example, when {it:command} is
+{cmd:logit}, {cmd:mim: predict} produces the event probability, not the linear
+predictor. The option {opt xb} must be included to obtain the linear predictor. 
+The values returned in the imputed datasets ({cmd:_mj} > 0) use
+imputation-specific parameter estimates and (if appropriate) the imputed
+covariate values. The values returned in the {cmd:_mj} = 0 section of the
+dataset are obtained by combining the predictions from the imputed datasets
+using Rubin’s rules.
+
+{pstd}
+As just mentioned, the across-imputation average of whatever is being predicted
+is stored in
+imputation 0 ({cmd:_mj} = 0). Note, however, that if after fitting (say) a
+{cmd:mim: logit} model you do {cmd:mim: predict p} and {cmd:mim: predict xb, xb},
+then logit({cmd:p}) = {cmd:xb} for {cmd:_mj} > 0 but not for {cmd:_mj} = 0.
+The behaviour is logical, but should nevertheless be borne in mind.
+
+{pstd}
+There may be better ways to perform multiple-imputation inference for a
+desired predicted quantity, particularly when the latter is a highly
+non-linear function of the original model parameters.
+In the case of logistic regression, for example, a user might prefer to
+combine on the linear predictor scale before obtaining inferences for
+predicted probabilities by back-transformation, i.e.
+{cmd:mim: predict xb, xb} followed by {cmd:gen p = invlogit(xb)}, which
+will not give the same results as {cmd:mim: predict p}. There appears to
+be no clear statistical theory to guide these decisions.
+
+
+    {title:Running mim in more than one instance of Stata}
+
+{pstd}
+In Stata 10 and higher, to maximize speed of operation,
+{cmd:mim} stores the estimates from models
+fit to the imputed datasets on disk, in the default system
+temporary folder (whose precise name varies from computer to
+computer, depending on operating system preferences). The
+estimates are stored in files named {bf:mim_ests}{it:#}{bf:.ster},
+where {it:#} runs from 1 to m. If you run {cmd:mim} simultaneously
+in more than
+one instance of Stata, these files may interfere with one another,
+resulting in an obscure-looking fatal error
+(typically reported as {bf:r(603)}). For example, running simulation
+studies involving {cmd:mim} in several copies of Stata at once
+could cause the problem.
+
+{pstd}
+To avoid such clashes, we recommend that you tell {cmd:mim}
+to store its estimates in memory. Load
+the data to be analysed and issue the command
+
+{pmore}{cmd:. char _dta[mim_ests] "memory"}
+
+{pstd}The setting is cancelled by entering
+
+{pmore}{cmd:. char _dta[mim_ests]}
+
+{pstd}
+in the current Stata session.
+
+
+    {title:Score labels in -mlogit-}
+
+{pstd}
+It is legal in Stata for score labels to contain periods (UK English: full
+stops). For example,
+
+{phang}{cmd:. label define edulbl 1 "Less than H.S." 2 "H.S." 3 "Assoc. or higher"}{p_end}
+{phang}{cmd:. label values edu edulbl}
+
+{pstd}
+is perfectly valid. Such labels define equation-names when used with the
+{cmd:mlogit} command. However, Stata does not allow them to be transferred
+"manually" to matrices, a feature which would stop {cmd:mim} in its tracks.
+To avoid the problem, {cmd:mim} converts the periods
+in such labels to underscores when reporting {cmd:mlogit} model equations.
+ 
+
+{marker results}{...}
+{title:Saved results}
+
+{pstd}
+After model fitting, {cmd:mim} returns results in {cmd:e()} as follows.
+
+{synoptset 18 tabbed}{...}
+{synopthdr:Result}
+{synoptline}
+
+{syntab:{it:Matrices}}
+
+{synopt:{cmd:e(MIM_Q)}}coefficient estimates{p_end}
+{synopt:{cmd:e(MIM_T)}}total covariance matrix estimate{p_end}
+{synopt:{cmd:e(MIM_TLRR)}}Li-Raghunathan-Rubin (1999) estimate of total covariance matrix{p_end}
+{synopt:{cmd:e(MIM_W)}}within imputation covariance matrix estimate{p_end}
+{synopt:{cmd:e(MIM_B)}}between imputation covariance matrix estimate{p_end}
+{synopt:{cmd:e(MIM_dfvec)}}vector of MI degrees of freedom{p_end}
+{synopt:{cmd:e(MIM_lambda)}}vector of fraction of missing information (FMI){p_end}
+{synopt:{cmd:e(MIM_r)}}vector of increase in variance due to missing information{p_end}
+
+{syntab:{it:Scalars}}
+
+{synopt:{cmd:e(MIM_dfmin)}}minimum of {cmd:e(}{cmd:MIM_dfvec}{cmd:)}{p_end}
+{synopt:{cmd:e(MIM_dfmax)}}maximum of {cmd:e(}{cmd:MIM_dfvec}{cmd:)}{p_end}
+{synopt:{cmd:e(MIM_Nmin)}}minimun number of observations used in estimation{p_end}
+{synopt:{cmd:e(MIM_Nmax)}}maximum number of observations used in estimation{p_end}
+
+{syntab:{it:Macros}}
+
+{synopt:{cmd:e(MIM_m)}}number of imputed datasets used in estimation{p_end}
+{synopt:{cmd:e(MIM_levels)}}values of {cmd:_mi_m} variable used in estimation{p_end}
+{synopt:{cmd:e(MIM_prefix)}}value of {cmd:e(}{it:prefix}{cmd:)} returned by {it:command}{p_end}
+{synopt:{cmd:e(MIM_prefix2)}}{cmd:mim}{p_end}
+{synopt:{cmd:e(MIM_cmd)}}the name of the estimation command specified in {it:command}{p_end}
+{synopt:{cmd:e(MIM_depvar)}}value of {cmd:e(depvar)} returned by {it:command}{p_end}
+{synopt:{cmd:e(MIM_title)}}value of {cmd:e(title)} returned by {it:command}{p_end}
+{synopt:{cmd:e(MIM_properties)}}value of {cmd:e(properties)} returned by {it:command}{p_end}
+{synopt:{cmd:e(MIM_eform)}}value of {cmd:e(eform)} returned by {it:command}{p_end}
+
+{syntab:{it:Additional results (returned when}{cmd: storebv}{it: option is specified)}}
+
+{synopt:{cmd:e(b)}}equal to {cmd:e(MIM_Q)}{p_end}
+{synopt:{cmd:e(V)}}equal to {cmd:e(MIM_T)}{p_end}
+{synopt:{cmd:e(N)}}equal to {cmd:e(MIM_Nmin)}{p_end}
+{synopt:{cmd:e(sample)}}equal to 1 for observations in the estimation sample, 0 otherwise{p_end}
+{synopt:{cmd:e(cmd)}}equal to {cmd:e(MIM_cmd)}{p_end}
+{synopt:{cmd:e(depvar)}}equal to {cmd:e(MIM_depvar)}{p_end}
+{synopt:{cmd:e(df_r)}}equal to {cmd:e(MIM_dfmin)}{p_end}
+{synopt:{cmd:e(properties)}}equal to {cmd:e(MIM_properties)}{p_end}
+
+{synoptline}
+
+{p2colreset}{...}
+
+
+{title:Examples}
+
+{pstd}
+Examples and accompanying remarks are given under the headings
+{it:Model fitting}, {it:Data manipulation}, {it:Post-estimation},
+{it:Replay of estimation results [advanced]}, {it:Utility commands},
+and {it:Combining estimates using Rubin's rules}.
+
+{marker fitting}{...}
+    {title:Model fitting}
+
+{pstd}
+When invoked for model fitting, {cmd:mim} applies {it:command} to each of the
+imputed datasets in the current MIM dataset, and then combines the individual
+estimates using Rubin's rules for multiple-imputation-based inferences. In
+most cases fitting a statistical model to a multiply-imputed dataset with
+{cmd:mim} is simply a matter of loading the MIM-format dataset into Stata and
+executing the desired estimation command, prefixing it with the {cmd:mim}
+prefix. Several examples are provided below.
+
+{phang}
+{cmd:. use mymimdataset1, clear}
+{p_end}
+{phang}
+{cmd:. mim: regress y x1 x2 x3 x4}
+{p_end}
+
+{phang}
+{cmd:. use mymimdataset2, clear}
+{p_end}
+{phang}
+{cmd:. mim: logistic y x1 x2, coef}
+{p_end}
+
+{phang}
+{cmd:. use mymimdataset3, clear}
+{p_end}
+{phang}
+{cmd:. xi: mim: glm low age lwt i.race smoke ptl ht ui, f(bin) l(logit) le(90)}
+{p_end}
+{phang}
+{cmd:. xi: mim: stepwise, pr(0.05): glm low age lwt (i.race) smoke ptl ht ui, f(bin) l(logit) le(90)}
+{p_end}
+
+{phang}
+{cmd:. use mymimdataset4, clear}
+{p_end}
+{phang}
+{cmd:. mim: svy: proportion heartatk}
+{p_end}
+{phang}
+{cmd:. mim: svy: logistic heartatk age weight height}
+{p_end}
+{phang}
+{cmd:. mim, noi: svy jackknife, nodots: logit highbp height weight age age2 female black, or}
+{p_end}
+
+{phang}
+{cmd:. use mymimdataset5, clear}
+{p_end}
+{phang}
+{cmd:. mim: xtmixed gsp private emp water other unemp || region: R.state, l(90)}
+{p_end}
+
+{pstd}
+Additionally, other Stata estimation commands may by fitted to a MIM dataset using the
+{cmd:category(fit)} option of {cmd:mim}. Two examples are given below.
+
+{phang}
+{cmd:. use mymimdataset6, clear}
+{p_end}
+{phang}
+{cmd:. mim, cat(fit): mvprobit (private = years logptax loginc) (vote=years logptax loginc), nolog}
+{p_end}
+
+{phang}
+{cmd:. use mymimdataset7, clear}
+{p_end}
+{phang}
+{cmd:. mim, cat(fit): MyNewCommand y x1 x2}
+{p_end}
+
+
+    {title:Data manipulation}
+
+{pstd}
+The stacked dataset format used by {cmd:mim} allows simple data manipulation
+such as generating and replacing variables to be performed using existing
+Stata commands. More complex data manipulation tasks, particularly those that
+alter the number of observations in each of the imputed datasets, usually
+require more detailed programming. For convenience, three common tasks,
+namely reshaping, appending and merging datasets, can be accomplished by
+prefixing the relevant command with {cmd:mim}. The first two are
+straightforward, and in most instances will be applied by simply prefixing
+the usual syntax with {cmd:mim}.
+
+{phang}
+{cmd:. use mymimdataset7, clear}
+{p_end}
+{phang}
+{cmd:. mim: reshape wide income, i(id) j(year)}
+{p_end}
+{phang}
+{cmd:. mim: reshape long} 
+{p_end}
+
+{phang}
+{cmd:. use mymimdataset8, clear}
+{p_end}
+{phang}
+{cmd:. mim: append using mymimdataset9}
+{p_end}
+
+{pstd}
+Merging two {cmd:mim}-compatible datasets requires a little further
+explanation, since it requires that the {cmd:sortorder} option be specified to
+{cmd:mim}. This option is necessary so that {cmd:mim} can generate a new
+{cmd:_mi_id} variable once merging is complete. For example, suppose that 
+{cmd:mymimdataset10} is a {cmd:mim}-compatible dataset containing patient
+details, with each patient having a unique {cmd:id}, and {cmd:mymimdataset11}
+is a second stacked dataset containing additional longitudinal measurements on
+each patient, with each measurement uniquely identified by the two variables
+{cmd:id time}. Merging these data into a single dataset would usually be
+accomplished by a match-merge on the {cmd:id} variable. However, once merging
+is complete, the observations in the merged dataset are determined by the pair
+of variables {cmd:id} and {cmd:time}. Using {cmd:mim} the merge would be
+accomplished as follows:
+
+{phang}
+{cmd:. use mymimdataset10, clear}
+{p_end}
+{phang}
+{cmd:. mim, sortorder(id time): merge id using mymimdataset11}
+{p_end}
+
+{pstd}
+Additionally, other Stata commands that either manipulate a single dataset or a
+master/using pair of datasets may by applied to a multiply-imputed dataset
+using the {cmd:category} option of {cmd:mim}. This is most likely to be of
+interest when {it:command} is a user-written program designed to accomplish a
+project-specific task.
+
+{phang}
+{cmd:. use mymimdataset12, clear}
+{p_end}
+{phang}
+{cmd:. mim, category(manip) so(id): mystatacmd x1 x2 x3}
+{p_end}
+
+
+{marker postestimation}{...}
+    {title:Post-estimation}
+
+{pstd}
+In general Stata's standard post-estimation methods cannot be directly applied
+with multiply-imputed data. Methods relying on likelihood comparisons
+({cmd:lrtest}) are not applicable because multiple imputation does not
+involve calculation of likelihood functions for the data. Furthermore,
+application of a post-estimation command directly to the multiple-imputation
+estimates will not in general produce valid simultaneous inferences for multiple
+parameters, since applying Rubin's rules to the vector of parameter estimates
+and their associated variance-covariance matrices does not work reliably
+(Li et al, 1991). Performing inferences for target parameters that are scalar
+(unidimensional) is however easily accomplished using Rubin's rules, and this
+has enabled us to create multiple-imputation versions of {cmd:lincom} and 
+{cmd:predict}. In addition, we have implemented the method of Li et al (1991)
+to create a {cmd:mim}-specific version of {marker testparm}{cmd:testparm},
+which allows the testing of null hypotheses relating to a vector of parameters.
+Examples of the use of {marker lincom}{cmd:mim: lincom}, {cmd:mim: testparm}
+and {cmd:mim: predict} are given below. For other post-estimation tasks see the
+additional remarks under
+{help mim##replay:Replay of estimation results [advanced]}.
+
+{pstd}
+Warning: {cmd:mim: lincom} has an anomalous feature.
+Stata's {cmd:lincom} following {cmd:logistic} behaves atypically
+compared with other Stata regression commands such as {cmd:stcox}. If you
+wish to get odds ratio estimates with {cmd:mim: logistic} followed by
+{cmd:mim: lincom}, you should specify the model as {cmd:mim: logit ..., or}
+and the lincom command as {cmd:mim: lincom} {it:exp}{cmd:, or}.
+
+{phang}
+{cmd:. use mymimdataset2, clear}
+{p_end}
+{phang}
+{cmd:. mim: logit y x1 x2}
+{p_end}
+{phang}
+{cmd:. mim: lincom x1 + 2 * x2}
+{p_end}
+{phang}
+{cmd:. mim: lincom x1 + x2, or}
+{p_end}
+{phang}
+{cmd:. mim: testparm _all}
+{p_end}
+{phang}
+{cmd:. mim: predict yhat, xb }
+{p_end}
+{phang}
+{cmd:. mim: predict yhatse, stdp}
+{p_end}
+
+{marker replay}{...}
+    {title:Replay of estimation results [advanced]}
+
+{pstd}
+Multiple-imputation estimates may be replayed by simply typing {cmd:mim} at the
+command line. If the estimates for a given imputed dataset have previously
+been called up using the {opt j(#)} option, the overall (Rubin's rules)
+estimates may be re-displayed by typing {cmd:mim, storebv} or
+{cmd:mim, clearbv}. A {opt level(#)} option and any {opt eform} options
+supported by {it:command} may be specified during replay.
+
+{phang}
+{cmd:. use mymimdataset2, clear}
+{p_end}
+{phang}
+{cmd:. mim: logit y x1 x2}
+{p_end}
+{phang}
+{cmd:. mim, or l(90)}
+{p_end}
+
+{pstd}
+Multiple-imputation estimates may be copied into {cmd:e(b)}, {cmd:e(V)} etc.
+by specifying the {cmd:storebv} option during replay. Note that use of
+multiple-imputation estimates in this way is at the user's descretion, and
+validity of the results is not guaranteed. In particular, forcing the
+multiple-imputation estimates into {cmd:e(b)} and {cmd:e(V)} allows
+application of a Stata post-estimation command directly to the
+multiple-imputation estimates. While this may be valid in specific cases,
+it is certainly not valid in general (see
+{help mim##postestimation:Post-estimation} for additional comments).
+
+{phang}
+{cmd:. mim, storebv}
+{p_end}
+
+{pstd}
+(Note that the {cmd:storebv} option may also be specified during model fitting.)
+
+{pstd}
+Alternatively, by specifying the {opt j(#)} option of {cmd:mim}, the estimates
+corresponding to the application of {it:command} to one of the individual
+imputed datasets are copied into their usual place in {cmd:e()} (that is, into
+{cmd:e(b)}, {cmd:e(V)} etc.). {it:command} can also be replayed directly in
+this situation, for example
+
+{phang}
+{cmd:. mim: logit y x1 x2}
+{p_end}
+{phang}
+{cmd:. mim, j(1)}
+{p_end}
+{phang}
+{cmd:. logit, or}
+{p_end}
+
+{pstd}
+displays the estimated odds ratios for imputation #1.
+
+{pstd}
+The facility to replay individual estimates has been incorporated with
+extensibility in mind, particularly with regard to post-estimation. The most
+likely application is to loop over the individual estimates, replaying and
+capturing necessary quantities from each set of results in turn, and then
+combining these in some way, where the standard approach for simple scalar
+estimation would be to use Rubin's rules.
+
+{phang}
+{cmd:. use mymimdataset2, clear}
+{p_end}
+{phang}
+{cmd:. mim: logit y x1 x2}
+{p_end}
+{phang}
+{cmd:. local levels `"`e(MIM_levels)'"'}
+{p_end}
+{phang}
+{cmd:. foreach j of local levels {c -(}}
+{p_end}
+{phang}
+{cmd:. {space 3}quietly mim, j(`j')}
+{p_end}
+{phang}
+{cmd:. {space 3}{it:... apply some post-estimation command or capture some stored results here ...}}
+{p_end}
+{phang}
+{cmd:. {c )-}}
+{p_end}
+{phang}
+{cmd:. {it:combine results from individual estimations using Rubin's rules ...}}
+{p_end}
+
+{pstd}
+Finally, to avoid inadvertent application of a Stata post-estimation command
+to estimates copied into {cmd:e(b)}, {cmd:e(V)} etc. using either the
+{opt j(#)} or {cmd:storebv} option, the {cmd:clearbv} option is provided to
+allow one to clear these estimates when finished (without losing the multiple
+imputation estimates from memory). It is recommended always to make use of
+this facility.
+
+{phang}
+{cmd:. mim, clearbv}
+{p_end}
+
+
+{marker utility}{...}
+    {title:Utility commands}
+
+{pstd}
+The {cmd:check} command provides a detailed integrity check of a multiply
+imputed dataset in stacked format. The main checks are that non-missing
+values must be constant across imputed datasets and that all missing values
+must have been imputed. Note that the utility commands are only applicable
+when the original dataset with missing values has been included in the stacked
+dataset (see {help mim##format:MIM dataset format}).
+
+{phang}
+{cmd:. use mymimdataset12, clear}
+{p_end}
+{phang}
+{cmd:. mim: check}
+{p_end}
+
+{phang}
+Alternatively, the check can be restricted to selected variables.
+
+{phang}
+{cmd:. mim: check x1 x2 x3 x4 x5}
+{p_end}
+
+{pstd}
+The {cmd:genmiss} command generates a missing indicator variable for a specified variable.
+
+{phang}
+{cmd:. mim: genmiss x1}
+{p_end}
+
+{pstd}
+In this case the generated indicator variable is called {cmd:_mim_x1} (and in
+general the naming convention used is to prefix {it:varname} with {it:_mim_}).
+
+
+{marker combine_estimates}{...}
+    {title:Combining estimates using Rubin's rules}
+
+{pstd}
+Some simple examples of {cmd:mim, category(combine)} may help to clarify how to use
+this powerful facility. One small point to note: the degrees of freedom used in
+calculating the t-statistic for confidence intervals are slightly larger according to
+{cmd:mim, category(combine)} than to {cmd:mim} when fitting regression models.
+The result is that
+{cmd:mim, category(combine)} gives slightly narrower confidence intervals.
+
+{pstd}{ul:1. The mean of {cmd:x} with its SE and 95% CI computed in different ways}
+
+{pmore}Using the default calculating tool ({cmd:statsby}):
+
+{pmore}{cmd:. mim, cat(combine) est(_b[x]) se(_se[x]) : mean x}{p_end}
+{pmore}{cmd:. mim, cat(combine) est(_b[_cons]) se(_se[_cons]) : regress x}{p_end}
+{pmore}{cmd:. mim, cat(combine) est(r(mean)) se(sqrt(r(Var)/r(N))) : ameans x}{p_end}
+
+{pmore}Note the use of an expression for the SE of the mean, namely
+{hi:se(sqrt(r(Var)/r(N)))}. {cmd:statsby} allows this flexibility but
+{cmd:byvar} doesn't.
+
+{pmore}Using the alternative calculating tool ({cmd:byvar}):
+
+{pmore}{cmd:. mim, cat(combine) byvar est(b(x)) se(se(x)) : mean x}{p_end}
+{pmore}{cmd:. mim, cat(combine) byvar est(b(_cons)) se(se(_cons)) : regress x}{p_end}
+
+{pstd}{ul:2. Area under a ROC curve}
+
+{pmore}
+The aim is to fit a logistic regression of {cmd:y} on {cmd:x1} and {cmd:x2},
+and compute the AUROC (area under the ROC curve) for the resulting linear predictor
+in each imputation, combine the AUROC values across imputations and report
+the mean AUROC with its SE and 95% CI.
+
+{pmore}{cmd:. mim: logit y x1 x2}{p_end}
+{pmore}{cmd:. mim: predict xb}{p_end}
+{pmore}{cmd:. mim, cat(combine) est(r(area)) se(r(se)) : roctab y xb}{p_end}
+{pmore}{cmd:. mim, cat(combine) byvar est(r(area)) se(r(se)) : roctab y xb}{p_end}
+
+{pmore}
+We have noticed that {cmd:byvar} is substantially faster than {cmd:statsby} in some
+examples; in the {cmd:roctab} example just given, it takes one third of the time
+taken by {cmd:statsby}. The reason appears to be that {cmd:statsby} executes
+{it:stata_cmd} first for the entire dataset, then for each imputation, whereas
+{cmd:byvar} only does it for each imputation.
+
+{pstd}{ul:3. Using a sequence of Stata commands}
+
+{pmore}
+Note the feature of {cmd:byvar} that {it:stata_cmd} can
+be a sequence of Stata commands, separated by {cmd:@}. The feature
+is not available with {cmd:statsby}.
+
+{pmore}
+For example,
+the mean AUROC in the second example above could be obtained
+by the following single command:
+
+{pmore}{cmd:. mim, cat(combine) byvar est(r(area)) : logit y x1 x2 @ lroc, nograph}{p_end}
+
+{pmore}
+Since {cmd:lroc} does not return the SE of the AUROC, the {opt se()}
+option of {cmd:mim, category(combine)} is omitted and only the mean AUROC is reported. 
+
+{pstd}{ul:4. Combining estimates of a parameter from a multi-equation model}
+
+{pmore}This is purely a pedagogic example, since {cmd:mim} reports combined results
+for all parameters of a multi-equation model anyway:
+
+{phang2}{cmd:. mim, cat(combine) est([ln_p]_b[_cons]) se([ln_p]_se[_cons]) : streg x1 x2, distribution(weibull)}{p_end}
+
+
+{title:Authors}
+
+{pstd}
+John C. Galati & John B. Carlin, Clinical Epidemiology & Biostatistics Unit
+Murdoch Children’s Research Institute & University of Melbourne{break}
+john.carlin@mcri.edu.au
+
+{pstd}
+Patrick Royston, MRC Clinical Trials Unit, London.{break}
+pr@ctu.mrc.ac.uk
+
+
+{title:References}
+
+{phang}
+Carlin JB, Galati JC and Royston P. 2008. 
+A new framework for managing and analyzing multiply imputed data in Stata.
+{it:Stata Journal} 8(1): 49-67.
+
+{phang}
+Carlin JB, Li N, Greenwood P and Coffey C. 2003.
+Tools for analyzing multiple imputed
+datasets. {it:Stata Journal} 3(3): 226-244.
+
+{phang}
+Efron B, Gong G. 1983. A leisurely look at the bootstrap, the jackknife,
+and cross-validation. {it:The American Statistician} 37: 36-48.
+
+{phang}
+Li KH, Raghunathan TE, Rubin DB. 1991. Large-sample significance levels from
+multiply-imputed data using moment-based statistics and an F reference distribution.
+{it:Journal of the American Statistical Association} 86: 1065-1073.
+
+{phang}
+Royston P. 2004. Multiple imputation of missing values.
+{it:Stata Journal} 4(3): 227-241.
+
+{phang}
+Royston P. 2005. Multiple imputation of missing values: update.
+{it:Stata Journal} 5(2): 188-201.
+
+{phang}
+Royston P. 2005. Multiple imputation of missing values:
+update of ice. {it:Stata Journal} 5(4): 527-536.
+
+{phang}
+Royston P. 2007. Multiple imputation of missing values: further
+update of ice, with an emphasis on interval
+censoring. {it:Stata Journal} 7(4): 445–464.
+
+{phang}
+Royston P, Carlin JB and White IR. 2009. Multiple imputation of missing values:
+new features for mim. {it:Stata Journal} to appear.
+
+
+{title:Also see}
+
+{pstd}
+Online:  help for {help mim}, {help mimstack},
+{help mi estimate} (if Stata 11 installed)
+{p_end}

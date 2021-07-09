@@ -1,0 +1,175 @@
+.-
+help for ^violin^                                  (STB-46: gr33) version 1.4.1
+.-
+
+
+Violin plots
+------------
+
+    ^violin^ varlist [weight] [^if^ exp] [^in^ range]
+       [^,^ [^bi^weight|^cos^ine|^ep^an|^gau^ss|^par^zen|^rec^tangle|^tri^angle]
+           ^n(^#^) w^idth^(^#^) by(^byvar^) tru^ncat^(^#,#|*^) ro^und^(^#^)^ graph_options ]
+
+^fweights^ and ^aweights^ are allowed; see ^help^ @weights@.
+
+
+Description
+-----------
+
+^violin^ produces violin plots, a graphical box plot--kernel density synergism.
+The violin plot combines the basic summary statistics of a box plot with the 
+visual information provided by a local density estimator. The goal is to 
+reveal the distributional structure in a variable.  Much like a traditional 
+box plot, the violin plot displays the median as a short horizontal line, the 
+first-to-third interquartile range as a narrow shaded box, and the lower-to-
+upper adjacent value range as a vertical line, but it does not plot outside 
+values.  Instead, it "boxes" the data with mirrored density curves and labels 
+the y-axis at the minimum, median and maximum observed data values.
+
+^violin^ also lists basic descriptive statistics about the data (i.e., the lower
+and upper adjacent values, the 25th and 75th centiles, the minimum, median and
+maximum of the data, and the sample size) and it provides information about
+the density estimation (i.e., the kernel method used, the number of points of
+estimation, and the resulting scale and width factors). When ^by()^ is specified,
+some additional descriptive statistics are displayed for the combined group.
+
+^violin^ ignores observations on an casewise basis as a function of 1) missing
+data and 2) the ^if^ (or ^in^) specification (i.e, it ignores the entire 
+observation).  This behavior may lead to unexpected results when multiple 
+variables are in the varlist.
+  
+Note: ^violin^ calls ^centile^ to compute the needed centiles but ^centile^ does
+      not respond to a ^[weight]^ specification.  This conflicts with the
+      ^kdensity^ code which responds to that specification.  The implications of
+      this conflict have not been explored, but ^violin^ currently allows the the
+      ^[weight]^ specification to be passed through to ^kdensity^.
+
+Note: ^violin^ uses a low-level ^gph^ command which is not supported in Stata's 
+      release 2 ^.gph^ format.  As a result neither ^Stage^ nor the ^gphdot^ or 
+      ^gphpen^ DOS-based graphics output programs can process a saved violin-plot
+      graphics file.  This limitation does not affect screen display or output
+      using the ^Graph Print^ option of Stata's ^File^ menu. 
+
+
+Options
+-------
+
+^biweight^, ^cosine^, ..., ^triangle^ specify the kernel.  By default, ^epan^, the
+    Epanechnikov kernel, is used.
+
+^n(^#^)^ specifies the number of points at which density estimates will be
+    evaluated.  The default is 50.
+
+^width(^#^)^ specifies the halfwidth of the kernel, the width of the density
+    window around each point.  If ^width()^ is not specified, then the "optimal"
+    width is used; see ^[R] kdensity^.  For multimodal and highly skewed 
+    densities, the "optimal" width is usually too wide and oversmooths the
+    density.
+
+^by(^byvar^)^ produces separate plots for the groups of observations defined by 
+    byvar and displays them in a single graph having common vertical scale. 
+    ^by()^ cannot be specified when there is more than one variable in the 
+    varlist.
+
+^truncat(^#^,^#|^*)^ limits the range of the density trace, either to a range 
+    specified as ^(^#^,^#^)^, or to the observed data limits, specified as ^(*)^.
+    Regardless of the actual ^(^#^,^#^)^ specification, the maximum range truncation
+    honored is the observed data limits.  The precise truncation points will 
+    be the most extreme points within the specified range where the density is
+    calculated (the points of density calculation depend on ^n()^, ^width()^ 
+    and the observed data).
+
+^round(^#^)^ rounds the y-axis numeric labels into units of ^#^.  For example, to
+    obtain labels of the form 12.3, specify ^round(.1)^.  When using ^round()^
+    the labels and their corresponding tic marks may not be placed at the true
+    minimum, median, or maximum values, rather they will be at the rounded
+    values.  ^round()^ has no effect if ^ylabel^ is specified without arguments, 
+    but is operative if ^ylabel^ is not specified or is specified with arguments.
+    The ^round(#)^ option follows the rules of Stata's ^round(x,y)^ function, with
+    ^#^ being the ^y^ argument and each label value being the ^x^ argument; see 
+    ^[U] 16.3.6 Special functions^.
+
+graph_options are any of the options allowed by ^graph, twoway^ except ^b2title()^
+    (which is ignored); see ^help^ @graph@.  Some options are preset and, although
+    changeable, usually should not be modified.  These include ^symbol(i)^ and 
+    ^connect(l)^ for specifying the plotting symbol and point connection method
+    for the density curve.  In addition, ^ylabel()^ is preset to label only the
+    minimum, median and maximum points.  ^t1title(Violin Plot)^ is preset but can
+    be changed--except when ^by()^ is specified; in this instance ^t1title^ is used
+    for the variable name or label.  When changeable, use of ^t1title(.)^ will
+    result in a blank title.  Other preset options, such as ^pen(2)^ for the
+    plot pen color, are intended to be freely changed to suit user preference.
+    A few options, such as the left and right titles, are set (or default to) 
+    blank.  If specified, each left or right title appears only once, to the
+    left or right of all plots in a multi-variable or ^by()^ graph.  Lastly, the
+    ^saving()^ option differs slightly from ^graph^'s in that the filename
+    extension is always ^.gph^ and must not be specified.
+
+
+Saved values
+------------
+
+The following items are saved in the global ^S_^# macros and are returned in ^r()^.
+
+    ^S_1   r(kernel)^  name of kernel used for density trace
+    ^S_2   r(est_N)^   number of points of density estimation
+    ^S_3   r(width)^   band width for density estimation
+    ^S_4   r(scale)^   scale factor of density plot
+    ^S_5   r(min)^     minimum
+    ^S_6   r(lav)^     lower adjacent value
+    ^S_7   r(q25)^     first quartile
+    ^S_8   r(median)^  median
+    ^S_9   r(q75)^     third quartile
+    ^S_10  r(uav)^     upper adjacent value
+    ^S_11  r(max)^     maximum
+    ^S_12  r(N)^       n
+
+When multiple variables are specified, the saved values contain results for
+the last variable in the varlist.
+
+When ^by()^ is specified: ^S_3^ and ^S_4^ contain the averages of the band width and
+scale factors used in the subgroup density estimations; ^S_5^, ^S_7^, ^S_8^, ^S_9^, 
+^S_11^ and ^S_12^ are statistics for the combined group; and ^S_6^ and ^S_10^ are set 
+missing.  The corresponding ^r()^ items are likewise changed.
+
+In addition, matrix ^S^ is returned and contains the saved statistics for all 
+plots generated by the command.  ^S^ always contains 11 rows, but the number 
+of columns is determined by the number of variables in a multi-variable plot 
+or by the number of groups defined by the ^by()^ variable.  Each column in ^S^
+is labeled with the variable or group name to which it applies.  Such names, 
+if necessary, are truncated to 8 characters and blank characters are replaced 
+by the underscore character. The rows of ^S^, corresponding to global macros 
+^S_2^ to ^S_12^ above, are labeled respectively as: 
+       ^estN^, ^Width^, ^Scale^, ^Min^, ^LAV^, ^Q25^, ^Median^, ^Q75^, ^UAV^, ^Max^, and ^n^.
+ 
+
+Examples
+--------
+
+	. ^violin length, t1title(Auto data) l1title(length of car)^
+
+	. ^violin length weight, n(100) width(20) round(.01)^
+
+	. ^violin weight, by(foreign) parzen^
+
+
+Author
+------
+
+Thomas J. Steichen, RJRT, steicht@@rjrt.com
+
+
+Reference
+---------
+
+Hintze, J. L. and R. D. Nelson (1998).  "Violin plots: a box plot-density trace
+synergism."  The American Statistician, 52(2):181-4.
+
+
+Also see
+--------
+
+    STB:  gr33 (STB-46) Violin plots. 
+ Manual:  ^[R] kdensity^, ^[R] graph box^, ^[R] centile^ 
+          ^[U] 16.3.6 Special functions^
+On-line:  help for @kdensity@, @graph@, @centile@, @functions@

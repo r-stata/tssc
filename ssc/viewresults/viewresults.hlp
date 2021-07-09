@@ -1,0 +1,100 @@
+{smcl}
+{* 28oct2009}{...}
+{cmd:help viewresults}
+{hline}
+
+{title:Title}
+
+{p 4 4 2}{hi:viewresults} {hline 2} Display results of a command in the Viewer
+
+
+{title:Syntax}
+
+{p 8 17 2}
+{cmd:viewresults} [{cmd:,} {opt non:ew} {opt name(viewername)} {opt noc:md} ] {cmd::} {it:command}
+
+
+{p 8 17 2}
+{cmd:dview} [{varlist}] [{bf:{help using}} {it:filename}]
+[{cmd:,} {opt name(viewername)} {opt noc:md} {it:{help describe:describe_options}} ]
+
+
+{synoptset 20}{...}
+{synopthdr:options}
+{synoptline}
+{synopt :{opt non:ew}}display results in the currently active Viewer window
+  {p_end}
+{synopt :{opt name(viewername)}}display results in a Viewer window named
+{it:viewername}
+  {p_end}
+{synopt :{opt noc:md}}suppress displaying the command line
+  {p_end}
+{synoptline}
+
+
+{title:Description}
+
+{pstd}In interactive work it would sometimes be convenient to be able
+to hold on to some piece of console output (i.e. output appearing in
+Stata's Results window) in a separate window. For example, it might
+be helpful to keep {cmd:describe}'s output, i.e. a description of the
+data in memory, in a separate window.
+
+{pstd}{cmd:viewresults} executes {it:command} and displays a copy of the
+command's results in the Viewer.
+
+{pstd}{cmd:dview} displays the results of Stata's {cmd:describe} command
+in a Viewer named "describe". It is a shorthand for
+
+        {com}. viewresults, name(describe) : describe{txt}
+
+
+{title:Options}
+
+{phang}
+{opt nonew} specifies that a new Viewer window not be opened for the results
+if a Viewer window is already open.  The default is for a new Viewer
+window to be opened each time {cmd:viewresults} is issued so that multiple
+results may be viewed at once. {cmd:nonew} causes the results to be displayed in
+the topmost open Viewer. {cmd:nonew} is not allowed with {cmd:dview}.
+{cmd:dview}'s default is to display the results in a window named
+"describe".
+
+{phang}
+{opt name(viewername)} specifies that the results be displayed in a Viewer window
+named {it:viewername}.  If the named window already exists, its contents
+will be replaced.  If the named window does not exist, it will be created.
+
+{phang}
+{opt nocmd} causes the command line to be excluded from the displayed results.
+
+
+{title:Examples}
+
+        {com}. {stata "sysuse auto, clear"}
+
+        . {stata "dview"}
+
+        . {stata "regress price weight"}
+
+        . {stata "viewresults: estimates table"}{txt}
+
+
+{title:Author}
+
+{p 4 4 2} Ben Jann, ETH Zurich, jannb@ethz.ch
+
+{p 4 4 2}
+    Thanks for citing this software as follows:
+
+{p 8 8 2}
+    Jann, B. (2006). viewresults: Stata module to display results of a command in the 
+    Viewer. Available from
+    {browse "http://ideas.repec.org/c/boc/bocode/s456704.html"}.
+
+
+{title:Also see}
+
+{psee}
+Online:  {helpb describe}, {helpb viewer}, {helpb saveresults} (if installed)
+

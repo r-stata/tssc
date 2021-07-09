@@ -1,0 +1,68 @@
+.-
+help for ^clustsens^ - 1.0 - 17 Mar 2005
+.-
+
+Perform sensitivity analysis for cluster command results
+.-
+
+  ^clustsens^ varlist [^if^ exp] [^in^ range] [, reps(100) k(3) seed(string)  detail
+                                   type("kmeans") distopt("L2") dots ]
+
+
+Description
+-----------
+clustsens is a routine to do a sensitivity analysis of the @cluster@ command. 
+
+The cluster command groups cases based on the values of a variable, or the 
+mean/median of a group of variables. The results vary depending on the case 
+the process starts at, which is set by the random number seed. The amount 
+of variation is related to the number of variables being averaged together. 
+The more variables averaged, the less variation (shades of the central limit 
+theorem).  At any rate, there will, very likely, be variation - sometimes
+large variation - in the results.  That's what this routine investigates. 
+It simply runs the cluster command multiple times and records the result. 
+The seed is saved (and displayed if the detail option is specified) so that 
+a specific result can be replicated. 
+
+
+Options: 
+--------
+^reps(^#^)^ specifies the number of times the cluster command is repeated. 
+        The default is 100. 
+
+^k(^#^)^  specifies the number of groups (see help for the @cluster@ command). 
+      The default is 3. 
+
+^seed(^"string"^)^ specifies the random number seed to use at the start. 
+               The default is "123456789". 
+
+^type(^"string"^)^ indicates the type of averaging (see help for the @cluster@ command). 
+               The default is "kmeans". 
+
+^distopt(^"string"^)^ Specifies how the distance between the cases is calculated (see 
+                  help for the cluster command). The default is "L2". 
+
+^detail^ specifies that the detail for each replication will be shown.
+
+^dots^ will print a dot for each replication (shows the command is working...) 
+
+
+
+Other routines called
+---------------------
+  @matsort@ must be installed for clustsens to function
+             
+
+Examples
+--------
+ . ^clustsens^ var1 var2 , detail
+
+
+Author: Paul Millar
+        www.ucalgary.ca/~pemillar/stata.htm
+        pemillar@@ucalgary.ca
+         
+See also:
+---------
+Online:     help for @cluster@, @set@ (if installed)
+

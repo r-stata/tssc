@@ -1,0 +1,148 @@
+.-
+help for ^spautoc5^
+.-
+
+Spatial autocorrelation (Moran and Geary measures)
+--------------------------------------------------
+
+   ^spautoc5^ valuesvar neighboursvar [^if^ exp] [^in^ range] 
+   [, ^w(^strvar^) lmea^n^(^newvar^) lmed^ian^(^newvar^)^ ]
+   
+Description
+-----------
+
+^spautoc5^ calculates Moran and Geary measures of spatial autocorrelation
+for a spatial variable valuesvar and neighbourhood information given by
+neighboursvar.
+
+
+Remarks
+-------
+                                                   
+For n values of a spatial variable x defined for various locations, 
+which might be points or areas, calculate the deviations 
+            _
+    z = x - x 
+
+and for pairs of locations i and j, define a matrix 
+
+    W = ( w   )
+           ij 
+	   
+describing which locations are neighbours in some precise sense. 
+For example, w   might be assigned 1 if i and j are contiguous areas 
+              ij
+and 0 otherwise; or w   might be a function of the distance between 
+                     ij
+i and j and/or the length of boundary shared by i and j.
+
+The Moran measure of autocorrelation is 
+
+        n   n                      n   n         n   2
+   n ( SUM SUM z  w   z  ) / ( 2 (SUM SUM w  )  SUM z  ) 
+       i=1 j=1  i  ij  j          i=1 j=1  ij   i=1  i 
+
+and the Geary measure of autocorrelation is 
+
+             n   n               2           n   n         n   2
+   (n -1) ( SUM SUM w   (z  - z )  ) / ( 4 (SUM SUM w  )  SUM z  ) 
+            i=1 j=1  ij   i    j            i=1 j=1  ij   i=1  i 
+
+and these measures may used to test the null hypothesis of no spatial 
+autocorrelation, using both a sampling distribution assuming that x 
+is normally distributed and a sampling distribution assuming randomisation, 
+that is, we treat the data as one of n! assignments of the n values to 
+the n locations. 	    
+
+^spautoc5^ avoids the use of Stata's matrix language, to avoid the limit of 
+a maximum of 800 locations which that would imply, and to avoid the need 
+to handle a matrix that in many problems would be very sparse. The price 
+paid is a data structure for the neighbourhood information that is 
+idiosyncratic by Stata standards. 
+
+In a toy example, area 1 neighbours 2, 3 and 4  and has value 3
+                       2            1 and 4                   2
+		       3            1 and 4                   2
+		       4            1, 2 and 3                1
+		       
+This would be matched by the data 
+
+^_n^ (obs no)    ^value^ (numeric variable)  ^nabors^ (string variable) 
+-----------    ------------------------  ------------------------
+    1                      3                    "2 3 4"
+    2                      2                      "1 4"
+    3                      2                      "1 4"
+    4                      1                    "1 2 3"
+
+That is, ^nabors^ contains the observation numbers of the neighbours of 
+the location in the current observation, separated by spaces. Therefore, 
+the data must be in precisely this sort order when ^spautoc5^ is called. 
+
+Note various assumptions made here: 
+
+1. The neighbourhood information can be fitted into at most a ^str80^ 
+variable. 
+
+2. If i neighbours j, then j also neighbours i and both facts are 
+specified. 
+
+By default this data structure implies that those locations listed 
+have weights in W that are 1, while all other pairs of locations are not 
+neighbours and have weights in W that are 0. 
+
+If the weights in W are not binary (1 or 0), use the ^weights^ option. 
+The variable specified must be another string variable. 
+
+^_n^ (obs no)  ^nabors^ (string variable)  ^weight^ (string variable)  
+-----------  ------------------------  ------------------------
+    1                "2 3 4"             ".1234 .5678 .9012"
+    etc. 
+
+that is, w   = 0.1234, and so forth. w   need not equal w  . 
+          12                          ij                 ji
+    
+Again, the assumption here is that these weights can be fitted into 
+at most a ^str80^ variable. 
+
+
+Options
+-------
+
+^w(^strvar^)^ specifies a string variable containing numeric weights, 
+    as explained above. 
+
+^lmean(^newvar^)^ and ^lmedian(^newvar^)^ specify that new variables 
+    should be generated containing local means and local medians, that 
+    is, means and medians of the neighbours of each location (not 
+    including that location). Any weights specified will be used in 
+    the calculation. 
+
+
+Examples
+--------
+
+    . ^spautoc5 cows nabors^
+
+
+References
+----------
+
+Cliff, A.D. and Ord, J.K. 1973. Spatial autocorrelation. London: Pion.
+
+Cliff, A.D. and Ord, J.K. 1981. Spatial processes: models and 
+applications. London: Pion. 
+
+
+Author
+------
+
+         Nicholas J. Cox, University of Durham, U.K.
+         n.j.cox@@durham.ac.uk
+
+
+Also see
+---------
+
+On-line: help for @dupneigh5@, @neigh5@, @numids5@  
+
+

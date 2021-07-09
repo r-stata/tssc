@@ -1,0 +1,87 @@
+// Revised 10/24/2010
+// Version 3.0
+
+VERSION 10.0
+POSITION . . 340 340
+
+DIALOG main, label("ICD-9-CM TRAUMA") tabtitle("Main")
+BEGIN
+   GROUPBOX gb_dx_format         10 10  320 70,                         ///
+            label("Diagnosis Code Format")
+   RADIO    rd_without_dec_pt    20 30  150 20,                         ///
+            first                                                       ///
+            label("Without Decimal Point ")
+   RADIO    rd_with_dec_pt       20 50  150 20,                         ///
+            last                                                        ///
+            label("With Decimal Point ")
+   GROUPBOX gb_iss_calc          10 90  320 70,                         ///
+            label("ISS Calculation Method")
+   RADIO    rd_iss_calc_standard 20 110 280 20,                         ///
+            first                                                       ///
+            label("Any AIS = 6; ISS = 75")
+   RADIO    rd_iss_calc_alt     20 130  280 20,                         ///
+            last                                                        ///
+            label("All AIS = 6 -> AIS = 5; ISS calculated normally")
+   GROUPBOX gb_dx_prefix        10 170  320 60,                         ///
+            label("Diagnosis Code Variable Name Prefix")
+   EDIT     ed_dx_prefix        20 195  50  20,                         ///
+            error("Diagnosis Code Variable Name Prefix")
+   TEXT     tx_dx_prefix        75 195  245 20,                         ///
+            label("Enter diagnosis code prefix")
+   GROUPBOX gb_in_out_files     10 240  320 90,                         ///
+            label("Select Input and Output Files")
+   FILE     fn_in               20 265  300 20,                         ///
+            label("Browse Input File")                                  ///
+            error("Input File Name")                                    ///
+            buttonwidth(100)                                            ///
+            filter("Stata Dataset (*.dta)|*.dta|All Files (*.*)|*.*") 
+   FILE     fn_out            20 295 300 20,                            ///
+            label("Browse Output File")                                 ///
+            error("Output File Name")                                   ///
+			buttonwidth(100)                                            ///
+            save                                                        ///
+            filter("Stata Dataset (*.dta)|*.dta|All Files (*.*)|*.*")
+END
+
+OK ok1, label("OK")
+CANCEL can1, label("Cancel")
+SUBMIT sub1, label("Submit")
+HELP hlp1, view("help trauma")
+RESET res1
+COPY copy1
+
+PROGRAM command
+BEGIN
+   require main.ed_dx_prefix
+   require main.fn_in
+   require main.fn_out
+   put "trauma "
+   put `"""'
+   put main.fn_in
+   put `"""'
+   put " "
+   put `"""'
+   put main.fn_out
+   put `"""'
+   put " "
+   if main.rd_without_dec_pt {
+      put "1"
+   }
+   put " "
+   if main.rd_with_dec_pt {
+      put "2"
+   }
+   if main.rd_iss_calc_standard{
+      put " 1"
+   }
+   put " "
+   if main.rd_iss_calc_alt{
+      put " 2"
+   }
+
+   put " "
+   put main.ed_dx_prefix
+END
+
+
+

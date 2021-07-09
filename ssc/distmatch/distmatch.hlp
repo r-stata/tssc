@@ -1,0 +1,145 @@
+{smcl}
+{* 13Sep2009}{...}
+{cmd:help distmatch}
+
+{hline}
+
+{title:Title}
+
+{p2colset 5 18 20 2}{...}
+{p2col :{hi:  distmatch} {hline 2}}distance matching based on latitudes and longitudes{p_end}
+
+{marker s_Syntax}
+{title:Syntax}
+
+{p 4 4 6}
+{cmdab:distmatch} [{varlist}], {opt id( )}  {opt lat:itude( )} {opt lon:gitude( )} [{it:options}]
+
+{marker s_Description}
+{title:Description}
+
+{p 4 4 6}
+{cmd:distmatch} provides a fast and easy way to perform distance matching based on latitudes and 
+longitudes. It mathces location identifiers, attributes, or distances from one to another. It also 
+counts the number of neighboring locations within a given area, either in circles or bands of 
+concentric circles.
+
+{p 4 4 6}
+Outputs produced by {cmd:distmatch} are typically used in studies of geocoded data. These outputs 
+can also be produced by non-Stata softwares such as ArcGIS and ArcView.
+
+{p 4 4 6}
+{cmd:distmatch} implements {browse `"http://en.wikipedia.org/wiki/Haversine_formula"':haversine} formula for distance.
+
+{p 4 4 6}
+Distance matching with full ranking of nearby neighbors can be computationally intensive. Observations of 
+3,000 may take several minutes to complete. Observations of 2,000,000 will take about 1 day per nearest neighbor 
+for each observations.
+
+{p 4 4 6}
+The default setting is to calculate distances for each observation in miles.
+
+{marker s_Options}
+{title:Options}
+
+{dlgtab:Main}
+
+{p 4 12 6}{opt id(varname)} unique identifiers. They cannot be missing. {p_end}
+
+{p 4 12 6}{opt lat:itude(varname)} decimal-degree latitude. {p_end}
+
+{p 4 12 6}{opt lon:gitude(varname)} decimal-degree longitude. {p_end}
+
+{p 4 12 6}{opt don:or(varname)} an indicator for donor. Neighbors will be found for them. The default is 1 for everyone.{p_end}
+
+{p 4 12 6}{opt rec:ipient(varname)} an indicator for recipients. They are candidate to be someone's neighbor. The default is 1 for everyone.{p_end}
+
+{p 4 12 6}{opt near:est(#)} the number of nearest neighbors to be found. {opt near:est(.)} will make it look 
+until it runs out of potential neighbors. The default is 5.{p_end}
+
+{p 4 12 6}{opt min:imum(#)} the minimum distance. {p_end}
+
+{p 4 12 6}{opt max:imum(#)} the maximum distance.{p_end}
+
+{p 4 12 6}{opt count} count the number of neighbors within the area upto {opt near:est(#)}{p_end}
+
+{p 4 12 6}{opt km} kilometers instead of miles.{p_end}
+
+{p 4 12 6}{opt noi:sily} display the progress on the screen.{p_end}
+
+
+{dlgtab:Nomenclature}
+
+{p 4 12 6}{opt dist( )} name of variables to contain distnaces. The default is "dist" {p_end}
+
+{p 4 12 6}{opt count( )} name of variable to contain the number of neighbors. The default is "count".{p_end}
+
+{p 4 12 6}{opt pre:fix( )} prefix. The default is "_". {p_end}
+
+{p 4 12 6}{opt suf:fix( )} non-index suffix before the indices. The default is none. {p_end}
+
+
+{title:Hints}
+
+{p 4 4 6}If you have more than one datasets, they need to be appeneded into one dataset. They should 
+have the same name for longigutes and latitutudes so that they will appear in the same columns.
+
+{p 4 4 6}Use donor( ) option to indicate the potential pool of neighbors. See an example below.
+
+{p 4 4 6}Use recipient( ) option to indicate locations for which neighbors will be found. See an example below.
+
+{p 4 4 6}Use noisily option to see the progress on the screen.
+
+{marker s_0}
+{title:Examples}
+
+{p 4 4 6}* suggestions on how to create unique identifier{p_end}
+{p 4 8 6}gen id = _n{p_end}
+{p 4 8 6}egen id = group(state county){p_end}
+
+{p 4 4 6}* You should download the ancillary file containing population centroids of U.S. counties{p_end}
+{p 4 8 6}{stata `"net describe distmatch, from(http://fmwww.bc.edu/RePEc/bocode/d)"'} {p_end}
+{p 4 8 6}{stata use distmatch_county.dta, clear} {p_end}
+
+{p 4 4 6}* noisily produces the id and the distance to 5 nearest neighbors by default {p_end}
+{p 4 8 6}{stata distmatch, id(id) lat(lat) lon(lon) } {p_end}
+{p 4 8 6}{stata browse}{p_end}
+
+{p 4 4 6}* extracts values (attributes) associated with the nearest neighbors {p_end}
+{p 4 8 6}{stata drop _*} {p_end}
+{p 4 8 6}{stata distmatch name lat longi, id(id) lat(lat) lon(lon)} {p_end}
+{p 4 8 6}{stata browse}{p_end}
+
+{p 4 4 6}* draw potential neighbors from a pool of donors and match them to the recipients {p_end}
+{p 4 8 6}{stata drop _*} {p_end}
+{p 4 8 6}{stata gen donor =1 in 1/1500}{p_end}
+{p 4 8 6}{stata gen recipient =1 in 1501/3232}{p_end}
+{p 4 8 6}{stata distmatch, id(id) lat(lat) lon(lon) don(donor) rec(recipient) dist(one_to_the_other)}{p_end}
+{p 4 8 6}{stata browse}{p_end}
+
+{p 4 4 6}* searches in a band of concentric circle between 10 and 11 miles inclusive (for obs 1-500){p_end}
+{p 4 8 6}{stata clear} {p_end}
+{p 4 8 6}{stata set maxvar 12000} {p_end}
+{p 4 8 6}{stata use distmatch_county.dta, clear} {p_end}
+{p 4 8 6}{stata keep in 1/500} {p_end}
+{p 4 8 6}{stata distmatch, id(id) lat(lat) lon(lon) min(10) max(11) nearest(.) count(conc_1_2)}{p_end}
+{p 4 8 6}{stata browse}{p_end}
+
+
+{title:Acknowledgement}
+
+{p 4 4 6}Austin Nichols provided suggestions on how to improve the package.
+
+
+{title:Remarks}
+
+{p 4 12 6}The word "long" is reserved in Stata. Use "lon" or something else instead.{p_end}
+{p 4 12 6}{opt min:imum( )} and {opt max:imum( )} are inclusive, i.e. >= and <=.{p_end}
+{p 4 12 6}Conflicts between options should be reported with detailed examples to the address below.{p_end}
+
+
+{title:Author}
+
+{p 4 4 6}Roy Wada{p_end}
+{p 4 4 6}roywada@hotmail.com{p_end}
+

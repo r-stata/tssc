@@ -1,0 +1,39 @@
+{smcl}
+{hline}
+help for {hi:spellmerge}{right:(E. Leuven)}
+{hline}
+
+{title:Merge adjacent records of time-span data}
+
+{p 8 15}{cmdab:spellmerge}, {cmdab:spell(}{it:start} {it:end}{cmdab:)} [{cmdab:by(}{it:varlist}{cmdab:)}
+ {cmd:gap(}{it:days}{cmd:)}]
+
+{title:Description}
+
+{p}{cmd:spellmerge} merges observations of timespan data that are adjacent.
+
+     id      date0     date1
+1.    1   1jan2000  2jan2000
+2.    1   2jan2000  8jan2000
+3.    1  12jan2000 20jan2000
+
+becomes
+
+     id      date0     date1
+1.    1   1jan2000  8jan2000
+3.    1  12jan2000 20jan2000
+
+
+{title:Options}
+
+{p 0 4}{cmdab:by(}{it:varlist}{cmd:)} specify subset within which merging must take
+place. Usually an identifyer, but typically should include time-varying characteristics
+as well.
+
+{p 0 4}{cmdab:gap(}{it:days}{cmd:)} specify maximum gap (in days) between spell for it to 
+be considered adjacent. Default is zero.
+
+
+{title:Author}
+
+{p}E. Leuven, Department of Economics, University of Amsterdam. If you observe any problems {browse "mailto:e.leuven@uva.nl"}.

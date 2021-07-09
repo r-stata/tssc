@@ -1,0 +1,826 @@
+/*  VERSION: 1.00  02/12/2015 
+    AUTHOR: Christoph Thewes - thewes@uni-potsdam.de
+
+   CHANGELOG:
+   1.0.0: 02/12/2015: Initial release 
+*/
+
+VERSION 13
+
+POSITION . 150 690 520
+
+
+OK      ok1
+CANCEL  can1
+SUBMIT  sub1, label(Preview) uaction(preview)
+RESET   res1
+
+
+* ----------
+*    MAIN
+* ----------
+DIALOG main, label("dtapaper - Create datapaper") tabtitle("Main")
+BEGIN
+	*-------------
+	GROUPBOX info         5     5   670  120 , label(" DESCRIPTION: ")
+	*-------------
+	TEXT t_info1        +15   +15   640   70 , label("This program creates a datapaper based on the data stored in memory.")
+	TEXT t_info2          @   +15     @    @ , label("It is work in progress and will be harmonized in order to work with different databases in near future.")
+	TEXT t_info3          @   +15     @    @ , label("Check help-file for further information and for the aditional program -setdtapaper-.")
+	TEXT t_info4          @   +30     @    @ , label("")
+	TEXT t_info5          @   +15     @    @ , label("written by Christoph Thewes - University of Potsdam - thewes@uni-potsdam.de")
+
+	*-----------
+	GROUPBOX dd      -15   +50  330   360 , label(" DATA DESCRIPTION: ")
+	*-----------
+	TEXT t_title     +15   +20  300     . , label("Title:*") 
+	EDIT ed_title      @   +20    @     . , error("Title") default(global dp_title)
+
+	TEXT t_abs         @   +20    @     . , label("Abstract:*") 
+	EDIT ed_abs        @   +20    @   100 , error("Abstract") default(global dp_abstract)
+
+	TEXT t_key         @  +100    @     . , label(`"Keywords: (separate by ;)"')
+	EDIT ed_key        @   +20    @     . , default(global dp_keywords)
+  
+	TEXT t_sour        @   +20    @     . , label("Source:")
+	EDIT ed_sour       @   +20    @     . , default(global dp_source)
+   
+	TEXT t_acc         @   +20    @     . , label("Access (doi/ARK/URL):")  
+	EDIT ed_acc        @   +20    @     . , default(global dp_access)
+   
+	TEXT t_range       @   +35  130     . , label("Time-range of data:")
+	
+	TEXT t_rangef   +120   -10   40     . , label(" from:*")
+	COMBOBOX ed_r_y1   @   +18   50     . , dropdown contents(year) error("Time-range") default(global dp_from)
+	 
+	TEXT t_ranget    +80   -18  100     . , label(" to: (optional)")
+	COMBOBOX ed_r_y2   @   +18   50     . , dropdown contents(year) default(global dp_to)
+
+
+
+	*-----------	
+	GROUPBOX pi     +120  -323  330   170 , label(" PERSONAL INFORMATION: ")
+	*-----------
+	TEXT t_author    +15   +20  300     . , label("Author:*")
+	TEXT t_author2     @   +15   +3     . , label("(e.g. Brown, Charlie and Bunny, Bugs and Duck, Donald)")
+	EDIT ed_auth       @   +20   -3     . , error("Author") default(global dp_author)
+   
+	TEXT t_inst        @   +20    @     . , label("Institution:")  
+	EDIT ed_inst       @   +20    @     . , default(global dp_institution)
+     
+	TEXT t_cont        @   +20    @     . , label("Contact/E-Mail:*")  
+	EDIT ed_cont       @   +20    @     . , error("Contact/E-Mail") default(global dp_contact)
+
+	   
+	*------------
+	GROUPBOX out     -15  +55   330   75  , label(" OUTPUT: ")
+	*------------
+	TEXT t_path      +15  +20   300    .  , label("Save as:*")
+	FILE path          @  +20     @    .  , label("Browse") filter("HTML-File|*.html") save error("File destination") default(global dp_path)
+
+
+
+
+	TEXT t_star       10   503  300     . , label("* = required")
+
+END
+
+* -----------
+*   OPTIONS
+* -----------
+
+DIALOG opt, label("dtapaper - Create datapaper") tabtitle("Options")
+BEGIN
+	
+	*------------
+	GROUPBOX opt          5     5   350   70 , label(" VARIABLE LIST: ")
+	*------------
+	CHECKBOX cb_vars    +15   +20     .    . , default(global dp_cb_var) onclickon(script lab_vars_on) onclickoff(script lab_vars_off) option(vars)
+	TEXT t_vars         +23     @   190    . , label("Include list of variables and labels")
+
+	  CHECKBOX cb_val    +0   +20     .    . , default(global dp_cb_val) option(values) onclickon(opt.t_valnote.show) onclickoff(opt.t_valnote.hide)
+	  TEXT t_val        +23     @   120    . , label("Include value labels")
+	  TEXT t_valnote   +105     @   120    . , label("(May require some time)")
+
+	*------------
+	GROUPBOX note         5   +35   350  380 , label(" LABELS AND NOTES: ")
+	*------------
+
+	CHECKBOX cb_lab     +15   +25     .     . , default(global dp_cb_lab) 
+	TEXT t_lab          +23     @   190     . , label("Label dataset [Author(Year): Title]")
+
+	CHECKBOX cb_note    -23   +25     .     . , default(global dp_cb_note) onclickon(script n_allon) onclickoff(script n_alloff) 
+	TEXT t_note         +23     @   150     . , label("Add a note to the dataset")
+	
+	  RADIO  r1           @   +25     .     . , first  label("Add note with all information") onclickon(script n_all) default(global dp_r1)
+	  RADIO  r2           @   +20     .     . , last   label("Let me choose:") onclickon(script n_choose) default(global dp_r2)
+
+	    CHECKBOX cb_n_auth +107   +3    .     . , default(1)
+	    TEXT t_n_auth       +25    @  120     . , label("Author")
+	    CHECKBOX cb_n_inst  -25  +20    .     . , default(1)
+	    TEXT t_n_inst       +25    @  120     . , label("Institution")
+	    CHECKBOX cb_n_cont  -25  +20    .     . , default(1)
+	    TEXT t_n_cont       +25    @  120     . , label("Contact")
+	    CHECKBOX cb_n_title -25  +20    .     . , default(1)
+	    TEXT t_n_title      +25    @  120     . , label("Title")
+	    CHECKBOX cb_n_abs   -25  +20    .     . , default(1)
+	    TEXT t_n_abs        +25    @  120     . , label("Abstract")
+	    CHECKBOX cb_n_key   -25  +20    .     . , default(1)
+	    TEXT t_n_key        +25    @  120     . , label("Keywords")
+	    CHECKBOX cb_n_sour  -25  +20    .     . , default(1)
+	    TEXT t_n_sour       +25    @  120     . , label("Source")
+	    CHECKBOX cb_n_acc   -25  +20    .     . , default(1)
+	    TEXT t_n_acc        +25    @  120     . , label("Access")
+	    CHECKBOX cb_n_time  -25  +20    .     . , default(1)
+	    TEXT t_n_time       +25    @  120     . , label("Time-Range")
+	    CHECKBOX cb_n_date  -25  +20    .     . , default(1)
+	    TEXT t_n_date       +25    @  120     . , label("Current Date")
+	    CHECKBOX cb_n_id    -25  +20    .     . , default(1)
+	    TEXT t_n_id         +25    @  120     . , label("Identifier")
+
+	  CHECKBOX cb_n_drop -132    +20    .     . , default(global dp_cb_drop)
+	  TEXT t_n_drop       +23      @  120     . , label("Drop old note")
+
+	CHECKBOX cb_save    -46   +35     .     . , default(global dp_cb_save)
+	TEXT t_save         +23     @   120     . , label("save and replace data with new label/note")
+
+
+	*------------
+	GROUPBOX add        370     5   310  110 , label(" ADDITIONAL INFORMATION: ")
+	*------------
+
+	CHECKBOX cb_n       +15   +25     .    . , default(global dp_cb_n) 
+	TEXT t_n            +23     @   165    . , label("Include number of observations (N)")
+
+	CHECKBOX cb_k       -23   +25     .    . , default(global dp_cb_nvar) 
+	TEXT t_k            +23     @   150    . , label("Include number of variables")
+
+
+	CHECKBOX cb_name    -23   +25     .    . , default(global dp_cb_name) 
+	TEXT t_name         +23     @   150    . , label("Include filename")
+
+
+
+
+END
+
+
+
+
+* =============================================================================================================
+* =============================================================================================================
+
+
+PROGRAM command
+BEGIN
+
+	put "quietly {"
+	stata hidden queue 
+
+	call program mainprog
+	call program crhtml
+
+	put "}"
+	stata hidden queue 
+
+	* DISPLAY NOTIFICATION
+	* --------------------
+	put `"capture confirm file "`path'""'
+	stata hidden queue 
+	
+	put `"if _rc noi di as err _n `"  Creation of datapaper was not successful."' _n `"  Maybe path or filename has invalid characters."' _n(2) `"  use only a-z, A-Z, 0-9, - and _"'"' 
+	stata hidden queue 
+	* put `"if !_rc noi di as txt _n `"  Datapaper successfully created. Please send the file"' _n  as res `"   {browse "`temppath'dtapaper_temp.html":`path'}"' _n  as txt `"  to"'  as res `" dtapaper@ratswd.de"'"'
+	put `"if !_rc noi di as txt _n `"  Datapaper successfully created."' _n  as res `"   {browse "`temppath'dtapaper_temp.html":`path'}"'
+	stata hidden queue 
+END
+
+
+PROGRAM preview
+BEGIN
+	put "quietly {"
+	stata hidden queue 
+
+	call program mainprog
+	call program smclpreview
+
+	put "}"
+	stata hidden queue 
+END
+
+
+PROGRAM mainprog
+BEGIN
+
+require main.ed_title main.ed_abs main.ed_r_y1 main.ed_auth main.ed_cont main.path
+
+
+
+	* PATH-CHECKS (and replace \ with /)
+	* ----------------------------------
+
+	put "local path "
+	put main.path
+	stata hidden queue
+
+	put `"local path : subinstr local path "\" "/",all"' 
+	stata hidden queue
+
+	put `"local pos = strpos(reverse("`path'"),".")"'
+	stata hidden queue
+	put `"local filecheck = reverse(substr(reverse("`path'"),1,`pos'-1))"'
+	stata hidden queue
+
+	* add .html extension if missing
+	put `"if "`pos'" == "0" local path "`path'.html""'
+	stata hidden queue
+
+	* change .htm to .html
+	put `"if "`filecheck'" == "htm" local path "`path'l""'
+	stata hidden queue	
+
+	put `"local pos = strpos(reverse("`path'"),".")"'
+	stata hidden queue
+	put `"local filecheck = reverse(substr(reverse("`path'"),1,`pos'-1))"'
+	stata hidden queue
+
+	put `"if "`filecheck'" != "html" noi di as err "No filename specified / Wrong file-type: *.html required""'
+	stata hidden queue
+
+	
+	* CONVERT PATH TO SMCL
+	* --------------------
+
+	put `"local smclpath : subinstr local path ".html" ".smcl",all "'
+	stata hidden queue
+
+	put `"capture confirm file "`smclpath'""'
+	stata hidden queue 
+
+	put `"if !_rc {"'
+	stata hidden queue 
+		put `"erase "`smclpath'""'
+		stata hidden queue
+	
+	put "}"
+	stata hidden queue 
+
+
+	* CREATE LOCALS
+	* -------------
+	
+	put `"local author ""' main.ed_auth `"""'
+	stata hidden queue
+
+	put `"local institut ""' main.ed_inst `"""'
+	stata hidden queue
+
+	put `"local title ""' main.ed_title `"""'
+	stata hidden queue
+
+	put `"local abstract ""' main.ed_abs `"""'
+	stata hidden queue
+
+	put `"local key ""' main.ed_key `"""'
+	stata hidden queue
+
+	put `"local source ""' main.ed_sour `"""'
+	stata hidden queue
+
+	put `"local access ""' main.ed_acc `"""'
+	stata hidden queue
+
+	put `"local contact ""' main.ed_cont `"""'
+	stata hidden queue
+
+	put `"local range1 ""' main.ed_r_y1 `"""'
+	stata hidden queue
+
+	put `"local range2 ""' main.ed_r_y2 `"""'
+	stata hidden queue
+
+	* GET CURRENT DATE
+	put `"local date: di %tdDD/NN/CCYY date(c(current_date),"DMY")"'
+	stata hidden queue
+	put `"local year : di %tdCY date(c(current_date),"DMY")"'
+	stata hidden queue
+
+	* GET FILENAME
+	put `"local filename "`c(filename)'""'
+	stata hidden queue
+	put `"local filename : subinstr local filename ".dta" """'
+	stata hidden queue
+
+	* CREATE ID
+	put `"local id : word 1 of `author'"'
+	stata hidden queue
+	put `"local id : subinstr local id "," """'
+	stata hidden queue
+	put `"local id = lower("`id'_`filename'_`date'")"'
+	stata hidden queue
+
+
+	* OPEN EMPTY FILE
+	* ---------------
+
+	put `"file close _all"'
+	stata hidden queue
+
+	put `"if "`filecheck'" == "html" file open data using "`smclpath'", replace write text"'
+	stata hidden queue
+
+
+	* WRITE BASIC INFORMATION INTO SMCL-FILE 		
+	* --------------------------------------
+
+	put `"file write data "{smcl}" _n(2) "{hi:{center: `title'}}" _n(2) "'
+
+	put `""{center:{bf:Data Paper} (`id')}" _n "'
+	
+	if main.ed_acc { 
+		put `""{center:`access'}" _n(2) "'
+	}
+	
+	put `""{center:`author'}" _n "'
+
+	if main.ed_inst { 
+		put `""{center:`institut'}" _n(2) "'
+	}
+	else {
+		put `" _n"'
+	}
+
+	put `""{title:Abstract:}" _n(2) "'
+	
+	put `""{p}`abstract'{p_end}" _n(2) "'
+	
+	if main.ed_key {
+		put `""{it:Keywords:}     `key' " _n "'
+	}
+	
+	if main.ed_r_y2 { 
+		put `""{it:Time-range:}   `range1' - `range2' " _n "'
+	}
+	else {
+		put `""{it:Time-range:}   `range1'" _n "'
+	}
+
+	if main.ed_sour {
+		put `""{it:Source:}       `source' " _n(2) "'
+	}
+
+	
+	put `""{it:Contact:}      `contact' " _n(2) "'
+
+
+
+	if opt.cb_n {
+		put `""{it:Observations:} `c(N)' " _n "'
+	}
+
+	if opt.cb_k {
+		put `""{it:Variables:}    `c(k)' " _n "'
+	}
+
+	if opt.cb_name {
+		put `""{it:Filename:}     `filename' " _n(2) "'
+	}
+	
+
+	stata hidden queue
+
+	* INCLUDE LIST OF VARIABLES & LABELS & VALUE-LABELS (via ADO)
+	* -----------------------------------------------------------
+
+	if opt.cb_vars {
+		put "dtapaper "
+		  beginoptions
+		    option opt.cb_vars
+		    option opt.cb_val
+		  endoptions
+		stata hidden queue
+	}
+	
+
+
+	* CLOSE FILE
+	* ----------
+	put "file close data"
+	stata hidden queue
+	
+	
+	* WRITE DATA-LABEL
+	* ----------------
+	if opt.cb_lab {
+		put `"label data "`author' (`year'): `title'""'
+		stata hidden queue
+	}
+	
+
+	* WRITE DATA-NOTE
+	* ---------------
+	
+	if opt.cb_n_drop {
+	put "note drop _dta"  
+	stata hidden queue
+	}
+
+	if opt.cb_n_auth {
+	put `"note _dta: Author: `author'"'
+	stata hidden queue
+	}
+	if opt.cb_n_inst {
+	put `"note _dta: Institution: `institut'"'
+	stata hidden queue
+	}
+	if opt.cb_n_cont {
+	put `"note _dta: Contact: `contact'"'  
+	stata hidden queue
+	}
+	if opt.cb_n_title {
+	put `"note _dta: Title: `title'"'  
+	stata hidden queue
+	}
+	if opt.cb_n_abs {
+	put `"note _dta: Abstract: `abstract'"'  
+	stata hidden queue
+	}
+	if opt.cb_n_key {
+	put `"note _dta: Keywords: `key'"'  
+	stata hidden queue
+	}
+	if opt.cb_n_sour {
+	put `"note _dta: Source: `source'"'  
+	stata hidden queue
+	}
+	if opt.cb_n_acc {
+	put `"note _dta: Access: `access'"'
+	stata hidden queue
+	}
+	if opt.cb_n_time {
+		if main.ed_r_y2 { 
+			put `"note _dta: Time-Range: `range1' - `range2'"'  
+		}
+		else {
+			put `"note _dta: Time-Range: `range1'"'  
+		}
+	stata hidden queue
+	}
+
+	if opt.cb_n_date {
+	put `"note _dta: Date: `date'"'
+	stata hidden queue
+	}
+
+	if opt.cb_n_id {
+	put `"note _dta: ID: `id'"'
+	stata hidden queue
+	}
+
+
+
+
+	* SAVE DATASET
+	* ------------
+	if opt.cb_save {
+	  put "capture save, replace"
+	  stata hidden queue 
+	  put `"if _rc == 608 noi di as err "Data is read-only. Please save manually.""'
+	  stata hidden queue 
+	  put `"if !_rc save, replace"'
+	  stata hidden queue 
+	}
+
+END
+
+
+
+
+
+PROGRAM crhtml
+BEGIN
+
+	* DELETE OLD HTML-FILE
+	* --------------------
+	put `"capture confirm file "`path'""'
+	stata hidden queue 
+
+	put `"if !_rc {"'
+	stata hidden queue 
+		put `"copy "`path'" "`path'.bak", replace"'
+		stata hidden queue 
+		put `"erase "`path'""'
+		stata hidden queue 
+	put "}"
+	stata hidden queue 
+
+	* CONVERT TO HTML
+	* ---------------
+	put `"log html "`smclpath'" "`path'", replace"'
+	stata hidden queue 
+
+
+
+	* GET SYSTEM TEMP-PATH 
+	* --------------------
+	
+	put `"local temppath `c(tmpdir)'"' 
+	stata hidden queue
+
+	put `"local temppath : subinstr local temppath "\" "/",all"' 
+	stata hidden queue
+
+	* Add "/" at the end if missing in `c(tmpdir)'
+	put `"local tmpcheck = reverse(substr(reverse("`temppath'"),1,1))"'
+	stata hidden queue
+
+	put `"if "`tmpcheck'" != "/" local temppath "`temppath'/""'
+	stata hidden queue
+
+	
+	* OPEN FILE
+	* ---------
+	put `"file open html using "`temppath'dtapaper_temp.html", replace write text"'
+	stata hidden queue
+	
+	put `"file write html `"<html><body><p>Below you can see your datapaper.<br>"'"'
+	*put `"`"Please send this file as an attachment to the following adress: "'"'
+	*put `"`"<a href="mailto:datapaper@ratswd.de?subject=Datapaper%20Nr555">datapaper@ratswd.de</a> <br>"'"'
+	put `"`"The file is located at "`path'"<br><br>"'"'
+	put `"`"<iframe src="file:///`path'" width="800" height="800"></iframe> </body></html>"'"'
+	stata hidden queue
+
+
+	* CLOSE FILE
+	* ----------
+	put "file close html"
+	stata hidden queue
+
+
+	* DELETE TEMP SMCL-FILE
+	* ---------------------
+	put `"erase "`smclpath'""'
+	stata hidden queue 
+
+
+END
+
+
+
+
+PROGRAM smclpreview
+BEGIN
+	put `"capture confirm file "`smclpath'""'
+	stata hidden queue 
+
+	put `"if !_rc {"'
+	stata hidden queue 
+		put `"view "`smclpath'""'
+		stata hidden queue
+	
+	put "}"
+	stata hidden queue 
+
+END
+
+
+
+
+
+
+
+* --------------
+*    scripts
+* --------------
+
+
+* ENABLE/DISABLE CHECKBOXES
+* -------------------------
+SCRIPT n_cb_ena
+BEGIN
+	opt.cb_n_auth.enable
+	opt.cb_n_inst.enable
+	opt.cb_n_cont.enable
+	opt.cb_n_title.enable
+	opt.cb_n_abs.enable
+	opt.cb_n_key.enable
+	opt.cb_n_sour.enable
+	opt.cb_n_auth.enable
+	opt.cb_n_acc.enable
+	opt.cb_n_date.enable
+	opt.cb_n_time.enable
+	opt.cb_n_id.enable
+
+END
+
+SCRIPT n_cb_dis
+BEGIN
+	opt.cb_n_auth.disable
+	opt.cb_n_inst.disable
+	opt.cb_n_cont.disable
+	opt.cb_n_title.disable
+	opt.cb_n_abs.disable
+	opt.cb_n_key.disable
+	opt.cb_n_sour.disable
+	opt.cb_n_auth.disable
+	opt.cb_n_acc.disable
+	opt.cb_n_date.disable
+	opt.cb_n_time.disable
+	opt.cb_n_id.disable
+
+END
+
+
+* SETON/SETOFF CHECKBOXES
+* -----------------------
+SCRIPT n_cb_on
+BEGIN
+	opt.cb_n_auth.seton
+	opt.cb_n_inst.seton
+	opt.cb_n_cont.seton
+	opt.cb_n_title.seton
+	opt.cb_n_abs.seton
+	opt.cb_n_key.seton
+	opt.cb_n_sour.seton
+	opt.cb_n_auth.seton
+	opt.cb_n_acc.seton
+	opt.cb_n_date.seton
+	opt.cb_n_time.seton
+	opt.cb_n_id.seton
+END
+
+SCRIPT n_cb_off
+BEGIN
+	opt.cb_n_auth.setoff
+	opt.cb_n_inst.setoff
+	opt.cb_n_cont.setoff
+	opt.cb_n_title.setoff
+	opt.cb_n_abs.setoff
+	opt.cb_n_key.setoff
+	opt.cb_n_sour.setoff
+	opt.cb_n_auth.setoff
+	opt.cb_n_acc.setoff
+	opt.cb_n_date.setoff
+	opt.cb_n_time.setoff
+	opt.cb_n_id.setoff
+END
+
+
+* ENABLE/DISABLE CB_LABELS
+* ------------------------
+SCRIPT n_t_ena
+BEGIN
+	opt.t_n_auth.enable
+	opt.t_n_inst.enable
+	opt.t_n_cont.enable
+	opt.t_n_title.enable
+	opt.t_n_abs.enable
+	opt.t_n_key.enable
+	opt.t_n_sour.enable
+	opt.t_n_auth.enable
+	opt.t_n_acc.enable
+	opt.t_n_date.enable
+	opt.t_n_time.enable
+	opt.t_n_id.enable
+END
+
+SCRIPT n_t_dis
+BEGIN
+	opt.t_n_auth.disable
+	opt.t_n_inst.disable
+	opt.t_n_cont.disable
+	opt.t_n_title.disable
+	opt.t_n_abs.disable
+	opt.t_n_key.disable
+	opt.t_n_sour.disable
+	opt.t_n_auth.disable
+	opt.t_n_acc.disable
+	opt.t_n_date.disable
+	opt.t_n_time.disable
+	opt.t_n_id.disable
+END
+
+
+
+* COMBINE SCRIPTS
+* ---------------
+
+SCRIPT n_allon
+BEGIN
+	opt.r1.enable
+	opt.r2.enable
+	script n_cb_on
+	script n_cb_dis
+	script n_t_dis
+	opt.r1.seton
+	opt.cb_n_drop.enable
+	opt.t_n_drop.enable
+END
+
+SCRIPT n_alloff
+BEGIN
+	opt.r1.disable
+	opt.r2.disable
+	script n_cb_off
+	script n_cb_dis
+	script n_t_dis
+	opt.cb_n_drop.disable
+	opt.t_n_drop.disable
+	opt.cb_n_drop.setoff
+END
+
+
+SCRIPT n_all
+BEGIN
+	script n_cb_on
+	script n_cb_dis
+	script n_t_dis
+END
+
+SCRIPT n_choose
+BEGIN
+	script n_cb_ena
+	script n_t_ena
+END
+
+
+SCRIPT lab_vars_on
+BEGIN
+	opt.cb_val.enable
+	opt.t_val.enable	
+END
+
+
+SCRIPT lab_vars_off
+BEGIN
+	opt.cb_val.disable
+	opt.t_val.disable	
+	opt.cb_val.setoff
+END
+
+SCRIPT lab_val_on
+BEGIN
+	opt.t_valnote.show
+	opt.cb_num.enable
+	opt.t_num.enable
+END
+
+
+SCRIPT lab_val_off
+BEGIN
+	opt.t_valnote.hide
+	opt.cb_num.disable
+	opt.t_num.disable
+	opt.cb_num.setoff
+END
+
+* --------------
+*    lists
+* --------------
+
+LIST year
+BEGIN
+(type in year if list is not sufficent) 
+2018
+2017
+2016
+2015
+2014
+2013
+2012
+2011
+2010
+2009
+2008
+2007
+2006
+2005
+2004
+2003
+2002
+2001
+2000
+1999
+1998
+1997
+1996
+1995
+1994
+1993
+1992
+1991
+1990
+1989
+1988
+1987
+1986
+1985
+1984
+1983
+1982
+1981
+1980
+(type in year if list is not sufficent) 
+END
+
+

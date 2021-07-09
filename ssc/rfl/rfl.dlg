@@ -1,0 +1,1385 @@
+*! rfl.dlg version 3.6, 29 Nov 2005, Dankwart Plattner,  dankwart.plattner@web.de
+
+// Die Logik der Knöpfe Other DB und NoDB überdenken!
+// Die Logik von program setlogname überdenken!
+
+// Control = type
+// Button =   2
+// Checkbox = 1
+// Combobox = 8
+// Edit =     6
+// File =    12
+// Frame =   14
+// Groupbox = 5
+// Radio =    4
+// Spinner = 11
+// Text       3
+
+VERSION 8.2
+
+INCLUDE rfldef
+
+POSITION . . _wddlg _htdlg
+DIALOG main, title("rfl 3.6 - Recent files list") tabtitle("Main")
+BEGIN
+
+// Begin groupbox for datasets, descriptions, memory
+	// Always hidden
+	CHECKBOX cb_runstata        1             1             1             1,           label("Do not run -stata- commands before the cb is checked, ie the dlg is fully loaded") default(0) nomemory
+
+	GROUPBOX gb_Database        _lftgbdta     _upgbdta      _wd_gb        _htgbdta ,   label(`"Select the desired dataset from the drop-down-list or choose to open another dataset"')
+	FRAME gb_lists      	       _lftstd       _upgblists    _wdgblists    _htgblists,  label("")
+	FRAME gb_otherno 	 	       _lftgbotherno @             _wdgbotherno  @,           label("")
+
+	TEXT tx_liste               _lfttxliste   _uptxliste    _wdtxliste    _htrad,      left label("List")
+	RADIO rb_listrecent         _lftradrecent @             _wdradrecent  @,    	     first label(`"Most recent"')	option("getlast5")	 onclickon("script show_rb_g1")	//onclickoff("script hide_rb_g1")
+	RADIO rb_listall            _lftradall    @             _wdradall     @,           middle label(`"All"') 			option("getallfiles") onclickon("script show_rb_g2")	 //onclickoff("script hide_rb_g2") nomemory
+	RADIO rb_listdesc           _lftraddesc   @             _wdraddesc    @,           last label(`"by description"')		  option("getlast5") onclickon("script show_rb_g3")	//onclickoff("script hide_rb_g3") nomemory
+
+	CHECKBOX cb_otherDB	       _lftcbother   @             _wdcbother    _htstd,      label("Other dataset") onclickon("program fi_dtaopen_show") onclickoff("program fi_dtaopen_hide")
+	CHECKBOX cb_noDB            _lftcbnodb    @             _wdcbnodb     @,           label("No dataset")	  onclickon("program no_db_checkon")	 onclickoff("program no_db_checkoff") nomemory
+
+	COMBOBOX co_listrecent      _lftstd       _upcombo      _wdcombo      _htcombo,    label("Select the desired dataset") dropdownlist 	                contents(lstlast5)		onselchange("program fi_sel_chg") nomemory
+	COMBOBOX co_listall         @             @             @             @,           label("Select the desired dataset") dropdownlist 	                contents(listall)		onselchange("program fi_sel_chg") nomemory
+	COMBOBOX co_listdesc        @             @             @             @,           label("Select the desired dataset by description") dropdownlist 	 contents(lstdesc)	   onselchange("program fi_sel_chg") nomemory
+	FILE fi_otherDB             @             @             @             _htstd,      label("Choose ...") dialogtitle("Select a dataset")	  filter("Stata Data (*.dta)|*.dta")		onchange("program sc_after_fi_fop") nomemory
+
+	TEXT tx_desc                _lftrad       _uptxdesc     _wdstd        _htstd,      left // Description
+	EDIT ed_desc                @             @             _wdcombo      @,           label("Enter a description (<=244 Chars)") max(244)
+
+	TEXT tx_filesize            _lftrad       _uptxfilesz   _wdtxfilesz   _htrad,      left label("An error occured - you should read here the size of the dataset")
+	TEXT tx_setmem              _lfttxsetmem  @             _wdtxsetmem   @,           left label("Set memory to")
+	SPINNER sp_mem              _lftspmem     @             _wdspmem      _htstd,      label("Memory to be allocated") 		option(memory) min(1) max(5000) onchange("program setmemtext")
+	TEXT tx_setmemMB            _lftsetmemmb  @             _wdsetmemmb   _htrad,      left label("MB")
+
+	GROUPBOX gb_marked          _lftstd       _upgbmarked   _wdgbmarked   _htgbmarked, label("")
+	TEXT tx_marked              _lfttxmarked  _uptxmarked   _wdtxmarked   _htrad,      left label("")
+	BUTTON bu_chgdesc           _lftbuchgdesc @             _wdbuchgdesc  _htstd,      label("Change description") 			onpush("script chgdesc")
+	BUTTON bu_chgdn             @             @             @             @,           label("Done")								onpush("program chgdescdone")
+
+	BUTTON bu_dellistentry      _lftbudelent  @             _wdbudelent   _htstd,      label("Remove/Rename entry") 			onpush("program show_gb_delren")
+	BUTTON bu_showname	       _lftbushown   @             _wdbuchgdesc  _htstd,      label("Complete info") 					onpush("program showname")
+
+// Always hidden in this group:
+	EDIT ed_hid                 _lftedhid     _upedhid      _wdcombo      _htedit,     label("Zur Übergabe zwischen Textfeld description und edit description") max(244) nomemory
+	EDIT ed_hidfo               _lftedhidfo   _upedhidfo    @             @,           label("Zur Übergabe der description, die für eine neue Datei geschrieben wird") max(244) nomemory
+	EDIT ed_hisize              _lftedhisz    _upedhisz     @             @,           label("Size of dataset")
+	CHECKBOX cb_hidedesclist    _lftstd       1             1             1,           label("Hide descriptions list") nomemory default(0)
+
+// Begin groupbox for logfiles
+	GROUPBOX gb_Logfile         _lftgbdta     _upgblogs    _wd_gb         _htgblogs,   label(`"Log file to use:"')
+	// The "___" labels help circumvent Stata 9's shortcoming of not stretching the label of a radio button when the label is changed
+	RADIO rb_log1default        _lftrad       _uplog1       _wdstd        _htrad,      first label(`"____________________________________________________________________________________________________"')  onclickon("program sc_knownlog")
+	RADIO rb_log2last           @             _uplog2       @             @,           middle label(`"____________________________________________________________________________________________________"') onclickon("program sc_rb_l2")
+	RADIO rb_log3nolog          @             _uplog3       @             @,           middle label(`"No log file"') onclickon("program nolog")
+	RADIO rb_log4other          @             _uplog4       @             @,           last label(`"Other log file"')		 onclickon("program logopen")
+	FILE	fi_logopen            @             _upfilogop    _wdcombo      _htstd,      label("Choose ...") dialogtitle("Select the desired log file") filter("Formatted log (*.smcl)|*.smcl|Log (*.log)|*.log|All files (*.*)|*.*") onchange("program setlogname")
+
+// Always hidden in this group:
+	EDIT ed_hil                 _lftrad       _upedhil      _wdcombo      _htedit,     label("Hidden log") nomemory
+	EDIT ed_hill                @             _upedhill     @             @,           label("Hidden log last used with this dataset") nomemory
+// end groupbox for logfiles
+
+// Begin other visible controls
+	CHECKBOX cb_dsave           _lftrad       _upcbsave     _wdcbsave     _htedit,     label(`"Save"') option("saved") nomemory
+	CHECKBOX cb_dclose  	       _lftcbclose 	_upcbdclose   _wdstd        @,           label(`"Close data in memory"') option("closed") nomemory
+	CHECKBOX cb_lclose          @             _upcblclose   @             @,           label(`"Close (and save) open log"') option("closel") nomemory
+	CHECKBOX cb_cclose          @             _upcbcclose   @             @,           label(`"Close (and save) open cmdlog"') option("closec") nomemory
+// end other visible controls
+
+// Begin other hidden controls
+	EDIT ed_scri                _lftstd       _upedscri     _wdcombo      _htedit,      nomemory max(3000)
+	CHECKBOX cb_runsetmemtext   _lftgbdta     @             _wdtxliste    _htstd,       label("Allow setmemtext to run") default(0) nomemory
+// end other hidden controls
+
+// Begin groupbox for deleting and renaming entries
+	GROUPBOX gb_ren_del         _lftgbdta     _upgblogs     _wd_gb        _htgblogs,   label(`"What do you want to do with the selected list entry?"')
+	RADIO rb_delete 	          _lftrad       _uplog1       _wdrbdel      _htrad,	    first label("Remove")
+	RADIO rb_rename             @             _uplog2       @             @,           last label("Rename") 					onclickon("program show_rb_rename_on")	onclickoff("program show_rb_rename_off") nomemory
+	FILE fi_rename              @             _upfiren      _wdcombo      _htstd,      label("Choose ...") dialogtitle("Select the new location of the dataset")	  filter("Stata Data (*.dta)|*.dta")
+	BUTTON bu_fi_delete         _lftbufidel   _upbufidel    _wdbufidel    _htedit,     label("Submit") onpush("program del_ren_entry")
+	BUTTON bu_fi_cancel         _lftbufican   @             _wdbufican    @,           label("Show logs") onpush("program del_ren_cancel")
+
+END
+
+DIALOG second, title("rfl 3.6 - Recent files list") tabtitle("cmdlog and other settings")
+BEGIN
+// Groupbox for menu settings
+	GROUPBOX gb_General         _lftgbdta     _upgbdta      _wdgbgen      _htgbgen,    label(`"Menu settings"')
+	CHECKBOX cb_nomenu          _lftstd       _upcbnomenu   _wdcbnomenu   _htstd,      label(`"Hide rfl's menu"') default(0) onclickon("program nomenu") onclickoff("program menu") nomemory option("hidemenu")
+	TEXT tx_setnumfiles         _lfttxsetnf   @             _wdtxsetnf    @,           right label("List of recent files:")
+	SPINNER sp_numfiles         _lftspnumfi   _upspnumfi    _wdspnumfi    @,           label("Number of files in the list") 		option(recentno) min(1) default(9) max(30) onchange("script bu_setdefault_enable") nomemory
+	TEXT tx_setnumfilesitems    _lfttxsetnfi  _upcbnomenu   _wdtxsetnfi   @,           left label("entries")
+	CHECKBOX cb_rewritemenu     _lftstd       _upcbrwmenu   _wdcbrwmenu   @,           label(`"Rewrite rfl's menu"') default(0)  nomemory option(rewritemenu) onclickon("script bu_setdefault_enable") onclickoff("script bu_setdefault_enable")
+
+// Groupbox for Actions
+//	GROUPBOX gb_Actions         _lftgbact     _upgbdta      _wdgbact      _htgbgen,    label(`"Actions"')
+	BUTTON bu_setdefault        _lftbusetdef  _upbusetdef   _wdbusetdef   _htstd,      label("Make settings permanent") 			onpush("program setdefault")
+	BUTTON bu_resetwindowtitle  @             _upburesetwt  @             @,           label("Reset Stata's window title") 			onpush("program resetwindowtitle")
+
+// Groupbox for log file settings
+	GROUPBOX gb_logsettings     _lftgbdta     _upgblogset   _wd_gb        _htgblogset, label(`"Log file settings"')
+	CHECKBOX cb_loadlastlog     _lftstd       _upcbloadll   _wdcbloadll   _htstd,      label(`"Load last log files"') default(1)  nomemory option(loadlastlog) onclickon("script loadlastlog") onclickoff("script dontloadlastlog")
+	TEXT tx_cmd1					 @             _uptxcmd1     _wdtxcmd1     @,           label("Add last ")
+	SPINNER sp_cmd				    _lftspcmd     @             _wdspcmd      @,           label("Number of commands") 		option(lastcmds) min(0) default(0) max(9999) onchange("script bu_setdefault_enable") nomemory
+	TEXT tx_cmd2				    _lfttxcmd2    @             _wdtxcmd2     @,           label("commands to review")
+	CHECKBOX cb_logsparallel    _lftstd       _upcblogspar  _wdcbloadll   @,           label(`"cmdlog selection follows log selection"') onclickon("program logssamename") onclickoff("program logsnotsamename") default(1) nomemory option(treatcmdlogpar)
+	CHECKBOX cb_logreplace      _lftcblogsrep _upcbloadll   _wdcblogsrep  @,           label(`"Overwrite existent log file"') default(0) nomemory option(replacelog) onclickon("program logcmdlogreplace") onclickoff("program logcmdlogreplace")
+	CHECKBOX cb_cmdlogreplace   @             _upcbcmdlogrep @            @,           label(`"Overwrite existent cmdlog file"') default(0) nomemory option(replacecmdlog) onclickon("program logcmdlogreplace") onclickoff("program logcmdlogreplace")
+	CHECKBOX cb_logrepldontwarn @             _uplogrepdw   @             @,           label(`"Don't warn me before overwriting a log or cmdlog file"') default(0) nomemory option(dontwarnlogreplace) onclickon("script bu_setdefault_enable") onclickoff("script bu_setdefault_enable")
+	CHECKBOX cb_logbackup       @             _uplogbkp     @             @,           label(`"Make a backup copy before overwriting"') default(0) nomemory option(logbackup) onclickon("script bu_setdefault_enable") onclickoff("script bu_setdefault_enable")
+
+// Begin groupbox for cmdlog files
+	GROUPBOX gb_cmdlogfile      _lftgbdta     _upgbcmdlogs  _wd_gb        _htgbcmdlogs, label(`"cmdlog file to use:"')
+	RADIO rb_cmdlog1default     _lftrad       _upcmdlog1    _wdstd        _htrad,      first label(`"____________________________________________________________________________________________________"')  onclickon("script sc_knowncmdlog")
+	RADIO rb_cmdlog2last        @             _upcmdlog2    @             @,           middle label(`"____________________________________________________________________________________________________"') onclickon("script sc_rb_cmdl2")
+	RADIO rb_cmdlog3nolog       @             _upcmdlog3    @             @,           middle label(`"No cmdlog file"') onclickon("script nocmdlog")
+	RADIO rb_cmdlog4other       @             _upcmdlog4    @             @,           last label(`"Other cmdlog file"')		 onclickon("script cmdlogopen")
+	FILE	fi_cmdlogopen         @             _upficmdlogop @             _htstd,      label("Choose ...") dialogtitle("Select the desired cmdlog file") filter("Unformatted log (*.txt)|*.txt|Unformatted log (*.log)|*.log|All files (*.*)|*.*") onchange("program setcmdlogname")
+
+// Always hidden in this group:
+	EDIT ed_hicmdl              _lftstd       _upedhil      _wdcombo      _htedit,     label("Hidden cmdlog") nomemory
+	EDIT ed_hilcmdl             @             _upedhill     @             @,           label("Hidden cmdlog last used with this file") nomemory
+// end groupbox for logfiles
+
+// Begin groupbox for memory settings
+	GROUPBOX gb_memory          _lftgbdta     _upgbmem      _wd_gb        _htgbmem,    label(`"Memory settings"')
+	TEXT tx_filesize1           _lftstd       _uptxfilesz1  _wdtxfilesz1  _htstd,      left label("On main tab, suggest memory to be 0.1*")
+	SPINNER sp_memmult		    _lftspmemmult _upspmemmult  _wdspmemmult  @,           label("File size multiplier") 		option(memmult) min(10) default(15) max(50) onchange("script bu_setdefault_enable") nomemory
+	TEXT tx_filesize5           _lfttxfilesz5 _uptxfilesz1  _wdtxfilesz5  @,           left label("*(file size).")
+	TEXT tx_setminmem           _lftstd       _uptxsetminmem _wdtxsetminmem @,         left label("Minimum memory suggested")
+	SPINNER sp_minmem    	    _lftspminmem  @             _wdspminmem   @,           label("Minimum memory proposed") 		option(minmem) min(1) default(10) max(30000) onchange("script bu_setdefault_enable") nomemory
+	TEXT tx_minmemMB            _lfttxminmMB  @             _wdtxminmMB   @,           left label("MB,")
+	TEXT tx_setmaxmem           _lfttxsetmaxmem @           _wdtxsetmaxmem @,          left label("maximum")
+	SPINNER sp_maxmem    	    _lftspmaxmem  @             _wdspmaxmem   @,           label("Maximum memory proposed") 		option(maxmem) min(1) default(450) max(30000) onchange("script bu_setdefault_enable") nomemory
+	TEXT tx_maxmemMB            _lfttxmaxmMB  @             _wdtxminmMB   @,           left label("MB.")
+
+// Hidden
+// This one is only used at start-up to set the initial values
+	CHECKBOX cb_startdialog     1             1             1             1,           label("Should be last but one line. Hide some controls and start the dialog") nomemory onclickon("script startdialog") onclickoff("script startdialog") default(0)
+
+END
+
+OK			ok1,  label("OK")
+CANCEL	can1, label("Cancel")
+HELP     hlp1, view("help rfl")
+
+INCLUDE rfllast5
+INCLUDE rflliall
+INCLUDE rflldesc
+
+SCRIPT startdialog
+BEGIN
+	second.cb_startdialog.hide
+
+	main.cb_hidedesclist.hide
+	main.fi_otherDB.hide
+	main.ed_desc.hide
+	main.ed_hid.hide
+	main.ed_hidfo.hide
+	main.fi_logopen.hide
+	main.bu_chgdesc.show
+	main.bu_chgdn.hide
+	main.tx_marked.hide
+	main.gb_marked.hide
+	main.ed_hil.hide
+	main.ed_hill.hide
+//	main.cb_dellistentry.hide
+	main.ed_scri.hide
+//	main.ed_scri.append "R begin|"
+	main.cb_runstata.hide
+	main.ed_hisize.hide
+	main.cb_runsetmemtext.hide
+
+	main.rb_listrecent.seton
+
+	second.ed_hicmdl.hide
+	second.ed_hilcmdl.hide
+	second.bu_setdefault.disable
+
+	program del_ren_cancel
+//	program otherstartsettings
+//	program chckforopfiles
+
+END
+
+SCRIPT show_rb_g1
+//	Aufgerufen von rb_listrecent
+BEGIN
+//	main.ed_scri.append "R show_g1|"
+
+	main.co_listdesc.hide
+	main.co_listall.hide
+	main.co_listrecent.show
+	main.co_listrecent.enable
+
+	program show_rb_common
+END
+
+SCRIPT show_rb_g2
+//	Aufgerufen von rb_listall
+BEGIN
+//	main.ed_scri.append "R show_g2|"
+
+	main.co_listrecent.hide
+	main.co_listdesc.hide
+	main.co_listall.show
+	main.co_listall.enable
+
+	program show_rb_common
+END
+
+SCRIPT show_rb_g3
+//	Aufgerufen von rb_listdesc
+BEGIN
+//	main.ed_scri.append "R show_g3|"
+
+	main.co_listall.hide
+	main.co_listrecent.hide
+	main.co_listdesc.show
+	main.co_listdesc.enable
+
+	program show_rb_common
+END
+
+PROGRAM show_rb_common
+//	Aufgerufen von rb_listdesc
+BEGIN
+	call gaction main.bu_chgdn.hide
+	call gaction main.ed_desc.hide
+	call gaction main.tx_desc.show
+	call gaction main.tx_desc.enable
+	if main.rb_listdesc {
+		call gaction main.bu_chgdesc.disable
+		call program setlog
+	}
+	if main.rb_listrecent | main.rb_listall {
+		call gaction main.bu_chgdesc.enable
+		call program setlogdesc
+	}
+END
+
+PROGRAM fi_dtaopen_show
+// Aufgerufen von cb_otherDB
+BEGIN
+	call gaction main.bu_chgdn.hide
+	call gaction main.bu_chgdesc.show
+	call gaction main.bu_chgdesc.enable
+	call gaction main.co_listall.hide
+	call gaction main.co_listrecent.hide
+	call gaction main.co_listdesc.hide
+
+	call program del_ren_cancel
+
+	call gaction main.rb_listrecent.disable
+	call gaction main.rb_listall.disable
+	call gaction main.rb_listdesc.disable
+	call gaction main.cb_noDB.disable
+	call gaction main.bu_dellistentry.disable
+	call gaction main.fi_otherDB.show
+//	call gaction main.ed_scri.append "R fi_dtaopen_show "
+	if main.fi_otherDB {
+		// Wenn fi_otherDB schon gefüllt ist, weil es schon einmal aufgerufen war
+		call gaction main.bu_showname.enable
+		// Setlog wird nur aufgerufen, wenn fi_otherDB gefüllt ist (also bereits einmal aufgerufen war)
+		call program setlog
+		if !(H(main.co_listrecent) & H(main.co_listall) & H(main.co_listdesc)) {
+			if main.ed_desc {
+				call gaction main.bu_chgdesc.setlabel "Change description"
+			}
+			if !main.ed_desc {
+				call gaction main.bu_chgdesc.setlabel "Enter description"
+			}
+		}
+		if H(main.co_listrecent) & H(main.co_listall) & H(main.co_listdesc) {
+			if main.ed_hidfo {
+				call gaction main.bu_chgdesc.setlabel "Change description"
+			}
+			if !main.ed_hidfo {
+				call gaction main.bu_chgdesc.setlabel "Enter description"
+			}
+		}
+//		call gaction main.ed_desc.withvalue main.tx_desc.setlabel `"@"'
+		call program set_tx_desc
+		call gaction main.tx_desc.show
+
+//		call gaction main.ed_scri.append "fi_dtaopen: ed_desc->tx_desc|"
+	}
+//	Falls fi_otherDB noch nicht aufgerufen war: tx_desc und die Buttons werden verborgen
+//	Falls fi_otherDB schon einmal aufgerufen war und ausgefüllt worden ist: tx_desc bleibt sichtbar, Button Change description bleibt
+//	call gaction main.ed_scri.append "fi_dtaopen_show: !main.fi_otherDB | "
+	if !main.fi_otherDB {
+		call gaction main.bu_showname.disable
+		call gaction main.bu_chgdesc.setlabel "Enter description"
+		call gaction main.bu_chgdesc.disable
+		call gaction main.rb_log1default.disable
+		call gaction main.rb_log2last.disable
+//		call gaction main.tx_desc.disable
+		call gaction main.tx_desc.setlabel ""
+		call gaction main.ed_hidfo.setvalue ""
+		call gaction main.tx_filesize.disable
+		call gaction main.ed_desc.hide
+		call gaction second.rb_cmdlog1default.disable
+		call gaction second.rb_cmdlog2last.disable
+	}
+END
+
+PROGRAM fi_dtaopen_hide
+//	Aufgerufen von cb_otherDB
+BEGIN
+	call gaction main.rb_listrecent.enable
+	call gaction main.rb_listall.enable
+	if !main.cb_hidedesclist {
+		call gaction main.rb_listdesc.enable
+	}
+	call gaction main.bu_dellistentry.enable
+	call gaction main.rb_log1default.enable
+	call gaction main.rb_log2last.enable
+	if !second.cb_logsparallel {
+		call gaction second.rb_cmdlog1default.enable
+		call gaction second.rb_cmdlog2last.enable
+	}
+	if main.rb_listall {
+		call gaction main.co_listall.show
+	}
+	if main.rb_listrecent {
+		call gaction main.co_listrecent.show
+	}
+	if main.rb_listdesc {
+		call gaction main.co_listdesc.show
+	}
+	call gaction main.cb_noDB.enable
+	call gaction main.bu_chgdn.hide
+	call gaction main.ed_desc.hide
+	call gaction main.bu_showname.enable
+	call gaction main.tx_desc.show
+	call gaction main.tx_desc.enable
+	call gaction main.tx_filesize.show
+	call gaction main.tx_filesize.enable
+	if !H(main.fi_otherDB) {
+		call gaction main.fi_otherDB.hide
+	}
+	if main.cb_otherDB {
+		call gaction main.cb_otherDB.setoff
+	}
+//	call gaction main.ed_scri.append "R fi_dtaopen_hide C setlog C setdesc|"
+
+	if !main.rb_listdesc {
+		call program setlogdesc
+	}
+	if main.rb_listdesc {
+		call program setlog
+	}
+	if main.ed_hid {
+		call gaction main.bu_chgdesc.setlabel "Change description"
+	}
+	if !main.ed_hid {
+		call gaction main.bu_chgdesc.setlabel "Enter description"
+	}
+	if !main.rb_listdesc {
+		call gaction main.bu_chgdesc.enable
+	}
+	if main.rb_listdesc {
+		call gaction main.bu_chgdesc.disable
+	}
+END
+
+PROGRAM sc_after_fi_fop
+BEGIN
+//	main.ed_scri.append "R prg_after_fi_fop|"
+	if main.fi_otherDB {
+		call gaction main.rb_log2last.setlabel `"<no last log file yet>"'
+		call gaction main.rb_log1default.enable
+		call gaction main.rb_log2last.enable
+		call gaction second.rb_cmdlog2last.setlabel `"<no last cmdlog file yet>"'
+		if !second.cb_logsparallel {
+			call gaction second.rb_cmdlog1default.enable
+			call gaction second.rb_cmdlog2last.enable
+		}
+		call gaction main.bu_chgdesc.enable
+
+		call program setlogname
+	}
+	if !main.fi_otherDB {
+		call program fi_dtaopen_show
+	}
+END
+
+PROGRAM fi_sel_chg
+//	Aufgerufen von co_listrecent, co_listall, co_listdesc
+BEGIN
+//	call gaction main.ed_scri.append "R fi_sel_chg "
+
+	if main.rb_listall {
+		call gaction main.co_listall.show
+	}
+	if main.rb_listrecent {
+		call gaction main.co_listrecent.show
+	}
+	if main.rb_listdesc {
+		call gaction main.co_listdesc.show
+	}
+	call gaction main.cb_noDB.enable
+	if main.ed_desc {
+		call gaction main.bu_chgdesc.setlabel "Change description"
+	}
+	if !main.ed_desc {
+		call gaction main.bu_chgdesc.setlabel "Enter description"
+	}
+	if !main.rb_listdesc {
+		call gaction main.bu_chgdesc.enable
+	}
+	if main.rb_listdesc {
+		call gaction main.bu_chgdesc.disable
+	}
+	call gaction main.bu_chgdn.hide
+	call gaction main.ed_desc.hide
+	if !main.rb_listdesc {
+		call gaction main.tx_desc.show
+	}
+	call gaction main.fi_otherDB.hide
+	if main.cb_otherDB {
+		call gaction main.cb_otherDB.setoff
+//	 	call gaction main.ed_scri.append "C ofi.setoff "
+	}
+//	call gaction main.ed_scri.append "C setlog C setdesc|"
+
+	if !main.rb_listdesc {
+		call program setlogdesc
+	}
+	if main.rb_listdesc {
+//		call program setdesc
+		call program setlog
+	}
+END
+
+PROGRAM no_db_checkon
+// Aufgerufen von cb_noDB
+BEGIN
+//	main.cb_otherDB.setoff
+	call program del_ren_cancel
+
+	call gaction main.cb_otherDB.disable
+	call gaction main.rb_listrecent.disable
+	call gaction main.rb_listall.disable
+	call gaction main.rb_listdesc.disable
+	call gaction main.co_listall.disable
+	call gaction main.co_listrecent.disable
+	call gaction main.co_listdesc.disable
+	call gaction main.tx_desc.show
+	call gaction main.tx_desc.disable
+//	main.fi_otherDB.hide
+	call gaction main.ed_desc.hide
+	call gaction main.bu_chgdesc.disable
+	call gaction main.bu_chgdn.hide
+	call gaction main.bu_dellistentry.disable
+	call gaction main.bu_showname.disable
+	call gaction main.tx_filesize.disable
+//	main.sp_mem.hide
+	call gaction main.rb_log3nolog.seton
+	if second.cb_logsparallel {
+		call gaction second.rb_cmdlog3nolog.seton
+	}
+//	call gaction main.ed_scri.append "R no_db_checkon|"
+END
+
+PROGRAM no_db_checkoff
+// Aufgerufen von cb_noDB
+BEGIN
+//	call gaction main.ed_scri.append "R no_db_checkoff"
+	call gaction main.bu_dellistentry.enable
+	call gaction main.cb_otherDB.enable
+	if main.cb_otherDB {
+		call gaction main.cb_otherDB.setoff
+// 	call gaction main.ed_scri.append " C cb_otherDB.setoff"
+	}
+	call gaction main.rb_listrecent.enable
+	call gaction main.rb_listall.enable
+	if !main.cb_hidedesclist {
+		call gaction main.rb_listdesc.enable
+	}
+	call gaction main.co_listall.enable
+	call gaction main.co_listrecent.enable
+	call gaction main.co_listdesc.enable
+	call gaction main.tx_desc.enable
+	if main.ed_desc {
+		call gaction main.bu_chgdesc.setlabel "Change description"
+	}
+	if !main.ed_desc {
+		call gaction main.bu_chgdesc.setlabel "Enter description"
+	}
+	if !main.rb_listdesc {
+		call gaction main.bu_chgdesc.enable
+	}
+	if main.rb_listdesc {
+		call gaction main.bu_chgdesc.disable
+	}
+	call gaction main.bu_chgdn.hide
+	call gaction main.bu_showname.enable
+	call gaction main.tx_filesize.enable
+	if main.rb_log3nolog {
+		call gaction main.rb_log1default.seton
+	}
+	if second.rb_cmdlog3nolog & second.cb_logsparallel {
+		call gaction second.rb_cmdlog1default.seton
+	}
+//	call gaction main.ed_scri.append "|"
+END
+
+SCRIPT chgdesc
+//	Aufgerufen von bu_chgdesc
+BEGIN
+	main.tx_desc.hide
+	main.ed_desc.show
+	main.rb_listdesc.disable
+	program set_ed_desc
+
+	main.bu_chgdesc.hide
+	main.bu_chgdn.show
+//	main.ed_scri.append "R chgdesc|"
+END
+
+PROGRAM chgdescdone
+// Aufgerufen von bu_chgdn
+BEGIN
+	call program set_ed_hid
+
+//	main.ed_scri.append "chgdescdone: ed_desc->tx_desc,ed_desc>ed_hid|"
+	if !main.cb_otherDB {
+		call gaction main.rb_listdesc.enable
+	}
+	call gaction main.ed_desc.hide
+	call gaction main.tx_desc.show
+	call gaction main.tx_desc.enable
+	call gaction main.bu_chgdesc.show
+	call gaction main.bu_chgdn.hide
+//	main.ed_scri.append "R chgdescdone|"
+
+	call program writedesc
+END
+
+PROGRAM set_ed_desc
+//	Aufgerufen von SCRIPT chgdesc, enterdesc
+BEGIN
+	put "rflbdlg "
+	beginoptions
+//		put "dellistentry(" /hidden main.cb_dellistentry ") "
+		put `"action(fill_ed_desc) from(program set_ed_desc) "'
+		//option desc
+		if H(main.fi_otherDB) | !main.fi_otherDB {
+			// TO DO Ist das richtig, daß ed_hid genommen wird, wenn fi_otherDB leer ist?
+			put `"desc("' /hidden main.ed_hid `") "'
+		}
+		if !H(main.fi_otherDB) & main.fi_otherDB {
+			// TO DO Ist das richtig, daß fi_otherDB nicht nur sichtbar, sondern auch gefüllt sein muß?
+			put `"desc("' /hidden main.ed_hidfo `") "'
+		}
+//		put `"scr("' /hidden main.ed_scri `")"'
+	endoptions
+	if main.cb_runstata {
+		stata hidden
+	}
+	clear
+// Dieser böse Bube setzt 	nur ca. 72 Buchstaben. Daher über das ado-file gehen!
+//	call gaction main.ed_hid.withvalue main.ed_desc.setvalue `"@"'
+//	call gaction main.ed_scri.append `"set_ed_desc: ed_hid->ed_desc"'
+// main.ed_scri.append "R set_ed_desc|"
+END
+
+PROGRAM set_tx_desc
+//	Aufgerufen von PROGRAM fi_dtaopen_show
+BEGIN
+	put "rflbdlg "
+	beginoptions
+		put `"action(fill_tx_desc) from(program set_tx_desc) "'
+		//option desc
+		if H(main.fi_otherDB) | !main.fi_otherDB {
+			// TO DO Ist das richtig, daß ed_hid genommen wird, wenn fi_otherDB leer ist? Warum nicht ed_hid?
+			put `"desc("' /hidden main.ed_desc `") "'
+		}
+		if !H(main.fi_otherDB) & main.fi_otherDB {
+			// TO DO Ist das richtig, daß fi_otherDB nicht nur sichtbar, sondern auch gefüllt sein muß?
+			put `"desc("' /hidden main.ed_hidfo `") "'
+		}
+//		put `"scr("' /hidden main.ed_scri `")"'
+	endoptions
+	if main.cb_runstata {
+		stata hidden
+	}
+	clear
+END
+
+PROGRAM set_ed_hid
+//	Aufgerufen von PROGRAM chgdescdone
+// Fills either ed_hid or ed_hidfo
+BEGIN
+	put "rflbdlg "
+	beginoptions
+//		put "dellistentry(" /hidden main.cb_dellistentry ") "
+		if H(main.fi_otherDB) | !main.fi_otherDB {
+			// TO DO Ist das richtig, daß ed_hid genommen wird, wenn fi_otherDB leer ist?
+			put `"action(fill_ed_hid) from(program set_ed_hid) "'
+		}
+		if !H(main.fi_otherDB) & main.fi_otherDB {
+			put `"action(fill_ed_hidfo) from(program set_ed_hid) "'
+		}
+		//option desc
+		put `"desc("' /hidden main.ed_desc `") "'
+//		put `"scr("' /hidden main.ed_scri `")"'
+	endoptions
+	if main.cb_runstata {
+		stata hidden
+	}
+	clear
+//	call gaction main.ed_scri.append `"set_ed_desc: ed_hid->ed_desc"'
+END
+
+PROGRAM writedesc
+// Aufgerufen von chgdescdone
+// Hier geht es nur um Änderungen der Beschreibung; Description wird für neue Files immer erst geschrieben, wenn das File geöffnet wird
+BEGIN
+//	call gaction main.ed_scri.append "R writedesc entered|"
+if H(main.fi_otherDB) {
+	// Nur bei schon in der Liste vorhandenen Dateien
+	put "rflbdlg "
+	beginoptions
+		put `"dta("'
+		put main.co_listall
+		put main.co_listrecent
+		put main.co_listdesc
+		put `") "'
+
+		if !main.fi_otherDB | H(main.fi_otherDB) {
+			if !H(main.co_listdesc) {
+				put "dtaisdesc(" main.rb_listdesc ") "
+			}
+		}
+
+//		call gaction main.ed_scri.append "|"
+
+//		put "dellistentry(" /hidden main.cb_dellistentry ") "
+		put `"action(writedesc) from(program writedesc) "'
+		//option desc
+		put `"desc("' /hidden main.ed_desc `") "'
+//		put `"scr("' /hidden main.ed_scri `")"'
+	endoptions
+	if main.cb_runstata {
+		stata hidden
+	}
+	clear
+}
+END
+
+PROGRAM showname
+// Aufgerufen von bu_showname
+BEGIN
+	put "rflbdlg "
+	beginoptions
+		put `"dta("'
+		put main.co_listall
+		put main.co_listrecent
+		put main.co_listdesc
+		put main.fi_otherDB
+		put `") "'
+
+		if !main.fi_otherDB | H(main.fi_otherDB) {
+			if !H(main.co_listdesc) {
+				put "dtaisdesc(" main.rb_listdesc ") "
+			}
+		}
+		put `"log("' /hidden main.ed_hil `") "'
+		put `"cmdlog("' /hidden second.ed_hicmdl `") "'
+
+		//option desc
+		put `"desc("'
+		if !H(main.ed_desc) & main.ed_desc {
+			put main.ed_desc
+		}
+		if H(main.ed_desc) | !main.ed_desc {
+			if H(main.fi_otherDB) {
+				put /hidden main.ed_hid
+			}
+			if !H(main.fi_otherDB) {
+				put /hidden main.ed_hidfo
+			}
+		}
+		put `") "'
+
+//		call gaction main.ed_scri.append "|"
+
+//		put "dellistentry(" /hidden main.cb_dellistentry ") "
+		put `"action(showname) from(program showname) "'
+//		put `"scr("' /hidden main.ed_scri `")"'
+	endoptions
+	if main.cb_runstata {
+		if H(main.fi_otherDB) | main.fi_otherDB {
+			stata hidden
+		}
+	}
+	clear
+END
+
+PROGRAM nolog
+// Aufgerufen von rb_log3nolog
+BEGIN
+	call gaction main.fi_logopen.hide
+	if second.cb_logsparallel {
+		call gaction second.rb_cmdlog3nolog.seton
+	}
+END
+
+PROGRAM logopen
+// Aufgerufen von rb_log4other
+BEGIN
+	call gaction main.fi_logopen.show
+	if second.cb_logsparallel {
+		call gaction second.rb_cmdlog4other.seton
+	}
+//	main.ed_scri.append "R logopen C setlogname|"
+	call program setlogname
+END
+
+PROGRAM sc_knownlog
+//	Aufgerufen von rb_log1default
+BEGIN
+	call gaction main.fi_logopen.hide
+	if main.cb_runstata {
+		if second.cb_logsparallel {
+			call gaction second.rb_cmdlog1default.seton
+		}
+	}
+//	main.ed_scri.append "R sc_knownlog|"
+END
+
+PROGRAM sc_rb_l2
+//	Aufgerufen von rb_log2last
+BEGIN
+	call gaction main.fi_logopen.hide
+	if second.cb_logsparallel {
+		call gaction second.rb_cmdlog2last.seton
+	}
+END
+
+PROGRAM setlogname
+// Aufgerufen von fi_otherDB, fi_logopen, logopen
+BEGIN
+//	call gaction main.ed_scri.append "R setlogname "
+	if H(main.fi_logopen) & H(main.fi_otherDB) {
+		call program setlog
+	}
+	if !H(main.fi_otherDB) & main.fi_otherDB {
+//		call gaction main.ed_scri.append "C 2if|"
+		call program setlog
+		call gaction main.bu_showname.enable
+		call gaction main.tx_filesize.enable
+	}
+	if !H(main.fi_logopen) & main.fi_logopen {
+//		The following method can only work with up to 64 chars. Therefore:
+//		call gaction main.fi_logopen.withvalue main.rb_log1default.setlabel `"@"'
+//		call gaction main.ed_scri.append "C 3if|"
+
+		call program knownlog
+	}
+END
+
+PROGRAM knownlog
+// Aufgerufen von setlogname
+// Fills second.fi_logopen, if logsparallel is checked
+BEGIN
+	put "rflbdlg "
+	beginoptions
+		put `"log("' main.fi_logopen `") "'
+		if second.cb_logsparallel {
+			put `"cmdlog("' main.fi_logopen `") "'
+		}
+		if !second.cb_logsparallel {
+			put `"cmdlog("' second.fi_cmdlogopen `") "'
+		}
+		put `"action(dontchgrb_l1) from(program knownlog) "'
+//		put "dellistentry(" /hidden main.cb_dellistentry ") "
+//		put `"scr("' /hidden main.ed_scri `")"'
+	endoptions
+//	call gaction main.ed_scri.append "R knownlog C stata|"
+	if main.cb_runstata {
+		stata hidden
+	}
+	clear
+END
+
+PROGRAM setlog
+//	Aufgerufen von fi_sel_chg, fi_dtaopen_show, hide_rb_g1, hide_rb_g2, hide_rb_g3, rb_log2last
+BEGIN
+	put "rflbdlg "
+	beginoptions
+		put `"dta("'
+		put main.fi_otherDB
+		put main.co_listall
+		put main.co_listrecent
+		put main.co_listdesc
+		put `") "'
+		if main.fi_otherDB & !H(main.fi_otherDB) {
+	//		call gaction main.ed_scri.append "R setlog (fi_otherDB)|"
+			put `"action(setlogdesc_in_hidfo) "'
+		}
+		if !main.fi_otherDB | H(main.fi_otherDB) {
+	//		call gaction main.ed_scri.append "R setlog (co_filesX)|"
+			if !H(main.co_listdesc) {
+				put "dtaisdesc(" main.rb_listdesc ") "
+			}
+			put `"action(setlogfile) "'
+		}
+		put `"from(program setlog) "'
+		put `"mem("' main.sp_mem `") "'
+		put `"size("' /hidden main.ed_hisize `") "'
+
+		optionarg second.sp_minmem
+		optionarg second.sp_maxmem
+		optionarg second.sp_memmult
+//		put "dellistentry(" /hidden main.cb_dellistentry ") "
+//		put `"scr("' /hidden main.ed_scri `")"'
+	endoptions
+	if main.cb_runstata {
+		call gaction main.cb_runsetmemtext.setoff
+		stata hidden
+		call gaction main.cb_runsetmemtext.seton
+	}
+	clear
+END
+
+PROGRAM logssamename
+BEGIN
+	call script bu_setdefault_enable
+	call gaction second.rb_cmdlog1default.disable
+	call gaction second.rb_cmdlog2last.disable
+	call gaction second.rb_cmdlog3nolog.disable
+	call gaction second.rb_cmdlog4other.disable
+	call gaction second.fi_cmdlogopen.disable
+	if main.rb_log1default {
+		call gaction second.rb_cmdlog1default.seton
+	}
+	if main.rb_log2last {
+		call gaction second.rb_cmdlog2last.seton
+	}
+	if main.rb_log3nolog {
+		call gaction second.rb_cmdlog3nolog.seton
+	}
+	if main.rb_log4other {
+		if main.cb_runstata {
+			call gaction second.rb_cmdlog4other.seton
+			call program knownlog
+		}
+	}
+END
+
+PROGRAM logsnotsamename
+BEGIN
+	call script bu_setdefault_enable
+	call gaction second.rb_cmdlog1default.enable
+	call gaction second.rb_cmdlog2last.enable
+	call gaction second.rb_cmdlog3nolog.enable
+	call gaction second.rb_cmdlog4other.enable
+	call gaction second.fi_cmdlogopen.enable
+	if second.rb_cmdlog4other {
+		call gaction second.fi_cmdlogopen.show
+	}
+	call gaction second.cb_cmdlogreplace.enable
+END
+
+SCRIPT loadlastlog
+BEGIN
+	main.rb_log2last.seton
+	second.rb_cmdlog2last.seton
+	script bu_setdefault_enable
+END
+
+SCRIPT dontloadlastlog
+BEGIN
+	main.rb_log1default.seton
+	second.rb_cmdlog1default.seton
+	script bu_setdefault_enable
+END
+
+PROGRAM logcmdlogreplace
+BEGIN
+	call script bu_setdefault_enable
+	if !second.cb_logreplace & !second.cb_cmdlogreplace {
+		call gaction second.cb_logrepldontwarn.disable
+		call gaction second.cb_logbackup.disable
+	}
+	if second.cb_logreplace | second.cb_cmdlogreplace {
+		call gaction second.cb_logrepldontwarn.enable
+		call gaction second.cb_logbackup.enable
+	}
+END
+
+PROGRAM nomenu
+BEGIN
+	call script bu_setdefault_enable
+	call gaction second.cb_rewritemenu.setoff
+	call gaction second.cb_rewritemenu.disable
+END
+
+PROGRAM menu
+BEGIN
+	call script bu_setdefault_enable
+	call gaction second.cb_rewritemenu.enable
+END
+
+SCRIPT bu_setdefault_enable
+BEGIN
+	second.bu_setdefault.enable
+END
+
+SCRIPT nocmdlog
+// Aufgerufen von rb_cmdlog3nolog
+BEGIN
+	second.fi_cmdlogopen.hide
+END
+
+SCRIPT cmdlogopen
+// Aufgerufen von rb_cmdlog4other
+BEGIN
+	second.fi_cmdlogopen.show
+//	main.ed_scri.append "R logopen C setcmdlogname|"
+END
+
+SCRIPT sc_knowncmdlog
+//	Aufgerufen von rb_cmdlog1default
+BEGIN
+	second.fi_cmdlogopen.hide
+//	main.ed_scri.append "R sc_knowncmdlog|"
+END
+
+SCRIPT sc_rb_cmdl2
+//	Aufgerufen von rb_log2last
+BEGIN
+	second.fi_cmdlogopen.hide
+END
+
+PROGRAM setdesc
+// Aufgerufen von script fi_sel_chg, hide_rb_g1, hide_rb_g2, hide_rb_g3
+BEGIN
+	put "rflbdlg "
+	beginoptions
+		put `"dta("'
+		put main.co_listdesc
+		put main.co_listall
+		put main.co_listrecent
+		put `") "'
+		if !main.fi_otherDB | H(main.fi_otherDB) {
+			if !H(main.co_listdesc) {
+				put "dtaisdesc(" main.rb_listdesc ") "
+			}
+		}
+		put `"action(getdesc) from(program setdesc) "'
+//		put "dellistentry(" /hidden main.cb_dellistentry ") "
+//		put `"scr("' /hidden main.ed_scri `")"'
+	endoptions
+//	call gaction main.ed_scri.append "R setdesc C stata|"
+	if main.cb_runstata {
+		stata hidden
+	}
+	clear
+END
+
+PROGRAM setlogdesc
+//	Aufgerufen von fi_sel_chg, fi_dtaopen_show, show_rb_g1, show_rb_g2, show_rb_g3, rb_log2last
+BEGIN
+	put "rflbdlg "
+	beginoptions
+		put `"dta("'
+		if main.fi_otherDB & !H(main.fi_otherDB) {
+			put main.fi_otherDB
+	//		call gaction main.ed_scri.append "R setlog (fi_otherDB)|"
+		}
+		if !main.fi_otherDB | H(main.fi_otherDB) {
+			put main.co_listall
+			put main.co_listrecent
+			put main.co_listdesc
+	//		call gaction main.ed_scri.append "R setlog (co_filesX)|"
+		}
+		put `") "'
+//		call gaction main.ed_scri.append "dtaisdesc:"
+//		call gaction main.rb_listdesc.withvalue main.ed_scri.append @
+//		call gaction main.ed_scri.append "|"
+		if !main.fi_otherDB | H(main.fi_otherDB) {
+			if !H(main.co_listdesc) {
+				put "dtaisdesc(" main.rb_listdesc ") "
+			}
+		}
+		put `"action(setlogdesc) from(program setlogdesc) "'
+		put `"mem("' main.sp_mem `") "'
+		put `"size("' /hidden main.ed_hisize `") "'
+
+		optionarg second.sp_minmem
+		optionarg second.sp_maxmem
+		optionarg second.sp_memmult
+
+//		put "dellistentry(" /hidden main.cb_dellistentry ") "
+//		put `"scr("' /hidden main.ed_scri `")"'
+	endoptions
+	if main.cb_runstata {
+		call gaction main.cb_runsetmemtext.setoff
+		stata hidden
+		call gaction main.cb_runsetmemtext.seton
+	}
+	clear
+END
+
+PROGRAM chckforopfiles
+BEGIN
+	put `"rflbdlg, action(checkopenfiles) from(program chckforopfiles) "'
+//	call gaction main.ed_scri.append "R chckforopfiles C stata|"
+	if main.cb_runstata {
+		stata hidden
+	}
+	clear
+END
+
+PROGRAM show_gb_delren
+BEGIN
+	call gaction main.bu_dellistentry disable
+	call gaction main.gb_Logfile.hide
+	call gaction main.rb_log1default.hide
+	call gaction main.rb_log2last.hide
+	call gaction main.rb_log3nolog.hide
+	call gaction main.rb_log4other.hide
+	call gaction main.fi_logopen.hide
+
+	call gaction main.gb_ren_del.show
+	call gaction main.rb_delete.show
+	call gaction main.rb_rename.show
+	call gaction main.bu_fi_delete.show
+	call gaction main.bu_fi_cancel.show
+
+	call program show_rb_rename_on
+END
+
+PROGRAM show_rb_rename_on
+BEGIN
+	if main.rb_rename {
+		call gaction main.fi_rename.show
+	}
+END
+
+PROGRAM show_rb_rename_off
+BEGIN
+	if !main.rb_rename {
+		call gaction main.fi_rename.hide
+	}
+END
+
+PROGRAM del_ren_cancel
+BEGIN
+	call gaction main.gb_ren_del.hide
+	call gaction main.rb_delete.hide
+	call gaction main.rb_rename.hide
+	call gaction main.fi_rename.hide
+	call gaction main.bu_fi_delete.hide
+	call gaction main.bu_fi_cancel.hide
+	call gaction main.bu_dellistentry enable
+
+	call gaction main.gb_Logfile.show
+	call gaction main.rb_log1default.show
+	call gaction main.rb_log2last.show
+	call gaction main.rb_log3nolog.show
+	call gaction main.rb_log4other.show
+	if main.rb_log4other {
+		call gaction main.fi_logopen.show
+	}
+END
+
+PROGRAM del_ren_entry
+// Aufgerufen von bu_fi_delete
+BEGIN
+	if main.rb_rename {
+		call program renlistentry
+	}
+	if main.rb_delete {
+		call program dellistentry
+	}
+	call program del_ren_cancel
+END
+
+PROGRAM dellistentry
+// Aufgerufen von program del_ren_entry
+BEGIN
+//	call gaction main.ed_scri.append "R dellistentry C stata|"
+//	call gaction main.cb_dellistentry.seton
+
+	put "rflbdlg "
+	beginoptions
+		//option dta
+		put `"dta("'
+			put main.co_listall
+			put main.co_listrecent
+			put main.co_listdesc
+		put `") "'
+		// option scr
+// 	put `"scr("' /hidden main.ed_scri `") "'
+		if !main.fi_otherDB | H(main.fi_otherDB) {
+			if !H(main.co_listdesc) {
+				put "dtaisdesc(" main.rb_listdesc ") "
+			}
+		}
+//		put `" dellistentry("' /hidden main.cb_dellistentry ") "
+//		put `" from(program dellistentry) "'
+		put `" action(dellistentry) "'
+	endoptions
+	if main.cb_runstata {
+		stata hidden
+	}
+	clear
+END
+
+PROGRAM renlistentry
+// Aufgerufen von program del_ren_entry
+BEGIN
+//	call gaction main.ed_scri.append "R dellistentry C stata|"
+//	call gaction main.cb_dellistentry.seton
+
+	put "rflbdlg "
+	beginoptions
+		//option dta
+		put `"dta("'
+			put main.co_listall
+			put main.co_listrecent
+			put main.co_listdesc
+		put `") "'
+		put `"newdta("' main.fi_rename `") "'
+		if !main.fi_rename {
+			stopbox stop "No file has been selected." `"You must select a file to rename a list entry."'
+			call gaction main.cb_noDB.seton
+			call gaction main.rb_log3nolog.seton
+		}
+		// option scr
+// 	put `"scr("' /hidden main.ed_scri `") "'
+		if !main.fi_otherDB | H(main.fi_otherDB) {
+			if !H(main.co_listdesc) {
+				put "dtaisdesc(" main.rb_listdesc ") "
+			}
+		}
+//		put `" from(program renlistentry) "'
+		put `" action(renlistentry) "'
+	endoptions
+	if main.cb_runstata & main.fi_rename {
+		stata hidden
+	}
+	clear
+END
+
+PROGRAM exitst
+// Aufgerufen von SUBMIT
+BEGIN
+//	call gaction main.ed_scri.append "R dellistentry C stata|"
+
+	put "rflbdlg "
+	beginoptions
+		// option scr
+// 	put `"scr("' /hidden main.ed_scri `") "'
+		put `" from(program exitst) "'
+		put `" action(exitstata) "'
+	endoptions
+	if main.cb_runstata {
+		stata hidden
+	}
+	clear
+END
+
+PROGRAM setmemtext
+BEGIN
+	put "rflbdlg "
+	beginoptions
+		put `" action(setmemtext) "'
+		put `"mem("' main.sp_mem `") "'
+		put `"size("' /hidden main.ed_hisize `") "'
+	endoptions
+	if main.cb_runstata {
+		if main.cb_runsetmemtext {
+			stata hidden
+		}
+	}
+	clear
+END
+
+PROGRAM resetwindowtitle
+BEGIN
+	put "rflbdlg "
+	beginoptions
+		put `" action(resetwindowtitle) "'
+		put `" from(program resetwindowtitle) "'
+	endoptions
+	if main.cb_runstata {
+		stata hidden
+	}
+	clear
+END
+
+PROGRAM runonceonstart
+// Called only once when cb_runstata is set on from rfl.ado
+// Doesn't work because it calls ados while rfl.ado is still running
+BEGIN
+	call program chckforopfiles
+	if !main.cb_noDB | main.cb_otherDB {
+		call program show_rb_common
+	}
+	//
+	if main.rb_log1default {
+		call program sc_knownlog
+	}
+	if second.cb_logsparallel {
+		call program logssamename
+	}
+END
+
+PROGRAM setdefault
+BEGIN
+	call gaction second.bu_setdefault.disable
+	put "rflbdlg "
+	beginoptions
+		put `" action(setdefault) "'
+		put `" from(program setdefault) "'
+		put "hidemenu(" /hidden second.cb_nomenu ") "
+		optionarg second.sp_numfiles
+		put "loadlastlog(" /hidden second.cb_loadlastlog ") "
+		put "rewritemenu(" /hidden second.cb_rewritemenu ") "
+		optionarg second.sp_minmem
+		optionarg second.sp_maxmem
+		optionarg second.sp_memmult
+		put "treatcmdlogpar(" /hidden second.cb_logsparallel ") "
+		put "replacelog(" /hidden second.cb_logreplace ") "
+		put "replacecmdlog(" /hidden second.cb_cmdlogreplace ") "
+		put "dontwarnlogreplace(" /hidden second.cb_logrepldontwarn ") "
+		put "logbackup(" /hidden second.cb_logbackup ") "
+		optionarg second.sp_cmd
+	endoptions
+	if main.cb_runstata {
+		stata hidden
+	}
+	clear
+END
+
+PROGRAM command
+BEGIN
+//	call gaction main.ed_scri.append "R command"
+//	call gaction main.ed_scri.append " Vor erstem IF | "
+
+// Das hier ist doch ein Quatsch, oder?
+	if !main.cb_noDB | H(main.cb_noDB) {
+		if (H(main.rb_listrecent) & H(main.rb_listall) & H(main.rb_listdesc)) { // | (!main.co_listrecent & !main.co_listall & !main.co_listdesc) {
+//			call gaction main.ed_scri.append " combos verborgen "
+			if !main.fi_otherDB | H(main.fi_otherDB) {
+//				call gaction main.ed_scri.append " und fi_otherDB auch verborgen "
+				stopbox stop "No dataset has been selected from the lists." `"You may select a dataset, choose to open another dataset, or check "no dataset"!"'
+				call gaction main.cb_noDB.seton
+				call gaction main.rb_log3nolog.seton
+			}
+		}
+	}
+
+	put "rflbdlg "
+	beginoptions
+		if main.cb_noDB & main.rb_log3nolog {
+			put `"action(noaction) "'
+		}
+		if !(main.cb_noDB & main.rb_log3nolog) {
+			put `" action(openfiles) "'
+			if !main.cb_noDB {
+				//option dta
+				put `"dta("'
+				if main.cb_otherDB & main.fi_otherDB {
+					put main.fi_otherDB
+				}
+				if H(main.fi_otherDB) | !main.fi_otherDB {
+					put main.co_listall
+					put main.co_listrecent
+					put main.co_listdesc
+				}
+				put `") "'
+			}
+			if !main.fi_otherDB | H(main.fi_otherDB) {
+				if !H(main.co_listdesc) {
+					put "dtaisdesc(" main.rb_listdesc ") "
+				}
+			}
+			//option desc
+			// pass desc only whith new file
+			if main.fi_otherDB & !H(main.fi_otherDB) {
+				put `"desc("'
+				if !H(main.ed_desc) & main.ed_desc {
+					put main.ed_desc
+				}
+				if H(main.ed_desc) {
+					put /hidden main.ed_hidfo
+				}
+				put `") "'
+			}
+			//option log
+			if !main.rb_log3nolog & !(main.rb_log4other & !main.fi_logopen) {
+				put `"log("'
+				if main.rb_log1default {
+					put /hidden main.ed_hil
+	//				call gaction main.ed_scri.append " rb_log1default"
+				}
+				if main.rb_log2last {
+					put /hidden main.ed_hill
+	//				call gaction main.ed_scri.append " rb_log2last"
+				}
+				if main.rb_log4other & main.fi_logopen & H(main.fi_logopen) {
+					put /hidden main.fi_logopen
+	//				call gaction main.ed_scri.append " rb_l4H"
+				}
+				if main.rb_log4other & main.fi_logopen & !H(main.fi_logopen) {
+					put main.fi_logopen
+	//				call gaction main.ed_scri.append " rb_log4other"
+				}
+				put `") "'
+			}
+			//option cmdlog
+			if !second.rb_cmdlog3nolog & !(second.rb_cmdlog4other & !second.fi_cmdlogopen) {
+				put `"cmdlog("'
+				if second.rb_cmdlog1default {
+					put /hidden second.ed_hicmdl
+				}
+				if second.rb_cmdlog2last {
+					put /hidden second.ed_hilcmdl
+				}
+				if second.rb_cmdlog4other & second.fi_cmdlogopen & H(second.fi_cmdlogopen) {
+					put /hidden second.fi_cmdlogopen
+				}
+				if second.rb_cmdlog4other & second.fi_cmdlogopen & !H(second.fi_cmdlogopen) {
+					put second.fi_cmdlogopen
+				}
+				put `") "'
+			}
+		}
+		// options scr, mem
+//		put `"scr("' /hidden main.ed_scri `"") "'
+		put `"mem("' main.sp_mem `") "'
+		put `" from(program command) "'
+		optionarg main.cb_dsave
+		optionarg main.cb_dclose
+		optionarg main.cb_lclose
+		optionarg main.cb_cclose
+
+		put "hidemenu(" /hidden second.cb_nomenu ") "
+		optionarg second.sp_numfiles
+		put "loadlastlog(" /hidden second.cb_loadlastlog ") "
+		put "rewritemenu(" /hidden second.cb_rewritemenu ") "
+		optionarg second.sp_minmem
+		optionarg second.sp_maxmem
+		optionarg second.sp_memmult
+		put "treatcmdlogpar(" /hidden second.cb_logsparallel ") "
+		put "replacelog(" /hidden second.cb_logreplace ") "
+		put "replacecmdlog(" /hidden second.cb_cmdlogreplace ") "
+		put "dontwarnlogreplace(" /hidden second.cb_logrepldontwarn ") "
+		put "logbackup(" /hidden second.cb_logbackup ") "
+		optionarg second.sp_cmd
+	endoptions
+	stata hidden
+//	call gaction main.ed_scri.append " Drittes IF vorbei | "
+END
+
+
+
+

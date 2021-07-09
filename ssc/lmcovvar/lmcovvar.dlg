@@ -1,0 +1,206 @@
+/*
+ diagvar
+*!  VERSION 1.0 28/09/2012
+  keyword:  eclass
+*/
+VERSION 11.0
+INCLUDE _std_large
+INCLUDE _ht260
+INCLUDE header
+
+HELP hlp1, view("help var")
+RESET res1
+
+DIALOG main, label("diagvar - (VAR) Breusch-Pagan Diagonal Covariance Matrix Test") /*
+		*/ tabtitle("Model")
+BEGIN
+  DEFINE _x _xsetbu
+  DEFINE _y _top
+  INCLUDE _bu_tsset
+
+  TEXT     tx_dv             _lft      _topph    129       .,		/*
+	*/ label("Dependent Variables:")
+  VARLIST  vl_dv             @         _ss       _iwd      .,		/*
+	*/ label("Dependent Variables") ts
+  CHECKBOX ck_nocons         _lft      _ms       _cwd1     .,		/*
+	*/ label("No Constant")			/*
+	*/ option("noconstant")
+
+  GROUPBOX gb_lags  _lft      _ls       _iwd      _ht2 ,	/*
+	*/ label("VAR Lag Order")
+  SPINNER  sp_lags1 _ilft  _ms       _spwd     .,		/*
+	*/ min(1) max(c(N)) default(1)				/*
+	*/ label("VAR Lag Order")
+
+  CHECKBOX ck_exog           _lft      _xxls     _cwd1     .,		/*
+	*/ label("Exogenous Variables:")			/*
+	*/ onclickon(gaction main.vl_exog.enable)		/*
+	*/ onclickoff(gaction main.vl_exog.disable)
+  VARLIST  vl_exog           _indent2  _ss       _ibwd     ., 		/*
+	*/ label("Exogenous Variables") ts			/*
+	*/ option("exog")
+
+END
+
+DIALOG opt, tabtitle("Model 2")
+BEGIN
+  /* column 1 */
+  CHECKBOX ck_constr         _lft      _top      _cwd1     _ht15h,	/*
+	*/ groupbox						/*
+	*/ label("Constraints")					/*
+	*/ onclickon(program constr_on)				/*
+	*/ onclickoff(script constr_off)
+  COMBOBOX cb_constr         _indent   _ms       _cwd3     .,		/*
+	*/ append						/*
+	*/ dropdown						/*
+	*/ contents(constraint)					/*
+	*/ label("Constraints")					/*
+	*/ option("constraints")
+  RADIO    rb_sure           @         _ls       _cwd3     ., first	/*
+	*/ label("Use iterated SURE")				/*
+	*/ onclickon(program sure)
+  CHECKBOX ck_nolog          _indent2  _ss       _cwd5     .,		/*
+	*/ label("Suppress SURE iteration log")			/*
+	*/ option(nolog)
+  DEFINE holdy @y
+  DEFINE holdx @x
+  SPINNER  sp_iter           @         _ms       _spwd     .,		/*
+	*/ label("iterate")					/*
+	*/ min(1)						/*
+	*/ max(1600)						/*
+	*/ default(1600)					/*
+	*/ option("iterate")
+  TEXT     tx_sep            _spsep    @         100       .,		/*
+	*/ label("Maximum iterations")
+  EDIT	   ed_tol            holdx     _ms       _en7wd    .,		/*
+	*/ option("tolerance")					/*
+	*/ default(.000001)					/*
+	*/ numonly						/*
+	*/ label("Convergence tolerance")
+  TEXT     tx_tol            _en7sep   @         130       .,		/*
+	*/ label("Convergence tolerance")
+  RADIO    rb_noisure        _ilft     _ls       _cwd3     ., last	/*
+	*/ label("Use one-step SURE")				/*
+	*/ onclickon(script noisure)				/*
+	*/ option(noisure)
+
+  GROUPBOX gb_adv    _lft      +35       _iwd      _ht2,		/*
+	*/ label("Advanced")
+  CHECKBOX ck_nobigf _ilft     _ss       _ibwd     .,			/*
+	*/ label("Do not compute parameter vector for coefficients implicitly set to zero")/*
+	*/ option(nobigf)
+
+  /* column 2 */
+  CHECKBOX ck_dfk            _lft2     _top      _cwd1     .,		/*
+	*/ label("Small sample d.f. adjustment")		/*
+	*/ option(dfk)
+  CHECKBOX ck_small          @         _ms       @         .,		/*
+	*/ label("Report small sample t and F statistics")	/*
+	*/ option(small)
+END
+
+INCLUDE byifin
+
+DIALOG rpt, tabtitle("Reporting")
+BEGIN
+  DEFINE _x _lft
+  DEFINE _cx _spr2
+  DEFINE _y _top
+  INCLUDE _sp_level
+
+  GROUPBOX gb_tests  _lft      _ls       _iwd      _ht2,		/*
+	*/ label("Additional test statistics")
+  CHECKBOX ck_luts   _ilft     _ss       _inwd     .,			/*
+	*/ option(lutstats)					/*
+	*/ label("Report Lutkepohl lag-order selection statistics")
+
+  DEFINE _x _lft
+  DEFINE _y _xls
+  DEFINE _cx _iwd
+  INCLUDE _nocnsreport
+
+  DEFINE _x _lft
+  DEFINE _y _ms
+  DEFINE _cx _iwd
+  INCLUDE _vsquish
+END
+
+PROGRAM constr_on
+BEGIN
+	call gaction opt.cb_constr.enable
+	call gaction opt.rb_sure.enable
+	call gaction opt.rb_noisure.enable
+	if opt.rb_sure {
+	call gaction opt.ck_nolog.enable
+	call gaction opt.sp_iter.enable
+	call gaction opt.tx_sep.enable
+	call gaction opt.ed_tol.enable
+	call gaction opt.tx_tol.enable
+	}
+END
+
+SCRIPT constr_off
+BEGIN
+	opt.cb_constr.disable
+	opt.rb_sure.disable
+	opt.ck_nolog.disable
+	opt.sp_iter.disable
+	opt.tx_sep.disable
+	opt.ed_tol.disable
+	opt.tx_tol.disable
+	opt.rb_noisure.disable
+END
+
+PROGRAM sure
+BEGIN
+	if opt.ck_constr {
+	call gaction opt.ck_nolog.enable
+	call gaction opt.sp_iter.enable
+	call gaction opt.tx_sep.enable
+	call gaction opt.ed_tol.enable
+	call gaction opt.tx_tol.enable
+	}
+END
+
+SCRIPT noisure
+BEGIN
+	opt.ck_nolog.disable
+	opt.sp_iter.disable
+	opt.tx_sep.disable
+	opt.ed_tol.disable
+	opt.tx_tol.disable
+END
+
+PROGRAM command
+BEGIN
+	INCLUDE _by_pr
+	put "var"
+	varlist main.vl_dv
+	INCLUDE _ifin_pr
+	beginoptions
+	option main.ck_nocons
+	put "lags(1/"
+	put main.sp_lags1
+	put ") "
+
+	if main.ck_exog {
+	require main.vl_exog
+	optionarg main.vl_exog
+	}
+	if opt.ck_constr {
+	require opt.cb_constr
+	optionarg opt.cb_constr
+	}
+	option opt.ck_nobigf
+	option opt.rb_noisure
+	optionarg /hidedefault opt.sp_iter
+	optionarg /hidedefault opt.ed_tol
+	option opt.ck_nolog
+	option opt.ck_small
+	option opt.ck_dfk
+	optionarg /hidedefault rpt.sp_level
+	option rpt.ck_luts
+	INCLUDE _nocnsreport_pr
+	INCLUDE _vsquish_pr
+	endoptions
+END

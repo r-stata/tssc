@@ -1,0 +1,111 @@
+{smcl}
+{* 24 Dec 2014}{...}
+{cmd:help hhi5}
+{hline}
+
+{title:Title}
+
+{p2colset 5 14 22 2}{...}
+{p2col :{hi:hhi5} {hline 2}}generates Herfindahl-Hirschman index (HHI) variables
+{p_end}
+{p2colreset}{...}
+
+
+{title:Syntax}
+
+{p 4 19 2}
+{cmdab:hhi5} {varlist} {ifin}, {opth by:(varlist:groupvar)} 
+[
+{cmdab:pre:fix:}{cmd:(str)}
+{cmdab:t:op:}{cmd:(#)}
+{cmdab:mim:obs:}{cmd:(#)}
+{opt per:centage}
+{cmdab:out:file:}{cmd:(str)}
+{opt replace}
+{opt noe:xpand}
+]
+
+
+{title:Description}
+
+{pstd}
+hhi5 generates Herfindahl-Hirschman index (HHI) variables also commonly known as 
+concentration index in economics and finance. {break}
+See: {browse "http://baike.baidu.com/view/4362432.htm":http://baike.baidu.com/view/4362432.htm}.
+The module supports multiple variables and group ids and 
+allows user to export output in table format (csv comma delimited).
+
+
+{title:Options}
+
+{phang}
+{opth by:(varlist:groupvar)} specifies the {it:groupvar} which defines the categories 
+that {opt hhi5} will use to calculate the HHI index. For example,  
+{opt by:(industry)}, {opt by:(industry year)}.
+
+{phang}
+{cmd:prefix(}{it:str}{cmd:)} prefixes new variable names with {it:str}. 
+If {cmd:prefix(}{it:str}{cmd:)} is not specified, the defult prefix is "hhi_". 
+Thus, {bf:hhi5 sale output, options} will generate 
+two variables named as {it: hhi_sale} and {it: hhi_output}, respectively.
+
+{phang}
+{cmd:top(}{it:#}{cmd:)} use firms in each {it:groupvar} 
+with the highest top # values of each variable in {varlist} to calculate the HHI index.
+
+{phang}
+{cmd:minobs(}{it:#}{cmd:)} specifies the minimum number of observations in each of the category defined by {it:groupvar}.
+
+{phang}
+{opt percentage} scale the market share of each firm in category defined by {it:groupvar} 
+to be a percentage of the total, between 0 and 100. 
+The defult is scaled to be a proportion of the total, between 0 and 1.
+Specify this option cause the HHI index 10^4 times larger.
+
+{phang}
+{opt noexpand} restrict the HHI index values to sub-sample correponding {cmd:top(}{it:#}{cmd:)} or
+{cmd:minobs(}{it:#}{cmd:)}. The defult is to expand the HHI index values to the full sample.
+
+{phang}   
+{cmd:outfile(}{it:filename}{cmd:)} export data in table format (.csv comma delimited), 
+named as {it:filename}.csv.    
+
+
+{title:Examples}
+
+{result}{dlgtab:The nlsw88 data}{text}
+
+{phang2}{inp:.} {stata "sysuse nlsw88,clear":sysuse nlsw88,clear}{p_end}
+{phang2}{inp:.} {stata "gen sale = ln(wage)":gen sale = ln(wage)}{p_end}
+{phang2}{inp:.} {stata "hhi5 sale, by(industry)":hhi5 sale, by(industry)}{p_end}
+{phang2}{inp:.} {stata "hhi5 sale hour, by(industry race) prefix(hhi5) top(5) minobs(10)":hhi5 sale hour, by(industry race) prefix(hhi5) top(5) minobs(10) }{p_end}
+{phang2}{inp:.} {stata "br industry race hhi*":br industry race hhi*}{p_end}
+
+
+{title:Acknowledgements}
+
+{pstd}   
+Codes from {help hhi} by Muhammad Rashid Ansari 
+({browse "mailto:rashid.ansari@insead.edu":rashid.ansari@insead.edu}) 
+have been incorporated. 
+{p_end}
+
+
+{title:Author}
+
+{pstd}   
+{cmd:Yujun,Lian (Arlion)} Department of Finance, Lingnan College, Sun Yat-Sen University, China.{break}
+E-mail: {browse "mailto:arlionn@163.com":arlionn@163.com}. {break}
+Blog: {browse "http://blog.cnfol.com/arlion":http://blog.cnfol.com/arlion}. {break}
+Homepage: {browse "http://www.lingnan.sysu.edu.cn/lnshizi/faculty_vch.asp?name=lianyj":http://www.lingnan.sysu.edu.cn/lnshizi/faculty_vch.asp?name=lianyj}. {break}
+MyCourse: {browse "http://www.peixun.net/author/3.html":http://www.peixun.net/author/3.html}. {break} 
+Youku Videos: {browse "http://i.youku.com/arlion":http://i.youku.com/arlion}. {break}
+{p_end}
+
+
+{title:Also see}
+
+{pstd} Online: {manhelp egen R};  {help hhi}  {p_end}
+
+{pstd}   {p_end}
+

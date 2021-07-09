@@ -1,0 +1,110 @@
+{smcl}
+{* *! version 1.0.1 Quezada-Sanchez AD 10nov2015}{...}
+{* *! version 1.0.0 Quezada-Sanchez AD 02dec2010}{...}
+{cmd:help lbpower}
+{hline}
+
+{title:Title}
+
+
+{p2colset 5 18 20 2}{...}
+{p2col: {hi: lbpower} {hline 2}} Calculate approximate power (or sample size) for longitudinal studies with binary response 
+and two equally sized treatment groups {p_end}
+{p2colreset}{...}
+
+
+{title:Syntax}
+
+{p 8 11 2}
+{cmd:lbpower} 
+{cmd:,}
+{cmdab:nr:ep(}#{cmd:)}
+{cmdab:dur(}#{cmd:)}
+{cmdab:corr:jk(}#{cmd:)}
+{cmdab:d:if(}#{cmd:)}
+{cmdab:a:lpha(}#{cmd:)}
+[
+{cmdab:p:ower(}{it:numlist}{cmd:)}
+{cmdab:ns:ize(}#{cmd:)} 
+{cmdab:unilateral} 
+]
+
+
+{title:Description}
+
+{pstd}
+{opt lbpower} Approximates power (or sample size) for longitudinal studies with a binary
+response and two treatment groups with equal size. It should be used if the log odds 
+can be assumed to be approximately linear with respect to the probability, this is a
+reasonable assumption when response probabilities are between 0.2 and 0.8. Additionally, 
+a constant correlation between repeated measurements is assumed and variance of the binary
+response variable is set at its maximum value (=0.25, when p=0.5). Note that this is just 
+an approximation and should be applied taking into account all these assumptions.
+
+
+{title:Options}
+
+{phang}{cmdab:nr:ep(}#{cmd:)} Number of repeated mesurements.
+
+{phang}{cmdab:dur:(}#{cmd:)} Duration of the study.
+
+{phang}{cmdab:corr:jk(}#{cmd:)} Correlation between repeated measurements.
+
+{phang}{cmdab:d:if(}#{cmd:)} Difference in the change of response probabilites between groups (from begining to the end of the study).
+
+{phang}{cmdab:a:lpha(}#{cmd:)} Significance level.
+
+{phang}{cmdab:p:ower(}{it:numlist}{cmd:)} Power, sample size is calculated.
+
+{phang}{cmdab:ns:ize(}#{cmd:)}  Sample size, calculate power.
+
+{phang}{cmdab:unilateral} Specify if the test is one sided
+
+{pstd} Either {cmdab:p:ower} or {cmdab:n:size} must be specified
+
+
+{title:Example}
+
+{pstd} Suppose that subjects are randomly assigned to receive any of two different suplements on a daily basis. There 
+is no placebo for ethical reasons but in other contexts may be the case. The duration of the study is two years and 
+five measurements will be taken. The researchers would like to detect treatment group differences in the prevalence 
+of anemia of at least 6 percentage points (p.p.) per year, that is, 12 p.p. in the course of the whole study. 
+The baseline prevalence in this population is about 45% so there is no problem with the linearity assumption for the 
+log odds. Correlation between measurements is assumed to be 0.6
+
+
+{pstd} Calculate sample size for power values between 0.7 and 0.9 :
+
+{p 4 8 2}{cmd:lbpower, nrep(5) dur(2) corrjk(0.6) dif(0.12) alpha(0.05) power(0.7(.05)0.9)  }
+
+{pstd} Calculate power for a sample size of 140 per group:
+
+{p 4 8 2}{cmd:lbpower, nrep(5) dur(2) corrjk(0.6) dif(0.12) alpha(0.05) nsize(140) }
+
+{pstd} Calculate sample size if a power of 80% and a difference of 15 p.p. in the change of prevalences 
+(from the beginning to the end of the study) are considered:
+
+{p 4 8 2}{cmd:lbpower, nrep(5) dur(2) corrjk(0.6) dif(0.15) alpha(0.05) power(0.8) }
+
+
+{title:Saved results}
+
+{pstd} If power is provided, the sample size per group is saved as scalar in {cmd:r(N1)}. In
+case a list of power values is given, each sample size value is stored in {cmd:r(N1)},  {cmd:r(N2)}, ...
+
+{pstd} If sample size is specified, power is saved as scalar in {cmd:r(power)}
+
+
+{title:Author}
+
+{pstd} Amado David Quezada S{c a'}nchez {break}
+Center for Research in Nutrition and Health{break}
+National Institute of Public Health - Mexico (INSP) {break}
+Email {browse "mailto:amado.quezada@insp.mx":amado.quezada@insp.mx}
+{p_end}
+
+{title:Reference}
+
+{pstd} Fitzmaurice/Laird/Ware (2004) Applied Longitudinal Analysis, 411-413.
+
+

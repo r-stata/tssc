@@ -1,0 +1,125 @@
+{smcl}
+{* September 5, 2007 @ 13:35:10}{...}
+{hi:help ckvar_overview}
+{hline}
+	
+{hi:Help for the ckvar system}
+
+{title:Description}
+
+{pstd}
+This help file gives an overall description of how {help ckvar} and
+its associated commands can be used to keep information about data
+validation and scoring connected to the variables themselves.	
+{p_end}
+
+{title:Remarks}
+{pstd}
+Remarks are presented under the headings
+{p_end}
+
+{pstd}
+{hi:{help ckvar_overview##intro:1. Introduction}}
+{p_end}
+{pstd}
+{hi:{help ckvar_overview##background:1.1. Background}}
+{p_end}
+{pstd}
+{hi:{help ckvar_overview##overview:1.2. Overview}}
+{p_end}
+
+{pstd}
+{hi:{help ckvar_overview##quick:2. Quick Start}}
+{p_end}
+
+{marker intro}{...}
+{title:1. Introduction}
+
+{marker background}{...}
+{title:1.1. Background}
+
+{pstd}
+Data validation is an important part of working with any
+external dataset. Unfortunately, validation rules are rarely passed along when
+data are shared. When they are, they are typically in a form which
+forces the receiver of the data to write validation routines from
+scratch, wasting precious time. To make matters worse, sometimes the
+validation depends on other variables which are not passed along.
+In the worst-case (and most common) scenaraio,
+validation rules are not passed along whatsoever. This, of course,
+impedes reproducibility and lowers the value of the data.
+Using {help char:characteristics} to store the data
+validation routines (or error-checking or scoring routines) allows the
+valiation rules to be passed along with the data to the data user,
+saving time and frustration. It also allows passing on all variables needed
+for validation.
+{p_end}
+
+{marker overview}{...}
+{title:1.2. General Overview}
+
+{pstd}
+The {help ckvar} command uses {help char:characteristics} to store the
+information it needs to validate variables. Thus, passing along data
+also passes along the ability to validate the data, even if new
+observations are added to existing variables. There are also some
+helper commands which can keep things running smoothly: {help ckkeep},
+{help ckkeep:ckdrop}, and {help ckrename}.
+{* , and {help ckcodebook} (not done yet!)}
+{p_end}
+
+{marker quick}{...}
+{title:2. Quick Start}
+
+{pstd}
+To add validation rules to a dataset which is already in use,
+{stata ckvaredit:run the ckvaredit} command (click {help ckvaredit:here} for help instead). It will
+open up a dialog box which will
+allow you to add or edit rules for validation for as many as you would
+like. At its simplest, you may
+{p_end}
+{phang2}optionally give a {help ckvaredit##validvalid:validation rule},{p_end}
+{phang2}optionally state whether the variable is required to be
+non-missing, and{p_end}
+{phang2}optionally state if there are other variables needed to validate this
+variable.
+{p_end}
+{pstd}
+When you are finished, typing {cmd:ckvar} will then validate your
+data. The help file for {help ckvar} gives more details about what
+else your validation can involve. 
+{p_end}
+
+{pstd}
+You may also use this system for {it:scoring} variables as one might
+score an exam or a survey instrument. The
+distinction between validation (or error-checking) and scoring is this:
+{it: validation} and {it:error-checking} result in something which is
+two-valued (either 0 or 1),
+whereas {it:scoring} can result in any value.
+The idea is that in validation, one would normally like to create a
+new error variable containing 1's for errors and 0's for valid values,
+wheras for scoring, there could be multiple possible values depending
+on the value of the original variable (think: partial credit).
+The distinction is not large; it has been made because most people
+think of validation as right or wrong, errors as existing or not, but
+think of scores as multivalued.
+The help files for {help ckvar} will primarily talk of validation, since 99% of all
+users will use {cmd:ckvar} for validation.
+Scoring simply involves writing more complicated `validation' rules.
+{p_end}
+
+{title:Also see}
+
+{psee}
+Online: {help ckvaredit} for ways to set up validation rules using a
+dialog box, along with how validation rules work.
+{p_end}
+
+{title:Author}
+
+{pstd}
+Bill Rising, StataCorp{break}
+email: brising@stata.com{break}
+web: {browse "http://homepage.mac.com/brising":http://homepage.mac.com/brising}
+{p_end}

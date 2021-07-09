@@ -1,0 +1,60 @@
+{smcl}
+{hline}
+help for {hi:spellsplit}{right:(E. Leuven)}
+{hline}
+
+{title:Splits records of time-span data}
+
+{p 8 15}{cmdab:spellsplit} [{it:clist}], {cmdab:spell(}{it:start} {it:end}{cmdab:)} [{cmdab:by(}{it:varlist}{cmdab:)}]
+
+{p}where {it:clist} is [{cmdab:(}stat{cmdab:)}] {it:varlist} [ [{cmdab:(}stat{cmdab:)} ... ]
+
+{p}and stat is either {cmdab:mean} or {cmdab:sum}
+
+{title:Description}
+
+{p}{cmd:nojoin} breaks overlapping spells in disjoint adjacent spells. 
+
+{p}{it:clist} with statistics
+instructs how to treat variables when spells overlap; to sum them or take an average. 
+
+{p 8 0} spellsplit x1 x2, spell(date0 date1) by(id)
+
+is equivalent to
+
+{p 8 0} spellsplit (mean) x1 x2, spell(date0 date1) by(id)
+ 
+{p}As an example, if two overlapping spells
+refer to a job and the variable is hours worked one would like to sum (to get the total hours worker), 
+whereas if the variable is the worker's
+age one would like to take the average (which will just be the worker's age).
+
+{p}{cmd:spellsplit} Does the following
+
+Suppose you have this
+
+. l
+           d0        d1          x
+  1.   1Jan99    6Jan99          1
+  2.   2Jan99    7Jan99         .2
+  3.   4Jan99    8Jan99         .5
+  4.   4Jan99   10Jan99         .1
+  5.  16Jan99   21Jan99         .7
+
+. spellsplit x, spell(d0 d1)
+
+. l
+              d0          d1          x   _count  
+  1.   01Jan1999   02Jan1999          1        1  
+  2.   02Jan1999   04Jan1999         .6        2  
+  3.   04Jan1999   06Jan1999        .45        4  
+  4.   06Jan1999   07Jan1999   .2666667        3  
+  5.   07Jan1999   08Jan1999         .3        2  
+  6.   08Jan1999   10Jan1999         .1        1  
+  7.   16Jan1999   21Jan1999         .7        1  
+
+where _count is the number of intercepting spells and x is averaged.
+  
+{title:Author}
+
+{p}E. Leuven, Department of Economics, University of Amsterdam. If you observe any problems {browse "mailto:e.leuven@uva.nl"}.

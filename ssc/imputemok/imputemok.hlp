@@ -1,0 +1,58 @@
+{smcl}
+{* 30June2008}{...}
+{hline}
+help for {hi:imputemok}{right:Jean-Benoit Hardouin}
+{hline}
+
+{title:Imputation of missing item responses with the Mokken scaling}
+
+{p 8 14 2}{cmd:imputemok} {it:varlist} [,{cmdab:pref:ix}({it:string}) {cmdab:max}({it:#})]
+
+
+{title:Description}
+
+{p 4 4 2}{cmd:imputemok} imputes missing item responses with the Mokken scaling as defined in Huisman and Molenaar (2001). This module runs only with dichotomous items.
+
+{p 4 4 2}The following algorithm is used:
+
+{p 8 4 2}First, the items are ordered according to the percentage of positive responses (in a decreasing order).
+
+{p 8 4 2}For each individual, if a positive response follows a missing response, it is imputed to 1.
+
+{p 8 4 2}Else if a negative response precedes a missing response, it is imputed to 0.
+
+{p 8 4 2}Else we count the number of positive and negative responses preceding a missing response and if the number of negative response is larger or equal than the number of positive responses, the missing value is imputed to 0.
+
+{p 8 4 2}Else we count the number of positive and negative responses following a missing response and if the number of positive response is larger or equal than the number of negative responses, the missing value is imputed to 1.
+
+{p 8 4 2}Else, the missing value is imputed by drawing a random number based on the observed proportion of positive responses to the item.
+
+{title:Options}
+
+{p 4 8 2}{cmd:prefix} defines the prefix to use to name the imputted variables (this prefix is followed by the name of the initial variable). By default, this prefix is "imp".
+
+{p 4 8 2}{cmd:max} allows imputing missing values only for individuals with a maximal number of missing values defined with this option.
+
+{title:Example}
+
+	{cmd:. imputemok itemA*}
+
+	{cmd:. imputemok itemA*,prefix(new)}
+
+
+{title:Reference}
+
+{p 4 8 2}{cmd:Huisman M. and Molenaar I. W.}, {it:Imputation of missing scale data with item response models}. In A. Boomsma, M.A.J. van Duijn, & T.A.B. Snijders (Eds.), {it: Essays on item response theory} (pp. 221-244).
+New York: Springer-Verlag, 2001.
+
+{title:Author}
+
+{p 4 8 2}Jean-Benoit Hardouin, PhD, assistant professor{p_end}
+{p 4 8 2}EA 4275 "Biostatistics, Clinical Research and Subjective Measures in Health Sciences"{p_end}
+{p 4 8 2}University of Nantes - Faculty of Pharmaceutical Sciences{p_end}
+{p 4 8 2}1, rue Gaston Veil - BP 53508{p_end}
+{p 4 8 2}44035 Nantes Cedex 1 - FRANCE{p_end}
+{p 4 8 2}Email:
+{browse "mailto:jean-benoit.hardouin@univ-nantes.fr":jean-benoit.hardouin@univ-nantes.fr}{p_end}
+{p 4 8 2}Websites {browse "http://www.anaqol.org":AnaQol}
+and {browse "http://www.freeirt.org":FreeIRT}

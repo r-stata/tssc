@@ -1,0 +1,77 @@
+{smcl}
+{* 23nov2004}{...}
+{hline}
+help for {hi:cpyxplot}
+{hline}
+
+{title:Scatter (or other twoway) plots for each y vs each x variable} 
+
+{p 8 17 2} 
+{cmd:cpyxplot}
+{it:yvarlist}
+{it:xvarlist}
+[{it:weight}] 
+[{cmd:if} {it:exp}] 
+[{cmd:in} {it:range}]
+[
+{cmd:,}
+{cmd:plottype(}{it:plottype}{cmd:)} 
+{it:graph_options} 
+{cmd:combine(}{it:combine_options}{cmd:)} 
+]
+
+
+{title:Description} 
+
+{p 4 4 2} 
+{cmd:cpyxplot} produces an array of scatter or other twoway plots for
+{it:yvarlist} versus {it:xvarlist}.  There is one plot for each {it:y} variable
+from {it:yvarlist} and each {it:x} variable from {it:xvarlist}.  The name
+{cmd:cpyxplot} is derived from Cartesian product of {it:y} and {it:x}. {cmd:cp}
+may also be interpreted as `cross pairs'. The backslash {cmd:\} must be used to
+separate the {it:yvarlist} and the {it:xvarlist}.
+
+{p 4 4 2} 
+A neat arrangement of the individual graphs is produced if the
+number of {it:y} variables is equal to the number of {it:x} variables, or the
+number of {it:y} variables is 1, or the number of {it:x} variables is 1.
+
+
+{title:Options}
+
+{p 4 8 2}{cmd:plottype()} specifies a {help twoway} plottype that may be used
+to plot {cmd:y} versus {cmd:x}. The default is {help scatter}. Possibilities
+include {help twoway_line:line}, {help twoway_connected:connected}
+and {help twoway_lowess:lowess}. 
+
+{p 4 8 2}{it:graph_options} are options allowed with {help scatter} (or if 
+{cmd:plottype()} is specified) with {help twoway} {it:plottype}. 
+
+{p 4 8 2}{cmd:combine()} specifies options allowed with 
+{help graph_combine}. 
+
+
+{title:Examples} 
+
+{p 4 8 2}{cmd:. cpyxplot y1 y2 y3 \ x1 x2 x3}{p_end} 
+{p 4 8 2}{cmd:. cpyxplot srunoff \ srain17 srain23 srain60, combine(row(1))} 
+
+
+{title:Author} 
+
+{p 4 4 2}Nicholas J. Cox, University of Durham, U.K.{break} 
+         n.j.cox@durham.ac.uk
+
+
+{title:Acknowledgements} 
+
+{p 4 4 2}Rory Wolfe suggested the original problem.
+         Phil Ender alerted me to a bug.
+	 Pete Watt made a helpful suggestion. 
+
+
+{title:Also see}
+
+{p 4 13 2}
+On-line: help for {help twoway} 
+

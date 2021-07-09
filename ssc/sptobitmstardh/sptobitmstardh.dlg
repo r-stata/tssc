@@ -1,0 +1,247 @@
+/*
+ sptobitmstardh
+*! VERSION 1.0 25/11/2013
+*/
+VERSION 11.0
+INCLUDE _std_xlarge
+DEFINE _dlght 350
+INCLUDE header
+HELP hlp1, view("help sptobitmstardh")
+RESET res1
+
+SCRIPT PREINIT
+BEGIN
+program parseMessage
+script se_createAsSvyOLS
+script se_setBias_on
+program svy_check_title
+END
+
+PROGRAM parseMessage
+BEGIN
+if __MESSAGE.contains("__MI__") {
+call script se_setMI_on
+}
+END
+
+SCRIPT POSTINIT
+BEGIN
+program check_bytab
+program se_setFinalInitState
+END
+
+PROGRAM check_bytab
+BEGIN
+if ! __MESSAGE.contains("__MI__") {
+call script sub_set_by_on
+}
+END
+
+SCRIPT svy_is_on
+BEGIN
+	script max_setDefaultNoLog
+END
+SCRIPT svy_is_off
+BEGIN
+	script max_setDefaultLog
+END
+
+DIALOG main, label("sptobitmstardh- Tobit mSTAR Spatial Cross Sections Durbin Multiplicative Heteroscedasticity Models") ///
+	tabtitle("Main")
+BEGIN
+ DEFINE wlabel 130
+ DEFINE cmdx 320
+ DEFINE cmdw 170
+ DEFINE _x _xsetbu
+ DEFINE _y _top
+
+ TEXT tx_fn1	_lft      _top  500 	.,	///
+ label("Weight Matrix File Name (dta):") 
+ FILE fi_fn1   _lft      @  	500 	.,	///
+ label("Brows...")				///
+ option("wmfile")				///
+ filter("Stata dta File (*.dta)|*.dta|All (*.*)|*.*") ///
+ defext(dta)
+
+ GROUPBOX gb_group1   _lft     _ss       _iwd     _ht6 , 
+  TEXT     tx_yvar     _ilft   +15    _vnwd     .,	/*
+		*/ label("Dependent Variable:")		/*
+		*/
+  TEXT     tx_xvar     _vlx      @      _cwd2     .,	/*
+		*/ label("Independent Variables:")	/*
+		*/
+  VARNAME  vn_yvar     _ilft       _ss       _vnwd   .,	/*
+		*/ label("Dependent Variable")		/*
+		*/
+  VARLIST  vl_xvar     _vlx       @         380      .,	/*
+		*/ label("Independent Variables")
+  CHECKBOX ck_nocons @   _ms   _cwd1  .,	/*
+		*/ label("No Constant")	/*
+		*/ option("noconstant")		/*
+		*/
+ VARLIST vl_aux _ilft   _xls   350    ., ///
+	label("Auxiliary Variables") ///
+	option(aux)
+ TEXT tx_aux    380   @    160   .,	///
+	label("Auxiliary Variables")
+ VARLIST vl_mhet _ilft	_ms	350 .,	///
+	label("Heteroscedasticity Variables") ///
+	option(mhet)
+ TEXT tx_mhet	380 	@ 	160 .,	///
+	label("Heteroscedasticity Variables")
+*/
+  CHECKBOX ck_mfx  _lft    +35   _iwd    _ht2 , 	///
+	groupbox					///
+	onclickon(script ck_mfx_on)			///
+	onclickoff(script ck_mfx_off)		///
+label("Total, Direct, and Indirect Marginal Effects - Elasticities:")
+
+ CHECKBOX ck_lin  _ilft   _ss  100  ., option("mfx(lin)") /*
+*/ label("Linear") /*
+*/
+DEFINE y @y
+  CHECKBOX ck_log    120   y  @ ., option("mfx(log)") /*
+*/ label("Log-Log") /*
+*/
+  CHECKBOX ck_tolog    250   y 120 ., option("tolog") /*
+*/ label("Log Transform Varlist") /*
+*/
+  SPINNER  sp_nw   400   @    40  .,	/*
+	*/ min(1) max(4) default(1)		/*
+	*/ option("nwmat")			/*
+	*/ label("nwmat")
+  TEXT     tx_nw   450    @   100  .,	/*
+	*/ label("nwmat") /*
+*/
+  CHECKBOX ck_model0 _lft    _xls   _iwd    _ht6 , ///
+	groupbox				 ///
+	onclickon(script ck_model0_on)		 ///
+	onclickoff(script ck_model0_off)	 ///
+	label("Standardized Weight Matrix Type:")
+  RADIO    rb_ws1  _ilft     _ss     300    ., 	/*
+	*/ label("Standardized Weight Matrix - (W)") /*
+	*/ first			/*
+	*/ option("stand")		/*
+*/
+  RADIO    rb_ws2  _ilft     _ss     300    ., 	/*
+	*/ label("Inverse Standardized Weight Matrix - (1/W)") /*
+	*/ option("stand inv")		/*
+*/
+  RADIO    rb_ws3  _ilft     _ss     300    ., 	/*
+	*/ label("Inverse Squared Standardized Weight Matrix - (1/W^2)") /*
+	*/ last					/*
+	*/ option("stand inv2")			/*
+*/
+END
+
+DIALOG est1 , tabtitle("Options")
+BEGIN
+  CHECKBOX ck_model12  _lft    _top   _ibwd    _ht10 , ///
+	groupbox				 ///
+	onclickon(script ck_model12_on)		 ///
+	onclickoff(script ck_model12_off)	 ///
+	label("Options:")
+ CHECKBOX ck_coll _ilft     _ss    400 ., option("coll") /*
+*/ label("coll: Keep Collinear Variables")
+ CHECKBOX ck_robust _ilft  _ss   350  ., option("robust") /*
+*/ label("robust: Use Huber-White Variance-Covariance Matrix") 
+ CHECKBOX ck_zero   @  _ss  @  ., option("zero") /*
+*/ label("zero: convert missing values observations to Zero") 
+ CHECKBOX ck_nolog   @  _ss  @  ., option("nolog") /*
+*/ label("nolog: suppress iteration of the log likelihood") 
+  EDIT ed_llt  _ilft       _ms    50   ., 	/*
+	*/ label("llt")				/*
+	*/ option("ll")
+  TEXT     tx_llt     80    @  250    .,	/*
+	*/ label("ll: Minimum Left-Censoring Dependent Variable Value")
+ TEXT tx_predict _ilft    _ls    150 .,	///
+	label("Predicted Variable")
+ TEXT tx_resid   200      @      150 .,	///
+	label("Residuals Variable")
+ VARNAME vn_predict _ilft _ss   150  .,	///
+	label("predict") 		///
+	option(predict)
+ VARNAME vn_resid  200   @     150  .,	///
+	label("resid") 			///
+	option(resid)
+*/
+END
+
+SCRIPT ck_mfx_on
+BEGIN
+ main.ck_lin.enable
+ main.ck_log.enable
+END
+SCRIPT ck_mfx_off
+BEGIN
+ main.ck_lin.disable
+ main.ck_log.disable
+END
+
+SCRIPT ck_model0_on
+BEGIN
+ main.rb_ws1.enable
+ main.rb_ws2.enable
+ main.rb_ws3.enable
+END
+
+SCRIPT ck_model0_off
+BEGIN
+ main.rb_ws1.disable
+ main.rb_ws2.disable
+ main.rb_ws3.disable
+END
+
+SCRIPT ck_model12_on
+BEGIN
+ est1.ck_coll.enable
+ est1.ck_robust.enable
+ est1.ck_zero.enable
+ est1.ck_nolog.enable
+END
+
+SCRIPT ck_model12_off
+BEGIN
+ est1.ck_coll.disable
+ est1.ck_robust.disable
+ est1.ck_zero.disable
+ est1.ck_nolog.disable
+END
+
+INCLUDE byifin
+INCLUDE weights_fpai
+INCLUDE se
+INCLUDE max_ml
+
+PROGRAM command
+BEGIN
+ put /program by_output
+ put "sptobitmstardh "
+ varlist main.vn_yvar [main.vl_xvar]
+ put " " /program ifin_output
+ put " " /program weights_output
+ put /program se_prefix_output
+ require main.fi_fn1
+ require est1.ed_llt
+beginoptions
+ optionarg main.fi_fn1
+ option main.ck_nocons
+ optionarg main.sp_nw
+ optionarg main.vl_aux
+ optionarg main.vl_mhet
+ option main.ck_lin
+ option main.ck_log
+ option main.ck_tolog 
+ option radio(main rb_ws1 rb_ws2 rb_ws3)
+ option est1.ck_coll
+ option est1.ck_robust
+ option est1.ck_nolog 
+ option est1.ck_zero
+ optionarg est1.ed_llt
+ optionarg est1.vn_predict
+ optionarg est1.vn_resid
+ put " " /program se_output
+ put " " /program max_output
+endoptions
+ END
+

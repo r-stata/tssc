@@ -1,0 +1,104 @@
+{smcl}
+{hline}
+help for {hi:clustergram}{right:{hi: Matthias Schonlau}}
+{hline}
+
+{title:Graph for visualizing hierarchical and non-hierarchical cluster analyses}
+
+{p 8 27}
+{cmd:clustergram} 
+{it:varlist}
+[{cmd:if} {it:exp}] 
+[{cmd:in} {it:range}] 
+{cmd:,} 
+{cmdab:cl:uster(}{it:clustervarlist}{cmd:)} 
+[
+{cmdab:fr:action(}{it:#}{cmd:)} 
+{cmd:fill}
+{it:graph_options}
+]
+
+
+{title:Description}
+
+{p}{cmd:clustergram} draws a graph to examine how cluster members are assigned
+to clusters as the number of clusters increases in a cluster analysis.  This is
+similar in spirit to the dendrograms (tree graphs) used for hierarchical
+cluster analyses. The graph is especially useful for non-hierarchical
+clustering algorithms, such as {it:k}-means, and for hierarchical cluster
+algorithms when the number of observations is too large for dendrograms to be
+practical.
+
+{p}{it:varlist} usually contains the variables with which the cluster algorithm was
+run.   These variables are only used to compute the value of the vertical axis for each
+cluster.
+ It is also possible to specify a single variable to examine the 
+cluster assignments w.r.t that variable. It is also possible to specify a variable
+that was not among the variables that was used for the cluster analysis. 
+
+When more than one variable are specified it often makes sense to standardize
+the variables to ensure that no single variable dominates the scale.
+
+{title:Options}
+
+{p 0 4} {cmd:cluster(}{it:clustervarlist}{cmd:)} specifies the variables
+containing cluster assignments, as previously produced by {cmd:cluster}.  More
+precisely, they usually successively specify assignments to 1, 2, ...
+clusters.  Typically they will be named something like
+{cmd:cluster1-cluster}{it:max}, where {it:max} is the maximum number of
+clusters identified.  It is possible to specify assignments other than to 1,2,
+... clusters (e.g.  omitting the first few clusters, or in reverse order). A
+warning will be displayed in this case. This option is required. 
+
+{p 0 4}{cmd:fraction(}{it:#}{cmd:)} specifies a fudge factor controlling the
+width of line segments and is typically modified to reduce visual clutter.  The
+relative width of any two line segments is not affected.  The value should be
+between 0 and 1.  The default is 0.2.
+
+{p 0 4} {cmd:fill} specifies that individual graph segments are to be filled
+(solid).  By default only the outline of each segment is drawn. 
+
+{p 0 4}
+{it:graph_options} are options of {cmd:graph, twoway} other than 
+{cmd:symbol()} and {cmd:connect()}. The defaults include {cmd:ylabel}s 
+showing three (rounded) levels and {cmd:gap(5)}. 
+
+
+{title:Examples}
+
+{p}Plot the clustergram for {inp:cluster1} through {inp:cluster20}:
+
+{p 4 8}{inp:. clustergram var1-var7, cluster(cluster1-cluster20)}
+
+{p}Plot the clustergram with a smaller width to reduce visual clutter:
+
+{p 4 8}{inp:. clustergram sepallen-petalwid, cluster(cluster1-cluster10) fraction(.1) xla(1/10)}
+
+{p}Examine the effect of the cluster assignments on a single variable:
+
+{p 4 8}{inp:. clustergram petalwid, cluster(cluster1-cluster10)  l2title("petalwid") }
+
+
+{title:References}
+
+{p 0 8}
+Schonlau M. The clustergram: a graph for visualizing hierarchical and non-hierarchical cluster analyses. 
+The Stata Journal, 2002; 2 (4):391-402.
+
+{p 0 8}Schonlau, M.  Visualizing Hierarchical and Non-Hierarchical 
+Cluster Analyses with Clustergrams. Computational Statistics: (to  appear).
+
+
+{title:Author}
+
+	Matthias Schonlau, University of Waterloo
+	schonlau at uwaterloo dot ca
+	{browse "http://www.schonlau.net":www.schonlau.net}
+
+
+{title:Also see}
+
+{p 0 19}Manual:  {hi:[R] cluster}, {hi:[R] cluster dendrogram}, {hi:[R] cluster kmeans}, 
+ {hi:[R] graph}{p_end}
+{p 0 19}On-line:  help for {help cluster}, {help graph}{p_end}
+

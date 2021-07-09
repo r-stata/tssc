@@ -1,0 +1,102 @@
+Scoring the Monetary Choice Questionnaire using logistic regression 
+
+Version 1.0b               
+-------------------------------------------------
+
+	^mcqscore^ response_varlist, ^id(^id_variable^)^ 
+		^saving(^out_filename^)^ [^nojk^]
+
+
+
+Description
+-----------
+
+MCQScore scores the Monetary Choice Questionnaire (questions in 
+standard order), which uses a hyperbolic decay function to summarize
+the degree to which time discounts the value of a delayed reward.  
+The scale parameter k is used as a measure of impulsivity.  
+Conventional scoring requires a lot of hand labor, identifying 
+indifference points where a subject's behavior changes from 
+preferring an immediate to a delayed reward.  Instead, we use 
+logistic regression to identify a contour where the probability of 
+choosing either reward is 0.5, identifying in turn the corresponding 
+hyperbolic function.  Logistic regression is applied to raw binary 
+choices from the survey, modeling the probability of choosing the 
+delayed reward in response to time and a transformation of the reward 
+ratio.  The estimate of k is obtained as a ratio of the two betas.  
+Output will include log-k estimates for small, medium, and large 
+delayed reward sizes, a pooled log-k estimate and the component betas, 
+and optionally, a jackknife estimate of standard error for the pooled 
+log-k estimate and a bias-reduced estimate.  
+
+Two other ado files must be included for this routine to run. The 
+first is ^mcqlik.ado^, the penalized likelihood function that keeps 
+the parameter estimates in bounds.  The second is ^mcq2long.ado^, 
+which transforms the data to long format, and associates question 
+numbers with reward values.
+
+Please note that this is a first release.  Please contact me with errors.
+
+	^response_varlist^	is required. It lists the names of the 
+				variables containing the responses to 
+				the MCQ in standard order.  Data must 
+				be 0s and 1s representing the choice 
+				of the delayed reward.  Data must also 
+				be in wide format, with one line of 
+				data per subject.  Variable naming 
+				should conform to the following 
+				convention: use a common root with the
+				question number 1, 2, .. 27, on the 
+				end of the name. 
+
+Options
+------------------------------------------------------------
+
+	^id^		is required.  It contains the name of the 
+			subject identifier.
+
+	^saving^ 	is required.  It is the name of an output 
+			file for saving results.
+
+	^nojk^		is optional.  By default, the jackknife 
+			procedure is run.  nojk prevents this.
+
+Examples
+---------
+
+mcqscore choice1-choice27, id(subject) 
+saving(d:\discounting\my_outfile) nojk
+
+mcqscore c1 c2 c3 c4 c5 c6 c7 c8 c9 c10 c11 c12 c13 c14 c15 c16 
+c17 c18 c19 c20 c21 c22 c23 c24 c25 c26 c27, id(idname) 
+saving(d:\mcq\outputfile)
+                     
+
+References
+-----------
+
+Wileyto, E.P., Audrain-McGovern, J., Epstein, L.H., & Lerman, 
+	C. (In Press) Using Logistic Regression to Estimate Delay-
+	Discounting Functions. Behavior Research Methods, 
+	Instrumentation, & Computers.
+
+Kirby, K.N., Petry, N.M., & Bickel, W.K. (1999) Heroin addicts 
+	have higher discount rates for delayed rewards than non-
+	drug-using controls. Journal of Experimental Psychology: 
+	General, 128, 78-87.
+
+
+
+Author
+------
+
+E. Paul Wileyto, Ph.D.
+Assistant Professor of Biostatistics
+Tobacco Use Research Center
+School of Medicine, U. of Pennsylvania
+3535 Market Street, Suite 4100
+Philadelphia, PA  19104-6068
+
+215-746-7147
+Fax: 215-746-7140
+epw@mail.med.upenn.edu

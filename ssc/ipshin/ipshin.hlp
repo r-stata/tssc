@@ -1,0 +1,83 @@
+{smcl}
+{* 15jul2001}{...}
+{hline}
+help for {hi:ipshin}{right:(StataList distribution 01 August 2001)}
+{hline}
+
+{title:Im-Pesaran-Shin panel unit root test}
+
+{p 8 14}{cmd:ipshin} {it:varname} 
+[{cmd:if} {it:exp}] [{cmd:in} {it:range}] {cmd:,lags({it:numlist})} [
+{cmdab:t:rend} {cmdab:nod:emean }]
+
+{p}{cmd:ipshin} is for use with panel data.  You must {cmd:tsset} your
+data before using {cmd:ipshin}, using the panel form of {cmd:tsset}; see help {help tsset}.
+
+{p} {it:varname} may contain time-series operators; see help {help varlist}.
+
+{p} Users of Stata 11+ should use the official {cmd:xtunitroot ips} command.
+
+{title:Description}
+
+ {p}{cmd:ipshin} estimates the t-test for unit roots in heterogeneous panels developed by Im,
+ Pesaran and Shin (IPS, 2003).  It allows for individual effects, time trends, and common time effects.
+ Based on the mean of the individual Dickey-Fuller t-statistics  of each unit in the panel, the IPS test 
+ assumes that all series are non-stationary under the null hypothesis. Lags of the dependent variable may be introduced to allow for serial correlation in 
+ the errors.  The exact critical values of the t-bar statistic are given in IPS. After transformation by factors
+ provided in the paper, the W[t-bar] statistic (4.10) is distributed standard normal under the null
+ hypothesis of nonstationarity. (Note that in the working paper version, this statistic was known as Psi-bar (5.3)). The tables in the paper limit the calculation of this statistic to a maximum of 8 lags in any series.
+
+ {p} Unlike the Levin and Lin (1993) test, which assumes that all series are stationary under 
+ the alternative, IPS is consistent under the alternative that only a fraction of the series
+ are stationary. 
+
+
+{title:Options}
+
+{p 0 4}{cmd:lags} must be specified, and may take on any non-negative value. If a single
+value is provided, that lag length is used for all individuals. If a list of lags is 
+provided (perhaps with a local macro), its length must match the number of individuals
+in the panel.
+
+{p 0 4}{cmd:trend} includes a time trend in the estimated equation.
+
+{p 0 4}{cmd:nodemean} omits the elimination of common time effects.
+
+
+{title:Examples}
+
+{p 8 12}{inp:.} {stata "use http://fmwww.bc.edu/ec-p/data/hayashi/sheston91.dta,clear":use http://fmwww.bc.edu/ec-p/data/hayashi/sheston91.dta,clear}
+
+{p 8 12}{inp:. ipshin rgdppc if country<11, lag(2)}
+
+{p 8 12}{inp:. ipshin rgdppc if country<11, lag(2 2 2 3 3 3 4 4 4 4) nodemean}
+
+{p 8 12}{inp:. ipshin D.rgdppc if country<11, lag(2) trend}
+
+{title:References}
+
+Banerjee, Anindya. Panel Data Unit Roots and Cointegration: An Overview.
+Oxford Bulletin of Economics and Statistics, Special Issue, 607-629, 1999.
+
+Kyung So Im, M. Hashem Pesaran, Yongcheol Shin, Testing for Unit Roots in Heterogeneous
+Panels. Journal of Econometrics, 2003, 115, 53-74. Earlier version available as 
+unpublished Working Paper, Dept. of Applied Economics, University of Cambridge, 
+Dec. 1997 (http://www.econ.cam.ac.uk/faculty/pesaran/lm.pdf)
+
+Levin, Andrew and Lin, Chien-Fu. Unit Root Tests in Panel Data:
+New Results, University of California at San Diego Discussion Paper No. 93-56, 
+1993.
+
+{title:Acknowledgements}
+
+We thank Gene Liang, Herbert BrŸcker and Piotr Lewandowski for pointing out errors in the routine.
+
+{title:Authors}
+
+Fabian Bornhorst, European University Institute, Italy, Fabian.Bornhorst@iue.it
+Christopher F Baum, Boston College, USA, baum@bc.edu
+
+
+{title:Also see}
+
+{p 0 19}On-line:  help for {help dfuller}, {help madfuller} (if installed), {help levinlin}  (if installed)  {p_end}

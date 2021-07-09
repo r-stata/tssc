@@ -1,0 +1,54 @@
+.-
+help for ^ctabstat^                                        
+.-
+
+Display table of summary statistics
+-----------------------------------
+
+   ^ctabstat^ varlist [^if^ exp] [^in^ range] [weight] [^, s^tatistics^(^statname [...]^)^
+                    ^by(^varname^)^ ^not^otal ^m^issing ^sep^ 
+		    ^c^olumns^(v^ariables|^s^tatistics^)^ ^lo^ngstub ^la^belwidth^(^#^)^ 
+		    ^f^ormat[^(^%fmt^)^] ^case^wise ^save^ ]
+
+^aweights^ and ^fweights^ are allowed; see @help weights@.
+
+Description
+-----------
+
+^ctabstat^ is a wrapper program yielding a minor variation on ^tabstat^ 
+with two small features, as detailed below. 
+
+^tabstat^ (added to Stata 29 June 2000) must be installed. For most 
+features, see help on @tabstat@. 
+
+
+Options
+-------
+
+^sep^ specifies that a separator line between the ^by()^ categories be 
+    displayed. The default is no separator, the reverse of ^tabstat^. 
+
+^columns(variables^|^statistics)^ specifies whether variables or statistics
+    are displayed in the columns of the table.  ^columns(statistics)^ is the 
+    default, the reverse of ^tabstat^.
+
+
+Examples
+--------
+
+   . ^ctabstat pric weig trun disp, by(foreign) stats(min mean max)^
+
+
+Author
+------
+
+	Nicholas J. Cox
+        University of Durham, U.K.
+        email: n.j.cox@@durham.ac.uk
+
+
+Also see
+--------
+
+On-line: @tabstat@     
+

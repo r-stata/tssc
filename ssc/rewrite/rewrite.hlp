@@ -1,0 +1,100 @@
+{smcl}
+{* 22jul2009}{...}
+{hline}
+help for {hi:rewrite}{right:(Rosa Gini)}
+{hline}
+
+{title:Rewrite text files from disk performing macro substitutions}
+
+
+{title:Syntax}
+
+{p 8 13 2}
+{cmd:rewrite} {it:modelfile} {cmd: using} {it:finalfile} {cmd:,} {c -(}{cmd:replace}|{cmd:append}{c )-}
+[ {cmd:tex} {cmd:html} ]
+
+{phang}
+{it:modelfile} must be the name of a text file.
+
+
+
+{title:Description}
+
+{pstd}
+{cmd: rewrite} copies {it:modelfile} to {it:finalfile}. The difference with {cmd: copy} 
+is that {it:modelfile} is not copied verbatim: {cmd: rewrite} performs 
+macro substitution on {it:modelfile} using the 
+values of global macros that are valid for 
+the current Stata session. {cmd: rewrite} automatizes the tip contained in (Gini 2008). 
+As an option, html or LaTeX 
+special characters are also substituted. {p_end}
+
+
+{title:Options}
+
+{phang}
+{opt replace} specifies that {it:finalfile} be replaced if 
+it already exists, {opt append} specifies that the rewritten file will be appended 
+to {it:finalfile}. If {it:finalfile} doesn't exist, either option will create it.
+{p_end}
+
+{phang}
+{opt tex} causes {cmd: rewrite} to substitute to some character that LaTeX considers 
+special their corresponding LaTeX commands. {opt html} does the same thing for html.{p_end}
+
+
+
+{title:Remarks}
+
+
+{pstd}
+{cmd: rewrite} is mainly thought of as an instrument to manipulate 
+code of various programming languages ({cmd:sql}, {cmd: html}, {cmd: tex}): the document in {it:modelfile} 
+is a piece of language code containing some global macros. Before executing 
+the code {cmd: rewrite} substitutes the active values of the global macros, 
+so that {it:finalfile} contains valid programming language code and can 
+be executed-possibly from within the same {it:Stata} session by means of the {cmd:shell} command. A very suitable programming language for this procedure 
+is {it:Stata}'s language itself.{p_end}
+
+{pstd}
+A second use is for generating small texts in {cmd: html} and {cmd: tex} starting form the same text file.{p_end}
+
+{title:Examples}
+
+{phang2}{cmd:. rewrite "my document" using "rewritten document", replace}{p_end}
+
+{phang2}{cmd:. global year=2007}{break}
+{cmd:. rewrite do_file_with_some_macros.txt using finalfile.do, replace}{break}
+{cmd:. do finalfile.do}{break}
+
+{phang2}{cmd:. global year=2007}{break}
+{cmd:. rewrite headertex.txt using text.tex, replace}{break}
+{cmd:. rewrite text.txt using text.tex, tex append}{break}
+{cmd:. rewrite foottex.txt using text.tex, append}{break}
+{cmd:. shell pdflatex text.tex}{break}
+{cmd:. shell acroread text.pdf}{break}
+
+{phang2}{cmd:. forvalues year=2000/2007{c -(}}{break}
+{cmd:. global year=`year'}{break}
+{cmd:. rewrite code_with_macros.sql using query.sql, append}{break}
+{cmd:. {c )-}}{break}
+{cmd:. shell sqlplus {it:username}/{it:psswd}@{it:servername} @query.sql}{p_end}
+
+
+
+{title:Author}
+
+Rosa Gini, Agenzia regionale di sanità della Toscana, Italy.
+Email: {browse "mailto:rosa.gini@arsanita.toscana.it":rosa.gini@arsanita.toscana.it}
+
+{title:References}
+
+{phang}
+Gini, R.  2008. 
+Stata tip 56: Writing parameterized text files.
+{it:The Stata Journal} 8(1): 134-136.
+
+
+
+
+

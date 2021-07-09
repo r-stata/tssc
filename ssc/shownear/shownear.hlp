@@ -1,0 +1,82 @@
+.-
+help for ^shownear^
+.-
+
+Show nearby values of numeric variable 
+--------------------------------------
+
+    ^shownear^ numvar #_value [#_tolerance] [^if^ exp] [^in^ range] [ , ^sort^ ]
+
+Description
+-----------
+
+^shownear^ lists any values of numeric variable numvar that are `near' 
+#_value.
+
+By default, with no specified #_tolerance, `near' means within 1% of #_value. 
+
+#_tolerance may be specified as a positive number in one of two ways: 
+
+1. as a percent e.g. ^5%^. The ^%^ sign should follow the number immediately, 
+with no intervening spaces. 
+
+2. as a number e.g. ^0.1^. This specifies an interval of #_tolerance 
+centred on #_value.
+
+
+Remarks 
+-------
+
+^shownear^ is a convenience command, as everything it can achieve 
+can also be achieved in at most two commands with ^list^ and ^sort^. 
+
+For example, the minimal 
+
+	^shownear^ numvar #_value       
+	
+is equivalent to, for #_value > 0,  
+
+	^list^ numvar ^if^ numvar ^<=^ (#_value ^* 1.01) &^ 
+	                       numvar ^>= (^#_value ^* 0.99)^ 
+
+with a generalisation to cover #_value < 0 and #_tolerance given 
+as a percent. 
+
+
+Options
+-------
+
+^sort^ specifies that observations should be sorted on numvar so that 
+nearby values are put in contiguous observations. 
+
+
+Examples
+--------
+
+    values within 1% of 21:  
+    . ^shownear mpg 21^          
+    
+    values within 5% of 21: 
+    . ^shownear mpg 21 5%^
+   
+    values in [20,22]:  
+    . ^shownear mpg 21 2^
+       
+    . ^shownear mpg 21 2 if foreign^
+    
+    . ^shownear mpg 21 2, sort^
+
+
+Author
+------
+
+         Nicholas J. Cox, University of Durham, U.K.
+         n.j.cox@@durham.ac.uk
+
+
+Also see
+--------
+
+On-line: help for @list@
+
+

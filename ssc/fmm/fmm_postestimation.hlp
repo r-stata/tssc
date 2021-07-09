@@ -1,0 +1,149 @@
+{smcl}
+{* documented: June 12, 2007}{...}
+{* revised: February 12, 2012}{...}
+{cmd:help fmm postestimation} {right:also see:  {helpb fmm} }
+{hline}
+
+{title:Title}
+
+{hi:fmm postestimation} {hline 2} Postestimation tools for {cmd:fmm}
+
+
+{title:Description}
+
+{pstd}
+The following postestimation commands are available for {opt fmm}:
+
+{synoptset 11}{...}
+{p2coldent :command}description{p_end}
+{synoptline}
+INCLUDE help post_estat
+INCLUDE help post_estimates
+INCLUDE help post_lincom
+INCLUDE help post_lrtest
+INCLUDE help post_margins
+INCLUDE help post_nlcom
+{synopt :{helpb fmm postestimation##predict:predict}}predictions including component 
+probabilities{p_end}
+INCLUDE help post_test
+INCLUDE help post_testnl
+{synoptline}
+{p2colreset}{...}
+
+
+{marker predict}{...}
+{title:Syntax for predict}
+
+{p 8 16 2}
+{cmd:predict} {dtype} {newvar} {ifin} [{cmd:,} {it:statistic}
+{opt eq:uation(component#)}]
+
+{synoptset 11 tabbed}{...}
+{synopthdr :statistic}
+{synoptline}
+{syntab :Main}
+{synopt :{opt me:an}}predicted mean; the default{p_end}
+{synopt :{opt pri:or}}prior component probability{p_end}
+{synopt :{opt pos:terior}}posterior component probability{p_end}
+{synoptline}
+{p2colreset}{...}
+{p 4 6 2}
+Option {opt eq:uation(component#)} is required for {opt pri:or} and {opt pos:terior}.  
+It is also required for {opt me:an} if predicted within-component means are desired.
+{p_end}
+
+INCLUDE help esample
+
+
+{title:Options for predict}
+
+{phang}
+{opt me:an}, the default, calculates the predicted mean.
+
+{pmore}
+To obtain within component means, specify the {opt eq:uation(component#)} option.
+
+{phang}
+{opt pri:or} calculates the prior component probabilities.  With {opt prior}, 
+{opt eq:uation(component#)} must also be specified.
+
+{phang}
+{opt pos:terior} calculates the posterior component probabilities.  With 
+{opt posterior}, {opt eq:uation(component#)} must also be specified.
+
+
+{title:Marginal effects}
+
+{pstd}
+Marginal effects can be calculated separately for the overall conditional mean 
+as well as for within-component means, prior and posterior probabilities.  To calculate 
+marginal effects for within-component means, prior and posterior probabilities, run 
+{cmd:margins} separately for each component, as shown in the examples below. Note that {cmd:fmm} has not been updated to accommodate factor variables.
+
+
+{title:Examples}
+
+{pstd}Mixture of normals
+
+{phang}{stata "webuse womenwk, clear" : . webuse womenwk, clear}
+
+{phang}{stata "fmm wagefull educ age married, mix(normal) comp(2)" : . fmm wagefull educ age married, mix(normal) comp(2)}
+
+{phang}{stata "predict wfhat" : . predict wfhat}
+
+{phang}{stata "predict wfhat1, eq(component1)" : . predict wfhat1, eq(component1)}
+
+{phang}{stata "predict wfhat2, eq(component2)" : . predict wfhat2, eq(component2)}
+
+{phang}{stata "predict wfhatpri, prior eq(component1)" : . predict wfhatpri, prior eq(component1)}
+
+{phang}{stata "predict wfhatpos, posterior eq(component1)" : . predict wfhatpos, posterior eq(component1)}
+
+{phang}{stata "sum wagefull wfhat*" : . sum wagefull wfhat*}
+
+{phang}{stata "drop wfhat*" : . drop wfhat*}
+
+
+{pstd}Mixture of Negative Binomials (Type 2)
+
+{phang}{stata "webuse medpar, clear" : . webuse medpar, clear}
+
+{phang}{stata "gen los0 = los - 1" : . gen los0 = los - 1}
+
+{phang}{stata "fmm los0 died hmo type2-type3, mix(negbin2) comp(2)" : . fmm exlos died hmo type2-type3, mix(negbin2) comp(2) comp(2)}
+
+{phang}{stata "predict wfhat" : . predict wfhat}
+
+{phang}{stata "predict l0hat1, eq(component1)" : . predict l0hat1, eq(component1)}
+
+{phang}{stata "predict l0hat2, eq(component2)" : . predict l0hat2, eq(component2)}
+
+{phang}{stata "predict l0hatpri, prior eq(component1)" : . predict l0hatpri, prior eq(component1)}
+
+{phang}{stata "predict l0hatpos, posterior eq(component1)" : . predict l0hatpos, posterior eq(component1)}
+
+{phang}{stata "sum los0 l0hat*" : . sum los0 l0hat*}
+
+{phang}{stata "drop l0hat*" : . drop l0hat*}
+
+{phang}{stata "margins, dydx(*) predict(eq(component1))" : . margins, dydx(*) predict(eq(component1))}
+
+{phang}{stata "margins, dydx(*) predict(eq(component2))" : . margins, dydx(*) predict(eq(component2))}
+
+{phang}{stata "margins, dydx(*)" : . margins, dydx(*)}
+
+
+{title:Also see}
+
+{psee}
+{helpb fmm};
+{helpb estimates},
+{helpb lincom},
+{helpb lrtest},
+{helpb margins},
+{helpb nlcom},
+{helpb predictnl},
+{helpb suest},
+{helpb test},
+{helpb testnl}
+{p_end}

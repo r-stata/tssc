@@ -1,0 +1,76 @@
+.-
+help for ^eformat^                                            Version: 04/02/2002 
+.-
+
+Generates new format for variables defined.
+-------------------------------------------
+
+^eformat^ varlist, [^vn^ ^l^ab ^v^al ^d^ate^(^string^)^ ^n^ewdec]
+
+^Description^
+^-----------^
+Generates new formats for the variables in the ^varlist^, based on 
+   - the variable type
+   - the current format
+   - the range of values
+   - the maximum length of a label attached to a value
+   - and the length of the variable name.
+
+^Options^
+^-------^
+ ^vn^	requests width minimum as long as varname
+ ^val^  requests width sufficient for display of values (int, float)
+ ^lab^  requests width sufficient for longest label if labelled variable
+ ^newdec^ requests new calculation of decimals for float variables with current
+        number of decimals >0. If not specified the current number of decimals, if >0, is kept. 
+ ^date()^ string a date-format to be given to all vars with already a %d format. 
+
+The varlist will be ^compressed^ before changing any formats. 
+
+The width of the format of a variable will ^default^ be based on the range of
+values of the variable. However, if ^lab^ is specified, and the variable has 
+a value label attached, the width will be determined by the length of the 
+longest label associated with one of the values of the variable. In  that case
+the value of the variable will also be taken into account if option ^val^ is
+specified. 
+
+The format of variables with a date-format attached (^elapsed dates^) will be
+left unchanged, apart that it will be made longer if the variable name 
+(or a label) would require it. With the option ^date^(date-format), all
+date-variables may be given the same date format. An invalid date format
+in date(date-format) will be ignored. 
+
+^String^ variables will be given format %ws, with w=length of largest non-empty 
+string.
+
+For variables of type ^integer, byte or long^ (after compression) the decimal 
+part of the format will be 0. The width will be sufficient to display the 
+largest value as an integer.
+
+The format of variables of type ^float or double^ (after compression), if based 
+on the values, as usually will be the case since in general no value label 
+will be attached to such a variable, will be either  f- or g-format, 
+depending on the range of values. The number of decimals will be the same as 
+the current number unless the current number is 0 or if option ^newdec^ is 
+specified. The number of decimals, if recalculated, is based primarily on
+the number required to display the first non-zero decimal of the smallest 
+non integer absolute value. If all values are between -1 and +1 the number
+of decimals is at least 2.
+
+^Examples^
+^--------^
+
+ . ^eformat _all, vn lab val date(%dD/N/Y)^
+ . ^eformat _all, date(%d)^
+
+^Other ado files required:^ 	ljust, nel
+^-------------------------^
+ 
+^Author:^
+^-------^ 
+Wim van Putten
+Erasmus MC - Daniel den Hoed Cancer Center
+Department of Statistics 
+The Netherlands
+e-mail:	w.vanputten@@erasmusmc.nl 
+

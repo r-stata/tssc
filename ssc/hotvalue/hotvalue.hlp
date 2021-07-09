@@ -1,0 +1,72 @@
+
+{smcl}
+{hline}
+
+{title:hotvalue - v1.0 - 04 Oct 2008}
+
+    {hi:Generate scales with missing values conditionally imputed}
+
+{title:Syntax}
+
+{p 8 17 2}
+{cmd:hotvalue} {varlist} {ifin} {cmd:,}  {it:options}
+
+{title:Options}
+{p 4 8 2}{cmd:Scale(newvarname)} Required: the variable to contain the resultant summated rating scale
+
+{p 4 8 2}{cmd:MIssing(#)} The percentage of missing values allowed for imputation (default 40)
+
+{p 4 8 2}{cmd:CUToff(#)} The maximum probability from the means test before reverting to listwise deletion (default 0.05)
+
+{p 4 8 2}{cmd:ttest(#)} The type of equality of means test (default 2).  See {help ttest:ttest} command.
+{break}         If 0, no test for equality of means is to be performed.
+{break}         If 1, a test for equality of the mean of the scale with imputed values versus the scale made from complete cases.
+{break}         If 2, a test for equality of the imputed values versus the complete cases.
+
+{p 4 8 2}{cmd:sdtest(#)} The type of equality of standard deviation test (default 1).  See {help sdtest:sdtest} command.
+{break}         If 0, no test for equality of standard deviations is to be performed.
+{break}         If 1, test for equality of the standard deviation of the scale with imputed values versus the scale made from complete cases.
+{break}         If 2, test for equality of the imputed values versus the complete cases.
+
+{p 4 8 2}{cmd:method(string)} The procedure for imputing missing values.  Must be one of:
+{break}         CM Corrected Item Row-Mean imputation (default)
+{break}         PM Person Mean (Row-Mean) imputation
+{break}         LW No imputation, complete cases only (listwise deletion of missing values).
+
+{p 4 8 2}{cmd:int} Indicates that imputed values should be rounded to the nearest integer.  
+         Statistical rounding is used (eg. 1.75 has a 75% chance of being 2 and a 25% chance of being 1).
+
+{p 4 8 2}{cmd:err} Add an error term to the imputed values, to try and retain similar variance.
+ 
+
+{title:Description}
+
+{p 4 6 2}{cmd:hotvalue} constructs a summated rating scale with conditional imputation of missing values.
+
+{p 4 6 2}The variables (or items) in {varlist} are summed to create a summated rating scale.
+
+Missing values are handled according to the conditions specified in the options:
+{p 4 6 2}1) For complete cases with no missing values on any of the variables (or items) the values are summed.
+{p 4 6 2}2) If the criteria for percentage of missing items and equality tests are met, missing values will be imputed using the method specified.  In this way, the scale is constructed using imputation only if it meets the standards specified.
+
+{smcl}
+{p 4 6 2}This method should not be confused with the mean substitution method of imputing missing values, which can severely distort model results.  The imputation here is row-wise (or case-wise).  Classical measurement theory deems all items in a summated rating scale as measures of the same thing.  The items are combined to provide a more reliable measure of the concept.  By imputing row-wise and placing limits on the imputation, the pitfalls of mean substitution can be avoided while increasing the cases available for analysis.
+{p_end}
+
+{title: Example}
+
+
+{cmd:sysuse} auto
+{cmd:gen} fullscale=mpg+trunk+turn
+{cmd:replace} mpg=. in 39/40
+{cmd:gen} lwdscale=mpg+trunk+turn
+{cmd:hotvalue} mpg trunk turn, scale(scale1)
+{cmd:hotvalue} mpg trunk turn, scale(scale2)
+{cmd:pwcorr} fullscale lwdscale scale1 scale2, obs{break}{break}
+
+{p 4 6 2}Coen A. Bernaards and Klaas Sijtsma (2000). Influence of Imputation and EM Methods on Factor Analysis when Item Nonresponse in Questionnaire Data is Nonignorable. Multivariate Behavioral Research, 35 (3), 321-364.
+         
+{title:Author}
+Paul Millar
+pmillar@brocku.ca
+

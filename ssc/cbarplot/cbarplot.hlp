@@ -1,0 +1,169 @@
+{smcl}
+{* 13oct2011}{...}
+{hline}
+help for {hi:cbarplot}
+{hline}
+
+{title:Centred bar plots of absolute or relative frequencies} 
+
+{p 8 17 2} 
+{cmd:cbarplot} 
+{it:yvar} [{it:xvar}] 
+[{it:weight}]
+[{cmd:if} {it:exp}] 
+[{cmd:in} {it:range}]
+[ 
+{cmd:,}
+[
+{cmdab:perc:ent}
+{cmdab:perc:ent(}{it:varname}{cmd:)}
+]
+{cmd:yasis}
+{cmd:xasis}
+{cmd:format(}{it:format}{cmd:)}
+{cmdab:vert:ical} 
+{cmd:by(}{help by_option}{cmd:)} 
+{cmdab:rbar:opts(}{it:rbar_options}{cmd:)} 
+{it:scatter_options}
+] 
+
+
+{title:Description}
+
+{p 4 4 2}
+{cmd:cbarplot} shows absolute or relative frequencies of {it:yvar} as
+centred bar plots. If {it:xvar} is specified, a bar plot is shown for
+each distinct value of {it:xvar}. 
+
+{p 4 4 2}
+By default, each variable is mapped on the fly to an integer variable
+with values 1 up, but with value labels reflecting the input data, and
+each bar plot has horizontal bars with absolute or relative frequencies
+shown as marker labels. 
+
+{p 4 4 2}
+{cmd:fweight}s, {cmd:aweight}s, {cmd:iweight}s and {cmd:pweight}s may be
+specified. 
+
+
+{title:Remarks} 
+
+{p 4 4 2}
+Centred bar plots are often used in archaeology to show frequencies of
+different kinds of artefact at different levels or ages, sometimes under
+the title of battleship curves or battleship diagrams (e.g. Doran and
+Hodson 1975, pp.278{c -}280; Renfrew and Bahn 1991, pp.107{c -}108).
+
+{p 4 4 2}
+This command will not draw e.g. population pyramids in which each
+age-group is subdivided by sex. See help on {help twoway_bar}. 
+
+
+{title:Options} 
+
+{p 4 8 2}
+{cmd:percent} specifies that frequencies are to be shown as percents of
+the total. 
+
+{p 4 8 2}
+{cmd:percent(}{it:varlist}{cmd:)} specifies that frequencies are to be
+shown as percents of the totals for the categories of {it:varlist}.
+{it:varlist} may only include one or more of {it:yvar}, {it:xvar} or
+a variable specified in the {cmd:by()} option.  
+
+{p 8 8 2}
+These two percent options may not be combined. 
+
+{p 4 8 2}
+{cmd:yasis} specifies that the values of {it:yvar} should be treated as
+is.  Usually, but not necessarily, {it:yvar} should be discrete or already binned in
+some sense.  Either way, the default bar width of 0.95 may now need
+changing. 
+
+{p 4 8 2}
+{cmd:xasis} specifies that the values of {it:xvar} should be treated as
+is.  Usually, but not necessarily, {it:xvar} should be discrete or already binned in
+some sense.  Either way, the default bar width of 0.95 may now need
+changing. 
+
+{p 4 8 2}
+{cmd:format(}{it:format}{cmd:)} specifies a format for the marker
+labels. By default the format is %2.1f, unless all values in the marker
+labels are integers in
+which case the default is %2.0f. See help on {help format} if desired. 
+
+{p 4 8 2}
+{cmd:by()} specifies that different graphs be shown for distinct values
+of the variable specified. See help on {help by_option} for more detail. 
+
+{p 4 8 2}
+{cmd:vertical} specifies that bars are to be drawn vertically. Changing 
+from the default horizontal to vertical will usually imply changing the
+order of {it:yvar} and {it:xvar}. 
+
+{p 4 8 2}
+{cmd:rbaropts(}{it:rbar_options}{cmd:)} are options of {help twoway rbar}.  
+The defaults include {cmd:blcolor(blue) bfcolor(none) barw(0.95)}. 
+
+{p 4 8 2}
+{it:scatter_options} are options of {help twoway scatter}.  The defaults
+include {cmd:mlabpos(0) mlabcolor(blue)}. 
+Note that setting {cmd:mlabcolor(bg)} would blank out the marker labels.  
+
+
+{title:Examples}
+
+{p 4 4 2}(data from Doran and Hodson 1975, p.259){p_end}
+
+{p 4 8 2}{cmd:. clear }{p_end}
+{p 4 8 2}{cmd:. input levels freqcores freqblanks freqtools }{p_end}
+{p 4 8 2}{cmd: 25 21 32 70}{p_end}
+{p 4 8 2}{cmd: 24 36 52 115}{p_end}
+{p 4 8 2}{cmd: 23 126 650 549}{p_end}
+{p 4 8 2}{cmd: 22 159 2342 1633}{p_end}
+{p 4 8 2}{cmd: 21 75 487 511}{p_end}
+{p 4 8 2}{cmd: 20 176 1090 912}{p_end}
+{p 4 8 2}{cmd: 19 132 713 578}{p_end}
+{p 4 8 2}{cmd: 18 46 374 266 }{p_end}
+{p 4 8 2}{cmd: 17 550 6182 1541}{p_end}
+{p 4 8 2}{cmd: 16 76 846 349 }{p_end}
+{p 4 8 2}{cmd: 15 17 182 51 }{p_end}
+{p 4 8 2}{cmd: 14 4 51 14 }{p_end}
+{p 4 8 2}{cmd: 13 29 228 130}{p_end}
+{p 4 8 2}{cmd: 12 135 2227 729}{p_end}
+{p 4 8 2}{cmd:. end }{p_end}
+{p 4 8 2}{cmd:. reshape long freq, i(levels) j(kind) string }{p_end}
+{p 4 8 2}{cmd:. cbarplot levels kind [fw=freq]}{p_end}
+{p 4 8 2}{cmd:. cbarplot levels kind [fw=freq], percent(levels)}{p_end}
+{p 4 8 2}{cmd:. cbarplot levels kind [fw=freq], percent(levels) mlabsize(*.6)}{p_end}
+{p 4 8 2}{cmd:. cbarplot levels kind [fw=freq], percent(levels) mlabcolor(bg) rbaropts(bfcolor(blue))}{p_end}
+{p 4 8 2}{cmd:. cbarplot levels [fw=freq],  by(kind, row(1)) percent(levels) mlabcolor(bg) rbaropts(bfcolor(blue))}{p_end}
+{p 4 8 2}{cmd:. cbarplot levels [fw=freq],  by(kind, row(1)) percent(levels) mlabcolor(bg) rbaropts(bfcolor(blue)) ysc(reverse)}{p_end}
+
+
+{title:Author}
+
+{p 4 4 2}Nicholas J. Cox, Durham University{break} 
+         n.j.cox@durham.ac.uk
+
+	 
+{title:Acknowledgments} 
+
+{p 4 4 2}Philip B. Ender drew this kind of graph to my attention and provided helpful comments. 
+
+
+{title:References} 
+
+{p 4 8 2}Doran, J.E. and Hodson, F.R. 1975. 
+{it:Mathematics and computers in archaeology.}
+Edinburgh: Edinburgh University Press. 
+
+{p 4 8 2}Renfrew, C. and Bahn, P. 1991. 
+{it:Archaeology: Theories, methods and practice.} 
+London: Thames and Hudson. 
+
+
+{title:Also see}
+
+{p 4 8 2}On-line:  help for {help twoway rbar}; {help catplot} (if installed); {help tabplot} (if installed)
+

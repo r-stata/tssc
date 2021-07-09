@@ -1,0 +1,411 @@
+{smcl}
+{hline}
+help for {hi:boost}{right:(SJ5-3: st0087)}
+{hline}
+{title:Title}
+
+{p2colset 5 23 25 2}{...}
+{p2col :{cmd:Boosting (Boosted Regressions)}}
+{p2colreset}{...}
+
+{marker syntax}{...}
+{title:Syntax}
+{p 8 14 2}
+{cmd:boost} 
+{it:varlist}
+{ifin} {cmd:,} {cmdab:dist:ribution(string)} [{it:options}]
+
+{synoptset 20 tabbed}{...}
+{synopthdr}
+{synoptline}
+{syntab:Model}
+{synopt :{opt dist:ribution(str)}}possible distributions are normal,logistic(or bernoulli), poisson, and multinomial.{p_end}
+{synopt :{opt train:fraction(real)}}percentage of data to be used as training data.By default trainfraction(0.8).{p_end}
+{synopt :{opt maxiter(int)}}maximum number of iterations.  By default maxiter(20000).{p_end}
+
+{syntab:Tuning parameters}
+{synopt :{opt shrink(real)}}specifies the shrinkage factor. By default shrink(0.01).{p_end}
+{synopt :{opt bag(real)}}specifies the fraction of training observations that is used to fit an individual tree. By default bag(0.5).{p_end}
+{synopt :{opt inter:action(int)}}specifies the maximum number of interactions allowed. By default interaction(5).{p_end}
+
+{syntab:Other}
+{synopt :{opt in:fluence}}displays the percentage of variation explained.{p_end}
+{synopt :{opt pred:ict(varname)}}predicts and saves the predictions in the variable varname.{p_end}
+{synopt :{opt seed(int)}}specifies the random number seed to generate the same sequence of random numbers. By default seed(0).{p_end}
+{synoptline}
+
+{title:Predict Syntax}
+
+{phang}
+{cmd:predict} {stub*} {ifin} [{cmd:,} {it:options} ]
+
+{phang}
+A name stub can be specified and the * is replaced with numbers 1,2,…, one for each category.
+
+{synoptset 20 tabbed}{...}
+{synopthdr}
+{synoptline}
+{synopt :{opt class}} if {cmd:distribution(bernoulli)}, the predictions are rounded to 0 and 1. 
+If {cmd:distribution(multinomial)} there is no effect;
+ both class predictions and probabilities are supplied by default. {p_end}
+
+
+
+{title:Post Estimation Command Syntax}
+{p 8 16 2}
+{cmd:influence_delete} [{cmd:,} {it:options}]
+
+{p 8 16 2}
+{cmd:influence_barchart} [{cmd:,} {it:options}]
+
+
+{title:Description}
+
+{p 4 4 2}
+{cmd:boost} implements the MART boosting algorithm described in Hastie et al. (2001).
+{cmd:boost} accommodates Gaussian (normal), logistic, Poisson and multinomial regression.
+The algorithm is implemented as a C++ plugin 
+and requires Stata 8.1 or higher to run.
+
+{p 4 4 2} 
+By default the model is fit using the first 80% of the data (training data). This 
+percentage can be changed through the option {cmd:trainfraction()}. To 
+ensure that the training data are random 80% sort the data in random order
+ before running boost. 
+
+{p 4 4 2}
+{cmd:boost} determines the number of iterations that maximizes the likelihood,
+or, equivalently, the pseudo R squared. The pseudo-R-squared is defined as R2=1-L1/L0 where L1 and L0 are the log likelihood 
+of the full model and intercept-only model, respectively.
+Unlike the R2 given in {cmd:regress}, the pseudo R2 is an out-of-sample statistic. 
+Out-of-sample R2's tend to be lower than in-sample-R2's. 
+
+
+{marker options}{...}
+{title:Options}
+
+{dlgtab:Model}
+
+{phang}
+{opt dist:ribution(str)} Possible distributions are 
+{cmd:normal},{cmd:logistic}(or {cmd:bernoulli}), {cmd:poisson}, and {cmd:multinomial}. The number of categories in 
+{cmd:multinomial} is not limited.
+
+{phang}
+{opt train:fraction(real)} specifies the percentage of data to be used 
+as training data.  The remainder, the test data
+ is used to evaluate the best number of iterations.
+By default this value is {cmd:trainfraction(0.8)}.  
+
+{phang}
+{opt maxiter(int)} The algorithm stops either when {cmd:bestiter} has not 
+been reset for 100 iterations or when {cmd:maxiter} is reached.  The computing time
+is the same whether {cmd:maxiter}={cmd:bestiter}+100 or {cmd:maxiter}={cmd:bestiter}+100,000.
+When {cmd:bestiter} is too close to {cmd:maxiter} the maximum likelihood iteration may
+be larger than {cmd:maxiter}. In that case  it is useful to rerun the model
+with a larger value for {cmd:maxiter}.
+When {cmd:trainfraction(1.0)} all {cmd:maxiter} observations are used for prediction
+({cmd:bestiter} is missing because it is computed on a test data set).
+
+{dlgtab:Tuning parameters}
+
+{phang}
+{opt shrink(real)} specifies the shrinkage factor. 
+{cmd: shrink(1)} corresponds to no shrinkage. 
+As a general rule of thumb, reducing the value for  {cmd:shrink}
+requires an increase in the value of {cmd: maxiter} to achieve a comparable 
+cross validation R2.
+By default {cmd:shrink(0.01)} . 
+
+{phang}
+{opt bag(real)} Specifies the fraction of training observations that is used to fit an 
+individual tree. {cmd:bag(0.5)}  means that half the observations are 
+used for building each tree. To use all observations specify {cmd: bag(1.0)}.
+By default {cmd:bag(0.5)}. 
+
+{phang}
+{opt inter:action(int)} specifies the maximum number of interactions allowed.
+{cmd:interaction(1)} means that only main effects are fit, {cmd:interaction(2)} means that main 
+effect and two way interactions are fitted, and so forth. 
+The number of interactions equals the number of terminal nodes in a tree plus 1. 
+If {cmd: interaction(1)}, then each tree has 2 terminal nodes. 
+If {cmd: interaction(2)}, then each tree has 3 terminal nodes, and so forth.
+By default {cmd:interaction(5)}.
+
+{dlgtab:Other}
+
+{phang}
+{opt in:fluence} displays the percentage of variation explained 
+(for non-normal distributions, the percentage of log likelihood explained) 
+by each input variable for the best number of iterations (only display when the number of variables is less than 20).  
+If the best number of iterations is 0 (bestiter=0), the influence will be zero for all variables.
+For the multinomial distribution, influence is displayed separately for each category.
+The influence matrix is saved in {cmd:e(influence)}. For the multinomial distribution, column names refer
+to category values (with any periods replaced by underscores, because of STATA rules for naming matrix columns.)
+
+{phang}
+{opt pred:ict(varname)} predicts and saves the predictions 
+in the variable  {it: varname}. 
+If the distribution is logistic/bernoulli or multinomial, the predicted values are probabilities.
+If the distribution is multinomial, 
+(1) predictions are saved in
+multiple variables from {it: varname1} through {it:varname`k'}, where k is the number of categories
+and where variable labels indicate the category that is being predicted, and 
+(2) the predicted class is saved in {it: varname_class}.
+To allow for out-of-sample predictions 
+{cmd:predict} ignores {cmd:if} and {cmd:in}. For model fitting only observations
+that satisfy {cmd:if} and {cmd:in} are used, predictions are made for  
+all observations.
+This option also computes {cmd:{e(*mse)} and {cmd:e(*accuracy)} on training and test data. 
+Training data refers to the first {cmd:e(trainn)} observations that satisfy {cmd:[if][in]}.
+Test data refer to the remainder of the obserations that satisfy {cmd:[if][in]}.
+
+{p 8 8 2}
+This option was the original way of specifying predictions.
+Prediction can now also be specified using the {cmd: predict} statement following the {cmd:boost} command;
+however, then {cmd:e(*mse)} and {cmd:e(*accuracy)} is not computed.
+
+{phang}
+{opt seed(int)}  {cmd:seed} specifies the random number seed 
+to generate the same sequence of random numbers. Random numbers are only used 
+for bagging.  Bagging uses random numbers 
+to select a random subset of the observations for each iteration.
+By default ({cmd:seed(0)}). The boost seed option is unrelated to Stata's
+ {cmd:set seed} command.
+
+{title:Details}
+
+{p 4 4 2} The variables may not contain missing values (impute missing values first or drop
+observations with missing values. For example, after running a regression the statement 
+"drop if !e(sample)" would do that.).
+ When {cmd:prediction} is specified, even the values excluded by {cmd:[if][in]} may not contain
+missing values. 
+
+{p 4 4 2} The boosting model itself cannot be saved. For this reason predictions is
+specified as  an option rather than as a post-estimation command. This is different, for 
+example, for {cmd:regress} where {cmd: predict} can be invoked afterwards. 
+
+{p 4 4 2} The number of iterations that {cmd:boost} uses for prediction/influence, 
+bestiter, cannot be set directly. It is affected indirectly by the choice of 
+maxiter because {cmd: bestiter} cannot exceed {cmd: maxiter}.
+
+{p 4 4 2} If for logistic regression the train_R2 is missing but the test_R2 is not missing 
+the test_R2 can be trusted. The missing train_R2 is due to numerical problems in
+evaluating the log likelihood functions for very unlikely parameter values. Reset 
+the number of iterations to bestiter, often this will solve the problem.
+
+{p 4 4 2}
+The standard output consists of the best number of iterations, {it: bestiter}; 
+the R-squared value computed on the test dataset, {cmd:test_R2}; 
+the R-squared value computed on the training data set, {cmd:train_R2} 
+(based on {it:min(maxiter,bestiter+100)} iterations) 
+ the number of observations used for the taining data, {cmd:trainn}. {cmd:trainn}
+is computed as the number of observations that meet the {cmd:in}/{cmd:if} conditions 
+ times  {cmd:trainfraction()}. These statistics can also 
+be retrieved using {cmd:ereturn}. In addition, {cmd:ereturn} also stores the log-likelihood values from 
+which {cmd: train_R2} and {cmd: test_R2} are computed.
+
+
+{title:Post Estimation Command Syntax}
+
+{p 4 4 2}
+{cmd:influence_delete} removes variables that were never used in the model, i.e. variables with  zero influence as 
+specified in the influence matrix. This is useful when the number of variables are very large, and the number of 
+variables in a subsequent run are to be reduced.
+
+{synoptset 17}{...}
+{synopthdr}
+{synoptline}
+{synopt :{opt min:_influence(#)}} Remove all x-variables that had influence of less than  {cmd:min_influence}. By default {cmd:min_influence} = 0, i.e.
+ only variables with no influence are removed. {p_end}
+{synoptline}
+
+
+{p 4 4 2}
+{cmd:influence_barchart}
+Creates a barchart of the variable influences. There is a separate helpfile for {help influence_barchart:influence_barchart}.
+
+
+
+{marker examples}{...}
+{title:Example:Basic prediction example}
+
+
+{p 4 4 2} 
+Put data into random order.  Assess contributions of x variables and predict values:
+
+{p 4 8 2}{inp:. gen u=uniform()}
+
+{p 4 8 2}{inp:. sort u}
+
+{p 4 8 2}{inp:. boost y x1-x7, distribution(logistic) trainfraction(0.8) predict(pred) influence}
+
+{p 4 4 2}The boosting implementation  currently does not allow missing values. A quick way
+to get rid of the missing values to remove all the observations for which the predicted
+values after a regression is missing:
+
+{p 4 8 2}{inp:. regress y x1-x7}
+
+{p 4 8 2}{inp:. predict p}
+
+{p 4 8 2}{inp:. drop if missing(p) }
+
+{p 4 4 2}Determine the percentage of correctly classified observations for both the 
+test and the training data sets:
+
+{p 4 8 2}{inp:. global trainn=e(trainn)}
+
+{p 4 8 2}{inp:. gen class=pred>.5 }
+
+{p 4 8 2}{inp:. gen correct_test= class==y  }
+
+{p 4 8 2}{inp:. replace correct_test=.   if missing(y)}
+
+{p 4 8 2}{inp:. gen correct_train=  correct_test}
+
+{p 4 8 2}{inp:. replace correct_test=.  if _n<=$trainn }
+
+{p 4 8 2}{inp:. replace correct_train=. if _n>$trainn}
+
+{p 4 8}{inp:. tab1 correct_test correct_train y}
+
+
+{p 4 4 2}Display the variable influences in a barchart:
+
+{p 4 8 2}{inp:. matrix influence = e(influence)}
+
+{p 4 8 2}{inp:. svmat influence}
+
+{p 4 8 2}{inp:. gen id=_n}
+
+{p 4 8 2}{inp:. replace id=. if influence==.}
+
+{p 4 8 2}{inp:. graph bar (mean) influence, over(id) ytitle(Percentage Influence)}
+
+{p 4 4 2} The bars are labeled with numbers. The corresponding names can be found by typing
+{it: matrix list influence}.
+
+{title:Example:Prediction with new data}
+
+{p 4 4 2}
+It is currently not possible to save the model, but it is possible to generate predictions for new data.
+The model is built excluding data as specified by the "in" or "if" statements, 
+but the "predict" option ignores "if" and "in". If new data are appended to existing data, 
+the boost model can be built from existing data, but predictions are 
+computed for all observations. Here is an example where only the first 1000 observations 
+are used for model building, but predictions are generated for all observations:
+
+{p 4 8 2}{inp:.	boost y x1 x2 x3 x4 in 1/1000,  dist(normal)  predict }
+
+{title:Example:5-fold crossvalidation}
+
+{p 4 4 2} in turn use a different 20% of 
+the data as the test data set and compute an Rsquared value each time. It is assumed 
+that the boosting plugin is already loaded.
+
+{p 4 8 2}{inp:. gen u=uniform()}
+
+{p 4 8 2}{inp:. sort u}
+
+{p 4 8 2}{inp:. local N=_N}
+
+{p 4 8 2}{inp:. local size=round(`N'/5)}
+
+{p 4 8 2}{inp:. gen group=0}
+
+{p 4 8 2}{inp:. replace group=1 if _n>`size'}
+
+{p 4 8 2}{inp:. replace group=2 if _n>`size'*2}
+
+{p 4 8 2}{inp:. replace group=3 if _n>`size'*3}
+
+{p 4 8 2}{inp:. replace group=4 if _n>`size'*4}
+
+{p 4 8 2}{inp:. matrix  input R2 = (   )}
+
+{p 4 8 2}{inp:. forval i=1/5  {c -(}   }
+
+{p 4 8 2}{inp:.      	sort group}
+
+{p 4 8 2}{inp:.		boost y x x2,  dist(normal) maxiter(100) trainfraction(0.8)}
+
+{p 4 8 2}{inp:.		replace group= mod(group+1,5)	}
+
+{p 4 8 2}{inp:.      	matrix R2= R2   \ (e(test_R2))}
+
+{p 4 8 2}{inp:. {c )-}  }
+
+{p 4 8 2}{inp:. svmat R2 }
+
+{p 4 8 2}{inp:. sum R2 }
+
+{title:Example:Prediction for the Multinomial distribution}
+
+{p 4 4 2} The number of prediction variables equals the number of categories.
+Each category has a predicted probability. 
+The predicted category is the category with the largest probability. The code below computes the predicted 
+category class from the labels of the predicted variables.
+(With version 1.3.1 and later such a variable is  now created automatically and saved in <varname-class>)
+
+{p 4 8 2}{inp:. boost insure age  male nonwhite site2 site3 if age!=., dist(multinomial) seed(1) predict(pred) trainfraction(0.8) }
+
+{p 4 8 2}{inp:. gen class=.}
+
+{p 4 8 2}{inp:. egen pred=rowmax(pred1-pred3) }
+
+{p 4 8 2}{inp:. foreach var of varlist pred1-pred3 {c -(} }
+
+{p 4 8 2}{inp:.	    replace  class=`: var label `var''  if pred==`var' }
+
+{p 4 8 2}{inp:. {c )-}   }
+
+
+{title:Stored results}
+
+{pstd}
+{cmd:boost} stores the following in {cmd:e()}:
+
+{synoptset 20 tabbed}{...}
+{p2col 5 20 24 2: Scalars}{p_end}
+{synopt:{cmd:e(trainn)}}Number of observations in the training data (first trainn observations among those that satisfy [if][in]) {p_end}
+{synopt:{cmd:e(besttiter)}}Best number of iterations used for fitting{p_end}
+{synopt:{cmd:e(test_ll0)}}log likelihood of the null model in the test data (remainder of observations among those that satisfy [if][in] {p_end}
+{synopt:{cmd:e(test_ll1)}}log likelihood of model with bestiter iterations in the test data{p_end}
+{synopt:{cmd:e(train_ll0)}}log likelihood of the null model in the training data{p_end}
+{synopt:{cmd:e(train_ll1)}}log likelihood of the model with bestiter iterations in the training data{p_end}
+{synopt:{cmd:e(train_R2)}}pseudo R squared in the training data{p_end}
+{synopt:{cmd:e(test_R2)}}pseudo R squared on the test data set (complement of the training data){p_end}
+{synopt:{cmd:e(train_mse)}} MSE in the training data (normal, poisson only)  {p_end}
+{synopt:{cmd:e(test_mse)}} MSE in the test data (normal, poisson only) {p_end}
+{synopt:{cmd:e(train_accuracy)}} Accuracy in the training data (logistic/bernoulli and multinomial only) {p_end}
+{synopt:{cmd:e(test_accuracy)}} Accuracy in the test data (logistic/bernoulli and multinomial only) {p_end}
+
+{p2col 5 20 24 2: Macros}{p_end}
+{synopt:{cmd:e(predict)}}program used to implement {cmd:predict}{p_end}
+{synopt:{cmd:e(predictlabels)}}labels used for predicted variables {cmd:predict}{p_end}
+
+{synoptset 20 tabbed}{...}
+{p2col 5 20 24 2: Matrices}{p_end}
+{synopt:{cmd:e(influence)}}Influence matrix. Number of rows= number of x-variables. Number of cols=number of y-variables (usually 1){p_end}
+{synopt:{cmd:e(predmat)}}the matrix of probabilities of labels{p_end}
+
+
+{title:References}
+{p 4 8 2}
+Hastie T, Tibshirani R, Friedman J.  The Elements of Statistical Learning. 
+New York: Springer-Verlag; 2001.
+
+{p 4 8 2}
+G. Ridgeway (1999). The state of boosting.  Computing Science and Statistics 31:172-181. 
+
+
+{title:Author}
+
+	Matthias Schonlau, University of Waterloo
+	schonlau at uwaterloo dot ca
+	{browse "http://www.schonlau.net":www.schonlau.net}
+
+{title:Also see}
+
+{p 4 14 2}Article:  {it:Stata Journal}, volume 5, number 3: {browse "http://www.stata-journal.com/article.html?article=st0087":st0087}{p_end}
+

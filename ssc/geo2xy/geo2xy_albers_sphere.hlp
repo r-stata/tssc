@@ -1,0 +1,261 @@
+{smcl}
+{* *! version 1.0.0  31jan2017}{...}
+{cmd:help geo2xy_albers_sphere}
+{hline}
+
+{title:Title}
+
+{phang}
+{cmd:geo2xy} {hline 2} Convert latitude and longitude to cartesian (x,y) coordinates
+
+
+{title:Map projection}
+
+{phang}
+Albers equal-area conic projection - spherical model
+
+
+{title:Syntax}
+
+{p 8 16 2}
+{cmd:geo2xy}
+{it:lat_var lon_var} 
+{ifin} 
+{cmd:,}
+{c -(}{opt gen:erate(y_lat x_lon)}{c |}{opt replace}{c )-}
+[ 
+{opt proj:ection}{cmd:(}{opt albers_sphere}
+[,{help geo2xy##proj_name:proj_opts}]{cmd:)}
+{opt ti:ssot} ]
+
+
+{synoptset 40 tabbed}{...}
+{synopthdr}
+{synoptline}
+{p2coldent :* {opt gen:erate(y_lat x_lon)}}New variable names for the projected coordinates (note the order!){p_end}
+{p2coldent :* {opt replace}}Replace the values in {it:lat_var lon_var} with the projected coordinates{p_end}
+{synopt :{opt proj:ection(albers_sphere [,proj_opts])}}Specifies the projection and, optionally, projection parameters{p_end}
+{synopt :{opt ti:ssot}}Append Tissot's indicatrices (grid of circles){p_end}
+{synoptline}
+{pstd}* Either {opt gen:erate(y_lat x_lon)} or {opt replace} is required.
+{p2colreset}
+
+
+{synoptset 15 tabbed}{...}
+{synopthdr :proj_opts}
+{synoptline}
+{synopt :{it:lat1}}1st standard parallel (default is minlat + (maxlat - minlat) / 6){p_end}
+{synopt :{it:lat2}}2nd standard parallel (default is maxlat - (maxlat - minlat) / 6){p_end}
+{synopt :{it:lat0}}projection's origin (default is 0){p_end}
+{synopt :{it:lon0}}central meridian (default is mid-longitude){p_end}
+{synoptline}
+{p2colreset}
+
+{pstd}
+Projection parameters are optional. To specify some, 
+all parameters must be specified and appear in the following order
+
+{p 8 16 2}
+{opt proj:ection}{hi:(albers_sphere} {it:, lat1 lat2 lat0 lon0})
+
+
+{title:Description}
+
+{pstd}
+This projection transfers locations on a sphere to a
+cone that intersects the sphere at the two standard parallels.
+On the map, meridians are straight lines and equally spaced.
+Parallels are arcs of circles with a common center point
+located at the intersection of the meridian lines. 
+A meridian intersects a parallel at a right angle.
+Parallels are not equally spaced and are farther apart
+between the standard parallels.
+The poles are represented using an arc of a circle.
+
+{pstd}
+The algorithm to automatically select the first and second standard
+parallels follows Deetz and Adams's (1934, p. 91) suggestion
+(1/6 of meridional distance).
+
+{pstd}
+This is an equal area projection, which means that
+the area of a shape on the map is proportional 
+to the area of the shape on earth.
+This projection is particularly appropriate 
+when creating thematic maps. 
+
+
+{title:Spheroid and (x,y) coordinates units}
+
+{pstd}
+This projection assumes that the geographic latitude and longitude
+describe locations on a sphere.
+The computations are performed on a unit sphere (radius of 1)
+and projected coordinates are returned without further scaling.
+If you want the units to reflect distances on Earth, you need to
+multiply the coordinates by an appropriate radius 
+(e.g. 6371 km, 3958.76 miles, 20,902,231 feet, etc.).
+Distances are only accurate along the standard parallels.
+
+
+{title:Examples}
+
+{pstd}
+These examples require {cmd:geo2xy}'s ancillary datasets
+in the current directory. Click 
+{stata `"net get geo2xy, from("http://fmwww.bc.edu/repec/bocode/g")"':here}
+to download them.
+
+{pstd}
+{cmd: geo2xy} will automatically select appropriate values for the
+first and second parallel and for the central meridian.
+The algorithm works quite well for the 48 conterminous states.
+
+{space 8}{hline 27} {it:example do-file content} {hline 27}
+{cmd}{...}
+{* example_start - albers_sphere_us}{...}
+	use "geo2xy_us_coor.dta", clear
+	drop if inlist(_ID, 14, 39, 42) // Alaska, Puerto Rico, Hawaii
+
+	geo2xy _Y _X, gen(ylat xlon) projection(albers_sphere)
+	
+	// show the projection details and compute the plot's height
+	return list
+	local yheight = 6 * `r(aspect)'
+	
+	line ylat xlon, lwidth(vthin) lcolor(gray) cmissing(n) ///
+		xsize(6) ysize(`yheight') ///
+		ylabel(minmax, nogrid) yscale(off) ///
+		xlabel(minmax, nogrid) xscale(off) ///
+		plotregion(margin(small)) graphregion(margin(small)) ///
+		legend(off) name(albers_sphere_us, replace)
+{* example_end}{...}
+{txt}{...}
+{space 8}{hline 80}
+{space 8}{it:({stata geo2xy_run albers_sphere_us using geo2xy_albers_sphere.hlp, requires("geo2xy_us_coor.dta") preserve:click to run})}
+{* example_start - albers_sphere_us_t}{...}
+{* 	use "geo2xy_us_coor.dta", clear}{...}
+{* 	drop if inlist(_ID, 14, 39, 42) // Alaska, Puerto Rico, Hawaii}{...}
+{* }{...}
+{* 	geo2xy _Y _X, gen(ylat xlon) projection(albers_sphere) tissot}{...}
+{* 	}{...}
+{* 	// show the projection details and compute the plot's height}{...}
+{* 	return list}{...}
+{* 	local yheight = 6 * `r(aspect)'}{...}
+{* 	}{...}
+{* 	line ylat xlon if !mi(_ID), lwidth(vthin) lcolor(gray) cmissing(n) ///}{...}
+{* 	||  ///}{...}
+{* 	line ylat xlon if mi(_ID), lwidth(vthin) lcolor(eltblue) cmissing(n) ///}{...}
+{* 		xsize(6) ysize(`yheight') ///}{...}
+{* 		ylabel(minmax, nogrid) yscale(off) ///}{...}
+{* 		xlabel(minmax, nogrid) xscale(off) ///}{...}
+{* 		plotregion(margin(small)) graphregion(margin(small)) ///}{...}
+{* 		legend(off) name(albers_sphere_us_t, replace)}{...}
+{* example_end}{...}
+{space 8}{it:({stata geo2xy_run albers_sphere_us_t using geo2xy_albers_sphere.hlp, requires("geo2xy_us_coor.dta") preserve:click to run with Tissot's indicatrices})}
+
+{pstd}
+Redo using standard parallels of 29.5 and 45.5.
+These are the values used by the 
+the {it:{browse "https://en.wikipedia.org/wiki/United_States_Geological_Survey":USGS}}.
+Use the same central meridian that was computed in the example
+above (mid-longitude is -95.837867).
+
+{space 8}{hline 27} {it:example do-file content} {hline 27}
+{cmd}{...}
+{* example_start - albers_sphere_usgs}{...}
+	use "geo2xy_us_coor.dta", clear
+	drop if inlist(_ID, 14, 39, 42) // Alaska, Puerto Rico, Hawaii
+
+	geo2xy _Y _X , gen(ylat xlon) projection(albers_sphere, 29.5 45.5 0 -95.837867)
+	
+	// show the projection details and compute the plot's height
+	return list
+	local yheight = 6 * `r(aspect)'
+	
+	line ylat xlon, lwidth(vthin) lcolor(gray) cmissing(n) ///
+		xsize(6) ysize(`yheight') ///
+		ylabel(minmax, nogrid) yscale(off) ///
+		xlabel(minmax, nogrid) xscale(off) ///
+		plotregion(margin(small)) graphregion(margin(small)) ///
+		legend(off) name(albers_sphere_usgs, replace)
+{* example_end}{...}
+{txt}{...}
+{space 8}{hline 80}
+{space 8}{it:({stata geo2xy_run albers_sphere_usgs using geo2xy_albers_sphere.hlp, requires("geo2xy_us_coor.dta") preserve:click to run})}
+{* example_start - albers_sphere_usgs_t}{...}
+{* 	use "geo2xy_us_coor.dta", clear}{...}
+{* 	drop if inlist(_ID, 14, 39, 42) // Alaska, Puerto Rico, Hawaii}{...}
+{* }{...}
+{* 	geo2xy _Y _X , gen(ylat xlon) proj(albers_sphere, 29.5 45.5 0 -95.837867) tissot}{...}
+{* 	}{...}
+{* 	// show the projection details and compute the plot's height}{...}
+{* 	return list}{...}
+{* 	local yheight = 6 * `r(aspect)'}{...}
+{* 	}{...}
+{* 	line ylat xlon if !mi(_ID), lwidth(vthin) lcolor(gray) cmissing(n) ///}{...}
+{* 	||  ///}{...}
+{* 	line ylat xlon if mi(_ID), lwidth(vthin) lcolor(eltblue) cmissing(n) ///}{...}
+{* 		xsize(6) ysize(`yheight') ///}{...}
+{* 		ylabel(minmax, nogrid) yscale(off) ///}{...}
+{* 		xlabel(minmax, nogrid) xscale(off) ///}{...}
+{* 		plotregion(margin(small)) graphregion(margin(small) fcolor(gs15)) ///}{...}
+{* 		legend(off) name(albers_sphere_usgs_t, replace)}{...}
+{* example_end}{...}
+{space 8}{it:({stata geo2xy_run albers_sphere_usgs_t using geo2xy_albers_sphere.hlp, requires("geo2xy_us_coor.dta") preserve:click to run with Tissot's indicatrices})}
+
+
+{title:Certification}
+
+{pstd}
+The equations for this projection are from pages 100-101 of Snyder (1987).
+The numerical example at p. 291 is used to certify {bf:geo2xy}'s
+implementation:
+
+{space 8}{hline 27} {it:example do-file content} {hline 27}
+{cmd}{...}
+{* example_start - certify}{...}
+	clear
+	input double(_Y _X)
+	35 -75
+	end
+
+	geo2xy _Y _X, gen(y x) proj(albers_sphere, 29.5 45.5 23 -96)
+	return list
+	list
+	
+	assert string(x,"%10.7f") ==  "0.2952720"
+	assert string(y,"%10.7f") ==  "0.2416774"
+{* example_end}{...}
+{txt}{...}
+{space 8}{hline 80}
+{space 8}{it:({stata geo2xy_run certify using geo2xy_albers_sphere.hlp, preserve:click to run})}
+
+
+{title:References and further reading}
+
+{pstd}
+Deetz, Charles Henry, and Oscar Sherman Adams. 
+{it:Elements of map projection with applications to map and chart construction. No. 68}. 
+US Government Printing Office, 1921.
+
+{pstd}
+Snyder, John P., 
+{it:Map projections: A working manual}.
+U.S. Geological Survey Professional Paper 1395, 1987.
+[{it:{browse "http://pubs.er.usgs.gov/publication/pp1395":download}}].
+
+{pstd}
+U.S. Department of the Interior; U.S. Geological Survey,
+{it:{browse "https://egsc.usgs.gov/isb//pubs/MapProjections/projections.html#albers":Albers Equal Area Conic}}.
+Web page, reviewed 1/31/2017.
+
+{pstd}
+Wikipedia, {it:{browse "https://en.wikipedia.org/wiki/Albers_projection":Albers projection}}.
+Web page, reviewed 1/31/2017.
+
+
+{title:Author}
+
+{pstd}Robert Picard{p_end}
+{pstd}picard@netbox.com{p_end}

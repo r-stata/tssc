@@ -1,0 +1,104 @@
+{smcl}
+{* 2oct2003}{...}
+{hline}
+help for {hi:tabsort}
+{hline}
+
+{title:One- and two-way tables with sorted rows and/or columns}
+
+{p 8 17 2} 
+{cmd:tabsort}
+{it:varlist}
+[{it:weight}] 
+[{cmd:if} {it:exp}] 
+[{cmd:in} {it:range}] 
+[{cmd:,}
+{cmdab:nors:ort} 
+{cmdab:nocs:ort} 
+{cmdab:rev:erse} 
+{cmdab:so:rt(}{it:measure}{cmd:)}
+{cmdab:s:ummarize(}{it:summvar}{cmd:)} 
+{it:tabulate_options}
+]
+
+{p 4 4 2}
+{cmd:by} {it:...}{cmd::} may be used with {cmd:tabsort}; see help {help by}.
+
+
+{title:Description} 
+
+{p 4 4 2} 
+{cmd:tabsort} tabulates {it:varlist}, containing either one or two variables,
+such that the order of rows (and of columns where present) is by default
+by frequency of occurrence (most frequent first), or optionally by means
+or standard deviations of a summarized variable (highest value first).
+
+
+{title:Remarks}
+
+{p 4 4 2} 
+String variables that contain only one or more spaces " " are
+tabulated with marginal {cmd:|}, except that very long values will be 
+shown truncated, as occurs to any very long string value. 
+
+{p 4 4 2}
+String values that are empty "" are tabulated as {cmd:missing}.
+
+{p 4 4 2}
+In Stata 8, {cmd:tabulate} with the {cmd:sort} option provides 
+an official alternative for one-way tables of counts only. 
+
+
+{title:Options} 
+
+{p 4 8 2} 
+{cmd:norsort} suppresses sorting of rows by frequency.
+
+{p 4 8 2} 
+{cmd:nocsort} suppresses sorting of columns by frequency.
+
+{p 4 8 2} 
+{cmd:reverse} reverses the sort order, so that lowest values come first.
+
+{p 4 8 2} 
+{cmd:sort(}{it:measure}{cmd:)} 
+indicates the measure by which rows and/or columns are
+sorted. The default is {cmd:f} or {cmd:freq}, indicating frequencies. 
+{cmd:c} or {cmd:count} is acceptable as a synonym.
+Alternatively, with {cmd:summarize()} {cmd:m} (or {cmd:mean}) or 
+{cmd:s} (or {cmd:sd}) may be specified.
+
+{p 4 8 2} 
+{cmd:summarize(}{it:summvar}{cmd:)}
+indicates a variable to be summarized within each cell of the table.
+
+{p 4 8 2} 
+{it:tabulate_options} are other options for {help tabulate}.
+
+
+{title:Examples} 
+
+{p 4 8 2}{cmd:. tabsort rep78} 
+
+{p 4 8 2}{cmd:. format price %1.0f}{p_end}
+{p 4 8 2}{cmd:. tabsort rep78 foreign, su(price) so(mean)}{p_end}
+{p 4 8 2}{cmd:. format price %8.0g}
+
+
+{title:Author} 
+
+{p 4 4 2} 
+Nicholas J. Cox, University of Durham, U.K.{break} 
+n.j.cox@durham.ac.uk
+
+
+{title:Acknowledgements}  	 
+
+{p 4 4 2}Edmond Ng and Lee Sieswerda alerted me to bugs. 
+
+
+{title:Also see}
+
+{p 4 13 2} 
+On-line: {help tabulate}, {help tabsum}; {help groups} (if installed) 
+

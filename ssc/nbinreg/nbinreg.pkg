@@ -1,0 +1,29 @@
+d 'NBINREG': module to estimate negative binomial regression models
+d
+d Here is the first version of a maximum liklihood negative
+"d binomial with cluster, robust, and score options. Initial values"
+d are calculated my a call to poisson. Two scores are produced: 1)
+"d the normal B-based scores, and 2) the score based on the alpha"
+"d parameter. The latter score necessitates a digamma function,"
+d which is  approximated here until a formal one is developed by
+"d Statacorp. I have not added  the comparison with Poisson here,"
+"d but it takes only a little extra code. Otherwise,  the output is"
+d the same as other ML algorithms. A caveat: if the true value of
+"d alpha  is close to 0, then the model is really Poisson. There may"
+d be convergence problems.  This is true with any NB type program.
+"d Actually, when modeling it is probably best  to start with"
+d Poisson - and if found to be overdispersed then use the NB.  The
+d value of the robust option here is quite important. It may be
+d quite likely that an instance of overdispersed Poisson data is
+"d not truly negative binomial either. A clustering effect, for"
+"d instance, which may cause overdispersion, may not take a gamma"
+"d shape. If so, then the robust options becomes important."
+d
+"d Author: Joseph Hilbe, Arizona State University"
+d Support: email hilbe@@asu.edu
+d
+d Distribution-Date: 19980208
+
+f nbinreg.ado
+f nbinlf.ado
+f nbinreg.hlp

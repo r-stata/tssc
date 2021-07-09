@@ -1,0 +1,101 @@
+{smcl}
+{.-}
+help for {cmd:mclgen}{right: {browse "mailto:John_Hendrickx@yahoo.com":John Hendrickx}}
+{.-}
+
+{p}
+{title:Stata macros for multinomial conditional logit models}
+
+{p}
+{it:MCL} stands for
+{it:{ul:M}ultinomial {ul:C}onditional {ul:L}ogit} model. A conditional
+logit program is used to estimate a multinomial logistic model. This
+produces the same coefficients and standard errors as a regular
+multinomial logit program but has the advantage that it provides great
+flexibility for imposing constraints on the dependent variable.
+{cmd:mclgen} restructures the data so the model can be estimated by
+{help clogit}, {help mclest} estimates the model using {cmd:clogit}.
+
+{p}
+In addition, {cmd:mclest} can estimate two special models:
+{it:stereotyped ordered regression} (SOR) and Goodman's
+{it:row and columns model} 2 (RC2). Both models estimate a scaling
+metric for the dependent variable; the RC2 model estimates a scaling
+metric for a categorical independent variable as well.
+
+{title:Syntax}
+
+{p 8 27}
+{cmd:mclgen} {it:depvar}
+
+{p}
+The {it:depvar} argument is required. {it:depvar} corresponds with the dependent variable in a multinomial logit model and should indicate a categorical {it:response factor} with a maximum of 12 levels.
+
+{title:Description}
+
+{p}
+Note that {cmd:mclgen} will {hi:modify the data}, and that the data
+should be {hi:saved} before running {cmd:mclgen}.
+
+{p}
+An MCL model uses a conditional logit model to estimate a multinomial
+logistic model. This provides great flexibility for imposing
+constraints on the response factor, the dependent variable in a
+multinomial logistic model. Different constraints can be imposed on
+the response factor for each independent (dummy) variable. One
+application is to specify loglinear models for square tables such as
+quasi-independence, uniform association, symmetric association, into a
+multinomial logistic model. A further extension provided by
+{help mclest} is to estimate special nonlinear designs, such as
+stereotyped ordered regression and Goodman's row and columns model 2.
+
+{p}
+In order to estimate an MCL model, the data must be transformed into a
+{it:person/choice} file. In a {it:person/choice} file, each respondent
+has a {ul:separate record} for each category of the
+{it:response factor} (i.e. the dependent variable in a multinomial
+logit model). The {it:reponse factor} indexes the
+{it:response options} for respondents, a {it:stratifying variable}
+indexes the respondents, and a {it:dichotomous dependent variable}
+indicates which record corresponds with response option chosen by the
+repondent.
+
+{p}
+So for a response factor with 5 levels, the dataset is expanded 5
+times. The response factor specified in {cmd:mclgen} indexes the
+{it:response options} for each respondent. {cmd:mclgen} creates
+{cmd:__strata} and {cmd:__didep}, the {it:stratifying variable} and
+{it:dichotomous dependent variable} for use by {help clogit}
+or {help mclest}.
+
+{p}
+In {help clogit}, the {it:dichotomous dependent variable} is specified
+as the dependent variable and the {it:stratifying variable} is
+specified in the {cmd:strata(}{it:varname}{cmd:)} option. The main
+effects of the {it:response factor} correspond with the intercept of a
+multinomial logistic model. Interactions of the response factor with
+independent variables correspond with the effects of these independent
+variables.
+
+{p}
+If the response factor is modelled using a fixed reference category,
+the log likelihood, estimates and standard errors will be exactly the
+same as a model estimated with {help mlogit}. However, this procedure
+followed here allows much more flexibility in imposing restrictions on
+the response factor.
+
+See {help mclest} for further information
+
+Direct comments to: {browse "mailto:John_Hendrickx@yahoo.com":John Hendrickx}
+
+{p}
+{cmd:mclest} is available at
+{browse "http://ideas.uqam.ca/ideas/data/bocbocode.html":SSC-IDEAS}.
+Use {help findit} {cmd:mcl} to locate the latest version.
+
+{title:Also see}
+{p 0 21}
+On-line: help for
+  {help mclest}, {help mlogit}, {help clogit}, {help desmat}, {help desrep},
+  {help xi}, {help xi3}, {help ologit}
+{p_end}

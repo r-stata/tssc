@@ -1,0 +1,190 @@
+.-
+ help for ^metatrim^                                    (Stata 6; version 1.0.5)
+.-
+
+Nonparametric "trim and fill" analysis of publication bias in meta-analysis
+---------------------------------------------------------------------------
+
+   ^metatrim^ { theta { se_theta | var_theta } | exp(theta) ll ul [cl] }
+              [ ^if^ exp ] [ ^in^ range ] [^,^ { ^v^ar | ^ci^ } ^re^ffect ^pr^int
+                ^est^imator^(^{ ^r^un | ^l^inear | ^q^uadratic }^) ef^orm ^f^unnel
+                ^l^evel^(^#^) g^raph ^id^var^(^var^) sa^ve^(^filename [^, replace^]^)^
+                ^flip^ ^mixed^ graph_options ]
+
+      where { a | b |...} means choose one and only one of {a, b, ...}.
+
+Description
+-----------
+
+^metatrim^ performs the Duval and Tweedie nonparametric "trim and fill" method
+of accounting for publication bias in meta-analysis. The method, a rank-based
+data augmentation technique, formalizes the use of funnel plots, estimates
+the number and outcomes of missing studies, and adjusts the meta-analysis to
+incorporate the theoretical missing studies.  The authors claim that the
+method is effective and consistent with other adjustment techniques.
+
+The user provides the effect estimate, ^theta^, to ^metatrim^ as a log risk
+ratio, log odds ratio, or other direct measure of effect.  Along with theta,
+the user supplies a measure of theta's variability (i.e., its standard error,
+^se_theta^, or its variance, ^var_theta^).  Alternatively, the user may provide
+the exponentiated form, ^exp(theta)^, (i.e., a risk ratio or odds ratio) and its
+confidence interval, ^(ll, ul)^.
+
+As an option, ^metatrim^ provides a funnel graph of the filled data. The funnel
+graph plots ^theta^ versus ^se_theta^.  Guide lines to assist in visualizing the
+funnel are plotted at the variance-weighted (fixed effects) meta-analytic
+effect estimate and at pseudo confidence interval limits about that effect
+estimate (i.e., at ^theta +/- z * se_theta^, where ^z^ is the standard Normal
+variate for the confidence level specified by option ^level()^.  Each filled
+(i.e., augmented) data point is indicated by the addition of a square placed
+around the data symbol.
+
+Note: ^metatrim^ requires that program ^meta^ be installed on your system.
+Use ^findit meta^ to find and install ^meta^ from STB-43.
+
+
+Options
+-------
+
+^var^ indicates that ^var_theta^ was supplied on the command line instead of
+^se_theta^.  Option ^ci^ should not be specified when option ^var^ is specified.
+
+^ci^ indicates that ^exp(theta)^ and its confidence interval, ^(ll, ul)^, were
+supplied on the command line instead of ^theta^ and ^se_theta^.  Option ^var^
+should not be specified when option ^ci^ is specified.
+
+^reffect^ requests that the analysis be based on random-effects meta-analytic
+point estimates. The default is to base the calculations on fixed-effects
+meta-analytic point estimates.
+
+^mixed^ requests that the meta-analyses during iterations be different from
+those of the initial and final meta-analyses.  That is, if ^reffect^ is
+specified, a random-effects meta-analysis is used for the initial point
+estimate and the final filled analysis but fixed-effects meta-analysis is used
+for point estimates during iteration.  Conversely, if the default analysis is
+chosen (i.e. ^reffect^ not specified) then a fixed-effects meta-analysis is
+used for the initial point estimate and the final filled analysis but random-
+effects meta-analysis is used for point estimates during iteration.
+
+^print^ requests that the weights used in the fixed and random effects
+estimation are listed for each study, together with the individual study
+estimates and confidence intervals.  The studies are labelled by name if
+the ^idvar^ option is specified, or by number otherwise.
+
+^eform^ requests that the results in the final meta-analysis and in the ^print^
+option be reported in exponentiated form.  This is useful when the data
+represent odds ratios or relative risks.
+
+^estimator(^{ ^run^ | ^linear^ | ^quadratic^ }^)^ chooses the estimator to be used
+to determine the number of points to trim in each iteration.  The ^run^
+estimator is non-robust to an isolated negative point and the ^quadratic^
+estimator may not be defined when the number of points in the data set is
+small. The ^linear^ estimator is stable in most situations and is the default.
+
+^funnel^ requests the filled funnel graph showing the data, the fixed-effects
+(variance-weighted) meta-analytic effect, and the pseudo confidence interval
+limits about the meta-analytic effect.
+
+^level(^#^)^ sets the confidence level % for the pseudo confidence intervals;
+the default is 95%.
+
+^idvar(^varname^)^ indicates the character variable used to label the studies.
+
+^graph^ requests that the point estimates and confidence intervals be plotted.
+The combined estimate in the graph is derived using fixed or random effects
+meta-analysis, as specified by option ^reffect^.
+
+^save(^filename [^, replace^]^)^ saves the filled data in a separate Stata data
+file. The filename is assumed to have extension ^.dta^ (an extension should not
+be provided by the user).  If filename does not exist, it is created.  If
+filename exists, an error will occur unless ^replace^ is also specified.  Only
+three variables are saved: a study id variable and two variables containing
+the filled theta and setheta values.  The study id variable, named ^id^ in the
+saved file, is created by ^metatrim^ but, when option ^idvar()^ is specified,
+is based on that id variable.  The filled theta and setheta variables are
+named ^filled^ and ^sefill^ in the saved file.
+
+^flip^ is a switch that changes the direction in which studies are assumed to be
+suppressed by publication bias. By default, ^metatrim^ assumes that studies with
+negative or small effect sizes are suppressed. Specifying ^flip^ causes ^metatrim^
+to assume that studies with positive or large effect sizes are suppressed. Use
+of this option would be appropriate, for example, where a beneficial treatment
+reduces the odds or risk of death. Studies not showing the desired effect
+(i.e., a decrease) may be more likely to be suppressed by publication bias.
+
+Graph options are those allowed with ^graph, twoway^, except ^ylabel()^, ^symbol()^,
+^xlog^, ^ytick^ and ^gap^ are not recognized by ^graph^.  For ^funnel^, the default
+graph_options include ^connect(lll..)^, ^symbol(iiioS)^, and ^pen(35522)^ for
+displaying the meta-analytic effect, the pseudo confidence interval limits
+(two lines), the data points, and the augmented data, respectively.
+
+
+Required input variables
+------------------------
+
+  ^theta^        the effect estimate
+  ^se_theta^     the corresponding standard error
+
+ or
+
+  ^theta^        the effect estimate
+  ^var_theta^    the corresponding variance
+
+ or
+
+  ^exp(theta)^   the risk (or odds) ratio
+  ^ll^           the lower limit of the risk ratio's confidence interval
+  ^ul^           the upper limit of the risk ratio's confidence interval
+ [^cl^]          optional (see below)
+
+
+Optional input variable
+-----------------------
+
+^cl^ contains the confidence level of the confidence interval defined by ^ll^
+and ^ul^.  If ^cl^ is not provided, the procedure assumes that each confidence
+interval is at the 95% confidence level.  ^cl^ allows the user to provide the
+confidence level, by study, when the confidence interval is not at the default
+level.  ^cl^ can be specified with or without a decimal point.  For example,
+90 and .90 are equivalent and may be mixed (i.e., 90, .95, 80, .90 etc.).
+
+
+Note
+----
+
+If your data are in raw count format, program ^metan^ can be used to facilitate
+conversion to effect format.  ^metan^ automatically adds ^exp(theta)^ and ^se_theta^
+variables to the dataset, calling them ^_ES^ and ^_seES^.  You must manually
+generate ^theta^ as the natural log of ^_ES^ (for example, ^gen _lnES = ln(_ES)^)
+then input the effect-format variables, ^_lnES^ and ^_seES^, using ^metatrim^'s
+default input method.
+
+
+Examples
+--------
+
+ . ^metatrim logrr selogrr, funnel print^
+ . ^metatrim logrr varlogrr if site==3, var graph^
+ . ^metatrim rr ll ul, ci eform reffect^
+ . ^metatrim logor selogor if region==4, funnel level(90)^
+
+
+References
+----------
+
+Duval, S., Tweedie, R., 2000.  A nonparametric "trim and fill" method of
+accounting for publication bias in meta-analysis.  JASA 95(449): 89-98.
+
+
+Author
+------
+
+Thomas J. Steichen, steichen@triad.rr.com
+
+
+Also see
+--------
+
+    STB:  STB-57 sbe39 (STB-58 sbe-39.1; STB-61 sbe-39.2)
+ Manual:
+On-line:  help for @meta@, @metabias@, and @metan@ (if installed)

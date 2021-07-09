@@ -1,0 +1,215 @@
+* scheme-rbn3mono.scheme
+* s1 scheme family with a naturally white background
+* and black foreground (non-grid lines, symbols, text, etc)
+* and gray grid lines
+* and some improvements by Roger Newson (as he sees it),
+* similar to rbn1mono but with thinner lines
+* as preferred by some medical journals.
+
+*! Author: Roger Newson
+*! Date: 18 December 2012
+
+* Use the official Stata scheme s1mono as the mother scheme
+#include s1mono
+
+* Roger Newson's "improvements"
+* (added from 30 January 2003 onwards)
+
+* Text boxes unshaded (including by-group subtitles)
+color textbox white
+
+* Plot lines medium width and black
+linewidth p   0.25
+linewidth p1  0.25
+linewidth p2  0.25
+linewidth p3  0.25
+linewidth p4  0.25
+linewidth p5  0.25
+linewidth p6  0.25
+linewidth p7  0.25
+linewidth p8  0.25
+linewidth p9  0.25
+linewidth p10 0.25
+linewidth p11 0.25
+linewidth p12 0.25
+linewidth p13 0.25
+linewidth p14 0.25
+linewidth p15 0.25
+linewidth p1bar    0.25
+linewidth p2bar    0.25
+linewidth p3bar    0.25
+linewidth p4bar    0.25
+linewidth p5bar    0.25
+linewidth p6bar    0.25
+linewidth p7bar    0.25
+linewidth p8bar    0.25
+linewidth p9bar    0.25
+linewidth p10bar   0.25
+linewidth p11bar   0.25
+linewidth p12bar   0.25
+linewidth p13bar   0.25
+linewidth p14bar   0.25
+linewidth p15bar   0.25
+linewidth p1mark    0.25
+linewidth p2mark    0.25
+linewidth p3mark    0.25
+linewidth p4mark    0.25
+linewidth p5mark    0.25
+linewidth p6mark    0.25
+linewidth p7mark    0.25
+linewidth p8mark    0.25
+linewidth p9mark    0.25
+linewidth p10mark   0.25
+linewidth p11mark   0.25
+linewidth p12mark   0.25
+linewidth p13mark   0.25
+linewidth p14mark   0.25
+linewidth p15mark   0.25
+linewidth p1other   0.25
+linewidth p2other   0.25
+linewidth p3other   0.25
+linewidth p4other   0.25
+linewidth p5other   0.25
+linewidth p6other   0.25
+linewidth p7other   0.25
+linewidth p8other   0.25
+linewidth p9other   0.25
+linewidth p10other  0.25
+linewidth p11other  0.25
+linewidth p12other  0.25
+linewidth p13other  0.25
+linewidth p14other  0.25
+linewidth p15other  0.25
+color p       black
+color p1      black
+color p2      black
+color p3      black
+color p4      black
+color p5      black
+color p6      black
+color p7      black
+color p8      black
+color p9      black
+color p10     black
+color p11     black
+color p12     black
+color p13     black
+color p14     black
+color p15     black
+
+* Fill colors for areas on area plots
+color p1area  gs8
+color p2area  gs12
+color p3area  gs4
+color p4area  gs14
+color p5area  gs2
+color p6area  gs10
+color p7area  gs6
+color p8area  gs15
+color p9area  gs1
+color p10area gs13
+color p11area gs3
+color p12area gs11
+color p13area gs5
+color p14area gs9
+color p15area gs7
+
+* Fill colors for bars on bar plots
+color p1bar  gs16
+color p2bar  gs8
+color p3bar  gs12
+color p4bar  gs4
+color p5bar  gs14
+color p6bar  gs10
+color p7bar  gs6
+color p8bar  gs2
+color p9bar  gs15
+color p10bar gs13
+color p11bar gs11
+color p12bar gs9
+color p13bar gs7
+color p14bar gs5
+color p15bar gs3
+
+* Set default histogram bar color to white
+color histogram gs16
+
+* Set default shadestyles for p# plots to p#bar shading
+shadestyle p1       p1bar
+shadestyle p2       p2bar
+shadestyle p3       p3bar
+shadestyle p4       p4bar
+shadestyle p5       p5bar
+shadestyle p6       p6bar
+shadestyle p7       p7bar
+shadestyle p8       p8bar
+shadestyle p9       p9bar
+shadestyle p10      p10bar
+shadestyle p11      p11bar
+shadestyle p12      p12bar
+shadestyle p13      p13bar
+shadestyle p14      p14bar
+shadestyle p15      p15bar
+
+* Set by-graph style to compact
+bygraphstyle bygraph compact
+
+* Set legends to have 1 column by default
+* (allowing long explicit labels)
+numstyle legend_cols 1
+
+* Axis labels perpendicular to axes, with value labels
+anglestyle vertical_tick        horizontal
+anglestyle horizontal_tick      rvertical
+yesno use_labels_on_ticks       yes
+
+* Grid and axis line options
+yesno draw_major_vgrid          yes
+yesno draw_major_hgrid          yes
+yesno grid_draw_min             yes
+yesno grid_draw_max             yes
+color major_grid                gs13
+linewidth major_grid            0.25
+linewidth minor_grid            0.25
+linewidth xyline                0.25
+linepattern xyline              shortdash
+
+* Title, subtitle and label sizes, spanning and justification
+gsize text                      3
+gsize filled_text               3
+gsize axis_title                3
+gsize label                     3
+gsize small_label               3
+gsize tick_label                3
+gsize minor_tick_label          3
+gsize plabel                    3
+gsize heading                   3
+gsize subheading                3
+gsize body                      3
+gsize small_body                3
+gsize key_label                 3
+gsize text_option               3
+yesno title_span                yes
+yesno note_span                 yes
+yesno caption_span              yes
+yesno legend_span               yes
+horizontal label                right
+horizontal heading              right
+horizontal subheading           right
+horizontal body                 right
+horizontal axis_title           right
+
+* Marker label options
+clockdir p                     3
+
+* Axis, legend and other line widths
+linewidth   plotregion          0.25
+linewidth tickline              0.25
+linewidth tick                  0.25
+linewidth minortick             0.25
+linewidth legend                0.25
+linewidth text_option           0.25
+linewidth refline               0.25
+linewidth refmarker             0.25
+linewidth foreground            0.25
+linewidth background            0.25

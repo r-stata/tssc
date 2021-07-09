@@ -1,0 +1,237 @@
+{smcl}
+{* 28may2006}{...}
+{hline}
+help for {hi:sensatt}
+{hline}
+
+{title:A simulation-based sensitivity analysis for matching estimators}
+
+
+{p 8 24}
+{cmd:sensatt}
+{it:outcome treatment} [{it:varlist}]
+[{it:weight}]
+[{cmd:if} {it:exp}]
+[{cmd:in} {it:range}]
+[ ,
+{cmd:alg}{cmd:(}{it:att*}{cmd:)}
+{cmd:p}{cmd:(}{it:varname}{cmd:)}
+{cmd:p11}{cmd:(}{it:#}{cmd:)}
+{cmd:p10}{cmd:(}{it:#}{cmd:)}
+{cmd:p01}{cmd:(}{it:#}{cmd:)}
+{cmd:p00}{cmd:(}{it:#}{cmd:)}
+{cmdab:r:eps}{cmd:(}{it:#}{cmd:)}
+{cmd:ycent}{cmd:(}{it:#}{cmd:)}
+{cmd:se}{cmd:(}{it:se_type}{cmd:)}
+{cmd:pscore}{cmd:(}{it:scorevar}{cmd:)}
+{cmdab:logit }
+{cmdab:index }
+{cmdab:comsup}
+{cmdab:boot:strap }
+]
+
+{p 8 8}{cmd:fweight}s, {cmd:iweight}s, and {cmd:pweight}s are allowed;
+see help {help weights}.
+
+{p 8 8}{cmd:sensatt} makes use of the commands for the propensity-score
+matching estimation of average treatment effects written by
+Becker and Ichino (2002): {cmd:attnd}, {cmd:attnw},
+{cmd:attk}, {cmd:attr}. Before using {cmd:sensatt}, you should install them
+and be familiar with their utilization. Download: {net sj 5-3 st0026_2}
+
+
+{title:Description}
+
+{p} {cmd:sensatt} implements the sensitivity analysis for matching estimators
+proposed by Ichino, Mealli and Nannicini (2006).
+The analysis builds on Rosenbaum and Rubin (1983a) and Rosenbaum (1987),
+and simulates a potential binary confounder in order to assess the robustness of
+the estimated treatment effects with respect to specific deviations from the
+Conditional Independence Assumption (CIA).
+
+{p} As a first step, the Average Treatment effect on the Treated (ATT) is estimated
+by using one of the following propensity-score matching estimators: Nearest Neighbor ({cmd:attnd},
+{cmd:attnw}); Radius ({cmd:attr}); Kernel ({cmd:attk}). The options that are common to these commands specify how
+the baseline ATT is estimated (see Becker and Ichino, 2002).
+
+{p} As a second step, a potential binary confounder (U) is simulated in the data, on the
+basis of four parameters: pij (with i,j=0,1). Defining Y as the outcome (or as a binary transformation of the outcome
+in the case of continuous outcomes) and T as the binary treatment, each simulation parameter pij represents
+the probability that U=1 if T=i and Y=j.
+The user can either specify the four parameters (with the options: {cmd:p11}{cmd:(}{it:#}{cmd:)}
+{cmd:p10}{cmd:(}{it:#}{cmd:)}, {cmd:p01}{cmd:(}{it:#}{cmd:)}, {cmd:p00}{cmd:(}{it:#}{cmd:)})
+or let the distribution of U mimic the distribution of some relevant covariate
+(with the option: {cmd:p}{cmd:(}{it:varname}{cmd:)}).
+
+{p} Finally, U is considered as any other covariate and is included in the set of matching variables
+used to estimate the propensity score and the ATT. The imputation of U and the ATT estimation are
+replicated many times (according to the option: {cmdab:r:eps}{cmd:(}{it:#}{cmd:)}), and a simulated
+ATT is retrieved as an average of the ATTs over the distribution of U. This estimate is robust
+to the specific failure of the CIA implied by the parameters pij. A comparison of the simulated ATT and the baseline ATT
+tells us to what extent the latter is robust, with respect to the specific deviation from the CIA that we are assuming.
+
+{p} In order to further emphasize the characteristics of the failure of the CIA implied by the simulated confounder
+(i.e., by the chosen pij), the estimated effect of U on the selection into treatment - {it:selection effect} - and the 
+estimated effect of U on the outcome of untreated subjects - {it:outcome effect} - are also reported as odds ratios.
+
+
+{title:Remarks}
+
+{p} The treatment must be binary.
+
+{p} When the outcome is not binary, the potential confounder U is simulated on the basis of a binary
+transformation of the outcome: Y=1 if the outcome is above the mean, the 25, the 50 or the 75 centile, according
+to the choice of the user (see option {cmdab:ycent}). The ATT, of course, is still estimated for the continuous outcome.
+
+
+{title:Options that are specific to {cmd:sensatt}}
+
+{p 0 4}
+{cmdab:alg(}{it:att*}{cmd:)} specifies the name of the command (i.e., of the matching algorithm) that is
+used in the ATT estimation. One of the following commands can be specified: {cmd:attnd}, {cmd:attnw},
+{cmd:attk}, {cmd:attr}. The default is {cmd:attnd}.
+
+{p 0 4}
+{cmdab:p(}{it:varname}{cmd:)} indicates the binary variable which is used to simulate the confounder.
+The parameters pij used to simulate U are set equal to the ones observed for {it:varname}.
+Instead of selecting this option, the user can directly specify the parameters pij.			
+
+{p 0 4}
+{cmd:p11}{cmd:(}{it:#}{cmd:)}, {cmd:p10}{cmd:(}{it:#}{cmd:)}, {cmd:p01}{cmd:(}{it:#}{cmd:)} and
+{cmd:p00}{cmd:(}{it:#}{cmd:)} jointly specify the parameters pij used to simulate U in the data.
+Since they are probabilities, they must be between zero and one. For each parameter, the default is zero.
+
+{p 0 4}
+{cmdab:r:eps}{cmd:(}{it:#}{cmd:)} specifies the number of iterations, i.e., how many times
+the simulation of U and the ATT estimation are replicated. The default is 1,000.
+
+{p 0 4}
+{cmd:ycent}{cmd:(}{it:#}{cmd:)} is relevant only with continuous outcomes. It means that U
+is simulated on the basis of the binary transformation of the outcome: Y=1 if the continuous outcome
+is above the {it:#} centile. Three centiles are allowed: 25, 50, 75.
+If {cmd:ycent}{cmd:(}{it:#}{cmd:)} is not selected but the outcome is continuous, U is simulated
+on the basis of the transformation: Y=1 if the outcome is above the mean.
+
+{p 0 4}
+{cmd:se}{cmd:(}{it:se_type}{cmd:)} allows the user to decide which standard error should be displayed
+with the simulated ATT. Three {it:se_type}s are possible: {cmd:set} uses the total variance
+in a multiple-imputation setting; {cmd:sew} uses the within-imputation variance;
+{cmd:seb} uses the between-imputation variance. The default is {cmd:set}.
+
+
+{title:Options that are common to {cmd:attnd}, {cmd:attnw}, {cmd:attk} and {cmd:attr}}
+
+{p 0 4}  
+{cmdab:pscore(}{it:varname}{cmd:)} specifies the name of the user-provided
+variable for the estimated propensity score. If no name is provided,
+the propensity score is estimated on the basis of the specification in {it:varlist}.
+
+{p 0 4}                                                      
+{cmd:logit} uses a logit model to estimate the propensity score 
+instead of the default {cmd:probit} model when the option
+{cmdab:pscore(}{it:varname}{cmd:)} is not specified by the user.
+
+{p 0 4}                                                      
+{cmd:index} requires the use of the linear index as the propensity score 
+when the option {cmdab:pscore(}{it:varname}{cmd:)} is not specified by the user.
+Otherwise no effect is produced.
+
+{p 0 4}                                                      
+{cmdab:boot:strap} bootstraps the standard error of the estimated ATTs.
+
+{p 0 4} 
+{cmd:comsup} restricts the computation of the ATT to the region of
+common support.
+
+
+{title:Saved results}
+
+{p} The program stores the simulated treatment effect in {inp:r(att)}.
+
+{p} Standard errors are stored in: {inp:r(se)} (multiple-imputation);
+{inp:r(sew)} (within-imputation); {inp:r(seb)} (between-imputation).
+
+{p} The estimated outcome effect and selection effect of the simulated confounder are respectively
+stored in {inp:r(yodds)} and {inp:r(todds)}.
+
+
+{title:Examples}
+
+{inp:. sensatt emp training male age yschool, p(male) or}
+{inp:. sensatt emp training male age yschool, p(male) alg(attk) se(seb) boot}
+{inp:. sensatt emp training male age yschool, p11(0.6) p10(0.5) p01(0.5) p00(0.2)}
+{inp:. sensatt emp training male age yschool, p11(0.6) p10(0.5) p01(0.5) p00(0.2) logit alg(attr) r(100) comsup boot}
+
+
+{title:Author}
+
+	{browse "http://www.tommasonannicini.eu":Tommaso Nannicini}
+	(Universidad Carlos III de Madrid)
+	Email {browse "mailto:tnannici@eco.uc3m.es":tnannici@eco.uc3m.es} if you observe any problem.
+
+	
+{title:Also see}
+
+{p}Help for {help pscore}, {help attnd}, {help attnw}, 
+{help attk}, {help attr}.
+
+{p}Analytical formulas and further details on the sensitivity analysis implemented
+by this program can be found in: Ichino, A., Mealli, F. and Nannicini, T. (2006),
+"From Temporary Help Jobs to Permanent Employment: What Can We Learn from
+Matching Estimators and their Sensitivity?", {browse "ftp://ftp.iza.org/dps/dp2149.pdf":IZA DP No. 2149}.
+
+
+{title:Useful references}
+
+{p 0 2}
+Becker, S.O. and Ichino, A. (2002), "Estimation of average treatment effects
+based on Propensity Scores", The Stata Journal, 2, 4, 358-377.
+{p_end}
+{p 0 2}
+Dehejia, R.H and Wahba, S. (1999), "Causal Effects in Non-Experimental Studies:
+Re-Evaluating the Evaluation of Training Programmes", Journal of the American
+Statistical Association, 94, 1053-1062.
+{p_end}
+{p 0 2}
+Dehejia, R.H. and Wahba, S.(2002), "Propensity Score Matching Methods for Non-Experimental 
+Causal Studies", Review of Economics and Statistics, 84(1), 151-161.
+{p_end}
+{p 0 2}
+Heckman, J.J., Ichimura, H. and Todd, P.E. (1997), "Matching As An Econometric Evaluation 
+Estimator: Evidence from Evaluating a Job Training Programme", Review of Economic Studies, 
+64, 605-654.
+{p_end}
+{p 0 2}
+Heckman, J.J., Ichimura, H. and Todd, P.E. (1998), "Matching as an Econometric Evaluation 
+Estimator", Review of Economic Studies, 65, 261-294.
+{p_end}
+{p 0 2}
+Ichino, A., Mealli, F. and Nannicini, T. (2006), "From Temporary Help Jobs to Permanent Employment: 
+What Can We Learn from Matching Estimators and their Sensitivity?", IZA DP No. 2149.
+{p_end}
+{p 0 2}
+Imbens, G.W. (2003), "Sensitivity to Exogeneity Assumptions in Program Evaluation",
+AEA Papers and Proceedings, 93, 2, 126-132.
+{p_end}
+{p 0 2}
+Imbens, G.W. (2004), "Nonparametric Estimation of Average Treatment Effects Under Exogeneity:
+A Review", The Review of Economics and Statistics, 86, 1, 4-29.
+{p_end}
+{p 0 2}
+Rosenbaum, P.R. (1987), "Sensitivity analysis to certain permutation inferences
+in matched observational studies", Biometrika, 74, 1, 13-26.
+{p_end}
+{p 0 2}
+Rosenbaum, P.R. and Rubin, D.B. (1983a), "Assessing Sensitivity to an Unobserved
+Binary Covariate in an Observational Study with Binary Outcome",
+Journal of the Royal Statistical Society, B, 45, 212-218.
+{p_end}
+{p 0 2}
+Rosenbaum, P.R. and Rubin, D.B. (1983b), "The Central Role of the Propensity Score in 
+Observational Studies for Causal Effects", Biometrika, 70(1), 41-55.
+{p_end}
+{p 0 2}
+Smith, J., and Todd, P.E. (2005), "Does Matching Overcome Lalonde's Critique of 
+Nonexperimental Estimators?", Journal of Econometrics, 125, 305-353.
+{p_end}
+

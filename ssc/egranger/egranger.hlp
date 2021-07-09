@@ -1,0 +1,223 @@
+{smcl}
+{* 17Aug2012}{...}
+{hline}
+help for {hi:egranger}
+{hline}
+
+{title:Engle-Granger (EG) and Augmented Engle-Granger (AEG) cointegration tests and 2-step ECM estimation}
+
+{p 8 14}{cmd:egranger} {it:varlist} [, {cmd:ecm} {cmdab:L:ags(}{it:#}{cmd:)} {cmdab:TR:end} {cmdab:QTR:end}  {cmdab:REG:ress} ]
+
+
+{title:Description}
+
+{p}{cmd:egranger} conducts tests for cointegration proposed by Engle and Granger (1987),
+reporting test statistics plus critical values calculated by MacKinnon (1990, 2010).
+{cmd:egranger} will also estimate an ECM (Error Correction Mechanism) model
+using the 2-step procedure proposed by Engle and Granger (1987).
+
+{p}{cmd:egranger} requires Stata 9.0 or higher.
+
+
+{title:Engle-Granger tests for cointegration}
+
+{p}The Engle-Granger (EG) test for cointegration is a two-step residual-based test.
+Say that we suspect that the variables y, x_1, ..., x_k are cointegrated.
+The simplest form of the test is performed as follows.
+First, y is regressed on a constant and x_1, ..., x_k
+and the residuals are calculated.
+Then, the first difference of the residuals is regressed on
+the lagged level of the residuals without a constant.
+The test statistic is the traditional OLS t-statistic
+on the lagged residual.
+Under the null hypothesis that y and x_1, ..., x_k
+are not cointegrated, the residual should be non-stationary,
+hence the resemblance of the EG test to
+the Dickey-Fuller test for non-stationarity (see {help dfuller}).
+Rejection of the null is evidence the residual is stationary,
+i.e., that the series are indeed cointegrated.
+
+{p}The EG test requires the error terms to be serially independent.
+If this is not the case, lags of the first difference of the residual
+can be included in the second (test) regression
+so that the residuals in that regression appear serially uncorrelated.
+This version of the test is usually known as
+the Augmented Engle-Granger (AEG) test.
+The number of desired lags is specified by the {cmd:lags(#)} option.
+
+{p}A linear or quadratic trend may be included in the first-step regression
+by using the {cmd:trend} or {cmd:qtrend} options.
+
+{p}The distributions of the EG/AEG test statistics are non-standard,
+and depend on the number of series being tested, the sample size,
+and whether a linear or quadratic trend is included.
+MacKinnon (1990, 2010) has computed response surface regressions
+which provide critical values for all these cases.
+These are the critical reported by {cmd:egranger}.
+
+{p}The EG/AEG test can be seen as a robust alternative
+to the Johansen tests for cointegration
+available via Stata's {cmd:vecrank}.
+The EG test makes fewer distributional assumptions,
+but, unlike {cmd:vecrank}, does not allow the identification of the number
+of cointegrating vectors.
+In some applications this last limitation may not be important,
+e.g., in the bivariate case when there are only two variables
+and hence at most one cointegrating relationship.
+
+
+{title:Engle-Granger two-step ECM model estimation}
+
+{p}Engle and Granger (1987) also proposed a two-step method for estimating
+ECM (Error Correction Mechanism) models.
+
+{p}The first step is identical to the first step in the EG/AEG test procedure described above.
+In the second step, the first difference of y
+is regressed on the lagged level of the first-step residual
+and the lagged first differences of x_1, ..., x_k using OLS.
+The coefficient on the lagged residual is an estimate
+of the ECM "speed of correction" parameter.
+
+{p}The EG two-step ECM estimation is obtained by specifying
+the {cmd:ecm} option.
+Lags of y and x can be included by specifying the {cmd:lags(#)} option:
+{cmd:lags(1)} causes the lagged first difference of y to be added
+to the second-step ECM alongside the lagged first difference of x;
+{cmd:lags(tau)} where tau>1 causes lags 1..tau of the first differences
+of y and x to appear in the second-step ECM.
+
+
+{title:Saved results and postestimation options}
+
+{p}{cmd:egranger} uses Stata's {cmd:regress} to estimate
+the test regression and ECM.
+All the main {cmd:regress} results are preserved after {cmd:egranger} has run.
+This allows the user to employ Stata's built-in postestimation commands
+for {cmd:regress} after {cmd:egranger} is used.
+In particular, the standard {cmd:regress} postestimation commands
+can be used to obtain information criteria and to test for serial correlation
+in the EG/AEG test regression or ECM estimation regression.
+
+{p}In addition to the standard {cmd:regress} results,
+{cmd:egranger} saves the following:
+
+Variables
+{col 4}{cmd:_egresid}{col 18}First-step residuals
+
+Scalars
+{col 4}{cmd:e(lags)}{col 18}Number of lags in the test or second-step regression
+{col 4}{cmd:e(N1)}{col 18}Sample size in the first-step regression
+{col 4}{cmd:e(N2)}{col 18}Sample size in the second-step regression
+
+Scalars (EG and AEG tests only)
+{col 4}{cmd:e(Zt)}{col 18}EG/AEG test statistic
+{col 4}{cmd:e(cv1)}{col 18}EG/AEG 1% critical value
+{col 4}{cmd:e(cv5)}{col 18}EG/AEG 5% critical value
+{col 4}{cmd:e(cv10)}{col 18}EG/AEG 10% critical value
+
+
+{title:Options}
+
+{p 0 4}{cmd:ecm} requests that the Engle-Granger two-step ECM is estimated.
+The default is to report the EG/AEG cointegration test.
+
+{p 0 4}{cmd:lags(#)} specifies the number of lags
+of the first difference of the residuals to include in the AEG test regression
+or the number of lags of first differences of the potentially cointegrating variables
+to include in the ECM second-step regression.
+
+{p 0 4}{cmd:trend} specifies that a linear trend is included in the first-step regression.
+
+{p 0 4}{cmd:qtrend} specifies that a quadratic trend is included in the first-step regression.
+
+{p 0 4}{cmd:regress} requests that the first-step and (if applicable) EG/AEG test regressions are reported.
+
+
+{title:Examples}
+
+{col 0}(Cointegration test)
+
+{phang}{stata webuse rdinc : . webuse rdinc}
+
+{phang}{stata egranger ln_ne ln_se: . egranger ln_ne ln_se}
+
+{phang}{stata egranger ln_ne ln_se, lags(2): . egranger ln_ne ln_se, lags(2)}
+
+{phang}{stata egranger ln_ne ln_se, lags(2) trend: . egranger ln_ne ln_se, lags(2) trend}
+
+{phang}{stata egranger ln_ne ln_se ln_me, lags(1) qtrend: . egranger ln_ne ln_se ln_me, lags(1) qtrend}
+
+{col 0}(Report the internal 1st-step and test regressions)
+
+{phang}{stata egranger ln_ne ln_se, lags(2) regress: . egranger ln_ne ln_se, lags(2) regress}
+
+{col 0}(Replicate the above test by hand)
+
+{phang}{stata regress ln_ne ln_se: . regress ln_ne ln_se}
+
+{phang}{stata predict double resid, res: . predict double resid, res}
+
+{phang}{stata regress D.resid L.resid L(1/2)D.resid, nocons: . regress D.resid L.resid L(1/2)D.resid, nocons}
+
+{col 0}(Two-step ECM estimation)
+
+{phang}{stata egranger ln_ne ln_se, ecm: . egranger ln_ne ln_se, ecm}
+
+{col 0}(Use {cmd:lags(#)} option)
+
+{phang}{stata egranger ln_ne ln_se, ecm lags(2): . egranger ln_ne ln_se, ecm lags(2)}
+
+{col 0}(Report the internal 1st-step regression)
+
+{phang}{stata egranger ln_ne ln_se, ecm lags(2) regress: . egranger ln_ne ln_se, ecm lags(2) regress}
+
+{col 0}(Replicate the above 2-step ECM estimation by hand)
+
+{phang}{stata regress ln_ne ln_se: . regress ln_ne ln_se}
+
+{phang}{stata capture drop resid: . capture drop resid}
+
+{phang}{stata predict double resid, res: . predict double resid, res}
+
+{phang}{stata regress D.ln_ne L.resid L(1/2)D.(ln_ne ln_se): . regress D.ln_ne L.resid L(1/2)D.(ln_ne ln_se)}
+
+
+{title:Citation}
+
+{p}{cmd:egranger} is not an official Stata command.
+It is a free contribution to the research community, like a paper.
+Please cite it as such:{p_end}
+
+{phang}Schaffer, M.E.  2010.  egranger: Engle-Granger (EG) and Augmented Engle-Granger (AEG)
+cointegration tests and 2-step ECM estimation.
+{browse "http://ideas.repec.org/c/boc/bocode/s457210.html":http://ideas.repec.org/c/boc/bocode/s457210.html}{p_end}
+
+
+{title:References}
+
+{p 0 4}Engle, R.F. and Granger, C.W.J.  1987.
+"Co-integration and Error Correction: Representation, Estimation and Testing"
+Econometrica, Vol. 55, pp. 251–276.
+
+{p 0 4}MacKinnon, James G.  1990, 2010. Critical Values for Cointegration Tests.
+Queen's Economics Department Working Paper No. 1227, Queen's University, Kingston, Ontario, Canada.
+Available at {browse "http://ideas.repec.org/p/qed/wpaper/1227.html":http://ideas.repec.org/p/qed/wpaper/1227.html}.
+
+
+{title:Author}
+
+{col 4}Mark E Schaffer, Heriot-Watt University, UK
+{col 4}m.e.schaffer@hw.ac.uk
+
+	
+{title:Acknowledgements}
+
+{p}Thanks to Julia Darby and the students in
+the {browse "http://www.sgpe.ac.uk":SGPE} QM1 course for the impetus for writing this program,
+and to Kit Baum for feedback on the program and help file.
+
+
+{title:Also see}
+
+{p 1 14}Manual:  {hi:[TS] dfuller}; {hi:[TS] vec intro}; {hi:[TS] vecrank}{p_end}
+{p 0 19}On-line:  help for {help dfuller}; {help vec intro}; {help vecrank}{p_end}

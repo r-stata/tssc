@@ -1,0 +1,39 @@
+
+DIALOG about, tabtitle("about")
+BEGIN
+
+	TEXT     tx_vrsn    _lft        _top      _iwd        .,		///
+	label("-usexmlex-")
+
+	TEXT     tx_about      _lft        _ms      _iwd        .,		///
+	label("-usexmlex- was written by Sergiy Radyakin, in August 2014")
+
+	TEXT     tx_about2     _lft        _ss       _iwd        .,		///
+	label("I am an Economist in Developemt Economics Research Group, The World Bank")
+
+	TEXT     tx_about4     _lft        _ms       _iwd        .,		///
+	label("Description of the program, syntax and capabilities is available form it's homepage:")
+	
+	BUTTON bt_homepage @ _ms 120 ., label("Homepage") ///
+               tooltip("Visit homepage of -usexmlex-") ///
+               onpush(view http://www.radyakin.org/transfer/usexmlex/stata.smcl)
+
+	TEXT     tx_about5     _lft        _ms       _iwd        .,		///
+	label("It is important to keep this program up to date.")
+
+	BUTTON bt_checkupd @ _ms 120 ., label("Check for updates") ///
+               tooltip("Check availability of updates to -usexmlex-") ///
+               onpush(program checkupdates)
+	
+
+END
+
+PROGRAM checkupdates
+BEGIN
+	put "adoupdate usexmlex"
+	stata
+END
+
+
+// end of file
+

@@ -1,0 +1,104 @@
+{smcl}
+{* 29sep2004}{...}
+{hline}
+help for {hi:kappci}, {hi:kappaci}{right:(Author:  David Harrison)}
+{hline}
+
+{title:Confidence intervals for kappa}
+
+{p 4 4 2}
+Two unique raters, two ratings:
+
+{p 8 15 2}{cmd:kappci} {it:varname1} {it:varname2}
+		[{cmd:if} {it:exp}] [{cmd:in} {it:range}]
+		[{cmd:,} {cmdab:pos:itive(}{it:exp}{cmd:)}
+        [{cmdab:exa:ct}|{cmdab:w:ilson}|{cmdab:a:gresti}|{cmdab:j:effreys}]
+	    {cmdab:l:evel:(}{it:#}{cmd:)} ]
+
+{p 4 4 2}Two or more (non-unique) raters, two ratings:
+
+{p 8 15 2}{cmd:kappci} {it:varname1} {it:varname2} {it:varname3} [{it:...}]
+		[{cmd:if} {it:exp}] [{cmd:in} {it:range}]
+        [{cmd:,} {cmdab:pos:itive(}{it:exp}{cmd:)}
+        {cmdab:l:evel:(}{it:#}{cmd:)} ]
+
+{p 8 15 2}{cmd:kappaci} {it:varname1} {it:varname2}
+		[{cmd:if} {it:exp}] [{cmd:in} {it:range}]
+		[, {cmdab:l:evel:(}{it:#}{cmd:)} ]
+
+
+{title:Description}
+
+{p 4 4 2}
+{cmd:kappci} (first syntax) calculates the kappa-statistic measure of interrater
+agreement when there are two unique raters and two ratings, with confidence
+interval using the goodness-of-fit approach of Donner & Eliasziw (1992).
+
+{p 4 4 2}
+{cmd:kappci} (second syntax) and {cmd:kappaci} calculate the kappa-statistic in
+the case of two or more (nonunique) raters and two ratings, with confidence
+interval using an inverted modified Wald test approach applied to the
+Fleis-Cuzick estimate of kappa as recommended by Zou & Donner (2004).
+
+{p 4 4 2}
+{cmd:kappci} (second syntax) and {cmd:kappaci} produce the same results; they
+merely assume the data are organized differently.  Both commands assume each
+observation is a subject.  In the case of {cmd:kappci}, {it:varname1} contains the
+ratings by the first rater, {it:varname2} the ratings by the second rater, and
+so on.  {cmd:kappaci}, on the other hand, assumes each variable records the
+frequencies with which ratings were assigned.  The first variable records the
+number of times a positive rating was assigned, and the second variable the number
+of times a negative rating was assigned.  These definitions follow the same
+patterns as {cmd:kap} and {cmd:kappa}; see help {help kappa}.
+
+
+{title:Options}
+
+{p 4 8 2}{cmd:positive(}{it:exp}{cmd:)} specifies an expression identifying the
+ratings that should be considered to be positive; the default assumes non-zero
+(and non-missing) for positive and 0 for negative.
+
+{p 4 8 2}{cmd:exact}, {cmd:wilson}, {cmd:agresti}, and {cmd:jeffreys} specify
+how binomial confidence intervals for the observed agreement are to be
+calculated (see help {help ci}); the default is {cmd:exact}.
+
+{p 4 8 2}{cmd:level(}{it:#}{cmd:)} specifies the confidence level, in percent,
+for confidence intervals; see help {help level}.
+
+
+{title:Examples}
+
+{p 4 4 2}Two raters, rating variables coded 0/1.
+
+{p 8 12 2}{cmd:. kappci rada radb}
+
+{p 4 4 2}Two raters, rating variables coded Y/N, Wilson confidence interval on
+observed agreement.
+
+{p 8 12 2}{cmd:. kappci rada radb, pos("Y") wilson}
+
+{p 4 4 2}More than two raters, 99% confidence interval.
+
+{p 8 12 2}{cmd:. kappaci pos neg, level(99)}
+
+
+{title:References}
+
+{p 4 4 2}Donner, A. and Eliasziw, M. 1992. A goodness-of-fit approach to
+inference procedures for the kappa statistic: confidence interval construction,
+significance-testing and sample size estimation. {it:Statistics in Medicine} 11: 1511-1519.
+
+{p 4 4 2}Zou, G. and Donner, A. 2004. Confidence interval estimation of the
+intraclass correlation coefficient for binary outcome data. {it:Biometrics} 60: 807-811.
+
+
+{title:Maintainer}
+
+    David A. Harrison
+    Intensive Care National Audit & Research Centre
+    david@icnarc.org
+
+
+{title:Also see}
+
+    Online:  help for {help kappa}, {help ci}

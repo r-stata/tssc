@@ -1,0 +1,100 @@
+ 
+
+{smcl}
+{* 12April2004}{...}
+{hline}
+help for {hi:meta_lr}
+{hline}
+ 
+{title:Graph of positive and negative likelihood ratios in diagnostic test}
+
+
+	{cmd:meta_lr} {theta1} {se_theta1} {theta2} {se_theta2} {stratavariables} [{cmd:if}{it:exp}] [{cmd:in}{it:range}]
+	[{cmd:,} {cmdab:st:ratify} {cmd:combine} {cmdab:we:ighting} {cmd:id(strvar)} {cmdab:f:ix} {cmdab:e:form} {cmd:ylab} {cmd:graphoption}]
+ 
+
+{title:Description}
+{p 4 4 2}
+
+	{cmd:meta_lr} does mainly two things: it can do stratified meta-analysis of individual estimates 
+	{it:theta1} and {it:theta2} by {it:stratavariables}, save the stratified pooled estimates and 
+	their confidence intervals in new data set and draw them in one graph; if stratified variables are not
+	given, {cmd:meta_lr} draw {it:theta1} and {it:theta2} and their confidence interval by individual study
+	in one graph, with or without weighting. Combined meta-analysis results are shown in star.
+
+	This command is mainly used to draw graph in diagnostic test.The user provides the effect estimate as thetas 
+	(e.g., log positive likelihood ratio and log negative likelihood ratio). Likewise, the user provides the 
+	standard error of thetas. 
+	
+	Commands {help meta} and {help metareg} must be installed before using this command.
+
+{title:options for stratified analysis}
+
+	{cmd:stratify} must be given when do the stratified analysis. Meanwhile, at least one {it:stratavariable} must be given.
+
+	{cmd:fix} indicates statified meta-analysis using fixed model. Default is random effect model. 
+
+	{cmd:eform} is the same option as in {help meta}. It requests that the output of stratified meta-analysis
+	is exponentiated. When this option is chosen, option {cmd:xscale(log)} is suggested to use. 
+	
+	{cmd:ylab} gives labels on y axis. These labels are the strata variables. 
+	
+	{cmd:graphoption} the following graph options of STATA 8 can be used in this command. {cmd:symbol() msize()}
+	{cmd:mcolor() xscale() xline() xlabel() blpattern() blcolor() ytitle() xtitle() scheme()}
+
+{title:options for not stratified analysis}
+
+	Option {cmd:stratify} must not be given.
+
+	{cmd:id(strvar)} is a character variable which is used to label the studies. A string variable must be given.
+	
+	{cmd:combine} provide the combined estimates of {it:theta1} and {it:theta2} with their confidence intervals. In graph, they 
+	are shown in star with two vertical lines to show the combined point estimates. {cmd:combine} can be chosen together with 
+	{cmd:fix} which means that fixed meta-analysis model is used, random model is the default one.
+	
+	{cmd:weighting} gives individual study weights. If {cmd:fix} is chosen, weights are reverse of variance of {it:theta1} and
+	{it:theta2}. If {cmd:fix} is not chosen, weights are 1/(tau^2 + variance).
+	
+	{cmd:fix} define that combined estimates are obtained from fixed meta-analysis and weighting is reverse of variance. Default 
+	is that combined estimates are from random effect model and weights are 1/(tau^2 + variance). 
+	
+	{cmd:graphoption} the same as for stratified analysis.
+	
+{title:Required input variables}
+
+	{cmd:theta1}	 the first effect estimate (for example log negative likelihood ratio)
+	{cmd:se_theta1}  the corresponding standard error
+
+
+	{cmd:theta2}	 the second effect estimate (for example log positive likelihood ratio)
+	{cmd:se_theta2}  the corresponding standard error
+	
+	{cmd:theta1} and {cmd:theta2} can be the same effect estimates. This means that stratified meta-analysis will 
+	be done only on one effect estimate and the graph only shows for one estimate. Hence, this command also can be
+	used in meta-analysis of randomised controlled trails which will show the similar graph as {help meta}. However
+	{cmd:meta_lr} provide more options, with or without combine, weighting and more graph options. The disadvantage is 
+	that the user needs to type the same theta and its corresponding standard error twice.
+	
+	{cmd:stratavariable} are the stratified variables. They must be discrete or binary variables. These variables are re-grouped
+	before drawing the graph. For example, if the user has a variable called test which can be 0, 0.5 or 1. This variable 
+	is re-grouped to 1, 2 and 3. This change is made in order to label y axis. But the user's data set will not be changed
+	at all.
+	
+	
+{title:Example}
+
+	.{cmd: meta_lr llrpos llrposse llrneg llrnegse test funding, stratify fix eform xscale(log) xline(1)}
+	.{cmd: meta_lr llrpos llrposse llrneg llrnegse, id(author) combine weighting}
+	.{cmd: meta_lr logitsens se_sens logitsens se_sens, id(author) combine}
+	
+{title:Author}
+
+	Aijing Shang
+	Institute of Social and Preventive Medicine, University Berne, Switzerland
+	Email: shang@ispm.unibe.ch
+	
+{title:Also see}
+
+	On-line: help for {help meta} (if installed), {help metan} (if installed), {help metareg} (if installed)
+	
+	

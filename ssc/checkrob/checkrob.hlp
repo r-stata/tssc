@@ -1,0 +1,111 @@
+{smcl}
+{* Version 1, september 2006}{...}
+{hline}
+help for {hi:checkrob} {center: (Mikkel Barslund, September 2006)}
+{hline}
+
+{title:Test of robustness of specification}
+
+{p 4 12 2}{cmd:checkrob} {it:#corevars} {it:#testingvars} [options] [filename.txt] [noisily] : {it:estimation command}
+
+{p 4} {it:where}
+
+{p 6 16 2} {hi:#corevars}  is the number of core variables (to be retained in all regressions).
+
+{p 6 19 2} {hi:#testingvars}  is the number of testing variables (to be systematically included/excluded).
+
+{p 6 16 2} {hi:options}  are additional output options. All return variables [e(name)] can be specified with a space between them. Default (=none).
+
+{p 6 21 2} {hi:filename.txt}  is an option for specifying the name of the output file. Note, that it must have the ".txt" extension.
+			Default (={it:result.txt}). The table file will get the name table_{it:filename.txt}. If {it:filename.txt}
+			already exists {cmd:checkrob} will end with an error message.
+
+{p 6 14 2} {hi:noisily} displays the output for each regression. Default (=quietly).
+
+{p 6 25 2} {it}{hi:estimation command}{sf} can be any single equation estimation command and
+				some 2-equation estimation commands where the second equation is fixed (such as
+				{help heckman:heckman} or {help heckprob:heckprob}
+				with a fixed (unaltered) selection equation in all regressions).{break}
+				{it}{hi:Note:}{sf} the order of the explanatory variables is important for {cmd:checkrob} to work
+				properly. First should the core variables be specified and only thereafter the testing
+				variables (see {hi:Examples}{sf} below).{break}
+				A full set of options supported by the estimation command can be applied to each estimation (e.g. {help weights:weights}, 
+				{help cluster:cluster}, {help in:in range}, {help if:if} etc.)
+
+
+{p 6 25 2} {hi:checkrob} supports survey settings via the {help svy:svy:} prefix (see also help {help svyset:svyset}).
+				
+{p 6 16 2} {it}{hi:OBS...OBS}{sf} {cmd:checkrob} only does limited syntax checking. Thus, the user should check
+			the prerun explanation by {cmd:checkrob} of what it is about to do carefully.
+				
+				
+{title:Description}
+
+{p 4 4 2}{cmd:checkrob} estimates a set of regressions where the dependent variable is regressed (with whatever method
+is specified in {it:estimation command}) on the {it:core} variables {c -} which are included in all regressions {c -}
+and all possible
+combinations of the {it:testing variables}. In total 2^{it:#testingvars} regressions are generated. For each
+regression the coefficients, their standard errors and optional estimation return variables
+({help ereturn:ereturn list}) are recorded in comma separated format in the file named {it:filename.txt}. This file
+can be accessed after {cmd:checkrob} has run with a standard text editor. Further, {cmd:checkrob} produces a second text
+file table_{it:filename.txt} including the following statistics for each {it:core} and {it:testing} variable:
+maximum (Max), minimum (Min) and average value (Mean) of the coefficient over all regressions, average standard
+deviation (AvgSTD), share of regressions where the coefficient is significant (PercSigni), share of regressions
+where the sign is positive (Perc+), respective negative (Perc-), the average t-value (AvgT) and the number of times
+the variable was included in the regressions (Obs) (this might differ between core variables (and between testing variables)
+if a variable is sometimes dropped. For each variable the average over optional estimation return variables in
+these regression where the variable featured is also reported.
+
+{p 4 4 2}The table will look like this (recorded in comma separated form):
+
+{center:         table_{it:filename.txt}           }
+
+{center: Core var   Max   Min   Mean   AvgSTD   PercSigni   Perc+   Perc-   AvgT   Obs   e(r2)}
+{center:{hline 86}}
+{center: Education                                                                   4         }
+{center: Experience                                                                  4         }
+{center: age                                                                         4         }
+
+{center: Testing    Max   Min   Mean   AvgSTD   PercSigni   Perc+   Perc-   AvgT   Obs   e(r2)}
+{center:{hline 86}}
+{center: Educ.spouse                                                                 2         }
+{center: Children                                                                    2         }
+
+
+{p 4 4 2}{cmd:checkrob} is a useful tool if you want to check the robustness of including/excluding one
+or more controls in your preferred specification. {cmd:checkrob} was used to produce the robustness results
+in Barslund et al. (2007). See the command {help rcheck:rcheck} (if installed) by Kenneth L. Simons for a similar procedure,
+however {help rcheck:rcheck} cannot handle multiple equation such as the {help heckman:heckman} estimation command.
+
+
+
+{title:Examples}
+
+{p 8 12 2}{cmd:. checkrob} {it:#corevars} {it:#testingvars} [options] [filename.txt] [noisily] : {it:estimation command}
+
+{p 8 10 2}{cmd:. checkrob 2 3: reg wage education experience age educspouse children}{break}
+			Here education and experience are core variables; age, educspouse and children are testing variables.
+
+{p 8 10 2}{cmd:. checkrob 1 4: reg wage education experience age educspouse children}{break}
+			Here education is the only core variables; experience, age, educspouse and children are testing variables.
+
+{p 8 10 2}{cmd:. checkrob 1 4: reg wage education experience age educspouse children, cluster(ea)}
+
+{p 8 10 2}{cmd:. checkrob 2 2 output.txt noisily: reg wage education experience age children if children>4, cluster(ea)}
+			
+
+{title:Author}
+
+{p 4 4 2} Please address comments and suggestions to:
+
+{p 4 4 2} Mikkel Barslund, Department of Economics, University of Copenhagen, Denmark {break}
+<mikkelbarslund@gmail.com>
+
+{title:References}
+
+{p 4 4 2} Barslund, M., Chiconela, J., Rand, J. & Tarp, F., 2007,{break}
+'Understanding Victimization: The Case of Mozambique'. World Development Vol. 35, No. 7 (July)
+ 
+{title:Also see}
+
+{p 4 19 2}Online:  help for {help rcheck} if installed{p_end}

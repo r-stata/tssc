@@ -1,0 +1,180 @@
+{smcl}
+{* 11may2011}{...}
+{cmd:help rrlogit}{right:also see:  {help rrlogit postestimation}}
+{hline}
+
+{title:Title}
+
+{p2colset 5 16 18 2}{...}
+{p2col :{hi:rrlogit} {hline 2}}Logistic regression for randomized response data{p_end}
+{p2colreset}{...}
+
+
+{title:Syntax}
+
+{p 8 15 2}
+{opt rrlogit} {depvar} [{indepvars}] {ifin} {weight} [{cmd:,} {it:options}]
+
+{synoptset 26 tabbed}{...}
+{synopthdr}
+{synoptline}
+{syntab :Model}
+{synopt :{opt pw:arner(#|varname)}}probability of non-negated question 
+    in Warner's model; default is {cmd:pwarner(1)}{p_end}
+{synopt :{opt py:es(#|varname)}}probability of a surrogate "yes"; default is {cmd:pyes(0)}{p_end}
+{synopt :{opt pn:o(#|varname)}}probability of a surrogate "no"; default is {cmd:pno(0)}{p_end}
+{synopt :{opt nocon:stant}}suppress constant term{p_end}
+{synopt :{opth off:set(varname)}}include {it:varname} in model with coefficient
+constrained to 1{p_end}
+{synopt :{opt asis}}retain perfect predictor variables{p_end}
+{synopt :{cmdab:const:raints(}{it:{help estimation options##constraints():constraints}}{cmd:)}}apply specified linear constraints{p_end}
+
+{syntab :SE/Robust}
+{synopt :{opth vce(vcetype)}}{it:vcetype} may be {opt oim}, {opt r:obust},
+{opt opg}, {opt boot:strap}, or {opt jack:knife}{p_end}
+{synopt :{opt r:obust}}synonym for {cmd:vce(robust)}{p_end}
+{synopt :{opth cl:uster(varname)}}adjust standard errors for intragroup
+correlation{p_end}
+
+{syntab :Reporting}
+{synopt :{opt l:evel(#)}}set confidence level; default is {cmd:level(95)}{p_end}
+{synopt :{opt or}}report odds ratios{p_end}
+
+{syntab :Max options}
+{synopt :{it:{help logit##maximize_options:maximize_options}}}control the maximization process; seldom used{p_end}
+{synoptline}
+{p2colreset}{...}
+{p 4 6 2}
+{it:depvar} and {it:indepvars} may contain time-series operators; see
+{help tsvarlist}.
+{p_end}
+{p 4 6 2}
+{opt bootstrap}, {opt by}, {opt jackknife}, {opt rolling}, {opt statsby},
+{opt stepwise}, and {opt xi} are allowed; see {help prefix}.
+{p_end}
+{p 4 6 2}
+{opt fweights}, {opt iweights}, and {opt pweights} are allowed;
+see {help weight}.
+{p_end}
+{p 4 6 2}See {help rrlogit postestimation} for features available after estimation.
+
+
+{title:Description}
+
+{pstd} {cmd:rrlogit} fits a maximum-likelihood logistic regression for 
+randomized response data following (see, e.g., Maddala 1983:54-56). {it:depvar}=0 
+indicates a negative outcome (a "no" answer); {it:depvar}!=0 & 
+{it:depvar}<. (typically {it:depvar}=1) indicates a positive outcome (a 
+"yes" answer).
+
+{pstd}{cmd:rrlogit} is suited for the analysis of data from Warner's RRT scheme,
+the forced-response RRT, or the unrelated-question RRT with a known
+distribution for the non-sensitive question (see, e.g., Fox and Tracy 1986).
+
+
+{title:Options}
+
+{dlgtab:Model}
+
+{phang} {opt pwarner(#|varname)} specifies the probability of the non-negated
+question in Warner's RRT scheme. {it:#} must be in [0,1]
+and may not be 0.5. The default is {cmd:pwarner(1)}. Individually varying
+probabilities may be specified by {opt pwarner(varname)}, where {it:varname}
+holds the individual probabilities.
+
+{pmore}{cmd:pwarner()} is conditional on not being directed to the surrogate 
+"yes" or "no". That is, the overall probability of the non-negated question is
+(1-{it:pyes}-{it:pno})*{it:pwarner}.
+
+{phang} {opt pyes(#|varname)} specifies the probability of a surrogate "yes"
+answer. {it:#} must be in [0,1]. The default is {cmd:pyes(0)}. Individually
+varying probabilities may be specified by {opt pyes(varname)}, where
+{it:varname} holds the individual probabilities.
+
+{phang} {opt pno(#|varname)} specifies the probability of a surrogate "no"
+answer. {it:#} must be in [0,1]. The default is {cmd:pno(0)}. Individually
+varying probabilities may be specified by {opt pno(varname)}, where
+{it:varname} holds the individual probabilities.
+
+{pmore}{cmd:pyes()} and {cmd:pno()} are unconditional (overall) probabilities.
+For example, in an unrelated-question RRT where the probability to be directed
+to the non-sensitive question is 0.4 (i.e. the probability to answer the
+sensitive question is 60%) and the probability to answer "yes" to the
+non-sensitive question is known to be, say, 0.75, the overall probability of a
+surrogate "yes" is 0.4*0.75 = 0.3. Likewise, the overall probability of a
+surrogate "no" is 0.4*(1-0.75) = 0.1.
+
+{phang}
+{opt noconstant}, {opth offset(varname)}; see {help estimation options}.
+
+{phang}
+{opt asis} forces retention of perfect predictor variables and their
+associated perfectly predicted observations and may produce instabilities in
+maximization; see {helpb probit}.
+
+{phang}
+{cmd:constraints(}{it:{help estimation options##constraints():constraints}}{cmd:)};
+see {help estimation options}.
+
+{dlgtab:SE/Robust}
+
+{phang}
+{opt vce(vcetype)}; see {it:{help vce_option}}.
+
+{phang}
+{opt robust}, {opth cluster(varname)}; see {help estimation options}.
+
+{dlgtab:Reporting}
+
+{phang}
+{opt level(#)}; see {help estimation options}.
+
+{phang}
+{opt or} reports the estimated coefficients transformed to odds ratios, i.e.,
+exp(b) rather than b.  Standard errors and confidence intervals are similarly
+transformed.  This option affects how results are displayed, not how they are
+estimated.  {opt or} may be specified at estimation or when replaying
+previously estimated results.
+
+{marker maximize_options}{...}
+{dlgtab:Max options}
+
+{phang}
+{it:maximize_options}:
+{opt dif:ficult}, {opt tech:nique(algorithm_spec)},
+{opt iter:ate(#)}, [{cmd:{ul:no}}]{opt lo:g}, {opt tr:ace},
+{opt hess:ian}, {opt grad:ient}, {opt showstep}, {opt tol:erance(#)},
+{opt ltol:erance(#)}, {opt gtol:erance(#)}, {opt nrtol:erance(#)},
+{opt nonrtol:erance}, {opt from(init_specs)}; see {help maximize}.  These
+options are seldom used.
+
+
+{title:Examples}
+
+        {com}. rrlogit infidelity male age, pyes(0.5){txt}
+
+
+{title:References}
+
+{phang}Fox, James Alan, and Paul E. Tracy. 1986. Randomized response: A method for sensitive 
+surveys. London: Sage.
+
+{phang} Maddala, G. S. 1983. Limited Dependent and Qualitative
+Variables in Econometrics. Cambridge: Cambridge University Press.
+
+
+{title:Author}
+
+{p 4 4 2} Ben Jann, Institute of Sociology, University of Bern, jann@soz.unibe.ch
+
+
+{title:Also see}
+
+{psee}
+Online:
+{help rrlogit postestimation};{break}
+{helpb constraint},
+{helpb logistic},
+{helpb logit},
+{helpb rrreg} (if installed)
+

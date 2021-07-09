@@ -1,0 +1,55 @@
+{smcl}
+{* 10 April07}{...}
+{hline}
+help for {hi:revrs}{right:Kyle C. Longest}
+{hline}
+
+{title:Reverse Variable Value Order}
+
+{p 8 14 2} {cmd:revrs} [{it:varlist}] [{cmd:,} {cmdab:repl:ace}]
+
+{title:Description}
+
+{p 4 8 2}{cmd:revrs} reverses the value {bf:order} of the specified variables and maintains the appropriate value labels. 
+Without the {cmd:replace} option specified, the command will create a new variable called {it:rev`origvar'}. This command is 
+especially useful for keeping variables with categorical response options all ordered in the same manner (e.g., "Most Important" always is highest value).
+
+{p 4 8 2}{err:WARNING:} This command only applies to the order of the values of the variable NOT the values themselves. The new reversed
+version of the variable will {bf:always} start at 1.
+
+{title:Options}
+
+ 
+{p 4 8 2}{cmd:replace} replaces the original variable with the reversed version. If invoked, it is applied to all variables in {it:varlist}.
+
+
+      +-----------+
+------+ Examples  +----------------------------------------------------------------------
+
+	{cmd:. revrs foreign}
+
+	{input:. tab1 foreign revforeign}
+
+	-> tabulation of foreign  
+
+	   Car type |      Freq.     Percent        Cum.
+	------------+-----------------------------------
+  	   Domestic |         52       70.27       70.27
+   	    Foreign |         22       29.73      100.00
+	------------+-----------------------------------
+              Total |         74      100.00
+
+	-> tabulation of revforeign  
+
+	   Car type |      Freq.     Percent        Cum.
+	------------+-----------------------------------
+    	    Foreign |         22       29.73       29.73
+   	   Domestic |         52       70.27      100.00
+	------------+-----------------------------------
+      	      Total |         74      100.00
+
+
+
+{title:Author}
+Kyle C. Longest, University of North Carolina - Chapel Hill
+email: {browse "mailto:klongest@email.unc.edu":klongest@email.unc.edu}

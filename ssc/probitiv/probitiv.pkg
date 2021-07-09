@@ -1,0 +1,31 @@
+d 'PROBITIV': module to perform instrumental variables probit
+d
+"d  This module implements  the method of Whitney Newey,  'Efficient"
+d Estimation of Limited Dependent Variable Models with Endogenous
+"d Explanatory Variables', Journal of Econometrics (1987).  The"
+"d standard errors are not correct, since I didn't account for the"
+d fact that the RHS endog variables (and the residuals from the
+d equations predicting them  are predicted and therefore have some
+d sampling variance/covariance with the other explanatory
+"d variables.   However, the point estimates will be consistent. The"
+"d syntax is as follows: probitiv <depvar>, endog( <endog rhs"
+d variables> ) exog( <exog. rhs variables>)  iv( <ins. variables>)
+d stage1( <first stage model>) where  <depvar> is the name of the
+"d dep. variable,  <endog rhs variables> is the  list of endogenous"
+"d rhs vars,  <exog. rhs variables> is the list of exog rhs vars"
+"d that are included in the structural (i.e. second stage) probit,"
+d <ins. variables> is the list of instruments for the endog rhs
+"d vars, and  <first stage model> is either 'probit', 'linear', or"
+"d empty.  If empty or 'linear', the first stage equations are run"
+"d as OLS.  If probit, they are (all) run as probits. The programs"
+d uses the same instruments for all first stage equations. To use
+"d different instruments for multiple endog rhs vars, you would need"
+d to generalize the code.
+d
+"d Author: Jonah B. Gelbach , University of Maryland at College Park"
+d Support: email gelbach@@shaken.econ.umd.edu
+d
+d Distribution-Date: 19990310
+
+f probitiv.ado
+f ./h/hyphens.ado

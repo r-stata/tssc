@@ -1,0 +1,68 @@
+overlay several graphs
+-----------------------
+
+^overlay^ , ^by(^varlist^)^  ^xlab(^numlist^)^ ^ylab(^numlist^)^ ^function(^string^)^ 
+   ^saving(^filename^)^ ^graph_options^
+
+Description
+-----------
+
+This function draws several graphs in one area of the graphics window. As a result this
+function is very versatile and will work well with any graph function that allows
+the user to specify the axes. The function will, by default,  
+try and calculate an axes that remains unchanged for each graph, this may fail and the
+user then has to specify the axes using ^xlab^ and ^ylab^.
+
+Any options for the graphing function can be added to the end of the command line. 
+This can be options like the plotting symbol and connecting points.
+
+WARNING: to get the same scales make sure you specify the
+xlab and ylab options and hence this should fix the axes.
+
+Options
+-------
+
+^by(^varlist^)^  specifies the strata for the multiple graphs.
+
+^saving(^filename^)^ saves the graph as filename.gph.
+
+^function(^string^)^ specifies the command that draws the graph. If this
+is not specified then the {\tt graph} function is used.
+
+^xlab(^numlist^)^ specifies axes labels.
+
+^ylab(^numlist^)^ specifies axes labels.
+
+Examples
+--------
+
+
+.overlay pef day0, by(patient) c(l) s(.) sort saving(graph1)
+
+
+.overlay pef if patient<5028, by(patient) function(kdensity) xlab(150,350,680) 
+ylab(0,0.02, 0.045) s(.) saving(graph3)
+
+.overlay pef if patient<5028, by(patient) xlab(150,350,680) bin(8) ylab(0,1.1)
+
+If the user wants to have fitted lines from a regression with confidence interavals 
+for several subgroups
+
+.overlay yhat yhatupper yhatlower x, by(subgroups) c(ll[-]l[-].) s(iiio)
+
+Author
+------
+   Adrian Mander
+   GSK, Harlow UK.
+   adrian.p.mander@gsk.com
+
+Also see
+--------
+
+ Manual:  ^[R] kdensity^
+On-line:  help for @kdensity@, @graph@
+
+
+
+ 
+

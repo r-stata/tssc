@@ -1,0 +1,76 @@
+{smcl}
+{* 2005-04-04 12:54:50}{...}
+{hline}
+help for {hi:dirlist} {right: (version 1.3.1, 2005-04-04)}
+{hline}
+
+{title:Retrieve directory information}
+
+{p 4 13 2}{cmd:dirlist} [{it:filespec}]
+
+
+{title:Description}
+
+{p 4 4 2}
+{cmd:dirlist} is used as the {cmd:dir} command, but retrieves the information
+about files in in return macros (see below).
+
+{p 4 4 2}
+{it:filespec} may be any valid Windows, Unix, or Macintosh file path or file
+specification (see {hi:[U] 14.6 File-naming conventions}) and may include 
+"{cmd:*}" to indicate any string of characters.
+
+{p 4 4 2}
+Directory data are written to a temporary file using shell commands
+(Windows {cmd:dir} and Mac OS X or Unix {cmd:ls}) and subsequently read by
+the program. On Windows, dates are given in the format that the shell
+command provides, on Mac OS X and Unix the ISO date format YYYY-MM-DD is used.
+
+{p 4 4 2}
+Mac OS X: Spaces in the {it:filespec} should be preceded by an escape character "{cmd:\}".
+
+
+{title:Examples}
+
+{p 4 8 2}
+{cmd:. dirlist dm50*.do}
+
+{p 4 4 2}
+You can then access the returned results:
+
+{p 4 4 2}
+{cmd:. return list}
+
+    macros:
+            r(nfiles) : "4"
+            r(fsizes) : "814 209 296 493"
+            r(ftimes) : "13:27:15 13:29:05 12:22:01 13:41:09"
+            r(fdates) : "2003-10-30 2003-10-30 2003-10-30 2003-10-30"
+            r(fnames) : "dm501.do dm502.do dm503.do dm504.do"
+            
+{p 4 8 2}
+{cmd:. dirlist ~/DM\ data/dm50*.do} {it:(Mac OS X, space in directory name)} 
+
+
+{title:Note} 
+
+{p 4 4 2}
+The ado-file has been tested on Mac OS X, Windows XP and one type of Linux. Possible problems could occur caused by the layout of directory lists regarding column arrangement and date format.
+
+
+{title:Author} 
+
+{p 4 4 2}
+Morten Andersen, Research Unit for General Practice{break}
+University of Southern Denmark, Denmark{break} 
+        mandersen@health.sdu.dk
+
+
+{title:Also see}
+
+{p 4 13 2}
+Online:  help for
+{help dir},
+{help shell},
+{help return}
+{p_end}

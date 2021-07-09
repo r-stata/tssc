@@ -1,0 +1,131 @@
+{smcl}
+{hline}
+help for {hi:sampsi_mcc}
+{hline}
+
+{title:Calculates Sample Size or Power for Matched Case-Control Studies}
+
+{p 8 22}
+{cmdab:sampsi_mcc}
+[,
+{opt p0(#)}
+{opt alt(#)}
+{opt n1(#)}
+{opt m(#)}
+{opt phi(#)}
+{opt a:lpha(#)}
+{opt power(#)}
+{opt s:olve(string)}
+}
+]
+
+{p}
+
+{title:Description}
+
+{p 0 0}
+{hi: sampsi_mcc} calculates the power and sample size for a matched case control study. The theory behind this
+command is described in Dupont (1988) Power Calculations for Matched Case-Control Studies, Biometrics.
+
+{p 0 0}
+The calculations require the usual alpha and beta values, a possible alternative odds ratio (the null is 1), phi the
+correlation of exposure between pairs in the case-control set (the default is 0.2) and the probability of exposure in
+the controls.
+
+{p 0 0}
+This command can be combined with {hi:samplesize} in order to look at multiple calculations and to plot the results.
+
+{title:Updating this command}
+
+{p 0 0}
+To obtain the latest version click the following to uninstall the old version
+{p_end}
+{stata ssc uninstall sampsi_mcc}
+And click here to install the new version
+{stata ssc install sampsi_mcc}
+
+{title:Options}
+
+{p 0 0}
+{opt p0(#)} specifies the exposure probability of controls; default is {hi:p0(0.5)}.
+
+{p 0 0}
+{opt alt(#)} specifies the "alternative OR".
+
+{p 0 0}
+{opt n1(#)} specifies the number of cases; default is {hi:n1(100)}.
+
+{p 0 0}
+{opt m(#)} specifies the number of matched controls per case; default is {hi:m(1)}.
+
+{p 0 0}
+{opt a:lpha(#)} significance level of test; default is {hi:a(0.05)}.
+
+{p 0 0}
+{opt power(#)} power of test; default is {hi:p(0.9)}.
+
+{p 0 0}
+{opt s:olve(string)} specifies whether to solve for the sample size or power; default is {hi:s(n)} solves for n and
+the only other choice is {hi:s(power)} solves for power.
+
+{p 0 0}
+{opt phi(#)} specifies the correlation of exposure between pairs in the case-control set. The paper recommends the
+default value {hi:0.2} when it is unknown.
+
+{title:Examples}
+
+{p 0 0}
+Calculate power for a two-sided test:
+{p_end}
+
+{p 2 2}
+{stata sampsi_mcc, p0(0.5) alt(1.5) n(100) s(power)}
+
+{p 0 0}
+Compute sample size:
+
+{p 2 2}
+{stata sampsi_mcc, p0(0.5) alt(1.5) s(n)}
+
+{p 0 0}
+Compute sample size when the power is 80%:
+
+{p 2 2}
+{stata sampsi_mcc, p0(0.5) alt(1.5) s(n) power(0.8)}
+
+{p 0 0}
+Re-calculate the above values for 5 matched controls rather than 1:
+{p_end}
+
+{p 2 2}
+{stata sampsi_mcc, p0(0.5) alt(1.5) n(100) s(power) m(5)}
+
+{p 0 0}
+Compute sample size:
+
+{p 2 2}
+{stata sampsi_mcc, p0(0.5) alt(1.5) s(n) m(5)}
+
+{title:Author}
+
+{p}
+Adrian Mander, MRC Human Nutrition Research, Cambridge, UK.
+
+Email {browse "mailto:adrian.mander@mrc-hnr.cam.ac.uk":adrian.mander@mrc-hnr.cam.ac.uk}
+
+{title:Reference}
+
+Dupont W.D. (1988) Power calculations for matched case-control studies. Biometrics 44: 1157-1168.
+ 
+{title:See Also}
+Related commands:
+
+{p 2 2}
+{help sampsi}, {help samplesize} (if installed), {help sampclus} (if installed), {help xsampsi} (if installed), {help artmenu} (if installed)
+
+
+
+
+
+ 
+

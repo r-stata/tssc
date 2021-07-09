@@ -1,0 +1,259 @@
+{smcl}
+{* 19-Apr2004; rev 8Feb2006, 1apr2008, 2012feb9}
+{hline}
+help for {hi:screenmatches}
+{hline}
+
+{title:Screen matching observations as prepared by {help mahapick}}
+
+{p 8 17 2}
+{cmd:screenmatches}
+{it:varlist}
+[{cmd:if} {it:exp}]
+,
+{cmd:gen(}{it:newvar}{cmd:)}
+{cmd:nummatches(}{it:#}{cmd:)}
+{cmd:matchnum(}{it:matchnumvar}{cmd:)}
+{cmd:prime_id(}{it:prime_id_var}{cmd:)}
+[ {cmdab:v:erbose} {cmd:summ tab}]
+
+{title:Description}
+
+{p 4 4 2}
+{cmd:screenmatches} provides a way of screening a dataset consisting of
+"treated" observations and
+their matched "control" observations.  We seek to screen the control
+observations; treated observations are usually kept (except as affected by an
+{cmd:if} condition; but see notes about excluded treated observations).
+Presumably, this dataset has been created by
+{help mahapick} and is stored in long form as produced by the {cmd:genfile}
+option of {help mahapick} {c -} or by the use of the {cmd:pickids} option of
+{help mahapick}, followed by an invocation of {help stackids} or an equivalent
+procedure.  You could,
+of course, create the dataset some other way, as long as the required structure
+is present.  Essentially, the data should be in long form, such that the
+observations can be partitioned into subsets, with each subset corresponding
+to a treated observation.  Each such subset includes the treated observation
+itself, plus several matching control observations.
+
+{p 4 4 2}
+In addition to the data structure alluded to above, it is presumed that some
+"content" data have been {help merge}d onto the given dataset.  It is these
+content variables that we are screening on; these variables, or a subset
+thereof, are named in {it:varlist}.  Typically, these content variables
+would include some items not found in the match covariates used in
+forming the match (in {cmd:mahapick}).
+
+{p 4 4 2}
+The purpose of this is to allow you to make a flexible dataset that can
+accomodate adjustments to the set of analyzed variables, or to the number
+of controls per treated observation.
+
+{p 4 4 2}
+Note that the present description speaks of "screening" or "keeping" observations.
+This actually occurs in terms of a generated indicator variable that represents
+the results of this screening.  No observations are actually dropped.
+
+
+{title:Options}
+
+{p 4 4 2}
+{cmd:gen(}{it:newvar}{cmd:)} is required.  This specifies the new variable
+to be generated, containing 0's and 1's, indicating which observations are
+screened in.
+
+{p 4 4 2}
+{cmd:nummatches(}{it:#}{cmd:)} is required.  This specifies the number of
+matches per treated observation that you want to choose.
+
+{p 4 4 2}
+{cmd:prime_id(}{it:prime_id_var}{cmd:)} is required.  This specifies a
+variable whose distinct values correspond to the treated observations,
+thereby enabling the partitioning of the dataset into subsets that correspond
+to the treated observations.
+
+{p 4 4 2}
+Typically, this would be the same variable as was specified in the
+{cmd:prime_id()} option (default name {cmd:_prime_id})
+in {cmd:mahapick}, or the {cmd:idprimevar()} option in {cmd:stackids} {c -} though,
+all that really matters is that its distinct values
+correspond to the treated observations.
+
+{p 4 4 2}
+{cmd:matchnum(}{it:matchnumvar}{cmd:)} is required.  This specifies a
+variable that enumerates the observations within each of the partition
+subsets that correspond to the treated observations.
+Typically, this would be the same variable as was specified in
+the {cmd:matchnum()} option (default name {cmd:_matchnum}) in
+{cmd:mahapick}, or the {cmd:matchnumvar()} option in {cmd:stackids}.
+
+{p 4 4 2}
+{it:matchnumvar} should be 0 for the treated observations, and should have
+positive values for the control observations, with the lower values
+corresponding to the best matches.  Typically,
+1 corresponds to the best match, 2 to the next best match, and so on, though
+the exact enumeration is not critical.
+
+{p 4 4 2}
+{cmdab:v:erbose} specifies that {cmd:screenmatches} will report the number
+of treated and control observations that were selected.
+
+{p 4 4 2}
+{cmd:summ} specifies that the the min and max of {it:matchnumvar} will be
+summarized.
+
+{p 4 4 2}
+{cmd:tab} specifies that the the min and max of {it:matchnumvar} will be
+tabulated.  This only applies if {cmd:summ} was specified.
+
+
+{title:Remarks}
+
+{p 4 4 2}
+To help understand the purpose of this, suppose that in doing the matching
+process, you had a certain set of variables in mind for analysis.
+You are clever enough to
+notice that some of these variables have missing values in a few of the
+observations.  So, in the matching
+process (prior to your call to {help mahapick}),
+you screened out these troublesome observations.  Thus, the
+matching process yielded, not the best matches in general, but the best
+matches under the constraint that none of the targetted variables have
+missing values.
+
+{p 4 4 2}
+(Note that this assumes that some of the variables in question are not in the
+match covariates; missing values in match covariates will disqualify observations
+from being matched.  See {help mahapick} for more on this.)
+
+{p 4 4 2}
+Your analysis will proceed correctly under the given scenario.  But now suppose
+that you want to add or remove some variables to the analysis.  Properly,
+to get the best matches for the revised analysis, you would be compelled to
+rerun the matching process, changing the pre-screening of observations
+to correspond to the revised set of variables.  Alternatively, you can
+omit doing this, but then you are accepting an analysis set that is not optimal
+for the given analysis.  It may...
+
+{p 8 8 2}
+have fewer control observations than what is actually possible (and you may
+also have a non-constant number of controls per treated observation), or,
+
+{p 8 8 2}
+overlook some control observations that are appropriate matches (and are
+better matches than the ones you have in their places).
+
+{p 4 4 2}
+Another scenario is that you might decide that, instead of, say, two controls
+per treated observation, you now want three.  If your matching process
+collected only two, you would now be compelled to rerun it.
+
+{p 4 4 2}
+{cmd:screenmatches} allow you to avoid these problems, so you don't
+have to rerun your matches (or accept a suboptimal control
+set) every time you reformulate the
+analysis.  This is done in combination with how you use {help mahapick}.
+In using {help mahapick}, you should {it:not} do any of the prescreening as
+described above.  (Of course, it may be appropriate to do some screening, based
+on conditions that you are certain are universally applicable.){bind:  }Also,
+you should call {help mahapick} with a {cmd:nummatches(}{it:#}{cmd:)} value that is
+considerably
+larger than the number of controls per treated that you actually want
+to analyze.  A good choice might be for this {it:#} to be
+two or three times the number of controls per treated in your forseeable
+analyses.
+This provides a large reservior of
+possible matches, which can be thought of as a set of queues, one
+for each treated observation, with the best matches positioned at the head of
+each queue.
+
+{p 4 4 2}
+After you have collected the matches and have {help merge}d the content data
+onto them, you are ready for some sort of analysis.  This is where you apply
+{cmd:screenmatches} telling it what variables are to be considered, and
+how many controls per treated observation you wish to use.
+
+{p 4 4 2}
+Note that in this process, you provide {help mahapick} with one
+{cmd:nummatches(}{it:#}{cmd:)} value; then you provide
+{cmd:screenmatches} with another,
+lower, {cmd:nummatches(}{it:#}{cmd:)} value.  It is hoped that users will not be confused
+by the fact that these options in the two programs have the same name.
+You are {it:not} supposed to supply the same value to them.
+
+{p 4 4 2}
+If you have collected enough potential matches in the {cmd:mahapick} step,
+then you will be able to screen-in a constant number of controls per treated
+observation in the {cmd:screenmatches} step.  That is, if in
+{cmd:mahapick}, you specify {cmd:nummatches()} sufficiently large (and the
+potential pool was large enough to begin with), then, in
+{cmd:screenmatches}, if you specify, for example, {cmd:nummatches(3)}, you
+will get three controls for each treated case {c -} rather than having fewer
+than three for some of the treated cases.
+
+{p 4 4 2}
+Users should be aware that there is a disadvantage to using this method.
+Some may find it awkward to have several variant analyses on the same set of treated
+cases, where the control set might vary slightly in its composition from
+one analysis to another.
+
+{p 4 4 2}
+Even if you don't end up in a situation that would compel you
+to rerun the matching, it should be
+understood that it may be valuable to use {cmd:screenmatches} along with
+the procedure described above.  This is because
+the matching process may be relatively time-consuming.  Thus, it is
+useful to be able to run it once (or a very few times), settng up the
+resulting dataset so that many different analyses can subsequently be run.
+Typically, you would want to do the matching and the anaylses in separate steps,
+saving intermediary files in between the steps.
+You would only want to rerun the matching to accomodate a change in the
+covariate set or {cmd:matchon()} options, or if the data were revised.
+
+{p 4 4 2}
+Important: if you specify an {cmd:if} condition which causes the exclusion of
+some treated observations, then all corresponding control observations are
+also excluded.
+
+{title:Examples}
+
+{p 4 4 2}
+These examples assume that the matching has already been done (as by
+{cmd:mahapick}, with a relatively high value for
+{cmd:nummatches(}{it:#}{cmd:)}), and "content" data have been merged on.
+
+{p 4 8 2}
+{cmd:.local regvars "worked_prior workhours_prior income_prior age agesq dsb married spouse_income_prior hsgrad"}
+{p_end}
+{p 4 8 2}
+{cmd:.screenmatches `regvars', nummatches(3) gen(k) matchnum(matchno) prime_id(id_prime)}
+{p_end}
+{p 4 8 2}
+{cmd:.regress income_current assisted `regvars' if k}
+{p_end}
+
+{p 4 4 2}
+Be sure to include any conditions on both the {cmd:screenmatches} and the
+analysis command:
+
+{p 4 8 2}
+{cmd:.screenmatches `regvars' if female, nummatches(3) gen(k) matchnum(matchno) prime_id(id_prime)}
+{p_end}
+{p 4 8 2}
+{cmd:.regress income_current assisted `regvars' if female & k}
+{p_end}
+
+
+{title:Author}
+
+{p 4 4 2}
+David Kantor; initial development was done at The Institute for Policy Studies,
+Johns Hopkins University.
+Email {browse "mailto:kantor.d@att.net":kantor.d@att.net} if you observe any
+problems.
+
+
+{title:Also See}
+{p 4 4 2}
+{help mahapick}, {help mahascore}, {help mahascores}, {help mahascore2},
+{help covariancemat}, {help variancemat}, {help stackids}.

@@ -1,0 +1,29 @@
+/*
+lmcovsem
+VERSION 2.0 25/01/2014
+*/
+VERSION 12.1
+INCLUDE _std_medium
+INCLUDE _ht150
+INCLUDE header
+HELP hlp1, view("help lmcovsem")
+RESET res1
+
+DIALOG main, label("lmcovsem- (SEM-FIML) Breusch-Pagan Diagonal Covariance Matrix Test") /*
+	*/ tabtitle("Main")
+BEGIN
+  TEXT     tx_message1  _lft      _top      _iwd      .,	/*
+*/ label("lmcovsem computes Breusch-Pagan LM Test")
+  TEXT     tx_message2  @         _ms      @         .,	/*
+*/ label("of Diagonal Covariance Matrix")
+  TEXT     tx_message3  @         _ms      @         .,	/*
+*/ label("after (SEM) Structural Equation Modeling Regression.")
+  TEXT     tx_message4  @         _ls       @         .,	/*
+*/ label("Press OK to compute lmcovsem")
+END
+
+PROGRAM command
+BEGIN
+put "lmcovsem "
+END
+

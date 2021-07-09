@@ -1,0 +1,627 @@
+{smcl}
+{* *! version 1.3.2  10dec2013}{...}
+{cmd:help project}{right:dialog:  {bf:{dialog project_setup:project}}}
+{hline}
+
+{title:Title}
+
+{phang}
+{bf:project} {hline 2} A set of tools to build and manage a Stata project.
+
+
+{title:Syntax: 1. Dataset of Projects}
+
+{pstd}
+To define a new project, select its master do-file and default log type using
+
+{p 8 16 2}
+{cmd:project, setup}
+
+{pstd}
+To remove a project from the dataset of projects
+
+{p 8 16 2}
+{cmd:project} {it:project_name}, {cmd: pclear}
+
+{pstd}
+To list currently defined projects and their directories
+
+{p 8 16 2}
+{cmd:project} [{it:project_name}] {cmd:, plist}
+
+{pstd}
+To change Stata's current working directory to a project's directory
+
+{p 8 16 2}
+{cmd:project} {it:project_name} {cmd:, cd}
+
+
+{title:Syntax: 2. Project Management Tasks}
+
+{pstd}
+A project is managed one task at a time by
+
+{p 8 16 2}
+{cmd:project} {it:project_name} {cmd:,}
+ {it:{help project##manage_task:manage_task}} [{opt text:log} {opt smcl:log}]
+
+{phang}
+except for the share task, which has an extended syntax
+
+{p 8 16 2}
+{cmd:project} {it:project_name} {cmd:,}
+{cmd:share(}{it:[share_with_name] [, {help project##share_options:share_options}])}{cmd:)}
+ [{opt text:log} {opt smcl:log}]
+ 
+ 
+{synoptset 21 tabbed}{...}
+{marker manage_task}{...}
+{synopthdr :manage_task}
+{synoptline}
+{synopt :{opt build}}build {it:project_name} by running the master do-file
+{p_end}
+{synopt :{opt list(options)}}list files in the project;
+{it:options} are 
+{opt build} to list the details of the last build, 
+{opt type} to list project files by type,
+{opt index} to list project files alphabetically,
+{opt directory} to list project files by directory,
+{opt concordance} to produce a dependency to do-file concordance table,
+{opt archive} to list project files that would be copied to the archive
+directory by the {opt archive} task. The
+{opt cleanup} option lists files that would be
+moved to the archive directory because they are in the project
+folder but are not included in the project.{p_end}
+{synopt :{opt validate}}validate a build by checking that project 
+files have not changed since the last build {p_end}
+{synopt :{opt replicate}}completely rebuild {it:project_name} and check 
+all created files for differences {p_end}
+{synopt :{opt archive}}copy files that have changed since the last archive
+to the archive directory{p_end}
+{synopt :{opt cleanup}}move files that are in the project directory but are
+not referenced within the build to the archive directory{p_end}
+{synopt :{opt rmcreated}}erase all files created by the project {p_end}
+{synoptline}
+{p2colreset}{...}
+
+
+{synoptset 21 tabbed}{...}
+{marker share_options}{...}
+{synopthdr :share_options}
+{synoptline}
+{synopt :{opt all:time}}share all files, irrespective of when they were added/modified{p_end}
+{synopt :{opt nocre:ated}}do not include files created by the project{p_end}
+{synopt :{opt max(size_string)}}specify a maximum file size in bytes, kB, MB, or GB{p_end}
+{synopt :{opt list}}list files that would be shared; no files are actually copied{p_end}
+{synoptline}
+{p2colreset}{...}
+
+ 
+{title:Syntax: 3. Build Directives}
+
+{pstd}
+You include build directives in do-files. By default, these clear the data in memory unless
+{cmd:preserve} is specified.
+
+{p 8 16 2}
+{cmd:project} {cmd:,}
+ {it:{help project##build_directives:build_directives}} [{cmd:preserve}]
+ 
+{pstd}
+The build directive to run a do-file within a do-file (nested do-file) can
+include a log type override for the do-file
+
+{p 8 16 2}
+{cmd:project} {cmd:,} {opt do(filename)}  [{opt text:log} {opt smcl:log} {cmd:preserve}]
+ 
+
+{synoptset 21 tabbed}{...}
+{marker build_directives}{...}
+{synopthdr :build_directives}
+{synoptline}
+{synopt :{opt do(filename)}}run a nested do-file {p_end}
+{synopt :{opt original(filename)}}indicate an input file dependency for the currently running do-file -
+the input file is not created within the project {p_end}
+{synopt :{opt uses(filename)}}indicate an input file dependency for the currently running do-file -
+the input file was created previously within the project {p_end}
+{synopt :{opt relies_on(filename)}}indicate a dependency - the currently running do-file relies on information in 
+{it:filename} (the file itself is not directly accessed by the do-file, 
+e.g. pdf, info, docs, etc.) {p_end}
+{synopt :{opt creates(filename)}}indicate an output file dependency for the currently running do-file - 
+{it:filename} was previously saved to disk by the current do-file{p_end}
+{synopt :{opt doinfo}}retrieve project information within a do-file {p_end}
+{synopt :{opt break}}stop execution of the build from within a do-file; data in memory is preserved{p_end}
+{synoptline}
+{p2colreset}{...}
+{p 4 6 2}
+Note that if your {it:filename} contains embedded spaces, it must be enclosed
+within double quotes. Also, {it:{help project##build_directives:build_directives}}
+are embedded in do-files and will clear Stata's memory when executed unless
+the {opt preserve} option is added, e.g. {bind:{cmd:project, creates("mydata.dta") preserve}} 
+{p_end}
+
+
+{title:Overview}
+
+{pstd}
+{cmd:project} automates the execution of do-files, skipping do-files with
+unchanged dependencies. With {cmd:project}, you accumulate and organize all
+Stata code related to a project, from the early data management steps to the
+final analysis, in a web of interconnected do-files, all managed from a
+master do-file. Each time you build a project (i.e. run the master do-file),
+{cmd:project} knows what has changed and only runs do-files that are affected by
+these changes.
+
+{pstd}
+You define a Stata project by typing {bind:{cmd:project, setup}} in Stata's
+Command window. This brings up this {bf:{dialog project_setup:dialog}} window that you
+use to select the project's master do-file. The name of the master do-file,
+without the ".do" extension, becomes the {it:project_name}. The {it:project_name}
+must conform to Stata's standard {help [M-1] naming:naming convention} for 
+variables and other objects so make sure that your master do-file is named
+appropriately. A short {it:project_name} is recommended as {cmd:project}
+management tasks include the {it:project_name} and are typed interactively.
+
+{pstd}
+The directory where the master do-file resides becomes the project directory. 
+If you defined a project called "abc", then
+typing {cmd:project abc, build} will run the master do-file "abc.do" located in
+the project directory irrespective of
+Stata's current working directory. 
+Use {bind:{cmd:project, setup}} again 
+if you move or rename the project directory or master do-file.
+
+{pstd}
+If a do-file loads files (raw data, Stata datasets, dictionaries, etc.) or
+creates files (Stata datasets, graphs, text files, etc.), 
+you must embed {it:{help project##build_directives2:build_directives}}
+in the do-file to let {cmd:project} record the do-file's dependencies with respect to these 
+input and output files. 
+For example, {bind:{cmd:project, original("raw.txt")}} indicates that the
+current do-file loads an original file (e.g. {bind:{cmd:insheet using "raw.txt"}})
+that was not created by the project. 
+If a do-file loads a file previously created by the project
+(e.g. {bind:{cmd:use "final.dta"}}), you would write
+{bind:{cmd:project, uses("final.dta")}} to indicate the do-file's dependency.
+The do-file that saves "final.dta" would include a {bind:{cmd:project, creates("final.dta")}}
+directive. It's also a good idea to record
+dependencies for files that are not used directly by the do-file but are relevant
+nonetheless. If you download data from a web site, you might want to record
+the steps by printing to pdf the download page. You would then use a
+{bind:{cmd:project, relies_on("download.pdf")}} directive to record
+the dependency. If you reuse the same input file in a do-file,
+you only need to record the dependency once. 
+When {cmd:project} records a dependency, it runs Stata's {help checksum} 
+command on the file and stores the result in its databases. {cmd:project}
+also writes, for the record, the checksum in the log file. 
+
+{pstd}
+All {it:{help project##build_directives2:build_directives}} 
+(except {opt break})
+clear the data in memory while {cmd:project} does its thing.
+Usually, it does not matter because a dependency on an input file is typically
+recorded just before loading the file and a dependency on an output file
+is recorded just after saving the file to disk. If this is inconvenient
+because, for example, you want to continue using the data after it is
+saved, you can add {opt preserve} to the directive to request that
+{cmd:project} preserve and restore the data 
+(e.g. {bind:{cmd:project, creates("mydata.dta") preserve}}).
+The location in the do-file of each directive does not
+really matter except of course that you want to record a dependency to
+a file created after it is created. You could therefore put all the
+directives for input file dependencies at the top of the do-file and
+all output file dependencies directives at the end of the do-file.
+Alternatively, you could put them all at the end, it really does not
+matter.
+
+{pstd}
+Use the {opt do(filename)} {it:{help project##build_directives2:build_directive}}
+to run a nested do-file.
+This puts {cmd:project} in control of running the do-file. 
+{cmd:project} automatically creates log files for all nested
+do-files. Before running a nested do-file, {cmd:project} suspends the current
+log file and starts a log file for the nested do-file. When control returns at
+the end of the nested do-file's run, {cmd:project} closes its log file and
+resumes logging the current do-file. {cmd:project} notes that the nested do-file
+and its dependencies are now dependencies of the current do-file.
+Note that {cmd:project} automatically adds the do-file itself as well as its log file
+to its dependencies.
+
+{pstd}
+{cmd:project} automatically changes Stata's working directory to the
+directory of the current do-file. This means that you can always
+access files in the do-file's directory by file name only.
+Files elsewhere but still within the project directory can be accessed using a file path 
+that is relative to the project directory (see {help project##ex_2:example 2}).
+A project that never uses full path names can be easily shared with others
+or moved to a new directory without having to update any file path.
+
+{pstd}
+When building a project, {cmd:project} skips do-files with unchanged dependencies under the 
+assumption that they would produce exactly the same results since nothing
+has changed. 
+You can use the {opt replicate} task to check that this is actually the case.
+This command moves all files created by the project (including log files) to an
+archive and then starts a replication build. When the build is complete,
+{cmd:project} checks each file created by the replication build against the matching
+copy in the archive and reports any differences found.
+
+{pstd}
+With {cmd:project}, you generally develop your work in a semi-interactive way,
+one do-file at a time. You can insert a break point anywhere in a do-file to
+stop execution and do some interactive experimentation. If your work is well
+compartmentalized, only the currently edited do-file is rerun at each build.
+
+{pstd}
+When you use the {opt build} task for the first time, {cmd:project} creates two
+datasets in the project directory. The first is "{it:project_name}_files.dta"
+and it stores information about each file in the project. The second is
+"{it:project_name}_links.dta" and it stores links between do-files 
+and their dependencies. Obviously,
+you should not edit or change these files directly.
+
+{pstd}
+The various projects and their directories are stored in a dataset called
+"project.dta" in the same directory as the "project.ado" file. Again, you should
+not edit or change this file directly.
+
+{pstd}
+Within the project directory, the "archive" and "replicate" directories are
+automatically created by {cmd:project} as needed and should be reserved 
+for its use.
+
+
+{marker manage_task2}{...}
+{title:Project management tasks}
+
+{pstd}
+{opt build} runs the master do-file "{it:project_name}.do" located in the project
+directory. Before running the master do-file,
+{cmd:project} loops over all the files linked to the project and uses
+{help checksum} to check for changes since the previous {opt build}.
+The files are checked in increasing order of file size. The first difference
+found stops this process and the master do-file is run. This process
+resumes when {cmd:project} is called 
+from within the master do-file to run a nested do-file
+(e.g. {bind:{cmd:project, do("data.do")}}).
+A nested do-file inherits the dependencies of all do-files nested within.
+The nested do-file's dependencies list is first checked against previously
+calculated checksums (within the same build). 
+If no change is detected, checksums are computed on the remaining 
+dependencies, again in increasing order of file size.
+As soon as a change is detected, the nested do-file is run. 
+The process repeats for all subsequent nested do-files.
+
+{pstd}
+{opt list(options)} produces a variety of listings related to {it:project_name}.
+The listing are recorded in a date and time-stamped log file saved in the
+project's "archive/list" directory. The options are (more than one can be
+specified, separated by spaces)
+
+{synoptset 15 tabbed}{...}
+{synopt :{opt build}}list the current build. Nested
+do-files are indented and all dependencies are shown,
+in order of appearance.{p_end}
+{synopt :{opt type}}list project files by type. This groups do-files, logfiles,
+original files, files that are relied upon, and files created by {it:project_name}.
+{p_end}
+{synopt :{opt index}}list project files alphabetically {p_end}
+{synopt :{opt directory}}list project files by directory {p_end}
+{synopt :{opt concordance}}dependency to do-file concordance table.
+This listing shows, for each file associated with the project, the
+do-file(s) within which it appears. Note that dependencies between do-files
+are skipped; use the {cmd:list(build)} task to track those.
+{p_end}
+{synopt :{opt cleanup}}lists all files in the project directory that are
+{hi:not} part of the most recent successful build. These files would be moved to
+the archive directory if the {opt cleanup} task is used.
+{p_end}
+
+{pstd}
+{opt validate} is used to verify that the results produced by the previous build
+still hold by checking that files associated with the project
+have not changed. 
+As with the {opt build} task, 
+the {help checksum} Stata command is used to check all
+project files. This command produces an alphabetical listing of all the
+files in the project and their status. Changes are just reported, they
+do not trigger a new build.
+The report is saved in a date and time-stamped log file in the
+project's "archive" directory.
+
+{pstd}
+{opt replicate} is used to verify that the results produced by the previous
+build can be replicated. All files created by the project are moved to a
+directory called "replicate" within the project directory and a new complete build
+is performed. Each file created by the {opt replicate} build is then checked against
+the version produced by the previous build. Stata datasets are checked by
+comparing their {help datasignature} (because their checksum changes since Stata
+includes a time stamp in datasets). Logfiles are tricky to compare because they
+include the logfile's time-stamp and changes in the {help checksum} for logfiles
+and datasets. The {opt replicate} option checks logfiles record by record and
+ignores these specific differences. All other files are
+checked by comparing their {help checksum}.
+A report is produced at the end of the {opt replicate} build that indicates,
+for each file created by the project, whether they have changed or not. 
+A log file of the report is saved in the "replicate" directory.
+If you find unexpected differences, this is probably because your code operates
+on data that is not fully sorted;
+see the following
+{browse "http://www.stata.com/support/faqs/programming/sorting-on-categorical-variables/":FAQ}.
+Note that a replication build may generate differences in log files compared
+to the previous normal build. For example {cmd:save "mydata.dta", replace}
+generates a note if the file does not exist. A similar situation occurs when a do-file 
+is skipped because no change was found
+since the last build. To completely replicate log files, it is usually necessary
+to perform a second replicate build.
+
+{pstd}
+{opt archive} is used to copy to an archive
+all additions and modified files in the project
+since the last archive. Files that are created by the project are omitted
+because they can be recreated by building the project again. This 
+provides a quick and simple way to back up what's new/changed in the project.
+The files to be archived are copied to subdirectories that match the
+directory structure where they reside in the project directory. The
+archive itself is in a date and time-stamped directory within the "archive"
+directory. 
+A log file of what was archived is also saved next to the
+archived directory.
+
+{pstd}
+{cmd:share(}{it:[share_with_name] [, {help project##share_options:share_options}])}{cmd:)}
+is used to share project files with others. 
+For example, 
+{bind:{cmd:project abc, share(Bob)}} 
+copies to an archive directory all files that have been added 
+or have changed since the last time files were shared with "Bob". 
+This archive directory is created in the project's "archive" directory.
+Its name is based on {it:share_with_name} plus
+a date and time stamp.
+The {it:share_with_name} must be a valid Stata name, i.e. a single name that
+could be given to a variable (use an underscore instead of a space if
+you want to share using a first and last name). 
+When specifying {it:share_options}, 
+do not use double quotes; also case matters. 
+Use the {opt alltime} option to force an archive of all
+the files in the project. The {opt nocreated} is used to omit files 
+created by the project (these include all datasets
+saved, all log files, and any other files generated by the project). 
+You can also omit files that are larger than {opt max(size_string)}.
+The {opt list} {it:share_option} lists files that would be archived (no files are
+copied).
+A log file of the files shared is also saved next to the
+archived directory.
+
+{pstd}
+The {opt cleanup} task
+targets files
+that are not part of the project. {cmd:project} scans the project's master
+directory (and recursively subdirectories) and moves to the project's "archive" directory 
+any file that
+is not included in the build. The {opt list(cleanup)} task can be used to see
+which files would be moved. This task also removes 
+files from past builds that are not part of the most recent build
+from "{it:project_name}_files.dta"
+and "{it:project_name}_links.dta".
+You should run a {opt cleanup} task before running a {opt replicate} task.
+This is a good way to catch some missing dependencies.
+A log file of the files moved is also saved next to the
+archived directory.
+
+{pstd}
+{opt rmcreated} erases all files created by the project. Because this
+includes all logfiles, all do-files in the project
+will run the next time the project is built.
+A report is saved in a date and time-stamped log file in the
+project's "archive" directory.
+
+
+{marker build_directives2}{...}
+{title:Build Directives}
+
+{pstd}
+Build directives are commands within do-files that are executed 
+as the project is built. These cannot be used interactively and
+they do not include the {it:project_name} (e.g. {bind:{cmd:project, uses("cpi.raw")}}).
+All file names must be fully specified as {cmd:project} never
+assumes a particular file extension.
+
+{pstd}
+All build directives clear Stata's memory except for {opt break} which simply
+stops the build after closing the log file(s). You can add {opt preserve}
+to a build directive (e.g. {bind:{cmd:project, creates("mydata.dta") preserve}})
+if you do not want {cmd:project} to clear the memory. Alternatively, you can move
+the directive to a location in the do-file where clearing the memory
+will not matter.
+
+{pstd}
+{opt do(do_filename)} is used to run a nested do-file. 
+Note that this directive is not
+the same as Stata's {help do} command.
+The {opt do(do_filename)} build directive will not run
+{it:do_filename} if the do-file has not changed and there is
+no change in any of the do-file's dependencies since the last {opt build}.
+Before running {it:do_filename}, {cmd:project} completely resets Stata
+so that {it:do_filename} runs with no priors (global macros are also cleared). 
+This promotes good
+programming practices by making sure that a do-file's results are entirely 
+a consequence of commands within that do-file. {cmd:project} also
+changes Stata's current directory to the one that contains {it:do_filename}.
+The {opt do(do_filename)} directive also manages log files for all
+do-files automatically.
+It suspends the log file of the currently running do-file while a
+nested do-file runs. 
+The {opt do(do_filename)} task automatically records the do-file's
+dependency to itself and to its log file. All other dependencies
+must be explicitly declared within do-files using the 
+directives below.
+
+{pstd}
+{opt original(original_file)} records the current do-file's dependence
+on {it:original_file}, a file that was not created within the project. 
+It indicates that if {it:original_file} changes, the do-file must be
+run again as its results may change.
+
+{pstd}
+{opt uses(uses_file)} records the current do-file's dependence
+on {it:uses_file},
+a file that was
+previously created within the project. 
+It indicates that if {it:uses_file} changes, the do-file must be
+run again as its results may change.
+
+{pstd}
+{opt relies_on(relies_on_file)} records the current do-file's dependence
+on {it:relies_on_file}, 
+a file that is not created within the project. 
+The {it:relies_on_file} is not used
+within the do-file so it cannot affect what is produced by the do-file.
+However, a change in {it:relies_on_file} will still trigger the running
+of the do-file because the log file must, as a matter of record,
+include the correct checksum for {it:relies_on_file}.
+This option is for documentation files, notes, or other raw
+data files that were not in a format that can be input by Stata. 
+This directive indicates that the do-file's structure and code is somehow
+dependent on the content of {it:relies_on_file}. Using this directive
+has the benefit of adding {it:relies_on_file} to the list of project
+files, which means that it
+will be included in {opt archive} and {opt share} tasks,
+and will not be subject to removal by the {opt cleanup} task.
+
+{pstd}
+{opt creates(created_file)} records the current do-file's dependency
+on {it:created_file}, a file that is created by the do-file. 
+This ensures that if {it:created_file} is missing or if it has changed in any
+way since the last build, the do-file will be run again.
+
+{pstd}
+{opt doinfo} prints information about the project currently being built. It
+also defines the following local macros:
+
+{synoptset 15 tabbed}{...}
+{synopt:{cmd:r(pname)}}the project name{p_end}
+{synopt:{cmd:r(pdir)}}the project's main directory{p_end}
+{synopt:{cmd:r(bdate)}}build start date{p_end}
+{synopt:{cmd:r(btime)}}build end date{p_end}
+{synopt:{cmd:r(dofile)}}do-file stub name (i.e. minus the ".do" extension){p_end}
+{p2colreset}{...}
+
+{pstd}
+With files that are not in a do-file's directory, you can use the {cmd:r(pdir)}
+macro to reference them using a path that is relative to the project directory
+(see {help project##ex_2:example 2}). 
+If you avoid full pathnames entirely, the whole
+project can be moved to a new directory or to a different computer or shared
+with others without having to edit any file path.
+It is sometimes useful to construct file names that are derived from the
+name of the do-file. For example, a do-file called "cpi.do" can be used to
+input "cpi.xls" using {bind:{cmd:import excel using "`r(dofile)'.xls"}} and
+save a Stata dataset using 
+{bind:{cmd:save "`r(dofile)'.dta", replace}}. If you have another version
+called "cpi2.xls", all you may have to do is save a copy of the do-file
+as "cpi2.do" and add it to the project.
+Also see {help project##ex_2:example 2}.
+
+{pstd}
+The {opt break} directive is used to stop execution of the build at a
+specific point within the do-file. 
+Note that this is not Stata's {help break} command; it is a build directive
+so the correct syntax is {cmd:project, break}.
+The data in memory
+is not cleared but the log file is closed. The build is considered incomplete.
+This allows for the interactive development of do-files within a project. 
+You just stop the build at any point and update the do-file as desired. 
+You can try out commands interactively as the data remained in memory.
+When you are ready, build the project again and repeat until you are satisfied with
+the do-file. Note that you get exactly the same effect if a command
+in a do-file generates an error: the log file is closed, the data remain
+in memory, and the build is incomplete.
+
+
+{marker ex_1}
+{title:Example 1. Master do-file}
+
+{pstd}
+When starting a new project, the first step is to create the master do-file.
+The master do-file's stub name (the name without the ".do" extension) becomes
+the project name. Then you type {bind:{cmd:project, setup}} in Stata's
+command window to bring up a dialog and select "abc.do". The master do-file
+usually does not include any working code, it simply calls
+nested do-files. Here's an example:
+
+	{hline 30} top of {cmd:abc.do} {hline 3}
+	{cmd:Version 9.2} // in case Stata's syntax changes in future versions
+
+	* Common settings
+
+	{cmd:set more off}
+	{cmd:set varabbrev off}  // less confusing
+	{cmd:set linesize 132}   // use 7pt font for printing
+	
+	* Run do-files
+
+	{cmd:project , do(data/original_data.do)}
+	{cmd:project , do(data/cleanup_data.do)}
+	{cmd:project , do(data/other_data.do)}
+	{cmd:project , do(analysis/reg_data.do)}
+	{cmd:project , do(analysis/myregs.do)}
+	{cmd:project , do(tables/mytables.do)}
+	{cmd:project , do(figures/myfigs.do)}
+	{hline 30} end of {cmd:abc.do} {hline 3}
+
+{pstd}
+Each of these nested do-files can also contain nested do-files. Notice that file
+paths are relative to the do-file's directory. To build this project:
+
+	{cmd:. project abc, build}
+	
+{pstd}
+You do not need to worry about the location of Stata's current working
+directory, {cmd:project} will find "abc.do" and automatically change the
+directory to the project's directory.
+
+{marker ex_2}
+{title:Example 2. Access the project directory and do-file name within do-files}
+
+{pstd}
+With {cmd:project}, Stata's working directory is always aligned with the
+directory of the currently running do-file. This makes it easy to access files in that directory
+by referencing them by name only. In the example below, the dataset produced will be
+saved in the directory where the do-file is located. 
+Its name is formed using the do-file's stub name. If you make copies of the
+do-file to try something else, you do not have to edit the name of the saved
+file as it will be derived from the new do-file's name.
+
+{pstd}
+A well-organized project is unlikely to put all project files in the same
+directory. You can easily reference files in other directories using a 
+path that is relative to the project's directory. Both the {cmd:r(pdir)} and
+{cmd:r(dofile)} macro are returned by the {opt doinfo} 
+{it:{help project##build_directives2:build_directive}} 
+
+	{hline 30} top of {cmd:reg_data.do} {hline 3}
+	{cmd:Version 9.2} // for future replication
+
+	{cmd:project, doinfo}
+	{cmd:local master "`r(pdir)'"}
+	{cmd:local doname "`r(dofile)'"}
+	
+	{cmd:project, uses("`master'/other_data/macro.dta")} // declare here is faster than using preserve
+	{cmd:project, uses("`master'/data/maindata_cleaned.dta")}
+	{cmd:use "`master'/data/maindata_cleaned.dta"}
+	
+	{cmd:sort state year}
+	{cmd:merge state year using "`master'/other_data/macro.dta"}
+	{cmd:tab _merge}
+	{cmd:drop _merge}
+	
+	{cmd:save "`doname'.dta", replace}
+	{cmd:project, creates("`doname'.dta")}
+	{hline 30} end of {cmd:reg_data.do} {hline 3}
+
+
+{title:Author}
+
+{pstd}Robert Picard{p_end}
+{pstd}picard@netbox.com{p_end}

@@ -1,0 +1,64 @@
+.-
+help for ^genvars^
+.-
+
+Usage
+-----
+	^genvars^ , varA(numlist) varB(numlist) ... varX(numlist)
+
+Description
+-----------
+^genvars^ generates new variables in a recursive fashion. This is
+best illustrated by example:
+
+  .^genvars^ age(0(10)100)
+
+generates a new variable age that has observations 0,10,20..100.
+
+  .^genvars^ age(0(10)100) gender(1,2)
+
+generates a new variable age that has observations 0,0,10,10,20,20..100,100
+and for each age the new variable gender has values 1 or 2.
+
+  .^genvars^ age(0(10)100) gender(1,2) smoking(1,2,3)
+
+
+Remarks
+-------
+^genvars^ was written for use with regression modelling. Sometimes your
+orginal data may miss particular ages. By generating new covariate patterns
+you can use the generated data and -predict- to view your model. See
+Examples.
+
+
+Examples
+--------
+
+.use "astma file"
+.frencurv , xvar(age) power(3)  gen(agesp)
+.logit astma agesp* gender
+
+Now - your model doesn't contain any data for ages 46, 48, which leaves
+holes in your graph. Then do:
+
+.drop _all
+.genvars age(0(1)100) gender(1,2)
+.frencurv , xvar(age) power(3)  gen(agesp)
+.predict linpred, xb
+.sort age gender
+.generate refcat=linpred[1]
+.replace linpred=linpred-refcat
+.generate or=exp(linpred)
+.graph linpred age if gender==1
+
+or use the utility @pspline@ which does the same.
+
+Author
+------
+Jan Brogger, jan.brogger@@med.uib.no
+
+Shameless plug :)
+--------------
+ I am looking for internship & residency  in internal 
+ medicine/pulmonary medicine US/EU. Am doing PhD in respiratory 
+ epidemiology now. 

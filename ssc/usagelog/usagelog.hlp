@@ -1,0 +1,81 @@
+{smcl}
+{* 14Oct2003}{...}
+{hline}
+help for {hi:usagelog} {right:manual:  {hi:[R] none}}
+{right:dialog:  {hi: none}    }
+{hline}
+
+
+{title:Log usage of Stata programs in an existing text file}
+
+{p 8 17 2}{cmd:usagelog}
+[{cmd:,} {cmd:message(}{it:string}{cmd:)}
+{cmd:start}
+{cmdab:et:ime}
+{cmd:type(}{it:string}{cmd:)}
+{cmdab:ue:rror(}{it:string}{cmd:)}
+]{p_end}
+
+{title:Description}
+
+{p 4 4 2}{cmd:Usagelog} is designed for programmers who want to keep track of how often
+and, simply, how their program is being used by their users.  With {cmd:usagelog}
+you can log the date and time of day the program was started and completed as well as
+what the user's command line looked like and any user-error code.  This one program can be
+used to track several programs in different usage log files.  When used with the option
+{help etime:etime} it can report how long the program to took to run in days:hours:mins:secs.{p_end}
+
+{p 4 4 2}The first line in the usagelog file is:{p_end}
+
+{p 8 8 2}"Current date", "Current time" and "Work directory"{p_end}
+
+{p 8 8 2}"Current date" is taken from the creturn variable: {cmd:`c(current_date)'}{p_end}
+
+{p 8 8 2}"Current time" is taken from the creturn variable: {cmd:`c(current_time)'}{p_end}
+
+{p 8 8 2}"Work directory" is taken from the creturn variable: {cmd:`c(pwd)'}{p_end}
+
+
+{title:Options}
+
+{p 4 8 2}{cmd:start} specifies that {cmd:usagelog} is to start logging program.{p_end}
+
+{p 4 8 2}{cmd:message} can pass any text message to the usagelog file like what
+options and settings the user of the program submitted.{p_end}
+
+{p 4 8 2}{cmd:type} specifies the program name or any text string you want the {cmd:usagelog
+file to start with.{p_end}
+
+{p 4 8 2}{cmd:etime} specifies to add the elapsed time since {cmd:start} to the usage log file.{p_end}
+
+{p 4 8 2}{cmd:uerror} provides what error code you want documented at time the program
+exited.  You have to make a call to {cmd:usagelog} before the Stata program really crashes
+since Stata will likely stop at that time.  {cmd:Uerror} is only helpful when you
+can predict how the program might fail.{p_end}
+
+{title:Examples}
+
+{p 4 8 2}You can make a call to {cmd:usagelog} at the beginning of a program:{p_end}
+
+{p 8 8 2}{cmd:usagelog} , type(savasas) c(savasas using `using' `if' `in' , type(`type') `replace' `rename'){p_end}
+
+{p 8 8 2}and then at the end of the program call it again:{p_end}
+
+{p 8 8 2}{cmd:usagelog} , type(savasas) uerror(5) etime(`s(etime)'){p_end}
+
+{title:Author}
+
+{p 4 4 2}
+Dan Blanchette {break}
+The Carolina Population Center {break}
+University of North Carolina - Chapel Hill, USA {break}
+dan_blanchette@unc.edu{p_end}
+
+
+{title:Also see}
+
+{p 4 13 2}On-line: {help log:log},
+{help etime:etime} (if installed)
+{help savasas:savasas} (if installed)
+{help usesas:usesas} (if installed){p_end}
+

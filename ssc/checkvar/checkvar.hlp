@@ -1,0 +1,86 @@
+{smcl}
+{* 11Mar2009}{...}
+{hline}
+help for {hi:checkvar}
+{hline}
+
+{title:Produce a table showing the relationship between a created variable and its component variables}
+
+{p 8 17 2}
+{cmd:checkvar} {it:created-variable} {it:varlist} {ifin}
+
+
+{title:Description}
+
+{p 4 4 2}{cmd:checkvar} displays a table showing each value of a created variable, 
+followed by each unique combination of values of the component variables and the 
+frequency of each combination. The {it:created-variable} should be listed first 
+after the command, then each component variable that was used to create it. 
+
+{p 4 4 2}{cmd:checkvar} can also be used to examine patterns of respondents in a set of
+skip and filter questions in a survey. In this case the first substantive question 
+following the skips and filters should be viewed as the created variable and the skips
+and filtes as the component variables. 
+
+
+{title:Remarks}
+
+{p 4 4 2}
+This command is more useful if the created and component variables have few discrete values 
+than if they have a large number of values.
+
+
+{title:Example - created variable}
+
+{p 4 8 2}{cmd:. sysuse auto}
+
+{p 4 8 2}{cmd:. gen byte goodcar=(rep78>=3 & headroom>3 & trunk>15)}
+
+{p 4 8 2}{cmd:. checkvar goodcar rep78 headroom trunk}
+
+{p 4 8 2}{cmd:. replace goodcar=. if rep78==.}
+
+{p 4 8 2}{cmd:. checkvar goodcar rep78 headroom trunk}
+
+
+{title:Example - skip pattern}
+
+{p 4 8 2}{cmd:. checkvar q45 q40 q42 q43}
+
+
+{title:Saved Results}
+
+{p 4 4 2}
+If all variables in {it:varlist} are numeric, the checkvar command saves in r()
+(see help for {help return}):
+
+{p 8 8 2}r(combos) - the number of combinations
+
+{p 8 8 2}r(checkvar) - the matrix of all combinations and their frequencies
+
+
+{title:Reference}
+
+{p 4 4 2}
+Dan Blanchette and Nick Cox suggested very useful improvements to this command. 
+
+
+{title:Author}
+
+{p 4 4 2}
+Phil Bardsley, {browse "http://www.cpc.unc.edu":Carolina Population Center}, 
+University of North Carolina - Chapel Hill, USA. Contact
+{browse "mailto:phil_bardsley@unc.edu":phil_bardsley@unc.edu} 
+if you observe any problems.
+
+
+{title:Also see}
+
+{p 4 13 2}
+Manual:  {hi:[R] tabulate,} {hi:[R] table}, {hi:[R] contract}
+
+{p 4 13 2}
+Online:  help for {help tabulate}, {help table}, {help contract}; {help groups} (if installed)
+
+
+

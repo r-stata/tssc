@@ -1,0 +1,345 @@
+{smcl}
+{* version 3.2.0}{...}
+{cmd:help des2}
+{hline}
+
+{title:Title}
+
+{p 5}
+{cmd:des2} {hline 2} {help describe:Describe} current dataset 
+(clickable output)
+
+
+{title:Syntax}
+
+{p 5}
+Basic Syntax
+
+{p 8}
+{cmd:des2} [{varlist} | {it:{help strings:string}}] 
+[{cmd:,} {it:options}]
+
+
+{p 5}
+Full Syntax
+
+{p 8}
+{cmd:des2} [{varlist} | {it:{help strings:string}}] 
+[{cmd:,} {it:options}] [{cmd::} {it:command}]
+
+
+{synoptset 30 tabbed}{...}
+{synopthdr}
+{synoptline}
+{syntab :{it:Main}}
+{synopt:{opt v:iew}}display results in the viewer{p_end}
+{synopt:{opt v:iew(filename)}}display results from 
+{it:{help filename}} in the viewer{p_end}
+{synopt:{cmd:saving(}{it:filename} [{cmd:, replace}]{cmd:)}}save 
+results to {it:{help filename}}{p_end}
+
+{synopt:[{cmd:no}]{cmd:cmdbar}}show the 
+command bar{p_end}
+
+{synopt:{opt nolook:for}}do not {help lookfor:look for} 
+{it:varname} or {it:string}{p_end}
+{synopt:{opt has(spec)}}same as {helpb ds:has({it:spec})} with 
+{helpb ds}{p_end}
+{synopt:{opt not(spec)}}same as {helpb ds:not({it:spec})} with 
+{helpb ds}{p_end}
+{synopt:{opt inse:nsitive}}same as {helpb ds:insensitive} with 
+{helpb ds}{p_end}
+
+{synopt:{cmd:vspace}[{cmd:(}{it:#}{cmd:)}]}add vertical space
+{p_end}
+{synopt:{opt varw:idth(#)}}width for variable names{p_end}
+{synopt:{opt valw:idth(#)}}width for value label names{p_end}
+{synopt:{cmd:{ul:varl}}[{cmd:{ul:abel}}]{opt w:idth(#)}}width 
+for variable labels{p_end}
+{synopt:{opt more}}set {help more} on, temporary{p_end}
+
+{syntab:{it:Customize}}
+{synopt:{cmd:cmd{it:#}(}{it:cmd}{cmd:)}}set {cmd:cmd{it:#}} 
+in command bar to {it:cmd}{p_end}
+{synopt:{cmd:txt{it:#}(}{it:str}{cmd:)}}set display text 
+{cmd:txt{it:#}} for {cmd:cmd{it:#}} to {it:str}{p_end}
+{synopt:{cmd:lcmd{it:#}(}{it:lcmd}{cmd:)}}set {cmd:lcmd{it:#}} 
+in command bar to {it:lcmd}{p_end}
+{synopt:{cmd:ltxt{it:#}(}{it:str}{cmd:)}}set display text 
+{cmd:ltxt{it:#}} for {cmd:lcmd{it:#}} to {it:str}{p_end}
+{synopt:{opt strcmd(scmd)}}execute {it:scmd} for string variables 
+{p_end}
+{synopt:{opt cmdorder(cmdorder_spec)}}order commands in the 
+command bar{p_end}
+
+{synopt:{cmdab:tabv:alues(}{it:#} [{cmd:, char}]{cmd:)}}tabulate 
+variables with at most {it:#} distinct values{p_end}
+
+{synopt:[{cmd:re}]{cmd:set}[{cmd:(}{it:optnames}{cmd:)}]}put options 
+{it:optnames} in {help macro:global macros}{p_end}
+{synoptline}
+
+
+{title:Description}
+
+{pstd}
+{cmd:des2} describes the data in memory. The program is a hybrid 
+combining elements from {helpb describe}, {helpb lookfor} and 
+{helpb ds} with clickable output.
+
+{pstd}
+Any variable in {it:varlist} that is not found in the current 
+dataset, is {help lookfor:looked for}. {cmd:des2} adds to 
+{it:varlist} all variables {helpb lookfor} {it:varname} returns 
+in {cmd:r(varlist)}.
+
+{pstd}
+Used as a prefix, {cmd:des2} adds to {it:varlist} any variables 
+{cmd:{it:command}} returns in {cmd:r(varlist)}.
+
+{pstd}
+{cmd:des2} mimics output from {helpb describe}. Clicking on 
+{it:varname} {help tabulate oneway:tabulates} {it:varname} while 
+clicking the value label evokes {helpb label:label list}.
+
+{pstd}
+{cmd:des2} with the {opt view} option, displays in the {help viewer} 
+below each line of the default output a list of commands (called the 
+command bar) to be executed for {it:varname} or {it:lblname}.
+
+
+{title:Options}
+
+{dlgtab:Main options}
+
+{phang}
+{opt v:iew} displays results in the {help viewer} instead of the 
+results window. This option implies {opt cmdbar}.
+
+{phang}
+{opt v:iew(filename)} {help view:views} {it:{help filename}}. Only 
+{helpb smcl:.smcl} files are supported and no other options are 
+allowed with {opt view(filename)}.
+
+{phang}
+{cmd:saving(}{it:filename} [{cmd:, replace}]{cmd:)} {help save:saves} 
+results to {it:{help filename}}.smcl. {opt replace} allows 
+{it:{help filename}} to be overwritten if it already exists. Option 
+{opt saving()} implies {opt view}.
+
+{phang}
+[{cmd:no}]{cmd:cmdbar} shows a list of clickable commands below each 
+line of the standard output.
+{opt nocmdbar} is for use with options which imply {opt cmdbar} 
+(e.g. {opt view}).
+
+{phang}
+{opt nolook:for} does not {helpb lookfor} {it:varname} or 
+{it:string}.
+
+{phang}
+{opt has(spec)}, {opt not(spec)} and {opt inse:nsitive} are 
+essentially the same as with {helpb ds}. In contrast to {cmd:ds} 
+however, {cmd:des2} does not exclude variables that do not match 
+the specified pattern from a specified {it:varlist}. To do this, 
+use {cmd:des2} as a prefix for {cmd:ds}.
+
+{phang}
+{opt vspace}[{cmd:(}{it:#}{cmd:)}] adds vertical space to the output 
+by including {it:#} empty lines below each line. Default {it:#} is 
+{cmd:1}.
+
+{phang}
+{opt varw:idth(#)}, {opt valw:idth(#)} and 
+{cmd:{ul:varl}}[{cmd:{ul:abel}}]{opt w:idth(#)} specify the width 
+(as number of characters) for variable names, value label names and 
+variable labels, respectively. For {opt varwidth} {it:#} must be 
+between 14 and 32 and defaults to {cmd:15}. For value label names, 
+{it:#} must be between 11 and 32 and defaults to {cmd:12}.
+
+{phang}
+{opt more} sets {help more} on, temporary.
+
+{dlgtab:Customize options}
+
+{phang}
+{opt cmd(cmd)} in its simplest form executes {cmd:{it:cmd}} 
+{it:varname}, when a (numeric) variable name is clicked. In {it:cmd} 
+use the {cmd:@} symbol to refer to {it:varname}. This placeholder is 
+added to the end of {it:cmd} if not specified. Thus, 
+{cmd:cmd(summarize)} is equivalent to {cmd:cmd(summarize @)}. Default 
+{cmd:{it:cmd}} is {helpb tabulate oneway:tabulate}. {cmd:cmd()} also 
+specifies the first command in the command bar.
+
+{phang}
+{opt lcmd(lcmd)} in its simplest form executes {cmd:{it:lcmd}} 
+{it:value label name}, when a value label name is clicked. As with 
+{opt cmd()} symbol {cmd:@} is used as a placeholder for {it:lblname}. 
+{cmd:lcmd()} also specifies the first label command in 
+the command bar. If you change {it:lcmd} remember to also change 
+the display text in {opt ltxt1(str)}.
+
+{phang}
+{opt str:cmd(scmd)} specifies {it:scmd} be executed if a string 
+variable is clicked. If {opt strcmd()} is not specified, it 
+defaults to {it:cmd}.
+
+{phang}
+{cmd:cmd{it:#}(}{it:cmd}{cmd:)} specifies the {it:#th} command in 
+the command bar, where {it:#} is {cmd:1}, {cmd:2}, 
+{it:...}, {cmd:9}. The defaults are
+
+{col 18}{opt cmd1}{col 24}{helpb tabulate oneway:tabulate}
+{col 18}{opt cmd2}{col 24}{helpb summarize}
+{col 18}{opt cmd3}{col 24}{helpb codebook}
+
+{p 8 8 8}
+and commands {opt cmd4} to {opt cmd9} are undefined.
+
+{phang}
+{cmd:lcmd{it:#}(}{it:lcmd}{cmd:)} specifies the {it:#th} label 
+command in the command bar. Up to 9 label commands may be 
+defined. Default label commands are
+
+{col 18}{opt lcmd1}{col 24}{helpb label:label list}
+{col 18}{opt lcmd2}{col 24}{helpb labelbook}
+
+{p 8 8 8}
+and label commands {opt lcmd3} to {opt lcmd9} are undefined.
+
+{phang}
+[{cmd:l}]{cmd:txt{it:#}(}{it:str}{cmd:)} displays {it:str} for 
+[{cmd:l}]{cmd:cmd{it:#}} in the command bar. 
+If not specified, {it:str} defaults to the first word of 
+[{it:l}]{it:cmd}. Per default {cmd:ltxt1} is set to 
+{cmd:"label list"}. Remember to change {opt ltxt1(str)} if 
+you change {opt lcmd1(lcmd)}.
+
+{phang}
+{opt cmdorder(cmdorder_sepc)} specifies the layout for 
+the command bar. In {it:cmdorder_spec} numbers  {cmd:1}-{cmd:9}, 
+{cmd:L1}, {cmd:L2}, {it:...}, {cmd:L9} and {cmd:\} are allowed. 
+Digits represent {cmd:cmd{it:#}}, {cmd:L{it:#}} represents 
+{cmd:lcmd{it:#}} and {cmd:\} marks the end of a line. Default is 
+{cmd:cmdorder(1 2 3 L1 L2 \ 4 5 6 7 8)}, resulting in a command bar 
+with (up to) two lines. Empty commands are not shown.
+
+{phang}
+{cmdab:tabv:alues(}{it:#} [{cmd:, char}]{cmd:)} is used with 
+{opt cmd()} if {it:cmd} is not {cmd:tabulate}. It requests variables 
+with at most {it:#} distinct values be tabulated and {it:cmd} be 
+executed for all other variables. 
+
+{p 8 8 8}
+This option slows down execution time considerably. Suboption 
+{opt char} allows {cmd:des2} to set 
+{help char:variable characteristics} holding the number of distinct 
+values. If {opt tabvalues} is specified repeatedly, {cmd:des2} obtains 
+the number of distinct values from these characteristics, speeding up  
+execution time. 
+
+{phang}
+[{cmd:re}]{opt set}[{cmd:(}{it:optnames}{cmd:)}] remembers specified 
+options by defining {help macro:global macros} 
+{cmd:Des2_Opt_}{it:optnames} that contain the specified options. 
+In {it:optnames} {opt view}, [{opt no}]{opt cmdbar}, {opt lookfor}, 
+{opt has}, {opt not}, {opt insensitive}, {opt vspace}, {opt varwidth}, 
+{opt valwidth}, {opt varlabelwidth}, {opt more}, {cmd:cmd{it:#}}, 
+{cmd:txt{it:#}}, {cmd:lcmd{it:#}}, {cmd:ltxt{it:#}}, {opt strcmd}, 
+{opt cmdorder} and {opt tabvalues} are allowed. Wildcards {cmd:*} and 
+{cmd:?} may be used to abbreviate option names. 
+
+{p 8 8 8}
+{opt set} without {it:optnames} defines global macros for any options 
+specified together with {opt set} in the current call. {opt reset} 
+without {it:optnames} clears all global macros previously set by 
+{cmd:des2}. Neither option suppresses output.
+
+
+{title:Examples}
+
+{pstd}
+Load the auto dataset
+
+{phang2}{stata sysuse auto:{bf}. sysuse auto}{p_end}
+
+{pstd}
+The default output
+
+{phang2}{stata des2:{bf}. des2}{p_end}
+
+{pstd}
+Output in the {help viewer}
+
+{phang2}{stata des2 ,view:{bf}. des2 , view}{p_end}
+
+{pstd}
+The command bar (in the results window)
+
+{phang2}{stata des2 ,cmdbar:{bf}. des2 , cmdbar}{p_end}
+{phang2}{stata des2 ,cmdbar vspace:{bf}. des2 , cmdbar vspace}{p_end}
+
+{pstd}
+{cmd:des2} and {helpb lookfor}
+
+{phang2}{stata des2 record:{bf}. des2 record}{p_end}
+{phang2}{stata des2 record ,nolookfor:{bf}. des2 record , nolookfor}{p_end}
+
+{pstd}
+{cmd:des2} and {helpb ds}
+
+{phang2}{stata des2 mpg ,has(vallabel):{bf}. des2 mpg , has(vallabel)}{p_end}
+{phang2}{stata "des2 : ds mpg ,has(vallabel)":{bf}. des2 : ds mpg , has(vallabel)}{p_end}
+
+{pstd}
+Add {helpb inspect} as another command to the command bar
+
+{phang2}{stata des2 ,cmdbar cmd4(inspect):{bf}. des2 , cmdbar cmd4(inspect)}{p_end}
+
+{pstd}
+Show {helpb inspect} as the first command followed by all other 
+commands
+
+{phang2}{stata des2 ,cmdbar cmd4(inspect) cmdorder(4 1 2 4 L1 L2):{bf}. des2 , cmdbar cmd4(inspect) cmdorder(1 2 4 3 L1 L2)}{p_end}
+
+{pstd}
+{help tabulate oneway:Tabulate} numeric variables with at most 5 
+distinct values or string variables, {help summarize} other variables
+
+{phang2}{stata des2 make price rep78 foreign,cmd(summarize) strcmd(tabulate) tabvalues(5):{bf}. des2 make price rep78 foreign ,cmd(summarize) strcmd(tabulate) tabvalues(5)}{p_end}
+
+{pstd}
+Remember the specified options above
+
+{phang2}{stata des2 make price rep78 foreign ,cmd(summarize) strcmd(tabulate) tabvalues(5) set(cmd1 strcmd tabvalues):{bf}. des2 make price rep78 foreign ,cmd(summarize) strcmd(tabulate) tabvalues(5) set(cmd1 strcmd tabvalues)}{p_end}
+
+{phang2}{stata des2:{bf}. des2}{p_end}
+
+{pstd}
+Clear all previously specified options
+
+{phang2}{stata des2 ,reset:{bf}. des2 , reset}{p_end}
+
+
+{title:Acknowledgments}
+
+{pstd}
+Andreas Franken suggested the combination of {helpb describe} with 
+{helpb lookfor} that also led to the broader possibility to use 
+{cmd:des2} as a prefix.
+
+
+{title:Author}
+
+{pstd}Daniel Klein, University of Kassel, klein.daniel.81@gmail.com
+
+
+{title:Also see}
+
+{psee}
+Online: {help describe}, {help lookfor}, {help ds}
+{p_end}
+
+{psee}
+if installed: {help findname}, {help fre}
+{p_end}

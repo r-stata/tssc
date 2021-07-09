@@ -1,0 +1,280 @@
+{smcl}
+{* 26nov2008}{...}
+{cmd:help xriml}{right:Patrick Royston}
+{hline}
+
+{title:Reference Interval Estimation by Maximum Likelihood}
+
+
+{title:Syntax}
+
+
+{p 8 12 2}
+{cmd:xriml}
+{it:yvar}
+[{it:xvar}]
+{ifin}
+{weight}
+[{cmd:,}
+{cmdab:di:st(}{it:distribution_code}{cmd:)}
+[{it:major_options}
+{it:minor_options}]
+
+
+{synoptset 30 tabbed}{...}
+{synopthdr}
+{synoptline}
+{syntab :{it:major}}
+{synopt :{opt ce:ntile(numlist)}}defines the required centiles of {it:yvar}|{it:xvar}{p_end}
+{synopt :{opt fp(terms)}}specifies the fractional polynomial power(s) in {it:xvar}
+for the M, S, G and D regression models{p_end}
+{syntab :{it:minor}}
+{synopt :{opt ce:ns(censvar)}}defines a censoring variable{p_end}
+{synopt :{opt cova:rs(covar_list)}}includes variables as predictors in the regression models
+for the M, S, G and D curves{p_end}
+{synopt :{opt cv}}parametrizes the S-curve to be a coefficient of variation{p_end}
+{synopt :{opt in:it(terms)}}specifies initial values for the G and D curves{p_end}
+{synopt :{opt lt:olerance(#)}}is a convergence criterion for the iterative fitting process{p_end}
+{synopt :{opt nod:etail}}suppresses display of details of the iterative fitting algorithm{p_end}
+{synopt :{opt nogr:aph}}suppresses the plot of the age-specific reference interval{p_end}
+{synopt :{opt noout:ofsample}}restricts prediction of M, S, G and D curves and Z-scores
+to the estimation sample{p_end}
+{synopt :{opt off:set(varname)}}adds {it:varname} to the M-curve of the model{p_end}
+{synopt :{opt plot(plot)}}provides a way to add other plots to the 
+generated graph; see help {help plot_option:plot option}{p_end}
+{synopt :{opt scat:ter(scatter_options)}}are options of {help scatter}{p_end}
+{synopt :{opt se}}produces standard errors of the M, S, G and D curves, and reference intervals{p_end}
+{synopt :{it:line_options}}options allowed with {help line}{p_end}
+{synoptline}
+{p2colreset}{...}
+
+{pstd}
+where {it:distribution_code} is one of {cmd:n}|{cmd:en}|{cmd:men}|{cmd:pn}|{cmd:mpn}|{cmd:sl}.
+
+
+{title:Description}
+
+{pstd}
+{opt xriml} calculates cross-sectional reference intervals for {it:yvar}, which is assumed
+to follow one of 6 possible distributions.  The parameters are estimated by
+maximum likelihood.
+
+{pstd}
+If {it:xvar} is specified, reference intervals for {it:yvar} conditional on {it:xvar} are
+estimated. Typically, {it:xvar} is age. The parameters of the distribution are
+modelled as functions of {it:xvar} using fractional polynomials (see {help fracpoly}).
+
+{pstd}
+{opt xriml} without variables or options displays the results of the most recent
+estimation.
+
+{pstd}
+{bf:NOTE}: the default prediction behaviour of {cmd:xriml} changed at version 6.0.0.
+The {opt all} option has been replaced with a {opt nooutofsample} option; please
+see the description of the latter under {it:Minor options} below.
+
+
+{title:Options}
+
+{dlgtab:Major options}
+
+{phang}
+{opt distribution(distribution_code)} is NOT optional.  Valid distribution_codes are Normal
+    ({opt n}), exponential-Normal ({opt en}), modulus-exponential-Normal ({opt men}),
+    power-Normal (or Box-Cox) ({opt pn}), modulus power-Normal ({opt mpn}) and shifted
+    (or three-parameter) lognormal ({opt sl}).
+
+{phang}
+{opt centile(numlist)} defines the required centiles of {it:yvar}|{it:xvar}.
+    Default {it:numlist} is {opt 3 97} (i.e. a 94% reference interval).
+
+{phang}
+{cmd:fp(}[{cmd:m:}{it:term}] [{cmd:, s:}{it:term}] [{cmd:, g:}{it:term}] [{cmd:, d:}{it:term}]{cmd:)}
+specifies the fractional polynomial power(s) in {it:xvar} for the M, S, G and
+(for the four-parameter distributions only) D regression models.
+
+{pmore}
+{it:term} is of form
+[{it:powers}] {it:#} [{it:#} ...]|{cmd:fix} {it:#}.  The phrase {it:powers} is optional.
+The powers should be separated by spaces, for example
+{cmd:fp(m:powers 0 1, s:powers 2)}, or equivalently {cmd:fp(m:0 1, s:2)}. If
+{it:powers} or {cmd:fix} are not specified for any curve, the curve is assumed to be
+a constant ({cmd:_cons}) estimated from the data.
+
+{pmore}
+{cmd:fix} {it:#} implies that the corresponding curve is NOT to be estimated from the
+data, but is to be fixed at {it:#}. {cmd:fix} is valid only with {cmd:g:} and {cmd:d:}.
+
+{pmore}
+Default: constants for each curve (M, S, G; D if applicable).
+
+{dlgtab:Minor options}
+
+{phang}
+{opt cens(censvar)} defines {it:censvar} as the censoring variable for data in which
+    some observations are left- ({it:censvar} = -1) or right- ({it:censvar} = 1) censored.
+    Uncensored observations have {it:censvar} = 0.
+
+{phang}
+{cmd:covars(}[{cmd:m:}{it:mcovars}] [{cmd:, s:}{it:scovars}] [{cmd:, g:}{it:gcovars}]
+[{cmd:, d:}{it:dcovars}]{cmd:)} includes {it:mcovars}
+({it:scovars}, {it:gcovars}, {it:dcovars}) variables as predictors in the regression model
+for the M (S, G, D if applicable) curves.
+
+{phang}
+{opt cv} parametrizes the S-curve to be a coefficient of variation (CV, standard
+    deviation divided by median), rather than a standard deviation.
+
+{phang}
+{cmd:init(}[{cmd:g:}{it:#}] [{cmd:, d:}{it:#}]{cmd:)}
+specifies initial values for the G ({cmd:g:}) and (where applicable) D ({cmd:d:})
+parameter curves. Defaults are shown below.
+
+	Distribution     Default # for G    Default # for D
+	---------------------------------------------------
+	{cmd:n}                     N/A                N/A
+	{cmd:en}                    0.01               N/A
+	{cmd:men}                  -0.2                 1
+	{cmd:pn}                    1                  N/A
+	{cmd:mpn}                   1                   1
+	{cmd:sl}                    0                  N/A
+	---------------------------------------------------
+
+{phang}
+{opt ltolerance(#)} is a convergence criterion for the iterative fitting process.  For
+    convergence, the difference between the final two values of the log
+    likelihood must be less than {it:#}.  Default {it:#} is 0.001.
+
+{phang}
+{opt nodetail} suppresses display of the steps of the iterative fitting algorithm
+    and of the estimated regression coefficients and confidence intervals.
+
+{phang}
+{opt nograph} suppresses the default plot of {it:yvar} against {it:xvar} with fitted median and
+    reference limits.
+
+{phang}
+{opt nooutofsample} restricts prediction of M, S, G and D curves, standard errors
+(when specified) and Z-scores to the estimation sample. The default is to predict
+in-sample and out-of-sample for all available observations of {it:xvar} and {it:yvar}.
+
+{phang}
+{opt offset(varname)} offsets {it:varname}, that is, {it:varname} is added to the M-curve of
+    the model.
+
+{phang}
+{opt plot(plot)} provides a way to add other plots to the 
+generated graph; see help {help plot_option:plot option}.
+
+{phang}
+{cmd:saving(}{it:filename} [{cmd:, replace}]{cmd:)} saves the graph to a file
+(see {opt nograph}).
+
+{phang}
+{opt scatter(scatter_options)} are options of {help scatter}. 
+These should be specified to control the rendering of the original data 
+points.
+
+{phang}
+{opt se} produces standard errors of the M, S, G (and if applicable, D) curves.
+    Standard errors of the estimated reference limits are also calculated.
+    Warning: This option is computationally intensive when determining SEs of
+    centiles, and may take considerable time on a slow computer and/or with a
+    large dataset.
+
+{phang}
+{it:line_options} are any of the options allowed with {help line}.  
+These should be specified to control the rendering of the smoothed lines
+or the overall graph.
+
+
+{title:Remarks}
+
+{pstd}
+All the models fitted by {opt xriml} are defined by transformations of the original
+data towards a Normal distribution (the `identity transformation' in the case
+of the Normal model). The shape parameter(s) of the resulting distributions
+may either be estimated from the data or fixed by the user.
+
+{pstd}
+Estimation is by maximum likelihood and is iterative. For the three-parameter
+models, the fit should converge within about 4-8 iterations. For the
+four-parameter models, about 5-15 iterations are needed in most cases.
+
+{pstd}
+The {opt pn} and {opt mpn} models may be used only with data which are positive in value.
+The restriction does not apply to any of the other models.
+
+{pstd}
+Each of the {opt en}, {opt pn} and {opt sl} distributions has 3 parameters known as M (mu, the
+median), S (sigma, the scale factor) and G (gamma, generic name for the shape
+parameter).  M is modelled as a fractional polynomial (FP) function of xvar.  S
+and G may also be modelled as FP functions of xvar, or may be treated as
+constants to be estimated from the data.
+
+{pstd}
+The {opt mpn} (modulus power-Normal) and {opt men} (modulus exponential-Normal)
+distributions are governed by four parameters, M, S, G and D.  There are two shape
+parameters, G (gamma) and D (delta).  Delta = 1 gives the `parent' {opt pn} and {opt en}
+(power-Normal and exponential-Normal) distributions respectively.  If delta < 1
+the distribution has longer tails than the corresponding `parent' distribution,
+and vice versa for delta > 1.  The distributions with gamma = 1 for the {opt mpn} and
+gamma = 0 for the {opt men} are symmetric.
+
+{pstd}
+The {opt en} ({opt men}) and {opt pn} ({opt mpn}) models are essentially identical in that if Y has a
+{opt pn} ({opt mpn}) distribution, then log Y has an {opt en} ({opt men}) distribution. However, the
+parameter values from the two models will differ, since in the first case the M
+curve is the median of Y, whereas in the second it is the median of log Y.  The
+S curves from the {opt en} and {opt men} models for log Y have the character of a CV for Y.
+
+{pstd}
+Note that fractional polynomial transformations of {it:xvar} are adjusted such
+that the transformed value is 0 at the mean of {it:xvar}.
+
+
+{title:Examples}
+
+{phang}
+{cmd:. use foothemi.dta}
+
+{phang}
+{cmd:. generate y = log(foot)}
+
+{phang}
+{cmd:. xriml y gawks, fp(m:-2 -2, s:1) dist(en)}
+
+{phang}
+{cmd:. xriml y gawks, fp(m:-2 -2, s:1, g:fix 0) dist(men) se}
+
+{phang}
+{cmd:. xriml foot gawks, fp(m:powers 2 2, s:powers 2) dist(pn)}
+
+{phang}
+{cmd:. xriml foot gawks, fp(m:2 2) dist(pn) saving(g1, replace)}
+
+{phang}
+{cmd:. xriml foot gawks, fp(m:2 2) dist(pn) cv}
+
+{phang}
+{cmd:. xriml foot gawks, fp(m:1, s:-1, g:0) dist(en) nooutofsample}
+
+
+{title:Author}
+
+{pstd}
+Patrick Royston, MRC Clinical Trials Unit, London.
+patrick.royston@ctu.mrc.ac.uk
+
+{pstd}
+Eileen Wright, Macclesfield
+
+
+{title:Also see}
+
+{psee}
+Manual:  {bf:[R] fracpoly}
+
+{psee}
+Online:  {help fracpoly}, {help xrigls} (when installed)
+{p_end}

@@ -1,0 +1,142 @@
+{smcl}
+{* 08oct2002}{...}
+{hline}
+help for {hi:gcause}{right:[P.Joly]}
+{hline}
+
+{title:Granger causality test}
+
+{p 8 27}
+{cmd:gcause}
+{it:var1}
+{it:var2}
+[{cmd:if} {it:exp}]
+[{cmd:in} {it:range}]
+{cmd:,}
+      {cmdab:l:ags(}{it:#}{cmd:)}
+[
+      {cmdab:ex:og(}{it:varlist}{cmd:)}
+      {cmdab:reg:ress}
+]
+
+
+{p}
+{cmd:gcause} is for use with time-series data.  You must {cmd:tsset}
+your data before using this commands; see help {help tsset}.
+
+
+{title:Description}
+
+{p}
+{cmd:gcause} performs a Granger causality test to investigate whether
+lagged values of a variable, {it:var2}, help in forecasting another
+variable, {it:var1}.  See {cmd:Methods & Formulas} below.
+
+
+{title:Options}
+
+{p 0 4}
+{cmd:lags(}{it:#}{cmd:)} is not optional.
+It specifies the number of lags of {it:var1} and {it:var2} to include
+in the regression.
+
+{p 0 4}
+{cmd:exog(}{it:varlist}{cmd:)} for lack of a better name, specifies
+other conditioning variables which may enter the regression.
+{it:varlist} may contain time-series operators which is particularly
+useful to add other lagged variables to the test regressions.
+
+{p 0 4}
+{cmd:regress} requests the display of the output from the unrestricted
+regression.
+
+
+{title:Methods & Formulas}
+
+{p}
+Granger-causality tests are usually performed in the context of vector
+autoregressions (VAR) or more specifically, individual equations
+within VAR systems.
+Individual equations in VARs are known as autoregressive distributed
+lag (ADL) relationships and may be represented as
+
+{p 4 4}
+{bind:             {it:p}                {it:p}}{break}
+y_{it:t} = {it:c}_1 + SUM {it:a_i} *y_{it:t-i} + SUM {it:b_i} *x_{it:t-i} + D_{it:t} + u_{it:t}{break}
+{bind:            {it:i}=1              {it:i}=1}
+
+{p 4 4}
+({it:t} = 1,...,{it:T} )
+
+{p}
+where y_{it:t} and x_{it:t} respectively refer to {it:var1} and
+{it:var2} in {cmd:gcause}'s syntax diagram and D_{it:t} corresponds
+to other variables that need to be controlled for, if any, specified
+at {cmd:exog()}.
+{it:p} is determined by {cmd:lags()}.
+
+{p}
+The null hypothesis that x_{it:t} does not Granger-cause y_{it:t}
+amounts to testing whether {it:b_i} = 0 for {it:i} = 1,...,{it:p}.
+The rationale for conducting such a test is simple.  If event X is
+seen as causing event Y, then event X should precede Y
+(Hamilton, p.303).
+The test statistic is calculated from the sum of squared residuals
+(RSS) of the unrestricted equation (above) and restricted equation
+
+{p 4 4}
+{bind:             }{it:p}{break}
+y_{it:t} = {it:c}_0 + SUM {it:g_i} *y_{it:t-i} + D_{it:t} + e_{it:t}{break}
+{bind:            }{it:i}=1
+
+using the formula for joint-significance tests given by
+
+{p 4 4}
+{it:F} = ({it:RSS}_0 - {it:RSS}_1)/{it:p}{break}
+{bind:    }{dup 18:{c -}}{break}
+{bind:    {it:RSS}_1 /({it:T} -2{it:p} -1)}
+
+{p}
+which is distributed as an {it:F} ({it:p},{it:T} -2{it:p} -1) variable.
+{it:RSS}_0 ({it:RSS}_1) is the residual sum of squares of the
+restricted (unrestricted) regression.
+
+{p}
+The above test in only valid asymptotically due to the presence of
+a lagged dependent variable in the regression.
+An asymptotically equivalent test is given by,
+
+{p 4 4}
+{it:F}_a = {it:T} ({it:RSS}_0 - {it:RSS}_1){break}
+{bind:      }{dup 17:{c -}}{break}
+{bind:           {it:RSS}_1}
+
+which is distributed as a chi2({it:p}) variable.
+
+
+{title:References}
+
+{p 0 2}
+Hamilton, J. D. (1994). {it:Time Series Analysis}. Princeton University
+Press. 799 p.
+
+
+{title:Acknowledgements}
+
+{p}
+Thanks to Carol Miu for helpful comments.
+
+
+{title:Author}
+
+Patrick Joly, Industry Canada
+pat.joly@utoronto.ca
+
+
+{title:Also see}
+
+{p 0 19}
+On-line:  help for
+      {help test},
+      {help vecar} (if installed)
+{p_end}

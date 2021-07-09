@@ -1,0 +1,140 @@
+{smcl}
+{hline}
+Help file for {hi:runparscale} {right:(Sept 26, 2012)}
+{hline}
+
+{p 4 4 2}
+Builds a PARSCALE data file and command file, 
+executes the command file, and displays  
+PARSCALE output in the Stata results window
+
+{hline}
+
+{p 8 17 2}
+{cmd: runparscale} varlist  , {hi:ID(}{it:subject id}{hi:)}
+ [ {cmd:RUnname(}{it:string}{hi:)}
+   {cmd:minsize(}{it:interger 20}{hi:)}
+   {cmd:display(}{it:string with 0,1,2 and/or 3}{hi:)}
+   {cmd:SCale(}{it:string 1.7}{hi:)} 
+   {cmd:NQpt(}{it:string 11}{hi:)} 
+   {cmd:CYcles(}{it:string 1000}{hi:)} 
+   {hi:cleanup} ]
+ 
+{title:Required commands}
+
+{p 0 8 2}
+{cmd:varlist} - Variables to be used in the 
+PARSCALE run. 
+
+{p 0 8 2}
+{cmd:ID} - a unique identifier for each 
+record must be provided. This is used to 
+merge in theta scores estimated from the
+PARSCALE run.
+
+{title:Options}
+
+{p 0 8 2}
+{cmd:runname(}{it:string}{hi:)} - file name stub used to 
+name PARSCALE data and command files created by {hi:runparscale}.
+
+{p 0 8 2}
+{cmd:minsize(}{it:integer}{hi:)} - Enter the minimum category 
+frequency allowed. The default value is 5% of the total number 
+of observations in the last item on the varlist, or 20, 
+whichever is smaller.  
+Categories will be combined, if possible, to meet the minsize.  Any variable that does not have enough observations in at least 2 categories will be dropped.  If you do not want any categories combined, specify minsize(1). 
+
+{p 0 8 2}
+{cmd:display(}{it:string with 0,1,2 and/or 3}{hi:)} - displays the 
+results of PARSCALE run phase 0, 1 2 or 3 as indicated. 
+Any string that contains 0,1,2,3 will work (e.g., "0123" or
+"0,1,2,3" or "phase2only", or "phase 1 and 2", or "2"). 
+
+{p 0 8 2}
+{cmd:scale} - changes the scale parameter from the default of 1.7.
+
+{p 0 8 2}
+{cmd:nqpt} - changes the number of quadrature points from a default of 11.  
+
+{p 0 8 2}
+{cmd:cycles} - changes the maximun number of iterations in PARSCALE stage 2 from the default of 1000.
+
+{p 0 8 2}
+{cmd:cleanup} - removes interim files, PARSCALE command, 
+data and results files. If {hi:runname} is not specified, 
+{hi:cleanup} is automatically invoked.
+
+{title:Description}
+
+{p 4 4 2}
+{cmd:runparscale} brings the IRT analysis framework of 
+PARSCALE into the Stata enviroment. While {cmd:runparscale} 
+does little more than data reformat and ascii file creation, 
+it removes a lot of the hassle of estimating IRT models. 
+
+{title:Remarks}
+
+{p 8 12 2}
+Program is rclass, returning item parameters and standard errors.
+
+{p 8 12 2}
+Warning message for variables with more than 15 levels (PARSCALE will reject).  Letter codes automatically made for 2-digit values. 
+
+{p 8 12 2}
+Items can have 2-10 categories.  The program will run correctly with up to 15 categories (PARSCALE's maximum), but not all item cutpoints will be displayed.  They will still be available in the {hi:runname}.par file.  
+
+{p 8 12 2}
+The maximum number of items is 230.
+
+{p 8 12 2}
+Allows missing values.
+
+{p 8 12 2}
+Allows character or numeric ID's up to 9 digits.  Creates a numeric, 10-digit ID code for PARSCALE by adding 1,000,000,000 to the ID, first converting string IDs to a unique number if needed.
+
+{p 8 12 2}
+Please make sure that Stata's current working directory is the same as your data's directory (help cd).
+
+{p 8 8 2}
+Default PARSCALE instructions are: 
+
+{p 12 12 2}
+        >CALIB GRADED, LOGISTIC, SCALE=1.7, NQPT=11, CYCLES=1000, CRIT=.001 
+
+{p 12 12 2}
+        >SCORE EAP 
+
+{p 12 12 2}
+If you want to change anything but the scale, nqpt, and cycles, you can edit the .PSL file or this program before running it.
+
+{p 8 12 2}
+Written for Stata 8.2.  
+
+{title:Examples}
+
+. {hi:runparscale y1-y7, id(id) scale(1.83) display(2) runname(splunge)}
+
+. {hi:runparscale y1-y7, id(id) scale(1.83) display(2) cleanup}
+
+
+{title:Authors}
+
+{p 0 12 2}
+{hi:runparscale} was written by Laura Gibbons, PhD and Richard Jones, ScD, under the direction of Paul Crane, MD MPH.  We appreciate the assistance of Tom Koepsell, MD MPH. 
+{break}
+
+Please see {hi:runparscale.ado} for UW License information.{break}
+
+Laura Gibbons, PhD
+gibbonsl@u.washington.edu 
+
+Richard N Jones, ScD
+jones@mail.hrca.harvard.edu
+
+
+{title:Also see}
+
+{p 4 4 2}
+{cmd:difwithpar} and {cmd:prepar}.
+

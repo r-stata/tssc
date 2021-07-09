@@ -1,0 +1,109 @@
+.-
+help for ^cpr^
+.-
+
+Results for all possible combinations of arguments
+--------------------------------------------------
+
+    ^cpr^ list1 [ ^\^ list2 [ ^\^ list3 ] ... ]
+    [ ^, noh^eader ^nos^top ^p^ause ] ^:^ stata_cmd
+
+Description
+-----------
+
+^cpr^ repeats stata_cmd using all possible n-tuples of arguments from
+between one and five lists: each possible argument from one list, each
+possible pair of arguments from two lists, and so forth.
+
+In stata_cmd, ^@@1^ indicates the argument from list1, ^@@2^ the
+argument from list2, and so forth.
+
+The elements of each list must be separated by spaces.
+
+If there are n_j arguments in list j, j = 1, ..., k, the number of sets
+of results is the product of the k n_j.
+
+The name ^cpr^ is derived from Cartesian product.
+
+
+Options
+-------
+
+^noheader^ suppresses the display of the command before each repetition.
+
+^nostop^ does not stop the repetitions if one of the repetitions results
+    in an error.
+
+^pause^ pauses output after each execution of stata_cmd.  This may be
+    useful, for example, under Stata for Windows when ^cpr^ is combined
+    with ^graph^.
+
+
+Remarks
+-------
+
+^cpr^ could lead to a lot of output. Consider the effects on paper and
+patience, your own and your institution's.
+
+^cpr^ is based on ^cp^ written for Stata 5.0. ^cp^ in Stata 6.0 is a
+built-in command.
+
+Like ^cp^, ^cpr^ does not understand quoted strings.
+
+Unlike ^cp^, ^cpr^ does understand numlists.
+
+Unlike ^for^, ^cpr^ does not understand varlists. A varlist will simply
+be passed through to stata_cmd.
+
+
+Examples
+--------
+
+        . ^cpr 2 4 6 : xtile mpg@@1 = mpg, n(@@1)^
+
+        This executes
+
+        . ^xtile mpg2 = mpg, n(2)^
+        . ^xtile mpg4 = mpg, n(4)^
+        . ^xtile mpg6 = mpg, n(6)^
+
+        . ^cpr length weight mpg \ 2 4 : xtile @@1@@2 = @@1, n(@@2)^
+
+        This executes
+
+        . ^xtile length2 = length, n(2)^
+        . ^xtile length4 = length, n(4)^
+        . ^xtile weight2 = weight, n(2)^
+        . ^xtile weight4 = weight, n(4)^
+        . ^xtile mpg2 = mpg, n(2)^
+        . ^xtile mpg4 = mpg, n(4)^
+
+        . ^cpr mpg price \ length displ weight : regress @@1 @@2^
+
+        This executes
+
+        . ^regress mpg length^
+        . ^regress mpg weight^
+        . ^regress mpg displ^
+        . ^regress price length^
+        . ^regress price weight^
+        . ^regress price displ^
+
+        . ^cpr 1/5 \ 1/8 : mat A[@@1,@@2] = sqrt(A[@@1,@@2])^
+
+        This executes an element-by-element replacement of each element
+        of a 5 X 8 matrix with its square root.
+
+
+Author
+------
+
+         Nicholas J. Cox, University of Durham, U.K.
+         n.j.cox@@durham.ac.uk
+
+
+Also see
+--------
+
+On-line:  help for @for@
+

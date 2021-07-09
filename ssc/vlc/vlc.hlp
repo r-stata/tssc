@@ -1,0 +1,128 @@
+{smcl}
+{* 31Jan2008}{...}
+{hline}
+help for {hi:vlc}
+{hline}
+
+{title:Compare value labels across datasets}
+
+{p 8 14}{cmd:vlc} [{it:varlist1}]
+[{cmd:using }{it:filename1}] [{it:weight}]
+[{cmd:if} {it:exp}] [{cmd:in} {it:range}]
+{bind:[{cmd:,} {cmd:to(}{it:filenamelist}{cmd:)}}
+{cmd:tab} {cmdab:pc:ent} {cmdab:nofr:eq}
+{cmdab:nomi:ss} {cmdab:noz:ero}
+{cmd:saving(}{it:filename2}{cmd:)}
+[{cmd:replace} | {cmd:append}]
+{bind:{cmd:clear} ]}
+
+{p}{cmd:aweight}s, {cmd:fweight}s, {cmd:iweight}s and {cmd:pweight}s
+are allowed; see help {help weights}.
+
+{title:Description}
+
+{p}{cmd:vlc} compares value labels across two datasets, and 
+optionally compares the distribution of observations (with the 
+{cmd:tab} option).  If no filename is specified with {cmd:using},
+the data currently in memory are assumed to be the using data.
+
+{title:Options}
+
+{p 0 4}{cmd:to(}{it:filenamelist}{cmd:)} specifies a set of files
+to which the current file (either in memory or 
+specified with {cmd:using}) should be compared. 
+If no comparison file is specified, the value labels in the 
+current file are tabulated with no comparison group.
+If multiple files are specified, the list of file names may need
+to be enclosed in compound double quotes; see help {help quotes}.
+
+{p 0 4}{cmd:tab} tabulates the frequency of value label 
+assignments in both datasets.
+
+{p 0 4}{cmd:pcent} specifies that tabulations of 
+value label assignments should report 
+percentages in addition to frequencies.
+
+{p 0 4}{cmd:nofreq} suppresses frequencies in 
+tabulations of value label assignments.
+
+{p 0 4}{cmd:nomiss} requests that no missing values be tabulated.
+
+{p 0 4}{cmd:nozero} suppresses categories with no observations in either dataset.
+
+{p 0 4}{cmd:clear} replaces the data currently in memory.  Without this option,
+data that has changed since the last save will not be lost; instead, an error will result.
+
+{p 0 4}{cmd:saving(}{it:filename2}{cmd:)} specifies a file location to 
+which to write a tab-delimited text file of results.
+
+{p 0 4}{cmd:replace} specifies that the file specified in
+{cmd:saving(}{it:filename2}{cmd:)} may be overwritten if it exists already.
+
+{p 0 4}{cmd:append} specifies that the tabulation should be appended to the file specified in
+{cmd:saving(}{it:filename2}{cmd:)}, assuming it exists already.
+
+{title:Remarks}
+
+{p}When {cmd:vlc} terminates, a dataset is in memory containing labels, values,
+and frequencies or percentages if requested. {cmd:vlc}
+saves no results in {cmd:r()}.  Type {help preserve} before running
+{cmd:vlc} to facilitate returning to data in memory.
+
+{title:Examples}
+
+{synoptset 20 tabbed}{...}
+{synoptline}
+{p 8 12}{stata "ssc install ddf2dct, replace" : ssc install ddf2dct, replace}{p_end}
+{p 8 12}{stata "clear" : clear}{p_end}
+{p 8 12}{stata "tempfile do dct s96" : tempfile do dct s96}{p_end}
+{p 8 12}{stata "ddf2dct using http://www.nber.org/sipp/1996/sipp96l.ddf, dct(`dct') do(`do')" : ddf2dct using http://www.nber.org/sipp/1996/sipp96l.ddf, dct(`dct') do(`do')}{p_end}
+{p 8 12}{stata "run `do'" : run `do'}{p_end}
+{p 8 12}{stata "describe t??amt" : describe t??amt}{p_end}
+{p 8 12}{stata "notes t50" : notes t50}{p_end}
+{p 8 12}{stata "save `s96'" : save `s96'}{p_end}
+{p 8 12}{stata "tempfile do dct s01" : tempfile do dct s01}{p_end}
+{p 8 12}{stata "ddf2dct using http://www.nber.org/sipp/2001/sipp01w1.ddf, dct(`dct') do(`do')" : ddf2dct using http://www.nber.org/sipp/2001/sipp01w1.ddf, dct(`dct') do(`do')}{p_end}
+{p 8 12}{stata "clear" : clear}{p_end}
+{p 8 12}{stata "run `do'" : run `do'}{p_end}
+{p 8 12}{stata "notes t50" : notes t50}{p_end}
+{p 8 12}{stata "tempfile do dct s93" : tempfile do dct s93}{p_end}
+{p 8 12}{stata "ddf2dct using http://www.nber.org/sipp/1993/sipp93w1.ddf, dct(`dct') do(`do')" : ddf2dct using http://www.nber.org/sipp/1993/sipp93w1.ddf, dct(`dct') do(`do')}{p_end}
+{p 8 12}{stata "clear" : clear}{p_end}
+{p 8 12}{stata "run `do'" : run `do'}{p_end}
+{p 8 12}{stata "notes higrade" : notes higrade}{p_end}
+{p 8 12}{stata "save `s93'" : save `s93'}{p_end}
+{p 8 12}{stata "vlc higrade, to(`s96')" : vlc higrade, to(`s96')}{p_end}
+{p 8 12}{stata "use `s96', clear" : use `s96', clear}{p_end}
+{p 8 12}{stata "vlc eeducate, to(`s93')" : vlc eeducate, to(`s93')}{p_end}
+{synoptline}
+{p 8 12}{stata "clear" : clear}{p_end}
+{p 8 12}{stata "tempfile do dct c89" : tempfile do dct c89}{p_end}
+{p 8 12}{stata "ddf2dct using http://www.nber.org/cps/cpsmar89_91.doc, dct(`dct') do(`do') drop(FILLER)": ddf2dct using http://www.nber.org/cps/cpsmar89_91.doc, dct(`dct') do(`do') drop(FILLER)}{p_end}
+{p 8 12}{stata "run `do'" : run `do'}{p_end}
+{p 8 12}{stata "save `c89'" : save `c89'}{p_end}
+{p 8 12}{stata "clear" : clear}{p_end}
+{p 8 12}{stata "tempfile do dct c92" : tempfile do dct c92}{p_end}
+{p 8 12}{stata "ddf2dct using http://www.nber.org/cps/cpsmar92.ddf, dct(`dct') do(`do') drop(FILLER)": ddf2dct using http://www.nber.org/cps/cpsmar92.ddf, dct(`dct') do(`do') drop(FILLER)}{p_end}
+{p 8 12}{stata "run `do'" : run `do'}{p_end}
+{p 8 12}{stata "save `c92'" : save `c92'}{p_end}
+{p 8 12}{stata `"vlc a_hga, to(`c89')"' : vlc a_hga, to(`c89')}{p_end}
+{p 8 12}{stata `"g lab92=trim(substr(label1,1,25))"' : g lab92=trim(substr(label1,1,25)}{p_end}
+{p 8 12}{stata `"ren label2 lab91"' : ren label2 lab91}{p_end}
+{p 8 12}{stata `"li val lab91 lab92, noo clean"' : li val lab91 lab92, noo clean}{p_end}
+{synoptline}
+
+{title:Author}
+
+    Austin Nichols
+    Urban Institute
+    Washington, DC
+    austinnichols@gmail.com
+
+{title:Also see}
+
+{p 1 14}Manual:  {hi: [U] 15.6 Dataset, variable, and value labels,}{p_end}
+{p 10 14}{hi:[R] label}
+{p 0 19}On-line:  help for {help label}, {help labelbook};
+{help uselabel}; {help cf};
+{stata "findit ddf2dct":ddf2dct}

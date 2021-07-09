@@ -1,0 +1,220 @@
+/*
+ lmngry2
+*! VERSION 1.0 06/08/2015
+*/
+VERSION 10.0
+INCLUDE _std_large
+DEFINE _dlght 440
+INCLUDE header
+HELP hlp1, view("help lmngry2")
+RESET res1
+
+DIALOG main, label("lmngry2 - 2SLS-IV Non Normality Geary Runs Test") ///
+	tabtitle("Main")
+BEGIN
+ DEFINE _x _xsetbu
+ DEFINE _y _top
+ INCLUDE _bu_tsset
+
+  TEXT tx_dv 		_lft	+17    140  	.,	///
+	label("Dependent Variable:")
+  TEXT tx_iv		160 	@     330 	.,	///
+	label("Independent Variables:")
+  VARNAME vn_dv		_lft 	_ss  	140	.,	///
+	ts						///
+	label("Dependent Variable")
+  VARLIST vl_iv		160	@  	330	.,	///
+	fv ts						///
+	allowcat					///
+	label("Independent Variables")
+  TEXT tx_vars2 	_lft	_ls    140  	.,	///
+	label("Endogenous Variables:")
+  TEXT tx_ivars		160 	@     330 	.,	///
+	label("ALL Instrumental Variables:")
+  VARLIST vl_vars2	_lft 	_ss  	140	.,	///
+	ts						///
+	label("Endogenous Variables")
+  VARLIST vl_ivars	160	@  	330	.,	///
+	fv ts						///
+	allowcat					///
+	label("ALL Instrumental Variables")
+
+  CHECKBOX ck_nocons +3  _ss 400  .,	/*
+	*/ label("No Constant in RHS Equation only")	/*
+	*/ option("noconstant")			/*
+	*/
+  CHECKBOX ck_nocong @  _ss 400  .,	/*
+	*/ label("No Constant in RHS and Instrumental Equations") /*
+	*/ option("noconexog")		/*
+	*/
+
+  GROUPBOX gb_estimator	_lft	_ss	_ibwd	_ht12 ,	///
+	label("Model")
+  RADIO rb_m1		_indent	_ss	_inwd	.,	///
+	first						///
+	option(model(2sls))				///
+	label("Two-Stage Least Squares (2SLS)")		///
+	onclickon(script ck_model1_off)
+  RADIO rb_m2		@	_ss	@	.,	///
+	option(model(liml))					///
+	label("Limited Information Maximum Likelihood (LIML)") ///
+	onclickon(script ck_model1_off)
+  RADIO rb_m3		@	_ss	@	.,	///
+	option(model(melo))				///
+	label("Minimum Expected Loss (MELO)")	///
+	onclickon(program ck_model1_off)
+  RADIO rb_m4	@	_ss	@	.,	///
+	option(model(fuller))			///
+	label("Fuller k - Class LIML")	///
+	onclickon(script fuller_on)
+
+  EDIT ed_fuller  170           @    70   ., 	/*
+	*/ label("fuller")			/*
+	*/ option("kf")
+  TEXT     tx_fuler   250        @  70    .,	/*
+	*/ label("k-Class Value")  		/*
+*/
+  RADIO rb_m5	_ilft	_ms	_iwd	.,	///
+	option(model(kclass))			///
+	label("Theil k - Class LIML")	///
+	onclickon(script kclass_on)
+
+  EDIT ed_kclass  170   @    70   ., 	/*
+	*/ label("kclass")			/*
+	*/ option("kc")
+  TEXT     tx_kclass 250  @  100    .,	/*
+	*/ label("k-Class Value")  	/*
+*/
+  RADIO rb_m6	_ilft	_ss	_iwd	.,	///
+  	last					///
+	option(model(gmm))			///
+	label("Generalized Method of Moments (GMM)")	///
+	onclickon(script ck_model1_on)
+
+ GROUPBOX gb_optgmm	_lft	_ls	_ibwd	_ht9 ,	///
+	label("GMM - Generalized Method of Moments Options:")
+  RADIO    rb_g0  _ilft           _ss        300    ., 	/*
+	*/ label("White Method") /*
+	*/ first				/*
+	*/ option("hetcov(white)")			/*
+*/
+DEFINE y @y
+  RADIO    rb_g1   _ilft           _ss        300    .,	/*
+	*/ label("Bartlet Method") /*
+	*/ option("hetcov(bart)")			/*
+*/
+  RADIO    rb_g2   _ilft           _ss        300   .,	/*
+	*/ label("Daniell Method")	/*
+	*/ option("hetcov(dan)")			/*
+*/
+  RADIO    rb_g3   _ilft           _ss        300    .,	/*
+	*/ label("Newey-West Method")		/*
+	*/ option("hetcov(nwest)")			/*
+*/
+  RADIO    rb_g4   _ilft           _ss        300    .,	/*
+	*/ label("Parzen Method")	/*
+	*/ option("hetcov(parzen)")			/*
+*/
+  RADIO    rb_g5   _ilft2           y        300    .,	/*
+	*/ label("Quadratic Spectral Method")	/*
+	*/ option("hetcov(quad)")			/*
+*/
+  RADIO    rb_g6   @           _ss        300    .,	/*
+	*/ label("Tent Method")	/*
+	*/ option("hetcov(tent)")			/*
+*/
+  RADIO    rb_g7   @           _ss        300    .,	/*
+	*/ label("Truncated Method")	/*
+	*/ option("hetcov(trunc)")			/*
+*/
+  RADIO    rb_g8   @           _ss        300    .,	/*
+	*/ label("Tukey-Hamming Method")	/*
+	*/ option("hetcov(tukeym)")			/*
+*/
+  RADIO    rb_g9   @           _ss        300    .,	/*
+	*/ label("Tukey-Hanning Method")	/*
+	*/ last					/*
+	*/ option("hetcov(tukeyn)") /*
+*/
+END
+
+SCRIPT ck_model1_on
+BEGIN
+ main.rb_g0.enable
+ main.rb_g1.enable
+ main.rb_g2.enable
+ main.rb_g3.enable
+ main.rb_g4.enable
+ main.rb_g5.enable
+ main.rb_g6.enable
+ main.rb_g7.enable
+ main.rb_g8.enable
+ main.rb_g9.enable
+ main.ed_fuller.disable
+ main.ed_kclass.disable
+END
+SCRIPT ck_model1_off
+BEGIN
+ main.rb_g0.disable
+ main.rb_g1.disable
+ main.rb_g2.disable
+ main.rb_g3.disable
+ main.rb_g4.disable
+ main.rb_g5.disable
+ main.rb_g6.disable
+ main.rb_g7.disable
+ main.rb_g8.disable
+ main.rb_g9.disable
+ main.ed_fuller.disable
+ main.ed_kclass.disable
+END
+
+SCRIPT fuller_on
+BEGIN
+ main.ed_fuller.enable
+ main.ed_kclass.disable
+END
+SCRIPT fuller_off
+BEGIN
+ main.ed_fuller.disable
+ main.ed_kclass.disable
+END
+SCRIPT kclass_on
+BEGIN
+ main.ed_fuller.disable
+ main.ed_kclass.enable
+END
+SCRIPT kclass_off
+BEGIN
+ main.ed_fuller.disable
+ main.ed_kclass.disable
+END
+
+PROGRAM command_sub
+BEGIN
+ varlist main.vl_vars2
+ put "="
+ varlist main.vl_ivars
+END
+
+INCLUDE byifin
+
+PROGRAM command
+BEGIN
+ put /program by_output " "
+ put "lmngry2 "
+ varlist main.vn_dv [main.vl_iv]
+ put "("
+ put /program command_sub
+ put ")"
+ put " " /program ifin_output
+ beginoptions
+ option main.ck_nocons
+ option main.ck_nocong
+option radio(main rb_m1 rb_m2 rb_m3 rb_m4 rb_m5 rb_m6)
+option radio(main rb_g0 rb_g1 rb_g2 rb_g3 rb_g4 rb_g5 rb_g6 rb_g7 rb_g8 rb_g9)
+optionarg main.ed_fuller
+optionarg main.ed_kclass
+endoptions
+END
+

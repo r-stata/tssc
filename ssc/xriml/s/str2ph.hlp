@@ -1,0 +1,216 @@
+{smcl}
+{* 10nov2006}{...}
+{hline}
+help for {hi:str2ph}, {hi:str2d}{right:Patrick Royston}
+{hline}
+
+{title:Explained variation in survival analysis}
+
+
+{p 8 12 2}
+{cmd:str2ph}
+{it:survival_cmd}
+[{it:varlist}]
+[{cmd:if}]
+[{cmd:in}]
+[{cmd:,}
+{cmdab:adj:ust}
+{cmdab:bo:otreps(}{it:#}{cmd:)}
+{cmdab:cal:ibrate}
+{cmdab:den:ominator}
+{cmdab:nodot:s}
+{cmdab:off:set(}{it:varname}{cmd:)}
+{cmdab:rand:omness}
+{cmdab:val:idate(}{it:varname}{cmd:)}
+{it:survival_cmd_options}
+]
+
+{p 8 12 2}
+{cmd:str2d}
+{it:survival_cmd}
+{it:varlist}
+[{cmd:if}]
+[{cmd:in}]
+[{cmd:,}
+{cmdab:adj:ust}
+{cmdab:bo:otreps(}{it:#}{cmd:)}
+{cmdab:rand:omness}
+{cmdab:val:idate(}{it:varname}{cmd:)}
+{it:survival_cmd_options}
+]
+
+
+{p 4 4 2}
+where {it:survival_cmd} may be
+{help stcox},
+{help streg}, or
+{help stpm} (if installed).
+
+{p 4 4 2}
+You must have {cmd:stset} your data before using {cmd:str2ph} or {cmd:str2d}.
+
+
+{title:Description}
+
+{p 4 4 2}
+{cmd:str2ph} computes Royston (2006)'s modification of O'Quigley, Xu &
+Stare's (2005) modification of Nagelkerke's (1991) R-squared (R≤) statistic
+(a.k.a. coefficient of determination, proportion of explained
+variation) for proportional hazards (PH) models for censored survival data.
+{cmd:str2ph} will also give sensible results in non-PH survival models supported
+by {cmd:streg} and {cmd:stpm}; see Royston (2006) for further information.
+
+{p 4 4 2}
+{cmd:str2d} computes Royston & Sauerbrei (2004)'s R≤ statistic based on
+their index of discrimination (D) for proportional hazards, proportional
+odds and probit models for censored survival data. The D measure is
+available for all {it:survival_cmd}s except {cmd:streg, distribution(gamma)}.
+
+{p 4 4 2}
+The model is defined by
+
+{p 8 8 2}
+{cmd:.} {it:survival_cmd} {it:varlist} [ {cmd:,} {it:survival_cmd_options} ]
+
+
+{p 4 4 2}
+See the {cmd:validate()} option for comments on out-of-sample prediction
+and assessment of R≤ in a "validation" or test sample.
+
+
+{title:Options}
+
+{p 4 8 2}
+{cmd:adjust} computes adjusted R≤, taking into account the dimension
+(i.e. number of covariates) of the model. This may be helpful when
+R≤ is low and/or the model is very complex, since
+the expected value of R≤ under the null hypothesis (that the outcome
+is unrelated to the covariates) is greater than zero and
+depends on the model dimension. Adjustment
+attempts to eliminate this bias in R≤ under the null hypothesis.
+Since R≤ calculated by out-of-sample prediction in a "validation"
+sample does not require adjustment, the {cmd:validate()} option is
+not permitted with {cmd:adjust}.
+
+{p 4 8 2}
+{cmd:bootreps(}{it:#}{cmd:)} with {it:#} > 0 computes a bootstrap confidence
+interval for R≤, using {it:#} bootstrap replications. A minimum reasonable
+value of {it:#} is 1000, but a better number is 5000. Note that with
+{it:#} = 5000, the computation may take quite some time. The default
+value of {it:#} is 0, meaning no bootstrap CI is computed.
+With {it:#} = 0 in {cmd:str2d}, an analytic estimate of the SE of R≤
+is displayed, derived by the delta method from the SE of D
+(see Royston & Sauerbrei (2004) for details of the SE of D).
+
+{p 4 8 2}
+{cmd:calibrate} (for use only with {cmd:str2ph} ... {cmd:, validate()})
+forces the survival regression to be re-estimated in the test
+sample on the index predicted from {it:varlist} in the training sample.
+The default is to offset the predicted index and calculate R≤ via
+the likelihood of that model. Regression on the index 
+amounts to calibration of the model in the test sample
+and may noticeably increase the R≤ value. See also the {cmd:validate()}
+option.
+
+{p 4 8 2}
+{cmd:denominator} changes the denominator for the model chisquare statistic
+from k (the number of events) to n*(k/n)^alpha, where n is the sample
+size and alpha is approximately 5/6. A better value of alpha is required;
+this is work in progress. The effect of this option is to reduce the
+variation explained, particularly when the number of events is small.
+
+{p 4 8 2}
+{cmd:nodots} suppresses display of the replication dots
+with bootstrap confidence interval estimation. By default, a single dot
+character is displayed after each 100 replications.
+
+{p 4 8 2}
+{cmd:offset(}{it:varname}{cmd:)} offsets {it:varname} from the linear
+predictor. Note that {cmd:offset(}{it:varname}{cmd:)} 
+without a main {it:varlist} is permitted. This allows the evaluation of
+a predictor 'from outside'.
+ 
+{p 4 8 2}
+{cmd:randomness} prevents conversion of the
+modified Nagelkerke index of determination from explained randomness
+to explained variation. The reported R≤ is then interpretable, at
+least in PH models, as explained randomness.
+
+{p 4 8 2}
+{cmd:validate(}{it:varname}{cmd:)} estimates the model in the 
+subsample defined by the low value of {it:varname} and computes
+R≤ in the subsample defined by the high value of {it:varname}.
+These subsamples may be thought of as a training and a test set.
+{it:varname} must have exactly two distinct values in the
+estimation sample defined by {it:varlist} and {cmd:if} and {cmd:in}.
+These two values are arbitrary. {it:varname} may be a string variable,
+in which case lexicographic ordering is assumed. R≤ is computed
+according to the index ({cmd:xb}) predicted from
+the training sample (low value of {it:varname}) into the test sample
+(high value of {it:varname}). With {cmd:str2ph}, there is a choice
+between refitting the index in the test sample, or offsetting the
+index there (see the {cmd:calibrate} option). With {cmd:str2d}, the
+index predicted on the test sample is transformed to scaled normal
+scores and regression on the scores is performed. The slope of this
+regression is Royston & Sauerbrei (2004)'s D statistic. This step
+is required to compute D and hence R≤. The {cmd:calibrate} option
+is not relevant to the D method, hence is not available with
+{cmd:str2d}.
+
+{p 4 8 2}
+{it:survival_cmd_options} are options of {it:survival_cmd}.
+Examples include {cmd:distribution(weibull)} for {cmd:streg},
+{cmd:df(2) scale(hazard)} for {cmd:stpm}, and {cmd:strata(x1 x2)}
+for {cmd:stcox}.
+
+
+{title:Examples}
+
+{p 4 4 2}
+{cmd:. str2ph stcox x1 x2 x3}{break}
+{cmd:. str2ph stcox x1-x20, adjust bootreps(1000)}{break}
+{cmd:. str2ph stcox x1-x20, validate(tt) bootreps(1000)}{break}
+{cmd:. str2ph stcox x1-x20, validate(tt) calibrate bootreps(1000)}{break}
+{cmd:. str2ph streg x1 x2 x3, distribution(weibull)}{break}
+{cmd:. str2ph stpm x1 x2 x3, scale(hazard) df(2)}{break}
+{cmd:. str2ph stcox, offset(index)}{break}
+
+{p 4 4 2}
+{cmd:. str2d stcox x1 x2 x3}{break}
+{cmd:. str2d stcox x1 x2 x3, validate(tt)}{break}
+{cmd:. str2d streg x1 x2 x3, distribution(llogistic)}{break}
+{cmd:. str2d stpm x1 x2 x3 if a==1, scale(odds) df(2) validate(tt)}{break}
+
+
+{title:Author}
+
+{p 4 4 2}
+Patrick Royston, MRC Clinical Trials Unit, London.{break}
+patrick.royston@ctu.mrc.ac.uk
+
+
+{title:References}
+
+{p 4 8 2}
+N. J. D. Nagelkerke. 1991. A note on a general definition of the coefficient
+of determination. Biometrika 78: 691-692.
+
+{p 4 8 2}
+J. O'Quigley, R. Xu and J. Stare. 2005.
+Explained randomness in proportional hazards models.
+Statistics in Medicine 24: 479-489.
+
+{p 4 8 2}
+P. Royston. 2006. Explained variation for survival models.
+Stata Journal.
+
+{p 4 8 2}
+P. Royston and W. Sauerbrei. 2004. A new measure of prognostic
+separation in survival data. Statistics in Medicine 23: 723-748.
+
+
+{title:Also see}
+
+{p 4 13 2}
+Online:  help for {help stcox}, {help streg}; {help stpm} if installed.
+{p_end}

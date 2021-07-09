@@ -1,0 +1,95 @@
+{smcl}
+{* 07feb2009}{...}
+{hline}
+help for {hi:levpredict}
+{hline}
+
+{title:Compute level predictions from log-dependent-variable regression reducing retransformation bias}
+
+{p 8 14}{cmd:levpredict}{it: newvarname}
+{bind:[{cmd:,} {cmd:Duan} {cmd:PRint}]}
+
+{p}{cmd:levpredict} is a post-estimation command for use after a linear 
+regression model with a logarithmic dependent variable has been estimated. 
+It generates predictions of the levels of the dependent variable for the estimation sample. These predictions reduce the 
+retransformation bias that arises when predictions of the log dependent variable
+are exponentiated.
+
+{title:Description}
+
+{p}Cameron and Trivedi (2009), in section 3.6.3, "Prediction in logs: The retransformation
+problem" point out that if a regression model with a logarithmic dependent variable is estimated,
+predictions of the underlying level variable will be subject to retransformation bias.
+That is, {cmd:predict} will calculate E[ln {it:y}|{bf:x}], but we wish to calculate
+E[{it:y}|{bf:x}]. Exponentiating the predicted values from the log model will not provide
+unbiased estimates of E[{it:y}|{bf:x}], as E[{it:y_i}|{bf:x}_i] = exp({bf:x}'beta) E[exp(u_i)], 
+and the second term will be ignored. If u~N[0,sigma^2], E[exp(u)] = exp(0.5 sigma^2).
+That quantity may be estimated by replacing sigma^2 with its consistent estimate s^2.
+Alternatively, Duan (1983) shows that for i.i.d. errors (which need not be Normal),
+E[exp(u)] = 1/n sum(exp(e_i)), where e_i are the residuals.
+
+{cmd:levpredict} computes the predictions of the levels of the dependent variable
+from a prior model estimated with the log of the dependent variable. It assumes that
+you have performed that estimation with some regression-type estimator, and that the 
+dependent variable of the prior model is indeed the log of the variable of interest.
+By default, {cmd:levpredict} computes the former formula, assuming normally distributed 
+errors, but with the {cmd:Duan} option the latter formula may be used.
+
+It should be kept in mind that an alternative approach to this problem would
+be to avoid OLS estimation and use {cmd:glm} or {cmd:poisson} regression to 
+estimate the original model instead. The approach implemented by {cmd:levpredict} will 
+improve the mean prediction, but does not ensure that predictions for individual cases 
+are particularly good.
+See Austin Nichols' presentation at the BOS'10 Stata Conference. 
+
+{title:Options}
+
+{p 0 4}{cmd:Duan} specifies that Duan's formula should be used.
+
+{p 0 4}{cmd:PRint} specifies that printed output should be produced. In this case,
+estimates of the mean of the exponentiated predicted values and its mean bias are displayed.
+
+
+{title:Saved results}
+
+{p}{cmd:levpredict} does not save any results at this time. Its primary purpose is
+to calculate {it:newvarname}.
+See {cmd:return list}.
+
+
+{title:Examples}
+
+{p 8 12}{inp:.} {stata "use http://fmwww.bc.edu/ec-p/data/mus/mus03data ":use http://fmwww.bc.edu/ec-p/data/mus/mus03data}
+
+{p 8 12}{inp:.} {stata "reg ltotexp suppins phylim actlim totchr age female income":reg ltotexp suppins phylim actlim totchr age female income}
+
+{p 8 12}{inp:.} {stata "levpredict tenorm, print":levpredict tenorm, print}
+
+{p 8 12}{inp:.} {stata "levpredict teduan, duan print":levpredict teduan, duan print}
+
+{p 8 12}{inp:.} {stata "su totexp ltotexp tenorm teduan if totexp > 0":su totexp ltotexp tenorm teduan if totexp > 0}
+
+
+
+{title:References}
+
+{p 0 4}Cameron, A.C. Trivedi, P., 2009. Microeconometrics using Stata. Stata Press.
+
+{p 0 4}Duan, N., 1983. Smearing estimate: A nonparametric retransformation method. 
+Journal of the American Statistical Association 78:605-610.
+
+{p 0 4}Nichols, A., 2010. Regression for nonnegative skewed dependent variables. BOS'10
+Stata Conference. Accessible from http://repec.org/bost10/nichols_boston2010.pdf 
+ 
+{title:Acknowledgements}
+
+Development of this routine was stimulated by Cameron and Trivedi's discussion, from
+which the computational logic and example were derived. 
+I thank Maarten Buis for helpful comments.
+
+{title:Author}
+
+{p 0 4}Christopher F Baum, Boston College, USA{p_end}
+{p 0 4}baum@bc.edu{p_end}
+
+

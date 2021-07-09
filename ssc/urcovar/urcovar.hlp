@@ -1,0 +1,107 @@
+{smcl}
+{* 19jul2007}{...}
+{hline}
+help for {hi:urcovar}
+{hline}
+
+{title:Perform Elliott-Jansson test for unit roots with stationary covariates}
+
+{title:Syntax}
+
+{p 8 14}{cmd:urcovar}
+{it:depvar}
+{it:varlist}
+[{cmd:if} {it:exp}]
+[{cmd:in} {it:range}] 
+{bind:[{cmd:,}}
+{cmd:maxlag(}{it:#}{cmd:)}
+{cmd:case(}{it:#}{cmd:)}
+{cmd:firstobs}
+]
+
+{p}{cmd:urcovar}  is for use with time-series data.  You must {cmd:tsset} your data before 
+using {cmd:urcovar}; see {help tsset}. You may apply {cmd:urcovar} to a single time series 
+of a panel dataset. {cmd:varlist} may contain time-series operators; see {cmd:help varlist}.
+
+{title:Description}
+
+{p}{cmd:urcovar} performs the test for a unit root in {it:depvar} in the context of one or more stationary
+covariates (listed in {it:varlist}) which was proposed by Elliott and Jansson (2003) as a generalization
+of the CADF test of Hansen (1995). The Elliott-Jansson test
+constructs a VAR in the model of the stationary covariates and the quasi-difference of 
+{it:depvar}. As in the
+Dickey-Fuller ({cmd:dfuller}) or Elliott-Rothenberg-Stock DF-GLS ({cmd:dfgls}) unit root tests,
+the model can include no deterministic terms, constants or constants and time trends. The deterministic
+model is specified by the {cmd:case} option.
+
+
+{title:Options}
+
+{p 0 4}{it:varlist} specifies the set of stationary regressors. At least one must be provided.
+
+{p 0 4}{cmd:maxlag(}{it:#}{cmd:)} specifies the number of lags to be used in computing the VAR. If not
+provided, one lag is assumed.
+
+{p 0 4}{cmd:case(}{it:#}{cmd:)} specifies the deterministic features of the model. Case 1 specifies
+no constant nor trend in the representation of {it:depvar} and {it:varlist}. Case 2 allows a constant
+in the representation of {it:depvar}. Case 3 allows for constants in both {it:depvar} and {it:varlist}.
+Case 4 also allows for a trend in the representation of {it:depvar}. Case 5 imposes no restrictions,
+allowing for constants and trends in both {it:depvar} and {it:varlist}. If not specified, case 1 is
+tested.
+
+{p 0 4}{cmd:firstobs} specifies that the first observation of {it:depvar} should be used to 
+define the first quasi-difference. If the option is not specified, that quasi-difference is set
+to zero.
+
+
+{title:Saved results}
+
+{p}{cmd:urcovar} returns the names of {it:depvar} and {it:varlist} and the value of {cmd:case} and
+{cmd:maxlag} in the return list. As well, the test statistic {cmd:lambda}, interpolated 5% critical
+value ({cmd:crit5}) and estimated R-squared ({cmd:r2}) are returned.
+See {cmd:return list}.
+
+
+{title:Examples}
+
+{p 8 12}{stata "use http://fmwww.bc.edu/ec-p/data/macro/blanquah" : . use http://fmwww.bc.edu/ec-p/data/macro/blanquah }{p_end}
+
+{p 8 12}{stata "urcovar PINCOME UNRATE, case(3) maxlag(8)" : . urcovar PINCOME UNRATE, case(3) maxlag(8)}
+
+{p 8 12}{stata "urcovar PINCOME UNRATE, case(5) maxlag(8)" : . urcovar PINCOME UNRATE, case(5) maxlag(8)}
+
+
+{title:Acknowledgements}
+
+I am grateful to Graham Elliott for clarifications of the logic of this routine. 
+Remaining errors are my own.
+
+{title:References}
+
+{p 0 4}Elliott, G. and Jansson, M., 2003. Tests for Unit Roots with Stationary
+Covariates.  Journal of Econometrics, Vol. 115, pp. 75-89.
+
+{p 0 4}Elliott, G. and Pesavento, E., 2006. On the Failure of Purchasing Power Parity for Bilateral 
+Exchange Rates after 1973. Journal of Money, Credit and Banking, Vol. 38, pp. 1405-1430.
+
+{p 0 4}Hansen, B.E., 1995. Rethinking the univariate approach to unit root testing: using
+covariates to increase power. Econometric Theory, Vol. 11, 1148-1172.
+
+{title:Citation}
+
+{p}{cmd:urcovar} is not an official Stata command. It is a free contribution
+to the research community, like a paper. Please cite it as such: {p_end}
+
+{phang}Baum, C.F., 2007.
+urcovar: Stata module to perform Elliott-Jansson test for unit roots with stationary covariates.
+{browse "http://ideas.repec.org/c/boc/bocode/s456863.html":http://ideas.repec.org/c/boc/bocode/s456863.html}{p_end}
+
+{title:Author}
+
+{p 0 4}Christopher F Baum, Boston College, USA{p_end}
+{p 0 4}baum@bc.edu{p_end}
+
+
+{title:Also see}
+
+{p 0 19}On-line:  help for {help dfgls}{p_end}

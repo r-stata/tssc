@@ -1,0 +1,259 @@
+/*
+  eclplot.dlg
+
+*! Authors: Roger Newson and Kevin Crow
+*! Date: 21 May 2015
+
+*/
+
+VERSION 13.0
+
+INCLUDE _std_wide
+DEFINE _dlght 400
+INCLUDE header
+
+HELP hlp1, view("help eclplot")
+RESET res1
+
+SCRIPT POSTINIT
+BEGIN
+	gr_plots.settabtitle "Estimation Plot"
+	gr_plots_outputCmd.setstring "estopts"
+
+END
+
+DIALOG main, tabtitle("Main")				///
+	label("eclplot - Plot estimates with confidence limits")
+BEGIN
+
+  GROUPBOX gb_variables 	_lft	_top	_iwd	_ht4,		///
+	label("Variables to be plotted")
+
+  TEXT tx_estimates		_ilft	_ss	130	.,		///
+	label("Estimates:")
+  DEFINE holdy @y
+  VARNAME vn_estimates		@	_ss	_vnwd	.,		///
+	numeric								///
+	label("Estimates")
+
+  TEXT tx_clmin			+140	holdy	140	.,		///
+	label("Lower confidence limits:")
+  VARNAME vn_clmin		@	_ss	_vnwd	.,		///
+	numeric								///
+	label("Lower confidence limits")
+
+  TEXT tx_clmax			+150	holdy	140	.,		///
+	label("Upper confidence limits:")
+  VARNAME vn_clmax		@	_ss	_vnwd	.,		///
+	numeric								///
+	label("Upper confidence limits")
+
+  TEXT tx_parmid		+150	holdy	130	.,		///
+	label("Plot against:")
+  VARNAME vn_parmid		@	_ss	_vnwd	.,		///
+	numeric								///
+	label("Plot agains:")
+
+  GROUPBOX gb_opts 		_lft	_xls	_iwd	_ht29,		///
+	label("Options")
+  TEXT tx_eplottype		_ilft	_ss	_cwd1	.,		///
+	label("Estimation plot type:")
+  DEFINE holdy2 @y
+  COMBOBOX cb_eplottype		@	_ss	@	.,		///
+	dropdownlist							///
+	contents(main_eplottype_list)					///
+	values(main_eplottype_values)					///
+	option(eplottype)						///
+	label("Estimation plot type")
+
+  TEXT tx_rplottype		@	_ls	@	.,		///
+	label("Confidence intervals plot type:")
+  COMBOBOX cb_rplottype		@	_ss	@	.,		///
+	dropdownlist							///
+	contents(main_rplottype_list)					///
+	values(main_rplottype_values)					///
+	option(rplottype)						///
+	label("Confidence intervals plot type")
+
+  GROUPBOX gb_ci_position 	_ilft2	holdy2	255	_ht5h,		///
+	label("Confidence Interval postion")
+  RADIO rb_default		_iilft2	_ss	_inwd	., first	///
+	label("Default")
+  RADIO rb_foreground		@	_ss	@	.,		///
+	option(ciforeground)						///
+	label("Foreground")
+  RADIO rb_background		@	_ss	@	., last		///
+	option(nociforeground)						///
+	label("Background")
+
+  CHECKBOX ck_horizontal 	_ilft	_xls	_ibwd	.,		///
+	option(horizontal)						///
+	label("Confidence intervals must be plotted horizontally")
+
+  CHECKBOX ck_supby 		_ilft	_ls	_ibwd	_ht7,		///
+	groupbox							///
+	onclickon("script main_supby_on")				///
+	onclickoff("script main_supby_off")				///
+	label("Superimpose multiple plots")
+
+  TEXT tx_supby			_iilft	_ss	_vnwd	.,		///
+	label("Variable:")
+  DEFINE holdy3	@y
+  VARNAME vn_supby		@	_ss	@	.,		///
+	label("Variable")
+  TEXT tx_spaceby		+130	holdy3	_spwd	.,		///
+	label("Space by:")
+  EDIT ed_spaceby		@	_ss	@	.,		///
+	numonly								///
+	option(spaceby)							///
+	label("Space by")
+  TEXT tx_offset		+70	holdy3	@	.,		///
+	label("Offset:")
+  EDIT ed_offset		@	_ss	@	.,		///
+	numonly								///
+	option(offset)							///
+	label("Offset")
+  TEXT tx_truncate		+70	holdy3	@	.,		///
+	label("Truncate:")
+  EDIT ed_truncate		@	_ss	@	.,		///
+	numonly								///
+	option(truncate)						///
+	label("Truncate")
+  CHECKBOX ck_missing	 	_iilft	_ls	_ibwd	.,		///
+	option(missing)							///
+	label("Plot confidence intervals for missing values")
+END
+
+LIST main_eplottype_list
+BEGIN
+	"Symbols"
+	"Symbols connected with lines"
+	"Lines"
+	"Shaded areas"
+	"Bars"
+	"Uncapped spikes"
+	"Spikes capped with symbols"
+END
+
+LIST main_eplottype_values
+BEGIN
+	scatter
+	connected
+	line
+	area
+	bar
+	spike
+	dropline
+END
+
+LIST main_rplottype_list
+BEGIN
+	"Capped spikes"
+	"Spikes capped with symbols"
+	"Symbols"
+	"Symbols connected with lines"
+	"Lines"
+	"Shaded areas"
+	"Bars"
+	"Uncapped spikes"
+END
+
+LIST main_rplottype_values
+BEGIN
+	rcap
+	rcapsym
+	rscatter
+	rconnected
+	rline
+	rarea
+	rbar
+	rspike
+END
+
+SCRIPT main_supby_on
+BEGIN
+	main.tx_supby.enable
+	main.vn_supby.enable
+	main.tx_spaceby.enable
+	main.ed_spaceby.enable
+	main.tx_offset.enable
+	main.ed_offset.enable
+	main.tx_truncate.enable
+	main.ed_truncate.enable
+	main.ck_missing.enable
+END
+
+SCRIPT main_supby_off
+BEGIN
+	main.tx_supby.disable
+	main.vn_supby.disable
+	main.tx_spaceby.disable
+	main.ed_spaceby.disable
+	main.tx_offset.disable
+	main.ed_offset.disable
+	main.tx_truncate.disable
+	main.ed_truncate.disable
+	main.ck_missing.disable
+END
+
+INCLUDE ifin
+INCLUDE gr_plots
+INCLUDE gr_ciplots
+INCLUDE gr_addplots
+INCLUDE gr_yaxis
+INCLUDE gr_xaxis
+INCLUDE gr_titles
+INCLUDE gr_legend
+INCLUDE gr_overall
+INCLUDE gr_by
+
+PROGRAM supby_output
+BEGIN
+	put main.vn_supby
+	if main.ck_missing | main.ed_truncate | main.ed_spaceby		///
+		| main.ed_offset {
+		put ", "
+		option main.ck_missing
+		optionarg main.ed_truncate
+		optionarg main.ed_spaceby
+		optionarg main.ed_offset
+	}
+END
+
+PROGRAM command
+BEGIN
+	put "eclplot "
+	require main.vn_estimates
+	require main.vn_clmin
+	require main.vn_clmax	
+	require main.vn_parmid
+	varlist main.vn_estimates main.vn_clmin main.vn_clmax main.vn_parmid
+        put " " /program ifin_output
+	beginoptions
+                option main.ck_horizontal
+                optionarg main.cb_eplottype
+                optionarg main.cb_rplottype
+                if main.rb_foreground {
+                  put " ciforeground"
+                }
+                if main.rb_background {
+                  put " nociforeground"
+                }
+		if main.ck_supby {
+			require main.vn_supby
+			put " supby("
+				put /program supby_output
+			put ")"
+		}
+		put " " /program gr_plots_output
+		put " " /program gr_ciplots_output
+		put " " /program gr_addplots_output
+		put " " /program gr_yaxis_output
+		put " " /program gr_xaxis_output
+		put " " /program gr_titles_output
+		put " " /program gr_legend_output
+		put " " /program gr_overall_output
+		put " " /program gr_by_output
+	endoptions
+END
+

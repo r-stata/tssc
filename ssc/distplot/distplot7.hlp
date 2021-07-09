@@ -1,0 +1,129 @@
+{smcl}
+{* 7may2003}{...}
+{hline}
+help for {hi:distplot7}
+{hline}
+
+{title:Distribution function plots} 
+   
+{p 15 19}
+{cmd:distplot7} 
+{it:varname}
+[{it:weight}] 
+[{cmd:if} {it:exp}] 
+[{cmd:in} {it:range}]
+[{cmd:,}
+{cmdab:s:urv}
+{it:graph_options}
+{cmd:by(}{it:byvar}{cmd:)}
+{cmdab:f:req} 
+{cmdab:g:enerate(}{it:newvar}{cmd:)}
+{cmd:mono}
+{cmdab:miss:ing}
+]
+
+{p 15 19}
+{cmd:distplot7} 
+{it:varlist}
+[{it:weight}] 
+[{cmd:if} {it:exp}] 
+[{cmd:in} {it:range}]
+[{cmd:,}
+{cmdab:s:urv}
+{it:graph_options}
+{cmdab:f:req} 
+{cmd:mono}
+]
+
+
+{title:Description} 
+
+{p}{cmd:distplot7} produces a plot of the cumulative distribution function(s)
+for the variables in {it:varlist}. This shows the proportion (or if desired
+the frequency) of values less than or equal to each value.
+
+{p}With the {cmd:surv} option, {cmd:distplot7} produces a plot of the survival
+(a.k.a. survivor, reliability, complementary or reverse distribution) 
+function for each {it:varname}. This shows the proportion (or if desired the 
+frequency) of values greater than each value, that is, the complement of 
+the cumulative distribution function.
+
+{p}fweights and aweights are allowed.
+
+{p}{cmd:distplot7} is a renamed clone of {cmd:distplot} 1.6.1 which is for
+Stata 7. Stata 8 users should use {cmd:distplot} 2.0.0 or later.
+ 
+
+{title:Options} 
+
+{p 0 4}{cmd:surv} specifies calculation and graphing of the survival function
+rather than the distribution function.
+
+{p 0 4}{it:graph_options} are options allowed with {cmd:graph, twoway}.
+
+{p 4 4}Note that with {cmd:by()} each function is treated graphically as if it
+were a separate variable, so long as the number of groups is not
+greater than the limit in Stata on the number of {it:y} variables on a
+scatter plot (20 in Stata 7.0).
+
+{p 4 4}With more groups, all functions must be treated graphically as a single
+variable, by using the {cmd:mono} option, which enforces a monochrome
+treatment. The only {cmd:connect()} line style appropriate is then {cmd:c(L)},
+and only one {cmd:pen()} and point {cmd:symbol()} may be used.
+ 
+{p 4 4}If {cmd:ylog} is specified, zero values of the survival function are
+automatically suppressed.
+
+{p 0 4}{cmd:by(}{it:byvar}{cmd:)} specifies that calculations are to be carried out
+separately for each class defined by {it:byvar}. Any graph will,
+however, show the functions for all classes. For a graph with
+separate panels for each class, use the {cmd:generate()} option and 
+then {cmd:graph} {it:newvar varname}, 
+{cmd:by(}{it:byvar}{cmd:)}. 
+{cmd:by()} is only allowed with a single {it:varname}.
+
+{p 0 4}{cmd:freq} specifies calculation of frequency rather than probability.
+
+{p 0 4}{cmd:generate(}{it:newvar}{cmd:)} specifies a new variable in which the function will
+be stored. {cmd:generate()} is only allowed with a single {it:varname}.
+
+{p 0 4}{cmd:mono} specifies a monochrome treatment, with a single {cmd:pen()}
+colour, {cmd:connect()} style and point {cmd:symbol()}. 
+See above, under {it:graph_options}.
+
+{p 0 4}{cmd:missing}, used only with {cmd:by()}, permits the use of non-missing values
+of varname corresponding to missing values for the variable named by
+{cmd:by()}. The default is to ignore such values.
+
+
+{title:Examples} 
+
+
+{inp:. distplot7 mpg} 
+
+{inp:. distplot7 mpg, by(foreign) c(ll)}
+
+{inp:. distplot7 mpg, by(foreign) c(JJ) surv} 
+
+{inp:. distplot7 length width height} 
+
+
+{title:Author}
+
+         Nicholas J. Cox, University of Durham, U.K.
+         n.j.cox@durham.ac.uk
+
+
+{title:Acknowledgments} 
+
+	{p 8 8}Elizabeth Allred made helpful
+        comments during program development.
+	Roger Harbord identified a limitation 
+	and pointed to a way to resolve it. 
+
+
+{title:Also see}
+
+{p}On-line: help for {help graph}, {help cumul}, {help quantile}, {help quantil2} (if installed){p_end} 
+ Manual: [R] graph, [R] cumul, [R] diagplots
+

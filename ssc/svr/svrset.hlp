@@ -1,0 +1,112 @@
+{smcl}
+{hline}
+help for {hi:svrset}
+{hline}
+
+{title:Set variables for replication-based survey data analysis}
+
+{p 8 15}{cmd:svrset} {cmd:set}{space 2} {it:key} {it:value} [{it:key} {it:value} [{it:...}]]
+
+{p 8 15}{cmd:svrset} {cmd:clear} [{it:key} [{it:key} [{it:...}]]]
+
+{p 8 15}{cmd:svrset} {cmd:list}{space 1} [{it:key} [{it:key} [{it:...}]]]
+
+where
+
+{p 8 41}{it:key}{space 8}Description{p_end}
+	{hline 68}
+{p 8 41}{cmd:meth} {space 7} Method of replication (brr, jk1, jk2, jkn){p_end}
+{p 8 41}{cmd:pw} {space 9} Main analysis pweight{p_end}
+{p 8 41}{cmd:rw} {space 9} Replication weights{p_end}
+{p 8 41}{cmd:dof} {space 8} Degrees of freedom for variance estimation{p_end}
+{p 8 41}{cmd:fay} {space 8} Constant for Fay's method (BRR method only){p_end}
+{p 8 41}{cmd:psun} {space 7} Counts of number of PSU's per stratum (JKn method only){p_end}
+	{hline 68}
+
+
+{title:Description}
+
+{p}{cmd:svrset} sets the key variables for use by replication-based survey analysis
+routines (see {help svr} and {help survwgt}).
+
+{p}The {cmd:survwgt} command can be used to create replication weights for use with the {cmd:svr}
+programs; it will set these options automatically when it generates weights.  The {svrset} command
+is for use with datasets that come with replication weights already calculated.
+
+{p}You must specify these options
+using {cmd:svrset}
+or have them set automatically by {cmd:survwgt}; you cannot specify them a part
+of a {cmd:svr} command.
+
+{p}Note that if you set more than one option with {svrset set}, you must enclose any values
+with multiple words in quotation marks, so they are understood as a single value to be set.
+
+{p}Once you specifiy these options, they will be remembered if you {help save} your data.
+
+{p}All of the current settings can be reviewed by typing {cmd:svrset list} without arguments:
+
+	{inp:. svrset list}
+
+{p}Settings can be changed simply by setting a different value.
+
+{p}Settings can be erased using the {cmd:clear} subcommand.  You must explicitly
+clear old settings.
+
+{p 8 12}{inp:. svrset clear rw}
+
+{p}To clear all settings, type
+
+{p 8 12}{inp:. svrset clear}
+
+
+{title:The key survey replication variables}
+
+{p 0 4}{cmd:svrset set meth} specifies the
+replication method to be used to calculate (co)variances of estimates.  The
+available options are brr, jk1, jk2, and jkn.  See {help survwgt} for information on
+the various methods.
+
+{p 0 4}{cmd:svrset set pw} specifies the name
+of a numeric variable that contains the full sample weighting variable (i.e., the full
+sample {help weight:pweight}.
+
+{p 0 4}{cmd:svrset set rw} specifies a numeric {help varlist} that contains
+the replication weights.
+
+{p 0 4}{cmd:svrset set dof} sets the degrees of freedom for variance estimates.
+
+{p 0 4}{cmd:svrset set fay} sets the constant to be used in Fay's variant of the BRR method.
+This option is not valid with other methods, and will be set to zero automatically.
+
+{p 0 4}{cmd:svrset set psun} sets the number of PSUs in each stratum, for use with the jkn
+method.  This method requires this information for the proper calculation of variance estimates.
+There must be one number set for each replicate.  Thus, a design involving two strata, with
+two PSUs in the first stratum and three PSUs in the second, would have psun set to {bind:"2 2 3 3 3"}.
+
+
+{title:Examples}
+
+{p 8 12}{inp:. svrset set pw mainwgt rw "rep1 rep2 rep3 rep4 rep5"}{p_end}
+
+{p 12 12}This would set the main analysis weight to "mainwgt", and specify five sets
+of replication weights, "rep1" through "rep5".
+
+{p 8 12}{inp:. svrset set meth brr}{p_end}
+
+{p 8 12}{inp:. svrset list}{p_end}
+
+{p 8 12}{inp:. svrset clear rw}{p_end}
+
+
+{title:Also see}
+
+{p 0 19}On-line:  help for {help svr}, {help survwgt}, {help svy}{p_end}
+
+
+{title:Author}
+
+	Nick Winter
+	Cornell University
+	nw53@cornell.edu
+	
+	

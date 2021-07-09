@@ -1,0 +1,217 @@
+{smcl}
+{* 15 Aug 2004/19 Mar 2007/25 Sept 2008/27 Jan 2009/6 Feb 2009/9 Feb 2009}{...}
+{hline}
+help for {cmd:triplot}
+{hline}
+
+{title:Triangular plot}
+
+{p 8 17 2} 	
+{cmd:triplot}
+{it:leftvar rightvar botvar}
+[{cmd:if} {it:exp}] 
+[{cmd:in} {it:range}]
+
+{p 17 17 2} 
+[ 
+{cmd:,}
+{cmd:max(}{it:#}{cmd:)} 
+{cmdab:sep:arate(}{it:varname}{cmd:)} 
+{cmd:by(}{it:byvar} [{cmd:,} {it:by_options}]{cmd:)} 
+
+{p 17 17 2} 
+{cmdab:la:bel(}{it:numlist}{cmd:)}
+{cmd:grid(}{it:grid_options}{cmd:)} 
+
+{p 17 17 2} 
+{cmdab:vert:ices(}{it:#}{cmd:)} 
+{cmd:frame(}{it:frame_options}{cmd:)} 
+
+{p 17 17 2}
+{cmd:y} 
+{cmd:y(}{it:y_options}{cmd:)} 
+
+{p 17 17 2}
+{cmd:centre(}{it:#left #right #bottom}{cmd:)} 
+
+{p 17 17 2} 
+{cmd:ltext(}{it:string}{cmd:)}
+{cmd:rtext(}{it:string}{cmd:)}
+{cmd:btext(}{it:string}{cmd:)}
+{cmd:bltext(}{it:string}{cmd:)}
+{cmd:ttext(}{it:string}{cmd:)}
+{cmd:brtext(}{it:string}{cmd:)}
+{cmd:text(}{it:text_options}{cmd:)}
+
+{p 17 17 2} 
+{it:scatter_options} 
+]
+
+
+{title:Description} 
+
+{p 4 4 2} 
+{cmd:triplot} produces a triangular plot of the three variables {it:leftvar},
+{it:rightvar} and {it:botvar}, which are plotted on the left, right and bottom
+sides of an equilateral triangle. Each should have values between 0 and some
+maximum value (default 1) and the sum of the three variables should be equal to
+that maximum (within rounding error). Most commonly, three fractions or
+proportions add to 1, or three percents add to 100.
+
+{p 4 4 2} 
+The constraint that the three variables have a constant sum means that there
+are just two independent pieces of information. Hence it is possible to plot
+observations in two dimensions within a triangle, which is a 2-simplex.
+
+{p 4 4 2}
+Triangular plots appear under various names in the literature, including
+tripolar, 
+trinomial, 
+trilinear, 
+triaxial, 
+three-element maps, 
+ternary, 
+simplex, 
+reference triangles,
+percentage triangles, 
+mixture, 
+barycentric. 
+Common geological applications are to sedimentary facies or particle form: 
+hence more specific terms such as facies and form triangles. 
+In genetics, applications are often called de Finetti diagrams. 
+
+
+{title:Remarks} 
+
+{p 4 4 2}The author recommends the {cmd:s1color} scheme for defaults congenial 
+with these plots.
+
+
+{title:Options} 
+
+{p 4 8 2}{cmd:max()} indicates the upper limit of each variable, and the
+sum of all three variables. Default value is 1. {cmd:max(100)}
+indicates percents.
+
+{p 4 8 2}{cmd:separate()} indicates that observations are to be
+subdivided into classes according to a specified variable. A legend will
+be shown if and only if more than one class is so defined. Each class is
+plotted as if it defined a single variable. Thus if {cmd:separate()}
+subdivides into two classes, and you want points for each class to be 
+connected and have different marker colours of your choice, specify also 
+options such as {cmd:c(l l) mcolor(pink blue)}. 
+
+{p 4 8 2}{cmd:by()} specifies that plots are to be shown separately according to
+the categories of a specified variable. 
+
+{p 4 8 2}{cmd:label()} specifies a list of numeric labels to be shown on each
+side of the triangle, which imply a grid of reference lines within the
+triangle.  The default is {cmd:0(0.2)1}, or {cmd:0(20)100} if {cmd:max(100)} is
+specified, or {cmd:0(200)1000} if {cmd:max(1000)} is specified.  As a special
+case, {cmd:label(nolabels)} specifies no labels and no reference lines.
+
+{p 4 8 2}{cmd:grid()} specifies options controlling the rendering of the labels
+and grid lines.  Know that {help twoway_connected:twoway connected} is used for 
+rendering and that the labels are shown as marker labels: hence use 
+{help connect_options:connect options} or {help marker_label_options:marker label options} 
+to make changes from the default. Example: {cmd:grid(lpat(shortdash))} changes 
+the line pattern to shortdash. 
+
+{p 4 8 2}{cmd:vertices()} specifies that only the vertices should be shown and
+not the complete triangular frame. The argument is the fraction of each side
+that is shown. {cmd:vertices(0.1)} means that 0.1 or 10% of each side will be
+shown.
+
+{p 4 8 2}{cmd:frame()} specifies options controlling the rendering of the
+triangular frame.  Know that {help line} is used for rendering: hence use 
+{help connect_options:connect options} to make changes from the default.
+Example: {cmd:frame(lpat(dot))} changes the line pattern to dot. 
+
+{p 4 8 2}{cmd:y} specifies that the Y is to be drawn that divides the triangle
+into regions in which each variable is greater than the other two. Some
+political scientists call the spokes of the Y 'win lines'. 
+Unless {cmd:centre()} is specified, each spoke connects
+the midpoint of each side to the centroid of the triangle (which, by virtue of
+symmetry, is also the incentre, the circumcentre, the orthocentre and the
+Fermat point of the triangle). 
+
+{p 4 8 2}{cmd:y()} specifies options controlling the rendering of the Y. Know
+that {help line} is used for rendering: hence use 
+{help connect_options:connect options} to make changes from the default.
+Example: {cmd:y(lcolor(green))} changes the line colour to green. 
+
+{p 4 8 2}{cmd:centre()} specifies three numbers to be used as centre 
+for the triangle, referring in order to left, right and bottom variables. 
+Suppose three percent variables {it:p}, {it:q}, {it:r}
+are being shown, and three numbers {it:P}, {it:Q} and {it:R} are specified
+as centre, with sum 100. Then data are transformed to 
+
+	({it:p/P}) / ({it:p/P}  + {it:q/Q}  + {it:r/R}) 
+	({it:q/Q}) / ({it:p/P}  + {it:q/Q}  + {it:r/R}) 
+	({it:r/R}) / ({it:p/P}  + {it:q/Q}  + {it:r/R}) 
+
+{p 8 8 2}Vertices remain vertices and contours of {it:p}, {it:q}, {it:r} 
+remain straight. See Upton (2001). 
+
+{p 8 8 2}As a convenience to users who do not use standard English 
+spelling, the synonym {cmd:center()} is also allowed. 
+
+{p 4 8 2}{cmd:ltext()}, {cmd:rtext()} and {cmd:btext()} control text on the
+left, right and bottom sides of the plot. They default to the variable labels
+(or if those do not exist, the names) of {it:leftvar}, {it:rightvar} and
+{it:botvar}. In each case, specifying {cmd:" "} blanks out the text.
+
+{p 4 8 2}{cmd:bltext()}, {cmd:ttext()}, {cmd:brtext()} control text by the
+bottom left, top and bottom right vertices of the triangle.  These options are
+intended as an alternative to numeric labels at the vertices.
+
+{p 4 8 2}{cmd:text()} specifies options controlling the rendering of the text
+specified by the {cmd:*text()} options.  Know that {help scatter} is used for
+rendering the text as marker labels: hence use 
+{help marker_label_options:marker label options} to make changes from the
+default.  Example: {cmd:text(mlabsize(medium))} changes the label text size
+pattern to medium. 
+
+{p 4 8 2}{it:scatter_options} are options of {help scatter}. 
+
+
+{title:Examples} 
+
+{p 4 8 2}{cmd:. triplot services industry agriculture, max(100) title("Structure of GDP 1996: 112 economies")} 
+
+{p 4 8 2}{cmd:. triplot services industry agriculture, max(100) title("Structure of GDP 1996: 112 economies") vert(0.2) la(nolabels) y ttext(services) bltext(agriculture) brtext(industry) ltext(" ") rtext(" ") btext(" ")}
+
+{p 4 8 2}{cmd:. triplot Dem Rep other, separate(region)} 
+
+
+{title:Author}
+
+{p 4 4 2}Nicholas J. Cox, Durham University, U.K.{break}
+n.j.cox@durham.ac.uk
+
+
+{title:Acknowledgments} 
+
+{p 4 4 2}Friedrich Huebler pointed to some bugs and posed some useful 
+questions. 
+Scott Merryman and Thomas Steichen found other bugs. 
+Vince Wiggins provided encouragement. 
+
+
+{title:References}
+
+{p 4 4 2}Cox, N.J. 2004. Graphing categorical
+and compositional data. {it:Stata Journal} 4: 190{c -}215.
+{browse "http://www.stata-journal.com/article.html?article=gr0004":http://www.stata-journal.com/article.html?article=gr0004}
+
+{p 4 4 2}Gray, J. 1993. M{c o:}bius's geometrical mechanics. In Fauvel, J., R. Flood and R. Wilson (eds)
+{it:M{c o:}bius and his band: mathematics and astronomy in nineteenth-century Germany.} 
+Oxford: Oxford University Press, pp.79{c -}103. 
+
+{p 4 4 2}M{c o:}bius, August Ferdinand. 1827. {it:Der barycentrische Calcul: ein neues H{c u:}lfsmittel zur analytischen Behandlung der Geometrie} 
+{it:dargestellt und insbesondere auf die Bildung neuer Classen von Aufgaben und die Entwicklung mehrerer Eigenschaften der Kegelschnitte.} 
+Leipzig: Johann Ambrosius Barth. [1790{c -}1868] 
+
+{p 4 4 2}Upton, G.J.G. 2001. A toroidal scatter diagram for ternary variables.
+{it:The American Statistician} 55: 247{c -}250. 
+

@@ -1,0 +1,121 @@
+{smcl}
+{hline}
+help for {hi:ttesttable}{right:Version 1.3}
+{hline}
+
+{title: Differences in means by groups including the T-test}
+
+
+{p 4 17 2}{cmd:ttesttable} {it:outcome} {it:groupvar} [if] [in] [,
+	{cmdab:uneq:ual}
+	{cmdab:tex:(}{it:str}{cmd:)}
+	{cmdab:html:(}{it:str}{cmd:)}
+	{cmdab:xml:(}{it:str}{cmd:)}
+	{cmdab:pre:table(}{it:str}{cmd:)}
+	{cmdab:post:table(}{it:str}{cmd:)}
+	{cmdab:force}
+	{cmdab:r:eference(}{it:str}{cmd:)}
+	{cmdab:f:ormat(}{it:{help format:fmt}}{cmd:)}
+	{cmdab:texf:ormat(}{it:{help format:fmt}}{cmd:)}
+	]
+
+
+
+{title:Description}
+
+{p 4 4 4} ttesttable is a very simple Stata module that performs a mean-comparison test (t-Test) 
+for all possible combinations of groups defined by a variable. For instance, if you have 4 types 
+of observations and you would like to see if there are differences in means between groups, this 
+module computes the t-test for all six possible combinations. The output is presented in a table 
+of differences in means and includes the significance level of the t-test. This table can be 
+exported directly as a LaTeX file and the underlying matrices are available for further use in Stata.
+
+{p 4 4 4} {cmd:outcome} This variable must be numeric and contains the variable you would like to test.  
+
+{p 4 4 4} {cmd:groupvar} This variable must be a categorical variable with either numerical values or strings.
+
+
+{title:Options}
+
+{p 4 4 4} {cmdab:uneq:ual} This option corresponds to the {it:unequal} option of the command 
+{it:ttest}, meaning that no equal variances of the outcome variable are assumed for the two groups. 
+
+{p 4 4 4} {cmdab:tex:(}{it:str}{cmd:)} Use this option to export the displayed table directly 
+to latex. Specify the name of the file (without the file extension). The table will be generated 
+with the LaTeX {it:tabular} environment. To include the {it:table} environment, use the options 
+{cmdab:pre:table(}{it:str}{cmd:)} and {cmdab:post:table(}{it:str}{cmd:)}
+
+{p 4 4 4} {cmdab:html:(}{it:str}{cmd:)} Use this option to export the displayed table in the HTML format. 
+The exported file can be opened in any browser (e.g. Firefox, Opera, Internet Explorer, etc). Specify the name 
+of the file (without the file extension). Use the option {cmdab:f:ormat(}{it:{help format:fmt}}{cmd:)} 
+to format the output. 
+
+{p 4 4 4} {cmdab:xml:(}{it:str}{cmd:)} Use this option to export the displayed table in the XML format, which
+can be opened by Excel. Specify the name of the file (without the file extension). Use the option 
+{cmdab:f:ormat(}{it:{help format:fmt}}{cmd:)}  to format the output. 
+
+{p 4 4 4} {cmdab:pre:table(}{it:str}{cmd:)} Only for LaTeX export. Include here LaTeX code you would like to have in 
+the tex-file before the {it:tabular} environment. This option is only available when the option 
+{cmdab:tex:(}{it:str}{cmd:)} is specified.
+
+{p 4 4 4} {cmdab:post:table(}{it:str}{cmd:)} Only for LaTeX export. Include here LaTeX code you would like to have in 
+the tex-file after the {it:tabular} environment. This option is only available when the option 
+{cmdab:tex:(}{it:str}{cmd:)} is specified.
+
+{p 4 4 4} {cmdab:force} By default, the program stops working when more than 10 categories are 
+detected, since this will lead to extremely large tables and is most likely due to the use of a 
+continuous variable as grouping variable. If you want to perform the analysis with more than the 
+generally admitted 10 categories, use the option force, which eliminates this limit. 
+
+{p 4 4 4} {cmdab:r:eference(}{it:str}{cmd:)} By default, the program computes the full table of all possible combinations.
+If you are only interested in the comparison of some values with the remaining, you can use this option. By
+indicating with which values you would like to compare. The columns will then be the values you indicate, while the
+rows remain the same.  
+
+{p 4 4 4} {cmdab:f:ormat(}{it:{help format:fmt}}{cmd:)} This option allows you to change the format of the display
+on the Stata output screen. The default value is %6.3f.
+
+{p 4 4 4} {cmdab:texf:ormat(}{it:{help format:fmt}}{cmd:)} Only for LaTeX export. This option allows you to change the format of the values 
+exported to the LaTeX file. Default is: %6.3f
+
+{title:Output}
+{p 4 4 15} Besides the screen output and the export to LaTeX, HTML and XML, ttesttable generates three matrices 
+which can be accessed through "return list": 
+
+{p 8 4 4} r(p) : matrix of p-values
+
+{p 8 4 4} r(t) : matrix of t statistics
+
+{p 8 4 4} r(diff) : matrix of differences in means
+
+
+{title:Example}
+
+{p 0 4 0}{cmd:ttesttable} score country, tex(myfile) pre("\begin{table}[!ht]\centering") 
+post("\caption{Cross table of differences in mean by group\end{table}"
+
+{p 4 4 15}This example will provide a matrix containing the differences in the average scores 
+across countries and performs a T-test for any combination of groups. The stars will indicate 
+if the difference is significantly different from zero. The table will be exported to the file 
+{it:myfile.tex} and include the {it:table} environment as defined by the options {cmd:pre()} and {cmd:post()}
+
+{p 0 4 0}{stata sysuse auto}
+
+{p 0 4 0}{stata ttesttable price rep78, f(%6.1f) ref(1 2)}
+
+{p 4 4 15}This computed the t-Test according to the group variable {it:rep78} on the outcome variable {it:price}. The option ref(1 2) 
+limits the comparisons to the values of 1 and 2 of the variable rep78 with all other values. Additionally, f(%6.1f) changes the format to a one decimal
+with 5 leading values for the Stata output.
+
+{title:Acknowledgements}
+{p 4 4 1}	I would like to thank Sarah Necker of the suggestion to add the option 'reference' and Rita Maria Ribeiro Bastião for the suggestion to include 
+HTML and XML export options. 
+
+{title:Author}
+{p 4 4 4}	For suggestions and questions, please contact the author: {break} 
+Florian Chávez Juárez: {browse "mailto:florian@chavezjuarez.com?subject=ttesttable:":florian@chavezjuarez.com}
+
+{title:Update}
+{browse "http://econ.chavezjuarez.com/vcheck.php?i=ttesttable&v=1.3":Click here to check if you have the newest version}
+
+

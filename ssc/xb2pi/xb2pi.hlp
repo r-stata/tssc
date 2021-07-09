@@ -1,0 +1,38 @@
+{smcl}
+{* 25sep2006}{...}
+{hline}
+help for {hi:xb2pi}
+{hline}
+
+{title:Transform the logit scores into probabilities}
+
+{p 4 14 10}{cmd:xb2pi} #1 #2 #3 ... [ ,  {cmdab:f:ormat(%}{it:fmt}{cmd:)} ] {p_end}
+
+{title:Description}
+
+{p 4 10 10}{cmd:xb2pi} provides the probabilities corresponding to the logit scores. {p_end}
+
+{title:Options}
+
+{p 4 8 2}{cmdab:f:ormat(%}{it:fmt}{cmd:)} specifies the display format for presenting numbers. The default is %3.2f. {p_end}
+
+{title:Examples}
+
+     {stata "xb2pi 0.15" }
+     {stata "xb2pi 0.15 0.10 0.20" }
+     {stata "xb2pi 0.15 0.10 0.20 , f(%3.2f)" }
+
+     {stata "sysuse cancer" }
+     {stata "logit died" }
+     {stata "xb2pi _b[_cons]" }
+     {stata "mat v = e(V)" }
+     {stata "xb2pi _b[_cons] _b[_cons]-1.96*sqrt(v[1,1]) _b[_cons]+1.96*sqrt(v[1,1])" }
+
+{title:Author}
+
+{p 4 4 2}Nicola Orsini, Division of Nutritional Epidemiology, IMM, Karolinska Institutet, Sweden {p_end}
+ 
+{title:Support}
+
+{p 4 12}{browse "http://nicolaorsini.altervista.org"}{p_end}
+{p 4 12}{browse "mailto:nicola.orsini@ki.se?subject=info xb2pi":nicola.orsini@ki.se}{p_end}

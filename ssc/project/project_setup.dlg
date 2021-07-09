@@ -1,0 +1,53 @@
+/*
+	project, setup
+   
+*!	VERSION 1.1	16nov2013
+
+*/
+
+VERSION 9.2
+
+INCLUDE _std_large
+INCLUDE _ht150
+POSITION . . _dlgwd _dlght
+
+HELP hlp1, view("help project")
+RESET res1
+COPY copy1
+
+OK ok1, label("OK")
+CANCEL can1, label("Cancel")
+
+DIALOG main, tabtitle("Main") ///
+	label("Setup a project's directory") 
+	
+BEGIN
+
+  	GROUPBOX	gb_using  _lft  _top  _iwd  _ht8, ///
+		label("Please select the project's master do-file")
+	
+	TEXT	tx_using	_ilft	_ls	_inwd	.,	///
+		label("master do-file:")
+	
+	FILE	fi_using	@		_ss	@		.,	///
+		label("Browse...")						///
+		filter("Stata do-files (*.do)|*.do")	///
+		error("master do-file")					///
+		nomemory
+	
+	CHECKBOX ck_text	@	_ls	@	.,	///
+		option(textlog)					///
+		label("Plain text log files")
+
+END
+
+PROGRAM command
+BEGIN
+	require main.fi_using
+	put "project , setmaster("
+	put `"""'
+	put main.fi_using
+	put `"")"'
+	put " "
+	option main.ck_text
+END

@@ -1,0 +1,40 @@
+{smcl}
+{* 18oct2009}{...}
+{cmd:help touch}
+{hline}
+
+{title:Title}
+
+{p 4 8 2}
+{bf:touch -- Create a blank data file}
+
+
+{title:Syntax}
+
+{p 8 17 2}
+{cmdab:touch} {it:filename}, [{cmd:type}({it:string})] [{cmd:replace}] [{cmd:var}({it:string})]
+
+
+{title:Description}
+
+{p 4 4 2}
+{cmdab:touch} creates a blank data file of the type specified.  This is useful to avoid append loops failing on the first run due to the file not existing, and is a slightly more elegant solution than -cap append-, as append will still abort the program if there is a real problem.  It is similar to the UNIX command touch.
+
+
+{title:Options}
+
+{p 4 8 2}
+
+{cmd:type} specifies the type of file to create.  Options are {it:txt} for text-based files e.g. csv, tsv, fixed, etc. or {it:dta} for Stata data files.  If not specified, the program will attempt to guess based on the extension given in {it:filename}.
+
+{cmd:var} specifies variable(s) to create.  Useful for merging in loops.
+
+Version 1.1: Allows specification of the path as part of filename.
+
+{title:Example}
+
+{p 4 8 2}
+
+{phang2}{cmd:. tempfile looptempfile }{p_end}
+{phang2}{cmd:. touch `looptempfile' }{p_end}
+

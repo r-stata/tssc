@@ -1,0 +1,104 @@
+{smcl}
+{hline}
+help for {hi:kwstat}{right:{browse "http://econ.chavezjuarez.com/vcheck.php?i=kwstat&v=1.0":Version 1.0}}
+{hline}
+
+{title:Kernel weighted sample statistics}
+
+
+{p 4 17 2}{cmd:kwstat} {it:yvar xvar} [if] [in] [,
+	{cmdab:b:w(}{it:real}{cmd:)}
+	{cmdab:lp:olybw}
+	{cmdab:k:ernel(}{it:str}{cmd:)}
+	{cmdab:s:tats(}{it:str}{cmd:)}
+	{cmdab:at}
+	{cmdab:grid(}{it:int}{cmd:)}
+	{cmdab:save}	
+	{cmdab:pre:fix(}{it:str}{cmd:)}
+	{cmdab:no:graph}
+	{cmdab:graphtype(}{it:str}{cmd:)}
+	{cmdab:grapho:ptions(}{it:str}{cmd:)}
+		]
+
+{title:Description}
+
+{p 4 4 4} {cmd:kwstat} computes sample statistics of {it:yvar} in function of another variable {it:xvar}. The approach is inspired by the kernel regression (Nadaraya-Watson estimator) which computes 
+the conditional mean of y in function of x. {cmd:kwstat} does the same but not only for the mean but also for the standard deviation, deciles, range, etc. Note that this procedure is an
+ad-hoc method and should be used in an exploratory way to visualize the data. It is not rooted in a well defined statistical concept. 
+
+{title:options}
+
+{p 4 4 4} 	{cmdab:b:w(}{it:real}{cmd:)} allows you to define the bandwidth of the kernel used in the computation. If nothing is specified, 
+kwstat uses h = 1.06 {sigma} n^(-1/5), which is an approximation of the optimal bandwidth for the Gaussian kernel when estimating the Nadaraya-Watson estimator. 
+Hence, it is not necessarily the optimal bandwidth for the estimation of other statistics and/or other kernels. 
+I strongly advise users to try several bandwidths and to compare them visually. See also the user manual for more details. 
+
+{p 4 4 4} 	{cmdab:lp:olybw} is a second option to modify the optimal bandwidth with respect to the default value. 
+By activating this option the optimal bandwidth proposed  by the command {cmd:lpoly} is used. Note, however, that this is only possible for the kernels 
+implemented in {cmd:lpoly} (e.g. it's not possible for the logit kernel) and that these optimized bandwidths were designed for the kernel regression 
+(estimation of the mean). They are therefore not necessarily optimal for the estimation of other statistics. I strongly advise users to try several bandwidths 
+and to compare them visually. See also section the user manual for more details.
+
+{p 4 4 4} 	{cmdab:k:ernel(}{it:str}{cmd:)} allows you to change the kernel type. The options are as follows: 
+
+{col 15} {it:default} {col 28} The default epanechnikov kernel
+{col 15} normal {col 28} The normal density kernel
+{col 15} triangle {col 28} The triangle kernel
+{col 15} beta {col 28} The beta kernel
+{col 15} logit {col 28} The logit density kernel
+{col 15} uniform {col 28} The uniform kernel
+{col 15} cosine {col 28} The cosine kernel
+{col 15} parzen {col 28} The Parzen kernel
+
+{p 4 4 4} 	{cmdab:s:tats(}{it:str}{cmd:)} lets you specify the statistics you would like to compute. The default value is the mean, providing equivalent results to 
+{cmd:lpoly}. All statistics supported by the command {cmd:tabstat} are supported: {cmd:mean, sd, min, max, range, kurtosis, skewness, semean, p10, p95} etc. 
+(e.g. see {cmd:help tabstat} for the full list). Several statistics can be selected together, for instance {cmd:stats(mean sd p10)} returns the mean, the 
+standard deviation and the first decile of {it:yvar} in function of {it:xvar}.
+
+{p 4 4 4} 	{cmdab:at} by default the statistics are evaluated on an equally spaced grid at 100 points. Using the option {cmd:at} you can change this and let 
+{cmd:kwstat} compute the statistics for each value of the variable {it:xvar}. Note, however, that his can become computationally heavy when many different values are 
+present. You can also change the number of points on the equally spaced grid using the option {cmd:grid({it:int})}
+
+{p 4 4 4} 	{cmdab:grid(}{it:int}{cmd:)}  allows you to change the number of points for which the statistics are computed. By default, 100 points on the equally 
+spaced grid between the minimum and the maximum of {it:xvar} are used.
+
+{p 4 4 4} 	{cmdab:save} allows you to store the variables produces by {cmd:kwstat}. This can be helpful for posterior use (e.g. to create your own graph). 
+You can also use the option {cmd:prefix} to change the name of the variables. By {it:default} the variables are names {cmd:_kwstats_{it:stat}} 
+where {cmd:{it:stat}} refers to the statistic chosen in the option {cmd:stats}. 	
+ 
+{p 4 4 4} 	{cmdab:pre:fix(}{it:str}{cmd:)} allows you to change the prefix of the generated variable from the default value of {cmd:_kwstat_} 
+to the prefix of your preference.
+
+{p 4 4 4} 	{cmdab:no:graph} suppresses the output of the graph. Note that this makes only sense if you also use the option {cmd:save} to keep 
+the computed variables for posterior use. Otherwise the command would not produce any output.
+
+{p 4 4 4} 	{cmdab:graphtype(}{it:str}{cmd:)} lets you change the graph type. By default a {it:line} graph is provided. 
+You can change it to {it:scatter} or {it:connected}.
+
+{p 4 4 4} 	{cmdab:grapho:ptions(}{it:str}{cmd:)} allows you to provide a string containing options for the twoway graph. You can for instance 
+change the legend or the label of the axis. See {cmd:help twoway} for more details
+
+{title:Output}
+{p 4 4 15} {cmd:kwstat} returns several values which can be accessed through {stata return list:return list}:
+
+{col 10} r(bw): {col 25} the bandwidth
+{col 10} r(kernel): {col 25} the kernel function used in the computation
+
+
+
+{title:Example}
+{p 0 4 0}First, we load a sample database containing several thousand individuals:{break}{stata sysuse nlsw88, clear} 
+
+{p 0 4 0}Then we can compute several statistics for {it:wage} in function of {it:tenure}{break}
+{stata kwstat wage tenure if tenure<22, lpoly stats(mean median sd)}{break}
+{stata kwstat wage tenure if tenure<22, lpoly stats(skewness) graphoptions( ytitle("Skewness") legend(on))}
+
+{title:Author}
+{p 4 4 4}	For suggestions and questions, please contact the author: {break} 
+Florian Chávez Juárez: {browse "mailto:florian@chavezjuarez.com?subject=Stata kernel:":florian@chavezjuarez.com}
+
+{title:Update and user manual}
+{p 4 4 4}	The easiest way to update the package is: {stata ssc install kwstat, replace:ssc install kwstat, replace}{break}
+If you want to see if you have the newest version and what changed,  {browse "http://econ.chavezjuarez.com/vcheck.php?i=kwstat&v=1.0":please click here}.{break}
+Or download the {browse "http://econ.chavezjuarez.com/download.php?id=17&h=667a99":User manual} from website of the author. 
+

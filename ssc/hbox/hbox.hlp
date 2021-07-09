@@ -1,0 +1,131 @@
+.-
+help for ^hbox^
+.-
+
+Horizontal box plots
+--------------------
+
+    ^hbox^ varlist [^if^ exp] [^in^ range] [weight] 
+    [ ^, q^sort^(^[^-^]{^min^|^p25^|^p50^|^p75^|^max^|^n^}^) shown^ 
+    hbar_options ]
+    
+    ^hbox^ varname [^if^ exp] [^in^ range] [weight] 
+    [ ^, q^sort^(^[^-^]{^min^|^p25^|^p50^|^p75^|^max^|^n^}^) shown^
+    ^by(^byvar^) to^tal hbar_options ]
+
+
+Description
+-----------
+
+^hbox^ plots data as one or more horizontal box plots.  
+
+
+Remarks
+-------
+
+^hbox^ differs from ^graph, oneway box^ and ^graph, box^:
+
+    ^hbox^ shows values beyond the quartiles only by whiskers extending 
+    to the extremes. No point symbols are used. 
+    ^graph, oneway box^ shows whiskers extending to the adjacent values. 
+    ^graph, box^ shows such whiskers and point symbols for values beyond
+    the adjacent values. 
+
+    With ^graph^, if you want horizontal box plots, you must have oneway 
+    plots as well. 
+
+    ^hbox^ allows the space taken up by boxes to be tuned by the 
+    ^barfrac( )^ option of ^hbar^, but all boxes have the same height. 
+    ^graph, box^ allows the width of boxes to vary according to 
+    ^vwidth^ and ^root^ options.
+    
+    ^graph, oneway box^ puts descriptive text under each line of marks. 
+    ^hbox^ and ^graph, box^ put descriptive text on the axes. 
+    
+    ^graph, oneway box^ does not allow tuning of ^xlabel( )^ -- the 
+    minimum and maximum are always shown -- nor of whether a border 
+    or axes are shown. 
+    ^hbox^ allows such tuning as with ^hbar^.
+    
+    ^hbox^ allows the use of ^xline( )^, in contrast to ^graph, oneway box^,
+    although not of ^yline( )^, in contrast to ^graph, box^.
+    
+    ^hbox^ uses only one colour in the body of the graph. 
+    ^graph, oneway box^ and ^graph, box^ use several colours with several 
+    variables. 
+
+    ^graph, oneway box^ allows up to 20 variables or 52 groups to be 
+    shown. 
+    ^graph, box^ allows up to 6 variables or 50 groups to be shown. 
+    ^hbox^ has no limit.    
+    
+    ^graph^ myvar^, oneway box by(^byvar^)^ or ^graph^ myvar^, box by(^byvar^)^ 
+    requires data to be sorted by byvar. 
+    ^hbox^ myvar^, by(^byvar^)^ does not require this. In addition, boxes
+    may be sorted by any one of the quantiles shown in the box plots, 
+    in either ascending or descending order. 
+
+    ^hbox^ allows only one variable with ^by( )^. Use ^separate^ to 
+    create separate variables for the case of two or more variables. 
+
+^hbox^ requires installation of ^svmat2^ and ^univstat^.     
+ 
+  
+Options
+-------
+
+^by(^byvar^)^ specifies that values of varname are to be shown separately
+    by groups defined by byvar. This option may only be specified with 
+    a single variable. 
+
+^total^ is relevant only with ^by( )^. It specifies that an extra box plot
+    should be shown for all the values. 
+
+^qsort( )^ specifies that boxes should be sorted according to the values 
+    of one of: the minimum ^min^, the lower quartile ^p25^, the median ^p50^
+    or ^med^, the upper quartile ^p75^, the maximum ^max^ or the number of 
+    values ^n^ or ^N^. By default with this option, values will be sorted 
+    so that the highest value appears at the bottom. Prefixing the measure
+    specified with ^-^ reverses this order. Thus ^qsort(p50)^ sorts boxes on 
+    the median, highest at bottom, and ^qsort(-p50)^ sorts boxes on the 
+    median, highest at top. (^q^ is supposed to evoke quantile, as all of 
+    these measures apart from ^n^ are quantiles.) 
+
+^shown^ (think "show n") specifies that the number of values should be shown 
+    in the ^rlegend( )^. By default this is right-justified with a horizontal 
+    position ^rlpos(31500)^. 
+
+hbar_options are options allowed with ^hbar^, except that 
+   ^shading(nl..r) t2(" ") l(^names^)^ are hardwired and ^sort( )^ is not 
+   allowed. 
+    
+
+Examples
+--------
+
+        . ^hbox length width height^ 
+        . ^hbox length, by(grade)^ 
+        . ^hbox length, by(grade) border xla(0(200)2000)^ 
+
+
+Acknowledgements
+----------------
+
+Abdel Babiker suggested the ^shown^ option. 
+Joshua Howland Sarver alerted me to a bug. 
+
+
+Author
+------
+
+         Nicholas J. Cox, University of Durham, U.K.
+         n.j.cox@@durham.ac.uk
+
+
+Also see
+--------
+
+On-line: help for @hbar@, @groneway@, @grbox@
+         
+	 
+

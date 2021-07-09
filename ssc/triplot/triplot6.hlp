@@ -1,0 +1,237 @@
+.-
+help for ^triplot6^
+.-
+
+Triangular plot
+---------------
+
+    ^triplot6^ leftvar rightvar botvar [^if^ exp] [^in^ range]
+
+    [ ^, m^ax^(^#^) la^bel^(^numlist^) v^ertices^(^#^) y^
+    ^sa^ving^(^graph_filename^)^
+
+    ^s^ymbol^(^string^) pts^ize^(^#^) pen(^string^) fontr(^#^) fontc(^#^)^
+
+    ^c^onnect^(^{^l^|^a^}^) g^roup^(^varname^) ahl(^#^)^
+
+    ^lt^ext^(^string^) rt^ext^(^string^) bt^ext^(^string^)^
+    ^blt^ext^(^string^) brt^ext^(^string^) tt^ext^(^string^)^
+    ^ti^tle^(^string^) t1^title^(^string^)^
+
+    ^k^ey^(^keyvar^) keyc^ol^(^#^) keyr^ow^(^#^) keytext(^keytextvar^)^ ]
+
+
+Description
+-----------
+
+^triplot6^ produces a triangular plot of the three variables leftvar,
+rightvar and botvar, which are plotted on the left, right and bottom
+sides of an equilateral triangle. Each should have values between 0 and
+some maximum value (default 1) and the sum of the three variables should
+be equal to that maximum (within rounding error). Most commonly, three
+fractions or proportions add to 1, or three percents add to 100.
+
+The constraint that the three variables have a constant sum means that
+there are just two independent pieces of information. Hence it is
+possible to plot observations in two dimensions within a triangle, which
+is a 2-simplex.
+
+Triangular plots appear under various names in the literature, including
+trilinear, triaxial, three-element maps, ternary, reference triangles,
+percentage triangles, mixture, barycentric. Common geological
+applications are to sedimentary facies or particle form: hence more
+specific terms such as facies and form triangles.
+
+Note: apart from a bug fix, ^triplot6^ is a frozen version of ^triplot^ 
+1.2.3 28 June 2000 written for Stata 6. Users of Stata 8 are recommended
+to use ^triplot^ 2.0.0 or later. 
+
+
+Options
+-------
+
+major features of plot
+----------------------
+
+^max(^#^)^ indicates that the upper limit of each variable, and the sum
+    of all three variables, is #. Default value is 1. ^max(100)^
+    indicates percents.
+
+^label(^numlist^)^ specifies a list of numeric labels to be shown on
+    each side of the triangle, which imply dotted reference lines
+    within the triangle.
+
+    The default is ^0(0.2)1^, or ^0(20)100^ if ^max(100)^ is specified.
+
+    As a special case, ^label(.)^ specifies no labels and no reference
+    lines.
+
+^vertices(^#^)^ specifies that only the vertices should be shown and not
+    the complete bounding triangle. The argument is the fraction of each
+    side that is shown. ^vertices(0.1)^ means that 0.1 or 10% of each
+    side will be shown.
+
+^y^ specifies that the Y is to be drawn that divides the triangle into
+    regions in which each variable is greater than the other two. Some
+    political scientists call the spokes of the Y `win lines'. Each  
+    spoke connects the midpoint of each side to the centroid of the 
+    triangle (which, by virtue of symmetry, is also the incentre, the
+    circumcentre, the orthocentre and the Fermat point of the triangle). 
+
+^saving(^graph_filename^)^ saves the graph in a .gph file.
+
+symbols
+-------
+
+^symbol(^string^)^ indicates symbols. If ^key(^keyvar^)^ is specified, a
+    symbol can be specified for each class present in the data.
+
+    The symbols will be used in the sort order of keyvar. If keyvar
+    takes on values 1, 2, 3, ^sy(opd)^ means that ^o^ will indicate
+    class 1, ^p^ class 2 and ^d^ class 3.
+
+    The default is ^sy(o)^. The possibilities are
+
+    ^o^                circle
+    ^p^                plus
+    ^S^                square
+    ^d^                diamond
+    ^T^                triangle
+   ^ .^                dot
+    ^i^                invisible
+    ^[_n]^             observation numbers
+    ^[^varname^]^      values of varname
+
+    Note that this option is not an exact emulation of the ^symbol( )^
+    option of ^graph^. ^sy(O)^ for large circle is supported, but the
+    result is identical to that of ^sy(o)^.
+
+    If numvar is a numeric variable with labels,
+
+    ^triplot6^ ... ^sy([^numvar^]) key(^numvar^)^
+
+    means that numbers will be shown within the triangle and a key with 
+    numbers and labels will be shown outside the triangle. 
+
+    Observation numbers depend on the sort order used. See ^group( )^
+    below for further detail.
+
+^ptsize(^#^)^ controls point symbol size. Default 275.
+
+^pen(^string^)^ indicates pens to be used for data symbols. Default 2
+    for all values. If ^key( )^ is specified, a pen can be specified for
+    each class present in the data.
+
+^fontr(^#^)^ and ^fontc(^#^)^ control the font used for symbols and
+    default to 570 and 290 (which is the default of @gph@).
+
+connections
+-----------
+
+^connect( )^ specifies that successive data points are to be connected.
+    ^connect(l)^ specifies use of a straight line and ^connect(a)^
+    specifies use of an arrow.
+
+^group(^groupvar^)^ specifies a variable determining which data points
+    may be connected. If ^group( )^ is specified, only observations with
+    the same value of the group variable will be connected.
+
+    The order of connections is determined by the sort order of groupvar,
+    where specified, and then by the original sort order of the data.
+
+^ahl(^#^)^ determines the length of the arrowhead used with ^connect(a)^.
+    Default 300.
+
+titles
+------
+
+^ltext(^string^)^, ^rtext(^string^)^ and ^btext(^string^)^ control text
+    on the left, right and bottom sides of the plot. They default to the
+    variable labels (or if those do not exist, the names) of leftvar,
+    rightvar and botvar. In each case, specifying ^" "^ blanks out the
+    text.
+
+^bltext(^string^)^, ^brtext(^string^)^, ^ttext(^string^)^ control text
+    by the bottom left, bottom right and top vertices of the triangle.
+    These options are intended as an alternative to numeric labels.
+
+^title(^string^)^ controls the ^title^, shown centred at the bottom of
+    the graph.
+
+^t1title(^string^)^ controls the ^t1title^, shown centred at the top of
+    the graph.
+
+key
+---
+
+^key(^keyvar^)^ indicates that values are to be subdivided into classes
+    according to keyvar. A key will be shown if and only if ^key( )^ is
+    specified and ^key( )^ defines more than one class but not more than
+    12 classes.
+
+^keycol(^#^)^ indicates the horizontal position of the top left-hand
+    corner of the key that is shown when more than one class is shown,
+    as controlled by the ^key( )^ option. Default is 24000. Less than
+    24000 means nearer the left than default.
+
+^keyrow(^#^)^ indicates the vertical position of the top left-hand
+    corner of the key that is shown when more than one class is shown,
+    as controlled by the ^key( )^ option. Default is 4000. Less than
+    4000 means nearer the top than default.
+
+^keytext(^keytextvar^)^ allows the simultaneous use of a numeric order
+    and string values in the key.
+
+    In particular, if numvar is a numeric variable and strvar is a
+    string variable,
+
+    ^triplot6^ ... ^sy([^numvar^]) key(^numvar^) keytext(^strvar^)^
+
+    or
+
+    ^triplot6^ ... ^sy(^string^) key(^numvar^) keytext(^strvar^)^
+
+    instructs ^triplot6^ to use in the key both the text or symbols
+    representing numvar and string values from strvar. Key elements will
+    be in the order defined by numvar.
+
+
+Examples
+--------
+
+    . ^triplot6 s i a, m(100) t1(Structure of output: % GDP 1996)^
+      ^ti(112 economies, according to World Bank)^ 
+
+    . ^triplot6 s i a, m(100) v(0.2) t1(Structure of output: % GDP 1996)^
+      ^ti(112 economies, according to World Bank) la(.) y tt(services)^
+      ^blt(agriculture) brt(industry) lt(" ") rt(" ") bt(" ")^
+
+    Suppose we have data on percent votes for three parties in several
+    elections for several areas. It is desired to connect the successive
+    votes for each area. The command will resemble
+
+    . ^triplot6 Dem Rep Other, key(date) group(area) c(l) sy(opd)^
+
+    If the data are originally in wide form with variables such as
+    ^Dem60^, ^Rep60^, ^Other60^, ^Dem64^, ^Rep64^, ^Other64^, etc.,
+    then it will be necessary to ^reshape^ them:
+
+    . ^reshape long Dem Rep Other, i(area) j(year)^
+
+    It can make sense to use the same variable as ^key( )^ and
+    ^group( )^ variable.
+
+
+Author
+------
+
+         Nicholas J. Cox, University of Durham, U.K.
+         n.j.cox@@durham.ac.uk
+
+
+Also see
+--------
+
+On-line: help for @graph@, @gph@
+ Manual: [R] graph, [R] gph
+

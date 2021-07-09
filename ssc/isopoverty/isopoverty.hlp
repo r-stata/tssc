@@ -1,0 +1,165 @@
+{smcl}
+{hline}
+help for {cmd:isopoverty}{right:Joao Pedro Azevedo}
+{right:Samuel Franco}
+{hline}
+
+{title:}
+
+{p 8 27}
+{cmdab:isopoverty}
+{it:income}
+[{it:weight}]
+[{cmd:if} {it:exp}]
+[{cmd:in} {it:range}]
+[ ,
+{cmd:varpl}{cmd:(}{it:varname}{cmd:)}
+{cmd:pline}{cmd:(}{it:number}{cmd:)}
+{cmdab:poverty}
+{cmdab:inequal}
+{cmd:stepgrw}{cmd:(}{it:number}{cmd:)}
+{cmd:stepinq}{cmd:(}{it:number}{cmd:)}
+{cmd:mininq}{cmd:(}{it:number}{cmd:)}
+{cmd:maxinq}{cmd:(}{it:number}{cmd:)}
+{cmd:mingrw}{cmd:(}{it:number}{cmd:)}
+{cmd:maxgrw}{cmd:(}{it:number}{cmd:)}
+{cmdab:frontier}
+{cmd:int}{cmd:(}{it:number}{cmd:)}
+{cmd:target}{cmd:(}{it:number}{cmd:)}
+]{p_end}
+
+{p}{cmd:fweight}s, and {cmd:aweight}s are allowed; see help {help weights}.{p_end}
+
+{title:Description}
+
+{p 4 4 2}{cmd:isopoverty} generates data that can be used to plot the Inequality-Poverty, Growth-Poverty and the Iso-Poverty curves 
+(ECLAC, 2002; Bourguignon, 2002; Kakwani and Pernia, 2000; Bigsten and Shimeles, 2003; Barros et al, 2005; Barros et al, 2003).{p_end}
+
+{p 4 4 2}{cmd:stepgrw} or {cmd:stepinq} have to be stated otherwise the programme does not work. If the option {cmd:stepgrw} is
+specified the ado automatically generates the Growth-Poverty data, likewise, if the option {cmd:stepinq} is spefied the program it
+will generate the Inequality-Poverty data. If both parameters are specified both procedures will be implemented.{p_end}
+
+{p 4 4 2}Please note that in order to provider a greater flexibility on the {help graph} options this ado does not automatically produce any
+figures. The final output is stored as a matrix in the Stata memory (please see {help ereturn}), in order to retrive it to the data set
+the use will have to use the {help svmat} command. An illustration of a figure produced with data from this ado can be found
+in the examples below.{p_end}
+
+{p 4 4 2} Inequality  -> {cmd:r(ineqreduc)}{p_end}
+{p 4 4 2} Growth      -> {cmd:r(growth)}{p_end}
+{p 4 4 2} Iso-Poverty -> {cmd:r(frontier)}{p_end}
+
+{p 4 4 2}WARNING! The Iso-Poverty is quite computationally intensive.  We strongly advice the user to first estimate the
+Inequality-Poverty curve and then the Growth-Poverty curve, in order to find out the best cut off points for the data that
+she or he is using.{p_end}
+
+{title:Options}
+
+{p 4 4 2}{cmd:varpl}{cmd:(}{it:varname}{cmd:)} provide the variable name containing the values poverty line.{p_end}
+
+{p 4 4 2}{cmd:pline}{cmd:(}#{cmd:)} sets the value of the poverty line. The default poverty line is computed as
+half the median of varname.{p_end}
+
+{p 4 4 2}{cmdab:poverty} is the default output and includes the head count ratio and the extremme poverty head count ratio, several
+other poverty measures can be easily included in this output.{p_end}
+
+{p 4 4 2}{cmdab:inequal} includes the Gini and Theil inequallity measures in the output.{p_end}
+
+{title:Options Inequality}
+
+{p 4 4 2}{cmd:mininq}{cmd:(}#{cmd:)} states the minimum inquality reduction. Default value 0.{p_end}
+
+{p 4 4 2}{cmd:maxinq}{cmd:(}#{cmd:)} states the maximum inequality reduction. Default value 1.{p_end}
+
+{p 4 4 2}{cmd:stepinq}{cmd:(}#{cmd:)} specifies the number of increments that will be ploted between the
+minium and maximum values of the inequality variation.{p_end}
+
+{title:Options Growth}
+
+{p 4 4 2}{cmd:mingrw}{cmd:(}#{cmd:)} states the minimum growth. Default value 0.{p_end}
+
+{p 4 4 2}{cmd:maxgrw}{cmd:(}#{cmd:)} states the maximum growth. Default value 1.{p_end}
+
+{p 4 4 2}{cmd:stepgrw}{cmd:(}#{cmd:)} specifies the number of increments that will be ploted between the
+minium and maximum values of the growth variation.{p_end}
+
+{title:Options Frontier}
+
+{p 4 4 2}{cmdab:frontier} this option has to be stated if the user wants to estimate the Iso-Poverty line, otherwise the ado will
+estimate the data for the Growth-Poverty and the Inequality-Poverty curvers separtely.{p_end}
+
+{p 4 4 2}{cmd:target} specify the poverty rates as percentage of the population (head count) from the Iso-Poverty curve being
+estimated. Multiple values accepted. No default pre-determined.{p_end}
+
+{p 4 4 2}{cmd:int} specify the interval of the poverty rate that is acceptable. This is a usefull option the user is using large increments
+on the both the poverty and inequalty variation. Default value 0.{p_end}
+
+{title:Examples}
+
+{p 4 8}{inp:. isopoverty rdpc, stepinq(50)}{p_end}
+
+{p 4 8}{inp:. isopoverty rdpc, stepinq(50) varpl(lp)}{p_end}
+
+{p 4 8}{inp:. isopoverty rdpc [fw=peso], stepinq(50)}{p_end}
+{p 4 8}{inp:. mat temp=r(ineqreduc)}{p_end}
+{p 4 8}{inp:. svmat double temp}{p_end}
+{p 4 8}{inp:. graph twoway line temp2 temp1 if temp2>0, ytitle("Poverty - Head Count") xtitle("Inequality") name(temp1, replace)}{p_end}
+
+{p 4 8}{inp:. isopoverty rdpc [fw=peso], stepinq(50) varpl(lp)}{p_end}
+
+{p 4 8}{inp:. isopoverty rdpc, stepinq(50) inequal}{p_end}
+
+{p 4 8}{inp:. isopoverty rdpc, stepinq(50) stepgrw(10) mininq(0) maxinq(.50) mingrw(0) maxgrw(1.50)  target(25) int(2) frontier varpl(lp)}{p_end}
+
+{p 4 8}{inp:. isopoverty rdpc [fw=peso],  stepinq(50) stepgrw(10) mininq(0) maxinq(.50) mingrw(0) maxgrw(1.50)  target(25) int(2) frontier varpl(lp)}{p_end}
+
+{p 4 8}{inp:. isopoverty gallT_ppp  [fw=ipop], varpl(lp) stepinq(200) stepgrw(200)  mininq(-.8) maxinq(.8) mingrw(0) maxgrw(3)  target(5 15 30 41) int(.5) frontier}{p_end}
+{p 4 8}{inp:. mat temp=r(frontier)}{p_end}
+{p 4 8}{inp:. svmat double temp}{p_end}
+{p 4 8}{inp:. matrix list temp}{p_end}
+
+{p 4 8}{inp:. graph twoway ///}{p_end}
+{p 4 8}{inp:.     (lowess temp1 temp2 if temp3 == 5) ///}{p_end}
+{p 4 8}{inp:.     (lowess temp1 temp2 if temp3 == 15) ///}{p_end}
+{p 4 8}{inp:.     (lowess temp1 temp2 if temp3 == 30) ///}{p_end}
+{p 4 8}{inp:.     (lowess temp1 temp2 if temp3 == 41) ///}{p_end}
+{p 4 8}{inp:.         , ytitle("Income change") xtitle("Distribution change") name(temp1, replace)}{p_end}
+
+{p 4 8}{inp:. graph twoway ///}{p_end}
+{p 4 8}{inp:.     (lowess temp5 temp6 if temp3 == 5) ///}{p_end}
+{p 4 8}{inp:.     (lowess temp5 temp6 if temp3 == 15) ///}{p_end}
+{p 4 8}{inp:.     (lowess temp5 temp6 if temp3 == 30) ///}{p_end}
+{p 4 8}{inp:.     (lowess temp5 temp6 if temp3 == 41) ///}{p_end}
+{p 4 8}{inp:.         , ytitle("Income (level)") xtitle("Gini (level)") name(temp2, replace)}{p_end}
+
+
+{title:Remark}
+
+{p 4 4 2}Please note that {cmd:isopoverty} uses the packages {help apoverty} and {help ainequal} on its calculations.{p_end}
+
+{title:References}
+
+{p 4 8 2} Barros, R. Carvalho, M. Franco, S. Ganuza E., Mendonça, R. (2005) El combate a la pobreza en Centroamerica.
+UNDP and IPEA. (Apendices 2 y 3 y Capitulo 5){p_end}
+
+{p 4 8 2} Barros, R.P. Carvalho, M. Franco, S. (2003) La igualdad como estrategia de combate a la pobreza en Panamá  (Capítulo 6). Panama: PNUD. 
+{browse "www.undp.org.pa/_pnud/Documents/libro.pdf" : (link)} {p_end}
+
+{p 4 8 2} ECLAC (2002) Meeting the Millennium Poverty Reduction Targets in Latin America and the Caribbean. Santiago, Chile: ECLAC-IPEA-UNDP. {browse "http://www.eclac.cl/publicaciones/xml/5/12555/lcg2188i.pdf" : (link)}{p_end}
+
+{p 4 8 2} Bourguignon, F. (2002), “The Growth Elasticity of Poverty Reduction: explaining heterogeneity across countries and time periods”, in T. Eichler and S. Turnovsky (eds.), Growth and Inequality, Cambridge: MIT Press. {p_end}
+
+{p 4 8 2} Bigsten, A. and A. Shimeles (2003). “Prospects for a Pro-Poor Growth Strategy in Africa”, Paper presented at the WIDER Conference on Human Wellbeing and Income Inequality, Helsinki, May. {p_end}
+
+{p 4 8 2} Kakwani, N. and E.M. Pernia (2000), “What is Pro-Poor Growth?”, Asian Development Review 18(1): 1-16.{p_end} 
+
+{title:Authors}
+
+    Joao Pedro Azevedo
+    jazevedo@worldbank.org
+    
+    Samuel Franco
+
+{title:Also see}
+
+{p 0 19}On-line:  help for {help lorenz2} & {help changemean} if installed{p_end}
+

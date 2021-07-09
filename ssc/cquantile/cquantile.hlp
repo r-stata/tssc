@@ -1,0 +1,80 @@
+{smcl}
+{* 1 Nov 2005}{...}
+{cmd:help cquantile}
+{hline}
+
+{title:Title}
+
+{p2colset 5 18 18 2}{...}
+{p2col :{hi:cquantile} {hline 2}}generate corresponding quantiles{p_end}
+{p2colreset}{...}
+
+
+{title:Syntax}
+
+{p 8 17 2}
+{cmd:cquantile} {it:varname1 varname2} {ifin} {cmd:,} 
+{opt g:enerate(newvar1 newvar2)}
+
+{p 8 17 2}
+{cmd:cquantile} {it:varname} {ifin} {cmd:,} 
+{opt by(groupvar)} {opt g:enerate(newvar1 newvar2)}
+
+
+{title:Description}
+
+{pstd}
+{cmd:cquantile} generates corresponding quantiles, namely, those
+quantiles that would be shown on a quantile-quantile plot, as in 
+{help qqplot}. Given either two numeric variables, or one numeric
+variable and one grouping variable defining two groups, two new
+variables are generated containing the quantiles.  One of those new
+variables contains values identical to those in one of the existing
+variables or groups, and the other contains corresponding quantiles.
+The two new variables are aligned lowest to lowest, ..., highest to
+highest.  There is thus some redundancy introduced, but having both
+variables handy is intended to be a convenience, especially for further
+graphics. For example, quantile-quantile plots are often inspected for
+additive or multiplicative structure. A direct way to check for either 
+would be to plot difference of quantiles versus their mean or ratio of
+quantiles versus their geometric mean. 
+
+
+{title:Options}
+
+{phang}
+{opt generate()} specifies two new variable names to hold 
+the quantiles. 
+
+{phang}
+{opt by()} specifies a group variable to specify precisely two 
+groups of {it:varname}, after any {opt if} or {opt in} restrictions have been 
+noted. {opt by()} may be only be specified with a single variable name. 
+
+
+{title:Examples}
+
+{phang}{cmd:. cquantile length width, gen(Qlength Qwidth)}{p_end}
+{phang}{cmd:. gen diff = Qlength - Qwidth}{p_end}
+{phang}{cmd:. gen mean = (Qlength + Qwidth) / 2}{p_end}
+{phang}{cmd:. scatter diff mean, yti(length - width) xti((length + width)/2)} 
+
+{phang}{cmd:. cquantile mpg, by(foreign) generate(mpg0 mpg1)}{p_end}
+{phang}{cmd:. qqplot mpg?} 
+
+
+{title:Author}
+
+{pstd}Nicholas J. Cox, Durham University{break}
+n.j.cox@durham.ac.uk
+
+
+{title:Also see}
+
+{psee}
+Manual:  {bf:[R] diagnostic plots} 
+
+{psee}
+Online:  {helpb qqplot}, {help separate}, {help fixsort} (if installed), 
+{help pairplot} (if installed)  
+{p_end}

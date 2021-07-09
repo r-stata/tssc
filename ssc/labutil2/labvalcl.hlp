@@ -1,0 +1,99 @@
+{smcl}
+{* version 1.0.2 18aug2011}{...}
+{cmd:help labvalcl}
+{hline}
+
+{title:Title}
+
+{p 5}
+{cmd:labvalcl} {hline 2} Clear value labels of null strings
+
+
+{title:Syntax}
+
+{p 8}
+{cmd:labvalcl} [{it:lblname-list}] 
+[{cmd:,} {opt n:ull}[{cmd:("}{it:label}{cmd:")}] {opt num:eric} 
+{opt node:tach}]
+
+
+{title:Description}
+
+{pstd}
+{cmd:labvalcl} removes null strings from value labels and detaches 
+empty value labels from variables. Empty value labels are dropped from 
+memory. If {it:lblname-list} is not specified it defaults to all value 
+labels in memory.
+
+
+{title:Options}
+
+{phang}
+{opt null}[{cmd:("}{it:label}{cmd:")}] additionally removes {it:label} 
+from value labels in {it:lblname-list}. If {it:label} is not specified 
+it defaults to "null".
+
+{phang}
+{opt numeric} additinally removes (integer) numbers from value labels 
+if integers are used as labels for the integer values they are 
+associated with. Thus "2" will be removed if it is associated with 
+value 2. 
+
+{phang}
+{opt nodetach} does not detach empty value labels from variables. This 
+option is seldom used.
+
+
+{title:Example}
+
+{pstd}
+Setting
+
+{phang2}
+. sysuse nlsw88
+{p_end}
+{phang2}
+. label define racelbl 4 "" ,modify
+{p_end}
+{phang2}
+. label define marlbl 0 "0" 1 "" ,modify
+{p_end}
+{phang2}
+. describe race married
+{p_end}
+{phang2}
+. label list racelbl marlbl
+{p_end}	
+
+{pstd}
+Remove null strings, numeric to numeric mappings and detach and drop 
+empty value labels
+
+{phang2}
+{cmd:. labvalcl racelbl marlbl ,numeric}
+{p_end}
+{phang2}
+. describe race married
+{p_end}
+{phang2}
+. label list racelbl
+{p_end}{...}
+{phang2}
+. label list marlbl
+{p_end}
+
+
+{title:Author}
+
+{pstd}Daniel Klein, University of Bamberg, klein.daniel.81@gmail.com
+
+
+{title:Also see}
+
+{psee}
+Online: {help label}, {help labelbook_problems}
+{p_end}
+
+{psee}
+if installed: {help labdel}, {help labdtch}, {help labvalch}, 
+{help labeldup}, {help strrec}, {help labutil2}{p_end}

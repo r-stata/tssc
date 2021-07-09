@@ -1,0 +1,52 @@
+{smcl}
+{* 23dec2004}{...}
+{hline}
+help for {hi:bystore}{right:(Author:  David Harrison)}
+{hline}
+
+{title:Repeat estimation command storing results}
+
+{p 8 15 2}{cmd:bystore} {it:varlist}
+		[{cmd:,} {cmdab:nol:abel} {cmdab:pre:fix(}{it:string}{cmd:)}
+		{it:est_table_opts} ] : {it:est_cmd}
+
+
+{title:Description}
+
+{p 4 4 2}
+{cmd:bystore} repeats the estimation command {it:est_cmd} (see help {help estcom})
+on subsets of the data in the manner of {cmd:by} (see help {help by}), storing the
+results of each estimation (see help {help estimates}).
+
+
+{title:Options}
+
+{p 4 8 2}{cmd:nolabel} specifies that the stored estimation results will be numbered
+1, 2, etc rather than labelled using labels derived from the {cmd:egen} function
+{cmd:group()} (see help {help egen}).
+
+{p 4 8 2}{cmd:prefix(}{it:string}{cmd:)} allows users to choose a prefix for the
+stored estimation results; the default is {cmd:_E}. All existing stored results with
+this prefix will be dropped.
+
+{p 4 8 2}{it:est_table_opts} are any of the options for the command {cmd:estimates table}; see
+help {help estimates_table}.
+
+
+{title:Examples}
+
+{p 4 4 2}{cmd:. bystore foreign: regress price weight}
+
+{p 4 4 2}{cmd:. bystore foreign, pre(_P) stats(N chi2): poisson rep78 weight}
+
+
+{title:Maintainer}
+
+    David A. Harrison
+    Intensive Care National Audit & Research Centre
+    david@icnarc.org
+
+
+{title:Also see}
+
+    Online:  help for {help by}, {help estcom}, {help estimates}

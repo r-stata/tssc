@@ -1,0 +1,132 @@
+{smcl}
+{* 12sep2011}{...}
+{hline}
+help for {hi:longshape}
+{hline}
+
+{title:Reshape to long (limited alternative version)}
+
+{p 8 17 2}
+{cmd:longshape}
+{it:varlist} 
+[{cmd:if} {it:exp}] 
+[{cmd:in} {it:range}] 
+{cmd:,}  
+{cmdab:i:name(}{it:idvar(s)}{cmd:)}
+{cmdab:j:name(}{it:newvar}{cmd:)}
+[
+{cmdab:y:name(}{it:newvar}{cmd:)}
+{cmd:yvallab(}{it:lblname}{cmd:)} 
+{cmd:replace}
+] 
+   
+   
+{title:Description} 
+
+{p 4 4 2}
+{cmd:longshape} is a convenience command automating one kind of simple
+{help reshape:reshape long}. Please study the Remarks below carefully
+to see if it matches your needs. Otherwise, it is likely that you really
+do need {cmd:reshape}. 
+
+
+{title:Remarks} 
+
+{p 4 4 2}
+Suppose that observations are identified by one or more existing
+variables {it:idvar(s)} and that you want to reshape a single bunch of
+variables {it:varlist} to long, i.e. to stack {it:varlist} into one variable.
+Any other variables are to be repeated alongside. {cmd:reshape} will do this 
+for you, but three details can bite: 
+
+{p 8 8 2}
+1. {cmd:reshape} requires that the variable names in {it:varlist} start
+with the same prefix or stub. Thus if {cmd:a b c} are to be stacked into
+one variable {cmd:y}, they would need to be called {cmd:ya yb yc}. It is
+easy enough to {help rename} these variables before a {cmd:reshape}, but
+with {cmd:longshape} it is only necessary to specify a desired new name
+through the {cmd:yname()} option. 
+
+{p 8 8 2}
+2. More awkwardly, with a {cmd:reshape long} the variable labels of
+{it:varlist} would disappear, so that it would be necessary to save them
+somewhere and put them back, or at worst to retype them. With
+{cmd:longshape} the variable labels, when they exist, become the value
+labels of a new variable. 
+
+{p 8 8 2}
+3. On occasion, you might want to specify directly that the new variable
+be assigned particular value labels. {cmd:longshape} has an option for
+that. 
+
+{p 4 4 2}
+One converse to this is that {cmd:longshape} does not support
+simultaneous reshaping of several bunches of variables, so for that you
+need {help reshape} (or {help stack}). 
+
+
+{title:Options} 
+
+{p 4 8 2} 
+{cmd:iname()} specifies the name(s) of the variables that singly or jointly
+specify observations uniquely. 
+This is a required option.     
+
+{p 4 8 2} 
+{cmd:jname()} specifies a name for a new variable to hold information on
+variables in {it:varlist}. Specifically, {cmd:longshape} creates two new 
+variables, as follows. Suppose you specify {cmd:jname(which)}. Then two
+new variables {cmd:which} and {cmd:_which} will be created. {cmd:which}
+is a numeric variable with value labels, which will be the original
+variable labels if defined and otherwise the original variable names.
+{cmd:_which} is a string variable with the original variable names. Thus
+when specifying {cmd:jname(}{it:jname}{cmd:)} it is necessary that both 
+{it:jname} and {cmd:_}{it:jname} be available as new variable names. 
+This is a required option.     
+
+{p 4 8 2}
+{cmd:yname()} specifies a name for the single new variable formed by
+stacking {it:varlist}. The name defaults to {cmd:y}, so long as that is a new
+variable name. 
+
+{p 4 8 2}
+{cmd:replace} forces a replacement of the existing dataset by the new
+reshaped dataset even though that existing dataset has changed since it
+was last {cmd:save}d or has not been {cmd:save}d at all. See 
+{help save}. Although this option may be used, it is better strategy to
+{cmd:save} the dataset first. 
+
+{p 4 8 2}
+{cmd:yvallab()} specifies that a particular set of value labels be
+assigned to the new variable named in {cmd:yname()}. This is an
+occasionally used option. 
+
+
+{title:Examples} 
+
+{p 4 8 2}{cmd:. clear}{p_end}
+{p 4 8 2}{cmd:. set obs 6}{p_end}
+{p 4 8 2}{cmd:. gen id = _n}{p_end}
+{p 4 8 2}{cmd:. gen a = ceil(10 * runiform())}{p_end}
+{p 4 8 2}{cmd:. label var a "the label of a"}{p_end}
+{p 4 8 2}{cmd:. gen b = ceil(10 * runiform())}{p_end}
+{p 4 8 2}{cmd:. label var b "the label of b"}{p_end}
+{p 4 8 2}{cmd:. l}{p_end}
+{p 4 8 2}{cmd:. save longshapetest, replace}{p_end}
+{p 4 8 2}{cmd:. longshape a b, i(id) j(which)}{p_end}
+{p 4 8 2}{cmd:. l}
+
+{p 4 8 2}(ecological data, observations are sites, species abundances to be stacked into one variable){p_end}
+{p 4 8 2}{cmd:. longshape achmil-calcus, i(id) j(species) y(abundance)}
+
+
+{title:Author} 
+
+{p 4 4 2}Nicholas J. Cox, Durham University, U.K.{break} 
+         n.j.cox@durham.ac.uk
+
+
+{title:Also see} 
+
+{p 4 4 2}Online: help for {help reshape}, {help stack} 
+

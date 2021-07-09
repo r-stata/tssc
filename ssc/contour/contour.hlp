@@ -1,0 +1,65 @@
+{smcl}
+{* 06apr2006}{...}
+{cmd:help contour}
+{hline}
+
+{title:Title}
+
+    {hi: Produces a contour plot}
+
+
+{title:Syntax}
+
+{p 8 17 2}
+{cmdab:contour}
+[{varlist}]
+[{cmd:,} {it:options}]
+
+{synoptset 20 tabbed}{...}
+{synopthdr}
+{synoptline}
+{syntab:Main}
+{synopt:{opt s:plit}{numlist}} specifies the values for the contours and takes a number list, the default is 3 contours at 
+the mean, 25th and 75th percentiles.{p_end}
+{synopt:{opt v:alues}} specifies that the data points be plotted alongside the contours.{p_end}
+{synopt:{help twoway_options}} specifies options for example titles and labels.{p_end}
+{synoptline}
+{p2colreset}{...}
+
+{title:Description}
+
+{pstd}
+{cmd:contour} draws a contour plot for a variable list on the x-axis and the observations on the y-axis.
+
+{title:Options}
+
+{dlgtab:Main}
+
+{phang}
+{opt s:plit}{numlist} specifies the values for the contours and takes a number list, the default is 3 contours at 
+the mean, 25th and 75th percentiles.
+
+{phang}
+{opt v:alues} specifies that the data points be plotted alongside the contours.
+
+
+{title:Examples}
+
+Click the following commands in order. 
+ 
+{stata clear}
+
+{stata set obs 8}
+
+{stata gen x1=uniform()}
+{stata gen x2=uniform()}
+{stata gen x3=uniform()}
+{stata gen x4=uniform()}
+
+{stata contour x1-x4}
+{stata contour x1-x4, ylabel(,angle(0)) title(contours) split(0.5) }
+
+{title:Also see}
+
+Online:  
+{helpb twoway}

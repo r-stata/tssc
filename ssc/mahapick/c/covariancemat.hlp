@@ -1,0 +1,76 @@
+{smcl}
+{* 8feb2008; rev, 2apr2008,2012feb9}
+{hline}
+help for {hi:covariancemat}
+{hline}
+
+{title:Generate a matrix of covariances}
+
+{p 8 17 2}
+{cmd:covariancemat}
+{it:varlist} [{cmd:if} {it:exp}] [{cmd:in} {it:range}]
+[{it:weight}]{cmd:, covarmat(}{it:mat}{cmd:)}
+
+
+{title:Description}
+
+{p 4 4 2}
+{cmd:covariancemat} generates a matrix of the covariances of the
+variables in {it:varlist}. The result is a square p-by-p matrix, where p is
+the number of variables in {it:varlist}.
+
+{p 4 4 2}
+{cmd:aweight}s, {cmd:fweight}s, {cmd:pweight}s, and {cmd:iweight}s are allowed; {cmd:aweight}
+is the default. See help {help weights}.
+
+{p 4 4 2}
+{cmd:covariancemat} was written for use by {help mahapick},
+{help mahascore}, and {help mahascores}, but may be of use
+in other circumstances.
+
+
+{title:Options}
+
+{p 4 4 2}
+{cmd:covarmat(}{it:mat}{cmd:)} is required; it specifies the name of the matrix
+to be created. If {it:mat} already exists as a scalar or matrix, it will be
+overwritten. The row- and column names of {it:mat} will be the variable names
+in {it:varlist}.
+
+
+{title:Remarks}
+
+{p 4 4 2}
+Since the covariances are computed together, they are necessarily computed on the
+set of observations that are nonmissing for all variables in {it:varlist}.
+Thus, the results may differ from pairwise computations of covariances,
+depending on the presence of missing values.
+(This corresponds to the {cmd: common} option of {help variancemat} of the
+mahapick package.)
+
+{p 4 4 2}
+This partly replicates functionality and borrows some code from {cmd:corrmat}
+by Shannon Driver of Stata Corporation.
+
+
+{title:Examples}
+
+{p 4 8 2}
+{cmd:. covariancemat age income numkids, covarmat(m)}
+
+{p 4 8 2}
+{cmd:. covariancemat age income numkids if numkids>0 [aw= wgt1], covarmat(m)}
+
+
+{title:Author}
+{p 4 4 2}
+David Kantor.
+Email {browse "mailto:kantor.d@att.net":kantor.d@att.net} if you observe any
+problems.
+
+
+{title:Also See}
+{p 4 4 2}
+{help mahapick}, {help mahascore}, {help mahascores}, {help mahascore2}, {help screenmatches},
+{help variancemat}, {help stackids}.
+See mahapick.ado for another example of the use of {cmd:covariancemat}.

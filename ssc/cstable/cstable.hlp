@@ -1,0 +1,126 @@
+{smcl}
+{* 02apr2007}{...}
+{cmd:help cstable}
+{hline}
+
+{title:Tools for Epidemiology}
+
+ cstable.ado, for Stata version 8.0 or higher
+ Sept 2007
+
+ {pstd}
+ Univariate cohort analysis for each exposure, results are summarized into one table. One row, one exposure.
+ {p_end}
+ {pstd}
+ Result file contains: ordering number of exposure(id), name of variable (exposure), total number of exposed, number of exposed cases, 
+ attack rate of exposed, total number of unexposed, number of unexposed cases, attack rate of unexposed, risk ratio, 95%CI interval,
+ 95% p-value.
+{p_end}
+
+
+ Collaborative work by Gilles Desve and Peter Makary.
+ Special thanks to Alain Moren. 
+ In case of any question please contact us: 
+ g.desve@epiconcept.fr
+ peter.makary@ktl.fi 
+ (Opinions, notices are welcome as well!)
+
+
+
+{title:Summary table for cohort study}
+
+
+{title:Syntax}
+
+{p 8 17 2}
+{cmdab:cstable}
+[{varlist}]
+{ifin}
+[{cmd:,} {it:options}]
+
+{synoptset 20 tabbed}{...}
+{synopthdr}
+{synoptline}
+{syntab:Main}
+{synopt:{opt exact}}Calculate 2-sided Fisher's exact p-value (default is chi square test p-value){p_end}
+{synopt:{opt nosort}}Results are displayed in the same order of variables in the command line{p_end}
+{synopt:{opt rr}}Sort result by risk ratio{p_end}
+{synopt:{opt ar}}Sort result by attack rate{p_end}
+{synopt:{opt pvalue}}Sort result by p-values (default) {p_end}
+{synopt:{opt replace}}Replace the current dataset with the cstable result {p_end}
+{synopt:{opt noabbreviate}}Display full exposure name (default fisrt 12 chars) {p_end}
+{synoptline}
+{p2colreset}{...}
+{p 4 6 2}
+{cmd:by} may not be used with {cmd:cstable}.{p_end}
+
+
+{title:Description}
+
+{pstd}
+{cmd:cstable} Calculate number of cases, attack rate among exposed and unexposed, relative risk, 95%CI interval, 95% p-value for each variable of {varlist}.
+The result table could be sorted by p-value, risk ratio, attack rates.
+
+{pstd}
+Result could be copied with "copy table" in order to be pasted in Excel. Alternatively, the {bf: replace} option store results as a new dataset. 
+Then, results can be exported or saved as a new dataset.  
+
+{title:Options}
+
+{dlgtab:Main}
+
+{phang}
+{cmd:exact} requests Fisher's exact p be calculated rather than the chi-squared and its significance level. Specifying exact is recommended whenever samples are small. A conservative rule of thumb for 2x2 tables is to specify exact when the
+        least-frequent cell contains fewer than 1,000 cases.  When the least-frequent cell contains 1,000 cases or more, there will be no
+        appreciable difference between the exact significance level and the significance level based on the chi-squared, but the exact
+        significance level will take considerably longer to calculate.  Note that exact does not affect whether exact confidence
+        intervals are calculated. 
+
+
+{phang}
+{cmd:nosort} Specifies that the order of the exposures will be the same in the result table as it was in the command.
+
+{phang}
+{cmd:rr} Results will be sorted by risk ratio in descending order.
+
+{phang}
+{cmd:ar} Results will be sorted by attack rate in descending order.
+
+{phang}
+{cmd:pvalue} Results will be sorted by p-value in ascending order. If no other sorting option is used, results will be sorted by ascending p-value as default.
+
+{phang}
+{cmd:replace} Specifies that the result table will {bf: replace} the original dataset in the memory and it will appear in the browser window. It means that the original dataset will be deleted from the memory. {bf: preserve} then {bf: restore} may be used to get back the original dataset, or upload it again with the {bf: use} command. {bf: replace} is used to create dataset from the result table (e.g. to save it), or to solve "copy table" incompatibilities in certain cases.
+
+{phang}
+{cmd:noabbreviate} Displays full exposure name (default 12 first chars).
+
+
+{title:Remarks}
+{pstd}
+As with the {helpb cs} command, variables used with {cmd:cstable} must be coded as 0/1. {p_end}
+{pstd}
+Sorting results only available in version 9 {p_end}
+{pstd}
+For detailed information contact g.desve@epiconcept.fr or peter.makary@ktl.fi 
+{p_end}
+
+{title:Examples}
+
+{phang}{cmd:. cstable ill mousse tiramisu beer sex agegrp}
+
+{phang}{cmd:. cstable ill mousse tiramisu beer, rr} {p_end}
+{p 4 6 2} 
+The result table is sorted by decreasing risk ratio {p_end}
+
+
+{title:Also see}
+{helpb cctable}, {helpb csinter}, {helpb cs}.
+
+{psee}
+Manual:  
+
+{psee}
+Online:  
+
+{p 4 6 2} 

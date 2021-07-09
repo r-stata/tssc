@@ -1,0 +1,81 @@
+{smcl}
+{* 12Nov2003; 8feb2006, 1apr2008, 2012feb9}
+{hline}
+help for {hi:variancemat}
+{hline}
+
+{title:Generate a matrix of variances}
+
+{p 8 17 2}
+{cmd:variancemat}
+{it:varlist} [{cmd:if} {it:exp}] [{cmd:in} {it:range}]
+[{it:weight}]{cmd:, matname(}{it:matrix}{cmd:)} [{cmd:common}]
+
+
+{title:Description}
+
+{p 4 4 2}
+{cmd:variancemat} generates an n by 1 matrix of the variances of the
+variables in {it:varlist}.
+
+{p 4 4 2}
+The rownames of {it:matrix} will be the variable names in {it:varlist};
+the colname of column 1 will be "variance".
+
+{p 4 4 2}
+{cmd:aweight}s, {cmd:iweight}s, and {cmd:fweight}s are allowed; {cmd:aweight}
+is the default.
+
+
+{title:Required Options}
+
+{p 4 4 2}
+{cmd:matname(}{it:matrix}{cmd:)} specifies the name of the matrix to be
+created.  If {it:matrix} already exists as a scalar or matrix, it will be
+overwritten.
+
+{title:Optional Options}
+
+{p 4 4 2}
+{cmd:common} specifies that the variances are to be calculated on the common
+set of observations that are nonmissing for all variables in {it:varlist}.
+The default is for variances to be calculated for each variable
+independently. In either case, the variance calculations are additionally
+restricted by any [{cmd:if} {it:exp}] or [{cmd:in} {it:range}] conditions
+that may be present.
+
+
+{title:Examples}
+
+{p 4 8 2}
+{cmd:. variancemat age income numkids, matname(m)}
+
+{p 4 8 2}
+{cmd:. variancemat age income numkids, matname(m) common}
+
+{p 4 8 2}
+{cmd:. variancemat age income numkids if numkids>0, matname(m)}
+
+{p 4 8 2}
+{cmd:. variancemat age income numkids [aw= wgt1], matname(m)}
+
+
+{title:Remarks}
+
+{p 4 4 2}
+{cmd:variancemat} was written for use by an earlier version of {help mahapick},
+but has been superseded by {help covariancemat} in that application.
+It may be of use in other circumstances.
+
+
+{title:Author}
+{p 4 4 2}
+David Kantor; initial development was done at The Institute for Policy Studies,
+Johns Hopkins University.
+Email {browse "mailto:kantor.d@att.net":kantor.d@att.net} if you observe any
+problems.
+
+{title:Also See}
+{p 4 4 2}
+{help covariancemat}, {help mahapick}, {help mahascore}, {help mahascores}, {help mahascore2},
+{help screenmatches}, {help stackids}.

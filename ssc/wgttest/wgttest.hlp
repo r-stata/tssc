@@ -1,0 +1,100 @@
+{smcl}
+{* 08jun2003}{...}
+{hline}
+help for {hi:wgttest}
+{hline}
+
+{title:Test the impact of sampling weights in regression analysis}
+
+{p 8 15 2}
+{cmd:wgttest} {it:depvar} [{it:varlist}] [{cmd:if} {it:exp}] [{cmd:in} {it:range}]
+{cmd:,} {cmd:wgt(}{it:wgtvar}{cmd:)} [ {cmd:cmd(}{it:estimation_command}{cmd:)}
+{cmdab:pre:fix(}string{cmd:)} {cmd:testopt(}{it:test_options}{cmd:)}
+{cmd:nonoise} {it:estimation_options} ]
+
+{p 4 4 2}
+{cmd:by} {it:...} {cmd::} may be used with {cmd:wgttest}; see help {help by}.
+
+
+{title:Description}
+
+{p 4 4 2}
+Whether to use sampling weights (pweights) in regression analysis should be carefully
+evaluated. Often, the weights do not have great influence on the parameter estimates (see
+e.g. Winship and Radbill, 1994, to learn when and why). In such cases, unweighted
+estimates are preferable because they are more efficient than the weighted estimates.
+
+{p 4 4 2}
+{cmd:wgttest} performs a test proposed by DuMouchel and Duncan (1983) to evaluate the
+significance of the impact of sampling weights on estimation results. First, a regression model
+of {it:depvar} on {it:varlist} including {it:wgtvar} and the first order interactions between
+{it:varlist} and {it:wgtvar} as additional covariates will be estimated. Second, the coefficients
+of these covariates (i.e. {it:wgtvar} and the interactions) are tested against zero using a
+standard F test (as provided by the post-estimation command {cmd:test}). "If the F test is not
+significant, then the weighted and unweighted estimates are not significantly different and the
+analyst can proceed by using unweighted OLS. Weighted and unweighted estimates are significantly
+different if the F test is significant" (Winship and Radbill, 1994: 248). In the later case, the
+unweighted estimators are probably biased by sample selection and the weighted estimators are
+preferable. Be aware, however, that significant differences between weighted and unweighted
+estimates may also be due to model misspecification.
+
+
+{title:Options}
+
+{p 4 8 2}
+{cmd:cmd(}{it:estimation_command}{cmd:)} allows users to choose a command
+other than {cmd:regress} for model estimation. Technically, {cmd:wgttest} will work with most 
+estimation commands (if not all). This, however, does not mean that the test is always valid
+(DuMouchel and Duncan, 1983, who proposed the test, discuss it solely within the framework of 
+linear regression).
+
+{p 4 8 2}
+{cmd:nonoise} suppresses the estimation results.
+
+{p 4 8 2}
+{cmd:prefix(}{it:string}{cmd:)} allows users to choose a prefix other than {hi:_I} for
+the interaction variables. The length of the prefix is restricted to 4 characters. Note that the 
+interaction variables will only be created temporarily.
+
+{p 4 8 2} {cmd:testopt(}{it:test_options}{cmd:)} may be used to pass options thru to the
+post-estimation command {cmd:test}.
+
+{p 4 8 2} {cmd:wgt(}{it:wgtvar}{cmd:)} specifies the sampling weights (mandatory). 
+
+{p 4 8 2} {it:estimation_options} are passed thru to the estimation command.
+
+
+{title:Examples}
+
+{p 4 4 2} Test the impact of the sampling weights (variable {it:pwt}) for a linear 
+regression model of wages on education and work experience:
+
+{p 8 8 2} {cmd:. wgttest wage education experience, wgt(pwt)}
+
+
+{title:References}
+
+{p 4 8 2} DuMouchel, W. H. and G. J. Duncan (1983). Using Sample Survey Weights in Multiple 
+Regression Analyses of Stratified Samples. Journal of the American Statistical 
+Association 78: 535-543.
+{p_end}
+{p 4 8 2} Winship, C. and L. Radbill (1994). Sampling Weights and Regression 
+Analysis. Sociological Methods and Research 23: 230-257.
+
+
+{title:Author}
+
+{p 4 4 2}
+Ben Jann, ETH Zurich, jann@soz.gess.ethz.ch
+
+
+{title:Also see}
+
+{p 4 13 2}
+Manual:  {hi:[U] 23 Estimation and post-estimation commands},{break}
+ {hi:[U] 29 Overview of Stata estimation commands},{break}
+ {hi:[R] test},{break}
+ {hi:[R] regress}
+
+{p 4 13 2}
+Online:  help for {help weights}, {help test}, {help regress}

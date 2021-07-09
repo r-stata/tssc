@@ -1,0 +1,169 @@
+{smcl}
+{* 20 June 2003/17 Sept 2004/23 Sept 2004}{...}
+{hline}
+help for {hi:tabcount}
+{hline}
+
+{title:Tabulate frequencies}
+
+{p 8 15 2}
+{cmd:tabcount}
+{it:varlist} 
+[{cmd:if} {it:exp}] 
+[{cmd:in} {it:range}] 
+[{it:weight}{cmd: = }{it:exp}] 
+[{cmd:,}
+{break} 
+{c -(} 
+{cmd:v(}{it:value_list}{cmd:)}
+{c |}
+{cmd:v1(}{it:value_list}{cmd:)}
+{c )-} 
+{cmd:v2(}{it:value_list}{cmd:)}
+{cmd:v3(}{it:value_list}{cmd:)}
+...
+{break} 
+{c -(} 
+{cmd:c(}{it:condition_list}{cmd:)}
+{c |}
+{cmd:c1(}{it:condition_list}{cmd:)}
+{c )-} 
+{cmd:c2(}{it:condition_list}{cmd:)}
+{cmd:c3(}{it:condition_list}{cmd:)}
+...
+{break} 
+{cmd:zero} 
+{cmdab:miss:ing} 
+{cmd:replace}
+{cmd:freq(}{it:newvarname}{cmd:)} 
+{cmdab:mat:rix(}{it:matrix_name}{cmd:)}
+{it:tabdisp_options} 
+]   
+
+
+{p 8 8 2}{cmd:by ... :} may be used with {cmd:tabcount}; see {cmd:help by}.  
+
+{p 8 8 2}{cmd:fweight}s and {cmd:iweight}s may be specified. 
+  
+
+{title:Description}
+
+{p 4 4 2}{cmd:tabcount} tabulates frequencies for up to 7 variables.  Its main
+distinctive features are that zero frequencies of one or more specified values
+are always shown in the table (i.e. entirely empty rows, columns, etc. are not
+omitted) and that reduced datasets and/or matrices containing the frequencies
+may also be saved. 
+
+
+{title:Options}
+
+{p 4 8 2}{cmd:v()}, {cmd:v1()}, etc. ({cmd:v} options) and/or {cmd:c()}, 
+{cmd:c1()}, etc. ({cmd:c} options) are required. 
+For each variable one {cmd:v} option or one {cmd:c} option is
+required. Suppose you specify {cmd:tabcount foreign rep78}.  {cmd:foreign} is
+the first variable, for which you must specify either {cmd:v1()} or {cmd:c1()}.
+{cmd:rep78} is the second variable, for which you must specify either {cmd:v2()}
+or {cmd:c2()}. 
+
+{p 8 8 2}A {cmd:v} option specifies a list of values which define the
+categories of a variable that are to be counted. A {help numlist} of numeric
+values will be expanded. Value labels will be used for display when they exist.
+String values containing spaces or quotes should be given in double quotes or
+compound double quotes. Thus {cmd:v1(1/5)} specifies that the integers 1
+through 5 are the categories of the first variable to be tabulated. 
+
+{p 8 8 2}A {cmd:c} option specifies a list of conditions which define the
+categories of a variable that are to be counted. Conditions are treated as true
+or false. In particular, conditions whose first non-space character is >, <, !
+or ~  will be treated as specifying an inequality, so make sure you use correct
+Stata syntax, i.e. one of > >= < <= != or ~= should be given.
+Any value given without one of these preceding characters is treated as if it 
+were preceded by ==. So if your conditions are {cmd: <=3 4 5 6 >7} the 
+categories will be <=3, (equal to) 4,
+... (equal to) 6 and >7. The text given will be taken literally, so that
+{cmd:"> 7"} produces the same counts as {cmd:>7} but the display will be as
+given. Note the need for protecting the space by quotes. There is no
+requirement that the categories be exclusive or exhaustive. Thus 
+{cmd:c1(<=10 <=20 <=30 <=40)} is fine. There is no special syntax for 
+specifying closed intervals. See the examples for one commonly used device. 
+
+{p 8 8 2}If there is just one variable tabulated, then {cmd:v()} is a
+synonym for {cmd:v1()} and {cmd:c()} is a synonym for {cmd:c1()}.  
+ 
+{p 4 8 2}{cmd:zero} specifies that zeros are to be shown as such in the table.
+The default is to blank them out. Irrespective of this option, 
+zeros are always saved as such by the {cmd:matrix()} and {cmd:replace} options. 
+
+{p 4 8 2}{cmd:missing} specifies that missing values of {it:varlist} are not
+automatically to be excluded. 
+ 
+{p 4 8 2}{cmd:replace} specifies that the dataset is to be replaced by a
+dataset showing combinations of categories and their frequencies.  This option
+may not be specified with {cmd:by:}.  The 
+replacement dataset is the basis for many other tables not produced 
+by {cmd:tabcount}. Note useful functions under {help functions} and 
+{help egen}, in particular the function {cmd:sum()} for cumulative 
+sums and the {cmd:egen} functions {cmd:sum()} for totals and 
+{cmd:pc()} for percents and proportions. See also the last example 
+below. 
+
+{p 4 8 2}{cmd:freq(}{it:newvarname}{cmd:)} is for use with {cmd:replace} and
+specifies an alternative to the default variable name {cmd:_freq} used for
+frequencies. 
+
+{p 4 8 2}{cmd:matrix(}{it:matrix_name}{cmd:)} specifies a matrix name to hold
+frequencies. This option may not be specified if there are three or more
+variables in {it:varlist} or with {cmd:by:}. 
+
+{p 4 8 2}{it:tabdisp_options} are options of {help tabdisp}
+other than {cmd:by()}, {cmd:cellvar()}, {cmd:missing} and {cmd:totals}.  
+
+
+{title:Examples}
+
+{p 4 8 2}{inp:. tabcount rep78, v(1/5)}
+
+{p 4 8 2}{inp:. bysort foreign: tabcount rep78, v(1/5)}
+
+{p 4 8 2}{inp:. generate mpg2 = 5 * int(mpg/5)}{p_end}
+{p 4 8 2}{inp:. label var mpg2 "Mileage (mpg)"}{p_end}
+{p 4 8 2}{inp:. forval i = 10(5)40 {c -(}}{p_end}
+{p 4 8 2}{inp:. {space 8}label def mpg2 `i' "`i'-", modify}{p_end}
+{p 4 8 2}{inp:. {c )-}}{p_end}
+{p 4 8 2}{inp:. label val mpg2 mpg2}{p_end}
+{p 4 8 2}{inp:. tabcount rep78 mpg2, v1(1/5) v2(10(5)40)}
+
+{p 4 8 2}{inp:. tabcount foreign rep78, v1(0 1) v2(1/5) matrix(counts)}
+
+{p 4 8 2}{cmd:run} this as a do file:{p_end}
+{p 4 8 2}{inp:. sysuse auto, clear}{p_end}
+{p 4 8 2}{inp:. preserve}{p_end}
+{p 4 8 2}{inp:. tabcount foreign rep78, v1(0/1) v2(1/5) replace}{p_end}
+{p 4 8 2}{inp:. egen pcfreq = pc(_freq), by(foreign)}{p_end}
+{p 4 8 2}{inp:. bysort foreign (rep78) : gen cupc = sum(pcfreq)}{p_end}
+{p 4 8 2}{inp:. noi di _n as txt "{c -(}title:Repair record and car type{c )-}" _c}{p_end}
+{p 4 8 2}{inp:. noi di "{c -(}txt:Percents and cumulative percents{c )-}" _c}{p_end}
+{p 4 8 2}{inp:. noi tabdisp foreign rep78, c(pcfreq cupc) format(%2.1f)}{p_end}
+{p 4 8 2}{inp:. restore}
+
+
+{title:Author} 
+
+{p 4 4 2}Nicholas J. Cox, University of Durham, U.K.{break} 
+        n.j.cox@durham.ac.uk
+
+
+{title:Acknowledgements} 
+
+{p 4 4 2}Kit Baum, Michael Blasnik and Shannon Driver 
+made many useful comments on problems of this kind and how 
+to tackle them. Hildegard Schaeper found a bug and pointed 
+out a difficulty in the handling of weights. Rufus Browning 
+pointed out two errors in the examples. 
+
+	 
+{title:Also see}
+
+{p 4 13 2}On-line:  help for {help tabulate}, {help table}, {help tabdisp}, 
+{help contract}{p_end}
+

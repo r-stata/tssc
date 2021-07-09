@@ -1,0 +1,77 @@
+{smcl}
+{.-}
+help for {cmd:fastcd} {right:Nicholas Winter}
+{.-}
+
+{title:Utility to automate changing directories}
+
+{p 5 15 2}{cmd:fastcd}{p_end}
+
+{p 5 15 2}{cmd:fastcd} {it:code}{p_end}
+
+{p 5 15 2}{cmd:fastcd cur} {it:new_code}{p_end}
+
+{p 5 15 2}{cmd:fastcd drop} {it:existing_code}{p_end}
+
+
+{title:Description}
+
+{p 0 5 2}
+{cmd:fastcd} automates the process of changing directories within Stata.
+The command allows you to build a database of commonly-used directory
+paths, and to associate a short mnemonic code with each.
+
+{p 0 5 2}
+Typing {cmd:fastcd} by itself displays a list of mnemonics and the associated
+directories.  You can then click on a mnemonic code to change the
+current Stata system directory to the associated directory.
+
+{p 0 5 2}
+{cmd:fastcd {it:code}} changes the current Stata system directory to the
+directory associated in the database.
+
+{p 0 5 2}
+{cmd:fastcd cur {it:code}} adds the current directory to the database, and
+associates the mnemonic {it:code} with it.
+
+{p 0 5 2}
+{cmd:fastcd drop {it:code}} drops the specified mnemonic from the database.
+
+{p 0 5 2}
+{cmd:fastcd} uses the {help file} command to create a file called {cmd:directoryfile.txt} in your
+personal ado directory (see {help adopath}), containing the mnemonics and associated
+directory paths.  The {cmd:file} command appeared as part of an update to
+Stata 7, so be sure your Stata is up-to-date.
+
+
+{title:Examples}
+
+{p 5 10 2}
+{cmd:. fastcd}
+
+{p 0 23}{space 12}{stata fastcd bowling:bowling} {txt}U:\nwinter\marketing\Putnam\bowlingdata{p_end}
+{p 0 23}{space 12}{stata fastcd brrsims:brrsims} {txt}U:\nwinter\StataData\brrsims{p_end}
+{p 0 23}{space 16}{stata fastcd ccd:ccd} {txt}c:\usrdata\ccd{p_end}
+{p 0 23}{space 13}{stata fastcd nascar:nascar} {txt}c:\usrdata\nascar{p_end}
+
+{res}            fastcd {it:code}          {txt}to change directories
+{res}            fastcd cur  {it:code}     {txt}to add current directory to database
+{res}            fastcd drop {it:code}     {txt}to drop entry
+
+{p 5 10 2}
+{cmd:. fastcd ccd}{p_end}
+{p 5 10 2}{res}c:\usrdata\ccd{txt}{p_end}
+
+
+{title:Author}
+
+     Nicholas Winter
+     Cornell University
+     nw53@cornell.edu
+
+
+{title:Acknowledgement}
+
+{p}I have used code from Jeroen Weesie's {cmd:qsort} command for sorting
+the database.  Thank you Jeroen!
+{p_end}

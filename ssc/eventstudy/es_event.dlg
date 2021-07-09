@@ -1,0 +1,190 @@
+/*
+
+es_event.dlg
+
+*!version 1.0.1 08mar2013
+
+*/
+
+VERSION 12
+
+POSITION . . 400 330
+RESET res1
+
+SCRIPT event_PREINIT
+BEGIN
+	create ARRAY event_select_variables
+	create BOOLEAN event_des_error
+	create DOUBLE event_selvar_nums 
+	script all_enable
+END
+	
+DIALOG event, label("EventStudy - deal with the event file")		///
+	tabtitle("EventFile")
+BEGIN	
+	TEXT  tx_eventfile 15 20 360 ., 								///
+		label("Select event file on the disk:")
+	
+	FILE  fi_eventfile @ +20 @ .,  									///
+		error("EventFileName")  									///
+		filter("Stata Dataset (*.dta)|*.dta|All Files (*.*)|*.*")	///
+		defext(dta) label("Browse...") nomemory    				   
+		
+	BUTTON bu_selecteventvar @ +30 80	., 						    ///
+		label("Confirm") onpush(program populate_cb_event)			///
+		tooltip("Confirm Choosing the event file")
+
+	TEXT tx_selecteventvar +85 @ 300 .,                             ///
+		label("Click button to Confirm the event file")
+
+	GROUPBOX group_event -85 +40	360	 180,            		    ///
+		label("Select Variable")
+
+		TEXT  tx_eventid +10 +30 180 ., 							///
+			label("variable for event id")
+		COMBOBOX cb_eventid  +190 @ 140 .,              			///
+			label("event id") nomemory                  			///
+			contents(event_select_variables) dropdown   			
+			
+	
+		TEXT  tx_eventdate -190 +30 180 ., 						    ///
+			label("variable for event date")
+		COMBOBOX cb_eventdate +190 @ 140 .,             			///
+			label("event date")  nomemory               			///
+			contents(event_select_variables) dropdown  				
+	
+		TEXT  tx_eventfirmid -190 +30 180 .,          			    ///
+			label("variable for firm id")
+		COMBOBOX cb_eventfirmid +190 @ 140 .,           			///
+			label("firm id")  nomemory                  			///
+			contents(event_select_variables) dropdown   			
+
+		TEXT tx_eventcontrol -190 +30 330 .,          			    ///
+			label("variable(s) for event control")
+		COMBOBOX cb_eventcontrol @ +20 330 .,    					///
+			label("event control variables")  nomemory 			    ///
+			contents(event_select_variables) dropdown  append				
+		
+END
+
+
+OK ok1
+SUBMIT sub1, uaction(command)
+CANCEL can1, uaction(command)
+COPY COPY1
+
+
+SCRIPT event_repopulate
+BEGIN
+	event.cb_eventid.repopulate
+	event.cb_eventdate.repopulate
+	event.cb_eventfirmid.repopulate
+	event.cb_eventcontrol.repopulate
+END
+
+PROGRAM populate_cb_event
+BEGIN
+
+	require event.fi_eventfile
+	call create STRING dlgName
+	call dlgName.setvalue class _dlg_rsrcname
+
+	put "es_event_wrk_dlg using "
+	put `"""'
+	put event.fi_eventfile
+	put `"""'
+	put ","
+	put "clsname(" dlgName ")"
+	stata hidden
+
+	if event_des_error{
+		stopbox stop "Event Variables not set"
+	}
+	else{
+		call script event_repopulate
+	}
+END
+
+
+
+
+SCRIPT all_disable
+BEGIN
+	event.tx_eventfile.disable
+	event.fi_eventfile.disable
+	event.bu_selecteventvar.disable
+	event.tx_selecteventvar.disable
+	event.group_event.disable
+	event.tx_eventid.disable
+	event.cb_eventid.disable
+	event.tx_eventdate.disable
+	event.cb_eventdate.disable
+	event.tx_eventfirmid.disable
+	event.cb_eventfirmid.disable
+	event.tx_eventcontrol.disable
+	event.cb_eventcontrol.disable
+END
+
+/*
+SCRIPT sample_show
+BEGIN
+	event.bu_createvent.show
+	event.fi_sampevent.show
+END
+*/
+
+/*
+SCRIPT dont_creat_event_prepare
+BEGIN
+	script all_enable
+	script sample_hide
+END
+*/
+SCRIPT all_enable
+BEGIN
+	event.tx_eventfile.enable
+	event.fi_eventfile.enable
+	event.bu_selecteventvar.enable
+	event.tx_selecteventvar.enable
+	event.group_event.enable
+	event.tx_eventid.enable
+	event.cb_eventid.enable
+	event.tx_eventdate.enable
+	event.cb_eventdate.enable
+	event.tx_eventfirmid.enable
+	event.cb_eventfirmid.enable
+	event.tx_eventcontrol.enable
+	event.cb_eventcontrol.enable
+END
+
+
+PROGRAM command
+BEGIN
+
+	require event.fi_eventfile
+	require event.cb_eventid
+	require event.cb_eventfirmid
+	require event.cb_eventdate
+	require event.cb_eventcontrol
+	
+	call create ARRAY arr_event_return
+	call create STRING str_event_return
+
+	call str_event_return.setvalue  ///
+		class event.fi_eventfile.value
+	call str_event_return.append "*"
+	call str_event_return.append    ///
+		class event.cb_eventid.value
+	call str_event_return.append "*"
+	call str_event_return.append   ///
+		class event.cb_eventdate.value
+	call str_event_return.append "*"
+	call str_event_return.append   ///
+		class event.cb_eventfirmid.value
+	call str_event_return.append "*"
+	call str_event_return.append   ///
+		class event.cb_eventcontrol.value
+
+	put str_event_return
+
+END

@@ -1,0 +1,77 @@
+{smcl}
+{* 11june2002/3nov2004}{...}
+{hline}
+help for {hi:ofrtplot}
+{hline}
+
+{title:Plot observed, fitted and residuals versus `time' variable} 
+
+{p 8 17 2}{cmd:ofrtplot} [{it:varname}] 
+[ 
+{cmd:,} 
+{cmd:super} 
+{cmd:ofplot(}{it:line_options}{cmd:)} 
+{cmd:rplot(}{it:spike_options}{cmd:)} 
+{cmd:combine(}{it:graph_options}{cmd:)} 
+] 
+
+
+{title:Description}
+
+{p 4 4 2}{cmd:ofrtplot} plots observed, fitted and residuals from the last
+model against a predictor. It is primarily designed for time series models and
+by default the predictor is whatever has been {cmd:tsset} as the time variable.
+However, other variables may be specified, whether or not data have been
+{cmd:tsset}. 
+
+{p 4 4 2}Observed values are for the response or dependent variable from the
+last model, fitted values are whatever {cmd:predict} produces by default and
+residuals are whatever {cmd:predict, res} produces. The plot is restricted to
+the estimation sample. 
+
+{p 4 4 2}By default, the plot has two panels. In the top panel, observed and
+fitted are plotted against the predictor. In the bottom panel, residuals are
+plotted against the predictor, by default as spikes from zero.
+
+
+{title:Options}
+
+{p 4 4 2}{cmd:super} specifies that plots are to be superimposed, not separate.
+ 
+{p 4 4 2}{cmd:ofplot()} specifies options of {help twoway line} to tune the 
+display of observed and fitted values.  
+
+{p 4 4 2}{cmd:rplot()} specifies options of {help twoway spike} to tune the 
+display of residuals. 
+
+{p 4 4 2}{cmd:combine()} specifies options to control the combination 
+of the two graphs. This has no effect with {cmd:super}. 
+
+
+{title:Examples}
+
+{p 4 8 2}{cmd:. tsset time}{p_end}
+{p 4 8 2}{cmd:. regress {it:whatever} time}{p_end}
+{p 4 8 2}{cmd:. ofrtplot}{p_end}
+
+{p 4 8 2}{cmd:. gen gpm = 1 / mpg}{p_end} 
+{p 4 8 2}{cmd:. regress gpm weight}{p_end}  
+{p 4 8 2}{cmd:. ofrtplot, ofplot(recast(scatter) ms(Oh none) connect(none l))}
+
+
+{title:Author}
+
+{p 4 4 2}Nicholas J. Cox, University of Durham, U.K.{break} 
+n.j.cox@durham.ac.uk
+
+
+{title:Acknowledgements} 
+
+{p 4 4 2}Denis de Crombrugghe suggested this program originally. 
+Kit Baum made several useful suggestions.
+
+
+{title:Also see}
+
+{p 4 13 2}On-line: help for {help predict}, {help tsset}, {help modeldiag}
+

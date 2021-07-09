@@ -1,0 +1,210 @@
+{smcl}
+{.-}
+help for {cmd:oprobpr} {right:Nick Winter}
+{.-}
+
+{title:Displaying predicted probabilities from ordered probit & logit}
+
+{p 5 15 2}
+{cmdab:oprobpr}
+{it:xvar} 
+[[{cmd:if} {it:exp}] [{cmd:in} {it:range}] 
+[{cmd:,}
+{cmdab:l:evels(}{it:level_spec}{cmd:)}
+{cmd:noesample}
+{bind:{cmdab:cat:egories(}{it:cat_spec}[{cmd:,} ...]}{cmd:)}
+{bind:{cmdab:lab:els(}{it:lablist}{cmd:)}}
+{bind:{cmdab:gt:ype(}{it:plot_type}{cmd:)}}
+{cmdab:stack}
+{cmdab:f:rom(}{it:#}{cmd:)} {cmdab:t:o(}{it:#}{cmd:)} {cmdab:inc(}{it:#}{cmd:)}
+{bind:{cmdab:nwid:th(}{it:#}{cmd:)}}
+{cmdab:nol:ist} 
+{bind:{cmdab:save:(}{it:filename}[{cmd:, replace}]}{cmd:)}}
+{bind:{cmd:plot(}{it:plot}{cmd:)}}
+{it:graph_options}
+
+{title:Description}
+
+{p 0 5 2}
+{cmd:oprobpr} plots (and optionally lists) the predicted probabilities from a previously-estimated
+ordered dependent variable model against a single covariate from the model, 
+holding the other covariates constant.
+
+{p 0 5 2}
+By default all response categories are listed and plotted; the {cmd:categories()} 
+   option allows the user to control plotting of only some categories, or
+   combinations of categories. {cmd:labels()} allows control of the labelling 
+   of the plotted lines.
+
+{p 0 5 2}
+{cmd:oprobpr} is a substantially-updated version that takes advantage of Stata's version
+8 graphics.  With this revision, {cmd:oprobpr} now operates as a post-estimation command,
+rather than estimating and plotting the model in one step.  See the important note below on handling
+interaction terms in the revised command.  This program was originally based 
+on {help logpred} published by Joanne Garrett
+   and of {help probpred} published by Mead Over in sg42.2: STB 42. 
+
+
+{title:Options}
+
+{p 0 5 2}
+{cmd:levels(}{it:level_spec}{cmd:)} specifies the levels at which to hold the other covariates 
+in the model.  By default, all covariates are set at their estimation sample means (but see the {cmd:noesample()} option).
+Note that the command automatically calculates these means in the estimation sample only , any {cmd:if} and/or {cmd:in} conditions
+specified with {cmd:oprobpr} will {it:further} restrict the calculation of these means.
+
+{p 5 5 2}The {cmd:levels()} option allows you to set covariates to other values; e.g. {cmd:levels(mpg=50, foreign=1)}.
+
+{p 5 5 2}In addition, if the model includes interaction terms between the {it:xvar} variable you are plotting and some other
+covariate, they must be appropriately specified
+in the {cmd:levels()} option in order that {cmd:oprobpr} can re-calculate them appropriately. For example, if
+your model included a variable called mXw, which is the interaction between mpg and weight, 
+and mpg is your {it:xvar}, then you would specify {cmd:levels(mXw=mpgXweight)}.  Of course, you can mix
+and match the two uses of {cmd:levels()}: {cmd:levels(weight=2500, mXw=mpg*weight)}.
+
+{p 0 5 2}
+{cmd:noesample} specifies that the calculation of means of covariates should be done without
+	regard to the estimation sample from the model estimation.  This means both that any {cmd:if} and/or {cmd:in}
+	conditions specified when the model was estimated are ignorred, and that all cases are included in the 
+	calculation of each variable's mean (that is, cases are not excluded on a casewise basis).  Any {cmd:if} and/or {cmd:in}
+	conditions specified with the {cmd:oprobpr} do restrict the calculation of means.
+
+{p 0 5 2}
+{cmd:from(}{it:#}{cmd:)} specifies the lowest value of {it:xvar} for which a prediction is to be
+   calculated.  The default is to use the minimum of {it:xvar} in the estimation sample.
+
+{p 0 5 2}
+{cmd:to(}{it:#}{cmd:)} specifies the highest value of {it:xvar} for which a prediction is to be
+   calculated.  The default is to use the maximum of {it:xvar} in the estimation sample.
+
+{p 0 5 2}
+{cmd:newobs(}{it:#}{cmd:)} specifies the number of observations to be created for calculation and graphing
+	of predicted probabilities.  The default is 25; more may be specified if necessary to yield a smooth line.
+	
+{p 0 5 2}
+{cmd:categories(}{it:n,...,n}{cmd:)} controls which categories of the dependent variable
+   are plotted and listed. The default is to list and plot probabilities 
+   for all categories. For example, {cmd:cat(1,3,4)} would result in categories 
+   1, 3 and 4 only being listed and plotted.
+
+{p 5 5 2}
+   {cmd:categories()} also allows categories to be combined. So, for example, 
+   {cmd:cat(1+2,3,4+5+6)} would plot three lines: one that is the sum of probabilities
+   for categories one and two, one that is the probability of category three,
+   and one that is the sum of categories 4 through 6.
+
+{p 0 5 2}{cmd:labels()} specifies text labels with which to label the lines.
+	By default, simple categories are labeled with the appropriate 
+   value label from the dependent variable, if available. Otherwise, they are
+   labelled {bind:"Category 1"}, {bind:"Category 2"} ... , through {bind:"Category {it:n}"}. 
+   For example, 
+   {cmd:cat(Low Medium High)} would label the lines "Low", "Medium",
+   and "High". To leave a line unlabeled, indicate a "." for its label.
+   
+{p 5 5 2}Enclose any labels that have spaces with quotation marks: {cmd:lab("Very Low" Low Medium High "Very High")}
+
+{p 5 5 2}Note that the labels can also be specified within the {help legend_option:legend()} option's {cmd:label()} suboption;
+this just provides a somewhat easier way to change multiple labels with a single option.
+
+{p 0 5 2}
+{cmd:gtype()} specifies the type of twoway graph to create.  By default this is {help scatter:scatter}.
+
+{p 0 5 2}
+{cmd:stack} causes the categories to be calculated as cumulative probabilities, allowing the 
+creation of a stacked plot; when this is specified the {cmd:gtype()} defaults to {help twoway_area:area}.
+
+{p 0 5 2}
+{cmd:nwidth()} specifies the width of the note that {cmd:oprobpr} creates to indicate the levels of the 
+covariates.  The default is 80.
+
+{p 0 5 2}
+{cmd:save(}{it:filename}{cmd:)} saves the prediction data set. This is useful 
+	for conducting additional analysis of the predicted values. (Note that the 
+	{help graph} option {cmd:saving()} is different, and may be used to save 
+	the resulting {it:graph}.)
+
+{p 0 5 2}
+{cmd:plot(}{it:plot}{cmd:)} provides a way to add other plots to the generated
+graph; see help {help plot_option}.  Note that the dataset will be intact, but will have
+additional observations added at the end for the calculation of predicted probabilities.  To exclude
+these observations from any additional plots, include the condition {cmd:in @@@} in these plots; this will
+be translated to cover the range of the original dataset.
+
+{p 0 5 2}
+{it:graph_options} can be any valid options for a twoway graph. 
+
+
+{title:Examples}
+
+{p 5 10 2}
+{cmd:. oprobit rep78 mpg weight gear_ratio foreign}
+{cmd:. oprobpr mpg}
+
+{p 5 5 2}
+Plots the predicted probabilities for categories of rep78 against mpg, holding the 
+other covariates constant at their estimation-sample means.
+
+
+{p 5 10 2}
+{cmd:. oprobpr mpg, levels(weight=2500, foreign=0)}
+
+{p 5 5 2}
+Same as above, except predictions are for foreign==0 and weight==2500 instead of for 
+the sample averages of those variables.
+
+
+{p 5 10 2}
+{cmd:. generate mpgXweight = mpg*weight}
+{p_end}{p 5 10 2}
+{cmd:. ologit rep78 mpg weight mpgXweight gear_ratio foreign}
+{p_end}{p 5 10 2}
+{cmd:. oprobpr mpg, levels(weight=2500, mpgXweight=mpg*weight, foreign=0)}
+
+{p 5 5 2}
+Same as above, except that the interaction term weight*mpg is included
+in the original model, and is specified in the {cmd:oprobpr()} command.  Weight is held
+constant at 2500, foreign at 0, and gear_ratio at its sample mean.  Model estimated is ordered
+logit rather than ordered probit.
+
+
+{p 5 10 2}
+{cmd:. oprobpr mpg, cat(1,3+4,5) lab(Low "Medium & High" "Very High") clpattern(dash dot dash_dot) msym(i i i) title( , size(small)) }
+
+{p 5 5 2}
+        Plots only categories 1, the sum of
+        3 and 4, and 5 of rep78, and labels them "Low", "Medium & High", and "Very High",
+        respectively.  The default {help connect_options:line patterns} and {help scatter:marker symbols} 
+        are overridden, and the size of the overall {help title_options:title} is adjusted.
+        Note that any other option 
+	which works on the {help graph} command will also work here.
+
+
+{p 5 10 2}
+{cmd:. oprobpr mpg, stack }
+
+{p 5 5 2}
+        Probabilities are graphed as a stacked area plot instead of as a series of lines.
+        
+        
+{p 5 10 2}        
+{cmd:. oprobpr mpg, plot(function y=.75, range(mpg) ) legend(order(1 2 3 4 5)}
+
+{p 5 5 2}
+An additional plot is overlaid, in this case a horizontal line at 0.75, specified to run over the
+range of the variable mpg.  The legend option is specified to suppress the listing of this additional 
+plot in the legend.  Note that this effect could also be achieved with the {cmd:yline()} option.
+
+
+{title:Author}
+
+     Nicholas Winter
+     University of Virginia
+     nwinter@virginia.edu
+
+
+{title:Also see}
+
+{p 0 10 2}
+On-line:  help for {help predict}, {help oprobit}, {help ologit}, 
+	  {help graph twoway} 
+{p_end}

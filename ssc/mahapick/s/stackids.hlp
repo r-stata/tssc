@@ -1,0 +1,154 @@
+{smcl}
+{* 6Feb2006; 8feb2006; 1apr2008, 2012feb9}
+{hline}
+help for {hi:stackids}
+{hline}
+
+{title:Stack the id variables produced by {help mahapick}}
+
+{p 8 17 2}
+{cmd:stackids}
+{it:varlist}
+,
+{cmd:idvar(}{it:id_varname}{cmd:)}
+{cmd:idprimevar(}{it:prime_id_varname}{cmd:)}
+{cmd:matchnumvar(}{it:matchnum_varname}{cmd:)}
+{cmd:clear}
+[{cmd:keepwideids}]
+
+{title:Description}
+
+{p 4 4 2}
+{cmd:stackids} takes the (possibly multiple) matched id variables as produced
+by {help mahapick} using the {cmd:pickids()} option, along with the id of
+the treated cases, and stacks them into a long-shaped dataset.
+(See {help reshape} for a discussion of wide- versus long-shaped data.)
+
+{p 4 4 2}
+{it:varlist} contains two parts: The first variable holds the id of the
+treated cases {c -} the "prime id".  The remaining variables 
+constitute the id's of the matched control cases; they should be the same
+as those specified in the {cmd:pickids()} option of {cmd:mahapick}
+(or a subset thereof).
+Note that {it:all} of the variables in {it:varlist} get stacked into one variable:
+{it:id_varname}.  That is, the treated and control cases get stacked together.
+So even if there is only one variable for control case id's, there will be
+some stacking of variables.
+
+{p 4 4 2}
+The resulting dataset will have...
+
+{p 8 10 2}
+a variable holding all the stacked id's;
+
+{p 8 10 2}
+a variable holding the id's of the corresponding treated cases;
+
+{p 8 10 2}
+a "matchnum" variable (as will be explained below).
+
+
+{title:Required Options}
+
+{p 4 4 2}
+{cmd:idvar(}{it:id_varname}{cmd:)}
+specifies the name for the (new) variable into which {it:varlist} is to be stacked.
+
+{p 4 4 2}
+{cmd:idprimevar(}{it:prime_id_varname}{cmd:)}
+specifies the name of the (new) "prime id" variable.  This will hold the id
+of the treated cases.  Values will be repeated for all the control cases
+matched to a given treated case.
+
+{p 4 4 2}
+Note that {it:id_varname} == {it:prime_id_varname} for treated cases, and they
+are unequal otherwise.
+
+{p 4 4 2}
+{cmd:matchnumvar(}{it:matchnum_varname}{cmd:)}
+specifies the name of a (new) variable that serves as a counter.  It will contain 0 for the
+treated cases, and 1, 2, etc. for control cases {c -} those corresponding to the 
+latter variables in {it:varlist}.
+
+{p 4 4 2}
+In stating that these variables are new, what is really meant is that they
+are for newly-created variables; but the whole dataset is new, so there is
+nothing restricting you from reusing an existing variable name.
+
+{p 4 4 2}
+{cmd:clear} indicates your understanding that the data in memory will be
+replaced.
+
+
+{title:Optional Options}
+
+{p 4 4 2}
+{cmd:keepwideids} retains the original {it:varlist} of id's in wide form.
+They will be present only on the treated cases; they will be missing for all
+others.  This is provided in case you want to see the matched control cases
+explicitly connected to the treated cases (in the same cases).
+Be aware, however, that you get a dataset that is both wide and long
+simultaneously, and it can be fairly wasteful of space.
+
+
+{title:Remarks}
+
+{p 4 4 2}
+After obtaining matches using {it:mahapick} with the {cmd:pickids()} option,
+it may be more useful, for analysis purposes, to have the data reshaped (or
+stacked) so that all the id values, both treated and control, appear in the
+same variable.  This program does that for you.  (While this can be achieved
+by {help reshape} or {help stack}, some extra steps are required to
+create a structure that contains
+the connection between the treated cases and their matched control
+cases (which may or may not be important to you). {cmd:stackids}
+takes care of those extra steps for you.)
+
+{p 4 4 2}
+{cmd:stackids} program was created to fill a need which was obviated by the advent
+of the {cmd:genfile()} option in {cmd:mahapick}; if you used the
+{cmd:genfile()} option, then you would not need {cmd:stackids}.
+Putting aside some possible variations resulting from choices of options, the dataset
+resulting from {cmd:stackids} should be the same as that of using the 
+{cmd:genfile()} option in {cmd:mahapick}. 
+
+{p 4 4 2}
+Since it is advisable to use the {cmd:genfile()} option, rather than the
+{cmd:pickids()} option in {cmd:mahapick},
+{cmd:stackids} may be needed rarely if ever.  It is 
+included for completeness.  {cmd:stackids} may be useful, however, if you
+have used {cmd:pickids()}
+and later find you would have preferred to use the {cmd:genfile()} option,
+but you don't want to rerun the matching process (which can be time-consuming).
+
+{p 4 4 2}
+Before running any analyses, you will want to
+{help merge} some "content" data onto the resulting set, as the resulting
+set bears only identification information.
+See {help mahapick} for more discussion of this.  Also note that there is
+no explicit variable provided indicating the treated cases.  You may recover
+this information either from the merge to the content data, or by identifying
+the cases with {it:matchnum_varname}==0.  (These will also be the ones with
+{it:id_varname} == {it:prime_id_varname}.)
+
+
+{title:Example}
+
+{p 4 8 2}
+{cmd:. stackids id match1 match2 match3, idvar(id) idprimevar(prime_id) matchnumvar(matchnum) clear}
+
+
+{title:Author}
+
+{p 4 4 2}
+David Kantor; initial development was done at The Institute for Policy Studies,
+Johns Hopkins University.
+Email {browse "mailto:kantor.d@att.net":kantor.d@att.net} if you observe any
+problems.
+
+
+{title:Also See}
+{p 4 4 2}
+{help mahapick}, {help mahascore}, {help mahascores}, {help mahascore2},
+{help screenmatches}, {help covariancemat}, {help variancemat},
+{help stack}, {help reshape}.

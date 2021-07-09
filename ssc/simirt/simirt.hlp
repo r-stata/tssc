@@ -1,0 +1,185 @@
+{smcl}
+{* 7May2013}{...}
+{hline}
+help for {hi:simirt}{right:Jean-Benoit Hardouin}
+{hline}
+
+{title:Simulation of IRT models}
+
+{p 8 14 2}{cmd:simirt} [, {cmdab:nbo:bs}({it:#})
+{cmdab:d:im}({it:# [#] [#]...}) {cmdab:mu}({it:# [#] [#]...}) {cmdab:cov}({it:# [# #]}) {cmdab:covm:atrix}({it:matrix})
+{cmdab:dif:f}({it:list_of_values_or_expression}) {cmdab:pcm}({it:matrix}) {cmdab:dis:c}({it:list_of_values})
+{cmdab:pmin}({it:list_of_values}) {cmdab:pmax}({it:list_of_values})
+{cmdab:acc}({it:list_of_values})
+{cmdab:rsm1}({it:list_of_values})
+{cmdab:rsm2}({it:list_of_values})
+{cmdab:thr:eshold}
+{cmdab:clear} {cmdab:sto:re}({it:filename}) {cmdab:id}({it:newvarname})
+{cmdab:rep:lace} {cmdab:pref:ix}({it:string}) {cmdab:draw} {cmdab:tit:le}({it:string})
+{cmdab:gr:oup}({it:#}) {cmdab:norand:om} {cmdab:del:tagroup}({it:#})])
+
+{title:Description}
+
+{p 4 8 2}{cmd:simirt} allows creating a new dataset of  responses
+to items simulated by an unidimensional IRT model. The model can be
+dichotomous (Rasch, OPLM, Birnbaum, 3PLM, 4PLM, 5PAM) or polytomous (Rating
+Scale  Model-RSM). It is possible to simulate two sets of items linked, for
+each of them, to a specific latent trait (who can be correlated).
+
+{title:Options}
+
+{p 4 8 2}{cmd:nbobs}({it:#}) specifies the number of individuals to simulate.
+By default, 2000 individuals are simulated.
+
+{p 4 8 2}{cmd:dim}({it:# [#] [#]...}) specifies the number of items linked to the first
+latent trait (and optionally to the second one and so on). If this option is not defined,
+the {cmd:simirt} command simulates only one latent trait with a number of items
+equal to the number of values defined in the {cmd:diff} or in the {cmd:pcm} option (at least one of
+these three options must be defined).
+
+{p 4 8 2}{cmd:mu}({it:# [#]}) specifies the mean(s) of each simulated latent
+trait(s).
+
+{p 4 8 2}{cmd:cov}({it:# [# #]}) defines the covariance matrix of the latent
+trait(s). If there is only one latent, {cmd:cov} is composed of the variance of
+this one, else, {cmd:cov} is composed of the variance of the first latent,
+followed by the variance of the second latent trait, and of the covariance.
+
+{p 4 8 2}{cmd:covmatrix}({it:matrix}) directly defines the covariance matrix of the latent
+trait(s). This option is required instead of the {cmd:cov} option as soon as the number
+of dimensions is greater than 2 (but this option could be used for one or two dimensions).
+
+{p 4 8 2}{cmd:diff}({it:list_of_values_or_expression}) defines the values of the
+difficulty parameters as a list of values (with a number of elements equal to
+the total number of items), or as an expression like {it: uniform #A #B} (to
+define these parameters as uniformly distributed in {it:]#A;#B[)}, or like
+{it:gauss #M #V} (to define these parameters as the percentiles of the gaussian
+distribution with mean {it:#M} and variance {it:#V}). If there is two latent
+traits, the expressions are defined as {it:uniform #A1 #B1 #A2 #B2} and
+{it: gauss #M1 #V1 #M2 #V2}. If this option is not defined (but the {cmd:dim}
+option is), these parameters are defined among a standardized gaussian
+distribution.
+
+{p 4 8 2}{cmd:pcm}({it:matrix}) defines a matrix containing as many rows as items and
+a column for each positive answer categorie. Elements of this matrix represents the
+difficulty parameters of the items in a Partial Credit Model.
+
+{p 4 8 2}{cmd:disc}({it:list_of_values}) defines the discriminating values of
+the items (by default, these parameters are fixed to 1) [only for dichotomous items].
+
+{p 4 8 2}{cmd:pmin}({it:list_of_values}) defines the minimal probability of
+positive responses for each item (by default, these parameters are fixed to 0)
+[only for dichotomous items].
+
+{p 4 8 2}{cmd:pmax}({it:list_of_values}) defines the maximal probability of
+positive responses for each item (by default, these parameters are fixed to 1)
+[only for dichotomous items].
+
+{p 4 8 2}{cmd:acc}({it:list_of_values}) defines the accelerating parameters
+for each item (by default, these parameters are fixed to 1) [only for dichotomous items].
+
+{p 4 8 2}{cmd:rsm1}({it:list_of_values}) and {cmd:rsm2}({it:list_of_values}) defines
+the tau parameters corresponding to the difficulty parameters of the positive answer
+categorie for each item in a Rating Scale Model for the first scale ({cmd:rsm1}) or
+for the second scale ({cmd:rsm2}).
+
+{p 4 8 2}{cmd:threshold} simulates the responses of each individuals directly from the latent trait.
+In a dichotomous model ({cmd:disc}, {cmd:pmin}, {cmd:pmax} and {cmd:acc} options are not allowed), the response
+1 if given as soon the latent trait of the individual is greater than the difficulty parameter of the item (defined with the {cmd:diff} option).
+In a polytomous model , an answer is given when the latent trait of the individual is greater than the
+ difficulties corresponding to this answer.
+
+{p 4 8 2}{cmd:clear} does not restore the initial dataset at the end of the
+command (at least one of the {cmd:clear} and {cmd:store} options must be defined).
+
+{p 4 8 2}{cmd:id}({it:newvarname}) defines the name of the identifiant variable (id by default).
+
+{p 4 8 2}{cmd:store}({it:filename}) defines the file where the new dataset will
+be stored (at least one of the {cmd:clear} and {cmd:store} options must be
+defined).
+
+{p 4 8 2}{cmd:replace}, associated to {cmd:store}, allows replacing the file
+defined by {cmd:store}, if it already exist.
+
+{p 4 8 2}{cmd:prefix}({it:string [string]}]) allows defining the prefix to use
+for the names of the items. The {it:string} cannot contain space(s). By default,
+the used prefix is "item" in the unidimensional case, and "itemA" and "itemB"
+in the bidimensional case. A number follows these prefixes.
+
+{p 4 8 2}{cmd:draw}, in the unidimensional case, this option allows drawing the
+Items Characteristic Curves on a graph.
+
+{p 4 8 2}{cmd:title} defines the title of the graphs.
+
+{p 4 8 2}{cmd:group} defines, in the unidimensional case, two groups of patients, for
+example a "treated" group (coded 1) and a "reference" group (coded 0). {cmd:group}
+defines the expected rate of individuals of the first group. By default, the
+affectation in the two groups is randomly provided (see the {cmd:norandom} option).
+
+{p 4 8 2}{cmd:norandom} allows affecting between the two groups the exact rates of individuals
+defined in the {cmd:group} option.
+
+{p 4 8 2}{cmd:deltagroup} defines, in the unidimensional case, the difference between the
+means of the latent trait between the two groups defined by the {cmd:group} option. This
+option is disabled if the {cmd:group} option is not defined. The variance of the latent
+trait is considered as equal in the two groups.
+
+{title:Outputs}
+
+{p 4 8 2}{cmd:r(nbobs)}: Number of simulated individuals.
+
+{p 4 8 2}{cmd:r(mean_#)}: Empirical mean of the #th latent trait.
+
+{p 4 8 2}{cmd:r(var_#)}: Empirical variance of the #th latent trait.
+
+{p 4 8 2}{cmd:r(cov_12)}: Empirical covariance between the two latent traits
+(if there is two simulated dimensions).
+
+{p 4 8 2}{cmd:r(rho)}: Empirical correlation coefficient between the two latent
+traits (if there is two simulated dimensions).
+
+{title:Examples}
+
+{p 4 8 2}{cmd: . simirt , dim(7) clear} /*simulates data by a Rasch model*/
+
+{p 4 8 2}{cmd: . simirt , diff(gauss 0 1) dim(7) disc(.8 1.2 1.4 .6 1.4 1.0 1.1) clear}
+ /*simulates data by a Birnbaum model*/
+
+{p 4 8 2}{cmd: . simirt , diff(uniform -2 3 0 1) dim(7 7) cov(2 4 1) clear}/*
+simulates data with a bidimensional latent trait*/
+
+{p 4 8 2}{cmd: . simirt , dim(7) clear group(.5) deltagroup(1)} /*simulates
+data by a Rasch model, with two groups of approximate equal size of patients
+and a difference between the means of the latent trait for the two groups of 1*/
+
+{p 4 8 2}{cmd: . simirt , dim(7) clear rsm(1 .5 .2)} /*Data simulated by a RSM. Each item
+has until 5 modalities*/
+
+{title:Notes about the models}
+
+{p 4 8 2}{bf:Rasch model}: By default, you can describe only the {cmd:diff} option.
+
+{p 4 8 2}{bf:Birnbaum model and OPLM}: By default, the {cmd:diff} and the {cmd:disc} options must be defined.
+
+{p 4 8 2}{bf:3-PLM}: By default, the {cmd:diff}, the {cmd:disc} and the {cmd:pmin} options must be defined.
+
+{p 4 8 2}{bf:4-PLM}: By default, the {cmd:diff}, the {cmd:disc}, the {cmd:pmin} and the {cmd:pmax} options must be defined.
+
+{p 4 8 2}{bf:5-PM}: The {cmd:diff}, the {cmd:disc}, the {cmd:pmin}, the {cmd:pmax} and the {cmd:acc} options must be defined.
+
+{p 4 8 2}{bf:RSM}: The {cmd:rsm1} [and eventually the {cmd:rsm2}] option(s) must be defined. The {cmd:disc}, the {cmd:pmin}, the {cmd:pmax} and the {cmd:acc} options cannot be defined.
+
+{p 4 8 2}{bf:PCM}: The {cmd:pcm} option must be defined. The {cmd:disc}, the {cmd:pmin}, the {cmd:pmax} and the {cmd:acc} options cannot be defined.
+
+{title:Author}
+
+{p 4 8 2}Jean-Benoit Hardouin, PhD, assistant professor{p_end}
+{p 4 8 2}EA 4275 "Team of Biostatistics, Pharmacoepidemiology and Subjective Measures in Health Sciences"{p_end}
+{p 4 8 2}University of Nantes - Faculty of Pharmaceutical Sciences{p_end}
+{p 4 8 2}1, rue Gaston Veil - BP 53508{p_end}
+{p 4 8 2}44035 Nantes Cedex 1 - FRANCE{p_end}
+{p 4 8 2}Email:
+{browse "mailto:jean-benoit.hardouin@univ-nantes.fr":jean-benoit.hardouin@univ-nantes.fr}{p_end}
+{p 4 8 2}Website {browse "http://www.anaqol.org":AnaQol}
+
+

@@ -1,0 +1,67 @@
+{smcl}
+{* 3dec2008}{...}
+{hline}
+help for {hi:bihist}
+{hline}
+
+{title:Graph bihistograms: histograms for two categories shown in opposite directions from the abscissa}
+
+{p 4 12 2}
+{cmd:bihist}
+{it:varname} {ifin} {weight}{cmd:, by(}{it:varname}{cmd:)} [{ {cmdab:freq:uency} |{cmdab:frac:tion} | {cmdab:dens:ity} } {cmd:name(}{help name_option}{cmd:)} {cmd:tw(}{help twoway_options}{cmd:)} {cmd:tw1(}{help twoway_options}{cmd:)}]
+
+{title:Description}
+
+{p 4 4 2}
+{cmd:bihist} makes a bihistogram, with frequencies (optionally fraction/density) of one variable
+by two categories of another variable shown above and below
+the abscissa (the x axis).  Which category's histogram is above
+the axis and which is below depends on the ordering of the by() variable.{p_end}
+
+{p 4 4 2}
+fweights, aweights, and pweights are allowed (at user's own risk).{p_end}
+
+{title:Options} 
+
+{p 4 8 2}{cmd:by} is required. Options after a comma within the parentheses are passed to {help twoway_bar}.{p_end}
+
+{p 4 8 2}{cmdab:freq:uency} |{cmdab:frac:tion} | {cmdab:dens:ity} are as in {help histogram}. {p_end}
+
+{p 4 8 2}{cmd:name} names the graph something other than "Graph"; see {help name_option}. {p_end}
+
+{p 4 8 2}{cmd:tw(}{help twoway_options}{cmd:)} passes options to {help twoway_bar}. Note that options passed by default may be superseded in this way,
+for example {help axis_options:y axis labels}, but some added options may be ignored as a result of existing options (e.g. {help axis_options:yscale}
+will not override the range specified by the existing {help axis_options:y axis labels}).
+{p_end}
+
+{p 4 8 2}{cmd:tw1(}{help twoway_options}{cmd:)} passes options to {help twoway_bar} that are intended to apply only to the first by group (the lower set of bars). 
+See the second example below.
+{p_end}
+
+{p 4 8 2}Other options are passed to {help twoway__histogram_gen}. {p_end}
+
+{title:Examples}
+
+{p 4 8 2}{stata "sysuse auto, clear":sysuse auto, clear}{p_end}
+{p 4 8 2}{stata "bihist mpg, by(foreign)":bihist mpg, by(foreign)}{p_end}
+
+{p 4 8 2}{stata "sysuse nlsw88, clear":sysuse nlsw88, clear}{p_end}
+{p 4 8 2}{stata "bihist wage [fw=hours], by(married) frac":bihist wage [fw=hours], by(married) frac}{p_end}
+{p 4 8 2}{stata `"la var married """':la var married ""}{p_end}
+{p 4 8 2}{stata "bihist wage [fw=hours], by(married) frac":bihist wage [fw=hours], by(married) frac}{p_end}
+{p 4 8 2}{stata "bihist wage [fw=hours], by(married) tw1(color(cyan)) tw(color(blue))":bihist wage [fw=hours], by(married) tw1(color(cyan)) tw(color(blue))}{p_end}
+
+{title:Author}
+
+{p 4 4 2}
+Austin Nichols{break}
+austinnichols@gmail.com
+
+{title:Also see:} 
+
+{p 1 14 2}Manual: {hi:[R] graph twoway bar}{p_end}
+
+{p 1 14 2}
+Online:  help for {help histogram}, {stata "view help twoway bar##remarks3":twoway bar};
+{help byhist} (if installed; {stata "ssc inst byhist, replace":install}){p_end}
+

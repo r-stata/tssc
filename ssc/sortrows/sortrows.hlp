@@ -1,0 +1,92 @@
+{smcl}
+{* 30Oct2006}{...}
+{* Jeff Arnold}{...}
+{cmd:help sortrows}
+{hline}
+
+{title:Title}
+
+{p2colset 5 17 19 2}{...}
+{p2col :{hi:sortrows} {hline 2}}Sort data within rows{p_end}
+{p2colreset}{...}
+
+{title:Syntax}
+
+{p 8 13 2}
+{opt sortrows}
+{varlist}, 
+{c -(}{opt r:eplace} | {opth gen:erate(newvarlist)}{c )-}
+{opt mi:ssing}
+{opt desc:ending}
+
+{title:Description}
+
+{pstd} 
+{opt sortrows} sorts observations row-wise and either generates new
+variables to hold the sorted values or replaces the existing variables. The
+variables are sorted in ascending order in the order of the  the variable list.
+Both numeric and string variables can be sorted, though all variables in the
+varlist must be either numeric or string.  If it is given a numeric variable
+list of several {help data_types: types} or a string variable list of different
+lengths, it will recast all the variables in the list to the largest type using
+{help decompress}.
+
+This requires Stata 9 since it uses Mata to perform the sorting.
+
+{title:Option}
+
+{phang}
+{opt replace} specifies that the sorted values should replace those of the
+existing variables. 
+
+{phang}
+{opth generate(newvarlist)} specifies the new variables to hold the sorted values.
+
+{phang}
+{opt missing} move all missing values or "" to the last variables.
+
+{phang}
+{opt descending} sort in descending order.
+
+{title:Example}
+
+{com}. list a b c d
+{txt}
+     {c TLC}{hline 3}{c -}{hline 3}{c -}{hline 3}{c -}{hline 3}{c TRC}
+     {c |} {res}a   b   c   d {txt}{c |}
+     {c LT}{hline 3}{c -}{hline 3}{c -}{hline 3}{c -}{hline 3}{c RT}
+  1. {c |} {res}9   3   0   2 {txt}{c |}
+  2. {c |} {res}2   3   8   0 {txt}{c |}
+  3. {c |} {res}2   9   2   1 {txt}{c |}
+  4. {c |} {res}1   5   4   2 {txt}{c |}
+  5. {c |} {res}7   7   1   6 {txt}{c |}
+     {c BLC}{hline 3}{c -}{hline 3}{c -}{hline 3}{c -}{hline 3}{c BRC}
+
+{com}. sortrows a b c d, replace
+{txt}
+{com}. list a b c d
+{txt}
+     {c TLC}{hline 3}{c -}{hline 3}{c -}{hline 3}{c -}{hline 3}{c TRC}
+     {c |} {res}a   b   c   d {txt}{c |}
+     {c LT}{hline 3}{c -}{hline 3}{c -}{hline 3}{c -}{hline 3}{c RT}
+  1. {c |} {res}0   2   3   9 {txt}{c |}
+  2. {c |} {res}0   2   3   8 {txt}{c |}
+  3. {c |} {res}1   2   2   9 {txt}{c |}
+  4. {c |} {res}1   2   4   5 {txt}{c |}
+  5. {c |} {res}1   6   7   7 {txt}{c |}
+     {c BLC}{hline 3}{c -}{hline 3}{c -}{hline 3}{c -}{hline 3}{c BRC}
+
+{title:Notes}
+
+This is a similar command to Nicholas Cox's {help sortrows}.
+
+{title:Author}
+
+{p 4 4 2}Jeffrey Arnold {p_end}
+{p 4 4 2}{browse "mailto:jeffrey.arnold@gmail.com":jeffrey.arnold@gmail.com} 
+
+{title:Also see}
+
+{psee}
+Online:  {helpb sort}, {helpb gsort}, {helpb egen}, {helpb rowsort}
+{p_end}

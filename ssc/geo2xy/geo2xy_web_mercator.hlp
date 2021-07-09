@@ -1,0 +1,283 @@
+{smcl}
+{* *! version 1.0.0  31jan2017}{...}
+{cmd:help geo2xy_web_mercator}
+{hline}
+
+{title:Title}
+
+{phang}
+{cmd:geo2xy} {hline 2} Convert latitude and longitude to cartesian (x,y) coordinates
+
+
+{title:Map projection}
+
+{phang}
+Web mercator projection - spherical model (Google Maps, Bing, etc.)
+
+
+{title:Syntax}
+
+{p 8 16 2}
+{cmd:geo2xy}
+{it:lat_var lon_var} 
+{ifin} 
+{cmd:,}
+{c -(}{opt gen:erate(y_lat x_lon)}{c |}{opt replace}{c )-}
+[ 
+{opt proj:ection}{cmd:(}{opt web_mercator}
+[,{help geo2xy##proj_name:proj_opts}]{cmd:)}
+{opt ti:ssot} ]
+
+
+{synoptset 40 tabbed}{...}
+{synopthdr}
+{synoptline}
+{p2coldent :* {opt gen:erate(y_lat x_lon)}}New variable names for the projected coordinates (note the order!){p_end}
+{p2coldent :* {opt replace}}Replace the values in {it:lat_var lon_var} with the projected coordinates{p_end}
+{synopt :{opt proj:ection(web_mercator [,proj_opts])}}Specifies the projection and, optionally, projection parameters{p_end}
+{synopt :{opt ti:ssot}}Append Tissot's indicatrices (grid of circles){p_end}
+{synoptline}
+{pstd}* Either {opt gen:erate(y_lat x_lon)} or {opt replace} is required.
+{p2colreset}
+
+
+{synoptset 15 tabbed}{...}
+{synopthdr :proj_opts}
+{synoptline}
+{synopt :{it:zoom}}zoom (default is 0){p_end}
+{synopt :{it:xtile}}name for new x tile id variable (default is no tile id generated){p_end}
+{synopt :{it:ytile}}name for new y tile id variable (default is no tile id generated){p_end}
+{synoptline}
+{p2colreset}
+
+{pstd}
+Projection parameters are optional. To specify some, 
+all parameters must be specified and appear in the following order
+
+{p 8 16 2}
+{opt proj:ection}{hi:(web_mercator} {it:, zoom xtile ytile})
+
+
+{title:Description}
+
+{pstd}
+The Web Mercator projection is used by most
+web mapping applications (Google Maps, Bing, etc.).
+It is the same as a standard Mercator projection
+except that it uses a sphere as a model for the earth
+instead of an ellipsoid. 
+
+{pstd}
+This projection, developed by Google for their Google Maps service,
+returns projected
+coordinates in map pixel coordinates and optionally with map tile coordinates.
+
+{pstd}
+In a Mercator projection, longitudes and latitudes are projected as straight lines,
+perpendicular to each other. To compensate for the fact that
+longitudes are not parallel and converge at the poles, latitudes are stretched
+to match the local stretch in longitude.
+As longitudes converge towards the poles, the amount of stretch needed for
+latitudes to maintain proportions becomes infinite. 
+
+{pstd}
+When Google implemented Google Maps, they decided that their maps would be
+rendered using tiles of 256x256 pixels each. A zoom level parameter decides the
+number of tiles needed to render the map of the whole world. At a zoom level of
+0, the world fits in a single tile of 256x256 pixels. An increase of 1 in the
+zoom level doubles the number of tiles both horizontally and vertically.
+This imposes an aspect ratio of 1 on the map of the world. Since a Mercator
+projection stretches the y-coordinates towards infinity, Google truncates
+the map of the world near the poles. Points at latitudes beyond 85.051129 degree 
+north or south have missing y-coordinates.
+
+{pstd}
+Note that unless you are trying to overlay your maps with other maps, 
+tile and pixel position are irrelevant and therefore the zoom level does
+not matter. In other words, if you plot the projected coordinates in Stata,
+the map produced will look exactly the same, no matter the zoom level.
+Furthermore, it will look exactly the same if you use a
+{help geo2xy_proj##mercator_sphere:Spherical Mercator} projection instead.
+
+{pstd}
+With a Mercator projection, circles retain their shapes over small areas but
+their size increases towards the pole.
+
+
+{title:Spheroid and (x,y) coordinates units}
+
+{pstd}
+This projection assumes that the geographic latitude and longitude
+describe locations on a sphere.
+The computations are performed on a unit sphere (radius of 1)
+and projected coordinates are returned in pixels from the map's 
+origin (top-left) at the selected zoom level.
+
+
+{title:Examples}
+
+{pstd}
+These examples require {cmd:geo2xy}'s ancillary datasets
+in the current directory. Click 
+{stata `"net get geo2xy, from("http://fmwww.bc.edu/repec/bocode/g")"':here}
+to download them.
+
+{pstd}
+Since this is {cmd:geo2xy}'s default projection, there's no need
+to specify a projection. 
+
+{space 8}{hline 27} {it:example do-file content} {hline 27}
+{cmd}{...}
+{* example_start - web_mercator_us}{...}
+	use "geo2xy_us_coor.dta", clear
+	drop if inlist(_ID, 14, 39, 42) // Alaska, Puerto Rico, Hawaii
+
+	geo2xy _Y _X, gen(ylat xlon)
+	
+	// show the projection details and compute the plot's height
+	return list
+	local yheight = 6 * `r(aspect)'
+	
+	line ylat xlon, lwidth(vthin) lcolor(gray) cmissing(n) ///
+		xsize(6) ysize(`yheight') ///
+		ylabel(minmax, nogrid) yscale(off) ///
+		xlabel(minmax, nogrid) xscale(off) ///
+		plotregion(margin(small)) graphregion(margin(small)) ///
+		legend(off) name(web_mercator_us, replace)
+			
+	summarize
+{* example_end}{...}
+{txt}{...}
+{space 8}{hline 80}
+{space 8}{it:({stata geo2xy_run web_mercator_us using geo2xy_web_mercator.hlp, requires("geo2xy_us_coor.dta") preserve:click to run})}
+
+{pstd}
+Redo the same map, this time projected at a zoom level of 10. At that level, Google's map
+of the world is made up of 1024 * 1024 tiles (2^10) or 262,144 by 262,144
+pixels. The top left of the map is (0,0) so {it:ylat} is negative.
+
+{space 8}{hline 27} {it:example do-file content} {hline 27}
+{cmd}{...}
+{* example_start - web_mercator_us_z10}{...}
+	use "geo2xy_us_coor.dta", clear
+	drop if inlist(_ID, 14, 39, 42) // Alaska, Puerto Rico, Hawaii
+	
+	geo2xy _Y _X, gen(ylat xlon) projection(web_mercator, 10 xtile ytile)
+	
+	// show the projection details and compute the plot's height
+	return list
+	local yheight = 6 * `r(aspect)'
+	
+	line ylat xlon, lwidth(vthin) lcolor(gray) cmissing(n) ///
+		xsize(6) ysize(`yheight') ///
+		ylabel(minmax, nogrid) yscale(off) ///
+		xlabel(minmax, nogrid) xscale(off) ///
+		plotregion(margin(small)) graphregion(margin(small)) ///
+		legend(off) name(web_mercator_us_z10, replace)
+			
+	summarize
+{* example_end}{...}
+{txt}{...}
+{space 8}{hline 80}
+{space 8}{it:({stata geo2xy_run web_mercator_us_z10 using geo2xy_web_mercator.hlp, requires("geo2xy_us_coor.dta") preserve:click to run})}
+
+{pstd}
+As you can see, the projected coordinates are different but the 
+maps produced by the two examples above are identical.
+
+{pstd}
+Use the {opt tissot} option to illustrate the distortions created by
+this projection:
+
+{space 8}{hline 27} {it:example do-file content} {hline 27}
+{cmd}{...}
+{* example_start - web_mercator_tissot}{...}
+	use "geo2xy_us_coor.dta", clear
+	drop if inlist(_ID, 14, 39, 42) // Alaska, Puerto Rico, Hawaii
+
+	geo2xy _Y _X, gen(ylat xlon) tissot
+	
+	// show the projection details and compute the plot's height
+	return list
+	local yheight = 6 * `r(aspect)'
+	
+	line ylat xlon if !mi(_ID), lwidth(vthin) lcolor(gray) cmissing(n) ///
+	|| ///
+	line ylat xlon if mi(_ID), lwidth(vthin) lcolor(eltblue) cmissing(n) ///
+		xsize(6) ysize(`yheight') ///
+		ylabel(minmax, nogrid) yscale(off) ///
+		xlabel(minmax, nogrid) xscale(off) ///
+		plotregion(margin(small)) graphregion(margin(small)) ///
+		legend(off) name(web_mercator_tissot, replace)
+{* example_end}{...}
+{txt}{...}
+{space 8}{hline 80}
+{space 8}{it:({stata geo2xy_run web_mercator_tissot using geo2xy_web_mercator.hlp, requires("geo2xy_us_coor.dta") preserve:click to run})}
+
+
+{title:Certification}
+
+{pstd}
+Google Maps offers a 
+{it:{browse "https://developers.google.com/maps/documentation/javascript/examples/map-coordinates":JavaScript utility}}
+that shows both the pixel
+and tile coordinates of a location in Google Maps.
+Their current example uses a point in Chicago, IL at latitude 41.85
+and longitude -87.650. If you zoom in or out, the caption
+shows the pixel and tile coordinates. For example:
+
+{pmore}
+Zoom level: 14  Pixel Coordinate: (1075955, 1559345)  Tile Coordinate: (4202, 6091)
+
+{pstd}
+The following code confirms that {cmd:geo2xy} generates the same projected
+pixel and tile coordinates.
+Note that since
+the map origin (0,0) is the top-left corner, y-coordinates are negative.
+
+{space 8}{hline 27} {it:example do-file content} {hline 27}
+{cmd}{...}
+{* example_start - certify}{...}
+	clear
+	input double(_Y _X)
+	41.85 -87.650
+	end
+
+	geo2xy _Y _X, gen(y x) projection(web_mercator, 14 xtile ytile)
+	return list
+	list
+	
+	assert int(x) == 1075955
+	assert int(y) == -1559345
+	assert xtile == 4202
+	assert ytile == 6091
+{* example_end}{...}
+{txt}{...}
+{space 8}{hline 80}
+{space 8}{it:({stata geo2xy_run certify using geo2xy_web_mercator.hlp, preserve:click to run})}
+
+
+{title:References and further reading}
+
+{pstd}
+Google, {it:{browse "http://developers.google.com/maps/documentation/ios/tiles":Tile Layers}}.
+Web page, reviewed 1/31/2017.
+
+{pstd}
+Microsoft, {it:{browse "https://msdn.microsoft.com/en-us/library/bb259689.aspx":Bing Maps Tile System}}.
+Web page, reviewed 1/31/2017.
+
+{pstd}
+Wikipedia, {it:{browse "http://en.wikipedia.org/wiki/Web_Mercator":Web Mercator}}.
+Web page, reviewed 1/31/2017.
+
+{pstd}
+Since this is a simple variant of a Mercator with a spherical model, see {cmd:geo2xy}'s
+{help geo2xy_mercator_sphere:Mercator projection - spherical model} 
+for more details about the underlying projection.
+
+
+{title:Author}
+
+{pstd}Robert Picard{p_end}
+{pstd}picard@netbox.com{p_end}

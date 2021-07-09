@@ -1,0 +1,286 @@
+/*
+
+eventstudy.dlg
+
+version 1.0.2	 05mar2013
+
+*/
+
+VERSION 12.0
+
+HELP hlp1, view("help eventstudy")
+RESET res1
+
+POSITION . . 500 200
+
+SCRIPT PREINIT_SCRIPT
+BEGIN
+	create BOOLEAN eventfi_ready
+	create BOOLEAN tradefi_ready
+	create BOOLEAN method_ready
+	
+	eventfi_ready.setfalse
+	tradefi_ready.setfalse
+	method_ready.setfalse
+
+END
+
+
+DIALOG eventstudy, label("Event Study")
+BEGIN
+	GROUPBOX gb_start 10	20		470		160,label("Star Manuel")
+
+		TEXT tx_eventst +10	 	+30 		360 		., 							///
+			label(`"Click the "EventFile" button to set event file and variables"')
+		BUTTON bu_eventst +370 		@ 		80 		., 							   ///
+			label("EventFile")                                                     ///  
+			onpush("program event_file")
+
+		TEXT tx_tradest -370	 +40	 360	 ., 							  ///
+			label(`"Click the "TradeFile" button to sent trade file and variables"')
+		BUTTON bu_tradest +370 		@ 		80 		.,                            ///
+			label("TradeFile")                                                    ///
+			onpush("program trade_file")
+		
+		TEXT tx_methodst -370 	+40	 360 .,                                      ///
+			label(`"Click the "Method" button to specify method parameters"')
+		BUTTON bu_methodst +370 		@ 		80 		.,                       ///
+			label("Method") 													 ///
+			onpush("program method")
+
+END
+
+
+
+OK ok1
+SUBMIT sub1 
+CANCEL can1
+COPY COPY1
+	
+PROGRAM event_file
+BEGIN
+	call create STRING event_dialogName
+	call event_dialogName.setvalue class _dlg_rsrcname
+	call create STRING _str_event_paremeter
+	call create CHILD es_event
+	call es_event.setExitString _str_event_paremeter
+	call es_event.setExitAction "program get_event_paremeter"
+END
+
+
+PROGRAM get_event_paremeter
+BEGIN
+
+	call create ARRAY paremeter_event_file
+
+	put "es_store_array, "
+	put "str(" 	_str_event_paremeter ") "
+	put "arrname(" 
+	put "paremeter_event_file "
+	put ") "
+	put "clsname(" event_dialogName ")"
+	stata hidden
+	
+	call eventfi_ready.settrue
+	
+END
+
+PROGRAM eventfile_pr
+BEGIN
+
+	call create STRING event_filename
+	call create STRING event_id
+	call create STRING event_date
+	call create STRING event_firmid
+	call create STRING event_control
+	
+	call event_filename.setvalue class	paremeter_event_file[1]
+	call event_id.setvalue       class  paremeter_event_file[2]
+	call event_date.setvalue     class  paremeter_event_file[3]
+	call event_firmid.setvalue   class  paremeter_event_file[4]
+	call event_control.setvalue  class  paremeter_event_file[5]
+
+END
+
+PROGRAM trade_file
+BEGIN
+	call create STRING trade_dialogName
+	call trade_dialogName.setvalue class _dlg_rsrcname
+	call create STRING _str_trade_paremeter
+	call create CHILD es_trade
+	call es_trade.setExitString _str_trade_paremeter
+	call es_trade.setExitAction "program get_trade_paremeter"
+END
+
+PROGRAM get_trade_paremeter
+BEGIN
+
+	call create ARRAY paremeter_trade_file
+
+	put "es_store_array, "
+	put "str(" 	_str_trade_paremeter ") "
+	put "arrname(" 
+	put "paremeter_trade_file "
+	put ") "
+	put "clsname(" trade_dialogName ")"
+	stata hidden
+	
+	call tradefi_ready.settrue	
+END
+
+
+PROGRAM tradefile_pr
+BEGIN
+
+	call create STRING trade_filename
+	call create STRING trade_firmid
+	call create STRING trade_date
+	call create STRING trade_rit
+	call create STRING trade_rmt
+	
+	call trade_filename.setvalue class	paremeter_trade_file[1]
+	call trade_firmid.setvalue       class  paremeter_trade_file[2]
+	call trade_date.setvalue     class  paremeter_trade_file[3]
+	call trade_rit.setvalue   class  paremeter_trade_file[4]
+	call trade_rmt.setvalue  class  paremeter_trade_file[5]
+
+END
+
+
+
+PROGRAM method
+BEGIN
+	call create STRING method_dialogName
+	call method_dialogName.setvalue class _dlg_rsrcname
+	call create STRING _str_method_paremeter
+	call create CHILD es_method
+	call es_method.setExitString _str_method_paremeter
+	call es_method.setExitAction "program get_method_paremeter"
+END
+
+PROGRAM get_method_paremeter
+BEGIN
+
+	call create ARRAY paremeter_method
+
+	put "es_store_array, "
+	put "str(" 	_str_method_paremeter ") "
+	put "arrname(" 
+	put "paremeter_method "
+	put ") "
+	put "clsname(" method_dialogName ")"
+	stata hidden
+	
+	call method_ready.settrue	
+END
+
+
+PROGRAM method_pr
+BEGIN
+
+	call create STRING method_savefilename
+	call create STRING method_estwinst
+	call create STRING method_estwinend
+	call create STRING method_evewinst
+	call create STRING method_evewinend
+	
+	call method_savefilename.setvalue class	paremeter_method[1]
+	call method_estwinst.setvalue       class  paremeter_method[2]
+	call method_estwinend.setvalue     class  paremeter_method[3]
+	call method_evewinst.setvalue   class  paremeter_method[4]
+	call method_evewinend.setvalue  class  paremeter_method[5]
+
+END
+
+
+PROGRAM command
+BEGIN
+	
+	if !eventfi_ready{
+		stopbox stop "The event file Not Yet Set"    ///
+					 "Please click on the EventFile button."
+	}
+	else{
+		call program eventfile_pr
+	}
+	if !tradefi_ready{
+		stopbox stop "The trade file Not Yet Set!"    ///
+					 "Please click on the TradeFile button."
+	}
+	else{
+		call program tradefile_pr
+	}
+	if !method_ready{
+		stopbox stop "The Method parameters Not Yet Set"    ///
+					 "Please click on the Method button."
+	}
+	else{
+		call program method_pr
+	}	
+	put "eventstudy "
+
+	put `"using ""'
+	put method_savefilename
+	put `"\result.dta""'
+	put ", "
+
+	put `"event_file_name(""'
+	put event_filename
+	put `"") "'
+	
+	put `"trade_file_name(""'
+	put trade_filename
+	put `"") "'
+
+	put "rit("
+	put trade_rit
+	put ") "
+		
+	put "rmt("
+	put trade_rmt
+	put ") "
+	
+	put "firm_id("
+	put trade_firmid
+	put ") "
+
+	put "trade_date("
+	put trade_date
+	put ") "
+
+	put "event_id("
+	put event_id
+	put ") "
+	
+	put "event_control("
+	put event_control
+	put ") "
+	
+	put "event_firm_id("
+	put event_firmid
+	put ") "
+	
+	put "event_date("
+	put event_date
+	put ") "
+	
+	put "event_window_st("
+	put method_evewinst
+	put ") "
+	
+	put "event_window_end("
+	put method_evewinend
+	put ") "
+	
+	put "est_window_st("
+	put method_estwinst
+	put ") "
+	
+	put "est_window_end("
+	put method_estwinend
+	put ")"
+
+	stata
+
+END
+

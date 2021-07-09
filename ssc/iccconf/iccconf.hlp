@@ -1,0 +1,62 @@
+
+.-
+help for ^iccconf^
+.-
+
+Confidence Interval for A Single Intraclass Correlation (ICC)
+-------------------------------------------------------------
+
+	.^iccconf <icc> <k> <reps>, level(#)^
+
+
+^Description^
+^-----------^
+
+^iccconf^ is an immediate command that computes a confidence interval for a 
+single intraclass correlation (ICC).  The procedure is based on Rosner's approach
+using the F-test. 
+
+Three inputs are required:
+
+       ^icc^    is the intraclass correlation. The input must be a value between 0 and 1
+
+        ^k^     is the number of subjects
+   
+       ^reps^   is the number of repeated assessments or "within" pair 
+                 measurements. 
+
+^Option^
+^------^
+       level(#)  The level option allows the user to modify the confidence limit.
+                 Use values between 0 and 1.  The default is .95.  
+
+
+Example 
+--------
+To find a 95% confidence interval for an ICC of .914, based on 5 observations
+with 2 replcations each:
+
+     ^.iccconf .914 5 2^
+     
+     
+For a 90% confidence interval for the above example, type:
+
+     ^.iccconf .914 5 2, level(.9)^
+
+
+References
+----------
+Rosner, B. "Fundamentals of Biostatistics, 6th ed" Duxbury, Press (The Thompson
+   Company): Belmont, CA, 2006, pgs 615-616.
+
+
+Author
+------
+Paul F. Visintainer, PhD
+Springfield, MA 01089
+visint46@gmail.com
+
+
+Also see
+--------
+Manual or on-line help for: @loneway@, @xtreg@, or ^bootcor^, ^xtrho^ if installed

@@ -1,0 +1,70 @@
+{smcl}
+{* version 1.0.0  06feb2006}{...} 
+{cmd:help freduse}{right:(SJ6-3: st0110)}
+{hline}
+
+{title:Title}
+
+{p2colset 5 16 18 2}{...}
+{p2col :{hi:freduse} {hline 2}}Import Federal Reserve economic data{p_end}
+{p2colreset}{...}
+
+
+{title:Syntax}
+
+{p 8 16 2}
+{opt freduse} {it:series_1} [{it:series_2} ... {it:series_k}] {ifin}
+   [{cmd:,} {opt f:ile} {cmd:clear}]
+
+
+{title:Description}
+
+{pstd}
+{cmd:freduse} imports data from the Federal Reserve Economic Data (FRED)
+repository into Stata.
+
+{pstd}
+The FRED repository at {browse "http://research.stlouisfed.org/fred2/"} 
+contains more than 3,000 U.S. economic time series.  Each time series is
+stored in a separate file that also contains a string-date variable and header
+with information about the series.  {cmd:freduse} imports a series from a list
+of files into a Stata dataset.
+
+
+{title:Options}
+
+{phang}{cmd:file} specifies that {it:series} refer to files stored on a local
+disk.  By default, {cmd:freduse} downloads the FRED series from the
+repository and imports the downloaded data.  You do not need to append
+{cmd:.txt} to the series names, but you must prepend the directory if the
+files are not in the current directory.
+
+{phang}{cmd:clear} specifies that {cmd:freduse} replace any data in memory
+with the imported data.
+
+
+{title:Remarks}
+
+{pstd}
+The names of the FRED series are case sensitive.  If the name of the series
+specified at {browse "http://research.stlouisfed.org/fred2/"} is in capital
+letters, as most are, you must use capital letters when specifying the
+name to {cmd:freduse}.
+
+
+{title:Examples}
+
+{pstd}
+{cmd:. freduse GS1M CPN3M GS5}
+
+{pstd}
+{cmd:. freduse mydir/GS1M mydir/CPN3M mydir/GS5, file clear}
+
+
+{title:Author}
+
+{pstd}
+   David Drukker{break}
+   StataCorp{break}
+   ddrukker@stata.com
+{p_end}

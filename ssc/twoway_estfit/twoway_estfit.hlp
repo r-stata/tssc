@@ -1,0 +1,98 @@
+{smcl}
+{* 8june2004}{...}
+{hline}
+help for {hi:twoway_estfit}{right:manual: }
+{hline}
+
+{* index lines, adding}{...}
+{* index adding lines}{...}
+{* index adding fits, see fits, adding}{...}
+{* index fits, adding}{...}
+{title:Twoway prediction plots}
+
+{p 8 60 2}
+{cmdab:tw:oway}
+{cmd:estfit}
+{it:yvar} {it:xvar}
+[{it:weight}]
+[{cmd:if} {it:exp}]
+[{cmd:in} {it:range}]
+[{cmd:,}
+{it:estcmd(command name)}
+{it:lfit_options}]
+
+{p 4 4 2}
+{cmdab:estc:md:(}{it:estimation command name}{cmd:)} specifies the name of the Stata estimation command 
+         to use for fitting the model and creating the prediction line
+
+{p 4 4 2}
+{it:lfit_options} are any options allowed by {help twoway_lfit}.  The {cmd:estopts} and {cmd:predopts} now 
+apply to whatever command is specified in {cmd:estcmd}
+
+
+{title:Description}
+
+{p 4 4 2}
+{cmd:twoway} {cmd:estfit} is a more flexible alternative to (cmd: lfit} --
+it calculates and plots the prediction line from fitting {it:yvar} on {it:xvar} 
+using the model specified in {cmd:estcmd}.  For more detailed syntax and help see {help twoway_lfit}, 
+
+{p 4 4 2}
+{cmd: estfit} only differs from {cmd: lfit} because it allows you to specify a 
+different estimator rather than {cmd: regress} that is built into {cmd: lfit}.
+
+
+{title:Options}
+
+{p 4 8 2}
+{cmd:estcmd(}{it:estimation command name}{cmd:)}
+    specifies the name of the command to be run to estimate the 
+    model from which the line will be predicted.  Choices include any 
+    Stata command that can be run using the the y and x vars.  Common
+    applications could include {cmd:rreg} or {cmd:qreg} for more robust linear fits than
+    {cmd: lfit} provides, but can be any command that works with 
+    {cmd: predict} such as {cmd:logit}, {cmd:probit}, {cmd:poisson}, {cmd: glm}, or
+    even user-written non-linear or maximum likelihood models.
+
+{p 4 8 2}
+{cmd:estopts(}{it:model_options}{cmd:)}
+    as in {cmd: lfit}, specifies options to be passed along to {cmd:estcmd} to estimate the 
+    model.
+
+{p 4 8 2}
+{cmd:predopts(}{it:predict_options}{cmd:)}
+    as in {cmd: lfit}, specifies options to be passed along to {cmd:predict} to
+    obtain the predictions after estimation by {cmd:estcmd}.
+
+
+{title:Typical use}
+
+{p 4 4 2}
+{cmd:twoway} {cmd:estfit}, like {cmd: lfit}, is primarily used in conjunction 
+with other {cmd:twoway} plottypes, such as
+
+	{cmd:. sysuse auto, clear}
+
+	{cmd:. scatter mpg weight || estfit mpg weight, estcmd(qreg) }
+
+{p 4 4 2}
+Results are the same as typing
+
+	{cmd}. qreg mpg weight
+	. predict fitted
+	. scatter mpg weight || line fitted weight{txt}
+
+
+{title:Also see}
+
+    Manual:  {hi:[G] graph twoway lfit}
+
+{p 4 13 2}
+Online:  help for
+{help twoway_lfit};
+{help twoway_qfit},
+{help twoway_fpfit},
+{help twoway_mband},
+{help twoway_mspline};
+{help twoway_lfitci};
+{p_end}

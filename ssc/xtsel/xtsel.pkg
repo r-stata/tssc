@@ -1,0 +1,50 @@
+d 'XTSEL': module for selection of variables and specification in a panel-data framework
+d
+d  The package XTSEL includes two new commands (xtselvar and
+d xtselmod) that help us to rank the best predictors between a
+"d number of alternative explanatory variables (candidates), or the"
+d best specification between all possible combinations of a set of
+"d explanatory variables, according to several in-sample and"
+d out-of-sample statistics. They are specially adapted for a panel
+"d data framework, firstly because the out-of-sample prediction"
+d performance is measured in the two inherent dimensions of a panel
+"d (time-series and cross-individuals), and secondly because they"
+d allow a large number of methodological options that typically are
+"d necessary in panel data analysis. Given a set of n predictors,"
+"d xtselvar estimates the same specification n times, one for each"
+"d predictor. xtselmod estimates 2^n - 1 different specifications,"
+d one per each possible combination out of the set of n variables.
+d Both procedures keep constant the same dependent variable and an
+"d optional list of fixed control variables, plus several other"
+d methodological options.     For each candidate
+"d variable/specification, the procedures estimate a set of"
+d parameters and statistical criteria: 1. Adjusted R squared
+d (R2_ad). 2. Akaike Information Criterion (AIC). 3. Bayesian
+d Information Criterion (BIC) 4. U-Theil in time-series dimension:
+d RMSE of variable/specification vs. RMSE from a naïve prediction
+d or an AR1 model (Uth_TS). 5. U-Theil in cross-section dimension:
+d RMSE of variable/specification vs. RMSE from a naïve prediction
+d or an AR1 model (Uth_CS). Both commands rank each
+d variable/specification according to each criterion and generate
+d one ranking per each one of them. xtselvar also reports
+d coefficients and t-statistic of each candidate variable. They
+d also compute a composite ranking summarizing all five criteria.
+d They finally sort all candidate variables/specifications
+"d according to the selected ranking, which by default is the"
+d composite ranking.
+d
+d KW: panel data
+d KW: specification
+d KW: variable selection
+d
+d Requires: Stata version 12
+d
+d Distribution-Date: 20200724
+d
+"d Author: Alfonso Ugarte Ruiz , BBVA Research"
+d Support: email alfonso.ugarte@@bbva.com
+d
+f xtselmod.ado
+f xtselmod.sthlp
+f xtselvar.ado
+f xtselvar.sthlp

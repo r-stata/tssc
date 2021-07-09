@@ -1,0 +1,27 @@
+/*
+lmanlsur
+VERSION 1.0 28/06/2012
+*/
+VERSION 10.0
+INCLUDE _std_small
+INCLUDE _ht150
+INCLUDE header
+HELP hlp1, view("help lmanlsur")
+RESET res1
+
+DIALOG main, label("lmanlsur - Overall System NL-SUR Autocorrelation Tests") /*
+	*/ tabtitle("Main")
+BEGIN
+  TEXT     tx_message1  _lft      _top      _iwd      .,	/*
+*/ label("lmanlsur computes Overall System NL-SUR Autocorrelation Tests")
+  TEXT     tx_message2  @         _ms      @         .,	/*
+*/ label("after nlsur Regression.")
+  TEXT     tx_message3  @         _ls       @         .,	/*
+*/ label("Press OK to compute lmanlsur")
+END
+
+PROGRAM command
+BEGIN
+put "lmanlsur "
+END
+

@@ -1,0 +1,82 @@
+.-
+help for ^gamma4^
+.-
+
+Fitting gamma distribution by moments and maximum likelihood
+------------------------------------------------------------
+
+    ^gamma4^ varname [^if^ exp] [^in^ range] [, ^s(^#^)^ ^t^ol^(^#^) l^og ]
+
+Description
+-----------
+
+^gamma4^ works on a single variable. All non-missing values must be
+positive. A two-parameter gamma distribution is fitted by the method of
+moments (a closed-form calculation) and by the method of maximum
+likelihood (ML) (an iterative calculation, which may occasionally be
+rather slow).
+
+The algorithm used for ML estimation of alpha was proposed by P.W.
+Mielke. See Mielke and Johnson (1974) and Mielke (1976). The first
+approximation is that suggested by Thom (1958).
+
+It is assumed that the parameterisation is
+1. shape parameter, here called alpha
+2. scale parameter, same units as data, here called beta.
+
+Some people work with a scale parameter which in these terms is 1/beta.
+Yet others work with alpha and the mean, here called mu. Such people are
+recommended to treat the saved values suitably.
+
+Note: this is the original version of ^gamma^, written for Stata 4. 
+Users of Stata 8 up should switch to ^gammafit^. 
+
+Options
+-------
+
+^log^ specifies that the results of each iteration should be displayed.
+
+^s(^#^)^ controls the number of terms used within ^gamma4^ in a series
+    approximation to the digamma function. The default is 100. This is a
+    technical option and should not normally be changed. See Mielke
+    (1976) for enlightenment.
+
+^tol(^#^)^ controls the tolerance used within ^gamma4^ to control
+    iteration. The default is 0.0000001. This is a technical option and
+    should not normally be changed. See Mielke (1976) for enlightenment.
+
+Example
+-------
+
+        . ^gamma4 precip^
+
+Saved values
+------------
+
+    S_1         number of values used
+    S_alpha     ML estimate of alpha
+    S_beta      ML estimate of beta
+    S_amom      moments estimate of alpha
+    S_bmom      moments estimate of beta
+
+References
+----------
+
+Mielke, P.W. 1976. Simple iterative procedures for two-parameter
+gamma distribution maximum likelihood estimates. Journal of
+Applied Meteorology 15, 181-3.
+
+Mielke, P.W. & Johnson, E.S. 1974. Some generalized beta
+distributions of the second kind having desirable application
+features in hydrology and meteorology. Water Resources Research
+10, 223-6. See also 1976. Correction. Water Resources Research 12,
+827.
+
+Thom, H.C.S. 1958. A note on the gamma distribution. Monthly
+Weather Review 86, 117-22.
+
+Author
+------
+         Nicholas J. Cox, University of Durham, U.K.
+         n.j.cox@@durham.ac.uk
+

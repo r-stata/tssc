@@ -1,0 +1,135 @@
+{smcl}
+{hline}
+help for {hi:gipf}
+{hline}
+
+{title:Graphical representation of log-linear models}
+
+{p 8 27}
+{cmdab:gipf}
+,
+{cmdab:m:odel}{cmd:(}{it:string}{cmd:)}
+[,
+{cmdab:no:legend}
+{cmdab:g:ap}{cmd:(}{it:int}{cmd:)}
+{cmdab:o:rder}{cmd:(}{it:string}{cmd:)}
+{cmdab:n:odelabel}{cmd:(}{it:string}{cmd:)}
+{cmdab:lw:idth}{cmd:(}{it:int}{cmd:)}
+{cmdab:s:aving}{cmd:(}{it:twoway_saving option}{cmd:)}
+]
+
+{p}
+
+{title:Description}
+
+{p 0 0}
+This command takes a log-linear model and draws an undirected graph, the nodes are the variables in the model and edges between nodes represent a second order interaction or higher.  The nodes are placed in a circle 
+for ease of display so may look cluttered with large amounts of nodes. It's main benefit is when used in 
+conjunction with the command {hi:swblock} for displaying the inter-locus relationships in a small genomic 
+region. The log-linear model should be specified by the syntax used in the commands {hi:hapipf} or {hi:ipf}.
+
+{title:Options}
+
+{p 0 0}
+{cmdab:no:legend} specifies that the legend for the edges is not displayed
+
+{p 0 0}
+{cmdab:g:ap}{cmd:(}{it:int}{cmd:)} specifies that an "invisible node" is inserted at the top of the graph. This is handy when the variables in the log-linear model are ordered and the "end" variables need to moved further apart.
+
+{p 0 0}
+{cmdab:o:rder}{cmd:(}{it:string}{cmd:)} specifies the order of the nodes. The default is to order nodes around a circle in {hi:reverse alphabetical} order. 
+
+{p 0 0}
+{cmdab:n:odelabel}{cmd:(}{it:string}{cmd:)} specifies that the nodes are labelled with text rather than variable names.
+
+{p 0 0}
+{cmdab:lw:idth}{cmd:(}{it:int}{cmd:)} specifies the relative thickness of the edges. The default integer value is 1 and is best for looking at graphs within STATA. Integers greater than 1 will give thicker edges.
+
+{p 0 0}
+{cmdab:s:aving}{cmd:(}{it:twoway_saving option}{cmd:)} specifies that the graph is saved to disk. This option takes the same syntax as the twoway {help saving_option}.
+
+{title:Examples}
+
+{p 0 0}
+If the log-linear model was A*B. Then you would have 2 nodes A and B. The "*" indicates that A and B interact or are related to each other and is represented by a straight line connecting the two nodes.
+
+e.g.   B ----- A
+
+Click here {stata gipf, model(A*B) gap(1)} to see this graphic
+
+{p 0 0}
+The {hi:gap} option means that an empty node is inserted at the top of the graph. Without the {hi:gap} option the graph would become
+
+		B
+		|
+		|
+		|
+		|
+		A
+
+Click here {stata gipf, m(A*B)} to see this graphic.
+
+{p 0 0}
+As noticed from the above graphs the node B always appears to the left or upper section. To reverse the node labels then use the {hi:order} option.
+
+e.g.  A ------ B
+
+Click here {stata gipf, m(A*B) order(B A) g(1)} to see this graphic.
+
+To label nodes differently to A and B you can assign labels by using the {hi:nodelabel} option
+
+{p 0 0}
+Click here {stata gipf, m(A*B) o(B A) g(1) nodelabel("Var B" "Var A")} to see this graphic. Note that the node labels are in the order B then A, this was specified by the {hi:order} option. 
+
+{p 0 0}
+For more complicated models there are usually more than 2 nodes for example the graph for A*B+A*C looks like
+
+		A		
+	       / \
+              /   \
+	     /     \
+	    C       B
+
+{p 0 0}
+Click here {stata gipf, m(A*B+A*C)} to get the above graph you need to reorder the nodes now click here {stata gipf, m(A*B+A*C) o(B C A)}. Finally to add labels to this graph click here {stata gipf, m(A*B+A*C) o(B C A) n("Var B" "Var C" "Var A")}
+
+{p 0 0}
+The final example is much more complicated and has higher order interactions and this is much easier seen by
+clicking the last command
+
+{stata gipf, m(A*B*C*D+E*F*G+H*I+J)}
+
+{title:Use with swblock}
+
+{p 0 0}
+The command {hi:swblock} is looking for the simplest model to describe a set of genetic loci haplotype 
+frequencies. Here the inclusion p-value is set to be 0.01 and there are 4 genetic markers.
+
+{inp:.swblock l10_1-l13_2, p(0.01)}
+
+{p 0 0}
+After this command has been run the "best" model is in the return class macro called parsimod. Immediately
+after the above command the model can be displayed as the above log-linear model graph by the following command
+
+{inp:.gipf, m(`r(parsimod)')}
+
+
+{title:Author}
+
+{p}
+Adrian Mander, Glaxo Smithkline, Harlow, UK.
+Email {browse "mailto:adrian.p.mander@gsk.com":adrian.p.mander@gsk.com}
+
+{title:Also see}
+
+Related commands
+
+HELP FILES 	Installation status		SSC installation links
+
+{help hapipf}		(if installed)			({stata ssc install hapipf})
+{help ipf}		(if installed)			({stata ssc install ipf})
+{help hapblock}		(if installed)			({stata ssc install hapblock})   
+{help swblock}		(if installed)       		({stata ssc install swblock}). 
+
+
+

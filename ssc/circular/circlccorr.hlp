@@ -1,0 +1,73 @@
+{smcl}
+{* 21apr2004}{...}
+{hline}
+help for {hi:cirlccorr}
+{hline}
+
+{title:Correlation for linear-circular data}
+
+{p 8 17 2} 
+{cmd:circlccorr}
+{it:linearvar circularvar}
+[{cmd:if} {it:exp}] 
+[{cmd:in} {it:range}]
+
+
+{title:Description} 
+
+{p 4 4 2} 
+{cmd:circlccorr} produces a correlation coefficient appropriate for a linear
+variable and a circular variable taking on values between 0 and 360
+degrees. The first-named variable is taken to be linear and the
+second-named variable is taken to be circular.
+
+{p 4 4 2} 
+The square of the correlation is defined for {it:n} values of two such
+variables, {it:x} linear and theta circular, as
+
+        2     2     2                           2
+       r = ( r   + r   - 2 r  r  r   ) / ( 1 - r   ),
+              12    13      12 13 23            23
+
+{p 4 4 2}where
+
+       r   is correlation of {it:x} and cos theta, 
+        12
+   
+       r   is correlation of {it:x} and sin theta, and 
+        13
+   
+       r   is correlation of sin theta and cos theta.
+        23
+
+{p 4 4 2} 
+Batschelet (1981, p.193) suggested for a large-sample significance test
+that if {it:x} and theta are independent, then {it:n} * {it:r}-square is 
+approximately distributed as chi-square with 2 degrees of freedom. Fisher (1993,
+p.145) recommends obtaining {it:P}-values by randomisation. Caveat emptor.
+
+
+{title:Example} 
+
+{p 4 8 2}{cmd:. circlccorr ozone dir} 
+
+
+{title:References}
+
+{p 4 8 2}Batschelet, E. 1981. {it:Circular statistics in biology.} London: 
+Academic Press.
+
+{p 4 8 2}Fisher, N.I. 1993. {it:Statistical analysis of circular data.}
+Cambridge: Cambridge University Press.
+
+
+{title:Author} 
+
+{p 4 4 2}Nicholas J. Cox, University of Durham, U.K.{break} 
+         n.j.cox@durham.ac.uk
+
+
+{title:Also see} 
+
+On-line: help for {help circscatter}, {help circcorr}
+

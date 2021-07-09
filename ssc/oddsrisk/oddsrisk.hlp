@@ -1,0 +1,242 @@
+{smcl}
+{* 02 Feb 2008}{...}
+{hline}
+help for {hi:oddsrisk}
+{hline}
+
+{title:Conversion from Logistic Odds Ratios to Risk Ratios} 
+
+{p 8 12}{cmd:oddsrisk} 
+{it:y(1/0)} {it:riskfactor(1/0)} {it:varlist} {it:[fw=countvariable]} {it:<if> <in>}
+
+
+{title:Description} 
+
+{p}
+{cmd:oddsrisk} converts logistic regression odds ratios to relative risk ratios
+by the formula described below. Source: Zhang and K. Yu, 1998. Frequency weights are 
+allowed in order to calculate odds and risk ratios from 2 x 2 tables. The response 
+must be binary, as does the first predictor, which is considered to be the risk factor 
+or exposure. 
+
+When the incidence of an outcome is common in the study population; i.e. greater than
+10%, the logistic regression odds ratio no longer approximates the risk ratio. As the 
+incidence rate becomes more frequent, the more the odds ratio overestiamtes the risk 
+ratio when its value is greater than 1, and the more it underestiamtes the risk ratio 
+when under one. J. Zhang and K. Yu proposed a method of adjusting the logistic 
+regression odds ratio in a cohort study or clinical trial so that it approximates 
+the risk ratio. This is particularly important when the odds ratio is greater than 
+2.5 or under 0.5. The method has also been shown to be applicable for retrospective 
+and observational studies as well. 
+
+The method is based on the response having a binary risk factor, or primary predictor 
+of interest. Other confounding predictors may also be included in the model. The 
+risk ratio is defined as  
+                           Rho  =  pe / pu
+
+and represents how much more or less likely it is for {it:y} to be the case; i.e. 
+(y==1) given a risk factor of 1, in comparison to {y==1} given a risk factor of 0.
+
+For example, let us denote the risk of death within 48 hours of admission to a 
+hospital (y) occurring for those sustaining an anterior infarct as pe and the risk 
+of death (y) among those having an other-site infarct as pu.  The subscripts e and 
+u signify exposed (1) and unexposed (0); i.e. e is having had an anterior infarct 
+and u is having an other-site infarct.  The risk ratio, Rho, represents how much 
+more or less likely it is for an individual to die within 48 hours of admission 
+among those sustaining an anterior infarct in comparison to those who died having 
+an infarct at another site. 
+
+When pe is small; i.e. the incidence rate for the exposed group is under 0.1, 
+then the values of Rho, the risk ratio, and OR, the odds ratio, are nearly the 
+same. As the incidence rate grows, the odds ratio will overestimate the risk ratio 
+when the latter is greater than 1.0 and underestimate the risk ratio when less 
+than 1.0. Simulation studies have shown that values of Pe less than 0.1. 
+
+Under this formulation, the odds ratio of the risk factor, or predictor of 
+interest, is defined as:
+
+                        pe/(1- pe)
+               OR  =  ------------
+                        pu/(1- pu)
+
+where  {it:pe} is the incidence rate for exposed patients (RF==1), 
+and    {it:pu} is the incidence rate for unexposed patients (RF==0), 
+where RF is the risk factor, a binary predictor of interest. 
+ 
+The formula for risk ratio in terms of the odds ratio is:
+ 
+                                OR
+                 RR ~  ---------------------
+                         (1- pu) + (pu *OR)
+
+One must first calculate the incidence rate of the unexposed group; ie when 
+the risk factor equals 0. This is the value of pu. 
+
+The fomula may be used to convert all predictors in the model to extimated 
+risk ratios. The same formula may also be used for the confidence intervals 
+of the odds ratio. 
+ 
+
+{title:Example 1}
+
+The {cmd:anterior} data set was created from a tabulation of death and anterior 
+taken from the {it:heart01} data set. A listing of the data, together with a 
+schemata of the underlying table, is shown first, followed by the use of 
+{cmd:oddsrisk} to estimate the odds and risk ratios, as well as 95% confidence
+intervals. These examples taken from 
+Hilbe J.M. (2008). {it:Logistic Regression Models}, Chapman & Hall/CRC Press
+
+. use anterior
+
+. list
+
+     +--------------------------+
+     | count   death   anterior |
+     |--------------------------|
+  1. |   120       1          1 |
+  2. |    67       1          0 |
+  3. |  2005       0          1 |
+  4. |  2504       0          0 |
+     +--------------------------+
+
+
+Table represented by data
+
+
+                  Response (death)
+                      1      0  
+                 ---------------
+    Risk       1 |  120   2005 | 2125
+(Anterior MI)    |             |
+               0 |   67   2504 | 2571 
+                 --------------- 
+                    187   4509   4696
+
+
+Use of {cmd:oddsrisk}, using {it:count} as a frequency weight
+
+. oddsrisk death anterior [fw=count]
+
+---------------------------------------------------------------------
+Incidence for unexposed risk group =     0.0261
+---------------------------------------------------------------------
+Predictor    Odds Ratio   Risk Ratio     [95% Conf. Interval]
+---------------------------------------------------------------------
+anterior        2.2368       2.1670       1.6220       2.8807
+---------------------------------------------------------------------
+
+
+Use of the {cmd:csi} command. Risk ratio CIs calculated using Woolfe's method.
+
+. csi 120 67 2005 2504
+
+                 |   Exposed   Unexposed  |      Total
+-----------------+------------------------+------------
+           Cases |       120          67  |        187
+        Noncases |      2005        2504  |       4509
+-----------------+------------------------+------------
+           Total |      2125        2571  |       4696
+                 |                        |
+            Risk |  .0564706    .0260599  |   .0398211
+                 |                        |
+                 |      Point estimate    |    [95% Conf. Interval]
+                 |------------------------+------------------------
+ Risk difference |         .0304107       |    .0188244     .041997 
+      Risk ratio |         2.166953       |    1.616054    2.905651 
+ Attr. frac. ex. |         .5385226       |    .3812087     .655843 
+ Attr. frac. pop |          .345576       |
+                 +-------------------------------------------------
+                               chi2(1) =    28.14  Pr>chi2 = 0.0000
+
+
+Simulation studies have demonstrated that a Poisson model with robust 
+SEs closely estimate the relative risk. Likewise, a log-binomial can be 
+used with the same result, but convergence problems many times occur 
+with multivariate models. 
+
+
+We use a Poisson with robust standard errors for comparison of results. 
+Note its close similarity to Woolfe's method, as well as to Zhang and Yu's 
+method ({cmd:oddsrisk}]. 
+
+
+. poisson death anterior [fw=count], nolog irr robust
+[ Header excluded from display ]
+
+------------------------------------------------------------------------------
+             |               Robust
+       death |        IRR   Std. Err.      z    P>|z|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+    anterior |   2.166953   .3243484     5.17   0.000     1.616003    2.905741
+------------------------------------------------------------------------------
+
+
+{title:Example 2}
+
+Use of full data. 
+
+. use heart01
+
+. logit death anterior hcabg kk2-kk4, nolog or
+[ Header excluded from display ]
+
+------------------------------------------------------------------------------
+       death | Odds Ratio   Std. Err.      z    P>|z|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+    anterior |    2.05989   .3391907     4.39   0.000       1.4917    2.844505
+       hcabg |   2.051369   .7098963     2.08   0.038     1.041063    4.042131
+         kk2 |   2.573692   .4558429     5.34   0.000     1.818841    3.641818
+         kk3 |   3.244251   .8504555     4.49   0.000      1.94079    5.423135
+         kk4 |   18.55298    6.12317     8.85   0.000     9.715963     35.4276
+------------------------------------------------------------------------------
+
+. oddsrisk death anterior hcabg kk2-kk4
+
+---------------------------------------------------------------------
+Incidence for unexposed risk group =     0.0261
+---------------------------------------------------------------------
+Predictor    Odds Ratio   Risk Ratio     [95% Conf. Interval]
+---------------------------------------------------------------------
+anterior        2.0599       2.0045       1.4728       2.7140
+hcabg           2.0514       1.9967       1.0400       3.7452
+kk2             2.5737       2.4723       1.7808       3.4072
+kk3             3.2443       3.0650       1.8943       4.8626
+kk4            18.5530      12.7299       7.9176      18.6738
+---------------------------------------------------------------------
+
+
+Compare with a Poisson model with robust standard errors, which estimates
+incident rate ratios. Simulation studies have confirmed that this model, 
+as well as a log-binomial model estimate relative risk ratios.
+
+. poisson death anterior hcabg kk2-kk4, nolog irr robust
+[ Header excluded from display ]
+
+------------------------------------------------------------------------------
+             |               Robust
+       death |        IRR   Std. Err.      z    P>|z|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+    anterior |   1.963766   .3099786     4.28   0.000     1.441213    2.675784
+       hcabg |   1.937465   .5851856     2.19   0.029     1.071864    3.502096
+         kk2 |   2.464633   .4128878     5.38   0.000     1.774822    3.422551
+         kk3 |   3.044356   .7604601     4.46   0.000     1.865825    4.967295
+         kk4 |   12.33746   2.883896    10.75   0.000      7.80291    19.50721
+------------------------------------------------------------------------------
+ 
+
+
+{title:Author}
+{p} Joseph M. Hilbe, Arizona State University ----
+    Hilbe@asu.edu; jhilbe@aol.com
+
+{title:References} 
+
+{p}J. Zhang and K. Yu, 1998.
+{it:What's the Relative Risk}, 
+JAMA, Vol 280, No 19, pp 1690-1691.
+
+{p}J.M. Hilbe, 2008
+{it:Logistic Regression Models},
+Chapman & Hall/CRC Press. 
+
+

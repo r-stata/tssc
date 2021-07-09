@@ -1,0 +1,67 @@
+{smcl}
+{* 24sept2004}{...}
+{hline}
+help for {hi:matsusort}
+{hline}
+
+{title:Sort rows or columns of matrix according to row or column summaries}
+
+{p 8 17 2}
+{cmd:matsusort}
+{it:input_matrix} 
+{it:output_matrix} 
+[{cmd:,} 
+{cmdab:col:umns}
+{cmdab:dec:rease}
+{cmdab:su:mmary(}{it:statistic}{cmd:)}]
+
+
+{title:Description}
+
+{p 4 4 2}
+{cmd:matsusort} by default sorts rows of {it:input_matrix} according
+their order by some numeric summary (by default, the mean of the
+elements in each row) and puts the resulting matrix into
+{it:output_matrix}.  {it:input_matrix} and {it:output_matrix} may have
+the same name. 
+
+{p 4 4 2}
+{cmd:matsusort} with the {cmd:columns} option sorts columns of
+{it:input_matrix} according their order by some numeric summary (by
+default, the mean of the elements in each column) and puts the resulting
+matrix into {it:output_matrix}.  {it:input_matrix} and
+{it:output_matrix} may have the same name. 
+
+
+{title:Options}
+
+{p 4 8 2}{cmd:columns} specifies that columns should be sorted, not rows
+as is the default. 
+
+{p 4 8 2}{cmd:decrease} specifies that rows and/or columns should be
+sorted in decreasing order of the numeric summary. The default is
+increasing order. 
+
+{p 4 8 2}{cmd:summary} specifies a summary statistic. The argument must be 
+one of the results left behind by {help summarize}, that is, one of 
+{cmd:N mean sum sum_w min max sd Var p1 p5 p10 p25 p50 p75 p90 p95 p99 skewness kurtosis}.
+
+
+{title:Examples}
+
+{p 4 8 2}{cmd:. matsusort A B}
+
+{p 4 8 2}{cmd:. matsusort A B, su(max)}
+
+
+{title:Author}
+
+{p 4 4 2}
+Nicholas J. Cox, University of Durham, U.K.{break}
+n.j.cox@durham.ac.uk
+
+
+{title:Also see}
+
+{p 4 13 2}
+Online:  help for {help matrix}, {help summarize} 

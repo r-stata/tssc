@@ -1,0 +1,52 @@
+d 'XTLHAZARD': module for Adjusted First-Differences Estimation of the Linear Discrete-Time Hazard Model
+d
+d  xtlhazard implements the adjusted first-differences estimator
+d for the linear discrete-time hazard model proposed by Tauchmann
+"d (2019). This procedure addresses the issue that, conventional"
+"d linear fixed-effects panel estimators (within-transformation,"
+"d first-differences), fail to eliminate unobserved time-invariant"
+d heterogeneity and are biased and inconsistent if the dependent
+d variable is a binary dummy indicating an absorbing state. This
+d even applies if the unobserved time-invariant heterogeneity is
+d uncorrelated with the regressors in the population. Besides
+d conventional survivor bias - from which also pooled OLS suffers
+d even if the unobserved heterogeneity is uncorrelated with the
+d regressors - these estimators suffer from a second source of
+"d bias. This second bias, which is severe in many settings,"
+d originates from the transformation of the data itself und is
+d present even in the absence of any unobserved heterogeneity. The
+d adjusted first-differences estimator eliminates this second
+d source of bias and confines the asymptotic bias to survivor bias
+d under the assumption that the unobserved heterogeneity is
+"d uncorrelated with changes in the regressors in the population,"
+"d while allowing for correlations with their levels. Technically,"
+d xtlhazard rescales the coefficients from unadjusted
+d first-differences estimation (with constant terms) by the matrix
+"d inv(I+inv(d.X'd.X)*d.X'l.X), which ('s transpose) is stored in"
+"d the macro e(Adjust). By specifying the option difference(#), one"
+d makes the estimation procedure use higher-order rather than
+d first-differences. This allows confining the asymptotic bias to
+d survivor bias under the alternative assumption of unobserved
+d heterogeneity being uncorrelated with higher-order differences of
+d the explanatory variables.
+d
+d KW:  : linear probability model
+d KW: individual fixed effects
+d KW: short panel
+d KW: discrete-time hazard
+d KW: duration analysis
+d KW: survival analysis
+d KW: non-repeated event
+d KW: absorbing state
+d KW: survival bias
+d KW: misscaling bias
+d
+d Requires: Stata version 12
+d
+d Distribution-Date: 20191111
+d
+"d Author: Harald Tauchmann , University of Erlangen-Nuremberg, Germany"
+d Support: email harald.tauchmann@@fau.de
+d
+f xtlhazard.ado
+f xtlhazard.sthlp

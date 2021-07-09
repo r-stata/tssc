@@ -1,0 +1,145 @@
+{smcl}
+{* 29mar2007}{...}
+{hi:help marktouse}, {hi:help svymarktouse}
+{hline}
+
+{title:Title}
+
+{p 4 4 2}{hi:marktouse} {hline 2} Mark observations to be used
+
+
+{title:Syntax}{smcl}
+
+{p 8 15 2}
+{cmd:marktouse} 
+ {it:markvar} 
+ [{it:{help varlist}}] 
+ [{it:{help if}}] 
+ [{it:{help in}}]
+ [{it:{help weight}}] 
+ [{cmd:,}
+ {cmdab:l:abel:(}{it:label}{cmd:)}
+ {cmdab:zero:weight}
+ ]
+
+{p 8 15 2}
+{cmd:svymarktouse} 
+ {it:markvar} 
+ [{it:{help varlist}}] 
+ [{it:{help if}}] 
+ [{it:{help in}}]
+ [{cmd:,}
+ {cmdab:l:abel:(}{it:label}{cmd:)}
+ ]
+ 
+
+{p 4 4 2}
+{cmd:aweight}s, {cmd:fweight}s, {cmd:pweight}s, and {cmd:iweight}s are
+allowed with {cmd:marktouse}; see {help weight}.
+{p_end}
+{p 4 4 2}
+Time-series operators are allowed; see {help tsvarlist}.
+
+
+{title:Description}
+
+{p 4 4 2}{cmd:marktouse} creates a 0/1 marker
+variable recording which observations are to be used in 
+subsequent commands. The marker variable is set to
+1 in observations for which none of the specified variables 
+contain missing, that satisfy the {cmd:if} and {cmd:in} qualifiers, 
+and have a strictly positive, non-missing weight 
+and is set to 0 in all other observations. Note that 
+{cmd:marktouse} is intended for use in interactive mode or 
+in do-files. Do not use {cmd:marktouse} within Stata programs. Use 
+official {helpb marksample} in Stata programs.
+
+{p 4 4 2}Working with a marker variable is useful if you want to 
+ensure that all commands use the same observations. See "Stata tip 
+44: Get a handle on your sample" in the Stata Journal 
+(in press). The procedure is to
+type 
+
+        {com}. marktouse {txt}{it:markvar}{com} ...{txt}
+        
+{p 4 4 2}
+at the beginning of an analysis and include {cmd:if} {it:markvar}
+in all subsequent commands, as in
+
+        {com}. regress ... if {txt}{it:markvar}
+
+{p 4 4 2}{cmd:svymarktouse} is like {cmd:marktouse} but, 
+additionally, sets the marker variable to 0 wherever any of the 
+survey-characteristic variables (previously set by 
+{helpb svyset}) contain missing. Essentially, {cmd:svymarktouse} is 
+{cmd:marktouse} followed by {helpb svymarkout}.
+
+{p 4 4 2}Warning: Do not use the {cmd:if} and {cmd:in} qualifiers in 
+{cmd:svymarktouse} to restrict analyses to subpopulations. To compute
+estimates for subpopulations in complex survey data, use {cmd:svy}'s
+{cmd:subpop()} option. 
+
+
+{title:Options}
+
+{p 4 8 2} {cmd:label(}{it:label}{cmd:)} attaches a label 
+(up to 80 characters) to the marker variable.
+
+{p 4 8 2} {cmd:zeroweight} indicates that zero
+weights are not to be excluded.
+
+
+{title:Examples}
+
+        {com}. sysuse auto
+        {txt}(1978 Automobile Data)
+        
+        {com}. marktouse touse price weight rep78
+        {txt}({res}69{txt} observations marked)
+        
+        {com}. quietly regress price weight if touse
+        {txt}
+        {com}. estimates store model1
+        {txt}
+        {com}. quietly xi: regress price weight i.rep78 if touse
+        {txt}
+        {com}. estimates store model2
+        {txt}
+        {com}. estimates table model1 model2, stats(N)
+        {res}
+        {txt}{hline 12}{c -}{c TT}{c -}{hline 10}{c -}{c -}{c -}{hline 10}{c -}{c -}
+        {ralign 12:Variable} {c |} {center 10:model1} {space 1} {center 10:model2} {space 1}
+        {hline 12}{c -}{c +}{c -}{hline 10}{c -}{c -}{c -}{hline 10}{c -}{c -}
+        {ralign 12:weight} {c |}{res} {ralign 10:2.0124198}{txt} {space 1}{res} {ralign 10:2.440292}{txt} {space 1}
+        {ralign 12:_Irep78_2} {c |}{res} {ralign 10:}{txt} {space 1}{res} {ralign 10:783.90092}{txt} {space 1}
+        {ralign 12:_Irep78_3} {c |}{res} {ralign 10:}{txt} {space 1}{res} {ralign 10:1379.1152}{txt} {space 1}
+        {ralign 12:_Irep78_4} {c |}{res} {ralign 10:}{txt} {space 1}{res} {ralign 10:2068.2672}{txt} {space 1}
+        {ralign 12:_Irep78_5} {c |}{res} {ralign 10:}{txt} {space 1}{res} {ralign 10:3245.2724}{txt} {space 1}
+        {ralign 12:_cons} {c |}{res} {ralign 10:44.3284}{txt} {space 1}{res} {ralign 10:-3000.4051}{txt} {space 1}
+        {hline 12}{c -}{c +}{c -}{hline 10}{c -}{c -}{c -}{hline 10}{c -}{c -}
+        {ralign 12:N} {c |}{res} {ralign 10:69}{txt} {space 1}{res} {ralign 10:69}{txt} {space 1}
+        {hline 12}{c -}{c BT}{c -}{hline 10}{c -}{c -}{c -}{hline 10}{c -}{c -}
+        {txt}
+
+{title:Returned results}
+
+{p 4 15 2}{cmd:r(N)}{space 6} scalar containing the number of 
+marked observations{p_end}
+{p 4 15 2}{cmd:r(markvar)} macro containing the name of marker 
+variable{p_end}
+
+
+{title:References}
+
+{p 4 8 2}Jann, B. (in press). Stata tip 44: Get a handle on 
+your sample. The Stata Journal 7(2).
+
+
+{title:Author}
+
+{pstd} Ben Jann, ETH Zurich, jann@soz.gess.ethz.ch
+
+
+{title:Also see}
+
+{psee} Online:  {helpb marksample}, {helpb svymarkout}

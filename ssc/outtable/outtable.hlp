@@ -1,0 +1,121 @@
+{smcl}
+{* 14jul2001}{...}
+{hline}
+help for {hi:outtable}{right:(SSC distribution: 20 April 2008)}
+{hline}
+
+{title:Output matrix to LaTeX table}
+
+{p 4 21}{cmd:outtable} {cmd:using} {it:filename}
+            {cmd:,} {cmd:mat(}{it:matrixname}{cmd:)} [
+            {cmdab:r:eplace}
+            {cmdab:app:end}
+            {cmd:nobox}
+            {cmdab:c:enter}
+            {cmdab:cap:tion(}{it:"Caption"}{cmd:)}
+            {cmdab:f:ormat(}{it:formatlist}{cmd:)}
+            {cmdab:norow:lab}
+            {cmdab:nodots}
+            {cmd:longtable}
+            {cmd:label}
+            {cmd:clabel(}{it:string}{cmd:)}]{p_end}
+
+{p}This command makes use of the {cmd:file} command, added to Stata on 8 May 2001.
+If {cmd:file} is not recognized, {cmd:update query}.
+
+
+{title:Description}
+
+{p}{cmd:outtable} automates the conversion of a Stata matrix to a LaTeX table, written to an
+external file. The table is presented with row and column names taken from the specified matrix.
+Thus, one need only generate the appropriate matrix
+using standard Stata commands. By default, only the lower triangle of a symmetric matrix will
+be written, as inferred by Stata's issym() function.
+
+{p}The {cmd:using} clause is required, and must specify the name of a file to which the LaTeX
+table is to be written, without the {bf:.tex} extension. If the file exists, either the
+{cmd:replace} option or the {cmd:append} option must be specified.
+
+{p}The {cmd:mat} qualifier specifies the name of the existing matrix which is to be written in
+tabular form.
+
+{title:Options}
+
+{p 0 4}{cmd:replace} specifies that if {it:filename} exists, it should be overwritten with the
+contents of {it:mat}.
+
+{p 0 4}{cmd:append} specifies that output should be appended to an existing {it:filename}.
+It may be used even if the file has not been previously created.
+
+{p 0 4}{cmd:nobox} specifies that the default behavior of providing borders for each cell of
+the table should not be applied.
+
+{p 0 4}{cmd:center} specifies that elements in the second and following columns of the table
+should be centered, rather than flush left.
+
+{p 0 4}{cmd:asis} specifies that the row and column names of {it:mat} should be passed through
+to the TeX file without alteration. This permits use of the underscore (_) to create subscripts in row or column headings. However, if the names of regressors are being used as labels, the default label {it:_cons} should be changed.
+
+{p 0 4}{cmd:caption} specifies a caption to be produced above the table. The table will be
+automatically numbered according to the style of the document.
+
+{p 0 4}{cmd:formatlist} specifies the format to be applied to the elements in the body of the table,
+which will then override the default format used to display matrix elements.  If one value is specified, all columns are output with that
+        format.  If more than one space-delimited format is listed, they are
+        mapped 1-to-1 to the columns of the matrix.
+{p_end}
+
+{p 0 4}{cmd:norowlab} suppresses the row labels.
+
+{p 0 4}{cmd:nodots} specifies that missing numeric values should be represented as empty cells rather than ".".
+
+{p 0 4}{cmd:longtable}  option allows to create tables that span over several pages using the "longtable" package (do not
+forget to \usepackage{longtable} in the preamble of your .tex document){p_end}
+
+{p 0 4}{cmd:label} option allows to display variable labels (if they exist) instead of variable names.
+
+{p 0 4}{cmd:clabel} allows you to enter the \caption{\label{  }}
+information which is used by LaTeX for cross-referencing tables.
+This option may be omitted and later typed into your LaTeX document.{p_end}
+
+
+{title:Examples}
+
+    {inp:. use auto}
+    {inp:. forv r=2/5 {c -(} }
+    {inp:.      qui reg price headroom-turn if rep78==`r'}
+    {inp:.      mat c`r'=e(b)'}
+    {inp:.      }}
+    {inp:.  mat c=c2,c3,c4,c5}
+    {inp:.  mat colnames c=rep78_2 rep78_3 rep78_4 rep78_5}
+
+    {inp:.  outtable using cars,mat(c) replace}
+
+    {inp:.  outtable using cars,mat(c) append center f(%9.2f)}
+    
+    {inp:.  outtable using cars,mat(c) replace center f(%9.2f %9.3f %9.1f %9.2f)}
+
+    {inp:.  outtable using cars,mat(c) replace c }
+        {inp:       cap("Regression coefficients by rep78")}
+        
+
+
+{title:Authors}
+Christopher F Baum, Boston College
+baum@bc.edu
+
+Joao Pedro Azevedo, Instituto de Pesquisa Economica Aplicada, Rio de Janeiro, Brazil
+jazevedo@ipea.gov.br
+
+
+{title:Acknowledgements}
+This command was made possible by Bill Gould's implementation of the file command,
+and inspired by conversations with Petia Petrova. Suggestions from David Drukker,
+Alan Feiveson and Nicholas J. Cox have improved its functionality. Formatting code was
+borrowed from Blasnik and Jann's mat2txt.
+
+
+{title:Also see}
+
+{p 0 19}On-line:  help for {help file}, {help outseries} (if installed), {help tosql} (if installed)
+{p_end}

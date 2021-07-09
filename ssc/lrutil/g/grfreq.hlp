@@ -1,0 +1,55 @@
+.-
+help for ^grfreq^
+.-
+
+Plots proportion of one variable by categories of another
+----------------------------
+
+    ^grfreq^ outcome strata [if] [, outcom(integer) gropt(...) yaxis01 ]
+
+Description
+-----------
+
+^grfreq^ plots proportions of one variable by categories of another.
+
+For a binary variable, this could be the prevalence of a trait.
+
+By default, the proportion of interest is that of the minimal value of
+the outcome variable. The outcome of interest can be changed.
+
+Options
+-------
+
+^gropt(...)^  specifies a string with options that are passed
+along to the graph command.
+
+^outcom(integer)^ specifies that the outcome of interest should be
+a given value. The default is the minimal value of the outcome
+variable.
+
+^yaxis01^ scales the y-axis from 0 to 1 and gives axis ticks and labels.
+
+
+Remarks 
+-------
+This program does not accept weights yet. It should be easily modified 
+for this. Just fiddle around with the "table" statement.
+
+Examples
+--------
+
+    . ^grfreq^ response age
+    . ^grfreq^ response age, gropt("xlab(15(10)70)")
+    . ^grfreq^ response age, outcom(1)
+
+
+Author
+-------
+    Jan Brogger, University of Bergen, Norway
+    jan.brogger@@med.uib.no
+
+Shameless plug :)
+--------------
+ I am looking for internship & residency  in internal 
+ medicine/pulmonary medicine US/EU. Am doing PhD in respiratory 
+ epidemiology now. 

@@ -1,0 +1,172 @@
+{smcl}
+{* 18dec2008}{...}
+{hline}
+help for {hi:eofplot}
+{hline}
+
+{title:Plot coefficients or loadings after principal component or factor analysis} 
+
+{p 8 17 2} 
+{cmd:eofplot} 
+[, 
+{c -(}
+{cmdab:c:omponents(}{it:numlist}{cmd:)}
+{c |}
+{cmdab:f:actors(}{it:numlist}{cmd:)} 
+{c )-} 
+{cmdab:n:umber}
+{cmdab:norot:ated}
+{it:twoway_connect_options}
+] 
+
+
+{title:Description} 
+
+{p 4 4 2} 
+{cmd:eofplot} plots coefficients or loadings of principal components or
+factors after {help pca} or {help factor} in sequence in relation to all
+the variables used in the analysis. It is thus a profile or parallel
+coordinates plot of the matrix e(L) (or e(r_L) when that exists). 
+
+{p 4 4 2} 
+{cmd:eofplot} will by default plot rotated loadings when they can be
+found. That default can be overridden. 
+
+
+{title:Remarks} 
+
+{p 4 4 2}
+There appears to be no standard name for this plot. The name 
+{help loadingplot} is already taken by Stata for a different though
+related plot. The name {cmd:eofplot}, although arbitrary, will at least
+suggest to some users the name empirical orthogonal functions (EOFs)
+widely used in meteorology and oceanography within one flavour of
+principal component analysis (PCA). 
+
+{p 4 4 2}
+This plot is most natural and helpful when variables can be placed in a
+sequence (e.g. in terms of time or space) or grouped in terms of
+meaning.  Conversely, the order of variables on the {it:x} axis is
+exactly that of the variables fed to the earlier {cmd:pca} or
+{cmd:factor} command, so that on occasion reissuing the original command
+with variables in a different order may allow a tidier plot to be
+produced afterwards. 
+
+{p 4 4 2}
+Use of this graph within the literature appears intriguingly capricious.
+Thus, of the leading monographs on principal component analysis, Jackson
+(1991) includes no examples, but Jolliffe (2002) includes several.
+Ramsey and Schafer (2002, pp.519{c -}521) give a very nice example,
+which was the original stimulus for this program. See also literature on
+PCA applications in meteorology and oceanography such as von Storch and
+Zwiers (1999) or Wilks (2006).
+
+
+{title:Options} 
+ 
+{p 4 8 2}
+{cmd:components()} specifies which components are to be plotted. By
+default, all components are plotted. That may lead to an untidy graph.
+Thus a {help numlist} may be specified with this option to select
+particular components to be plotted. For example, {cmd:components(1/3)}
+selects the first three components. 
+
+{p 4 8 2}
+{cmd:factors()} specifies which factors are to be plotted. By
+default, all factors are plotted. That may lead to an untidy graph.
+Thus a {help numlist} may be specified with this option to select particular 
+factors to be plotted. For example, {cmd:factors(1/3)} selects the first 
+three factors. 
+
+{p 8 8 2}
+Note: Both options are given as a convenience. It is expected that users
+of {cmd:pca} will find the {cmd:components()} option naturally named, as
+will users of {cmd:factor} with the {cmd:factor()} option. However,
+there is no obligation to use the "correct" terminology.  
+
+{p 4 8 2}
+{cmd:number} specifies that the various components or factors are to be
+distinguished on the plot by marker labels with the appropriate numbers.
+Thus components or factors 1, 2 and 3 would be distinguished by text
+with those numerals.  This option carries with it the other options
+{cmd:ms(i ..) mlabpos(0 ..) legend(off)}, but those options may in turn
+be overridden.  Although not the default, this option is recommended
+for a graph that is most nearly clean and self-explanatory.  See also
+{help marker label options}. 
+
+{p 4 8 2}
+{cmd:norotated} uses unrotated results, even when rotated results are
+available.  The default is to use rotated results if they are available.
+{cmd:norotated} is ignored if rotated results are not available.
+
+{p 4 8 2} 
+{it:twoway_connect_options} are options of {help twoway connect}.  The
+defaults include (given the number of variables included in the
+principal component analysis or factor analysis {it:#variables})
+{cmd:ytitle("loadings") xtitle(" ") xla(1/}{it:#variables}{cmd:, valuelabels) clw(thin ..)}.   
+If rotated loadings are shown, a {cmd:note()} indicates
+the rotation used. See {help title options}. Note that the {it:x} axis
+runs from 1 to {it:#variables}. 
+
+
+{title:Examples}
+
+{p 4 8 2}{cmd:. sysuse auto, clear}{p_end}
+{p 4 8 2}{cmd:. pca headroom trunk weight length displacement}{p_end}
+{p 4 8 2}{cmd:. eofplot}{p_end}
+{p 4 8 2}{cmd:. eofplot, number}{p_end}
+{p 4 8 2}{cmd:. eofplot, number xsc(r(0.8 5.2))}{p_end}
+{p 4 8 2}{cmd:. eofplot, number xsc(r(0.8 5.2)) mlabsize(*1.4 ..)}{p_end}
+{p 4 8 2}{cmd:. eofplot, number xsc(r(0.8 5.2)) mlabsize(*1.4 ..) xla(, grid)}
+
+
+{title:Author}
+
+{p 4 4 2}Nicholas J. Cox, Durham University{break} 
+n.j.cox@durham.ac.uk
+
+	 
+{title:References}
+
+{p 4 8 2}
+Jackson, J.E. 
+1991. 
+{it:A User's Guide to Principal Components.} 
+New York: John Wiley. 
+[reissued 2003 with some errata] 
+
+{p 4 8 2}
+Jolliffe, I.T. 
+2002. 
+{it:Principal Component Analysis.} 
+New York: Springer.
+
+{p 4 8 2}
+Ramsey, F.L. and Schafer, D.W. 
+2002.
+{it:The Statistical Sleuth: A Course in Methods of Data Analysis.} 
+Pacific Grove, CA: Duxbury. 
+
+{p 4 8 2}
+von Storch, H. and Zwiers, F.W. 
+1999. 
+{it:Statistical Analysis in Climate Research.} 
+Cambridge: Cambridge University Press. 
+
+{p 4 8 2}
+Wilks, D.S. 
+2006.
+{it:Statistical Methods in the Atmospheric Sciences.} 
+Burlington, MA: Academic Press.  
+
+
+{title:Also see}
+
+{p 4 13 2}On-line:  
+help for {help twoway connected}, 
+help for {help factor}, 
+help for {help factor postestimation}, 
+help for {help pca}, 
+help for {help pca postestimation}, 
+help for {help parplot} (if installed) 
+

@@ -1,0 +1,234 @@
+{smcl}
+{* 9nov2006/15apr2010}{...}
+{hline}
+help for {hi:lmoments9}
+{hline}
+
+{title:L-moments and derived statistics}
+
+{p 8 17 2}{cmd:lmoments9}
+[{it:varlist}]
+[{cmd:if} {it:exp}]
+[{cmd:in} {it:range}] 
+[{cmd:,}
+{cmdab:all:obs} 
+{cmdab:d:etail}
+{cmdab:m:atname(}{it:matrix_name}{cmd:)}
+{it:tabdisp_options}
+{cmd:variablenames}
+{cmd:se}[{cmd:(}{it:matrix_list_options}{cmd:)}]
+]
+
+{p 8 17 2}{cmd:lmoments9}
+{it:varname}
+[{cmd:if} {it:exp}]
+[{cmd:in} {it:range}] 
+[{cmd:,}
+{cmdab:all:obs} 
+{cmd:by(}{it:varlist}{cmd:)} 
+{cmdab:d:etail}
+{cmdab:g:enerate(}{it:specification}{cmd:)} 
+{cmdab:m:atname(}{it:matrix_name}{cmd:)}
+{it:tabdisp_options}
+{cmd:se}[{cmd:(}{it:matrix_list_options}{cmd:)}]
+]
+
+
+{p 4 4 2}{cmd:by ... :} may also be used with {cmd:lmoments9}: 
+see help on {help by}.
+
+
+{title:Description}
+
+{p 4 4 2}{cmd:lmoments9} calculates L-moments and derived statistics 
+for a {it:varlist}. Any string variables in {it:varlist} are 
+ignored. Specifically, the first four L-moments and the derived statistics 
+t, t_3 and t_4 are calculated for each variable in {it:varlist}.
+
+
+{title:Remarks}
+
+{p 4 4 2}Denote by X(j:n) the j th smallest observation from a sample of size n
+from a variable X and by E the expectation operator.
+
+{p 4 4 2}The first four L-moments are defined by
+
+	E (X(1:1)),
+
+	1/2 E (X(2:2) - X(1:2)),
+
+	1/3 E (X(3:3) - 2 X(2:3) + X(1:3)) and 
+
+	1/4 E (X(4:4) - 3 X(3:4) + 3 X(2:4) - X(1:4)). 
+
+{p 4 4 2}They are estimated via these weighted averages for a sample
+x_1, ..., x_n, otherwise known as probability-weighted moments:
+
+	b_0 = average of x(j:n),
+
+			 j - 1
+	b_1 = average of {hline 5} x(j:n),
+			 n - 1
+
+			 j - 1 j - 2
+	b_2 = average of {hline 5} {hline 5} x(j:n) and 
+			 n - 1 n - 2
+
+			 j - 1 j - 2 j - 3
+	b_3 = average of {hline 5} {hline 5} {hline 5} x(j:n). 
+			 n - 1 n - 2 n - 3
+
+{p 4 4 2} 
+The estimators are
+
+	l_1 = b_0,
+	l_2 = 2 b_1 - b_0, 
+	l_3 = 6 b_2 - 6 b_1 + b_0 and 
+	l_4 = 20 b_3 - 30 b_2 + 12 b_1 - b_0, 
+
+{p 4 4 2}whence
+
+	t   = l_2 / l_1        (cf. coefficient of variation),
+	t_3 = l_3 / l_2        (cf. skewness) and
+	t_4 = l_4 / l_2        (cf. kurtosis). 
+
+
+{title:Options}
+
+{p 4 8 2}{cmd:allobs} specifies use of the maximum possible 
+number of observations for each variable. The default is to 
+use only those observations for which all variables in 
+{it:varlist} are not missing. 
+
+{p 4 8 2}{cmd:by()} specifies one or more variables defining distinct groups
+for which L-moments should be calculated. {cmd:by()} is allowed only 
+with a single {it:varname}. The choice between {cmd:by:} 
+and {cmd:by()} is partly one of precisely what kind of output display is 
+required. The display with {cmd:by:} is clearly structured by 
+groups while that with {cmd:by()} is more compact. To show L-moments 
+for several variables and several groups with 
+a single call to {cmd:lmoments9}, the display with {cmd:by:} 
+is essential. 
+
+{p 4 8 2}{cmd:detail} specifies a full display of results. By default, 
+n, l_1, l_2, t_3 and t_4 are shown. {cmd:detail} adds l_3, l_4 and t.
+
+{p 4 8 2}{cmd:generate()} specifies one or more new variables to hold
+calculated results. {cmd:generate()} is allowed only with a single
+{it:varname}. This option is most useful when you want to save L-moments
+calculated for several groups for further analysis. Note that {cmd:generate()}
+is not allowed with the {cmd:by:} prefix: use the {cmd:by()} option instead.
+Values for the new variables will necessarily be identical for all observations
+in each group: typically it will be useful to select just one observation for
+each group, say by using {help egen:egen, tag()}. 
+
+{p 8 8 2} 
+The specification consists of one or more space-separated
+elements {it:newvar}{cmd:=}{it:statistic}, where {it:newvar} is a new variable
+name and {it:statistic} is one of {cmd:n}, {cmd:l_1}, {cmd:l_2}, {cmd:l_3},
+{cmd:l_4}, {cmd:t}, {cmd:t_3} or {cmd:t_4}. Omission of the underscore, 
+as in {cmd:l1}, {cmd:l2}, {cmd:l3}, {cmd:l4}, {cmd:t3} and {cmd:t4}, 
+is also allowed. 
+
+{p 4 8 2}{cmd:matname()} specifies the name of a matrix in which to save
+the results of calculations. There will be 8 columns. 
+The columns will contain n, l_1, l_2, l_3, l_4, t, t_3 and t_4. 
+The matrix will contain missing values if n < 4 or l_1 == 0 or l_2 == 0.
+
+{p 4 8 2}{it:tabdisp_options} are options of {help tabdisp}. 
+The default display has {cmd:format(%9.3f)}.
+
+{p 4 8 2}{cmd:variablenames} specifies that the variable names of {it:varlist}
+should be used in display. The default is to use variable labels to indicate a
+set of variables. 
+
+{p 4 8 2}{cmd:se} specifies that the variance matrix of sample L-moments and
+the standard error vector of sample L-moments and derived ratios be displayed.
+The variance matrix of sample L-moments is estimated using the exact unbiased
+distribution-free estimator of Elamir and Seheult (2004).  Note that negative
+estimates of each variance are possible, especially with very small samples. 
+The standard errors of sample L-moments are the square roots of the diagonal
+elements of that matrix. The standard errors of t, t_3 and t_4 are obtained
+from the variances of ratios l_2/l_1, l_3/l_2, l_4/l_2 using
+Taylor-series-based approximations: for a ratio U/V,  
+
+{p 8 8 2}var(U/V) = {c -(}var(U)/E(U)^2 + var(V)/E(V)^2 - 2 cov(U,V)/(E(U) E(V)){c )-} {c -(}E(U)/E(V){c )-}^2.
+
+{p 8 8 2}This information is reported for the last-named variable 
+or group only. However, {cmd:by:} may be used to obtain listings of 
+standard errors for each of several groups. {cmd:se} may be specified with options of {help matrix list} 
+to tune the display of the matrices. This option can be rather slow for large
+sample sizes. 
+
+
+{title:Examples} 
+
+{p 4 8 2}{cmd:. lmoments9 price-foreign}
+
+{p 4 8 2}{cmd:. bysort rep78: lmoments9 mpg}
+
+{p 4 8 2}{cmd:. lmoments9 mpg, by(rep78) generate(mean=l1 L2=l2 L_CV=t)}
+
+{p 4 8 2}{cmd:. lmoments9 c, se(format(%9.4f))}
+
+
+{title:Saved results} 
+
+{p 4 4 2}(for last-named variable or group only)
+
+    r(N)     n
+    r(l_1)   l_1
+    r(l_2)   l_2
+    r(l_3)   l_3
+    r(l_4)   l_4
+    r(t)     t
+    r(t_3)   t_3
+    r(t_4)   t_4
+    r(b_1)   b_1
+    r(b_2)   b_2
+    r(b_3)   b_3
+
+    if {cmd:se} specified only: 
+    r(V)     variance matrix of l_1 ... l_4
+    r(SE)    standard error vector of l_1 ... l_4 t t_3 t_4 
+
+
+{title:Acknowledgments} 
+
+{p 4 4 2}{cmd:lmoments9} includes code from Patrick Royston's 
+{cmd:lshape} program. Allan Seheult kindly provided and 
+discussed reprints of his joint work. William Gould was most 
+helpful with speeding up standard error calculations with Mata. 
+Stephen Jenkins found a bug. 
+
+
+{title:Author}
+
+{p 4 4 2}Nicholas J. Cox, Durham University, U.K.{break} 
+n.j.cox@durham.ac.uk
+
+
+{title:References}
+
+{p 4 8 2}{browse "http://www.research.ibm.com/people/h/hosking/lmoments.html": The L-moments page}
+
+{p 4 8 2}Elamir, E.A.H. and A.H. Seheult. 2004. 
+Exact variance structure of sample L-moments. 
+{it:Journal of Statistical Planning and Inference} 124: 337{c -}359. 
+
+{p 4 8 2}Hosking, J.R.M. 1990. L-moments: Analysis and estimation of
+distributions using linear combinations of order statistics. 
+{it:Journal of the Royal Statistical Society} Series B 52: 105{c -}124.
+
+{p 4 8 2}Hosking, J.R.M. 1998. L-moments. In Kotz, S., C.B. Read and 
+D.L. Banks (eds) {it:Encyclopedia of Statistical Sciences Update Volume 2.} 
+New York: Wiley, 357{c -}362.
+
+{p 4 8 2}Hosking, J.R.M. and J.R. Wallis. 1997. 
+{it:Regional frequency analysis: an approach based on L-moments.}
+Cambridge University Press.
+
+{p 4 8 2}Royston, P. 1992. 
+Which measures of skewness and kurtosis are best? 
+{it:Statistics in Medicine} 11: 333{c -}343. 
+

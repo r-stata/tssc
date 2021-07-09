@@ -1,0 +1,355 @@
+{smcl}
+{* *! version 2.0.0  21feb2012}{...}
+{cmd:help geonear}
+{hline}
+
+{title:Title}
+
+{phang}
+{bf:geonear} {hline 2} Finds nearest neighbors using geodetic distances.
+
+
+{title:Syntax}
+
+{p 8 16 2}
+{cmd:geonear} 
+{it:baseid baselat baselon} 
+{cmd:using} {it:nborfile}
+{cmd:,}
+{opt n:eighbors(nborid nborlat nborlon)}
+[{it:options}]
+
+{synoptset 20 tabbed}{...}
+{synopthdr:options}
+{synoptline}
+{syntab:Main}
+{synopt:{opt wid:e}}return nearest neighbors in wide form (the default){p_end}
+{synopt:{opt lo:ng}}return nearest neighbors in long form{p_end}
+{synopt:{opt nea:rcount(#)}}find the {it:#} nearest neighbors{p_end}
+{synopt:{opt i:gnoreself}}ignore distance to self 
+(when {it: {bind:baseid == nborid}}){p_end}
+{synopt:{opt o:ps(#)}}specify a maximum {it:#} of pairwise combinations 
+of {it:baseid} and {it:nborid} per region{p_end}
+
+{synopt:{it:Wide Form Only}}{p_end}
+{synopt:{opt g:enstub(str)}}prefix nearest neighbor variable names with {it:str}{p_end}
+
+{synopt:{it:Long Form Only}}{p_end}
+{synopt:{opt wit:hin(#)}}return neighbors within a distance of {it:#}
+from each {it:baseid}{p_end}
+{synopt:{opt li:mit(#)}}return no more than {it:#} nearest neighbors 
+for each {it:baseid}{p_end}
+
+{syntab:Distances}
+{synopt:{opt mi:les}}return distances in miles{p_end}
+{synopt:{opt ra:dius(#)}}custom radius {it:#} (in km) for spherical 
+distances{p_end}
+{synopt:{opt e:llipsoid}}use ellipsoidal distances{p_end}
+{synopt:{opt a(#)}}custom ellipsoid; semi-major axis parameter {it:#}{p_end}
+{synopt:{opt f(#)}}custom ellipsoid; flattening parameter {it:#} {p_end}
+
+{syntab:Reporting}
+{synopt:{opt re:port(#)}}display a status report line every {it:#}
+seconds{p_end}
+
+{synoptline}
+{p2colreset}{...}
+
+
+{title:Description}
+
+{pstd}
+For each location identified by {it:baseid} and with coordinates {it:baselat}
+{it:baselon}, {cmd:geonear} finds in {it:nborfile}, a Stata-format dataset, the
+nearest neighbor(s), identified by {it:nborid} and located at {it:nborlat}
+{it:nborlon}. Coordinates must be in signed decimal degrees, positive for north
+and east, and negative for south and west. Latitudes ({it:baselat} and
+{it:nborlat}) range from -90 to 90 and longitudes ({it:baselon} and
+{it:nborlon}) from -180 to 180.
+
+{pstd}
+{cmd:geonear} computes geodetic distances, i.e. the length of the shortest curve
+between two points along the surface of a mathematical model of the earth.
+{stata ssc des geodist:geodist} is a standalone implementation of
+{cmd:geonear}'s distance routines and is available from SSC. By default,
+{cmd:geonear} calculates distances on a sphere but ellipsoidal distances can be
+requested (slower). All distances are in kilometers and all distance variables
+are prefixed with "{it:km_to_}" unless the {opt mi:les} option is specified (the
+prefix changes to "{it:mi_to_}").
+
+{pstd} 
+{cmd:geonear} uses a divide and conquer strategy to significantly reduce the
+number of distances that must be computed. The approach involves splitting base
+locations into progressively smaller geographic regions while at the same time
+safely reducing the set of potential neighbors for each region. Distances are
+calculated only when the number of pairwise combinations of {it:baseid} and
+{it:nborid} falls below a threshold value (adjustable using the {opt o:ps(#)}
+option). Generally, there is about the same number of base locations per region
+which means that {cmd:geonear} will predictably find the nearest neighbors in a
+linear time even though the size of the overall problem increases exponentially.
+In other words doubling the size of the base location set {it:{hi:and}} doubling
+the size of the neighbor location set simply doubles the number of regions and
+thus doubles the run time.
+
+{pstd} 
+By default, {cmd:geonear} operates in wide form mode (see {opt wid:e} option).
+In this mode, {cmd:geonear} creates two variables for each neighbor requested.
+The first variable identifies the nearest neighbor (using {it:nborid}
+identifiers). The second variable stores the distance to that neighbor from the
+{it:baseid} location.
+
+{pstd}
+In long form mode (see {opt lo:ng} option), {cmd:geonear} returns one
+observation per neighbor found. The {opt near:count(#)} option can be used to
+request a specific number of neighbors per {it:baseid}. The {opt wit:hin(#)}
+option can be used to request all neighbors within a distance of {it:#} from
+each {it:baseid}. You can combine {opt wit:hin(#)} with {opt near:count(#)} and
+{cmd:geonear} will return any {it:nborid} that satisfies either condition.
+
+
+{title:Options}
+
+{dlgtab:Main}
+{phang}
+{opt wid:e} is used to request that {cmd:geonear} return results in wide form.
+In this mode, {cmd:geonear} creates variables to identify neighbors and their
+distance to the {it:baseid}. If {opt nea:rcount(#)} is omitted, the nearest
+neighbor is identified by the {it:nid} and {it:km_to_nid} variables. Otherwise,
+the naming follows the following pattern:
+
+{p 12 12 2}
+{it:nid1{space 2}km_to_nid1{space 2}nid2{space 2}km_to_nid2{space 2}[...]{space 2}nid#{space 2}km_to_nid#}
+
+{pmore}
+The {opt g:enstub(nidstub)} option can be used to specify an alternative
+stubname to {it:nid}.  
+
+{phang}
+{opt lo:ng} is used to request results in long form, one observation per
+neighbor found. {cmd:geonear} returns the variables {it:baseid}, {it:nborid} and
+{it:km_to_nborid}, with as many observations per {it:baseid} as there are
+neighbors found. Because of the output format, {it:baseid} and {it:nborid} must
+have different names. Both {opt wit:hin(#)} and {opt near:count(#)} can be used
+to target neighbors.
+
+{phang}
+{opt nea:rcount(#)} is used to request a specific number of nearest {it:nborid}
+per {it:baseid}. If omitted, {cmd:geonear} finds the nearest neighbor for each
+{it:baseid}. If there is a tie for the #th {it:nborid} position, the neighbor
+is chosen by ascending order of {it:nborid}.
+
+{phang}
+{opt ign:oreself} is used when {it:baseid} and {it:nborid} identify the same set
+of locations. With this option, {cmd:geonear} ignores distances when
+{it:{bind:nborid == baseid}} (as such distance would be zero) and thus ensures
+that the nearest neighbor is a different entity.
+
+{phang}
+{opt o:ps(#)} specifies the maximum {it:#} number of distances to be calculated
+per region. Within a region, the number of distances to be calculated is
+determined by {bind:{it:(nbases * nnbors)}}, where {it:nbases} is the count of
+base locations within the region and {it:nnbors} is the number of potential
+neighbors. The default is 15,000 for results in wide form and 7,000 for results
+in long form.
+
+{phang}
+{opt g:enstub(str)} is only available in wide form mode. It is used to specify
+an alternative stubname to {it:nid} for the nearest neighbor variables.
+
+{phang}
+{opt wit:hin(#)} is only available in long form mode. It is used to request all
+neighbors within a distance {it:#} of each {it:baseid}. If the {opt mi:les}
+option is specified, {opt wit:hin(#)} is considered specified in miles. This
+option can be combined with {opt nea:rcount(#)} to request a minimum number of
+nearest neighbors per {it:baseid}. Combined with {opt nea:rcount(0)},
+{it:baseid}s are excluded from the results if they have no neighbors within the
+specified distance.
+
+{phang}
+{opt li:mit(#)} is only available in long form mode. It can be used to limit the
+number of neighbor observations per {it:baseid} when {opt wit:hin(#)} is used.
+This option is offered mostly as a convenience. It does not affect the number of
+distances calculated; it simply drops neighbor observations that exceed the
+count.
+
+{dlgtab:Distances}
+{phang}
+{opt mi:les} requests that distances be returned in miles instead of kilometers.
+It also indicates that {opt wit:hin(#)} is in miles.
+
+{phang}
+{opt ra:dius(#)} allows for a user-specified radius of the earth in km. If
+omitted, a radius of 6371km is used. This is the earth's mean radius (see
+{browse "http://en.wikipedia.org/wiki/Earth_radius#Mean_radii"}).
+
+{phang}
+{opt e:llipsoid} indicates that distances should be calculated using the WGS
+1984 reference ellipsoid. Calculating ellipsoidal distances requires more
+computational power; you should expect a significant penalty in terms of total
+run time.
+
+{phang}
+{opt a(#)} is used to specify the length of the semi-major axis parameter in
+meters for a different ellipsoid. For example, to use the Bessel 1841 reference
+ellipsoid, specify {opt a(6377397.155)}.
+
+{phang}
+{opt f(#)} is used to specify the flattening ratio parameter for a different
+ellipsoid. For example, to use the Bessel 1841 reference ellipsoid, specify 
+{opt f(299.1528128)}.
+
+{dlgtab:Reporting}
+{phang}
+{opt rep:ort(#)} is used to control the frequency of status reporting. By
+default, a status report line is displayed every 10 seconds. Each report line
+includes current region count, number of base locations within the region,
+number of neighbor locations considered, total number of distances calculated
+{bind:(ops = base locs x nbor locs),} cumulative number of distances, percent
+done, and remaining time.
+
+
+{title:Accuracy and limitations}
+
+{pstd}
+By default, {cmd:geonear} computes great-circle distances using the Haversine
+formula. {cmd:geonear} uses double precision arithmetic throughout and the
+formula provides submillimeter accuracy for all distances except within 10
+meters of antipodal locations. {cmd:geonear} uses the Vincenty (1975) equations
+when computing distances on a reference ellipsoid. According to Thomas and
+Featherstone (2005), these are thought to maintain submillimeter accuracy
+between all locations. However, the Vincenty algorithm cannot accurately
+calculate distances for near-antipodal points. In such cases, the distances are
+undefined and set to missing. See 
+{browse "http://geographiclib.sourceforge.net/cgi-bin/Geod"} 
+for a calculator that does not have this limitation. In either case, since
+{cmd:geonear} seeks nearest neighbors, the issue of near-antipodal locations is
+not likely to matter.
+
+{pstd}
+Most longitude and latitude datasets are based on the WGS 1984 datum, which is
+what GPS devices and Google Earth/Map use. There are other datums and it is
+important to understand that distances will not be accurate if the base and
+neighbor locations are not expressed in the same reference system. Here is a
+{browse "http://robertpicard.com/stata/_MG_2342.jpg":photo of my GPS} lying on
+the Prime Meridian line at the Royal Observatory in Greenwich, England. If you
+use a distance calculator, you will see that it is about 100 meters to the west
+of the Reference Meridian of WGS 1984 
+({stata geodist 51.47803 -0.00145 51.47803 0}).
+
+
+{title:Examples}
+
+{pstd}
+Simulate a dataset of 2000 Census Block Group centroids for Colorado.
+
+        {cmd:.} {stata clear}
+        {cmd:.} {stata set seed 123456}
+        {cmd:.} {stata set obs 3278}
+        {cmd:.} {stata gen bgid = _n}
+        {cmd:.} {stata gen double bglat = 37 + (41 - 37) * uniform()}
+        {cmd:.} {stata gen double bglon = -109 + (109 - 102) * uniform()}
+        {cmd:.} {stata tempfile bg}
+        {cmd:.} {stata save "`bg'"}
+        
+{pstd}
+Create a new dataset that contains locations of cell towers in the State of
+Colorado.
+
+        {cmd:.} {stata clear}
+        {cmd:.} {stata set obs 1000}
+        {cmd:.} {stata gen ctid = _n}
+        {cmd:.} {stata gen double ctlat = 37 + (41 - 37) * uniform()}
+        {cmd:.} {stata gen double ctlon = -109 + (109 - 102) * uniform()}
+        {cmd:.} {stata tempfile cell}
+        {cmd:.} {stata save "`cell'"}
+
+{pstd}
+To find the nearest neighbor for each of these cell towers:
+
+        {cmd:.} {stata geonear ctid ctlat ctlon using "`cell'", n(ctid ctlat ctlon) ignoreself}
+
+{pstd}
+To find all towers within 50km of each tower:
+
+        {cmd:.} {stata use "`cell'", clear}
+        {cmd:.} {stata rename ctid ctid0}
+        {cmd:.} {stata geonear ctid0 ctlat ctlon using "`cell'", n(ctid ctlat ctlon) ign long within(50) near(0)}
+
+{pstd}
+To find all cell towers within 5km from each Census Block Group centroids:
+
+        {cmd:.} {stata use "`bg'", clear}
+        {cmd:.} {stata geonear bgid bglat bglon using "`cell'", n(ctid ctlat ctlon) within(5) near(0) long} 
+
+{pstd}
+To find the nearest cell tower as well as all cell towers within 5km from each
+Census Block Group centroids:
+
+        {cmd:.} {stata use "`bg'", clear}
+        {cmd:.} {stata geonear bgid bglat bglon using "`cell'", n(ctid ctlat ctlon) within(5) long} 
+        {cmd:.} {stata "by bgid: gen N = _N"} 
+        {cmd:.} {stata tab N} 
+
+{pstd}
+To find the nearest 3 Census Block Group centroids for each cell tower in wide
+form:
+
+        {cmd:.} {stata use "`cell'", clear}
+        {cmd:.} {stata geonear ctid ctlat ctlon using "`bg'", n(bgid bglat bglon) wide near(3) genstub(bgid)}
+        
+{pstd}
+The following example finds all Census Block Group centroids that fall within
+each cell tower's Voronoi (a.k.a. Thiessen) polygon.
+
+        {cmd:.} {stata use "`bg'", clear}
+        {cmd:.} {stata geonear bgid bglat bglon using "`cell'", n(ctid ctlat ctlon) genstub(ctid)} 
+        {cmd:.} {stata sort ctid bgid}
+        {cmd:.} {stata "by ctid: gen N = _N"}
+        {cmd:.} {stata tab N}
+
+
+{title:References and acknowledgements}
+
+{pstd}
+Many thanks to Chris Veness for the best web pages on how to compute
+geodetic distances:
+
+        {browse "http://www.movable-type.co.uk/scripts/latlong-vincenty.html"}
+        {browse "http://www.movable-type.co.uk/scripts/latlong.html"}
+        
+{pstd}
+The definition of the World Geodetic System 1984 is available from
+
+        {browse "http://earth-info.nga.mil/GandG/publications/tr8350.2/wgs84fin.pdf"}
+   
+{pstd}
+See Appendix A.1 for a list of reference ellipsoids. 
+
+{pstd}
+C. F. F. Karney, Geodesics on an ellipsoid of revolution, Feb. 2011; 
+preprint {browse "http://arxiv.org/abs/1102.1215":arxiv:1102.1215.}
+
+{pstd}
+R. W. Sinnott, "Virtues of the Haversine", {it:Sky and Telescope} 68 (2), 159 (1984).
+Thanks to the University of Michigan's Shapiro Science Library.
+
+{pstd}
+C. M. Thomas and W. E. Featherstone, 
+Validation of Vincenty's Formulas for the Geodesic Using a New 
+Fourth-Order Extension of Kivioja's Formula, {it:J. Surv. Engrg.} Volume 131, 
+Issue 1, pp. 20-26 (February 2005), available for download from:
+
+        {browse "http://www.cage.curtin.edu.au/~will/thomas-featherstone.pdf"}
+
+{pstd}
+Vincenty, T. (1975) Direct and inverse solutions of geodesics on the ellipsoid 
+with application of nested equations, {it:Survey Review} 22(176): 88-93 is available
+from:
+
+        {browse "http://www.ngs.noaa.gov/PUBS_LIB/inverse.pdf"}
+
+
+{title:Author}
+
+{pstd}Robert Picard{p_end}
+{pstd}picard@netbox.com{p_end}

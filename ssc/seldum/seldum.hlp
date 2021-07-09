@@ -1,0 +1,108 @@
+{smcl}
+{* 03aug2011}{...}
+{hline}
+help for {hi:seldum}
+{hline}
+
+{title:Various inequality indicators}
+
+{p 4}{cmd:seldum} {varlist} [, {cmdab:rep:lay}]
+
+
+{title:Description}
+
+{p}{cmd:seldum} is a post-estimation command to be used after the estimation
+of a linear regression model with a logarithmic dependent variable. This means
+that it has to be used immediately after a call to an estimation command as
+e.g. {cmd:regress}.
+
+{p}{cmd:seldum} transforms the coefficients estimated by the model so that
+they can be interpreted as percentage effects on the dependent variable. The
+calculations are made for coefficients relating to the variables specified 
+in {it: varlist} .
+
+{p}At the moment, {cmd:seldum} does not work for multiple-equation models, 
+including {cmd:heckman} and {cmd:treatreg}.
+
+
+{title:Option}
+
+{p} {cmdab:rep:lay} requests the display of the results of the last estimation model, i.e. the model 
+to be used in the calculations. 
+
+
+{title:Details}
+
+{p}Consider the following semilogarthmic regression model:
+
+ln(Y) = a + b*X + e 
+
+{p}If the independent variable X is continous, b gives the percentage change 
+in Y implied by a small change in X. In the case where X is a dummy varibale, 
+the same interpretation is frequently used. However, if X is a dummy variable, 
+this interpretation is only approximative. Kennedy (1981) has proposed the 
+following estimator: 
+
+p = exp(b - 0.5*V(b)) - 1    (1)
+
+{p}where V(b) is the variance of b. In principle, the variance of p could 
+be computed by using the delta method. Alternatively, Van Garderen and Shah (2002) 
+have derived the following estimator for the variance of p, which they claim to 
+be more accurate than the delta method:
+
+V(p) = exp(2*b)*(exp(-V(b)) - exp(-2*V(b)))    (2)
+
+{p}{cmd:seldum} computes Kennedy's estimator as given by equation (1) as well
+as its standard error, as given by equation (2). 
+
+{p}The paper by Van Garderen and Shah (2002) provides a more detailed discussion 
+on this topic.
+
+
+{title:Saved Results}
+
+{p}{cmd:seldum} returns its results in r():
+
+{p 4}r(b_varname) percentage impact of the varibale {it:varname}
+
+{p 4}r(se_varname) standard error of the percentage impact of variable {it:varname}
+
+{p}The advantage of saving the results in r() is that the results saved by the
+preceeding regression are not modified. These results remain available after a
+call to {cmd:seldum}.
+
+	
+{title:Example}
+
+{p 4 12}{inp:.} {stata "sysuse nlsw88, clear ":sysuse nlsw88, clear}
+
+{p 4 12}{inp:.} {stata "generate lwage = ln(wage) ":generate lwage = ln(wage)}
+
+{p 4 12}{inp:.} {stata "regress lwage collgrad smsa union south race ttl_exp ":regress lwage collgrad smsa union south race ttl_exp}
+
+{p 4 12}{inp:.} {stata "seldum collgrad union ":seldum collgrad union}
+
+{p 4 12}{inp:.} {stata "seldum collgrad union, replay ":seldum collgrad union, replay}
+
+
+
+{title:References}
+
+{p 0 4}Kennedy, P. E. (1981). Estimation with Correctly Interpreted Dummy Variables
+in Semilogarithmic Equations. American Economic Review, 71(4):801.
+
+{p 0 4}van Garderen, K. and Shah, C. (2002). Exact Interpretation of Dummy
+Variables in Semilogarithmic Equations. The Econometrics Journal, 5(1):149-159.
+
+
+{title:Also see}
+
+{p} {help levpredict} if installed (available via {help ssc})
+
+
+{title:Author}
+
+Jean Ries
+STATEC, Luxembourg
+jean.ries@statec.etat.lu
+

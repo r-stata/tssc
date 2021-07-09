@@ -1,0 +1,107 @@
+{smcl}
+{* 18 May 2004}{...}
+{hline}
+help for {hi:tabsplit}
+{hline}
+
+{title:Tabulate string variables split into parts}
+
+{p 8 17 2}
+{cmd:tabsplit} 
+{it:strvar} 
+[{cmd:if} {it:exp}] 
+[{cmd:in} {it:range}] 
+[
+{cmd:,}
+{cmdab:char:acters} 
+{cmdab:p:arse:(}{it:parse_strings}{cmd:)}
+[{cmdab:no:}]{cmdab:t:rim}
+{it:tabulate_options}
+]  
+
+
+{title:Description}
+
+{p 4 4 2}
+{cmd:tabsplit} tabulates frequencies of occurrence of the parts of a string
+variable. By default, the parts of a string are separated by spaces. The parts
+of {cmd:"A B C"} are thus {cmd:"A"}, {cmd:"B"} and {cmd:"C"}. Optionally,
+alternative parsing strings may be specified. The parts of {cmd:"A,B,C"}
+with {cmd:parse(,)} are, again, {cmd:"A"}, {cmd:"B"} and {cmd:"C"}. The parts
+of {cmd:"A B C"} with {cmd:parse(,)} are just the single part {cmd:"A B C"}.
+The idea of a part thus generalises Stata's concept of a word. 
+
+
+{title:Remarks} 
+
+{p 4 4 2} 
+Suppose data are gathered on modes of transport used in the journey to work. In
+addition to values of {cmd:"car"}, {cmd:"cycle"}, {cmd:"foot"}, and so forth,
+there may be multiple values such as {cmd:"car train tube foot"} for people who
+use two or more modes. Within the {help limits} in your version of Stata such
+single or multiple values may be stored as string variables.  It may then be
+desired, for example, to count the individual modes used.  {cmd:tabsplit} is
+designed for this special problem. 
+
+{p 4 4 2}
+By default, leading and trailing spaces are ignored. Thus, string values that
+equal one or more spaces are treated just as if they were missing. Also with
+{cmd:{bind:" 1,  2,   3"}} and {cmd:parse(,)} the parts are {cmd:"1"}, {cmd:"2"} and
+{cmd:"3"}.
+
+
+{title:Options}
+
+{p 4 8 2}{cmd:characters} specifies that strings are to be split into separate
+characters. Thus strings such as {cmd:"ABCDE"} and {cmd:"ABC"} will be split so
+that the frequencies of {cmd:"A"}, {cmd:"B"}, etc. will be tabulated.
+{cmd:parse()} is ignored if {cmd:characters} is specified. 
+
+{p 4 8 2}
+{cmd:parse(}{it:parse_strings}{cmd:)} specifies that, instead of spaces,
+parsing should be done using one or more {it:parse_strings}. Most commonly,
+one string which is a single punctuation character will be specified.  For
+example, if {cmd:parse(,)} is specified, then {cmd:{bind:"1,2,3"}} is split
+into {cmd:"1"}, {cmd:"2"} and {cmd:"3"}.
+
+{p 8 8 2}
+It is also possible to specify (1) two or more strings which are alternative
+separators of parts and/or (2) strings which consist of two or more
+characters.  Alternative strings should be separated by spaces and strings
+which include spaces should be bound by {cmd:{bind:" "}}. Thus if
+{cmd:{bind:parse(, " ")}} is specified, then {cmd:{bind:"1,2 3"}} is also
+split into {cmd:"1"}, {cmd:"2"} and {cmd:"3"}.  Note particularly the
+difference between (say) {cmd:{bind:parse(a b)}} and {cmd:parse(ab)}: with the
+first, {cmd:"a"} and {cmd:"b"} are both acceptable as separators, while with
+the second, only the string {cmd:"ab"} is acceptable.
+
+{p 4 8 2}
+{cmd:notrim} specifies that the original string variable should not be trimmed
+of leading and trailing spaces before being parsed, and that the parts 
+should not be trimmed similarly before being tabulated. {cmd:notrim} is not
+considered compatible with parsing on spaces, as the latter implies that spaces
+in a string are to be discarded: either specify parse strings or by default
+allow a {cmd:trim}.
+ 
+{p 4 8 2}{it:tabulate_options} are options of {help tabulate} with one
+variable. The most useful in practice is {cmd:sort}. Note that the table 
+is based on a temporary dataset which does not remain in memory after
+{cmd:tabsplit} has finished. 
+
+
+{title:Examples}
+
+{p 4 8 2}{inp:. tabsplit authors, parse(,) sort}
+
+
+{title:Author} 
+
+{p 4 4 2}Nicholas J. Cox, University of Durham, U.K.{break} 
+         n.j.cox@durham.ac.uk
+
+
+{title:Also see}
+
+{p 4 13 2}On-line:  help for {help split}, {help tabulate}  
+
+

@@ -1,0 +1,64 @@
+{smcl}
+{* *! version 1.0.0  22sep2008}{...}
+{cmd:help des10}
+{hline}
+
+{title:Title}
+
+{p2colset 5 21 23 2}{...}
+{p2col :{hi: des10} {hline 2}}Describe data in file Stata-10 format (for Stata-9 users){p_end}
+{p2colreset}{...}
+
+
+{title:Syntax}
+
+
+{phang}
+Describe data in Stata-10 file
+
+{p 8 17 2}
+{cmdab:des10} {bf:{help using}} {it:filename}
+
+
+{title:Description}
+
+{pstd}
+{cmd:des10} produces a summary of the dataset stored in the format od Stata-10. This command
+is for Stata-9 users only.
+
+{phang}
+{cmd: des10} has no options. For saved results see help for official {helpb describe:describe}. {it:varlist}
+and {it:sortlist} are always saved. The following are never saved: {cmd:r(N_max)}, {cmd:r(k_max)}, and
+{cmd:r(widthmax)}. This command is primarily for the programmers. Most users will {helpb use10:use10} the
+dataset and describe it later with Stata's native {helpb describe:describe}.
+
+{phang}
+{cmd: des10} cannot describe datasets located on the web. Copy the data to a temporary file first.
+
+{title:Saved results}
+
+{pstd}
+{cmd:des10} saves the following in {cmd:r()}:
+
+{synoptset 20 tabbed}{...}
+{p2col 5 20 24 2: Scalars}{p_end}
+{synopt:{cmd:r(N)}}number of observations{p_end}
+{synopt:{cmd:r(k)}}number of variables{p_end}
+{synopt:{cmd:r(width)}}width of dataset{p_end}
+{synopt:{cmd:r(Version)}}file format version, e.g. 114 for Stata-10{p_end}
+{synopt:{cmd:r(ByteOrder)}}byteorder 1=HILO (Mac, Unix), 2=LOHI (PC Windows){p_end}
+
+{p2col 5 20 24 2: Macros}{p_end}
+{synopt:{cmd:r(varlist)}}variables in dataset{p_end}
+{synopt:{cmd:r(sortlist)}}variables by which data are sorted{p_end}
+
+{title:Author}
+
+{phang}{cmd:des10} was written by Sergiy Radyakin: sradyakin(at)worldbank.org{p_end}
+
+
+{title:Also see}
+
+{psee}
+Online:  {helpb describe:describe}, {helpb use10:use10}
+{p_end}

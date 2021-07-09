@@ -1,0 +1,155 @@
+/*
+  ellip_plopts -- ellip options pool(#) and plopts(line_options) 
+*! version 1.0.0  26apr2004 Anders Alexandersson 
+  
+  modified from stopts -- graph options for a student t density curve
+  VERSION 1.0.0  21dec2002
+
+  This idlg requires the use of _graph.idlg and _std_graph.idlg for lengths,
+  widths, heights.
+  This idlg requires the use of _glist_def.idlg and _glist_sc.idlg 
+  at the beginning of your dialog file for initiating lists.
+
+*/
+
+DIALOG plopts, label("") tabtitle("Pool")
+BEGIN
+  CHECKBOX ck_stud        _lft       _top     _iwd      .,		/*
+  		*/ label("Add option pool();" 	/*
+		*/       " requires if/in restriction to be specified")	/*
+		*/ clickon(program gplopts_check)			/*
+		*/ clickoff(program gplopts_check)			/*
+  		*/
+
+  TEXT     tx_recom  _lft    _ss         _iwd   .,			/*
+	       */ label("Recommendation: Specify level() and if/in from regress")
+
+  SPINNER  sp_stud       _indent2  _ms       _spwd     .,		/*
+		*/ label("Number of line segments between b and bp")	/*
+		*/ min(1)						/*
+		*/ max(100)						/*
+		*/ default(literal 10)					/*
+		*/ option("pool")					/*
+		*/				
+  TEXT     tx_stud  _spsep    @         _en7r2b   .,			/*
+	       */ label("Number of line segments between b and bp")
+// how to make the slope of the major axis the default?
+
+  GROUPBOX gb_line        _lft     _ls       _cwd4_g   _ht9h,		/*
+  		*/label("Line")
+  DEFINE y @y
+  TEXT     tx_ccol        _lft4_1gi _ss      _txwd     .,		/*
+  		*/label("Color:") right
+DEFINE scaty @y
+DEFINE scatx @x
+  COMBOBOX cb_ccol        _txsep     @        _tcr4gi   .,		/*
+  		*/label("Line color") option(clcolor) dropdownlist	/*
+  		*/contents(_dclst_2) onselchangelist(plopts_color_ccol)	/*
+		*/value(_dvlst_2)
+  COLOR    cl_ccol        _tcr4gisep @        _colorwd  .,		/*
+  		*/label("Line color") option(clcolor) default(255 0 0)
+  TEXT     tx_clwidth     scatx      _ms      _txwd     .,		/*
+  		*/ label("Width:") right
+  COMBOBOX cb_clwidth     _txsep     @        _txr4gi   .,		/*
+  		*/label("Connect width") dropdownlist			/*
+  		*/contents(_dclst_5) value(_dvlst_5)			/*
+  		*/ option(clwidth)
+  TEXT     tx_clpat       scatx      _ms      _txwd     .,		/*
+  		*/label("Pattern:") right
+  COMBOBOX cb_clpat       _txsep     @        _txr4gi   .,		/*
+  		*/label("Pattern") dropdownlist contents(_dclst_4) 	/*
+  		*/ option(clpat) value(_dvlst_4)
+  TEXT     tx_conn        scatx      _ms      _txwd     .,		/*
+  		*/label("Type:") right 
+  COMBOBOX cb_conn        _txsep     @        _txr4gi   .,   		/*
+  		*/label("Connect type") option(connect) 		/*
+  		*/ dropdownlist contents(_dclst_6) value(_dvlst_6)
+
+END
+
+LIST plopts_color_ccol
+BEGIN
+	plopts.cl_ccol.hide
+	plopts.cl_ccol.show
+	plopts.cl_ccol.hide
+END
+
+PROGRAM gplopts_check
+BEGIN
+	if !H(plopts.ck_stud) & plopts.ck_stud {
+		call gaction plopts.sp_stud.enable
+		call gaction plopts.tx_stud.enable
+		
+		call gaction plopts.tx_recom.enable
+		
+		// line options
+		call gaction plopts.gb_line.enable
+		call gaction plopts.tx_ccol.enable
+		call gaction plopts.cb_ccol.enable
+		call gaction plopts.cl_ccol.enable
+		call gaction plopts.tx_clwidth.enable
+		call gaction plopts.cb_clwidth.enable
+		call gaction plopts.tx_clpat.enable
+		call gaction plopts.cb_clpat.enable
+		call gaction plopts.tx_conn.enable
+		call gaction plopts.cb_conn.enable
+	}
+	if H(plopts.ck_stud) | ! plopts.ck_stud {
+		call gaction plopts.sp_stud.disable
+		call gaction plopts.tx_stud.disable
+		
+		call gaction plopts.tx_recom.disable
+		
+		// line options
+		call gaction plopts.gb_line.disable
+		call gaction plopts.tx_ccol.disable
+		call gaction plopts.cb_ccol.disable
+		call gaction plopts.cl_ccol.disable
+		call gaction plopts.tx_clwidth.disable
+		call gaction plopts.cb_clwidth.disable
+		call gaction plopts.tx_clpat.disable
+		call gaction plopts.cb_clpat.disable
+		call gaction plopts.tx_conn.disable
+		call gaction plopts.cb_conn.disable
+	}
+END
+
+SCRIPT gplopts_disable
+BEGIN
+	plopts.ck_stud.disable
+	program gplopts_check
+END
+
+SCRIPT gplopts_enable
+BEGIN
+	plopts.ck_stud.enable
+	program gplopts_check
+END
+
+PROGRAM ellip_plopts_output
+BEGIN
+	if plopts.ck_stud {
+		optionarg plopts.sp_stud
+	}
+	if plopts.ck_stud	& ///
+	   !H(plopts.ck_stud)	& ///
+	   ( plopts.cb_ccol	| ///
+	     !H(plopts.cl_ccol)	| ///
+	     plopts.cb_clwidth	| ///
+	     plopts.cb_clpat	| ///
+	     plopts.cb_conn	///
+	   ) {
+		put "plopts("
+		if H(plopts.cl_ccol) {
+			optionarg /hidedefault plopts.cb_ccol
+		}
+		if !H(plopts.cl_ccol) {
+			optionarg /quoted plopts.cl_ccol
+		}
+		optionarg /hidedefault plopts.cb_clwidth
+		optionarg /hidedefault plopts.cb_clpat
+		optionarg /hidedefault plopts.cb_conn
+		put ")"
+	}
+END
+

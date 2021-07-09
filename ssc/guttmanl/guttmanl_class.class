@@ -1,0 +1,832 @@
+*! version 1.1.0 10nov2016 daniel klein
+
+vers 11.2
+
+loc non_r , rclass // returns void
+
+class guttmanl_class {
+	double replay 	= 0
+	string zero 	= ""
+		
+		/* tempnames */
+	string touse 	= ""
+	string Cov 		= ""
+	string SD 		= ""
+	string N 		= ""
+	
+	string parvars 	= "" // with ()
+	string varlist 	= "" // clean
+	string wgt 		= "" // weight
+	string halves 	= "" // numeric
+	string sign 	= "" // numeric
+	double k 		= 0
+	
+	is_corrmat 		= 0
+	
+	string lambda 	= "1 2 3 4 5 6"
+	double is_l4 	= 1
+	
+	string qtiles 	= "" // numeric
+	double reps 	= 0
+	string rseed 	= (.)
+	
+	string mvm 		= "cw"
+	double min 		= (.)
+	string emopts 	= ""
+	
+	double asis 	= 0
+	double std 		= 0
+}
+
+pr .new
+	.replay 	= replay()
+	.zero 		= `"`0'"'
+	
+	// back to ado
+end
+
+/*
+	main */
+pr .guttmanl_main
+	tempname touse Cov SD N
+	.touse 	= "`touse'"
+	.Cov 	= "`Cov'"
+	.SD 	= "`SD'"
+	.N 		= "`N'"
+	
+	if !(`.replay') {
+		if (`.is_varlist') {
+			.guttmanl_var
+		}
+		else {
+			.guttmanl_mat
+		}
+		
+		m : guttmanl_ado(	///
+			st_matrix("`.Cov'"), 			///
+			strtoreal(tokens("`.lambda'")), ///
+			strtoreal(tokens("`.qtiles'")), ///
+			(`.reps'), 						///
+			("`.rseed'"), 					///
+			("`.sign'"), 					///
+			("`.halves'"), 					///
+			st_matrix("`.N'"), 				///
+			("`.varlist'"), 				///
+			("`.wgt'") 					///
+			)
+	}
+	
+	.guttmanl_report
+end
+
+pr .is_varlist
+	loc 0 `.zero'
+	syntax anything(id = "varlist or matname") ///
+		[if] [in] [fw aw] [ , * ]
+	
+	gettoken first anything : anything , bind
+	loc is_varlist = (`"`anything'"' != "")
+	if (!`is_varlist') {
+		cap unab dump : `first'
+		loc is_varlist = !(_rc)
+	}
+	
+	class exit `is_varlist'
+end
+
+/*
+	varlist input */
+pr .guttmanl_var `non_r'
+	loc 0 `.zero'
+	syntax anything(id = "varlist") ///
+		[if] [in] [fw aw] [ , * ]
+		
+	if ("`weight'" != "") {
+		.wgt = "[`weight' `exp']"
+	}
+	
+	.get_varlist `anything'
+	
+	.get_options , `options'
+	
+	.opts_not_compatible
+	
+	.get_esample`if' `in' `.wgt'
+	
+	.get_covariance_matrix
+	
+	.get_sign
+end
+
+pr .get_varlist
+	loc halves : copy loc 0
+	loc 0 : subinstr loc 0 "||" " " , c(loc bars)
+	
+	syntax varlist(min = 2 num)
+	if (`bars') {
+		.get_halves `halves'
+	}
+	
+	loc varlist : list uniq varlist
+	loc k : word count `varlist'
+	
+	if (`k' < 2) {
+		.errmsg 102
+	}
+	
+	.parvars 	= "`0'"
+	.varlist 	= "`varlist'"
+	.k 			= `k'
+end
+
+pr .get_halves
+	gettoken half 0 : 0 , p("||")
+	gettoken bar1 0 : 0 , p("||")
+	gettoken bar2 0 : 0 , p("||")
+	
+	if ("`bar1'`bar2'" != "||") {
+		.errmsg 102
+	}
+	
+	unab half1 : `half'
+	unab half2 : `0'
+	
+	loc both `half1' `half2'
+	loc both : list uniq both
+	
+	foreach v of loc both {
+		loc t : list v in half2
+		if (`t' & `: list v in half1') {
+			.errmsg 498 "`v' cannot be in both halves"
+		}
+		loc halves `halves' `t'
+	}
+	
+	.halves = "`halves'"
+end
+
+pr .get_options
+	if (!`.replay') {
+		loc Quantiles Quantiles
+		loc Quantiles2 Quantiles2(str)
+		loc Std Std
+		if mi("`.varlist'") & (`.is_corrmat') {
+			loc SDs SDs(str)
+		}
+		else {
+			loc Asis Asis
+			loc options *
+		}
+	}
+	
+	syntax ///
+	[ , ///
+		Lambda(str) 	///
+		`Quantiles' 	///
+		`Quantiles2' 	///
+		`Asis' 			///		
+		`Std' 			///
+		`SDs' 			///
+		`options' 		///
+	]
+	
+	if ("`lambda'" != "") {
+		.get_options_lambda `lambda'
+	}
+	
+	if ("`sds'" != "") {
+		.get_options_sds `sds'
+	}
+	
+	if ("`quantiles'`quantiles2'" != "") {
+		.get_options_quantiles `quantiles2'
+	}
+	
+	.get_options_mvm , `options'
+	
+	.asis 	= ("`asis'" != "")
+	.std 	= ("`std'" != "")
+end
+
+pr .get_options_lambda
+	loc opts int max(6) r(>=1 <=6) sort
+	
+	cap .cl_numlist lambda "`0'" , `opts'
+	loc Rc = _rc
+	
+	if (`Rc') {
+		syntax anything(id = "numlist") ///
+			[ , NOT ]
+		
+		cap .cl_numlist lambda "`anything'" , `opts'
+		loc Rc = _rc
+		
+		if !(`Rc') {
+			if ("`not'" != "") {
+				loc all 1 2 3 4 5 6
+				loc lambda : list all - lambda
+				if mi("`lambda'") {
+					loc Rc 122
+				}
+			}
+		}
+	}
+	
+	if (`Rc') {
+		.errmsg `Rc' "lambda() invalid"
+	}
+	
+	loc lambda : list uniq lambda
+	
+	.lambda = "`lambda'"
+	.is_l4 	= (`: list posof "4" in lambda')
+end
+
+pr .get_options_quantiles
+	cap n syntax [ anything(id = "numlist") ] ///
+	[ , ///
+		Reps(numlist int max = 1 >= 0) 	///
+		RSEED(str) 						///
+	]
+	loc Rc = _rc
+	
+	if !(`Rc') {
+		cap .cl_numlist qtiles "`anything'" , min(0) r(>=0 <1) sort
+		loc Rc = _rc
+	}
+	
+	if !(`Rc') {
+		if ("`rseed'" != "") {
+			loc cseed = c(seed)
+			cap n se seed `rseed'
+			loc Rc = _rc
+			se seed `cseed'
+		}
+	}
+	
+	if (`Rc') {
+		.errmsg `Rc' "option quantiles invalid"
+	}
+	
+	if mi("`qtiles'") {
+		loc qtiles 0.05 0.5 0.95
+	}
+	else {
+		loc qtiles : list uniq qtiles
+	}
+	
+	if mi("`reps'") {
+		loc reps 1000
+	}
+	
+	if (!(`reps') & ("`rseed'" != "")) {
+		.errmsg 198 "option rseed() not appropriate"
+	}
+	
+	.qtiles = "`qtiles'"
+	.reps 	= `reps'
+	.rseed 	= "`rseed'"
+end
+
+pr .get_options_mvm
+	syntax ///
+	[ , ///
+		Casewise CW ///
+		LISTwise LW ///
+		PAIRwise PW ///
+		EM EM2(str) ///
+		MIN(numlist int max = 1 > 0 <= `.k') ///
+	]
+	
+	if ("`casewise'`listwise'`lw'" != "") {
+		loc cw cw
+	}
+	
+	if ("`pairwise'" != "") {
+		loc pw pw
+	}
+	
+	if ("`em2'" != "") {
+		loc em em
+	}
+	
+	loc mvm `cw' `pw' `em'
+	loc nmvm : word count `mvm'
+	if (!`nmvm') {
+		loc mvm cw
+	}
+	else if (`: word count `mvm'' > 1) {
+		.errmsg 198 "only one of " ///
+		"casewise, pairwise or em may be specified"
+	}
+	
+	if mi("`min'") {
+		loc min = cond("`mvm'" != "cw", 1, `.k')
+	}
+	else if (`min' == `.k') & ("`mvm'" != "cw") {
+		di as txt "(note: only complete cases used)"
+		loc mvm cw
+	}
+	else if (`min' < `.k') & ("`mvm'" == "cw") {
+		.errmsg 198 "option min() invalid"
+	}
+	
+	.mvm 	= "`mvm'"
+	.min 	= `min'
+	.emopts = "`em2'"
+end
+
+pr .get_options_sds
+	loc inv "option sds() invalid"
+	
+	cap n mat `.SD' = diag(`0')
+	if (_rc) {
+		.errmsg _rc "`inv'"
+	}
+	
+	loc cols_sd = colsof(`.SD')
+	if (`cols_sd' != rowsof(`.Cov')) {
+		.errmsg 503 "`inv'"
+	}
+	
+	forv j = 1/`cols_sd' {
+		if (`.SD'[`j', `j'] <= 0) {
+			.errmsg 508 "`inv' -- standard " /// 
+			"deviation may not be zero or negative"
+		}
+		
+		if mi(`.SD'[`j', `j']) {
+			.errmsg 504 "`inv' -- matrix has missing values"
+		}
+	}
+end
+
+pr .opts_not_compatible
+	if ("`.mvm'" == "em") & ("`.wgt'" != "") {
+		errmsg 198 "option em not allowed with weights"
+	}
+	
+	if !(`.is_l4') {
+		if ("`.halves'" != "") {
+			loc err "|| notation"
+		}
+		else if ("`.qtiles'" != "") {
+			loc err "option quantiles"
+		}
+		if ("`err'" != "") {
+			.errmsg 198 "`err' only allowed with lambda 4"
+		}
+	}
+	
+	if (("`.halves'" != "") & ("`.qtiles'" != "")) {
+		.errmsg 198 "option quantiles incompatible with || notation"
+	}
+end
+
+pr .get_esample
+	syntax [if] [in] [fw aw]
+	marksample touse
+	
+	loc expr `.varlist'
+	loc expr : subinstr loc expr " " ") + !mi(" , all
+	qui replace `touse' = (!mi(`expr') >= `.min')*`touse'
+	
+	qui cou if (`touse')
+	loc N = r(N)
+	
+	if (`N' < 2) {
+		.errmsg 2001
+	}
+	
+	g byte `.touse' = `touse'
+	
+	if ("`.mvm'" != "cw") {
+		markout `touse' `.varlist'
+		qui cou if (`touse')
+		if (r(N) >= `N') {
+			di as txt "(note: no missing " ///
+			"values in the estimation sample)"
+			loc N = r(N)
+			.mvm = "cw"
+		}
+	}
+	
+	mat `.N' = `N'
+end
+
+pr .get_covariance_matrix
+	if ("`.mvm'" == "cw") {
+		qui cor `.varlist' if `.touse' `.wgt' , cov
+		mat `.Cov' = r(C)
+	}
+	else if ("`.mvm'" == "pw") {
+		.get_cov_pw
+	}
+	else if ("`.mvm'" == "em") {
+		.get_cov_em
+	}
+	else {
+		as 0
+	}
+	
+	if (`.std') {
+		mat `.Cov' = corr(`.Cov')
+	}
+	
+	mat rown `.Cov' = `.varlist'
+	mat coln `.Cov' = `.varlist'
+end
+
+pr .get_cov_pw
+	mat `.Cov' = J(`.k', `.k', .)
+	mat `.N' = J(`.k', `.k', `= `.N'[1, 1]')
+	
+	token `.varlist'
+	
+	forv m = 1/`.k' {
+		qui su ``m'' if `.touse' `.wgt'
+		mat `.Cov'[`m', `m'] = r(Var)
+		forv n = 1/`= `m' - 1' {
+			qui cor ``m'' ``n'' if `.touse' `.wgt' , cov
+			mat `.Cov'[`n', `m'] = el(r(C), 1, 2)
+			mat `.Cov'[`m', `n'] = el(r(C), 1, 2)
+			mat `.N'[`n', `m'] = r(N)
+			mat `.N'[`m', `n'] = r(N)
+		}
+	}
+end
+
+pr .get_cov_em
+	preserve
+	cap mi unset
+	qui {
+		keep if `.touse'
+		keep `.varlist'
+		mi set mlong
+		mi reg imp `.varlist'
+		mi imp mvn `.varlist' , emonly `.em_opts'
+	}
+	
+	mat `.Cov' 	= r(Sigma_em)
+	mat `.N' 	= r(N_em)
+	restore
+end
+
+pr .get_sign
+	if (c(stata_version) >= 14) {
+		loc ustr ustr
+	}
+	
+	if (`ustr'regexm("`.parvars'", "\(.+\)")) {
+		.get_sign_var
+	}
+	else if (!`.asis') {
+		.get_sign_fac
+	}
+end
+
+pr .get_sign_var
+	loc parvars `.parvars'
+	loc varlist `.varlist'
+	
+	while ("`parvars'" != "") {
+		gettoken var parvars : parvars , m(par)
+		if ("`par'" != "") {
+			loc reverse `reverse' `var'
+		}
+	}
+	unab reverse : `reverse'
+	
+	foreach v of loc varlist {
+		loc rev : list posof "`v'" in reverse
+		loc sign `sign' `= 1- (`rev' > 0)*2'
+	}
+	
+	.sign = "`sign'"
+end
+
+pr .get_sign_fac
+	tempname eres L
+	_est h `eres' , r n
+	
+	loc n = `.N'[1, 1]
+	cap factormat `.Cov' , n(`n')
+	if (_rc) {
+		.errmsg 459 "cannot determine sign of variables;" ///
+		" must explicitly specify signs in {it:varlist}"
+	}
+	
+	m : st_local("sign", invtokens(strofreal( ///
+		1 :- (st_matrix("e(L)")[., 1] :< 0) :* 2)'))
+		
+	.sign = "`sign'"
+end
+
+/*
+	matrix input */
+pr .guttmanl_mat `non_r'
+	loc 0 `.zero'
+	syntax anything(id = "matrix") [ , * ]
+	
+	mat `.Cov' = `anything'
+	if (rowsof(`.Cov') != colsof(`.Cov')) {
+		.errmsg 505
+	}
+	.is_corrmat = (trace(`.Cov') == rowsof(`.Cov')) 
+	
+	.get_options , `options'
+	
+	cap conf matrix `.SD'
+	if !(_rc) {
+		tempname Tmp
+		mat `Tmp' = `.SD' * `.Cov' * `.SD'
+		mat `.Cov' = `Tmp'
+		m : st_matrix("`.Cov'", ///
+			makesymmetric(st_matrix("`.Cov'")))
+		if (mreldif(`Tmp', `.Cov') > 1e-8) {
+			.errmsg 505
+		}
+	}
+	
+	if (`.std') {
+		mat `.Cov' = corr(`.Cov')
+	}
+end
+
+/*
+	report results */
+pr .guttmanl_report
+	if ("`r(cmd)'" != "guttmanl") {
+		.errmsg 301 "last command not guttmanl"
+	}
+	
+	loc lambda `.lambda'
+	if (`.replay') {
+		.lambda = ""
+		.get_options `.zero'
+		loc lambda `.lambda'
+		if mi("`lambda'") {
+			forv l = 1/6 {
+				cap conf sca r(lambda`l')
+				if !(_rc) {
+					loc lambda `lambda' `l'
+				}
+			}
+		}
+		else {
+			foreach l of loc lambda {
+				conf sca r(lambda`l')
+			}
+		}
+	}
+	
+	di as txt _n "Guttman lower bound reliability coefficients" _n
+	m : guttmanl_report_reverse()
+	di as txt "Number of itmes: " as res %7.0f r(k) _n
+	foreach l of loc lambda {
+		di as txt "Guttman lambda `l': " as res %06.4f r(lambda`l')
+	}
+	
+	if (`: list posof "4" in lambda') {
+		cap conf mat r(L4Q)
+		if (_rc) {
+			e 0
+				/* done */
+		}
+		
+		di as txt _n "Quantiles lambda 4"
+		di as txt "Repetitions: " as res %11.0f r(reps) _n
+		loc rows = rowsof(r(L4Q))
+		forv r = 1/`rows' {
+			loc q = el(r(L4Q), `r', 2)
+			if !(`q') {
+				loc fmt
+				loc q = `"" min ""'
+			}
+			else {
+				loc fmt %04.3f
+			}
+			loc l4 = el(r(L4Q), `r', 1)
+			di as txt _col(7) "L4Q(" as res `fmt' `q' ///
+				as txt"): " _col(19) as res %06.4f `l4'
+		}
+	}
+end
+
+/*
+	utility routines */
+pr .cl_numlist
+	tempname rr
+	gettoken lmacname 0 : 0
+	_ret hold `rr'
+	numlist `0'
+	c_local `lmacname' `r(numlist)'
+	_ret res `rr'
+end
+
+pr .errmsg
+	gettoken rc 0 : 0
+	if (mi(`"`0'"')) {
+		loc rr rr
+	}
+	else {
+		di as err `0'
+	}
+	e`rr' `rc'
+end
+
+
+/*
+	Mata */
+
+loc gst guttmanl_struct_def
+loc gstS struct `gst' scalar
+
+m :
+
+struct `gst' {
+	real matrix Cov
+	real matrix CovUser
+	real rowvector lambda
+	real rowvector qtiles
+	real scalar reps
+	real rowvector sign
+	real rowvector halves
+	real matrix N
+	string scalar varlist
+	string scalar wgt
+	transmorphic scalar g
+	real colvector L
+	real colvector L4Q
+}
+
+void guttmanl_ado(real matrix Cov, 
+				real rowvector lambda,
+				real rowvector qtiles,
+				real scalar reps,
+				string scalar rseed,
+				string scalar signstr,
+				string scalar halfstr,
+				| real matrix N,
+				string scalar varlist,
+				string scalar wgt)
+{
+	`gstS' g
+	
+	g.Cov = Cov
+	g.CovUser = g.Cov
+	
+	g.lambda = lambda
+	
+	g.qtiles = qtiles
+	g.reps = reps
+	
+	g.sign = strtoreal(tokens(signstr))
+	if (cols(g.sign)) {
+		g.Cov = (g.sign'g.sign) :* g.Cov
+	}
+	else {
+		g.sign = J(1, cols(g.Cov), 1)
+	}
+	
+	g.halves = strtoreal(tokens(halfstr))
+	
+	g.N = N
+	g.varlist = varlist
+	g.wgt = wgt
+	
+	g.g = guttmanl_setup(g.Cov, 0)
+	
+	g.L = J(6, 1, .z)
+	if (anyof(g.lambda, 1)) {
+		g.L[1] = guttmanl_get_l1(g.g)
+	}
+	if (anyof(g.lambda, 2)) {
+		g.L[2] = guttmanl_get_l2(g.g)
+	}
+	if (anyof(g.lambda, 3)) {
+		g.L[3] = guttmanl_get_l3(g.g)
+	}
+	if (anyof(g.lambda, 4)) {
+		if (!cols(g.qtiles)) {
+			if (cols(g.halves)) {
+				guttmanl_set_l4_t(g.g, g.halves')
+			}
+			g.L[4] = guttmanl_get_l4(g.g)
+		}
+		else if (cols(g.qtiles)) {
+			if (g.reps) {
+				if (rseed != "") {
+					if (strtoreal(rseed) != .) {
+						rseed(strtoreal(rseed))
+					}
+					else {
+						rseed(rseed)
+					}
+				}
+				guttmanl_set_l4_optimize(g.g, g.reps)
+			}
+			else {
+				guttmanl_set_l4_optimize(g.g, 0)
+			}
+			g.L4Q = guttmanl_get_l4_q(g.g, (g.qtiles, 1))
+			g.L[4] = g.L4Q[rows(g.L4Q), 1]
+			g.L4Q = g.L4Q[(1::cols(g.qtiles)), .]
+		}
+		g.halves = guttmanl_get_l4_which_t(g.g, g.L[4])'
+	}
+	if (anyof(g.lambda, 5)) {
+		g.L[5] = guttmanl_get_l5(g.g)
+	}
+	if (anyof(g.lambda, 6)) {
+		g.L[6] = guttmanl_get_l6(g.g)
+	}
+	
+	guttmanl_ado_return(g)
+}
+
+void guttmanl_ado_return(`gstS' g)
+{
+	string scalar wtype, wexp
+	string matrix names
+	
+	st_rclear()	
+	
+	if (g.wgt != "") {
+		wtype = substr(g.wgt, 2, 1) + "weight"
+		wexp = substr(g.wgt, strpos(g.wgt, "="), .)
+		st_global("r(wtype)", wtype)
+		st_global("r(wexp)", substr(wexp, 1, strlen(wexp) -1))
+	}
+	st_global("r(halves)", invtokens(strofreal(g.halves)))
+	st_global("r(signlist)", invtokens(strofreal(g.sign)))
+	st_global("r(varlist)", g.varlist)
+	st_global("r(cmd)", "guttmanl")
+	
+	for (i = 1; i <= rows(g.L); ++i) {
+		if (g.L[i] != .z) {
+			st_numscalar("r(lambda" + strofreal(i) + ")", g.L[i])
+		}
+	}
+	st_numscalar("r(k)", rows(g.Cov))
+	
+	if (g.varlist != "") {
+		names = tokens(g.varlist)'
+		names = (J(rows(names), 1, ""), names)
+		
+		if (rows(g.N) > 1) {
+			st_matrix("r(N)", g.N)
+			st_matrixrowstripe("r(N)", names)
+			st_matrixcolstripe("r(N)", names)
+		}
+		else {
+			st_numscalar("r(N)", g.N)
+		}
+	}
+	
+	st_matrix("r(C)", g.CovUser)
+	if (g.varlist != "") {
+		st_matrixrowstripe("r(C)", names)
+		st_matrixcolstripe("r(C)", names)
+	}
+	
+	if (cols(g.qtiles)) {
+		st_numscalar("r(reps)", g.reps)
+		st_matrix("r(L4Q)", (g.L4Q, g.qtiles'))
+		st_matrixcolstripe("r(L4Q)", ((("", "")\ ("l4", "q"))'))
+	}
+}
+
+void guttmanl_report_reverse()
+{
+	string rowvector varlist
+	real rowvector sign
+	string scalar s
+	
+	varlist = tokens(st_global("r(varlist)"))
+	if (!cols(varlist)) {
+		return
+	}
+	
+	sign = strtoreal(tokens(st_global("r(signlist)"))):<0
+	if (!any(sign)) {
+		return
+	}
+	
+	varlist = select(varlist, sign)
+	if (!cols(varlist)) {
+		return
+	}
+	else if (cols(varlist) > 1) {
+		s = "s"
+	}
+	printf("{txt}Reversed item%s: {res}%s\n", s, invtokens(varlist))
+}
+
+end
+e
+
+1.1.0	10nov2016	support weights
+					return weight expression
+					report reversed items
+1.0.0	14feb2016	first version on SSC

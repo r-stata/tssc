@@ -1,0 +1,39 @@
+d 'STCOMPADJ': module to estimate the covariate-adjusted cumulative incidence function in the presence of competing risks
+d
+d stcompadj estimates the adjusted cumulative incidence function
+d based on a Cox or a flexible parametric regression model in the
+d presence of competing risks.  Cox regression in the presence of
+d competing risks is usually performed by fitting separate models
+d for each failure type. It is possible to obtain the same results
+d by using a single analysis after appropriately adapting the data
+d set. In short this consists of expanding each observation for
+"d each cause of failure, creating a stratum indicator taking on a"
+"d value of 1 for the first n records, 2 for  the following n"
+"d records and so on, and modifying the failure indicator so that it"
+d attains the value 1 for each observation of death caused by the
+"d main event in the first stratum, for each observation of death"
+d caused by the competing event  in the second stratum and so on.
+d This way of representing data (expanded format) allows to model
+d both identical and different effects of the same covariate on the
+d main and competing events.
+d
+d KW: cumulative incidence function
+d KW: competing risks
+d KW: Cox regression
+d KW: flexible parametric regression
+d KW: risk
+d
+d Requires: Stata version 10.0
+d
+d Distribution-Date: 20091125
+d
+"d Author: Enzo Coviello, Dipartimento di Prevenzione Az. USL Ba/1"
+d Support: email enzo.coviello@@tin.it
+d
+f stcompadj.ado
+f stcompadj.sthlp
+f stcompadj_example.ado
+f silong.dta
+f ./m/malignantmelanoma.dta
+f si.dta
+f stcompadj-ItSUG2009.pdf

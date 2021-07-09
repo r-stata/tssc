@@ -1,0 +1,287 @@
+{smcl}
+{.-}
+help for {cmd:reclass} {right: {browse "mailto:John_Hendrickx@yahoo.com":John Hendrickx}}
+{.-}
+
+{title:reclass}
+
+{p 8 27}
+{cmd:reclass} {it:varname} , {cmd:[}
+  {cmdab:p:cnttab(}{it:string}{cmd:)}
+  {cmdab:ad:just}
+  {cmdab:b:estmod}
+  {cmd:q(}{it:real}{cmd:)}
+  {cmd:u(}{it:real}{cmd:)}
+  {cmdab:d:ist(}{it:real}{cmd:)}
+  {cmdab:as:soc(}{it:string}{cmd:)}
+  {cmdab:m:isclass(}{it:real}{cmd:)}
+  {cmdab:f:ormat(}{it:string}{cmd:)}
+  {cmdab:v:erbose}
+  {cmd:]}
+
+{title:Description}
+
+{p}
+{cmd:reclass} is called by {help perturb} to create a table of
+reclassification probabilities for use a perturbation analysis. It can
+be used separately to experiment with different association patterns.
+{it:varname} should refer to a categorical variable. {cmd:reclass}
+creates a table of reclassification probabilities such that the
+expected frequencies of the reclassified variable will be equal to the
+frequency distribution of {it:varname}. In addition, an appropriate
+association is imposed between the reclassified variable and
+{it:varname}.
+
+{title:Options}
+
+{p 0 4}
+{cmd:pcnttab} can be either a single value, a row or column matrix, or
+a square matrix. Usually, a single value between 0 and 100 will be
+specified indicating the percentage cases to be reclassified to the
+same category.
+
+{p 4 4}
+If a row or column matrix is specified its dimensions must correspond
+with the number of categories of {it:varname}. Values should be
+between 0 and 100 and indicate the percentage of cases to be
+reclassified to the same category for each category separately.
+
+{p 4 4}
+If a square matrix is specified, its dimensions must correspond with
+the number of categories of {it:varname}. The matrix should indicate
+the reclassification probabilities with the original variable in the
+rows and the reclassified variables in the columns. Either percentages
+or probabilities may be used. It is not necessary for these to add to
+100 or to 1 respectively as {cmd:reclass} transforms them into
+columnwise proportions.
+
+{p}
+In most cases, the {cmd:pcnttab} option will suffice. The options
+below are useful for users familiar with loglinear models for square
+tables (mobility models).
+
+{p 0 4}
+{cmd:adjust} By default, {cmd:reclass} defines reclassification
+probabilities such that the expected frequencies of the reclassified
+variable are the same as those of {it:varname} when the {cmd:pcnttab}
+option is used. Use {cmd:noadjust} to suppress this and use the
+percentages specified in the {cmd:pcnttab} option unmodified.
+{cmd:noadjust} implies {cmd:nobestmod}.
+
+{p 0 4}
+{cmd:bestmod} By default, {cmd:reclass} imposes an appropriate pattern
+of association between {it:varname} and its reclassified counterpart
+when the {cmd:pcnttab} option is used. Use {cmd:nobestmod} to avoid
+this. The reclassification probabilities will be adjusted to make the
+expected frequencies of the reclassified variable equal to those of
+{it:varname} but they will otherwise be close approximations of the
+values specified in the {cmd:pcnttab} option.
+
+{p 0 4}
+{cmd:misclass} Maintained for compatiblity with the original version
+of {cmd:misclass} and {help perturb}. Translated by {cmd:reclass} into
+{cmd:pcnttab(100-}{it:misclass}{cmd:) noadjust}.
+
+{p}
+The options below can be used to specify the parameters of a pattern
+of association. They will be ignored if {cmd:pncttab} was specified.
+
+{p 0 4}
+{cmd:q} the multiplicative parameter of a quasi-independence (constrained) model.
+
+{p 0 4}
+{cmd:u} the multiplicative parameter of a uniform association model.
+
+{p 0 4}
+{cmd:dist} the multiplicative parameter of a distance model.
+
+{p 0 4}
+{cmd:assoc} This allows users familiar with loglinear mobility models
+to specify an association pattern of their own choice. The argument
+for assoc should refer to a Stata program in which the variable
+{cmd:paras} is defined as a function of the row variable {cmd:orig}
+and the column variable {cmd:dest} to produce a loglinear pattern of
+associaton.
+
+{p 0 4}
+{cmd:format }Specify a valid format for printing results. The default is %8.3f.
+
+{p 0 4}
+{cmd:verbose} debugging information.
+
+{title:Remarks}
+
+{p}
+The basic idea of reclassifying cases in a perturbation analysis is
+that each case will have a high probability, say 95%, of being
+reclassified into the same category. The remaining cases could then be
+distributed evenly among the remaining categories. There are two
+problems with this approach. First, smaller categories will tend to
+grow and larger categories will shrink after reclassification. Second,
+the association between the original and the reclassified variable
+will be arbitrary, with some reclassification categories being more
+likely than others. Both problems occur more strongly to the extent
+that the variable in question is unevenly distributed.
+
+{p}
+{cmd:reclass} solves thes problems by creating an initial table of
+expected frequencies for the original by the reclassified variable,
+given the initial reclassification probabilities as specified by the
+{cmd:pcnttab} option. The parameters for an {it:appropriate} pattern
+of association between the original and the reclassified variable are
+derived from this table. Then an adjusted table of expected
+frequencies is created with the pattern of a association found, such
+that the expected frequency distribution of the reclassified variable
+is identical to that of the original.
+
+{p}
+When a single percentage is specified in {cmd:pcnttab}, this
+percentage is used for the diagonal cells of the initial
+reclassification probabilities, with the remaining percentages
+distributed evenly among the other categories. The {it:appropriate}
+pattern of association in this case is a "quasi-independence
+(constrained)" loglinear mobility model (Hout 1983, Goodman 1984).
+The QI-C model makes the odds of reclassification to the
+same/different category the same for all categories. In addition, the
+reclassified category is independent of the original category, given
+that they are not the same. This model is fitted to the intital table
+of expected frequencies and a single {cmd:ln(q)} parameter is
+reported. This {cmd:ln(q)} parameter is used to create the adjusted
+table.
+
+{p}
+If the argument to {cmd:pcnttab} consists of a row or column vector of
+percentages, {cmd:reclass} assumes uses different odds for
+reclassification to the same versus different categories for each
+category. The {cmd:pcnttab} argument forms the diagonal of the initial
+reclassification percentages, the remaining percentages are
+distributed evenly among the other categories. A quasi-independence
+model is fitted to the initial table of expected frequencies, with
+separate odds per category for reclassification to the same versus a
+different category. An {cmd:ln(q)} parameter is reported for each
+category of {it:varname}. These parameters are then used to create the
+adjusted table.
+
+{p}
+If the argument to {cmd:pncttab} consists of a square matrix of
+percentages, {cmd:reclass} assumes that {it:varname} is an ordered
+categorical variable. Consequently, the percentages should be
+constructed so that short distance reclassification is more likely
+than long distance reclassification. {cmd:reclass} fits two models to
+the intial table of expected frequencies, a "quasi-distance" model and
+a "quasi-uniform association" model.
+
+{p}
+Both make short distance reclassification more likely than long
+distance but this is even more pronounced for a quasi-uniform
+association model than for a quasi-distance model. A quasi-distance
+model makes the likelihood of reclassification proportionately lower
+for each step away from the main diagonal. A quasi-uniform model on
+the other hand is equivalent to a squared distance model,
+reclassification is proportionately less likely for the squared number
+of steps from the main diagonal.
+
+{p}
+Both models include an {cmd:ln(q)} parameter that increases the
+likelihood of reclassification to the same category without affecting
+short or long distance reclassification. The quasi-uniform model also
+reports an {cmd:ln(u)} parameter, quasi-distance reports an
+{cmd:ln(dist)} parameter. The best fitting model is chosen by
+{cmd:reclass} and the deviance and df are reported.
+
+{p}
+If the patterns of associatioh used by {cmd:reclass} are not in fact
+appropriate to the problem at hand, the {cmd:nobestmod} option could
+be used. The final reclassification percentages will the be as close
+as possible to those in the {cmd:pcnttab} option. The reclassification
+probabilities will be adjusted to make the expected frequencies of the
+reclassified variable equal to those of the original, leading to some
+discrepancies.
+
+{p}
+Alternatively, {cmd:reclass} could be run using the {cmd:noadjust}
+option. The returned result {cmd:e(gentab)} is then equal to the
+initial table of expected frequencies. {cmd:e(gentab)} could be used
+in a loglinear analysis to derive an appropriate model of association,
+which could then be specified in the {cmd:assoc} option.
+
+{p}
+The adjusted table is created using a loglinear model of equal main
+effects (a halfway model) and the appropriate pattern of association
+as an offset variable. This is fitted to an arbitrary table with the
+frequency distribution of {it:varname} as both its row and column
+marginals. The predicted frequencies of this model form a symmetric
+table with the pre-specified marginals and pattern of association
+(Hendrickx, 2004; Kaufman & Schervish, 1986).
+
+{p}
+If the {cmd:q}, {cmd:u}, or {cmd:dist} parameters are known, these can
+be specified directly in the corresponding options. For other patterns
+of association, the {cmd:assoc} option could be used. {cmd:assoc}
+should refer to a small program that defines the variable {cmd:paras}
+in terms of {cmd:orig} and {cmd:dest} to produce a loglinear pattern
+of association. For example:
+
+{input:program define q25u5}
+{input:    gen paras=(orig==dest)*ln(25) + orig*dest*ln(5)}
+{input:end}
+
+{p}
+The command {cmd:reclass }{it:myvar}{cmd:, assoc(q25u5)} will produce
+reclassification probabilities for the variable {it:myvar} using the
+program q25u5. This is equivalent to using the options {cmd:q(25)} and
+{cmd:u(5)}. Other loglinear mobility models can be defined in a
+similar fashion.
+
+{title:Saved results}
+
+{p 0 4}
+{cmd:r(gentab)}
+{break}the initial expected table for the original by reclassified
+variable
+
+{p 0 4}
+{cmd:r(margin)}
+{break}the frequency distribution of {it:varname}
+
+{p 0 4}
+{cmd:r(classprob)}
+{break}the cumulative reclassification probabilities. These will be
+used by {help perturb} to randomly reclassify {it:varname}.
+
+{title:References}
+
+{p 0 4}
+Goodman, Leo A. (1984).
+{it:The analysis of cross-classified data having ordered categories}.
+Cambridge, Mass.: Harvard University Press.
+
+{p 0 4}
+Hendrickx, J. (2004). Using standardised tables for interpreting
+loglinear models. Submitted to {it:Quality & Quantity}.
+
+{p 0 4}
+Hout, M. (1983). {it:Mobility tables}. Beverly Hills: Sage Publications.
+
+{p 0 4}
+Kaufman, R.L., & Schervish, P.G. (1986). Using adjusted
+crosstabulations to interpret log-linear relationships.
+{it:American Sociological Review} 51:717-733
+
+{p 0 4}
+{browse "http://www.xs4all.nl/~jhckx/perturb/":http://www.xs4all.nl/~jhckx/perturb/}
+
+{p}
+Direct comments to: {browse "mailto:John_Hendrickx@yahoo.com":John Hendrickx}
+
+{p}
+{cmd:reclass} is available at
+{browse "http://ideas.uqam.ca/ideas/data/bocbocode.html":SSC-IDEAS}.
+Use {help ssc} {cmd:install perturb} to obtain the latest version.
+
+{title:Also see}
+{p 0 21}
+On-line: help for
+  {help vif}, {help collin}, {help coldiag}, {help coldiag2},
+  {help perturb}
+{p_end}

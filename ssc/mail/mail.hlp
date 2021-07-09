@@ -1,0 +1,62 @@
+{smcl}
+{cmd:help mail}
+{hline}
+
+{title:Title}
+
+    {hi: E-mail partial progress from within stata code}
+
+{title:Syntax}
+
+{p 8 17 2}
+{cmd:mail}
+From: sender@site1; To:recipient@site2; Subject: #;# 
+[using filename]
+[{cmd:,} {it:options}]
+
+{title:Description}
+
+{pstd}
+{cmd:mail} uses the OS's underlying sendmail program to send you emails.
+It is meant to be used from withing programs running for a long time and
+send emails to either an email-to-sms gateway of your sms provider or to
+a mail push service so that you get progress reports on your cell phone 
+or handheld in the form of sms or email.  It can append a number of lines
+from a given file typically the last lines from the file your program is 
+logging into. For that you need to install {cmd: ashell} (ssc install ashell)
+
+
+{title:Options}
+
+{dlgtab:Main}
+
+{phang}
+{cmd:using filename} append a max of 50 lines of bottom of filename to body.
+
+{phang}
+{cmd:,lines(integer 50)} Makes sense in the presence of "using filename". Modifies the default of 50.
+
+{title:Remarks}
+
+{pstd}
+This program  will work on MacOS X, Linux, Unix and the like. Could be made to work on windows. May port it there if demand manifests itself.
+
+
+{title:Examples}
+The command below
+{phang}
+{cmd:. mail From: nikos@iza.org; To: nikos@iza.org; Subject: request; How about windows?}{p_end}
+will send an email looking like this:
+------------------- 
+From: nikos@iza.org
+To: nikos@iza.org 
+Subject: request
+
+How about windows? 
+------------------
+
+{title: Author}
+Dr Nikos Askitas, IZA, Bonn, Germany.
+Email: nikos@@iza.org
+
+

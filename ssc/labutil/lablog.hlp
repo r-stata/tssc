@@ -1,0 +1,80 @@
+.-
+help for ^lablog^
+.-
+
+Define value labels for log base 10 numbers 
+-------------------------------------------
+
+    ^lablog^ valuelabelname ^, v^alues^(^numlist^)^ [ ^m^ax^(^#^) l^ist ] 
+
+Description
+-----------
+
+^lablog^ defines value labels for values which are base 10 logarithms
+containing the antilogged values. 
+
+The ^label define^ ... ^, modify^ command that defines the labels is 
+echoed to the monitor. 
+
+
+Remarks
+-------
+
+Suppose you have a variable which contains numbers which are base 10 
+logarithms of some other numbers. On a graph you wish to have labelling 
+in the original antilogged or exponentiated scale, so that 0 appears as 1, 
+1 as 10, -1 as 0.1, and so forth. ^lablog^ is designed for this problem. 
+
+^lablog logs, v(1/6)^ for example is equivalent to 
+
+^label def logs 1 "10" 2 "100" 3 "1000" 4 "10000" 5 "100000" 6 "1000000"^ 
+          ^, modify^ 
+	  
+after which you may attach the value labels in ^logs^ to one or more 
+variables. 
+
+The format here with each zero digit explicit may be unacceptable for very 
+big or very small numbers. By default labels for integers >= 7 or <= -7 
+are defined as powers of 10 such as ^"10^^7"^ or ^"10^^-7"^. The threshold 
+at which this change of format takes place may be tuned by the option 
+^max( )^. 
+
+Note that Stata does not permit value labels to be attached to non-integers. 
+
+
+Options
+-------
+
+^values(^numlist^)^ specifies a numlist of integers whose value labels are 
+    to be modified (added or changed). This is a required option. 
+
+^max(^#^)^ specifies a maximum level at which the format of the value 
+    labels changes to powers of 10 rather than numbers with each zero 
+    digit specified. ^max(5)^ would mean that the value labels for 4, 5, 
+    -4 and -5 would be ^"10000"^, ^"10^^5"^, ^"0.0001"^ and ^"10^^-5"^,  
+    respectively. See also Remarks above.
+
+^list^ invokes ^label list^ valuelabelname after the modifications.  
+    
+    
+Examples
+--------
+
+    . ^lablog logs, v(1/6)^
+    . ^lablog logs, v(1/6) m(5)^
+    . ^lab val lincome logs^ 
+
+
+Author
+------
+
+         Nicholas J. Cox, University of Durham, U.K.
+         n.j.cox@@durham.ac.uk
+
+
+Also see
+--------
+
+On-line: help for @label@, @numlist@ 
+ Manual: ^[U] 15.6^, ^[R] label^
+

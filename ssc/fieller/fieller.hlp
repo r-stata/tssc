@@ -1,0 +1,106 @@
+{smcl}
+{* 2004-12-07 JRC}{...}
+{hline}
+help for {hi:fieller}{right:Version 1.0 2004-12-07}
+         {hi:fielleri}
+{hline}
+
+{title:Confidence interval of a quotient by Fieller's method (for unpaired data)}
+
+{p 8 17 2}
+{cmd:fieller}
+{it:varname}
+[{cmd:if} {it:exp}]
+[{cmd:in} {it:range}]
+{cmd:,}
+    {cmd:by(}{it:grouping_varname}{cmd:)}
+    [{cmdab:l:evel:(}{it:real}{cmd:)}
+    {cmdab:rev:erse}]
+
+{p 8 17 2}
+{cmd:fielleri}
+{it:numerator_mean numerator_SD numerator_n denominator_mean denominator_SD denominator_n}
+[{cmd:,}
+    {cmdab:L:evel:(}{it:real}{cmd:)}]
+
+{p 4 4 2}
+{cmd:by} {it:...}{cmd::} may be used with {cmd:fieller}; see help {help by}.
+
+
+{title:Description}
+
+{p 4 4 2}
+{cmd:fieller} calculates the confidence interval for a quotient of two independent samples of normally distributed data in {it:varname}. The samples are identified by the grouping variable in the {cmd:by()} option.
+
+{p 4 4 2}
+{cmd:fielleri} is the immediate form of the command. Means, standard deviations and {it:n}s are given sequentially, with the numerator's statistics first.
+
+
+{title:Options}
+
+{p 4 8 2}
+{cmd:by()} is required for {cmd:fieller}. It identifies the grouping variable, which may be either numeric or string. The smallest value defines the group that will go into the numerator and the next-smallest value is the group in the denominator.
+
+{p 4 8 2}
+{cmd:reverse} (for {cmd:fieller}) allows the user to invert the quotient should the {cmd:by()} variable be coded such that the group intended to be in the denominator is the lesser value.
+
+{p 4 8 2}
+{cmd:level} allows the user to choose the level of the confidence interval.  It defaults to {cmd:c(level)}.  See help {help creturn}.
+
+
+{title:Remarks}
+
+{p 4 4 2}
+The confidence interval is calculated as described in Motulsky (1995).  The method is based upon an eponymous theorem by Edgar C. Fieller.
+
+{p 4 4 2}
+The method is intended for normally distributed data, but variances need not be identical between the two groups.  {cmd:fieller} and {cmd:fielleri} are for uncorrelated data (independent groups).  Confidence intervals for quotients of paired data should be calculable by the official Stata command {cmd:pkequiv} with the {cmd:fieller} option, if the dataset can be arranged to meet the requirements of the command.  See help {help pkequiv}.
+
+{p 4 4 2}
+The confidence interval relies upon the solution to a quadratic equation, which doesn't necessarily have both roots real; therefore, the confidence interval might not always be calculable.  This will happen when the quotient is not statistically  signficsignficantly different from zero at the specified level of Type I error rate—the mean of the denominator should be "large" in comparison to its standard deviation.
+
+{p 4 4 2}
+{title:Reference}
+
+{p 4 4 2}
+Harvey Motulsky, {it:Intuitive Biostatistics}   Oxford: Oxford University Press, 1995. pp. 285–86. 
+
+
+{title:Examples}
+
+{p 4 8 2}{cmd:. sysuse bplong}
+
+{p 4 8 2}{cmd:. // A recommended preliminary: -regress- and plot residuals with, for example, -pnorm-}
+
+{p 4 8 2}{cmd:. bysort when: fieller bp, by(sex) level(90)}
+
+{p 4 8 2}{cmd:. fieller bp if when == 2, by(sex)}
+
+{p 4 8 2}{cmd:. // An alternative approach (for large samples) using the delta method; less favorably considered}
+
+{p 4 8 2}{cmd:. tabulate sex, generate(Sex)}
+
+{p 4 8 2}{cmd:. regress bp Sex1 Sex2 if when == 2, noconstant}
+
+{p 4 8 2}{cmd:. nlcom _b[Sex1] / _b[Sex2]}
+
+{p 4 8 2}{cmd:. // Another alternative, using generalized linear modeling (again, for large samples)}
+
+{p 4 8 2}{cmd:. glm bp Sex1 if when == 2, family(gaussian) link(log) eform nolog}
+
+
+{p 4 8 2}{cmd:. fielleri 278 5.5 4 254 2.88 4, level(99)}
+
+{title:Author}
+
+{p 4 4 2}
+E-mail {browse "mailto:jcoveney@bigplanet.com":Joseph Coveney} if you observe any problems.
+
+
+{title:Also see}
+
+{p 4 13 2}
+Manual:  {hi:[R] pkequiv}
+
+{p 4 13 2}
+Online:  help for {help pkequiv}

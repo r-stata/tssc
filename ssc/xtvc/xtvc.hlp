@@ -1,0 +1,62 @@
+{smcl}
+{* 26july2004}{...}
+{hline}
+help for {hi:xtvc} 
+{hline}
+
+{title:Confidence intervals for the variance component of random-intercept linear models}
+
+{p 8 24}{cmd:xtvc} [{cmd:,} {cmdab:l:evel(}{it:#}{cmd:)} {cmdab:h:0(}{it:#}{cmd:)} ]   
+
+{title:Description}
+
+{p 4 7}{cmd:xtvc} is a post-estimation command that presents confidence intervals for the variance component
+of the random effect based on the inversion of a score-based test (Bottai, 2003).
+It has to be used after {cmd:xtreg} with option {cmd: mle} (maximum-likelihood random-effects estimator).
+
+{title:Options}
+
+{p 4 4}{cmd:level(}{it:#}{cmd:)} specifies the confidence level, in percent,
+for the confidence interval of the variance component; see help {help level}.
+
+{p 4 4}{cmdab:h:0(}{it:#}{cmd:)} performs the score-based test for the null hypothesis
+H0: sigma_u = #.
+
+{title:Remarks}
+
+{p 4 7}{cmd:xtvc} only provides interval estimates when the number of units (groups) is greater than eight.
+
+{title:Examples}
+
+{p 4 8 2}{cmd:. webuse nlswork.dta, clear}{p_end}
+{p 4 8 2}{cmd:. iis idcode}{p_end}
+{p 4 8 2}{cmd:. xtreg ln_w grade age ttl_exp tenure, mle}{p_end}
+{p 4 8 2}{cmd:. xtvc}{p_end}
+{p 4 8 2}{cmd:. xtvc, l(90)}{p_end}
+{p 4 8 2}{cmd:. xtvc, l(99) h0(0.25)}{p_end}
+
+{title:Authors}
+
+{p 4 4 1}Matteo Bottai, Arnold School of Public Health,
+ University of South Carolina, Columbia, USA and 
+ Institute of Information Science and Technology,
+ National Research Council of Italy, Pisa, Italy {p_end}
+
+{p 4 4 1}Nicola Orsini, Institute of Environmental Medicine, Karolinska Institutet, Stockholm, Sweden and
+ Institute of Information Science and Technology,
+ National Research Council of Italy, Pisa, Italy {p_end}
+
+{title:Reference}
+
+{p 4 4 1}Bottai, M. (2003) Confidence regions when the Fisher information is zero, Biometrika, 
+                  Volume 90, Issue 1: pp. 73-84.
+
+{title:Also see}
+ 
+{p 4 13 2} Manual:  {hi:[U] 23 Estimation and post-estimation commands},{break}
+{hi:[U] 29 Overview of Stata estimation commands},{break}
+{hi:[XT] xtreg}
+  
+{p 4 13 2}
+Online:  help for {help estcom}, {help postest}, {help xt}, {help xtreg}
+ 

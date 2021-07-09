@@ -1,0 +1,124 @@
+.-
+help for ^storecmd6^, ^stowcmd6^, ^repcmd6^ 
+.-
+
+Store and repeat commands using characteristics
+-----------------------------------------------
+
+    ^storecmd6^ charname cmdline
+
+    ^stowcmd6^ charname cmdline 
+
+    ^repcmd6^ charname [ ^, s^howonly ] 
+
+Description
+-----------
+
+cmdline is any Stata command line.
+
+charname is the name of a Stata characteristic. To avoid confusion with 
+characteristics used by Stata itself, include at least one capital letter 
+in the name. 
+
+^storecmd6^ executes cmdline. If successful, meaning that there were no 
+errors, cmdline is stored as characteristic ^_dta[^charname^]^. 
+
+^stowcmd6^ stows away cmdline as characteristic ^_dta[^charname^]^. cmdline 
+therefore need not be a command that would execute properly at the time
+it is stowed. 
+
+^repcmd6^ executes the command stored in characteristic 
+^_dta[^charname^]^.
+
+These commands with names ending with ^6^ are the original public domain 
+Stata 6 versions of these commands, renamed. Users of Stata 7 up should 
+use instead ^storecmd^, ^stowcmd^ and ^repcmd^. 
+
+
+Options
+-------
+
+^showonly^ shows the command line stored, but does not execute it. 
+
+
+Examples
+--------
+
+Stata command lines are stored temporarily in memory and they may 
+be stored as desired in text files, commonly ^.log^ or ^.do^ files. 
+
+These commands offer a third possibility: command lines may be stored 
+as characteristics. They may be stored within sessions, and so long as 
+the data file is saved so that these characteristics are included, they 
+may be stored between sessions with the same data file. 
+
+Here is one pattern: 
+
+1. You develop a complicated command line, possibly after several steps. 
+You want to store it. Type, for example, 
+
+^storecmd6 G graph^ <complicated details> 
+
+The command line 
+
+^graph^ <complicated details> 
+
+is executed. 
+
+If no error occurs, the command line is stored as characteristic 
+^_dta[G]^. 
+
+In addition, the command line is placed in the keyboard buffer, 
+so that it can be retrieved for editing. 
+
+^storecmd6 G graph^ <complicated details> 
+
+is one line above in the buffer. 
+
+2. At any time, to see what commands have been stored, you can type 
+
+^char list^ 
+
+or 
+
+^char list _dta^ 
+
+noting that this will list any other characteristics as well. 
+
+3. If you wish to save such characteristics with the data file, 
+use the ^save^ command. 
+
+4. Later, you wish to repeat the command. Type 
+
+^repcmd6 G^ 
+
+The command line stored as characteristic ^_dta[G]^ is executed. 
+
+In addition, that command line is placed in the keyboard buffer, 
+so that it can be retrieved for editing. 
+
+^repcmd6 G^ 
+
+is one line above in the buffer. 
+
+
+Author
+------
+
+         Nicholas J. Cox, University of Durham, U.K.
+         n.j.cox@@durham.ac.uk
+
+
+Acknowledgements
+----------------
+
+Alan Feiveson suggested the original idea. Jeroen Weesie's ^keyb^ program 
+was invaluable. 
+
+
+Also see
+--------
+
+On-line: help for @char@, @keyboard@  
+ Manual: ^[U] 15.8^, ^[R] char^ 
+

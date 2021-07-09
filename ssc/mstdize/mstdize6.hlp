@@ -1,0 +1,129 @@
+.-
+help for ^mstdize6^
+.-
+
+Marginal standardization of two-way tables
+------------------------------------------
+
+    ^mstdize6^ varname rowtotvar coltotvar [^if^ exp] [^in^ range]
+    ^, by(^rowvar colvar^)^ [ ^g^enerate^(^newvar^) tol^erance^(^#^)^
+    tabdisp_options ]
+
+Description
+-----------
+
+^mstdize6^ takes a table of varname, with rows indexed by rowvar and
+columns indexed by colvar, and produces a new table containing varname
+scaled such that the row totals are given by rowtotvar and the column
+totals given by coltotvar.
+
+
+Remarks
+-------
+
+The algorithm is
+
+0. Initialise
+         guess = varname
+
+1. Loop until max (| guess - previous guess |) <= tolerance
+         previous guess = guess
+         guess = guess * target row total / guess row total
+         guess = guess * target col total / guess col total
+
+The total over rows of the column totals should equal the total over
+columns of the row totals. That is, the two should lead to the same
+grand total.
+
+This procedure is known by many different names in several different
+disciplines, including statistics, economics and engineering. Some are
+
+    biproportional matrices
+    iterative proportional fitting
+    raking
+    RAS technique
+
+
+Options
+-------
+
+^by(^rowvar colvar^)^ indicates rowvar and colvar and is required.
+
+^generate(^newvar^)^ generates a new variable containing scaled values.
+
+^tolerance(^#^)^ is a technical option indicating the criterion for
+    convergence. This is the largest acceptable absolute difference
+    between each guess and the previous guess (and also between the two
+    totals of totals). Default 0.001.
+
+tabdisp_options are options of ^tabdisp^. Default ^center format(%9.2f)^.
+
+
+Examples
+--------
+
+    Data used by Smith (1976), quoted by Agresti (1990, p.197):
+    . ^gen r = 100^
+    . ^gen c = 100^
+    . ^mstdize6 freq r c, by(school attitude)^
+
+    Data used by Friedlander (1961), quoted by Bishop et al. (1975,
+    p.98):
+    . ^input freq age status^
+    . ^1306    1        1^
+    . ^83      1        2^ 
+    . ^0       1        3^
+    . ^619     2        1^ 
+    . ^765     2        2^
+    . ^3       2        3^
+    . ^263     3        1^
+    . ^1194    3        2^
+    . ^9       3        3^
+    . ^173     4        1^
+    . ^1372    4        2^
+    . ^28      4        3^
+    . ^171     5        1^
+    . ^1393    5        2^
+    . ^51      5        3^
+    . ^159     6        1^
+    . ^1372    6        2^
+    . ^81      6        3^
+    . ^208     7        1^
+    . ^1350    7        2^
+    . ^108     7        3^
+    . ^1116    8        1^
+    . ^4100    8        2^
+    . ^2329    8        3^
+    . ^end^
+    . ^gen rt = .^
+    . ^for X in num 1/8 \ Y in num 1412 1402 1450 1541 1681 1532 1662 7644:^
+         ^replace rt = Y if  age == X^
+    . ^gen ct = .^
+    . ^for X in num 1/3 \ Y in num 3988 11702 2634 :^
+         ^replace ct = Y if status == X^
+    . ^mstdize6 freq rt ct , by(age status)^
+
+
+References
+----------
+
+Agresti, A. 1990. Categorical data analysis. New York: John Wiley.
+
+Bishop, Y.M.M., Fienberg, S.E. and Holland, P.W. 1975. Discrete
+multivariate analysis. Cambridge, MA: MIT Press.
+
+Friedlander, D. 1961. A technique for estimating a contingency table
+given the marginal totals and some supplementary data. Journal of the
+Royal Statistical Society Series A 124: 412-420.
+
+Smith, K.W. 1976. Table standardization and table shrinking: aids in the
+traditional analysis of contingency tables. Social Forces 54, 669-693.
+
+
+Author
+------
+
+         Nicholas J. Cox, University of Durham, U.K.
+         n.j.cox@@durham.ac.uk
+
+

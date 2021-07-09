@@ -1,0 +1,243 @@
+{smcl}
+{* 25May2006}{...}
+{hline}
+help for {hi:ivreset}
+{hline}
+
+{title:Perform Ramsey/Pesaran-Taylor/Pagan-Hall RESET specification test after IV/GMM/OLS estimation}
+
+{p 8 14}{cmd:ivreset}
+{bind:[{cmd:,} {cmdab:poly:nomial(}{it:#}{cmd:)}}
+{cmdab:rf:orm}
+{cmd:cstat}
+{cmd:small}
+]
+
+{p}{cmd:ivreset} is for use after {help ivreg2} and {help regress}.
+
+
+{title:Description}
+
+{p}{cmd:ivreset} performs various flavors of Ramsey's
+regression error specification test (RESET)
+as adapted by Pesaran and Taylor (1999)
+and Pagan and Hall (1983)
+for instrumental variables (IV) estimation.
+The RESET test is sometimes called an "omitted variables test"
+but probably is best interpreted as
+a test of neglected nonlinearities in the choice of functional form
+(Wooldridge 2002, pp. 124-5).
+Under the null that there are no neglected nonlinearities,
+the residuals should be uncorrelated with low-order polynomials in y-hat,
+where the y-hats are the "forecast values" of the dependent variable
+(see below).
+The test flavors vary according to the polynomial terms
+(square, cube, 4th power of y-hat),
+the choice of forecast values
+(Pesaran-Taylor optimal forecasts
+or Pagan-Hall reduced form forecasts),
+test statistic (Wald or GMM-distance),
+and large vs. small sample statistic (chi-squared or F-statistic).
+The test statistic is distributed
+with degrees of freedom = number of polynomial terms.
+The default is the Pesaran-Taylor version
+using the square of the optimal forecast of y
+and a chi-squared Wald statistic with one degree of freedom.
+
+{p}If the original {cmd:ivreg2} or {cmd:regress} estimation
+was heteroskedastic-robust, cluster-robust,
+autocorrelation-consistent (AC),
+or heteroskedastic and autocorrelation-consistent (HAC),
+the RESET test reported will be as well.
+
+{p}{cmd:ivreset} can also be used after OLS or HOLS regression
+with {cmd:regress} or {cmd:ivreg2},
+when there are no endogenous regressors.
+In this case, a standard Ramsey RESET test
+using fitted values of y is reported.
+
+
+{title:Options}
+
+{p 0 4}{cmdab:rf:orm} requests
+the Pagan-Hall (1983) version of the RESET test for IV regression
+instead of the default Pesaran-Taylor (1999) version.
+The Pagan-Hall version uses the reduced form forecast
+y-hat of the dependent variable y,
+as opposed to the default Pesaran-Taylor
+version that uses an "optimal forecast" (see below).
+
+{p 0 4}{cmdab:poly:nomial(}{it:#}{cmd:)} requests a
+second, third, or fourth-order polynomial in y-hat.
+The default is a second-order polynomial,
+i.e., y-hat squared.
+
+{p 0 4}{cmd:cstat} requests a C-test statistic,
+also known as a "GMM-distance" or "difference-in-Sargan"
+test statistic (see below),
+instead of the default Wald statistic.
+
+{p 0 4}{cmd:small} requests a small-sample F statistic
+instead of the default chi-squared statistic.
+
+
+{title:Remarks}
+
+{p}The Ramsey (1969) RESET test
+is a standard test of neglected nonlinearities in the choice of functional form
+(sometimes, perhaps misleadingly, also described as a test for omitted variables;
+see {help ovtest} and Wooldridge (2002), pp. 124-5).
+The principle is to estimate y=X*beta+W*gamma+u
+and then test the significance of gamma.
+The Ws in a RESET test can either be powers of X or,
+as implemented here,
+powers of the forecast values of y.
+
+{p}As Pagan and Hall (1983) and Pesaran and Taylor (1999) point out,
+a RESET test for an IV regression cannot use
+the standard IV predicted values X*beta-hat,
+because X includes endogenous regressors that are correlated with u.
+Instead, the RESET test needs to be implemented using
+"forecast values" of y that are functions of the instruments
+(exogenous variables) only.
+
+{p}Denote the full set of instruments by Z
+(possibly including exogenous regressors also in X).
+
+{p}In the Pagan-Hall version of the test,
+the forecast values y-hat are
+the reduced form predicted values of y,
+i.e., the predicted values Z*pi-hat
+from a regression of y on the instruments Z.
+
+{p}In the Pesaran-Taylor version of the test,
+the forecast values y-hat are the "optimal forecast" values.
+The optimal forecast (predictor) y-hat
+is defined as X-hat*beta-hat,
+where beta-hat is the IV estimate of the coefficents
+and X-hat consists of the exogenous regressors in X
+and the reduced form predicted values of
+the endogenous regressors in X.
+The latter are the predicted values Z*pi-hat
+from regressions of the endogenous Xs on the instruments Z.
+Note that if the equation is exactly identified,
+the optimal forecasts and reduced form forecasts coincide,
+and the Pesaran-Taylor and Pagan-Hall tests are identical.
+
+{p}In both the Pesaran-Taylor and Pagan-Hall versions
+of the RESET test,
+the augmented equation is y=X*beta+W*gamma+u,
+where the Ws are the powers of y-hat.
+The default is squares of y-hat,
+but 3rd and 4th powers of y-hat can be requested.
+This equation is estimated by IV,
+and the default test statistic is a Wald
+test of the significance of gamma.
+Under the null that there are no neglected nonlinearities
+and the equation is otherwise well-specified,
+the test statistic is distributed as chi-squared
+with degrees of freedom equal to the number of powers of y-hat.
+
+{p}Alternatively, Godfrey has suggested that
+a C-test statistic (also known
+as a "GMM-distance" or "difference-in-Sargan" test)
+be used to test whether the powers of y-hat can be added
+to the orthogonality or moment conditions that
+define the IV or OLS estimator
+(see Pesaran and Taylor, pp. 262-63).
+This test can be requested with the {cmd:cstat} option.
+Under the null that the equation is well-specified
+and has no neglected nonlinearities,
+J-J1 is distributed as chi-squared
+with degrees of freedom equal to the number of powers of y-hat,
+where J1 is the Sargan-Hansen statistic for the original IV estimation
+and J is the Sargan-Hansen statistic for the IV estimation
+using the additional orthogonality conditions
+provided by the powers of y-hat.
+For a general discussion of this test,
+see help {help ivreg2} (if installed)
+and Hayashi (2000), pp. 218-22 and
+pp. 232-34.
+
+{p}If the equation was estimated using OLS or HOLS
+(heteroskedastic OLS - see help {help ivreg2}),
+and there there are no endogenous regressors,
+{cmd:ivreset} reports a standard Ramsey RESET test
+using the fitted values of y,
+i.e., X*beta-hat.
+Note that if the original estimation was OLS or HOLS,
+the excluded instruments (if any) are ignored by {cmd:ivreset}.
+
+{p}If the original equation was estimated
+using {cmd:robust}, {cmd:cluster}, or {cmd:bw},
+so is the augmented equation,
+and the RESET test statistic will be heteroskedastic-,
+cluster-, and/or autocorrelation-robust, respectively.
+
+
+{title:Saved results}
+
+{p}{cmd:ivreset} saves the value of the test statistic,
+its p-value,
+and the degrees of freedom of the test.
+See {cmd:return list}.
+
+
+{title:Examples}
+
+{p 8 12}{stata "use http://fmwww.bc.edu/ec-p/data/hayashi/griliches76.dta" : . use http://fmwww.bc.edu/ec-p/data/hayashi/griliches76.dta }{p_end}
+
+{p 8 12}(Wages of Very Young Men, Zvi Griliches, J.Pol.Ec. 1976)
+
+{p 8 12}{stata "ivreg2 lw s expr tenure rns smsa (iq=med kww)" : . ivreg2 lw s expr tenure rns smsa (iq=med kww)}
+
+(Default: 2nd-order polynomial in y-hat, Pesaran-Smith optimal forecast, Wald chi-squared statisic)
+
+{p 8 12}{stata "ivreset" : . ivreset}{p_end}
+
+(If estimation is heteroskedastic-robust, so are RESET tests)
+{p 8 12}{stata "ivreg2 lw s expr tenure rns smsa (iq=med kww), robust" : . ivreg2 lw s expr tenure rns smsa (iq=med kww), robust}
+
+(4th order polynomial, Pagan-Hall reduced form forecast, Wald F-statistic)
+
+{p 8 12}{stata "ivreset, poly(4) rf small" : . ivreset, poly(4) rf small}{p_end}
+
+(3rd order polynomial, Pesaran-Smith optimal forecast, C (GMM-distance) chi-squared statistic)
+
+{p 8 12}{stata "ivreset, poly(3) cstat" : . ivreset, poly(3) cstat}{p_end}
+
+
+{title:References}
+
+{p 0 4}Baum, C. F., Schaffer, M. E., Stillman, S., 2003. Instrumental variables and GMM:
+Estimation and testing.  The Stata Journal, Vol. 3, No. 1, pp. 1-31.
+Unpublished working paper version:
+Boston College Department of Economics Working Paper No. 545.
+http://fmwww.bc.edu/ec-p/WP545.pdf
+
+{p 0 4}Hayashi, F. Econometrics. 2000. Princeton: Princeton University Press.
+
+{p 0 4}Pagan, A.R. and Hall, D.  1983.  "Diagnostic Tests as Residual Analysis."
+Econometric Reviews, Vol. 2, No. 2, pp. 159-218.
+
+{p 0 4}Pesaran, M.H. and Taylor, L.W.  1999.  "Diagnostics for IV Regressions."
+Oxford Bulletin of Economics and Statistics, Vol. 61, No. 2, pp. 255-81.
+
+{p 0 4}Ramsey, J.B.  1969.  "Tests for Specification Errors in a Classical Linear
+Least Squares Regression Analysis."
+Journal of the Royal Statistical Society B, Vol. 31, pp. 350-71.
+
+{p 0 4}Wooldridge, J.M. 2002. Econometric Analysis of Cross Section and Panel Data.
+Cambridge, MA: MIT Press.
+
+
+{title:Author}
+
+{p 0 4}Mark E Schaffer, Heriot-Watt University, UK{p_end}
+{p 0 4}m.e.schaffer@hw.ac.uk{p_end}
+
+
+{title:Also see}
+
+{p 1 14}Manual:  {hi:[R] regression diagnostics}{p_end}
+{p 0 19}On-line:  help for {help ivreg2}, {help ivhettest}, {help ivendog} (if installed){p_end}

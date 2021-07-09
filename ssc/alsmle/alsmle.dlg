@@ -1,0 +1,133 @@
+/*
+ alsmle
+*! VERSION 1.0 14feb2012
+*/
+VERSION 10.0
+INCLUDE _std_large
+DEFINE _dlght 330
+INCLUDE header
+HELP hlp1, view("help alsmle")
+RESET res1
+
+SCRIPT PREINIT
+BEGIN
+program parseMessage
+script se_createAsSvyOLS
+script se_setBias_on
+program svy_check_title
+END
+
+PROGRAM parseMessage
+BEGIN
+if __MESSAGE.contains("__MI__") {
+call script se_setMI_on
+}
+END
+
+SCRIPT POSTINIT
+BEGIN
+program check_bytab
+program se_setFinalInitState
+END
+
+PROGRAM check_bytab
+BEGIN
+if ! __MESSAGE.contains("__MI__") {
+call script sub_set_by_on
+}
+END
+
+DIALOG main, label("alsmle - Beach-Mackinnon Autoregressive Maximum Likelihood Estimation") ///
+	tabtitle("Main")
+BEGIN
+ DEFINE _x _xsetbu
+ DEFINE _y _top
+ INCLUDE _bu_tsset
+  
+ TEXT tx_yvar	_lft	+30	120	., ///
+	label("Dependent Variable:")
+ TEXT tx_xvar	_vlx	@	300	., ///
+	label("Independent Variables:")
+ VARNAME vn_yvar  _lft	 _ss	120 .,	 ///
+	label("Dependent Variable")
+ VARLIST vl_xvar  _vlx	 @	300 ., ///
+	label("Independent Variables")
+  CHECKBOX ck_nocons @         _ms       @         .,	/*
+		*/ label("Suppress constant term")	/*
+		*/ option("noconstant")			
+
+  CHECKBOX ck_mfx  _lft    +35   _iwd    _ht2 , 	///
+	groupbox					///
+	onclickon(script ck_mfx_on)			///
+	onclickoff(script ck_mfx_off)		///
+label("Marginal Effects & Elasticities:")
+ 
+ CHECKBOX ck_lin _indent   _ss  80  ., option("mfx(lin)") /*
+*/ label("Linear") /*
+*/
+DEFINE y @y
+  CHECKBOX ck_log  100   y  @ ., option("mfx(log)") /*
+*/ label("Log-Log") /*
+*/
+  CHECKBOX ck_tolog    190   y 250 ., option("tolog") /*
+*/ label("Log Transform Varlist") /*
+*/
+
+ CHECKBOX ck_dn  _ilft   _xls   350  ., option("dn") /*
+*/ label("Divisor (N) instead of (N-K) for DF") 
+ CHECKBOX ck_logrho _ilft  _ss 350  ., option("log") /*
+*/ label("display iteration of Log Likelihood") 
+ CHECKBOX ck_diag _ilft  _ss   350  ., option("diag") /*
+*/ label("Model Selection Diagnostic Criteria") 
+ CHECKBOX ck_two _ilft  _ss   350  ., option("twostep") /*
+*/ label("Two-Step Estimation") 
+
+ TEXT tx_predict _ilft    _ls    130 .,	///
+	label("Predicted Variable")
+ TEXT tx_resid   170      @      130 .,	///
+	label("Residuals Variable")
+ VARNAME vn_predict _ilft _ss   130  .,	///
+	label("predict") 		///
+	option(predict)
+ VARNAME vn_resid  170   @     130  .,	///
+	label("resid") 			///
+	option(resid)
+END
+
+SCRIPT ck_mfx_on
+BEGIN
+ main.ck_lin.enable
+ main.ck_log.enable
+END
+SCRIPT ck_mfx_off
+BEGIN
+ main.ck_lin.disable
+ main.ck_log.disable
+END
+
+INCLUDE byifin
+INCLUDE weights_fpai
+INCLUDE se
+
+PROGRAM command
+BEGIN
+ put /program by_output
+ put "alsmle "
+ varlist main.vn_yvar main.vl_xvar
+ put " " /program ifin_output
+ put " " /program weights_output
+ put /program se_prefix_output
+beginoptions
+ option main.ck_lin
+ option main.ck_log
+ option main.ck_tolog 
+ option main.ck_nocons
+ option main.ck_diag
+ option main.ck_dn
+ option main.ck_logrho
+ option main.ck_two
+ optionarg main.vn_predict
+ optionarg main.vn_resid
+ put " " /program se_output
+ endoptions
+ END

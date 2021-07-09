@@ -1,0 +1,64 @@
+{smcl}
+{* *! version 1.0.1  31Dec2011}{...}
+{cmd:help isa_graph}
+{hline}
+
+{title:Title}
+
+{p2colset 9 19 21 2}{...}
+{p2col: {cmd:isa_graph} {hline 2}} Wrapper Program for -isa- for Drawing Graph{p_end}
+{p2colreset}{...}
+
+
+{title:Syntax}
+
+{p 8 15 2}
+{cmd:isa_graph}
+{depvar}
+{it:treatmentvar}
+[{indepvars}]
+{ifin}
+{cmd:,} {opt tau(real)} {it:or} {opt tstat(real)} [{opt nplots(int)}]
+
+{synoptset 26 tabbed}{...}
+{synopthdr}
+{synoptline}
+{syntab:Model}
+{synopt:{opth tau(real)}}the target size of the coefficient of the treatment variable.{p_end}
+{synopt:{opth tstat(real)}}the target size of the t-value of the treatment variable.{p_end}
+{synopt:{opth nplots(int)}}specifies the number of control variables plotted on the graph; default is {cmd: nplots(5)}. The first {it:n} variables in {it:indepvars} are selected.{p_end}
+
+{synoptline}
+{p2colreset}{...}
+{p 4 6 2}{depvars}, {it: treatmentvar}, and {indepvars}, and {opt tau(real)} or {opt tstat(real)} must be set in the same way as the user set in -{cmd:isa}-.{p_end}
+
+{title:Description}
+
+{pstd}
+{opt isa_graph} is a wrapper program of -isa- Imbens' (2003) Sensitivity Analysis.
+This program reproduces the graph after closing the original or manually dropping problematic results.
+The entries of the following variables must be located in the top rows: isa_partial_rsq_yx isa_partial_rsq_tx isa_plotvar.
+
+
+{title:Example (after running the example codes in -{cmd:isa}-})
+
+{phang}. {stata isa_graph wage union age black other grade married south c_city mnfctr, tau(.314) nplots(8):isa_graph wage union age black other grade married south c_city mnfctr, tau(.314) nplots(8)}{p_end}
+
+
+{title:Also see}
+
+{psee}
+{space 2}Help:  {help isa} and {help isa_search}
+
+
+{title:Reference}
+
+{pstd}
+If you use this program, please cite:
+
+{pstd}
+Imbens, Guido W. 2003. "Sensitivity to Exogeneity Assumptions in Program Evaluation." {it:The American Economic Review} 93(2):126-132.
+
+{pstd}
+Harada, Masataka "Generalized Sensitivity Analysis." {it:Working paper}.
+

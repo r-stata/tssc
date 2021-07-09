@@ -1,0 +1,71 @@
+{smcl}
+help {hi:autorename}
+{hline}
+{title:Title}
+
+{p 4 4 2}{cmd:autorename} {hline 2} Rename variables according to a row in the dataset.
+
+{title:Syntax}
+
+{p 8 14 2}{cmd:autorename} [{it:varlist} , {cmd:row(}{it:#}{cmd:)} {cmd:nodrop}
+{cmd:nolower} {cmd:nodestring} {cmd:vseparator(}{it:string}{cmd:)} {cmd:varlabels}]
+
+
+{title:Description}
+
+{p 4 4 2}{cmd:autorename} renames variables according to a specified row in the dataset.  This can be useful when reading text files into Stata.
+For example, you may need to {cmd:insheet} and manipulate a text file before the variable names are accessible.  {cmd:autorename} takes care to make variable names conform to Stata's naming scheme. 
+For example, it eliminates characters like '*' and '&' before renaming.
+
+
+{title:Options}
+
+
+{p 4 8 2}
+{cmd:row(}{it:#}{cmd:)} specifies the row number containing the new variable names. The default is
+to use the first row.
+
+{p 4 8 2}
+{cmd:nodrop} instructs Stata not to drop the row of data containing the new variable names.
+
+{p 4 8 2}
+{cmd:nolower} instructs Stata not to lowercase the renamed variables.
+
+{p 4 8 2}
+{cmd:nodestring} instructs Stata not to try to {help destring:destring} any variables.
+
+{p 4 8 2}
+{cmd:vseparator(}{it:string}{cmd:)} specifies what string should be used to replace spaces in variable
+names (since Stata prohibits spaces in variable names). If {hi:vseparator()} is not
+specified then {hi:vseparator(}""{hi:)} is assumed (so that words will be concatenated
+together).
+
+{p 4 8 2}
+{cmd:varlabels} labels the variables with their new variable names in addition to renaming them.  No characters are parsed out of the variable label.
+
+
+{title:Example}
+
+
+{col 8}{cmd:. {stata sysuse auto.dta, clear}}
+
+{col 8}{cmd:. {stata tempfile t}}
+
+{col 8}{cmd:. {stata outsheet using "`t'", replace}}
+
+{col 8}{cmd:. {stata insheet using "`t'", nonames clear}}
+
+{col 8}{cmd:. {stata autorename}}
+
+
+{title:Author}
+
+{p 4 4 2}Julian Reif, University of Chicago
+
+{p 4 4 2}jreif@uchicago.edu
+
+
+{title:Also see}
+
+{p 4 4 2}
+{help rename:rename}

@@ -1,0 +1,235 @@
+{smcl}
+{* September 5, 2007 @ 13:33:54}{...}
+{hi:help ckchar}{...}
+{right:dialog: {stata ckvaredit:{bf:ckvaredit}}}
+{hline}
+
+{title:Title}
+
+{hi:Details About Using Characteristics to Do Validation, Error Checking, or Scoring}
+
+{title:Description}
+
+{pstd}
+This help file explains the {help char:characteristics} (or
+{help char}s in Stata parlance) used by
+{help ckvar} to validate, error-check or score values of variables in
+a dataset. These are the details about where {help ckvar}
+finds the information it needs. Most of what is needed to use
+{help ckvar} can be found in {help ckvaredit}.
+{p_end}
+
+{title:Remarks}
+{pstd}
+Remarks are presented under the headings
+{p_end}
+
+{hi:{help ckchar##intro:1. Introduction}}
+
+{hi:{help ckchar##chars:2. Naming Conventions for Characteristics}}
+
+{hi:{help ckchar##stubs:2.1 Stubs}}
+{hi:{help ckchar##stubValid:2.1.1 The valid stub}}
+{hi:{help ckchar##stubScore:2.1.2 The score stub}}
+
+{hi:{help ckchar##suffix:2.2 Suffixes}}
+{hi:{help ckchar##commonSuffix:2.2.1 Common Suffixes}}
+{hi:{help ckchar##suffixCheck:2.2.1.1 The check suffix}}
+{hi:{help ckchar##suffixRequired:2.2.1.2 The required suffix}}
+{hi:{help ckchar##suffixMissingValue:2.2.1.3 The missing_value suffix}}
+{hi:{help ckchar##suffixOtherVars:2.2.1.4 The other_vars_needed suffix}}
+
+{hi:{help ckchar##esotericSuffix:2.2.2 Esoteric Suffixes}}
+{hi:{help ckchar##suffixVarname:2.2.2.1 The varname suffix}}
+{hi:{help ckchar##suffixVlabelName:2.2.2.2 The vlabel_name suffix}}
+{hi:{help ckchar##suffixVLabel:2.2.2.3 The vlabel suffix}}
+{hi:{help ckchar##suffixWt:2.2.2.4 The wt suffix}}
+
+{marker intro}{...}
+{title:1. Introduction}
+
+{pstd}
+{help ckvar} works by reading information from
+{help char:characteristics} attached to each variable, and then
+using the information to generate new variables (such as variables
+which mark observations containing errors) and attach value labels to the
+new variables. It looks for the information it needs in specifically
+named characteristics, substituting default values if the
+characteristics are blank. This file explains the naming.
+{p_end}
+
+{marker chars}{...}
+{title:2. Naming Conventions for Characteristics}
+
+{pstd}
+All the names of {help char:characteristics} used by {help ckvar}
+consist of a prefix, or {it:stub}, an underscore (_), and then a suffix. In all
+cases, the stub gives the general overall purpose, such as {it:valid} for validation/error-checking or
+{it:score} for scoring, and the suffix gives the information to which the
+contents of the characteristic pertains, such as {it:required} for
+stating whether non-missing values are required. For example, the
+{help char:characteristic} {bf:valid_rule}  
+has a stub of {hi:valid}, meaning it is used for validation, and a
+suffix of {hi:rule} because it is a rule which can be evaluated.
+{p_end}
+
+{pstd}
+Each of the stubs and suffixes are explained below.
+{p_end}
+
+{marker stubs}{...}
+{title:2.1 Stubs}
+
+{pstd}
+Stubs are used to denote the purpose of the
+{help char:characteristic}. The reason for using a stub is that it
+will then gather all {help char:characteristics} of a similar purpose
+together if a {cmd:char list} command is given.
+{p_end}
+
+{pstd}
+There are two common stubs used by {help ckvar}:
+{help ckchar##stubValid:valid} and
+{help ckchar##stubScore:score}. These are not restrictive, because the
+user can specify any other stub 
+to use with {help ckvar}. Using other stubs should be done only if
+completely necessary. (One rare situation would be if there are multiple different scoring rules which need to be
+distinguished from one another.) In any other case, using the default
+stub names is better, because they are what other users of the dataset
+will be expecting to see.
+{p_end}
+
+{marker stubValid}{...}
+{title:2.1.1 The {cmd:valid} stub}
+
+{pstd}
+The {cmd:valid} stub is used for saving {help char:characteristics} which
+correspond to data validation or error checking.
+{p_end}
+
+{marker stubScore}{...}
+{title:2.1.2 The {cmd:score} stub}
+
+{pstd}
+The {cmd:score} stub is used for saving {help char:characteristics} which
+correspond to computing a score from values of the variable. For
+example, if the variables were responses to test or instrument
+questions, and such questions were combined to get a score (or
+scores), the {cmd:score} stub would be used for all
+{help char:characteristics}.
+{p_end}
+
+{marker suffix}{...}
+{title:2.2 Suffixes}
+
+{pstd}
+Suffixes are used to denote particular tasks, or rules, which are
+associated with checking the variable. These are restricted to a
+particular set of suffixes, and will be explained below. The list of
+suffixes is split into two groups:
+The those that are {help ckchar##commonSuffix:commonly used}, and which
+currently can be set by using the dialog box created by
+{help ckvaredit}, and those that are a bit more
+{help ckchar##esotericSuffix:esoteric}.
+{p_end}
+
+{marker commonSuffix}{...}
+{title:2.2.1 Common Suffixes}
+
+{marker suffixCheck}{...}
+{title:2.2.1.1 The {cmd:rule} suffix}
+
+{pstd}
+The {cmd:rule} suffix is used to hold rules with which
+the data contained in a variable is validated or scored.
+(Note: This suffix was {cmd:_check} in earlier versions {cmd:ckvar}
+earlier than 3.2.0. See {help ckvarupdate} for updating instructions.)
+{p_end}
+
+{marker suffixRequired}{...}
+{title:2.2.1.2 The {cmd:required} suffix}
+
+{pstd}
+The {cmd:required} suffix states whether 
+missing values are errors or not. If the {cmd:required} suffix is "yes",
+"true", or "1" (or any abbreviation of these), then missing values are
+considered to be errors. Otherwise, missing values are not errors.
+{p_end}
+
+{marker suffixMissingValue}{...}
+{title:2.2.1.3 The {cmd:missing_value} suffix}
+
+{pstd}
+By default, if missing values are considered errors, they are marked
+with a value of -1, so that errors of commission and errors of
+omission are kept separate. If another value is desired, it goes with
+the suffix {cmd:missing_value}.
+{p_end}
+
+{marker suffixOtherVars}{...}
+{title:2.2.1.4 The {cmd:other_vars_needed} suffix}
+
+{pstd}
+If other variables are needed for validating or scoring the variable
+in question, their names go in the suffix
+{cmd:other_vars_needed}. This suffix is used by {help ckvar} as well
+as {help ckdrop}, {help ckkeep}, and {help ckrename}.
+{p_end}
+
+{marker esotericSuffix}{...}
+{title:2.2.2 Esoteric Suffixes}
+
+{marker suffixVarname}{...}
+{title:2.2.2.1 The {cmd:varname} suffix}
+
+{pstd}
+By default, all variables which hold indicators for errors start with
+{cmd:error}, and all variables which the scoring routines generate
+start with {cmd:score}. If another prefix for these variables is
+desired, it can be put in the suffix {cmd:varname}.
+{p_end}
+
+{marker suffixVlabelName}{...}
+{title:2.2.2.2 The {cmd:vlabel_name} suffix}
+
+{pstd}
+The {cmd:vlabel_name} suffix contains a name of a value label that
+should be used for labeling the values of the generated variable. Note
+that this value label name will typically get overwritten when doing
+validation checks.
+{p_end}
+
+{marker suffixVLabel}{...}
+{title:2.2.2.3 The {cmd:vlabel} suffix}
+
+{pstd}
+The {cmd:vlabel} suffix contains a list of value and label pairs (as is used in
+{help label:label define}). It would typically be used for scoring,
+when the computed scores take on known integer values.
+{p_end}
+
+{marker suffixWt}{...}
+{title:2.2.2.4 The {cmd:wt} suffix}
+
+{pstd}
+The {cmd:wt} suffix is for weighting scores. It can be a number only,
+and it is applied to all the scores from that variable. Think of a
+point value for a question on an exam, or a weighting for a question
+on an instrument.
+{p_end}
+
+{title:Notes}
+
+{pstd}
+If you become interested in writing more complicated error checkers, the general rules for programming
+with charactaristics and the {help dochar} command are given in the
+{help docharprog}. 
+{p_end}
+
+{title:Author}
+
+{pstd}
+Bill Rising, StataCorp{break}
+email: brising@stata.com{break}
+web: {browse "http://homepage.mac.com/brising":http://homepage.mac.com/brising}
+{p_end}

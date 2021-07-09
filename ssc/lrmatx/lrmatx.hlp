@@ -1,0 +1,69 @@
+.-
+help for ^lrmatx^
+.-
+
+Makes estimates and p-values from logistic
+regression more easily available   
+----------------------------
+
+    ^lrmatx^ 
+
+Description
+-----------
+
+^lrmatx^ must be run after a logistic regression.
+
+It stores the output that you see from a logistic regression as easily 
+accessible matrices.
+
+It is intended for use during model building. By making coefficients
+accessible, you can easily compare changes in coefficients between
+different models.
+
+Options
+-------
+
+none
+
+Remarks 
+-------
+The results are returned in
+	^r(or)^       odds ratios (exp(beta))
+	^r(ci)^       confidence intervals at 95% 2-tailed sig.level
+	^r(beta)^     coefficients
+	^r(stderr)^   standard errors
+	^r(pwald)^	  p-values of wald test
+	^r(lrmatx)^	  all of the above in one matrix
+
+This program is used in the programs lrplot and lrchg.
+
+
+
+
+Examples
+--------
+
+    . ^xi:logistic response i.age i.gender^ 
+    . ^lrmatx^
+    . ^return list^
+    . ^matrix list r(lrmatx)^	
+
+	r(lrmatx)[4,4]
+              OR          CI1         CI2       p
+	Iage_2  1.4102446   1.3292385   1.4961874	0
+	Iage_3  1.4026458   1.2765543   1.5411921	1.917e-12
+	Iage_4    1.06006   .92046704   1.2208228	.4181673
+	_cons   1.7053863   1.6373446   1.7762555	0
+
+Author
+-------
+    Jan Brogger, University of Bergen, Norway
+    jan.brogger@@med.uib.no
+
+Shameless plug :)
+--------------
+ I am looking for internship & residency  in internal 
+ medicine/pulmonary medicine US/EU. Am doing PhD in respiratory 
+ epidemiology now. 
+
+

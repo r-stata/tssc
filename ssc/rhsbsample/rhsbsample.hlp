@@ -1,0 +1,181 @@
+{smcl}
+{*  1.1.0 created 2013-11-14}{...}
+{*  1.0.0 created 2013-09-09}{...}
+{*  0.0.1 created 2009-02-20}{...}
+{hline}
+help for {hi:rhsbsample}{right:P. Van Kerm (September 2013, February 2009)}
+{hline}
+
+{title:Title}
+
+{pstd}{hi:rhsbsample} {hline 2} Repeated half-sample bootstrap sampling
+
+
+{title:Syntax}
+
+{p 8 17 2}
+{cmdab:rhsbsample}
+[{cmd:if} {it:exp}] 
+[{cmd:in} {it:range}] 
+[{cmd:,}
+{it:options}]
+
+{synoptset 20 tabbed}
+{synopthdr}
+{synoptline}
+{syntab:Main}
+{synopt :{opth str:ata(varlist)}}variables identifying strata{p_end}
+{synopt :{opth cl:uster(varlist)}}variables identifying resampling clusters{p_end}
+{synopt :{opth id:cluster(newvar)}}create new cluster ID variable{p_end}
+{synopt :{opth w:eight(varname)}}replace {it:varname} with frequency weights{p_end}
+{synopt :{opt svy:settings}}read strata and cluster identifiers from {cmd:svyset}{p_end}
+{synoptline}
+
+
+{title:Description}
+
+{pstd}
+{cmd:rhsbsample} is a variant of the {cmd:bsample} command. It draws random
+samples from the data in memory using the 'repeated half-sample bootstrap'
+proposed in Saigo, Shao and Sitter (2001). It is particularly suitable for
+bootstrapping complex survey data. 
+This modified bootstrap procedure has the advantage of being valid
+irrespectively of the number of primary sampling units per stratum and 
+of the type of estimator under analysis. It is also easy as it avoids the 
+need for rescaling weights as in other bootstrap procedures for survey data. 
+See Shao (2003) for an accessible discussion of bootstrapping sample surveys
+and Kolenikov (2010) for a detailed description of Stata capabilities.
+
+{pstd}
+When the original sample size N (the number of primary sampling units (PSU)) in a 
+stratum is even, Saigo et al.'s (2001) repeated half-sample bootstrap consists 
+in drawing {it:without} replacement a sample of size N/2. Each sampled PSU is then 
+duplicated so the bootstrap sample has size N. When N is odd, the procedure 
+is modified as follows:
+
+{phang2}
+Either (i) a sample of size (N-1)/2 is drawn without replacement and each 
+sampled PSU is duplicated to achieve a sample size N-1. One additional PSU is 
+then drawn at random from the units already selected to reach a sample size N;
+
+{phang2}
+Or (ii) a sample of size (N-1)/2 + 1 is drawn without replacement and each 
+sampled PSU is duplicated to achieve a sample size N+1. One PSU is then dropped
+at random to reach a sample size N. 
+
+{pstd}
+Method (i) is used with probability 1/4 and method (ii) is used with probability 3/4
+when forming replicate bootstrap samples.
+  
+{pstd}
+Stratified multistage sampling is handled by specifying strata and cluster identifiers 
+(as in {cmd:bsample}); samples of clusters are drawn independently
+across strata using the repeated hal-sample procedure. 
+
+{pstd}
+Observations that do not meet the optional {it:{help if}} and {it:{help in}}
+criteria are dropped (not sampled).
+
+
+{title:Options}
+
+Options are as in {help bsample} except for {opth svysettings}, see {bf:[R] bsample}. 
+
+{dlgtab:Main}
+
+{phang}
+{opth strata(varlist)} specifies the variables identifying strata.  If
+{opt strata()} is specified, bootstrap samples are selected within each stratum.
+
+{phang}
+{opth cluster(varlist)} specifies the variables identifying resampling
+clusters (primary sampling units).  If {opt cluster()} is specified, the
+sample drawn during each replication is a bootstrap sample of clusters.
+
+{phang}
+{opth idcluster(newvar)} creates a new variable containing a unique
+identifier for each resampled cluster.
+
+{phang}
+{opth weight(varname)} specifies a variable in which the sampling frequencies
+will be placed.  {it:varname} must be an existing variable, which will be
+replaced.  After {cmd:rhsbsample}, {it:varname} can be used as an {opt fweight}
+in any Stata command that accepts {opt fweight}s.  This option
+cannot be combined with {opt idcluster()}.
+
+{phang}
+{opth svysettings} requests that strata and cluster information is read from
+the settings of the dataset, as determined by {cmd;svyset}.
+
+{pmore}
+By default, {cmd:rhsbsample} replaces the data in memory with the sampled
+observations; however, specifying the {opt weight()} option causes only the
+specified {it:varname} to be changed and record the frequency of appearance of
+each observation in the bootstrap sample.
+
+
+{title:Examples}
+
+{phang}{cmd:. sysuse auto}{p_end}
+{phang}{cmd:. rhsbsample }{p_end}
+
+{phang}{cmd:. sysuse auto}{p_end}
+{phang}{cmd:. rhsbsample if !foreign}{p_end}
+
+{phang}{cmd:. sysuse auto}{p_end}
+{phang}{cmd:. rhsbsample , strata(foreign)}{p_end}
+
+{phang}{cmd:. sysuse auto}{p_end}
+{phang}{cmd:. forvalues i=1/500 {c -(}}{p_end}
+{phang}{cmd:.     qui gen brw`i' = .}{p_end}
+{phang}{cmd:.     rhsbsample , strata(foreign) weight(brw`i')}{p_end}
+{phang}{cmd:. {c )-}}{p_end}
+{phang}{cmd:. svyset , strata(foreign) bsrweight(brw*)}{p_end}
+{phang}{cmd:. svy bootstrap : regress price trunk turn}{p_end}
+
+{pstd}
+See {browse "http://ideas.repec.org/p/boc/usug13/10.html":Van Kerm (2013)} for more elaborate usage examples.
+
+
+{title:References}
+
+{phang}Kolenikov, S. (2010). Resampling variance estimation for complex
+survey data. {it:Stata Journal}, 10(2): 165–199.
+
+{phang}Saigo, H., Shao, J. and Sitter, R.R. (2001). A Repeated Half-Sample Bootstrap and Balanced
+Repeated Replications for Randomly Imputed Data. {it:Survey Methodology}, 27(2): 189{c -}196. 
+
+{phang}Shao, J. (2003). Impact of the Bootstrap on Sample Surveys. {it:Statistical Science}, 18(2): 191{c -}196. 
+
+{phang}Van Kerm, P. (2013). {browse "http://ideas.repec.org/p/boc/usug13/10.html":Repeated half-sample bootstrap resampling}.
+2013 London Stata Users Group meeting, September 12–13 2013, Cass Business School, London.
+
+
+{title:Author}
+
+{pstd}Philippe Van Kerm, CEPS/INSTEAD, Luxembourg, philippe.vankerm@ceps.lu
+
+
+{title:Citation suggestion}
+
+{phang}
+Van Kerm, P. (2013). rhsbsample {c -} Stata module for repeated half-sample bootstrap resampling, 
+{browse "http://ideas.repec.org/c/boc/bocode/s457697.html":Statistical Software Component S457697}, Boston College Department of Economics.
+
+
+
+{title:Acknowlegdments}
+
+{pstd}
+This work was part of the MeDIM and InWIn projects 
+supported by the Luxembourg Fonds National de la Recherche (contracts FNR/06/15/08 and C10/LM/785657) 
+and by core funding for CEPS/INSTEAD by the
+Ministry of Higher Education and Research of Luxembourg. 
+
+
+{title:Also see}
+
+{psee}
+Online:  {manhelp bsample R}, {helpb gsample} (if installed), {helpb bsweights} (if installed)
+{p_end}
+

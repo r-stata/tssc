@@ -1,0 +1,67 @@
+{smcl}
+{* 7Feb2005}{...}
+{hline}
+help for {hi:confall}
+{hline}
+
+{title:plot and display all possible effect estimates after estimation} 
+
+{p 8 17 2} 
+{cmd:confall}
+[{cmd:,}
+{cmdab:ef:orm(}{it:string}{cmd:)} 
+{opth lock:terms(varlist)} 
+{opth f:ormat(%fmt)}
+{cmdab:xis(}{it:string}{cmd:)} 
+{opth xf:ormat(%fmt)} 
+{cmdab: addaic }
+{cmdab: addbic }
+{cmdab:nota:ble}
+{it:graph_options}
+]
+
+{title:Description}
+
+{p 4 4 2}{cmd:confall} plots and displays effect estimates from models with all possible 
+combinations of potential confounders.The first independent variable is 
+the exposure of interest and all other independent variables are potential confounders. 
+
+{title:Options}
+
+{p 4 8 2} {cmd:eform} reports the estimated coefficients transformed to odds ratios, 
+hazard ratios, relative risk i.e., exp(b) rather than b.  Confidence intervals are 
+similarly transformed.
+
+{p 4 8 2}{opth format(%fmt)} specifies the display format for
+presenting numbers in graph and table.  {cmd:format(%9.0g)} is the default
+
+{p 4 8 2}{opth xformat(%fmt)} specifies the display format for
+presenting numbers in x axis. {cmd:format(%9.0g)} is the default
+
+{p 4 8 2}{opth lockterms(varlist)} specifies variables to be included in all models.
+
+{p 4 8 2}{cmd:xis()} specifies values for X-axis. The default is {it:p} representing p values.
+Alternatives include {it:pr} (rescaled X-axis using p^.23137821, but labeled as original p value) {it:aic} (Akaike Information Criterion), {it:bic} (Bayesian Information Criterion), {it:r2} (R2 or Pseudo R2), and {it:n} (the number of confounders)}
+
+{p 4 8 2}{cmd:addaic} and {cmd:addbic} mark the effect estimate from the model with the minimum AIC and BIC, respectively.
+
+{p 4 8 2}{cmd:table} displays the table.
+
+{p 4 8 2}{it:graph_options} refers to options of {help graph twoway scatter}. 
+
+{title:Examples}
+
+{p 4 8 2}{inp:. logistic diabetes BMI Age Sex IGT  ACR CRP Cholesterol DiastolicBP GGT  Smoking Drinking}{p_end}
+{p 4 8 2}{inp:. confall, lockterm(Age Sex) eform(OR)}{p_end}
+{p 4 8 2}{inp:. confall, eform(OR) xline(0.05) yline(1)}{p_end}
+{p 4 8 2}{inp:. confall, eform(OR) yline(1) xis(aic) }{p_end} 
+
+{title:Author}
+{p 4 8 2} {browse "mailto:z.wang@uq.edu.au?subject=confall":Zhiqiang Wang <z.wang@uq.edu.au>} {p_end}
+{p 4 8 2} The University of Queensland
+
+{title:Acknowledgments} 
+{p 4 8} This work was supported by the NHMRC Australia (301024). 
+
+{title:Also see}
+{p 4 13 2}On-line: help for {help confnd} (if installed)

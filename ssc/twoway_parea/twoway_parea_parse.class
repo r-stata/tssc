@@ -1,0 +1,31 @@
+/*                                 twoway_parea_parse                     */
+*! version 1.0.0  11aug2007
+
+version 8
+
+class {
+        string pattern="pattern10"
+} , inherit(twoway_bar_parse)
+
+
+// ---------------------------------------------------------------------------
+
+program parse
+	.viewtype  = "parea"
+	.viewclass = "parea_g"
+	.Super.parse `0'
+	local 0, `.options'
+	_parse combop 0 : 0 , option(pattern)     rightmost
+	syntax , [pattern(string) * ]
+	.options=`"`options'"'
+	if `"`pattern'"'!="" {
+          .pattern=`"`pattern'"'
+	}
+end
+
+program log_edits
+        args log view i novlabel
+        .Super.log_edits `0'
+        .`log'.Arrpush .`view'.pattern="`.pattern'"
+end
+

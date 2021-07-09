@@ -1,0 +1,502 @@
+/*
+  twitter2stata.dlg
+
+*!  VERSION 1.0.0  19jul2017
+*/
+
+VERSION 15.0
+
+INCLUDE _std_medium
+DEFINE _dlght 510
+INCLUDE header
+
+RESET res1
+HELP hlp1, view("help twitter2stata")
+
+DIALOG main, title("twitter2stata - Import Twitter data")
+BEGIN
+	GROUPBOX gb_main	_lft	_top	_iwd	_ht7h,		///
+		label("Data type")
+	BUTTON	bu_idnum	_rj120	_ss	115	.,		///
+		onpush(view dialog twitter2stata_access_token)		///
+		label("Set access tokens")
+	RADIO	rb_searchtw	_ilft	@	_cwd2	., first	///
+		onclickon(program main_searchtw_show)			///
+		label("Search tweet")
+	RADIO	rb_searchu	@	_ss	@	., 		///
+		onclickon(script main_searchu_show)			///
+		label("Search user")	
+	RADIO	rb_userdata	@	_ss	@	.,		///
+		onclickon(program main_userdata_show)			///
+		label("User")
+	RADIO	rb_lists	@	_ss	@	., last		///
+		onclickon(program main_lists_show)			///
+		label("List")
+	TEXT	tx_search_str	_lft	_xls	@	.,		///
+		label("Search phrase:")
+	EDIT	ed_search_str	@	_ss	_iwd	.,		///
+		max(500)						///
+		label("Search phrase")
+	RADIO	rb_username	_lft	-20	.	., first	///
+		label("Username:")					///
+		onclickon(script username_enable)
+	RADIO	rb_userid	_lft2	@	.	., last		///
+		label("User ID:")					///
+		onclickon(script userid_enable)
+	EDIT	ed_username	_lft	_ss	135	.,		///
+		error("Username")
+	EDIT	ed_userid	_lft2	@	@	.,		///
+		error("User ID")
+	RADIO	rb_listname	_ilft	-20	.	., first	///
+		label("List name:")					///
+		onclickon(script listname_enable)
+	EDIT	ed_listname	@	_ss	135	.,		///
+		error("List name")
+	RADIO	rb_listid	+180	-20	.	., last		///
+		label("List ID:")					///
+		onclickon(script listid_enable)
+	EDIT	ed_listid	@	_ss	135	.,		///
+		error("List ID")
+
+	GROUPBOX gb_opts	_lft	_ls	_iwd	_ht29h,		///
+		label("Options")
+	TEXT	tx_lang		_ilft	+15	100	.,		///
+		label("Language:")
+        DEFINE opt_top @y
+	COMBOBOX cb_lang	@	_ss	135	.,		///
+		option(lang)						///
+		contents(langs) values(langs_vals)			///
+		default(Englist)					///
+		dropdown
+	TEXT	tx_type		+180	-20	100	.,		///
+		label("Tweet type:")
+	COMBOBOX cb_type	@	_ss	135	.,		///
+		option(type)						///
+		dropdownlist						///
+		contents(types) values(types_vals)
+	SPINNER	sp_numcount	_ilft	+35	60	.,		///
+		option(numcount) max(10000) default(250)
+	TEXT	tx_numcount	+65	@	135	.,		///
+		label("Number of tweets")
+	CHECKBOX ck_daterange	20	+35	_ibwd	_ht4h,		///
+		groupbox						///
+		onclickon(script main_date_enable)			///
+		onclickoff(script main_date_disable)			///
+		label("Date range")
+	TEXT	tx_from		_indent	_ss	_vnwd	.,		///
+		label("Start date:")
+	EDIT	ed_from		@	_ss	@	.,		///
+		label("Start date")
+	TEXT 	tx_to		+130	-20	@	.,		///
+		label("End date:")
+	EDIT	ed_to		@	_ss	@	.,		///
+		label("End date")
+	TEXT	tx_dateform	+135	@	85	.,		///
+		label("(YYYY-MM-DD)")
+	CHECKBOX ck_geo		20	_xls	_ibwd	_ht6h,		///
+		groupbox						///
+		onclickon(script main_geo_enable)			///
+		onclickoff(script main_geo_disable)			///
+		label("Geographic location")
+	TEXT	tx_lat		_indent	_ss	85	.,		///
+		label("Latitude:")
+	EDIT	ed_lat		@	_ss	85	.,		///
+		numonly							///
+		label("Latitude")
+	TEXT	tx_long		+130	-20	85	.,		///
+		label("Longitude:")
+	EDIT	ed_long		@	_ss	85	.,		///
+		numonly							///
+		label("Longitude")
+	TEXT	tx_rad		+130	-20	50	.,		///
+		label("Radius:")
+	EDIT	ed_rad		@	_ss	85	.,		///
+		numonly
+	CHECKBOX ck_unit	30	_ls	_ibwd	.,		///
+		label("Use kilometers as the radius unit instead of miles")
+	RADIO	rb_getuser	_ilft	opt_top	_ibwd	., first	///
+		option(getuser)						///
+		label("User information for specified user")
+	RADIO	rb_likes	@	_ss	@	., 		///
+		option(likes)						///
+		label("Likes data for specified user")
+	RADIO	rb_following	@	_ss	@	.,		///
+		option(following)					///
+		label("Following data for specified user")
+	RADIO	rb_followers	@	_ss	@	., 		///
+		option(followers)					///
+		label("Followers data for specified user")
+	RADIO	rb_ulists	_ilft	_ss	@	., last		///
+		option(lists)						///
+		onclickon(main.ck_members.enable)			///
+		onclickoff(main.ck_members.disable)			///
+		label("All lists user subscripts to or is a member of")
+	RADIO	rb_listusers	_ilft	opt_top	@	., first	///
+		option(listusers)					///
+		onclickon(script listusers_opts)			///
+		label("User data")
+	RADIO	rb_listtweets	@	_ss	@	., last		///
+		option(listtweets)					///
+		onclickon(script listtweets_opts)			///
+		label("Tweet data")
+	CHECKBOX ck_members	_ilft	270	_ibwd	.,		///
+		option(members)						///
+		label("Return data on list members only")
+	CHECKBOX ck_clear	_ilft	100	_ibwd	.,		///
+		option(clear)						///
+		label("Clear data in memory before loading")
+END
+
+LIST types
+BEGIN
+	"All"
+	"Mixed"
+	"Popular"
+	"Recent"
+END
+
+LIST types_vals
+BEGIN
+	""
+	mixed
+	popular
+	recent
+END
+
+LIST langs
+BEGIN
+	"English"
+	"Spanish"
+	"French"
+	"German"
+	"Chinese"
+	"Japanese"
+	"Russian"
+	"Portuguese"
+	"Italian"
+	"Dutch"
+	"Polish"
+	"Swedish"
+	"Danish"
+	"Greek"
+	"Finnish"	
+	"Romanian"	
+	"Turkish"
+	"Korean"
+	"Arabic"
+	"Hindi"
+END
+
+LIST langs_vals
+BEGIN
+	en
+	es
+	fr
+	de
+	zh
+	ja
+	ru
+	pt
+	it
+	nl
+	pl
+	sv
+	da
+	el
+	fi
+	ro
+	tr
+	ko
+	ar
+	hi
+
+END
+
+SCRIPT main_hide_all
+BEGIN
+	main.tx_search_str.hide
+	main.ed_search_str.hide
+	main.tx_lang.hide
+	main.cb_lang.hide
+	main.tx_type.hide
+	main.cb_type.hide
+	main.tx_numcount.hide
+	main.sp_numcount.hide
+	main.ck_daterange.hide
+	main.tx_from.hide
+	main.ed_from.hide
+	main.tx_to.hide
+	main.ed_to.hide
+	main.tx_dateform.hide
+	main.ck_geo.hide
+	main.tx_lat.hide
+	main.ed_lat.hide
+	main.tx_long.hide
+	main.ed_long.hide
+	main.tx_rad.hide
+	main.ed_rad.hide
+	main.ck_unit.hide
+	main.ck_clear.hide
+	main.rb_username.hide
+	main.rb_userid.hide
+	main.ed_username.hide
+	main.ed_userid.hide
+	main.ck_members.hide
+	main.rb_ulists.hide
+	main.rb_listusers.hide
+	main.rb_listtweets.hide
+	main.rb_getuser.hide
+	main.rb_likes.hide
+	main.rb_following.hide
+	main.rb_followers.hide
+	main.rb_listname.hide
+	main.rb_listid.hide
+	main.ed_listname.hide
+	main.ed_listid.hide
+END
+
+PROGRAM main_searchtw_show
+BEGIN
+	call script main_hide_all
+	call main.tx_search_str.show
+	call main.ed_search_str.show
+	call main.tx_lang.show
+	call main.cb_lang.show
+	call main.tx_type.show
+	call main.cb_type.show
+	call main.tx_numcount.show
+	call main.sp_numcount.show
+	call main.ck_daterange.show
+	if main.ck_daterange {
+		call script main_date_enable
+	}
+	else {
+		call script main_date_disable
+	}
+	call main.tx_from.show
+	call main.ed_from.show
+	call main.tx_to.show
+	call main.ed_to.show
+	call main.tx_dateform.show
+	call main.ck_geo.show
+	if main.ck_geo {
+		call script main_geo_enable
+	}
+	else {
+		call script main_geo_disable
+	}
+	call main.tx_lat.show
+	call main.ed_lat.show
+	call main.tx_long.show
+	call main.ed_long.show
+	call main.tx_rad.show
+	call main.ed_rad.show
+	call main.ck_unit.show
+	call main.ck_clear.show
+	call main.ck_clear.setposition 20 480
+END
+
+SCRIPT main_date_enable
+BEGIN
+	main.tx_from.enable
+	main.tx_to.enable
+	main.ed_from.enable
+	main.ed_to.enable
+	main.tx_dateform.enable
+END
+
+SCRIPT main_date_disable
+BEGIN
+	main.tx_from.disable
+	main.tx_to.disable
+	main.ed_from.disable
+	main.ed_to.disable
+	main.tx_dateform.disable
+END
+
+SCRIPT main_geo_enable
+BEGIN
+	main.tx_lat.enable
+	main.tx_long.enable
+	main.tx_rad.enable
+	main.ed_lat.enable
+	main.ed_long.enable
+	main.ed_rad.enable
+	main.ck_unit.enable
+END
+
+SCRIPT main_geo_disable
+BEGIN
+	main.tx_lat.disable
+	main.tx_long.disable
+	main.tx_rad.disable
+	main.ed_lat.disable
+	main.ed_long.disable
+	main.ed_rad.disable
+	main.ck_unit.disable
+END
+
+SCRIPT main_searchu_show
+BEGIN
+	script main_hide_all
+	main.tx_search_str.show
+	main.ed_search_str.show
+	main.ck_clear.show
+	main.ck_clear.setposition 20 200 . . 
+END
+
+PROGRAM main_userdata_show
+BEGIN
+	call script main_hide_all
+	call main.rb_username.show
+	call main.rb_userid.show
+	call main.ed_username.show
+	call main.ed_userid.show
+	call main.rb_getuser.show
+	call main.rb_likes.show
+	call main.rb_following.show
+	call main.rb_followers.show
+	call main.rb_ulists.show
+	call main.ck_members.show
+	call main.ck_members.setposition 20 300
+	if (main.rb_ulists) {
+		call main.ck_members.enable
+	}
+	else {
+		call main.ck_members.disable
+	}
+	call main.ck_clear.show
+	call main.ck_clear.setposition 20 325
+END
+
+PROGRAM main_lists_show
+BEGIN
+	call script main_hide_all
+	call main.rb_listname.show
+	call main.rb_listid.show
+	call main.ed_listname.show
+	call main.ed_listid.show
+	call main.rb_listusers.show
+	call main.rb_listtweets.show
+	call main.ck_members.show
+	if (main.rb_listtweets) {
+		call main.ck_members.disable
+	}
+	else {
+		call main.ck_members.enable
+	}
+	call main.ck_clear.show
+	call main.ck_members.setposition 20 240
+	call main.ck_clear.setposition 20 265 
+END
+
+SCRIPT username_enable
+BEGIN
+	main.ed_username.enable
+	main.ed_userid.disable
+END
+
+SCRIPT userid_enable
+BEGIN
+	main.ed_username.disable
+	main.ed_userid.enable
+END
+
+SCRIPT listname_enable
+BEGIN
+	main.ed_listname.enable
+	main.ed_listid.disable
+END
+
+SCRIPT listid_enable
+BEGIN
+	main.ed_listname.disable
+	main.ed_listid.enable
+END
+
+PROGRAM command
+BEGIN
+	put "twitter2stata "
+
+	if main.rb_searchtw {
+		require main.ed_search_str
+		put "searchtweets "
+		put `"""'
+		put main.ed_search_str
+		put `"""'
+	}
+	if main.rb_searchu {
+		require main.ed_search_str
+		put "searchusers "
+		put `"""'
+		put main.ed_search_str
+		put `"""'
+	}
+	if main.rb_userdata {
+		if main.rb_username {
+			require main.ed_username
+		}
+		if main.rb_userid {
+			require main.ed_userid
+		}
+		option main.rb_getuser
+		option main.rb_likes
+		option main.rb_followers
+		option main.rb_following
+		option main.rb_ulists
+		put `" ""'
+		if main.rb_username {
+			put main.ed_username
+		}
+		else {
+			put main.ed_userid
+		}
+		put `"" "'
+	}
+	if main.rb_lists {
+		if main.rb_listname {
+			require main.ed_listname
+		}
+		if main.rb_listid {
+			require main.ed_listid
+		}
+		option main.rb_listtweets
+		option main.rb_listusers
+		put `" ""'
+		if main.rb_listname {
+			put main.ed_listname
+		}
+		else {
+			put main.ed_listid
+		}
+		put `"" "'
+	}
+		
+	beginoptions
+		optionarg /hidedefault main.cb_lang
+		optionarg /hidedefault main.sp_numcount
+		optionarg /hidedefault main.cb_type
+		if main.rb_searchtw {
+			 if main.ck_daterange {
+				require main.ed_from
+				require main.ed_to
+				put "daterange(" main.ed_from ", "
+				put main.ed_to ") "
+			}
+			if main.ck_geo {
+				require main.ed_lat
+				require main.ed_long
+				put "geo(" main.ed_lat ", " main.ed_long 
+				if main.ed_rad {
+					put ", " main.ed_rad 
+					if main.ck_unit {
+						put ", km"
+					}
+				}
+				put ") "
+			}
+		}
+		option main.ck_members	
+		option main.ck_clear
+	endoptions
+END

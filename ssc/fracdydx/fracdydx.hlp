@@ -1,0 +1,93 @@
+{smcl}
+{* *! version 1.2.1 20jan2011}{...}
+{cmd:help fracdydx} 
+{right:also see:  {help fracpoly}}
+{hline}
+
+{title:Title}
+
+{p2colset 5 17 19 2}{...}
+{p2col :{hi:fracdydx} {hline 2}}Evaluate derivatives of fractional polynomials{p_end}
+{p2colreset}{...}
+
+
+{title:Syntax}
+
+{p 8 16 2}{cmd:fracdydx} [{varname}] [{cmd:,} {it:options}]
+
+
+{synoptset 29 tabbed}{...}
+{synopthdr}
+{synoptline}
+{synopt :{opt c:oeffs(# [#...]|matrixname)}}defines the 
+ regression coefficients to be used{p_end}
+{synopt :{opt d:eriv(#)}}order of derivative to be calculated{p_end}
+{synopt :{opt g:en(newvarname)}}stores the required derivative in {it:newvarname}{p_end}
+{synopt :{opt p:owers(# [#...]|matrixname)}}defines the 
+ fractional polynomial powers to be used{p_end}
+{synoptline}
+{p2colreset}{...}
+
+
+{title:Description}
+
+{pstd}
+{cmd:fracdydx} evaluates derivative(s) of a fractional polynomial function
+at {it:varname} (if specified) or at the xvar most recently used by
+{help fracpoly}.
+
+{pstd}
+If {opt powers()} and {opt coeffs()} are not specified, powers and regression
+coefficients from the most recent fit of {cmd:fracpoly} are used.
+Otherwise, powers from {opt powers()} and coefficients from
+{opt coeffs()} are used.
+
+
+{title:Options}
+
+{phang}
+{opt coeffs(# [#...] | matrixname)} defines the regression coefficients for
+the fractional polynomial model to be used.
+
+{phang}
+{opt deriv(#)} specifies the order of derivative to be calculated.
+Default {it:#} is 1.
+
+{phang}
+{opt gen(newvarname)} puts the {opt deriv()}th derivative of the FP into
+{it:newvarname}.
+
+{phang}
+{opt powers(# [#...] | matrixname)} defines the fractional polynomial
+powers to be used.
+
+
+{title:Stored quantities}
+
+{pstd}
+{cmd:fracdydx} is an R-class program and saves in the following
+{cmd:r()} locations:
+
+	{cmd:r(powers)}	powers for the FP representing the {cmd:deriv()}th derivative
+	{cmd:r(coeffs)}	regression coefficents for the FP representing the
+			{cmd:deriv()}th derivative
+
+
+{title:Examples}
+
+{phang2}{cmd:. fracdydx}{p_end}
+{phang2}{cmd:. fracdydx, gen(d1)}{p_end}
+{phang2}{cmd:. fracdydx x, powers(-1 2) coeffs(1.25 0.65) deriv(2)}{p_end}
+
+
+{title:Author}
+
+{pstd}
+Patrick Royston, MRC Clinical Trials Unit, London, UK.
+({browse "mailto:patrick.royston@ctu.mrc.ac.uk":pr@ctu.mrc.ac.uk})
+
+
+{title:Also see}
+
+{psee}
+Manual:  {manlink R fracpoly}

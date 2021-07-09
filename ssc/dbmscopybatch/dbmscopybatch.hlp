@@ -1,0 +1,93 @@
+{smcl}
+{hline}
+
+help for {cmd:dbmscopybatch} {right:Amadou B. DIALLO: The World Bank.}
+
+{hline}
+
+
+{title:Data conversion utility. Creates a log/batch file for DBMS Copy.}
+
+
+{p 4 4 2}{cmd:dbmscopybatch} {cmd:,}
+{cmdab:p:ath}{cmd:(}{it:string}{cmd:)}
+{cmdab:d:path}{cmd:(}{it:string}{cmd:)}
+{cmdab:l:og}{cmd:(}{it:string}{cmd:)}
+{cmdab:i:n}{cmd:(}{it:string}{cmd:)}
+{cmdab:o:ut}{cmd:(}{it:string}{cmd:)} 
+[{cmdab:v:ersion}{cmd:(}{it:#}{cmd:)} 
+{cmdab:op:tions}{cmd:(}{it:string}{cmd:)}
+{cmdab:c:all} ]
+
+
+{p 4 4 2}where :
+
+    {it:path} is the directory where the files to be transfered are stored, 
+
+    {it:dpath} is the directory where the DBMS Copy executable is stored,
+
+    {it:log} is the name of the log file (stored in "path"),
+
+    {it:in} is the type of original dataset to be transfered,
+
+    {it:out} is the type of final dataset,
+
+    {it:version} is the version of DBMS Copy, with default 7,
+
+    {it:options} optionally adds options (embedded in double quotes) to the 
+    {it:}log/batch file (to be executed by DBMS Copy),
+  
+    {it:call} is an option to make Stata invoke DBMS Copy (available only for Windows Operating Systems).
+
+
+{title:Description}
+
+{p 4 4 2}{cmd:dbmscopybatch} is a routine to create a log (also called a batch) file for DBMS Copy.
+
+{p 4 4 2} When you have a lot of datasets to convert to other formats, doing it interactively in DBMS Copy 
+could be painful and time consuming. Stata will automatically create a log (batch) file which could be run 
+(see run or open batch in DBMS Copy menus).
+
+
+{title:Remarks}
+
+{p 4 4 2} Using dbmscopybatch requires knowing extensions allowed by DBMS Copy. See DBMS manuals. 
+Most known are ASCII (.dat, .prn or .txt), SPSS (.sav), SAS (.sas7bdat) and Stata (.dta).
+
+
+{title:Examples}
+
+{p 4 4 2}{cmd:. local path "..\Data\Countries\" }{p_end}
+
+{p 4 4 2}{cmd:. local dpath "..\DBMS\V7\" }{p_end}
+
+{p 4 4 2}{cmd:. cd "`path'"}{p_end}
+
+{p 4 4 2}{cmd:. local datas "country1 country2" }{p_end}
+
+{p 4 4 2}{cmd:. dbmscopybatch `datas', p(`path') d(`dpath') l(dbmscopylog) i(spsswin) o(stata7) v(7) c }{p_end}
+
+{p 4 4 2}{cmd:. dbmscopybatch `datas', p(`path') d(`dpath') l(dbmscopylog) i(spsswin) o(stata7) v(7)  }{p_end}
+{p 4 4 2}{cmd:  opt("keep if region==1; keep if sex=2; keep if age>=60")}{p_end}
+
+
+{title:Author}
+
+{p 4 4 2}Amadou Bassirou DIALLO,
+Poverty and Health Specialist. AFTPM, The World Bank.{p_end}
+{p 4 4 2}Email: {browse "mailto:adiallo5@worldbank.org":adiallo5@worldbank.org}
+
+
+{title:Aknowledgements}
+
+{p 4 4 2}I would like to thank Roger Newson for suggesting this program and Yulia Marchenko of StataCorp for her support.
+
+
+{title:Also see}
+
+{p 4 19 2}Manual:   {hi:[R] shell}, {hi:[R] winexec}.{p_end}
+
+{p 4 4 2}Online:   help for {help cd}, {help dir}, {help mkdir} and {help copy} if installed.{p_end}
+
+
+

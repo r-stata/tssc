@@ -1,0 +1,82 @@
+{smcl}
+{* 27feb2005/8mar2006}{...}
+{hline}
+help for {hi:neigh}
+{hline}
+
+{title:Generating string variable(s) specifying neighbours} 
+
+{p 8 17 2} 
+{cmd:neigh}
+{it:locivar locjvar}
+[{it:weightvar}]
+{cmd:,} {cmdab:g:enerate(}{it:newvar}{cmd:)} 
+[ 
+{cmdab:w:generate(}{it:newweightvar}{cmd:)}
+] 
+  
+
+{title:Description}
+
+{p 4 4 2} 
+{cmd:neigh} converts spatial neighbourhood information of the form 
+
+    {it:locivar}   {it:locjvar}      (optionally) {it:weightvar}
+    {hline 7}{space 3}{hline 7}{space 6}{hline 22} 
+       1         2              0.123
+       1         3              0.456
+       1         4              0.421 
+
+{p 4 4 2}into the form 
+
+    {it:locivar}   {it:newvar}        (optionally) {it:newweightvar}
+    {hline 7}{space 3}{hline 7}{space 7}{hline 25} 
+       1      "2 3 4"           "0.123 0.456 0.421" 
+
+{p 4 4 2} 
+That is, locations 2, 3 and 4 are neighbours of location 1. (The degree
+of neighbourliness {c -} perhaps determined by distance and/or length of
+common boundary {c -} is indicated by the weights specified.) 
+
+
+{title:Remarks} 
+
+{p 4 4 2}{cmd:neigh} is a utility for users of {help spautoc}. 
+
+{p 4 4 2} 
+It is envisaged that a dataset of neighbourhood information given by 
+two variables containing numeric identifiers will be converted to a 
+dataset containing one numeric identifier and one single string variable, 
+for merging with a normal data file. Optionally, a numeric weight 
+variable will also be packed into a new string variable.
+
+
+{title:Options}
+
+{p 4 8 2} 
+{cmd:generate()} specifies a new variable to contain information. 
+It is a required option. 
+
+{p 4 8 2} 
+{cmd:wgenerate()} specifies a new variable to contain weight
+information. 
+
+
+{title:Examples} 
+
+{p 4 8 2}{cmd:. neigh i j, gen(neigh)}{p_end}
+{p 4 8 2}{cmd:. neigh i j w, gen(neigh) wgen(W)} 
+
+
+{title:Author}
+
+{p 4 4 2}Nicholas J. Cox, Durham University, U.K.{break} 
+         n.j.cox@durham.ac.uk
+
+
+{title:Also see}
+
+{p 4 13 2} 
+On-line: help for {help spautoc}, {help dupneigh}, {help numids} 
+
+

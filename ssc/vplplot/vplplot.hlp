@@ -1,0 +1,121 @@
+.-
+help for ^vplplot^
+.-
+
+Vertical parallel line plot
+---------------------------
+
+        ^vplplot^ yvar1 yvar2 [xvar] [^if^ exp] [^in^ range]
+        [^,^ { ^d^iff | ^r^atio } ^b^ase^(^#^)^ 
+	{ ^m^ean | ^g^mean | ^so^rt^(^sortvarlist^)^ } 
+	graph_options ]
+
+Description
+-----------
+
+^vplplot^ plots paired data for yvar1 and yvar2 using parallel vertical
+lines to show the differences between values. 
+
+By default, yvar1 and yvar2 are plotted on the vertical axis.  Normally 
+yvar1 and yvar2 will have the same units. 
+ 
+If xvar is specified it is used for the horizontal axis: otherwise by 
+default the order of the observations is used for the horizontal axis.
+
+Other kinds of plots may be obtained through particular options. 
+
+
+Options
+-------
+
+^diff^ specifies that the y axis should show the difference between 
+    yvar1 and yvar2, i.e. yvar1 - yvar2. 
+
+^ratio^ specifies that the y axis should show the ratio of yvar1 and 
+    yvar2, i.e. yvar1 / yvar2. 
+
+^base(^#^)^ specifies a baseline for comparison if either ^diff^ or 
+    ^ratio^ is specified. With ^diff^, ^base^ has default 0. With 
+    ^ratio^, ^base^ has default 1. 
+
+^mean^ specifies that the x axis should show the mean of yvar1 and yvar2. 
+    This option may not be combined with specification of xvar, 
+    or with ^gmean^ or ^sort( )^.
+    
+^gmean^ specifies that the x axis should show the geometric mean of yvar1 
+    and yvar2. This option may not be combined with specification of xvar, 
+    or with ^mean^ or ^sort( )^. It requires that data be positive for both 
+    yvar1 and yvar2.
+
+^sort(^sortvarlist^)^ specifies that the order of the data is determined by 
+    sortvarlist. The x axis then shows order of observations on 
+    sortvarlist. This option invokes @gsort@, so that the order of sorting 
+    may be indicated by + or - signs. This option may not be combined 
+    with specification of xvar, or with ^mean^ or ^gmean^. 
+
+graph_options refers to options of ^graph, twoway^.
+
+    The defaults include ^symbol(Opii) connect(..||) pen(2344) gap(6)^
+
+    Users wishing to vary graph_options should note that four choices 
+    should be specified for ^symbol^, ^connect^ and ^pen^. 
+
+Remarks
+------- 
+
+The default graph is 
+
+    ^graph^ y1var y2var y1var y2var xvar ^, sy(Opii) c(..||)^  
+
+where xvar is observation number, a specified x variable, 
+or the mean of y1 and y2, or the geometric mean of y1 and y2.
+
+With ^diff^ the default graph is 
+
+    ^graph^ (y1var - y2var) base (y1var - y2var) base xvar 
+    ^, sy(Opii) c(..||)^  
+
+With ^ratio^ the default graph is    
+
+    ^graph^ (y1var / y2var) base (y1var / y2var) base xvar
+    ^, sy(Opii) c(..||)^  
+
+Note that 
+
+    ^vplplot^ y1 y2 ^, ratio gmean xlog ylog^          
+
+is equivalent to 
+
+    ^vplplot^ log(y1) log(y2) ^, diff mean^         
+
+except for the axis labelling. 
+
+
+Examples
+--------
+
+    . ^vplplot before after^
+    . ^vplplot before after, sort(before)^
+    . ^vplplot before after, diff mean^
+    . ^vplplot before after, ratio base(2)^
+
+
+Reference
+---------
+
+McNeil, D.R. 1992. On graphing paired data. American Statistician 46,
+307-11.
+
+
+Author
+------
+
+         Nicholas J. Cox, University of Durham
+         n.j.cox@@durham.ac.uk
+
+
+Also see
+--------
+
+On-line: help for @graph@, @gsort@ 
+

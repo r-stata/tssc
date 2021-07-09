@@ -1,0 +1,144 @@
+{smcl}
+help {hi:strgroup}
+{hline}
+{title:Title}
+
+{p 4 4 2}{cmd:strgroup} {hline 2} Match strings based on their Levenshtein edit distance.
+
+
+{title:Syntax}
+
+{p 4 4 2}{cmd:strgroup} {it:varname} [if] [in] , {cmdab:gen:erate(}{it:newvarname}{cmd:)}
+{cmdab:thresh:old(}{it:#}{cmd:)} [{cmd:first} {cmdab:norm:alize([shorter|longer|none])} {cmd:noclean} {cmd:force}]
+
+{p 2 2 1}{cmd:by} is allowed; see help {help by}.
+
+
+{title:Description}
+
+{p 4 4 2}{cmd:strgroup} matches similar strings together. This can be useful when merging data that contain typos. For example, 
+"widgets" will not merge with "widgetts" because the strings are not identical. 
+{cmd:strgroup} provides a way to match strings in an objective and automated manner. It employs the following algorithm:
+
+{p 8 14 2}1. Calculate the Levenshtein edit distance between all pairwise combinations of strings in {it:varname}.
+
+{p 8 14 2}2. Normalize the edit distance as specified by {cmd:normalize([shorter|longer|none])}. The default is to divide the
+edit distance by the length of the shorter string.
+
+{p 8 14 2}3. Match a string pair if their normalized edit distance is less than or equal to the 
+user-specified threshold.
+
+{p 8 14 2}4. If string A is matched to string B and string B is matched to string C, then match A to C.
+
+{p 8 14 2}5. Assign each group of matches a unique number and store this result in {it:newvarname}.
+
+{p 4 4 2}For example, the Levenshtein edit distance between "widgets" and "widgetts" is 1. 
+The lengths of these two strings are 7 and 8, respectively. Assuming {cmd:normalize(shorter)}, they are matched by {cmd:strgroup} if 1/7 <= threshold.
+
+{p 4 4 2}{cmd:strgroup} is case sensitive.
+
+{p 4 4 2}See {help levenshtein:levenshtein} for an explanation of the Levenshtein edit distance.
+
+
+{title:Options}
+
+{p 4 8 2}
+{cmd:generate(}{it:newvarname}{cmd:)} specifies the name of a new variable to store
+the results.
+
+{p 4 8 2}
+{cmd:threshold(}{it:#}{cmd:)} sets the threshold level for matching.
+
+{p 4 8 2}
+{cmd:first} instructs {cmd:strgroup} to only match strings that share the same first character.
+This typically reduces the amount of time required for {cmd:strgroup} to
+run by several orders of magnitude, at the cost of perhaps incorrectly not matching strings. 
+For example, "widgets" and "qidgets" will not be matched if you specify {cmd:first} because they do not begin with the same character.
+
+{p 4 8 2}
+{cmd:normalize([shorter|longer|none])} is used to define the normalization of the Levenshtein edit distance. With {cmd:shorter} all edit 
+distances are divided by the length of the shorter string in the pair; this is also the default. {cmd:longer} divides the edit distance
+by the length of the longer string. {cmd:none} specifies that no normalization is needed.
+
+{p 4 8 2}
+{cmd:noclean} instructs {cmd:strgroup} not to trim leading and trailing blanks when comparing string pairs. Trimming can reduce
+run time.
+
+{p 4 8 2}
+{cmd:force} forces {cmd:strgroup} to run even if when comparing more than 10,000 observations. This may take a while and may cause
+memory problems if your dataset is too large.
+
+
+{title:Notes}
+
+{p 4 4 2}
+{cmd:strgroup} does not match missing strings.
+
+{p 4 4 2}
+As explained above, {cmd:strgroup} calculates the Levenshtein edit distance between all pairwise combinations of strings in {it:varname}. 
+Let N be the number of observations being compared. 
+Then the amount of memory and number of calculations required by {cmd:strgroup} is proportional to (N)(N-1)/2, an expression that increases with the square of N.
+Thus, large datasets need to be divided into subsets in order to facilitate calculations. 
+The {cmd:first} option automates this by subsetting strings according to their first characters. 
+Alternatively, the user can run {cmd:strgroup} on subsets of the data by using the {cmd:if}, {cmd:in} and/or {cmd:by} options.
+
+{p 4 4 2}
+{cmd:strgroup} is implemented as a {help plugin:plugin} in order to minimize memory requirements and to maximize speed. 
+Unfortunately, plugins are specific to the hardware architecture and software framework of your computer, i.e., plugins are not cross-platform.
+Define a platform by two characteristics: machine type and operating system. 
+Stata stores these characteristics in {cmd:c(machine_type)} and {cmd:c(os)}, respectively. {cmd:strgroup} supports the following platforms at this time:
+
+{col 10}{hi:Machine type}{col 40} {hi:Operating system}
+{col 10}PC{col 40} Windows
+{col 10}PC (64-bit x86-64){col 40} Windows
+{col 10}PC (64-bit x86-64){col 40} Unix
+{col 10}Macintosh{col 40} MacOSX
+{col 10}Macintosh (Intel 64-bit){col 40} MacOSX
+
+
+{title:Example}
+
+{p 4 4 2}
+Merge two datasets together and identify potential matches that didn't merge.
+
+{col 8}{cmd:. {stata sysuse auto, clear}}
+{col 8}{cmd:. {stata tempfile t}}
+{col 8}{cmd:. {stata keep make price}}
+{col 8}{cmd:. {stata replace make = make + "a" in 5}}
+{col 8}{cmd:. {stata replace make = "gibberish" in 10}}
+{col 8}{cmd:. {stata save "`t'"}}
+{col 8}{cmd:. {stata sysuse auto, clear}}
+{col 8}{cmd:. {stata keep make}}
+{col 8}{cmd:. {stata merge make using "`t'", sort}}
+{col 8}{cmd:. {stata list if _merge!=3}}
+{col 8}{cmd:. {stata strgroup make if _merge!=3, gen(group) threshold(0.25)}}
+{col 8}{cmd:. {stata list if _merge!=3}}
+
+
+{title:Acknowledgements}
+
+{p 4 4 2} The code used to calculate the Levenshtein edit distance is based on a Python extension written by David Necas (Yeti).
+His code is publicly available at {browse "http://code.google.com/p/pylevenshtein/source/browse/trunk/Levenshtein.c":http://code.google.com/p/pylevenshtein/source/browse/trunk/Levenshtein.c}.
+
+{p 4 4 2} Thanks to Dimitriy Masterov for compiling the 64-bit Windows version of the plugin.
+
+{title:Citation of strgroup}
+
+{p 4 4 2} {cmd:strgroup} is not an official Stata command. It is a free contribution to the research community. You may cite it as:
+
+{col 8} Reif, J., 2010. strgroup: Stata module to match strings based on their Levenshtein edit distance. {browse "http://ideas.repec.org/c/boc/bocode/s457151.html":http://ideas.repec.org/c/boc/bocode/s457151.html}.
+
+
+{title:Author}
+
+{p 4 4 2}Julian Reif, University of Chicago
+
+{p 4 4 2}jreif@uchicago.edu
+
+
+{title:Also see}
+
+{p 4 4 2}
+{help levenshtein:levenshtein},
+{help regexm:regexm}
+

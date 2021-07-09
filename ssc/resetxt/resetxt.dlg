@@ -1,0 +1,303 @@
+/*
+ resetxt
+*! VERSION 1.0 06/08/2015
+*/
+VERSION 11.0
+INCLUDE _std_xlarge
+DEFINE _dlght 420
+INCLUDE header
+HELP hlp1, view("help resetxt")
+RESET res1
+
+DIALOG main, label("resetxt- Panel Data REgression Specification Error Tests (RESET)") ///
+	tabtitle("Main")
+BEGIN
+  TEXT  tx_cmd1   _lft      _top  110  .,	///
+	label("Model:")
+  TEXT  tx_id   160       @     100 .,	///
+	label("ID Cross Section")
+  TEXT  tx_it 280       @     150 .,	///
+	label("ID Time Series")
+  COMBOBOX cb_cmd1 _lft    _ss    110   ., ///
+	label("Model")			///
+	contents(cmd1_con )		///
+	value(cmd11_con) option(model)	///
+	onselchangelist(cmd1_sel ) dropdownlist
+  VARNAME vn_id   160      @    100 .,	///
+	option("id")			///
+	label("ID Cross Section")
+  VARNAME vn_it  280     @  100 ., 	/*
+	*/ label("ID Time Series")		/*
+	*/ option("it")
+
+ GROUPBOX gb_group1   _lft     _ss       _iwd     _ht6 , 
+  TEXT     tx_yvar     _ilft   +15    _vnwd     .,	/*
+		*/ label("Dependent Variable:")		/*
+		*/
+  TEXT     tx_xvar     _vlx      @      _cwd2     .,	/*
+		*/ label("Independent Variables:")	/*
+		*/
+  VARNAME  vn_yvar     _ilft         _ss       _vnwd   .,	/*
+		*/ label("Dependent Variable")		/*
+		*/
+  VARLIST  vl_xvar     _vlx         @         380      .,	/*
+		*/ label("Independent Variables")	/*
+		*/
+ CHECKBOX ck_nocons   @   _ms      @  ., option("noconstant") /*
+*/ label("No Constant") 
+
+ CHECKBOX ck_model12  _lft    _xls   _ibwd    _ht5 , 	///
+	groupbox					///
+	onclickon(script ck_model12_on)			///
+	onclickoff(script ck_model12_off)		///
+	label("Panels: Error Structure Across Panels - model(xtgls, xtpcse, xtregar):")
+  RADIO rb_piid    _ilft     _ss   _ibwd     .,	/*
+*/ label("iid: Homoscedastic Error with No Cross-Sections Correlation") /*
+	*/ first					/*
+	*/ option("panels(iid)")			/*
+	*/
+  RADIO rb_phet @         _ss       @         .,	/*
+*/ label("het: Heteroscedastic Error with No Cross-Sections Correlation") /*
+	*/ option("panels(het)")		/*
+	*/
+  RADIO rb_pcorr   @         _ss       @         .,	/*
+*/ label("cor: Heteroskedastic Error with Cross-Sections Correlation") /*
+	*/ last						/*
+	*/ option("panels(corr)")
+
+ CHECKBOX ck_model13  _lft    _ls   _ibwd    _ht5 , 	///
+	groupbox					///
+	onclickon(script ck_model13_on)			///
+	onclickoff(script ck_model13_off)		///
+	label("corr: Autocorrelation within Panels - model(xtgls, xtpcse, xtregar):")
+  RADIO    rb_cind    _ilft   _ss    _iwd  .,		/*
+*/ label("Independent: No Autocorrelation within Panels") /*
+	*/ first					/*
+	*/ option("corr(indep)")			/*
+	*/
+  RADIO    rb_car1    @         _ss       @   .,		/*
+	*/ label("ar1: Common AR(1) Autocorrelation within Panels") /*
+	*/ option("corr(ar1)")
+  RADIO    rb_cpsar1  @         _ss       @   .,		/*
+*/ label("psar1: AR(1) Autocorrelation within Panels, and in each Panel") /*
+	*/ last						/*
+	*/ option("corr(psar1)")
+
+ CHECKBOX ck_model14  _lft    _ls   _ibwd    _ht5 , 	///
+	groupbox					///
+	onclickon(script ck_model14_on)			///
+	onclickoff(script ck_model14_off)		///
+	label("Rho Method - model(xtpcse, xtregar):")
+  RADIO rb_reg    _indent   _ss       _cwd1  .,	/*
+	*/ label("none: Single Lag OLS Residuals (default)") /*
+	*/ first					/*
+	*/ option(NONE)					/*
+	*/
+DEFINE y @y
+  RADIO rb_freg   @         _ss       @         .,	/*
+	*/ label("freg: Single Lead OLS Residuals")	/*
+	*/ option("rhotype(freg)")			/*
+	*/
+  RADIO rb_dw     @         _ss       @         .,	/*
+	*/ label("dw: Durbin-Watson")		/*
+	*/ option("rhotype(dw)")			/*
+	*/
+  RADIO rb_nagar  _lft2     y         _cwd2     .,	/*
+	*/ label("nagar - Adjusted Durbin-Watson")	/*
+	*/ option("rhotype(nagar)")			/*
+	*/
+  RADIO rb_theil  @         _ss       @         .,	/*
+	*/ label("theil - Adjusted Autocorrelation")	/*
+	*/ option("rhotype(theil)")			/*
+	*/
+  RADIO rb_tscorr @         _ss       @         .,	/*
+	*/ label("tscorr: Residuals Autocorrelation") /*
+	*/ last						/*
+	*/ option("rhotype(tscorr)")			/*
+	*/
+
+END
+
+DIALOG est2, tabtitle("Options")
+BEGIN
+  CHECKBOX ck_model2  _lft    _top   _ibwd    _ht20 , ///
+	groupbox				 ///
+	onclickon(script ck_model2_on)		 ///
+	onclickoff(script ck_model2_off)	 ///
+	label("Additional Options:")
+ CHECKBOX ck_igls  _ilft     _ss    400 ., option("igls") /*
+*/ label("igls:  model(xtgls) iterated GLS instead of Two-Step GLS")	
+ CHECKBOX ck_twostep _ilft     _ss    400 ., option("twostep") /*
+*/ label("twostep: model(xtregar) Two-Step Estimates")
+ CHECKBOX ck_coll _ilft     _ss    400 ., option("coll") /*
+*/ label("coll: Keep Collinear Variables")
+ CHECKBOX ck_cost _ilft     _ss    400 ., option("cost") /*
+*/ label("cost: model(xtfrontier) Cost Frontier instead of Production Function")
+ CHECKBOX ck_ti _ilft     _ss    400 ., option("ti") /*
+*/ label("ti:   model(xtfrontier) Time-Invariant Model")
+ CHECKBOX ck_tvd _ilft     _ss    400 ., option("tvd") /*
+*/ label("tvd:  model(xtfrontier) Time-Varying Decay Model")
+ CHECKBOX ck_hetonly _ilft     _ss    400 ., option("hetonly") /*
+*/ label("hetonly: model(xtpcse) assume Panel-Level Heteroscedastic Errors")
+ CHECKBOX ck_indep _ilft     _ss    400 ., option("indep") /*
+*/ label("indep: model(xtpcse) assume Independent Errors Across Panels")
+ CHECKBOX ck_tobit _ilft     _ss    400 ., option("tobit") /*
+*/ label("tobit: model(xttobit) LR Test comparing against Pooled Tobit")
+ CHECKBOX ck_noskip _ilft     _ss    400 ., option("noskip") /*
+*/ label("noskip: model(xttobit) Likelihood-Ratio test")
+END
+
+LIST cmd1_con
+BEGIN
+xtbe
+xtfe
+xtfm
+xtpa
+-----------
+xtmle
+xtrc
+xtre
+xtsa
+xttb
+xtwh
+-----------
+xtgls
+xtkmhomo
+xtkmhet1
+xtkmhet2
+xtparks
+xtpcse
+xtregar
+-----------
+xtfrontier
+-----------
+xttobit
+-----------
+END
+
+LIST cmd11_sel
+BEGIN
+xtbe
+xtfe
+xtfm
+xtpa
+xtmle
+xtrc
+xtre
+xtsa
+xttb
+xtwh
+xtgls
+xtkmhomo
+xtkmhet1
+xtkmhet2
+xtparks
+xtpcse
+xtregar
+xtfrontier
+xttobit
+END
+
+SCRIPT ck_model12_on
+BEGIN
+ main.rb_piid.enable
+ main.rb_phet.enable
+ main.rb_pcorr.enable
+END
+SCRIPT ck_model12_off
+BEGIN
+ main.rb_piid.disable
+ main.rb_phet.disable
+ main.rb_pcorr.disable
+END
+
+SCRIPT ck_model13_on
+BEGIN
+ main.rb_cind.enable
+ main.rb_car1.enable
+ main.rb_cpsar1.enable
+END
+SCRIPT ck_model13_off
+BEGIN
+ main.rb_cind.disable
+ main.rb_car1.disable
+ main.rb_cpsar1.disable
+END
+
+SCRIPT ck_model14_on
+BEGIN
+ main.rb_reg.enable
+ main.rb_freg.enable
+ main.rb_dw.enable
+ main.rb_nagar.enable
+ main.rb_theil.enable
+ main.rb_tscorr.enable
+END
+SCRIPT ck_model14_off
+BEGIN
+ main.rb_reg.disable
+ main.rb_freg.disable
+ main.rb_dw.disable
+ main.rb_nagar.disable
+ main.rb_theil.disable
+ main.rb_tscorr.disable
+END
+
+SCRIPT ck_model2_on
+BEGIN
+ est2.ck_igls.enable
+ est2.ck_twostep.enable
+ est2.ck_coll.enable
+ est2.ck_cost.enable
+ est2.ck_ti.enable
+ est2.ck_tvd.enable
+ est2.ck_hetonly.enable
+ est2.ck_indep.enable
+ est2.ck_tobit.enable
+ est2.ck_noskip.enable
+END
+SCRIPT ck_model2_off
+BEGIN
+ est2.ck_igls.disable
+ est2.ck_twostep.disable
+ est2.ck_coll.disable
+ est2.ck_cost.disable
+ est2.ck_ti.disable
+ est2.ck_tvd.disable
+ est2.ck_hetonly.disable
+ est2.ck_indep.disable
+ est2.ck_tobit.disable
+ est2.ck_noskip.disable
+END
+
+INCLUDE byifin
+
+PROGRAM command
+BEGIN
+ put /program by_output
+ put "resetxt "
+ varlist main.vn_yvar main.vl_xvar
+ put " " /program ifin_output
+ require main.vn_id 
+ require main.vn_it 
+beginoptions
+ optionarg main.cb_cmd1
+ optionarg main.vn_id
+ optionarg main.vn_it
+ option main.ck_nocons
+ option radio(main rb_piid rb_phet rb_pcorr)
+ option radio(main rb_cind rb_car1 rb_cpsar1)
+ option radio(main rb_reg rb_freg rb_dw rb_nagar rb_theil rb_tscorr)
+ option est2.ck_igls
+ option est2.ck_twostep
+ option est2.ck_coll
+ option est2.ck_cost
+ option est2.ck_ti
+ option est2.ck_tvd
+ option est2.ck_hetonly
+ option est2.ck_indep
+ option est2.ck_tobit
+ option est2.ck_noskip
+ endoptions
+ END
+

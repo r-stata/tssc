@@ -1,0 +1,141 @@
+/*
+ fbep
+*! VERSION 1.0 25/04/2016
+*/
+VERSION 11.0
+INCLUDE _std_large
+DEFINE _dlght 375
+INCLUDE header
+HELP hlp1, view("help fbep")
+RESET res1
+
+DIALOG main, label("fbep - Break-Even Point Analysis (BEP)") ///
+	tabtitle("Main")
+BEGIN
+  
+ TEXT tx_up	_lft	_top	120	., ///
+	label("Unit Price (uP)")
+ TEXT tx_uvc	150	@	120	., ///
+	label("Unit Variable Cost (uVC)")
+ TEXT tx_tfc    300   @    120   .,	///
+	label("Total Fixed Cost (TFC)")
+ VARNAME vn_up  _lft	 _ss	120 .,	 ///
+	label("Unit Price (uP)")
+ VARNAME vn_uvc  150	 @	120 ., ///
+	label("Unit Variable Cost (uVC)")
+ VARNAME vn_tfc 300   @   120    ., ///
+	label("Total Fixed Cost (TFC)") ///
+	option(tfc)
+
+ CHECKBOX ck_mp _lft _ls _iwd  _ht5 , 	///
+ groupbox					///
+ onclickon(script ck_mp_on)		///
+ onclickoff(script ck_mp_off)	///
+ label("Multiple Products (BEP) Options:")	///
+	option(mp)
+
+ VARNAME vn_id _ilft	_ms	200 .,	///
+	label("ID Variable for Multiple Products (BEP)") ///
+	option(id)
+ TEXT tx_id	230 	@ 	250 .,	///
+	label("ID Variable for Multiple Products (BEP)")
+
+ VARNAME vn_ratio _ilft	_ms	200 .,	///
+	label("Unit Price Ratio for Multiple Products (BEP)") ///
+	option(ratio)
+ TEXT tx_ratio	230 	@ 	250 .,	///
+	label("Unit Price Ratio for Multiple Products (BEP)")
+
+ CHECKBOX ck_model1 _lft _xls _iwd  _ht19 , 	///
+ groupbox					///
+ onclickon(script ck_model1_on)		///
+ onclickoff(script ck_model1_off)	///
+ label("Additional Options:")
+
+ VARNAME vn_pf _ilft	_ss	200 .,	///
+	label("Target Profit") ///
+	option(pf)
+ TEXT tx_pf	230 	@ 	160 .,	///
+	label("Target Profit")
+ VARNAME vn_tax _ilft   _ms   200    ., ///
+	label("Tax Rate") ///
+	option(tax)
+ TEXT tx_tax    230   @    160   .,	///
+	label("Tax Rate")
+ VARNAME vn_qh _ilft	_ms	200 .,	///
+	label("Expected Quantity") ///
+	option(qh)
+ TEXT tx_qh	230 	@ 	160 .,	///
+	label("Expected Quantity")
+
+ CHECKBOX ck_list    _ilft  _ms   350  ., option("list") /*
+*/ label("Add (BEP) Variables to Data List") 
+ CHECKBOX ck_pcm    _ilft  _ms   350  ., option("pcm") /*
+*/ label("Print Contribution Margin output") 
+ CHECKBOX ck_txt    _ilft  _ms   350  ., option("txt") /*
+*/ label("Save Results in text File (*.txt) instead of (*.csv)") 
+ TEXT tx_fn	_ilft	_ms	460 	.,		///
+	label("Save Break-Even Point Analysis (BEP) Results in File (*.txt):") 
+
+ FILE fi_fn     @	_ss	@ 	.,		///
+	option(save)						///
+	label("Save As...")					///
+	filter("Stata dta File (*.txt)|*.csv|All (*.*)|*.*")	///
+	defext(txt)						///
+	error("Filename") save
+END
+
+SCRIPT ck_mp_on
+BEGIN
+ main.vn_id.enable
+ main.vn_ratio.enable
+END
+
+SCRIPT ck_mp_off
+BEGIN
+ main.vn_id.disable
+ main.vn_ratio.disable
+END
+
+SCRIPT ck_model1_on
+BEGIN
+ main.vn_pf.enable
+ main.vn_tax.enable
+ main.vn_qh.enable
+ main.ck_list.enable
+ main.ck_pcm.enable
+ main.ck_txt.enable
+END
+
+SCRIPT ck_model1_off
+BEGIN
+ main.vn_pf.disable
+ main.vn_tax.disable
+ main.vn_qh.disable
+ main.ck_list.disable
+ main.ck_pcm.disable
+ main.ck_txt.disable
+END
+
+INCLUDE byifin
+
+PROGRAM command
+BEGIN
+ put "fbep "
+ varlist main.vn_up main.vn_uvc
+ put " " /program ifin_output
+ require main.vn_tfc
+beginoptions
+ optionarg main.vn_tfc
+ optionarg main.vn_pf
+ optionarg main.vn_tax
+ optionarg main.vn_qh
+ option main.ck_pcm
+ option main.ck_list
+ option main.ck_mp
+ optionarg main.vn_id
+ optionarg main.vn_ratio
+ option main.ck_txt
+ optionarg main.fi_fn
+ endoptions
+END

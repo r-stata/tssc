@@ -1,0 +1,102 @@
+{smcl}
+{* 19 Jan 2009}{...}
+{hline}
+{cmd:help multencode}
+{hline}
+
+{title:Encode multiple string variables into numeric}
+
+
+{title:Syntax}
+
+{p 8 16 2}
+{cmd:multencode} 
+{it:strvarlist} 
+{ifin} 
+{cmd:,} 
+{cmdab:g:enerate(}{it:newvarlist}{cmd:)}
+[
+{cmdab:l:abel}{cmd:(}{it:name}{cmd:)} 
+{cmd:force}
+]
+
+
+{title:Description}
+
+{p 4 4 2}
+{cmd:multencode} creates new numeric variables {it:newvarlist}, with
+value labels defined and attached, based on the string variables
+{it:strvarlist}. The same set of value labels is used for all the new
+variables. By default a new set of labels will be created with the same
+name as the first variable in {it:strvarlist}. Optionally, a name may be
+specified using the {cmd:label()} option. In either case, no existing
+set of value labels with the same name will be used, unless the
+{cmd:force} option is specified, in which case those value labels will
+be over-written. In this way, the user is assured that the new variables
+will have the same alphabetically ordered set of value labels, provided
+as usual that the request does not breach any {help limits} that apply. 
+
+{p 4 4 2}
+Do not use {cmd:multencode} if {it:strvarlist} contains numbers that
+merely happen to be stored as strings. Instead, use {cmd:destring}. See
+{help destring}.
+
+
+{title:Remarks} 
+
+{p 4 4 2}
+{cmd:multencode} uses Mata to determine the distinct values of the
+variables to be encoded. Thus Stata 9 up is required. 
+
+{p 4 4 2}
+A multiple {help decode} is easy enough, perhaps as easy as 
+
+	{cmd:foreach v of var} {it:varlist} {c -(} 
+		{cmd:decode `v', gen(s_`v')} 
+	{c )-} 
+
+{p 4 4 2}
+{c -} so long as no variable name is close enough to the limit of 32
+characters. 
+
+
+{title:Options}
+
+{p 4 8 2}
+{cmd:generate()} is required and specifies the names of the variables to
+be created. Hyphenated lists such as {cmd:nvar1-nvar8} are allowed. 
+
+{p 4 8 2}
+{cmd:label()} specifies the name of the value label to be created.  
+If {cmd:label()} is not specified, {cmd:multencode} attempts to use 
+the same name for the label as the first existing variable specified. In
+neither case will an existing set of value labels be overwritten unless
+{cmd:force} is also specified. 
+
+{p 4 8 2}
+{cmd:force} specifies that any existing value labels with the same name
+as implied by other choices will be overwritten. Only rarely should this
+option be used: it may have serious consequences for other variables.
+Proceed with extreme caution and never use if in doubt. 
+
+
+{title:Example}
+
+{p 4 8 2}{cmd:. multencode svar1-svar8, gen(nvar1-nvar8)} 
+
+
+{title:Author} 
+
+{p 4 4 2}Nicholas J. Cox, Durham University, UK{break} 
+n.j.cox@durham.ac.uk
+
+
+{title:Acknowledgments} 
+
+{p 4 8 2}This problem was suggested on Statalist by Moleps Islon. 
+
+
+{title:Also see}
+
+{p 4 13 2}help for {help encode}, {help destring}, {help label} 
+

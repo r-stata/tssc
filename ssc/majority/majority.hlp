@@ -1,0 +1,181 @@
+{smcl}
+{* 30april2003}{...}
+{hline}
+help for {hi:majority}
+{hline}
+
+{title:Majority calculations for real or hypothetical elections} 
+
+{p 8 17 2} 
+{cmd:majority} 
+{it:varname}
+[{it:weight}]
+[{cmd:if} {it:exp}] 
+[{cmd:in} {it:range}]
+{cmd:,}
+{cmdab:pos:itive(}{it:valuelist}{cmd:)}
+{cmdab:neg:ative(}{it:valuelist}{cmd:)}
+[
+{cmd:by(}{it:byvarlist}{cmd:)} 
+{cmdab:perc:ent}
+{cmd:format(}{it:format}{cmd:)} 
+{it:list_options}
+{cmdab:g:enerate(}{it:newvarlist}{cmd:)} 
+]
+
+{p 8 17 2} 
+{cmd:majority} 
+{it:varlist}
+[{it:weight}]
+[{cmd:if} {it:exp}] 
+[{cmd:in} {it:range}]
+{cmd:,}
+{cmdab:pos:itive(}{it:varlist}{cmd:)}
+{cmdab:neg:ative(}{it:varlist}{cmd:)}
+[
+{cmd:by(}{it:byvarlist}{cmd:)} 
+{cmdab:perc:ent}
+{cmd:format(}{it:format}{cmd:)} 
+{it:list_options}
+{cmdab:g:enerate(}{it:newvarlist}{cmd:)} 
+]
+
+
+{title:Description}
+
+{p 4 4 2}
+{cmd:majority} reports on voting in real or hypothetical elections.  The
+{it:votes} cast are summarized as being {it:positive} or {it:negative}
+and the difference between these is reported.
+This difference is here called the {it:majority}, such terminology being a
+mild generalisation of usage in British English. 
+ 
+{p 4 4 2}There are two syntaxes. The first is for a long data structure in
+which votes are recorded in a single variable, which may be numeric or string.
+The second is for a wide data structure in which votes are recorded in two or
+more variables, which must be numeric. Note that with both syntaxes the
+percents calculated with the {cmd:percent} option will depend on the totals as
+determined by all the variables supplied, except for any {cmd:if} and {cmd:in}
+restrictions and missing values. 
+ 
+{p 4 4 2}{cmd:fweight}s and {cmd:aweight}s may be specified. 
+ 
+ 
+{title:Remarks} 
+ 
+{p 4 4 2}In 2000 the Electoral College of the United States voted as follows:
+George W. Bush 271; Al Gore 266; absentions 1. Hence George W. Bush was elected
+President of the United States by a majority of 5, or as a percent 5 / 538 =
+0.93%. The majority for Bush is here # votes for - # votes against.  More
+generally we can calculate a {it:majority} given a decision on which votes are 
+counted as {it:positive} and which as {it:negative}. 
+Polls are often summarized in terms of the difference
+between those who approve and those who disapprove, usually of some politician
+or policy. In a poll reported in the {it:Independent} [London] on 28 April
+2003, 14% of (presumably British) adults were in favour of genetically modified
+food, and 56% against. From this it would seem that a referendum on
+the issue would yield a majority of 42% against.  In a survey of grocery
+shoppers in Oxford, one question asked for agreement or disagreement with the
+statement "I find getting to grocery shops very tiring" on a 5 point scale
+running from {it:agree} to {it:disagree}.  Two possibilities here are to
+calculate (1) (# {it:agree}) - (# {it:disagree}) and (2) (# {it:agree} + #
+{it:tend to agree}) - (# {it:disagree} + # {it:tend to disagree}). Here as
+elsewhere it usually seems best to ignore the neutral category in the middle of
+the scale, # {it:in between}. In electoral terms, we might guess, in the
+absence of any other information, that those who are undecided either might not
+vote at all or might be split equally into {it:positive} and {it:negative}:
+whatever we guess,  the majority is unchanged.  However, how to assign
+categories is a substantive decision, rather than a statistical decision. 
+ 
+{p 4 4 2}More generally, the majority has various attractive properties. It is
+simple, and familiar to many people, largely because of its widespread use in
+reporting elections. It is a direct summary of the data which does not go
+beyond the categories given, as compared with say assigning some scores to the
+categories and averaging those. It is sensitive to variations, without being
+unstable: note that by comparison a ratio such as # {it:positive} / # {it:negative}
+is not only unstable but also indeterminate for zero denominators.  As
+mentioned, the majority is unchanged if neutral or don't know categories are
+split equally, unlike any ratio. Perhaps the main disadvantage of the majority
+is that it does not have an obvious link to any specific family of models.
+
+{p 4 4 2}See also Wilkinson, L. 1999. {it:The grammar of graphics.} 
+New York: Springer-Verlag and Zeisel, H. 1985. 
+{it:Say it with figures.} 6th ed. New York: Harper & Row. 
+
+{p 4 4 2}We deal here only with the simplest kind of voting.  For more
+information on voting systems, see for example 
+{browse "http://www.barnsdle.demon.co.uk/vote/vote.html":http://www.barnsdle.demon.co.uk/vote/vote.html}. 
+
+
+{title:Options}
+
+{p 4 8 2}{cmd:positive()} and {cmd:negative()} are required options. 
+With the first
+syntax, the argument of each is a {it:valuelist}, i.e. a numeric list or a list
+of string values. With the second syntax, it is a {it:varlist} of numeric
+variables. 
+ 
+{p 8 8 2}In the first syntax, suppose we have data in a numeric variable
+{cmd:opinion} on a 5 point opinion scale which we wish to summarize in terms of
+the number who say 1 or 2 minus the number who say 4 or 5, ignoring those who
+say 3. The syntax is, minimally, {cmd:majority opinion, pos(1 2) neg(4 5)}.
+Or suppose that we have data in a string variable {cmd:candidate} which we wish
+to summarize in terms of votes for "Bush" minus votes for "Gore". The syntax
+is, minimally, {cmd:majority candidate, pos("Bush") neg("Gore")}.
+ 
+{p 8 8 2}In the second syntax, suppose we have data in four numeric variables,
+{cmd:Bush}, {cmd:Gore}, {cmd:Nader} and {cmd:others}, which we wish to
+summarize in terms of the number who voted for Bush minus the number who voted
+for Gore. The syntax is minimally 
+{cmd:majority Bush Gore Nader others, pos(Bush) neg(Gore)}.  
+If we wish to summarize in terms of the number who
+voted for Bush minus the number who voted for all other candidates, the syntax
+is minimally 
+{cmd:majority Bush Gore Nader others, pos(Bush) neg(Gore Nader others)}. 
+ 
+{p 4 8 2}{cmd:by()} specifies that reports are to be subdivided according to
+the distinct combinations of {it:byvarlist}.  This is not a required option but
+in practice perhaps the most useful handle provided by {cmd:majority}. 
+ 
+{p 4 8 2}{cmd:percent} stipulates that positive and negative votes and the
+majority be reported as percents of the total. Thus  
+{cmd:majority Bush Gore Nader others, pos(Bush) neg(Gore Nader others) percent} 
+will report Bush minus all others as a percent of the total for all candidates, while
+{cmd:majority Bush Gore, pos(Bush) neg(Gore) percent} will report Bush
+minus Gore as a percent of their total. 
+
+{p 4 8 2}{cmd:format()} supplies a format to be used in displaying the results
+of {it:positive}, {it:negative} and {it:majority}. The default is %3.2f
+if {cmd:percent} is specified and %8.0g otherwise. 
+
+{p 4 8 2}{it:list_options} refers to options of {help list}, which is used to
+display results. 
+
+{p 4 8 2}{cmdab:g:enerate()} generates up to three new
+variables, as follows. With one new variable name, the new variable contains
+the {it:majority} calculated.  With two new variable names, the second contains
+the total(s) of {it:positive} votes. With three new variable names, the third 
+contains the total(s) of {it:negative} votes. 
+If {cmd:percent} is also specified, new variables will be in
+percent form. Note that each new variable will contain constants, unless
+{cmd:by()} is also specified, in which case each new variable will contain the
+same constant for each block defined by {cmd:by()}. 
+
+
+{title:Examples}
+
+{p 4 8 2}{inp:. use http://www.stata-press.com/data/r8/voter.dta}{p_end}
+{p 4 8 2}{inp:. majority candidat [w=frac], pos(2) neg(3)}{p_end}
+{p 4 8 2}{inp:. majority candidat [w=frac], pos(2) neg(3) by(inc)}{p_end}
+{p 4 8 2}{inp:. majority candidat [aw=pfrac], pos(2) neg(3) by(inc) format(%3.2f)}
+
+
+{title:Author}
+
+        Nicholas J. Cox, University of Durham
+        n.j.cox@durham.ac.uk
+
+	 
+{title:Also see}
+
+{p 0 19}On-line:  help for {help slideplot} (if installed){p_end}

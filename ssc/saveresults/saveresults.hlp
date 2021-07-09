@@ -1,0 +1,139 @@
+{smcl}
+{* 28oct2009}{...}
+{cmd:help saveresults}
+{hline}
+
+{title:Title}
+
+{p 4 4 2}{hi:saveresults} {hline 2} Save output from a command in a file on disk
+
+
+{title:Syntax}
+
+{p 8 17 2}
+{cmd:saveresults} [{helpb using}] {it:filename}
+    [{cmd:,} {it:options} ]
+    {cmd::} {it:command}
+
+
+{synoptset 20 tabbed}{...}
+{synopthdr:options}
+{synoptline}
+{syntab:Main}
+{synopt :{opt noc:md}}do not echo {it:command} in output
+  {p_end}
+{synopt :{opt replace}}replace existing file
+  {p_end}
+
+{syntab:Output format}
+{synopt :{opt ps}}PostScript
+  {p_end}
+{synopt :{opt prn}}default printer format
+  {p_end}
+{synopt :{opt txt}}generic ASCII text log
+  {p_end}
+{synopt :{opt log}}Stata ASCII text log
+  {p_end}
+{synopt :{opt smcl}}SMCL format
+  {p_end}
+{synopt :{opt pdf}}PDF (Mac only)
+  {p_end}
+{synopt :{it:override_options}}options passed through to {helpb translate}
+  {p_end}
+{synoptline}
+
+
+{title:Description}
+
+{pstd}
+    {cmd:saveresults} runs {it:command} and saves a copy of the command's
+    output in a file on disk. Depending on {it:filename}'s extension, the
+    output is translated to one of several file formats using Stata's
+    {helpb translate} command.
+
+
+{title:Options}
+
+{dlgtab:Main}
+
+{phang}
+    {opt nocmd} specifies that the command line not be echoed in the output.
+
+{phang}
+    {opt replace} specifies that {it:filename} be replaced if it already
+    exists.
+
+{dlgtab:Output format}
+
+{phang}
+    {opt ps}, {opt prn}, {opt txt}, {opt log}, {opt smcl}, and {opt pdf}
+    (MAC only) set the output format. Specify one of these options to
+    override the default behavior, which is to determine the output format
+    from {it:filename}'s extension. The default mappings are as follows:
+
+            {it:option  extension  translator  format}
+            {hline 53}
+            {opt ps}      .ps        {stata translator query smcl2ps:{bf:smcl2ps}}     PostScript
+            {opt prn}     .prn       {stata translator query smcl2prn:{bf:smcl2prn}}    default printer format
+            {opt txt}     .txt       {stata translator query smcl2txt:{bf:smcl2txt}}    generic ASCII text log
+            {opt log}     .log       {stata translator query smcl2log:{bf:smcl2log}}    Stata ASCII text log
+            {opt smcl}    .smcl      (none)      SMCL
+                    .sthlp     (none)      SMCL (Stata 10 up)
+                    .hlp       (none)      SMCL (Stata 9)
+            {opt pdf}     .pdf       {stata translator query smcl2pdf:{bf:smcl2pdf}}    PDF (Mac only)
+            {hline 53}
+
+{pmore}
+    For all other extensions {cmd:txt} is used as the default output
+    format. However, note that {cmd:saveresults} is sensitive to the
+    mappings defined by {helpb transmap}. For example, to declare PostScript
+    the default format for extension ".myps" you could type
+
+            {com}. transmap define .myps .ps{txt}
+
+{phang}
+    {it:override_options} are passed through to {helpb translate} and
+    override any of the default options of the used translator. To find out
+    what you can override for, say, {cmd:ps}, type
+
+            {com}. translator query smcl2ps{txt}
+
+{pmore}
+    For example, there is a {cmd:logo} option for most translators, which
+    you could turn off by typing
+
+            {com}. saveresults {txt}{it:...}{com}, logo(off) :{txt} {it:command}
+
+{pmore}
+    Alternatively, you can change translator options permanently using the
+    {cmd:translator set} command. See help {helpb translate} for details.
+
+
+{title:Examples}
+
+        {com}. {stata "sysuse auto, clear"}
+
+        . {stata "saveresults test.log: describe"}
+
+        . {stata "type test.log"}
+
+        . {stata "saveresults test.ps, logo(off): describe"}
+        {txt}
+
+{title:Author}
+
+{p 4 4 2} Ben Jann, ETH Zurich, jannb@ethz.ch
+
+{p 4 4 2}
+    Thanks for citing this software as follows:
+
+{p 8 8 2}
+    Jann, B. (2009). saveresults: Stata module to save output from a command
+    in a file on disk. Available from
+    {browse "http://ideas.repec.org/c/boc/bocode/s457089.html"}.
+
+
+{title:Also see}
+
+{psee}
+Online:  {helpb translate}, {helpb smcl}, {helpb viewresults} (if installed)

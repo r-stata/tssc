@@ -1,0 +1,126 @@
+{smcl}
+{* version 1.0.5 03sep2012}{...}
+{cmd:help labvalpool}
+{hline}
+
+{title:Title}
+
+{p 5}
+{cmd:labvalpool} {hline 2} Pool (sets of) value labels
+
+
+{title:Syntax}
+
+{p 8}
+{cmd:labvalpool} [{it:target-lblname} [{it:lblname-list}]] 
+[{cmd:,} {it:options}]
+
+
+{p 5}
+where 
+
+{p 8}
+{it:target-lblname} is the value label name for pooled sets of value 
+labels
+
+{p 8}
+{it:lblname-list} are names of value label sets to be pooled
+
+
+{title:Description}
+
+{pstd}
+{cmd:labvalpool} pools (sets of) value labels specified in 
+{it:lblname-list}. A value label set, {it:target-lblname}, is defined, 
+pooling definitions from {it:lblname{hi:1}}, {it:lblname{hi:2}}, 
+{it:...}. Not specifying {it:target-lblname} and/or {it:lblname-list}, 
+means all value labels in memory.
+
+
+{title:Options}
+
+{phang}
+{opt a:ppend}[{cmd:(}{it:{help numlist}} | {it:{help varlist}}{cmd:)}] 
+appends value label definitions from {it:lblname-list} to 
+{it:target-lblname}. Note that {it:target-lblname} must exist. If 
+specified, only values in {it:numlist} or {it:varlist} and the 
+associated text are added from {it:lblname-list}. May not be specified 
+with {opt replace}.
+
+{phang}
+{opt replace} replaces {it:target-lblname} with pooled value labels 
+from {it:lblname-list}. If {it:target-labelname} exists, it is 
+redefined, otherwise a new value label set is defined. May not be 
+specified with {opt append}.
+
+{phang}
+{opt update} overwrites value label definitions. Later definitions 
+overwrite earlier ones in the order of the specified 
+{it:lblname-list}. The synonym {opt overw:rite} may be used. May not 
+be specified with {opt pool}.
+
+{phang}
+{opt p:ool} pools text from value labels. Any text associated with 
+the same values is combined. May not be specified with {opt update}.
+
+{phang}
+{opt sep:arator(chars)} uses {it:chars} to separate pooled value 
+labels. May only be specified with {opt pool}. Default separator 
+is {hi:" "}.
+
+
+{title:Examples}
+
+{phang2}{cmd:. clear all}{p_end}
+{phang2}{cmd:. label define foo 1 "one" ,modify}{p_end}
+{phang2}{cmd:. label define foo 2 "two" ,modify}{p_end}
+{phang2}{cmd:. label define foo 3 "three" ,modify}{p_end}
+
+{phang2}{cmd:. label define bar 3 "second three" ,modify}{p_end}
+{phang2}{cmd:. label define bar 4 "four" ,modify}{p_end}
+
+{phang2}{cmd:. labvalpool foobar foo bar}{p_end}
+{phang2}{cmd:. label list}{p_end}
+{phang2}{cmd:. labvalpool foobar foo bar}{cmd:,replace update}{p_end}
+{phang2}{cmd:. label list foobar}{p_end}	
+{phang2}{cmd:. labvalpool foobar foo bar}{cmd:,replace pool}{p_end}
+{phang2}{cmd:. label list foobar}{p_end}
+
+{phang2}{cmd:. label drop foobar}{p_end}
+{phang2}{cmd:. labvalpool foo bar ,append}{p_end}
+{phang2}{cmd:. label list}{p_end}	
+
+{phang2}{cmd:. sysuse nlsw88 ,clear}{p_end}
+{phang2}{cmd:. recode occupation (1/2 = 1 "Higher occupation") ,generate(occ) label(occlbl2)}{p_end}
+{phang2}{cmd:. label list occlbl2}{p_end}
+{phang2}{cmd:. labvalpool occlbl2 occlbl ,append(occ)}{p_end}
+{phang2}{cmd:. label list occlbl2}{p_end}
+
+
+{title:Acknowledgments}
+
+{pstd}
+The problem of combining (sets of) value labels was suggested by 
+Jorge Eduardo Pérez Pérez on
+{browse "http://www.stata.com/statalist/archive/2011-05/msg00636.html":Statalist}.
+
+{pstd}
+Nick Cox proposed a first solution 
+{stata findit labvalcombine:labvalcombine}, which is availiable under 
+the link above (or as part of {stata findit labutil:labutil} package) 
+and will work with Stata version 8 or higher.
+
+
+{title:Author}
+
+{pstd}Daniel Klein, University of Kassel, klein.daniel.81@gmail.com
+
+
+{title:Also see}
+
+{psee}
+Online: {help label}{p_end}
+
+{psee}
+if installed: {help labvalcombine}, {help labcopy}, {help labvalclone}, 
+{help labutil2} {p_end}

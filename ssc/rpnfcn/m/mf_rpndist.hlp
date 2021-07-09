@@ -1,0 +1,87 @@
+{smcl}
+{* 25jun2007}{...}
+{cmd:help mata fexp()}
+{cmd:help mata Sexp()}
+{cmd:help mata fwei()}
+{cmd:help mata Swei()}
+{hline}
+{* index rpn cdf pdf mata}{...}
+{* index fexp()}{...}
+{* index Sexp()}{...}
+{* index fwei()}{...}
+{* index Swei()}{...}
+
+{title:Title}
+
+{p 4 4 2} {bf:Simple distribution functions for use with rpnfcn()}
+
+
+{title:Syntax}
+
+{p 16 12 2}
+{bf:{ul:Command name}}{space 5} {ul:Argument}
+
+{p 16 12 2}
+{cmd:&fexp()}{space 10} {it:&theta}
+
+{p 16 12 2}
+{cmd:&Sexp()}{space 10} {it:&theta}
+
+{p 16 12 2}
+{cmd:&fwei()}{space 10} {it:&theta}
+
+{p 16 12 2}
+{cmd:&Swei()}{space 10} {it:&theta}
+
+
+{title:Description}
+
+{p 4 4 2} These functions compute densities and survivor function for
+the Exponential and the Weibull density, respectively. The functions
+are to be used with {cmd:rpnfcn()}, and use the argument vector
+{it:theta} to evaluate the function on the matrix in the current top
+element of the stack in {cmd:rpnfcn()}. {it:theta} must be a column
+vector for the Exponential distribution, and a matrix with two columns
+for the Weibull distribution.
+
+
+{title:Remarks}
+
+{p 4 4 2} The parameterizations used can be described by the following
+forms of the survivor functions
+
+{p 18 8 8} S_exp (x; theta1) = exp(-x * exp(theta1))
+
+{p 8 8 8} S_wei (x; (theta1, theta2)) = exp(-(x * exp(theta1))^exp(theta2))
+
+{p 4 4 2} where theta1 and theta2 are columns of {it:theta}. Note
+that all parameters are log-transformed from their natural
+parameterization, so as to ensure that they are unbounded.
+
+{title:Source code}
+
+{p 4 4 2}
+{view rpndist.mata, adopath asis:rpndist.mata}
+
+{title:Author}
+
+{p 4 4 2}{browse "http://www.almen.dk/hstovring":Henrik Støvring},
+Research Unit of General Practice, University of Southern Denmark.
+Please email
+{browse "mailto:hstovring@health.sdu.dk":hstovring@health.sdu.dk}
+if you have comments, questions or observe any problems.
+
+
+{title:Also see}
+
+{p 4 13 2}
+Manual:  {hi:[M] Mata Reference Manual}
+
+{p 4 13 2}
+Online:  help for 
+{bf:{help mata:[M-0] mata}},
+{bf:{help mf_rpnfcn: Evaluation of algorithm matrix using RPN}},
+{bf:{help mf_rpnbinop:RPN stack manipulation functions}}, 
+{bf:{help mf_rpndist:RPN distribution functions}},
+{bf:{help mf_rpnint:RPN functions for integration}}
+{p_end}

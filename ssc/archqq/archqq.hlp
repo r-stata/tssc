@@ -1,0 +1,76 @@
+{smcl}
+{* *! version 1.03  2008-03-25}{...}
+{cmd:help archqq}
+{hline}
+
+{title:Q-Q plots and tests to assess distributional assumptions for ARCH models}
+
+
+{title:Syntax}
+
+{p 8 25 2}
+{cmd:archqq} 
+[{varname}]
+{ifin}
+[{cmd:,} 
+{opt dist:ribution(dist [#])}
+{opt nog:raph}
+{opt not:est}
+{opt jb}]
+
+{title:Description}
+
+{p}{cmd:archqq} is primarily for use after {cmd:arch} but can also be applied to an arbitrary
+variable. It displays Q-Q plots of the standardized residuals from an ARCH model
+against a standard normal, t-distribution normalized to variance 1 or the GED distribution.
+The distribution (and degrees of freedom for a t-distribution or shape parameter for the GED)
+is the one used with {cmd:arch} if not specified explicitly.
+
+{p}Additionally, the data and assumed moments, mean, variance, skewness and kurtosis 
+and.the Kolmogorov-Smirnov test for distribution are reported. In addition the Jarque-Bera
+test for normality is reported if the assumed distribution is normal. Optionally,
+a Jarque-Bera type test generalized to allow other null hypothesis than a normal
+distribution can be reported. Note that the properties of the generalized test are unknown. 
+In particular, the test appears to have very low power when 
+the alternative is a distribution with thinner tails than the null.
+
+{p}If a variable is specified the comparison distribution is scaled to the data mean and variance.
+
+{title:Options}
+
+{synoptset 22}{...}
+{synopthdr:option}
+{synoptline}
+
+{synopt:{opt dist:ribution(dist [#])}}Use the {it:dist} distribution with parameter {it:#}.
+{it:dist} can be one {cmd:gaussian}, {cmd:normal}, {cmd:t} or {cmd:ged}. {cmd:gaussian} and {cmd:normal}
+are synonyms. The second argument specifies the degrees of freedom for {cmd:t} or the
+shape parameter for {cmd:ged} and is not allowed with
+{cmd:gaussian} and {cmd:normal}. The default is {cmd:gaussian} if a variable is specified,
+otherwise the default is taken from the {cmd:arch} estimation results.
+
+{synopt:{opt nog:raph}}Suppress display of Q-Q plot.
+
+{synopt:{opt not:test}}Suppress display of moments and test statistics.
+
+{synopt:{opt jb}}Force calculation of Jarque-Bera type test with non-normal distributions.
+
+{synoptline}
+
+{title:Examples}
+
+{pstd}Setup{p_end}
+{phang2}{cmd:. webuse wpi1}{p_end}
+
+{pstd}Fit GARCH(1,1) under normality and display Q-Q plot{p_end}
+{phang2}{cmd:. arch D.ln_wpi, arch(1) garch(1)}{p_end}
+{phang2}{cmd:. archqq}{p_end}
+
+{pstd}Fit GARCH(1,1) with a t-distribution and display Q-Q plot{p_end}
+{phang2}{cmd:. arch D.ln_wpi, arch(1) garch(1) dist(t)}{p_end}
+{phang2}{cmd:. archqq}{p_end}
+
+{title:Author}
+
+{pstd}Sune Karlsson, Örebro University, Sweden{p_end}
+{pstd}sune.karlsson@oru.se{p_end}

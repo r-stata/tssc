@@ -1,0 +1,82 @@
+/*
+sgpower dialog version 1.00, 21.03.2020, Sven-Kristjan Bormann
+for sgpower version 1.00
+
+To install in User Statistics menu via Stata commands:
+  
+  . window menu append item "stUserStatistics" "SGPV Power Calculations (&sgpower)" "db sgpower"
+
+  . window menu refresh
+
+To permanently install, place the commands in your -profile.do- file.
+*/
+
+VERSION 12.0
+INCLUDE _std_small
+INCLUDE header
+HELP hlp1,   view("help sgpower")  
+RESET res1
+*SUBMIT sub1, label("Submit")
+
+LIST inttype_list
+BEGIN
+	confidence
+	likelihood
+END
+
+DIALOG main, label("Sgpower 1.00 - SGPV Power Calculations") tabtitle("Main")
+BEGIN
+	TEXT tx_true 		20    _top   120    ., label("True value")
+	EDIT ed_true 		 @    _ss    120    ., numonly option(true) error("A true value is required.") tooltip("The true value of a parameter for which the power function should be calculated.")
+	
+	GROUPBOX gb_null	 _lft  _xls   140   120, label("Null-Hypothesis Interval")
+	TEXT tx_nulllo 		+10   _ss 	 120     ., label("Lower Bound") 
+	EDIT ed_nulllo	 	@     _ss    @     ., option(nulllo) numonly ///
+											error("A lower bound for the null interval is required.")
+	
+	TEXT tx_nullhi	 	@   	_ls    @    ., label("Upper Bound")
+	EDIT ed_nullhi	 	@     _ss     @    ., option(nullhi)  numonly ///
+											error("An upper bound for the null interval is required.")
+											
+	TEXT tx_inttpye   +160   -70      100     ., label("Interval type")
+	COMBOBOX cb_inttype @    _ss      @     ., dropdown content(inttype_list) option(inttype) error("An interval type") tooltip("Set the interval type to either confidence or likelihood.")
+	
+	TEXT tx_intlevel    @    _ls      @     ., label("Interval level")
+	EDIT ed_intlevel    @    _ss      @     ., option(intlevel) error("An interval level is required.") tooltip("The interval level is")
+	
+	
+END
+
+DIALOG options ,tabtitle("Further Options")
+BEGIN
+	TEXT tx_se			_lft  _top    80    ., label("Standard Error")
+	EDIT ed_se			@     _ss     @     ., option(stderr) default(1) numonly
+	
+	CHECKBOX ck_bonus   @    _ls     100   ., label("Bonus statistics") option(bonus) ///
+											tooltip("Display additional statistics")	
+END
+
+PROGRAM command
+BEGIN
+	put "sgpower "
+	beginoptions
+		require main.ed_true
+		 optionarg main.ed_true
+		 
+		 require main.ed_nulllo
+		 optionarg main.ed_nulllo
+		 
+		 require main.ed_nullhi
+		 optionarg main.ed_nullhi
+		 
+		 require main.cb_inttype
+		 optionarg main.cb_inttype
+		 
+		 require main.ed_intlevel
+		 optionarg main.ed_intlevel
+		 
+		 optionarg options.ed_se
+		 option options.ck_bonus
+	endoptions
+
+END

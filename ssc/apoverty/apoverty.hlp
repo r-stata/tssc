@@ -1,0 +1,134 @@
+{smcl}
+{* 10apr2007}{...}
+{hline}
+help for {hi:apoverty}{right:Joao Pedro Azevedo}
+{hline}
+
+{title:Poverty Measures (revised)}
+
+{p 8 15}
+{cmd:apoverty} 
+{it:varlist} 
+[{it:weight}] 
+[{cmd:if} {it:exp}] 
+[{cmd:in} {it:exp}] 
+[{cmd:,} 
+{cmd:line}{cmd:(}#{cmd:)} 
+{cmd:varpl}{cmd:(}varname{cmd:)} 
+{cmd:gen}{cmd:(}newvarname{cmd:)} 
+{cmd:all}
+{cmd:h}    
+{cmd:h2}   
+{cmd:apg}  
+{cmd:pgr}  
+{cmd:igr}  
+{cmd:w}    
+{cmd:s}    
+{cmd:tak}  
+{cmd:thon} 
+{cmd:fgt1} 
+{cmd:fgt2} 
+{cmd:fgt3} 
+{cmd:fgt4} 
+{cmd:fgt5} 
+{cmd:fgt6} 
+{cmd:fgt7} 
+{cmd:fgt8} 
+{cmd:fgt9} 
+{cmd:chu1} 
+{cmd:chu2} 
+{cmd:chu3} 
+{cmd:chu4} 
+{cmd:chu5}          
+]{p_end}
+
+{p 5}{cmd:aweight}s, {cmd:fweight}s and {cmd:pweight}s are allowed; see help {help weights}.{p_end}
+
+
+{title:Description}
+
+{p 5}{cmd:apoverty} computes a series of poverty measures based on the (income)
+distribution described by varname. It is a revised and upgraded version
+of poverty published by Philippe Van Kerm.{p_end}
+
+{p}The poverty measures that can be computed by{p_end}
+
+{p 5} headcount ratio     extreme poverty hratio  aggregate poverty gap{p_end}
+{p 5} poverty gap ratio   income gap ratio        Watts index{p_end}
+{p 5} Sen index           Takayama index          Thon index,{p_end}
+
+{p}and series of Foster, Greer and Thorbecke indices with parameters :{p_end}
+{p 5}                   0.5, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5{p_end}
+{p 5}              Clark et al. indices with parameters :{p_end}
+{p 5}                   0.1, 0.25, 0.5, 0.75, 0.9{p_end}
+
+
+{p 5}The poverty line is either directly specified by the user or computed relative
+to the median of varname (half or two-third), see under "options" below. The extreme
+poverty line is directly speciefied as half of the poverty line used in the exercise.{p_end}
+
+{p}Up to 5 variables can be specified in {it:varlist}.{p_end}
+
+{title:Options}
+
+{p 4 4 2}{cmd:line}{cmd:(}#{cmd:)} sets the value of the poverty line. If # is set equal to -1, the
+    poverty line is computed as half the median of varname. If # is set equal
+    to -2, it is computed as two-third of the median of varname. Default is -1.{p_end}
+
+{p 4 4 2}{cmd:varpl}{cmd:(}varname{cmd:)} provide the variable name containing the values of the poverty line.{p_end}
+
+{p 4 4 2}{cmd:gen}{cmd:(}newvarname{cmd:)} creates a new variable that takes on the value of 1 for
+    all observations identified as poor and 0 for observations identified as
+    non-poor. "newvarname" is set to missing for observations with missing
+    "varname" or falling outside the ^if in^ statements. If more than one variable is specified on the {it:varlist}
+    variable created will refered to this last income variable.{p_end}
+
+{p 4 4 2}{cmd:all} requests that all possible measures are computed and reported.
+    By default, no measure is produced.{p_end}
+
+
+{p}The following options specify the measures to be computed and reported.{p_end}
+
+{p 4 7}{cmd:h}    : headcount ratio [FGT(0)]{p_end}
+{p 4 7}{cmd:h2}   : extremem poverty headcount ratio{p_end}
+{p 4 7}{cmd:apg}  : aggregate poverty gap{p_end}
+{p 4 7}{cmd:pgr}  : poverty gap ratio [FGT(1)]{p_end}
+{p 4 7}{cmd:igr}  : income gap ratio{p_end}
+{p 4 7}{cmd:w}    : Watts index{p_end}
+{p 4 7}{cmd:s}    : Sen index{p_end}
+{p 4 7}{cmd:tak}  : Takayama index{p_end}
+{p 4 7}{cmd:thon} : Thon index{p_end}
+{p 4 7}{cmd:fgt1} : Foster, Greer and Thorbecke -FGT(0.5)-{p_end}
+{p 4 7}{cmd:fgt2} : Foster, Greer and Thorbecke -FGT(1.5)-{p_end}
+{p 4 7}{cmd:fgt3} : Foster, Greer and Thorbecke -FGT(2)-{p_end}
+{p 4 7}{cmd:fgt4} : Foster, Greer and Thorbecke -FGT(2.5)-{p_end}
+{p 4 7}{cmd:fgt5} : Foster, Greer and Thorbecke -FGT(3)-{p_end}
+{p 4 7}{cmd:fgt6} : Foster, Greer and Thorbecke -FGT(3.5)-{p_end}
+{p 4 7}{cmd:fgt7} : Foster, Greer and Thorbecke -FGT(4)-{p_end}
+{p 4 7}{cmd:fgt8} : Foster, Greer and Thorbecke -FGT(4.5)-{p_end}
+{p 4 7}{cmd:fgt9} : Foster, Greer and Thorbecke -FGT(5)-{p_end}
+{p 4 7}{cmd:chu1}  : Clark, Ulph and Hemming index with beta of 0.10{p_end}
+{p 4 7}{cmd:chu2}  : Clark, Ulph and Hemming index with beta of 0.25{p_end}
+{p 4 7}{cmd:chu3}  : Clark, Ulph and Hemming index with beta of 0.50{p_end}
+{p 4 7}{cmd:chu4}  : Clark, Ulph and Hemming index with beta of 0.75{p_end}
+{p 4 7}{cmd:chu5}  : Clark, Ulph and Hemming index with beta of 0.90{p_end}
+
+{title:Saved Results}
+
+{p 5}{cmd:apoverty} returns results in r() format.
+[Important notice: When multiple variables are entered in {it:varlist},
+returned results are for all inequality measures of the variable
+listed.]{p_end}
+
+{title:Author}
+
+{p 5}Joao Pedro Azevedo{p_end}
+{p 5}jazevedo@ipea.gov.br{p_end}
+{p 5}IPEA{p_end}
+
+{p}This is a modified version of the ado poverty2 written by Philippe Van Kerm.{p_end}
+
+{title:Also see}
+
+{p 0 19}On-line:  help for {help povdeco} & {help poverty} if installed{p_end}
+

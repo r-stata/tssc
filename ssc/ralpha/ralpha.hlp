@@ -1,0 +1,78 @@
+{smcl}
+{* APR2011}{...}
+{hline}
+help for {hi:ralpha}
+{hline}
+
+{title: Utility to generate pseudo-random characters or words}
+
+{p 4 8 2} 
+{cmd:ralpha }
+{it:newvar} 
+[
+{cmd:,} 
+{cmdab:r:ange(}{it:LowerChar/UpperChar}{cmd:)}
+{cmdab:low:eronly} 
+{cmdab:upp:eronly} 
+{cmdab:l:ength(}{it:integer}{cmd:)} ]
+{break} 
+ 
+{title:Description}
+
+{p 4 4 2}
+{cmd:ralpha} generates a variable with pseudorandom characters/letters or words.  It uses {help runiform} to draw random 
+numbers that are converted or assigned to a list of alpha characters ([A-Za-z]).  The user can tell {cmd: ralpha}
+to select random variates from a subset of the list of alpha characters using the {opt range} option. 
+The {opt length} option can be used to generate random words as a string variable.
+
+
+{title:Options} 
+
+{p 4 8 2}
+{cmdab:r:ange} specifies a subset of alpha characters [A-Za-z] from which pseudorandom characters are drawn. This option 
+must be specified as  ({it:lowercharacter/uppercharacter}).  Notice that the uppercase character comes first 
+in this range.  
+
+{p 8 8 2}
+So to draw random characters from X to c (or X,Y,Z,a,b,c), 
+you would include the option "{cmd:range}({it:X/c})". Omitting this option is the same as specifying 
+"{cmd:range}({it:A/z})"
+
+{p 4 8 2}
+{cmdab:low:eronly} draws from the lowercase alpha characters only ([a-z]). This option cannot be used in combination
+with the option {opt range}; however, note that it is equivalent to specifying "{cmd:range}({it:a/z})."
+
+{p 4 8 2}
+{cmdab:upp:eronly} draws from the uppercase alpha characters only ([A-Z]). This option cannot be used in combination
+with the option {opt range}; however, note that it is equivalent to specifying "{cmd:range}({it:A/Z})."
+
+{p 4 8 2}
+{cmdab:l:ength} specifies the length of the {it:newvar} of pseudorandom alpha chars. This option can be used to 
+create words made of random letters (up to 244 characters, see {help limits}); for instance, a random ID where the
+ID needs to include letters instead of numbers.
+
+{title:Examples}
+
+{p 4 8 2}{cmd:. clear}{p_end}
+{p 4 8 2}{cmd:. set obs 25}{p_end}
+{p 4 8 2}{cmd:. ralpha  loweronly}{p_end}
+{p 4 8 2}{cmd:. ralpha uversion, upperonly }{p_end}
+{p 4 8 2}{cmd:. ralpha range1, range(B/g) }{p_end}
+
+// Create Random Words //
+{p 4 8 2}{cmd:. ralpha range2, range(J/z) l(10) }{p_end}
+{p 4 8 2}{cmd:. g newword = proper(range2) }{p_end}
+
+
+{title:Author}
+
+{p 4 4 2}Eric A. Booth, Texas A&M University {break} 
+         ebooth@ppri.tamu.edu {break} 
+		 {browse "http://www.eric-a-booth.com"}
+		 
+{title:Also see}
+
+{p 4 8 2}On-line:  help for {help random_number_functions:random numbers};
+{help string_functions:string functions}; {help set_seed:set seed}; 
+{help setrngseed:setrngseed} (if installed)
+

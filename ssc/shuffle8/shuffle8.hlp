@@ -1,0 +1,60 @@
+{smcl}
+{* 10may2005}{...}
+{hline}
+help for {hi:shuffle8}
+{hline}
+
+{title:Shuffle a list of items (Stata 8)}
+
+{p 8 15 2}
+{cmd:shuffle8} {it:list} {cmd:,} [ {cmd:num} {cmdab:noi:sily} ]
+
+
+{title:Description}
+
+{p 4 4 2} {cmd:shuffle8} randomly sorts the specified items (words,
+numbers).
+
+{p 4 4 2} Note: {cmd:shuffle8} is slow if the number of items is large
+(>100). {cmd:shuffle} for Stata 9 is much faster
+ (see
+ {net "describe http://fmwww.bc.edu/repec/bocode/s/shuffle":{bind:ssc describe shuffle}}).
+
+
+{title:Options}
+
+{p 4 8 2} {cmd:num} specifies that {it:list} be treated as {it:numlist}
+(see help {help numlist}).
+
+{p 4 8 2} {cmd:noisily} displays the sorted list.
+
+
+{title:Examples}
+
+        {inp}. set seed 23897
+
+        {inp}. shuffle8 a b c, noisily
+        {txt}c a b
+
+        {inp}. shuffle8 1/10, num noisily
+        {txt}7 8 4 9 2 5 6 1 10 3
+
+        {inp}. shuffle8 she said "my cat is black", noisily
+        {txt}said "my cat is black" she
+
+
+{title:Saved Results}
+
+{p 4 4 2} Macros:
+
+{p 4 17 2} {cmd:r(list)} shuffled list
+
+
+{title:Author}
+
+{p 4 4 2} Ben Jann, ETH Zurich, jann@soz.gess.ethz.ch
+
+
+{title:Also see}
+
+{p 4 13 2} Online:  help for {help seed}, {help numlist}, {help macrolists}

@@ -1,0 +1,108 @@
+{smcl}
+{hline}
+help for {hi:vgettoken}{right: Bill Rising}
+{hline}
+
+{hi:Pull the First Token from Each Observation of a Variable}
+{* put the syntax in what follows. Don't forget to use [ ] around optional items}
+{p 8 14}
+   {cmd:vgettoken}
+   {it:result_varname} [{it:rest_varname}] : {it:source_varname} 
+   [{cmd:if} {it:exp}]
+   [{cmd:in} {it:range}]
+   {cmd:,}
+   [{cmdab:p:arse(delimiters)} {cmd:nospace} {cmdab:replaceresu:lt} {cmdab:replaceres:t} {cmdab:nodelim:iters}
+{p_end}
+
+{title:Description}
+
+{p}
+{cmd:vgettoken} does for variables what {help gettoken} does for macros: it pulls a token from each observation of {it:source_varlist}, and stores the result in {it:result_variable}.
+If the optional {it:rest_variable} is specified, the remainder (possibly minus the intervening delimiter) is stored in the {it:rest_variable}.
+{p_end}
+
+{title:Options}
+
+{p 0 4}{cmd:parse(delimiters)} gives the list of delimiters which are used to separate tokens.
+If omitted, the only delimiter is whitespace (one or more spaces).
+There is no need to specify space a delimiter, though explicitly specifying it will not cause problems.
+{p_end}
+
+{p 0 4}{cmd:nospace} is used to {bf:prevent} spaces from being used as delimiters.
+{p_end}
+
+{p 0 4}{cmd:nodelimiters} is used to {bf:prevent} delimiters from being stored as tokens. 
+Note that just as with {help gettoken}, spaces are never kept as tokens.
+{p_end}
+
+{p 0 4}{cmd:replacereslt} allows the {it:result_variable} to be overwritten.
+{p_end}
+
+{p 0 4}{cmd:replacerest} allows the {it:rest_variable} to be overwritten.
+{p_end}
+
+{title:Example(s)}
+
+{p 8 12}{inp:. vgettoken foo : bar}{break}
+Will take the first word (space delimited!) from each observation in {it:bar} and put it in the corresponding observation of {it:foo}, leaving {it:bar} unchanged.
+{p_end}
+
+{p 8 12}{inp:. vgettoken foo rest : bar}{break}
+Will take the first word from each observation in {it:bar} and put it in the corresponding observation of {it:foo}, leaving {it:bar} unchanged, and putting the remaining words into {it:rest}.
+{p_end}
+
+{p 8 12}{inp:. vgettoken foo bar : bar}{break}
+Will take the first word from each observation in {it:bar} and put it in the corresponding observation of {it:foo}, and replace {it:bar} with the remaining words.
+{p_end}
+
+{p 8 12}{inp:. vgettoken foo : bar, parse(":") nospace}{break}
+Will take everything up to the first colon (:) from each observation in {it:bar} and put it in the corresponding observation of {it:foo}, leaving {it:bar} unchanged.
+If the first character of an observation of {it:bar} is itself a colon, the colon will be placed in the corresponding observation of {it:foo}.
+{p_end}
+
+{p 8 12}{inp:. vgettoken foo rest : bar, parse(":") nospace}{break}
+Will take everything up to the first colon (:) from each observation in {it:bar} and put it in the corresponding observation of {it:foo}, leaving {it:bar} unchanged.
+If the first character of an observation of {it:bar} is itself a colon, the colon will be placed in the corresponding observation of {it:foo}.
+The observations in {it:rest} will contain everything left over, so concatinating {it:foo} and {it:rest} will reconstruct {it:bar}.
+{p_end}
+
+{p 8 12}{inp:. vgettoken foo : bar, parse(":") nospace nodelimiters}{break}
+Will take everything up to the first colon (:) from each observation in {it:bar} and put it in the corresponding observation of {it:foo}, leaving {it:bar} unchanged.
+If the first character of an observation of {it:bar} is itself a colon, an empty observation will be placed in the corresponding observation of {it:foo}.
+{p_end}
+
+{p 8 12}{inp:. vgettoken foo rest : bar, parse(":") nospace nodelimiters}{break}
+Will take everything up to the first colon (:) from each observation in {it:bar} and put it in the corresponding observation of {it:foo}, leaving {it:bar} unchanged.
+If the first character of an observation of {it:bar} is itself a colon, the corresponding observation of {it:foo} will be empty.
+The observations in {it:rest} will contain everything left over, except any leading delimiters (just as would happen if spaces were used as the delimiters).
+{p_end}
+
+{p 8 12}{inp:. vgettoken foo : bar, parse(":|!")}{break}
+Will take everything up to either the first space, colon (:), vertical bar (|), or exclamation point (!) from each observation in {it:bar} and put it in the corresponding observation of {it:foo}, leaving {it:bar} unchanged.
+If the first character of an observation of {it:bar} is itself a delimiter, the delimiter will be placed in the corresponding observation of {it:foo} unless the delimiter is a space (or spaces), in which case the observation in {it:foo} will be empty.
+{p_end}
+
+{title:Notes}
+
+{p}
+While this could possibly be useful for splitting up variables by hand when working with nasty text files, it will probably be more useful to use {help vtokenize} to split up the {it:source_variable} into all its tokens.
+{p_end}
+
+{title:Also see}
+
+{p}
+{help gettoken}, {help tokenize}, {help vtokenize}
+{p_end}
+
+
+{title:Author}
+Bill Rising 
+email: {browse "mailto:brising@louisville.edu":brising@louisville.edu} 
+web: {browse "http://www.louisville.edu/~wrrisi01":http://www.louisville.edu/~wrrisi01}
+
+snailmail:
+Department of Bioinformatics and Biostatistics
+University of Louisville
+Louisville, KY  40292
+
+{title:Last Updated}: December 9, 2003 @ 22:28:15

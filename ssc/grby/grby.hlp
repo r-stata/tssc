@@ -1,0 +1,89 @@
+{smcl}
+{* 04apr2004}{...}
+{hline}
+help for {hi:grby} 
+{hline}
+
+{title:Bar charts}
+
+{p 8 14}{cmdab:grby} {it:yvar xvar1} [{it:xvar2}] [{cmd:if} {it:exp}]
+[{cmd:in} {it:range}] [, {cmdab:f:ormat(}{it:%fmt}{cmd:)} {cmdab:sh:ading(}{it:#}{cmd:)} 
+{cmdab:ysc:ale(}{it:# #}{cmd:)} {cmdab:me:ans} {cmdab:ci(}{it:##}{cmd:)} {cmdab:co:nnect} {cmdab:nu:mbers} {cmdab:v:label} {cmdab:v1:label} {cmdab:v2:label} 
+{cmdab:t:itle(}{it:text}{cmd:)} {cmdab:sa:ving(}{it:filename}[{cmd:,replace}]{cmd:)}]
+
+           {it:yvar}     continuous or categorical variable on y-axis.
+          {it:xvar1}     first categorical variable on x-axis.
+          {it:xvar2}     second categorical variable on x-axis. 
+
+{title:Description}
+
+{p}{cmd:grby} displays a bar chart for each covariate pattern.  Sums or means of {it:yvar} determine the height of the bars.
+In the latter case you can specify the {help level} of a confidence interval. This program works under Stata 7 and Stata 8 and it is based on {help gph}.
+
+{title:Options}
+
+    {cmd:format(%}{it:fmt}{cmd:)} specifies the display format for sums or means over the bars.
+        
+    {cmd:shading(}{it:#}{cmd:)} specifies the amount of shading on a scale 0 up to 4, with 0 being the lightest and 4 the darkest.
+        
+    {cmd:yscale(}{it:# #}{cmd:)} specifies the minimum and maximum value of y-axis.
+        
+    {cmd:means} specifies that means of {it:yvar} determine the height of the bars (the default are the sums).
+        
+    {cmdab:ci(}{it:##}{cmd:)} specifies the {help level} to figure out a confidence intervals for the means. This option is available only 
+             with the option {cmd:means}. The mean value for a covariate pattern with only one observation is signed by X.
+
+    {cmd:connect} with a line the means on the graph. This option is available only with {cmd:ci}.
+
+    {cmd:numbers} specifies the number (sum or mean) over the bar (or point if {cmd:ci} is specified).
+    
+    {cmd:vlabel} specifies the variable label.
+        
+    {cmd:v1label} specifies the value label for {it:xvar1}.
+        
+    {cmd:v2label} specifies the value label for {it:xvar2}.
+        
+    {cmd:title(}{it:text}{cmd:)} specifies a title on the top of the graph.
+    
+    {cmdab:sa:ving(}{it:filename}[{cmd:,replace}]{cmd:)} saves the graph in the current directory
+
+{title:Examples}
+
+    {cmd: . webuse lbw, clear  }
+    {cmd: . xtile aged = age, nq(10)      }
+    {cmd: . label var aged "decile age"    }
+    {cmd: . label define smoke 0 "No" 1 "Yes"  }
+    {cmd: . label values smoke smoke       }
+    {cmd: . label var smoke "smoking"       }
+    {cmd: . grby lwt race, nu format(%9.0g)   }
+    {cmd: . grby lwt race smoke, nu format(%9.0g)      }
+    {cmd: . grby lwt race smoke, nu format(%3.1f) mean v v1 v2        }
+    {cmd: . grby lwt race smoke, nu format(%3.1f) mean ci(95)     }
+    {cmd: . grby lwt race smoke, nu format(%3.1f) mean ci(95) v  v1 v2       }
+    {cmd: . grby lwt race smoke, nu format(%3.1f) mean ci(95) v  v1 v2 connect    }
+    {cmd: . grby lwt aged, nu                      }
+    {cmd: . grby lwt aged smoke, mea ci(95)      }
+    {cmd: . grby lwt aged race, mea ci(95) co v v2   }
+    {cmd: . grby lwt aged race, mea ci(99) co v v2 yscale(100 200) }
+
+{title:Authors}
+
+{p 4 4 2} Nicola Orsini,
+Institute of Environmental Medicine, Karolinska Institutet, Stockholm, Sweden 
+and Institute of Information Science and Technology, National Research Council of Italy, Pisa, Italy. {p_end}
+
+{p 4 4 2}Matteo Bottai, Arnold School of Public Health,
+ University of South Carolina, Columbia, USA and Institute of Information Science and Technology, 
+ National Research Council of Italy, Pisa, Italy. {p_end}
+
+{title:Support}
+
+{p 8 12}Nicola Orsini, {browse "http://nicolaorsini.altervista.org"}, Karolinska Institutet, Sweden{p_end}
+{p 8 12}{browse "mailto:nicola.orsini@imm.ki.se?subject=grby":nicola.orsini@imm.ki.se}
+
+{title:Also see}
+
+{p 1 10}Manual: {hi:[G] gph}{p_end}
+{p 1 10}Manual: {hi:[G] graph}{p_end}
+
+{p 1 10}On-line:  help for {help gph}, {help graph}{p_end}

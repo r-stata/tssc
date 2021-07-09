@@ -1,0 +1,80 @@
+{smcl}
+{* *! version 1.2.1 Matthew White 09mar2015}{...}
+{cmd:help truecrypt}
+{hline}
+
+{title:Title}
+
+{p2colset 5 23 25 2}{...}
+{p2col: {cmd:truecrypt} {hline 2} Mount or dismount a TrueCrypt volume}{p_end}
+{p2colreset}{...}
+
+
+{title:Syntax}
+
+{phang}
+Mount a TrueCrypt volume
+
+{p 8 10 2}
+{cmd:truecrypt} {it:filename}{cmd:,} [{opt m:ount}] [{it:options}]
+
+
+{phang}
+Dismount a TrueCrypt volume
+
+{p 8 10 2}
+{cmd:truecrypt,} {opt dis:mount} {opt dr:ive(drive_letter)} [{it:options}]
+
+
+{synoptset 23 tabbed}{...}
+{synopthdr}
+{synoptline}
+{synopt :{opt m:ount}}mount the TrueCrypt volume {it:filename}{p_end}
+{synopt :{opt dis:mount}}dismount the TrueCrypt volume specified by {opt drive()}{p_end}
+{synopt :{opt dr:ive(drive_letter)}}mount the volume as {it:drive_letter} or dismount the volume specified by
+{it:drive_letter}{p_end}
+{synopt :{opt prog:dir(directory_name)}}the directory that contains the TrueCrypt application; default is
+{cmd:C:\Program Files\TrueCrypt} (Stata for Windows) or {cmd:/Applications} (Stata for Mac)
+{p_end}
+{synoptline}
+{p2colreset}{...}
+
+
+{title:Description}
+
+{pstd}
+{cmd:truecrypt} mounts or dismounts a TrueCrypt volume.
+
+
+{title:Remarks}
+
+{pstd}
+The GitHub repository for {cmd:truecrypt} is
+{browse "https://github.com/PovertyAction/truecrypt":here}.
+Previous versions may be found there: see the tags.
+
+
+{title:Options}
+
+{phang}
+{opt m:ount} specifies that the TrueCrypt volume {it:filename} will be mounted. If neither {opt mount} nor
+{opt dismount} is specified, {opt mount} is implied.
+
+{phang}
+{opt dr:ive(drive_letter)} specifies the drive letter to use for mounting or dismounting. If {opt mount} is specified
+and {opt drive()} is not, the first free drive letter is used. On Mac, the mount directory is
+{cmd:~/}{it:drive_letter}{cmd:colon}.
+
+
+{title:Acknowledgements}
+
+{phang}Christopher Robert of the Harvard Kennedy School supplied code to make {cmd:truecrypt} compatible with Stata for Mac.
+
+
+{title:Author}
+
+{pstd}Matthew White{p_end}
+
+{pstd}For questions or suggestions, submit a
+{browse "https://github.com/PovertyAction/truecrypt/issues":GitHub issue}
+or e-mail researchsupport@poverty-action.org.{p_end}

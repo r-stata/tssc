@@ -1,0 +1,61 @@
+{smcl}
+{* 16may2007}{...}
+{hline}
+help for {hi:delta}{right:Jean-Benoit Hardouin}
+{hline}
+
+{title:Syntax}
+
+{p 8 14 2}{cmd:delta} {it:varlist} [{cmd:if} {it:exp}] [{cmd:in} {it:range}] [, {cmdab:ci}({it:#}) {cmdab:nod:ots} {cmdab:min:score}({it:#}) {cmdab:max:score}({it:#})]
+
+{title:Description}
+
+{p 4 8 2}{cmd:delta} computes the generalized delta index of scale  discrimination developed by Hankins (2007) based on the original work  of Ferguson (1949). This index measures the scale's ability to  distinguish between individuals. 
+A value of 1 indicates that the test  has maximal discrimination (all possible scores occur with the same  frequency) and a value of 0 means that the test has minimal  discrimination (all the respondents have the same score). 
+A value of  0.9 results from a set of scores that is normally distributed. A  value of 1 is observed if the scores follow a uniform distribution. Individuals with a missing score are omitted.
+
+{title:Options}
+
+{p 4 8 2}If {it:varlist} is composed of only one variable, the {cmd:delta} module considers that this variable is the score of the individuals.
+
+{p 4 8 2}{cmd:ci}({it:#}) estimates the confidence interval by  boostrap. {it:#} is the number of replications to be performed. By  default, no confidence interval is calculated.
+
+{p 4 8 2}{cmd:nodots} avoids displaying a dot for each replication (only with  {cmd:ci}).
+
+{p 4 8 2}{cmd:minscore}({it:#}) defines the minimal value of the score. By default, this value is fixed to 0.
+
+{p 4 8 2}{cmd:maxscore}({it:#}) defines the maximal value of the score. By default, the maximal observed score is used.
+
+{title:Output}
+
+{p 4 8 2}{cmd:r(delta)}: Observed value of the delta index.
+
+{title:Examples}
+
+{p 4 8 2}{cmd: . delta itemA*}
+
+{p 4 8 2}{cmd: . delta itemA*, ci(500) dots}
+
+{p 4 8 2}{cmd: . delta score, scoremax(8)}
+
+{title: References}
+
+{p 4 8 2}Ferguson G. A. (1949) On the theory of test discrimination.  {it:Psychometrika}, 14: 61-68.
+
+{p 4 8 2}Hankins M. (2007) Questionnaire discrimination: (re)- introducting coefficient delta. {it:BMC Medical Research  Methodology}, 7: 19.
+
+{title:Author}
+
+{p 4 8 2}Jean-Benoit Hardouin, PhD, assistant professor{p_end}
+{p 4 8 2}Team of Biostatistics, Clinical Research and Subjective Measures in Health Sciences{p_end}
+{p 4 8 2}University of Nantes - Faculty of Pharmaceutical Sciences{p_end}
+{p 4 8 2}1, rue Gaston Veil - BP 53508{p_end}
+{p 4 8 2}44035 Nantes Cedex 1 - FRANCE{p_end}
+{p 4 8 2}Email:
+{browse "mailto:jean-benoit.hardouin@univ-nantes.fr":jean-benoit.hardouin@univ-nantes.fr}{p_end}
+{p 4 8 2}Websites {browse "http://www.anaqol.org":AnaQol}
+and {browse "http://www.freeirt.org":FreeIRT}
+
+{title:Also see}
+
+{p 4 13 2}Online: help for {help alpha} and {help loevH} if installed.{p_end}

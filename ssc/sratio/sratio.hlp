@@ -1,0 +1,86 @@
+{smcl}
+{* 24may2006}{...}
+{cmd:help sratio}
+{hline}
+
+{title:Title}
+
+{p2colset 5 15 17 2}{...}
+{p2col :{hi:sratio} {hline 2}}Displays a table of ratio study statistics, particularly for evaluating mass appraisal performance {p_end}
+{p2colreset}{...}
+    
+{title:Syntax}
+
+{p 8 17 2}
+{cmd:sratio}
+{varlist}
+{ifin}
+[{cmd:,} {it:options}]
+
+{synoptset 18 tabbed}{...}
+{synopthdr}
+{synoptline}
+{syntab:Options}
+{synopt:{opt s:ample}}displays general information about the sample{p_end}
+{synopt:{opt as:sess}}displays measures of appraisal level{p_end}
+{synopt:{opt rel:iable}}displays measures of reliability{p_end}
+{synopt:{opt uni:form}}displays primary measures of appraisal uniformity{p_end}
+{synopt:{opt disp:erse}}displays detailed measures of dispersion{p_end}
+{synopt:{opt coc}}displays measures of concentration{p_end}
+{synopt:{opt br:ief}}displays measures of assessment, primary measures of uniformity, and measures of reliability{p_end}
+{synopt:{opt det:ail}}displays in detail all measures of appraisal level and uniformity; by default if
+no other option is specified.{p_end}
+{synopt :{opt l:evel(#)}}sets confidence level(in percent); default is {cmd:level(95)} or as set by {cmd:set level}; see {helpb level}{p_end}
+{synopt :{opt ioc(#)}}sets the low and upper limit of the desired concentration interval; default is {cmd:ioc (0.90 1.10)}{p_end}
+{synopt :{opt pioc(#)}}sets the desired concentration level in term of percentages (values between 0 and 100); default is {cmd:pioc (10)}{p_end}
+{synoptline}
+{p2colreset}{...}
+{p 4 6 2}
+{opt by} may be used with {opt sratio}; see {helpb by}.
+{p_end}
+{p 4 6 2}
+{p_end}
+
+{title:Description}
+
+{pstd}
+{opt sratio} calculates and displays a variety of ratio study statistics in a single table. These include measures of appraisal level, appraisal uniformity 
+(dispersion and concentration), and reliability.
+
+{pstd}
+With the {opt by} option, {opt sratio} allows you to display the output by categories of a grouping variable.  
+
+{pstd}
+With the different options available, {opt sratio} allows more flexibility in terms of the measures of performance presented. 
+
+{pstd}
+{opt sratio} takes, as input, a list of two scale variables that have positive values.{opt sratio} implicitly computes the ratio of these two variables 
+by dividing the first variable (the numerator) by the second variable (denominator) on the list provided ({varlist}). In appraisal ratio studies, 
+the numerator could be the appraisal or assessment value and the denominator could be the market value. 
+
+{title:Examples}
+
+{cmd:. sratio  AppraisedValue SalePrice }
+{cmd:. by  Strata, sort : sratio  AppraisedValue SalePrice}
+{cmd:. sratio  AppraisedValue SalePrice, brief}
+{cmd:. sratio  AppraisedValue SalePrice, assess}
+{cmd:. sratio  AppraisedValue SalePrice, level(90) ioc(0.80 1.10) pioc(10 20 30 35) }
+
+{title:Author} 
+
+{p 4 4 2}Benmamoun, Mamoun, Public Policy Research Center, University of Missouri – St. Louis , Saint Louis, MO, U.S.A. 
+Email {browse "mailto: vmamoun@yahoo.com": vmamoun@yahoo.com} if you observe any problem or if you have any comment or question.
+	
+{title:Remarks} 
+ {p 4 4 2}For detailed information on ratio statistics for mass appraisal, see "International Association of Assessing Officers. 1999. Standard on ratio 
+studies. Chicago: International Association of Assessing Officers."
+
+{title:Acknowledgement} 
+
+{p 4 4 2}I would like to acknowledge Steve Gardner  of the Public Policy Research Center at the University of Missouri – St. Louis  for his mentorship 
+and training in this area of research.
+
+{title:Also see}
+
+{psee}
+Online:  {helpb summarize}, {helpb tabstat}, {helpb ci} , {helpb centile}, {helpb tcod} {p_end}

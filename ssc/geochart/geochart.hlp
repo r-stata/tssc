@@ -1,0 +1,162 @@
+{smcl}
+{* Feb2014}{...}
+{cmd:help geochart}
+{hline}
+
+{title:Title}
+
+{p2colset 5 17 22 2}{...}
+{p2col :{hi: geochart} {hline 2}}Creates interactive map web page from Stata data using a Google-provided service. {p_end}
+{p2colreset}{...}
+
+
+{title:Syntax}
+
+{p 4 8 2}
+{cmdab:geochart} outcomevar countryidvar , {break}
+[region(string)] [resolution(string)] {break}
+[colorlow(#hexcolor)] [colorhigh(#hexcolor)] {break}
+[title(string)] [note(string)] {break}
+[width(#)] [height(#)] {break}
+save("filename") [replace] [nostart] [savebtn] {p_end}
+
+
+where 
+{p 4 8 2}{it:outcomevar} is the numeric outcome variable, which will be plotted{p_end}
+
+{p 4 8 2}{it:countryidvar} is the string country id variable using 2-letter country codes based on the ISO-3166-1 standard.{p_end}
+
+{p 4 8 2}{it:filename} is the name of the web page file on the local drive to be created. This 
+parameter is NOT optional. Your browser must be associated with the file's extension. Use 
+of .htm or .html is recommended for this parameter. Note that you can't use the Stata's 
+{cmd:tempfile} command, since it does not produce tempfiles with particular extensions. {p_end}
+
+
+{title:Options}
+
+{pstd}{opt replace} tells Stata it can overwrite the output file if it exists. {p_end}
+
+{pstd}{opt nostart} tells there is no need to start the file automatically. {p_end}
+
+{pstd}{opt region} limits the map to a particular region, like Africa or Asia. Default is the World map. 
+Possible regional codes are listed at the end of this document. {p_end}
+
+{pstd}{opt resolution} resolution of the map borders, one of the following: countries, provinces, metros.{p_end}
+
+{pstd}{opt title} Text written above the map with header style. Default is no text. {p_end}
+
+{pstd}{opt note} Text written under the map with regular style. Default is no text. {p_end}
+
+{pstd}{opt width} Map width in pixels. Default is 556 pixels. {p_end}
+
+{pstd}{opt height} Map height in pixels. Default is 347 pixels. {p_end}
+
+{pstd}{opt colorlow} Hex value of color corresponding to low values. E.g. "#00FF00" for green.{p_end}
+
+{pstd}{opt colorhigh} Hex value of color corresponding to high values. E.g. "#FF0000" for red. {p_end}
+
+{pstd}{opt savebtn} Add buttons below the chart that would allow the user to save the image file as *.png. {p_end}
+
+
+
+{title:Description}
+
+{pstd}{cmd:geochart} creates an HTML document that contains an interactive map based on Stata data. A graphic PNG file can be saved from the browser. Graphic image cannot be created directly (without a browser). {p_end}
+
+{pstd}No shape file is required to produce a map. {p_end}
+
+{pstd}Internet connection is required to view the map since it uses Google's Geochart engine to procuce the map.{p_end}
+
+{pstd}Geochart is compatible with Stata 9.0 or later.{p_end}
+
+{pstd}Browser may request confirmation to open the document since it is making use of JavaScript.{p_end}
+
+{pstd} Tip: Keeping one of the Internet Explorer windows open (with any page local or web, as long as the IE window exists) will allow the program to close the shell window and continue without waiting for the user to close it.{p_end}
+
+{pstd} The {opt resolution} parameter will accept free text, but it is up to the Google service to interpret it. Currently Google states that the value countries is supported for all regions except the US regional map, provinces is supported for some, but not all countries, metros is supported for the US map only.{p_end} 
+
+
+{title:Examples}
+
+** load some example data
+use "http://fmwww.bc.edu/repec/bocode/h/hcpov_2usd.dta"
+
+** create the poverty map of the World
+geochart p0 name2, save("C:\TEMP\Poverty.htm")
+
+** create the poverty map of Asia using black-red palette
+geochart p0 name2, save("C:\TEMP\PovertyAsia.htm") colorlow("#000000") colorhigh("#FF0000") region("142")
+
+** create a larger poverty map of Asia using black-red palette overwriting previous one and providing a save button
+geochart p0 name2, save("C:\TEMP\PovertyAsia.htm") replace colorlow("#000000") colorhigh("#FF0000") region("142") width(800) height(600) savebtn
+
+
+
+{title:Additional information}
+
+{pstd}You can find additional information at {browse "http://developers.google.com/chart/interactive/docs/gallery/geochart":Google's API description for Geochart}. {p_end}
+
+
+
+{title:Author}
+
+          Sergiy Radyakin, Economist, Research Department (DECRG), The World Bank
+          sradyakin@worldbank.org
+
+
+{title:Also see}
+
+{p 9}{browse "http://developers.google.com/chart/interactive/docs/gallery/geochart":Google reference}
+ {p_end}
+
+
+
+
+{ul:{bf:Continent Hierarchy and Codes}}
+
+
+{hline}
+002 - Africa
+{hline}
+  015 - Northern Africa: DZ, EG, EH, LY, MA, SD, TN
+  011 - Western Africa: BF, BJ, CI, CV, GH, GM, GN, GW, LR, ML, MR, NE, NG, SH, SL, SN, TG
+  017 - Middle Africa: AO, CD, ZR, CF, CG, CM, GA, GQ, ST, TD
+  014 - Eastern Africa: BI, DJ, ER, ET, KE, KM, MG, MU, MW, MZ, RE, RW, SC, SO, TZ, UG, YT, ZM, ZW
+  018 - Southern Africa: BW, LS, NA, SZ, ZA
+
+{hline}
+150 - Europe
+{hline}
+  154 - Northern Europe: GG, JE, AX, DK, EE, FI, FO, GB, IE, IM, IS, LT, LV, NO, SE, SJ
+  155 - Western Europe: AT, BE, CH, DE, DD, FR, FX, LI, LU, MC, NL
+  151 - Eastern Europe: BG, BY, CZ, HU, MD, PL, RO, RU, SU, SK, UA
+  039 - Southern Europe: AD, AL, BA, ES, GI, GR, HR, IT, ME, MK, MT, CS, RS, PT, SI, SM, VA, YU
+
+{hline}
+019 - Americas
+{hline}
+  021 - Northern America: BM, CA, GL, PM, US
+  029 - Caribbean: AG, AI, AN, AW, BB, BL, BS, CU, DM, DO, GD, GP, HT, JM, KN, KY, LC, MF, MQ, MS, PR, TC, TT, VC, VG, VI
+  013 - Central America: BZ, CR, GT, HN, MX, NI, PA, SV
+  005 - South America: AR, BO, BR, CL, CO, EC, FK, GF, GY, PE, PY, SR, UY, VE
+
+{hline}
+142 - Asia
+{hline}
+  143 - Central Asia: TM, TJ, KG, KZ, UZ
+  030 - Eastern Asia: CN, HK, JP, KP, KR, MN, MO, TW
+  034 - Southern Asia: AF, BD, BT, IN, IR, LK, MV, NP, PK
+  035 - South-Eastern Asia: BN, ID, KH, LA, MM, BU, MY, PH, SG, TH, TL, TP, VN
+  145 - Western Asia: AE, AM, AZ, BH, CY, GE, IL, IQ, JO, KW, LB, OM, PS, QA, SA, NT, SY, TR, YE, YD
+
+{hline}
+009 - Oceania
+{hline}
+  053 - Australia and New Zealand: AU, NF, NZ
+  054 - Melanesia: FJ, NC, PG, SB, VU
+  057 - Micronesia: FM, GU, KI, MH, MP, NR, PW
+  061 - Polynesia: AS, CK, NU, PF, PN, TK, TO, TV, WF, WS
+
+
+
+

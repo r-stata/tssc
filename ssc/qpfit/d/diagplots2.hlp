@@ -1,0 +1,225 @@
+{smcl}
+{* 24nov2003}{...}
+{hline}
+help for {hi:qdagum}, {hi:pdagum}, {hi:qgb2}, {hi:pgb2}, {hi:qlogn}, {hi:plogn}, {hi:qsm}, {hi:psm}
+{hline}
+
+{title:Distributional diagnostic plots for Dagum, generalized beta (second kind), lognormal and Singh-Maddala distributions}
+
+{p 8 25 2}{cmd:qdagum}{space 1}{it:varname} [{cmd:if} {it:exp}] 
+[{cmd:in} {it:range}] [{it:weight}] [{cmd:,}  
+{cmd:param(}{it:# # #}{cmd:)} {cmdab:gen:erate(}{it:newvar}{cmd:)} 
+{it:common_options} ]
+
+{p 8 25 2}{cmd:pdagum}{space 1}{it:varname} [{cmd:if} {it:exp}]
+[{cmd:in} {it:range}] [{it:weight}] [{cmd:,} 
+{cmd:param(}{it:# # #}{cmd:)} {cmdab:gen:erate(}{it:newvar1 newvar2}{cmd:)} 
+{it:common_options} ]
+
+{p 8 25 2}{cmd:qgb2}{space 3}{it:varname} [{cmd:if} {it:exp}] 
+[{cmd:in} {it:range}] [{it:weight}] [{cmd:,}  
+{cmd:param(}{it:# # # #}{cmd:)} {cmdab:gen:erate(}{it:newvar}{cmd:)} 
+{it:common_options} ]
+
+{p 8 25 2}{cmd:pgb2}{space 3}{it:varname} [{cmd:if} {it:exp}] 
+[{cmd:in} {it:range}] [{it:weight}] [{cmd:,}  
+{cmd:param(}{it:# # # #}{cmd:)} {cmdab:gen:erate(}{it:newvar1 newvar2}{cmd:)} 
+{it:common_options} ]
+
+{p 8 25 2}{cmd:qlogn}{space 2}{it:varname} [{cmd:if} {it:exp}]
+[{cmd:in} {it:range}] [{it:weight}] [{cmd:,}  
+{cmd:param(}{it:# #}{cmd:)} {cmdab:gen:erate(}{it:newvar}{cmd:)} 
+{it:common_options} ]
+
+{p 8 25 2}{cmd:plogn}{space 2}{it:varname} [{cmd:if} {it:exp}]
+[{cmd:in} {it:range}] [{it:weight}] [{cmd:,} 
+{cmd:param(}{it:# #}{cmd:)} {cmdab:gen:erate(}{it:newvar1 newvar2}{cmd:)} 
+{it:common_options} ]
+
+{p 8 25 2}{cmd:qsm}{space 4}{it:varname} [{cmd:if} {it:exp}]
+[{cmd:in} {it:range}] [{it:weight}] [{cmd:,} 
+{cmd:param(}{it:# # #}{cmd:)} {cmdab:gen:erate(}{it:newvar}{cmd:)} 
+{it:common_options} ]
+
+{p 8 25 2}{cmd:psm}{space 4}{it:varname} [{cmd:if} {it:exp}]
+[{cmd:in} {it:range}] [{it:weight}] [{cmd:,} 
+{cmd:param(}{it:# # #}{cmd:)} {cmdab:gen:erate(}{it:newvar1 newvar2}{cmd:)} 
+{it:common_options} ]
+
+{p 4 4 2}
+where {it:common_options} are
+
+{p 8 8 2}
+{cmd:a(}{it:#}{cmd:)}
+{cmdab:g:rid}
+{cmd:show(}{it:condition}{cmd:)}
+{cmd:rlopts(}{it:cline_options}{cmd:)}
+{cmd:plot(}{it:plot}{cmd:)}
+{it:scatter_options}
+{it:twoway_options}
+
+{p 4 4 2}{cmd:pweight}s, {cmd:fweight}s, {cmd:aweight}s and {cmd:iweight}s 
+are allowed; see help {help weights}. 
+
+
+{title:Description}
+
+{p 4 4 2}
+{cmd:qdagum} plots the quantiles of {it:varname} against the quantiles of a
+three-parameter Dagum distribution. The parameters {cmd:a}, {cmd:b} and {cmd:p}
+are taken by default from {cmd:e(ba)}, {cmd:e(bb)} and {cmd:e(bp)}, which is
+where {help dagumfit} puts maximum likelihood estimates of them.
+
+{p 4 4 2}
+{cmd:pdagum} produces a probability plot for {it:varname} compared with a
+three-parameter Dagum distribution.  The parameters {cmd:a}, {cmd:b} and
+{cmd:p} are taken by default from {cmd:e(ba)}, {cmd:e(bb)} and {cmd:e(bp)},
+which is where {help dagumfit} puts maximum likelihood estimates of them.
+
+{p 4 4 2}
+{cmd:qgb2} plots the quantiles of {it:varname} against the quantiles of a
+generalized beta (second kind) distribution. The parameters {cmd:a}, {cmd:b}, 
+{cmd:p} and {cmd:q}
+are taken by default from {cmd:e(ba)}, {cmd:e(bb)}, {cmd:e(bp)} and {cmd:e(bq)}, 
+which is where {help gb2fit} puts maximum likelihood estimates of them.
+
+{p 4 4 2}
+{cmd:pgb2} produces a probability plot for {it:varname} compared with a 
+generalized beta (second kind) distribution. The parameters {cmd:a}, {cmd:b}, 
+{cmd:p} and {cmd:q}
+are taken by default from {cmd:e(ba)}, {cmd:e(bb)}, {cmd:e(bp)} and {cmd:e(bq)}, 
+which is where {help gb2fit} puts maximum likelihood estimates of them.
+
+{p 4 4 2}
+{cmd:qlogn} plots the quantiles of {it:varname} against the quantiles of a
+two-parameter lognormal distribution. 
+The parameters {cmd:m} and {cmd:v} are taken by default from 
+{cmd:e(bm)} and {cmd:e(bv)},
+which is where {help lognfit} puts maximum likelihood estimates of them.
+
+{p 4 4 2}{cmd:plogn} produces a probability plot for {it:varname} compared with a
+two-parameter lognormal distribution. 
+The parameters {cmd:m} and {cmd:v} are taken by default from {cmd:e(bm)} 
+and {cmd:e(bv)},
+which is where {help lognfit} puts maximum likelihood estimates of them.
+
+{p 4 4 2}
+{cmd:qsm} plots the quantiles of {it:varname} against the quantiles of a
+three-parameter Singh-Maddala distribution. 
+The parameters {cmd:a}, {cmd:b} and
+{cmd:q} are taken by default from {cmd:e(ba)}, {cmd:e(bb)} and {cmd:e(bq)},
+which is where {help smfit} puts maximum likelihood estimates of them.
+
+{p 4 4 2}{cmd:psm} produces a probability plot for {it:varname} compared with a
+three-parameter Singh-Maddala distribution. 
+The parameters {cmd:a}, {cmd:b} and
+{cmd:q} are taken by default from {cmd:e(ba)}, {cmd:e(bb)} and {cmd:e(bq)},
+which is where {help smfit} puts maximum likelihood estimates of them.
+
+
+{title:Remarks} 
+
+{p 4 4 2}In the majority of cases, 
+*{cmd:dagum} 
+or *{cmd:gb2}
+or *{cmd:logn} 
+or *{cmd:sm} 
+will be used just after 
+{cmd:dagumfit}, 
+{cmd:gb2fit}, 
+{cmd:lognfit} 
+or {cmd:smfit} respectively.  
+Care should be taken to echo any {cmd:if} or {cmd:in}
+restrictions and specification of weights used in setting up the estimation
+problem. However, see also the {cmd:param()} and {cmd:show()} options. 
+
+
+{title:Options}
+
+{p 4 8 2}{cmd:param()} may be used to supply 
+parameter values directly for use in comparing observed and fitted values. 
+{cmd:a}, {cmd:b} and {cmd:p}, in the case of a Dagum distribution, or 
+{cmd:a}, {cmd:b}, {cmd:p} and {cmd:q}, in the case of a generalized beta 
+(second kind) distribution, or
+{cmd:m} and {cmd:v}, in the case of a lognormal distribution,
+or {cmd:a}, {cmd:b} and {cmd:q}, in the case of a Singh-Maddala distribution, 
+should be provided as separate values in precisely that order. The 
+documentation for {help dagumfit}, {help gb2fit}, {help lognfit} and 
+{help smfit} provides details on parameterisation. 
+
+{p 4 8 2}{cmd:generate()} specifies either the name of one new variable or the
+names of two new variables to hold the data plotted.  In the case of the 
+{cmd:q}* commands here, one new variable generated will hold
+the quantiles of the fitted distribution.  In the case of the {cmd:p}*  
+commands here, two new variables generated will hold, first, the
+distribution function of the specified distribution given parameters and
+observed values and, second, the empirical cumulative distribution function. 
+
+{p 4 8 2}{it:common_options} are
+{cmd:a(}{it:#}{cmd:)}
+{cmdab:g:rid}
+{cmd:show(}{it:condition}{cmd:)}
+{cmd:rlopts(}{it:cline_options}{cmd:)},
+{cmd:plot(}{it:plot}{cmd:)},
+{it:scatter_options}, and
+{it:twoway_options}.
+
+{p 4 8 2}{cmd:a()} specifies {it:a} in the formula for plotting position.  The
+plotting positions are ({it:i} - {it:a}) / ({it:n} - 2{it:a} + 1) for values 
+ranked smallest to largest and assigned unique ranks {it:i} = 1, ..., {it:n}. 
+The default is {it:a} = 0.5, giving ({it:i} - 0.5) / {it:n}.  
+Other choices include {it:a} = 0, giving {it:i} /
+({it:n} + 1), and {it:a} = 1/3, giving ({it:i} - 1/3) / ({it:n} + 1/3).
+
+{p 4 8 2}{cmd:grid} adds grid lines at the .05, .10, .25, .50, .75, .90, and
+.95 quantiles when specified with any {cmd:q}* command here. 
+{cmd:grid} is equivalent to {cmd:yla(0(.25)1, grid) xla(0(.25)1, grid)}
+when specified with any {cmd:p}* command here. 
+
+{p 4 8 2}{cmd:show()} may be used to specify 
+that you wish to restrict the graph according to some condition, say 
+looking at one tail of the distribution only. Note that {cmd:if} 
+and {cmd:in} should not be used for this purpose.
+
+{p 4 8 2}
+{cmd:rlopts(}{it:cline_options}{cmd:)} affect the rendition of the reference
+line; see help {help cline_options}.
+
+{p 4 8 2}
+{cmd:plot(}{it:plot}{cmd:)} provides a way to add other plots to the generated
+graph; see help {help plot_option}.
+
+{p 4 8 2}
+{it:scatter_options} affect the rendition of the plotted points; see help
+{help scatter}.
+
+{p 4 8 2}
+{it:twoway_options} are any of the options documented in help
+{help twoway_options} excluding {cmd:by()}.  These include options for titling
+the graph (see help {help title_options}) and options for saving the graph to
+disk (see help {help saving_option}).
+
+
+{title:Examples}
+
+{p 4 8 2}{cmd:. dagumfit income}
+
+{p 4 8 2}{cmd:. qdagum income} 
+
+{p 4 8 2}{cmd:. qdagum income, show(income < 20000)} 
+
+{p 4 8 2}{cmd:. pdagum income} 
+
+{p 4 8 2}{cmd:. qlogn mpg, param(3 .25)} 
+        
+
+{title:Author}
+
+{p 4 4 2}Nicholas J. Cox, University of Durham, U.K.{break} 
+n.j.cox@durham.ac.uk
+
+
+{title:Also see}
+
+{p 4 13 2}
+Online:  help for {help dagumfit}, {help gb2fit}, {help lognfit}, {help graph}, {help diagplots} 

@@ -1,0 +1,75 @@
+{smcl}
+{* 1aug2007}{...}
+{hline}
+help for {hi:filei} 
+{hline}
+
+{title:Write lines to end or beginning of text files}
+
+{p 8 17 2}
+{cmd:filei} 
+{cmd:+} [{cmd:`"}|{cmd:"}]{it:text}[{cmd:"}|{cmd:"'}]
+[{cmd:"}]{it:filename}[{cmd:"}]
+
+{p 8 17 2}
+{cmd:filei} 
+{cmd:-} [{cmd:`"}|{cmd:"}]{it:text}[{cmd:"}|{cmd:"'}]
+[{cmd:"}]{it:filename}[{cmd:"}]
+
+
+{title:Description}
+
+{p 4 4 2}{cmd:filei} is an {help immediate} command (hence the suffix
+{cmd:i}) that can be used to add extra lines to text files. 
+
+{p 4 4 2}The simple forms {cmd:filei +} {cmd:"}{it:text}{cmd:"}
+{it:filename} and {cmd:filei -} {cmd:"}{it:text}{cmd:"} {it:filename}
+add a line including {it:text}  at the end ({cmd:+}) or at the beginning
+({cmd:-}) of {it:filename}. The quote marks {cmd:" "} are not essential
+if {it:text} is a single 'word' (meaning, it contains no embedded
+spaces: {cmd:Stata} and {cmd:42} are both words).  Conversely, quote
+marks around {it:filename} are essential if it includes embedded spaces.
+Compound double quotes {cmd:`" "'} around {it:text} are essential if
+{it:text} includes one or more embedded quote marks. 
+
+{p 4 4 2}There is asymmetry: if {it:filename} does not exist, the
+{cmd:+} syntax may be used to create a one-line file, but the {cmd:-}
+syntax returns an error. 
+
+
+{title:Remarks} 
+
+{p 4 4 2}{cmd:filei} is deliberately minimal and designed only to fill a
+very small gap, as (in the author's view) this minimal task should be
+minimally easy to do in Stata. More elaborate problems require more
+elaborate commands or programs, which exist in abundance. This sentence
+confirms that {cmd:filei} includes no syntax to delete lines or to
+insert lines in the middle of files. 
+
+{p 4 4 2}{cmd:filei} may be used repeatedly to write successive lines to
+files. That is the user's call, but be warned that it is very
+inefficient, as files will be opened and closed repeatedly.  You should
+consider using (e.g.) {help file} instead, or even a text editor. 
+
+
+{title:Examples}
+
+{p 4 8 2}{cmd:. filei + "stuff" newfile.txt}
+
+{p 4 8 2}{cmd:. filei - "earlier stuff" newfile.txt}
+
+{p 4 8 2}{cmd:. filei + "a longer line is possible" "filename with spaces.txt"}
+
+
+{title:Author}
+
+{p 4 4 2}Nicholas J. Cox, Durham University, U.K.{break} 
+         n.j.cox@durham.ac.uk
+
+
+{title:Also see}
+
+{p 4 13 2}Manual:  {hi:[P] file}
+
+{p 4 13 2}Online:  help for {help file} 
+

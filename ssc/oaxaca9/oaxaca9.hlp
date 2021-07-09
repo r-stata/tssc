@@ -1,0 +1,449 @@
+{smcl}
+{* 27jan2009}{...}
+{hi:help oaxaca9}
+{hline}
+
+{title:Title}
+
+{pstd}{hi:oaxaca9} {hline 2} Blinder-Oaxaca decomposition of outcome differentials
+
+
+{title:Syntax}
+
+{p 8 15 2}
+    {cmd:oaxaca9} {depvar} [{indepvars}] {ifin} {weight}
+    {cmd:,} {opt by(groupvar)}
+    [ {help oaxaca9##opt:{it:options}} ]
+
+
+{synoptset 25 tabbed}{...}
+{marker opt}{synopthdr:options}
+{synoptline}
+{syntab :Main}
+{synopt :{opt by(groupvar)}}specifies the groups; {cmd:by()} is required
+    {p_end}
+{synopt :{opt swap}}swap groups
+    {p_end}
+{synopt :{cmdab:d:etail}[{cmd:(}{it:{help oaxaca9##dlist:dlist}}{cmd:)}]}display detailed decomposition
+    {p_end}
+{synopt :{opt a:djust(varlist)}}adjustment for selection variables
+    {p_end}
+
+{syntab :Decomposition type}
+{synopt :{cmdab:three:fold}[{cmd:(}{cmdab:r:everse}{cmd:)}]}three-fold
+    decomposition; the default
+    {p_end}
+{synopt :{opt w:eight(# [# ...])}}two-fold decomposition based on specified weights
+    {p_end}
+{synopt :{cmdab:p:ooled}[{cmd:(}{it:{help oaxaca9##mopts:model_opts}}{cmd:)}]}two-fold
+    decomposition based on pooled model
+    including {it:groupvar}
+    {p_end}
+{synopt :{cmdab:o:mega}[{cmd:(}{it:{help oaxaca9##mopts:model_opts}}{cmd:)}]}two-fold decomposition
+    based on pooled model
+    excluding {it:groupvar}
+    {p_end}
+{synopt :{opt ref:erence(name)}}two-fold decomposition based on stored model
+    {p_end}
+{synopt :{opt split}}split unexplained part of two-fold decomposition
+    {p_end}
+
+{syntab :X-Values}
+{synopt :{cmd:x1(}{it:{help oaxaca9##x1x2:names_and_values}}{cmd:)}}provide custom X-values for Group 1
+    {p_end}
+{synopt :{cmd:x2(}{it:{help oaxaca9##x1x2:names_and_values}}{cmd:)}}provide custom X-values for Group 2
+    {p_end}
+{synopt :{cmdab:cat:egorical(}{it:{help oaxaca9##clist:clist}}{cmd:)}}identify dummy variable sets and apply
+deviation contrast transform
+    {p_end}
+
+{syntab :SE/SVY}
+{synopt :{cmd:svy}[{cmd:(}{it:{help oaxaca9##svy:svyspec}}{cmd:)}]}survey data estimation
+    {p_end}
+{synopt :{opth vce(vcetype)}}{it:vcetype} may be may be {opt analytic},
+    {opt r:obust}, {opt cl:uster}{space 1}{it:clustvar}, {opt boot:strap},
+    or {opt jack:knife}
+    {p_end}
+{synopt :{opt cl:uster(varname)}}adjust standard errors for intragroup correlation (Stata 9)
+    {p_end}
+{synopt :{cmdab:fix:ed}[{cmd:(}{it:varlist}{cmd:)}]}assume non-stochastic regressors
+    {p_end}
+{synopt : {cmd:suest}[{cmd:(}{it:name}{cmd:)}] | {cmd:nosuest}}do/do not use {helpb suest} to obtain joint variance matrix
+    {p_end}
+{synopt :{opt nose}}suppress computation of standard errors
+    {p_end}
+
+{syntab :Models}
+{synopt :{cmd:model1(}{it:{help oaxaca9##mopts:model_opts}}{cmd:)}}estimation
+    details for the Group 1 model
+    {p_end}
+{synopt :{cmd:model2(}{it:{help oaxaca9##mopts:model_opts}}{cmd:)}}estimation
+    details for the Group 2 model
+    {p_end}
+{synopt :{opt noi:sily}}display model estimation output
+    {p_end}
+
+{syntab :Reporting}
+{synopt :{opt xb}}display table with coefficients and means
+    {p_end}
+{synopt :{opt l:evel(#)}}set confidence level; default is {cmd:level(95)}
+    {p_end}
+{synopt :{opt eform}}report exponentiated results
+    {p_end}
+{synopt :{opt nole:gend}}suppress legend
+    {p_end}
+{synoptline}
+{p 4 6 2}
+    {cmd:bootstrap}, {cmd:by}, {cmd:jackknife}, {cmd:statsby}, and
+    {cmd:xi} are allowed; see {help prefix}.
+{p_end}
+{p 4 6 2}
+    Weights are not allowed with the {helpb bootstrap} prefix.
+{p_end}
+{p 4 6 2}
+    {cmd:aweight}s are not allowed with the {helpb jackknife} prefix.
+{p_end}
+{p 4 6 2}
+    {cmd:vce()}, {cmd:cluster()}, and weights are not allowed with the {cmd:svy}
+      option.
+{p_end}
+{p 4 6 2}
+    {cmd:fweight}s, {cmd:aweight}s, {cmd:pweight}s, and {cmd:iweight} are allowed;
+    see {help weight}.
+{p_end}
+
+
+{title:Description}
+
+{pstd} {cmd:oaxaca9} computes the so-called Blinder-Oaxaca decomposition,
+which is often used to analyze wage gaps by sex or race. {it:depvar} is the
+outcome variable of interest (e.g. log wages) and {it:indepvars} are
+predictors (e.g. education, work experience, etc.). {it:groupvar}
+identifies the groups to be compared. For methods and formulas see Jann
+(2008).
+
+{pstd} {cmd:oaxaca9} typed without arguments replays the last
+results, optionally applying {cmd:xb}, {cmd:level()}, {cmd:eform}, or
+{cmd:nolegend}.
+
+
+{title:Options}
+
+{dlgtab:Main}
+
+{phang} {opt by(groupvar)} specifies the {it:groupvar} that defines the two
+groups that will be compared. {cmd:by()} is required.
+
+{phang} {opt swap} reverses the order of the groups.{p_end}
+{marker dlist}
+{phang}{cmd:detail}[{cmd:(}{it:dlist}{cmd:)}] requests that the detailed
+results for the individual predictors be reported. Use
+{it:dlist} to subsume the results for sets of regressors
+(results for variables not appearing in {it:dlist} are listed individually). The
+syntax for {it:dlist} is
+
+{p 12 16 2}{it:name}{cmd::}{it:varlist} [{cmd:,} {it:name}{cmd::}{it:varlist} {it:...}]
+
+{pmore} The usual shorthand conventions apply to the {it:varlist}s
+specified in {it:dlist} (see help {it:{help varlist}}; additionally,
+{cmd:_cons} is allowed). For example, specify {cmd:detail(exp:exp*)} to
+subsume {cmd:exp} (experience) and {cmd:exp2} (experience squared).
+{it:name} is any valid Stata name and labels the set.
+
+{phang} {opt adjust(varlist)} causes the differential to be adjusted by the
+contribution of the specified variables before performing the
+decomposition. This is useful, for example, if the specified variables are
+selection terms. Note that {cmd:adjust()} is not needed for {helpb heckman}
+models.
+
+{dlgtab:Decomposition type}
+
+{phang} {cmd:threefold}[{cmd:(}{cmdab:reverse}{cmd:)}] computes the
+three-fold decomposition. This is the default unless {cmd:weight()},
+{cmd:pooled}, {cmd:omega}, or {cmd:reference()} is specified.  The
+decomposition is expressed from the viewpoint of Group 2. Specify
+{cmdab:threefold(reverse)} to express the decomposition from the viewpoint
+of Group 1.
+
+{phang} {opt weight(# [# ...])} computes the two-fold decomposition where
+{it:#} [{it:# ...}] are the weights given to Group 1 relative to Group 2 in
+determining the reference coefficients (weights are recycled if there are
+more coefficients than weights). For example, {cmd:weight(1)} uses the
+Group 1 coefficients as the reference coefficients, {cmd:weight(0)} uses
+the Group 2 coefficients.
+
+{phang} {cmd:pooled}[{cmd:(}{it:{help oaxaca9##mopts:model_opts}}{cmd:)}]
+computes the two-fold decomposition using the coefficients from a pooled
+model over both groups as the reference coefficients. {it:groupvar} is
+included in the pooled model as an additional control variable. Estimation
+details may be specified in parentheses; see the
+{helpb oaxaca9##mopts:model1()} option below.
+
+{phang} {opt omega}[{cmd:(}{it:{help oaxaca9##mopts:model_opts}}{cmd:)}]
+computes the two-fold decomposition using the
+coefficients from a pooled model over both groups as the reference
+coefficients (without including {it:groupvar} as a control variable in the
+pooled model). Estimation
+details may be specified in parentheses; see the
+{helpb oaxaca9##mopts:model1()} option below.
+
+{phang} {opt reference(name)} computes the two-fold decomposition using the
+coefficients from a stored model. {it:name} is the name under which the
+model was stored; see {helpb estimates store}. Do not combine the
+{cmd:reference()} option with bootstrap or jackknife methods.
+
+{phang} {opt split} causes the "unexplained" component in the two-fold
+decomposition to be split into a part related to Group 1 and a part related
+to Group 2. {opt split} is effective only if specified with {cmd:weight()},
+{cmd:pooled}, {cmd:omega}, or {cmd:reference()}.
+
+{pstd}Only one of {cmd:threefold}, {cmd:weight()}, {cmd:pooled},
+{cmd:omega}, and {cmd:reference()} is allowed.
+
+{dlgtab:X-Values}
+{marker x1x2}
+{phang} {opt x1(names_and_values)} and {opt x2(names_and_values)} provide
+custom values for specific predictors to be used for Group 1 and Group 2 in
+the decomposition. The default is to use the group means of the predictors.
+The syntax for {it:names_and_values} is
+
+{p 12 16 2}{it:varname} [{cmd:=}] {it:value} [[{cmd:,}] {it:varname} [{cmd:=}] {it:value} {it:...} ]
+
+{pmore}Example: {cmd:x1(educ 12 exp 30)}
+    {p_end}
+{marker clist}
+{phang}
+{opt categorical(clist)} identifies sets of dummy variables representing
+categorical variables and transforms the coefficients so that the results of
+the decomposition are invariant to the choice of the (omitted) base
+category (deviation contrast transform). The syntax for {it:clist} is
+
+{p 12 16 2}{it:varlist} [{cmd:,} {it:varlist} {it:...} ]
+
+{pmore}where each {it:varlist} must contain indicator (0/1) variables for all
+categories including the base category (that is, a base category indicator variable must exist
+in the data). To generate a suitable set of indicator variables use, for example,
+
+{p 12 16 2}{cmd:tabulate} {it:catvar}{cmd:, generate(}{it:stubname}{cmd:)} [ {cmd:nofreq} ]
+
+{pmore}where {it:catvar} is the categorical variable and the indicator variables
+will be named {it:stubname}{cmd:1}, {it:stubname}{cmd:2},
+... ({cmd:nofreq} may be used to suppress the
+frequency table; see help {helpb tabulate_oneway:tabulate}).
+
+{pmore}The variables of a set specified in {cmd:categorical()} are added to
+the {it:indepvars} (unless at least one of the variables of the set already
+appears in {it:indepvars}), omitting the first variable of the set to prevent
+collinearity for model estimation (i.e. the first variable is used
+to represent the base category). Change the order of the variables or
+explicitly specify the desired terms in {it:indepvars} to change the base
+category.
+
+{pmore}The deviation contrast transform can also be applied to interactions between a
+categorical and a continuous variable. Specify the continuous variable in
+parentheses at the end of the list in this case, i.e.
+
+{p 12 16 2}{it:varlist} {cmd:(}{it:varname}{cmd:)} [{cmd:,} {it:...} ]
+
+{pmore}and also include a list for the main effects. Example:
+
+{p 12 16 2}{cmd:categorical(d1 d2 d3, xd1 xd2 xd3 (x))}
+
+{pmore}where {cmd:x} is the continuous variable, and {cmd:d1} etc. and
+{cmd:xd1} etc. are the main effects and interaction effects.
+
+{dlgtab:SE/SVY}
+{marker svy}
+{phang} {cmd:svy}[{cmd:(}[{it:vcetype}] [{cmd:,} {it:svy_options}]{cmd:)}]
+executes {cmd:oaxaca9} while accounting for the survey settings identified
+by {helpb svyset} (this is essentially equivalent to applying the
+{helpb svy} prefix command, although the {helpb svy} prefix is not allowed with
+{cmd:oaxaca9} due to some technical issues). {it:vcetype} and
+{it:svy_options} are as described in help {helpb svy}.
+
+{phang} {opt vce(vcetype)} specifies the type of standard errors
+reported. {it:vcetype} may be may be {opt analytic} (the default),
+{opt robust}, {opt cluster}{space 1}{it:clustvar}, {opt bootstrap},
+or {opt jackknife}; see {help vce_option:{bf:[R]}{space 1}{it:vce_option}}.
+
+{phang}
+{opt cluster(varname)}
+adjusts standard errors for intragroup correlation; this is Stata 9 syntax for
+{cmd:vce(cluster}{space 1}{it:clustvar}{cmd:)}.
+
+{phang} {cmd:fixed}[{cmd:(}{it:varlist}{cmd:)}] identifies fixed regressors
+(all if specified without argument; an example for fixed regressors are
+experimental factors). The default is to treat regressors as
+stochastic. Stochastic regressors inflate the standard errors of the
+decomposition components.
+
+{phang} {cmd:suest}[{cmd:(}{it:name}{cmd:)}] enforces using {helpb suest} to
+obtain the covariances between the models/groups. {cmd:suest} is implied by
+{cmd:pooled}, {cmd:omega}, {cmd:reference()}, {cmd:svy},
+{cmd:vce(cluster)}, and {cmd:cluster()}. Specify {cmd:suest(}{it:name}{cmd:)}
+to save {helpb suest}'s estimation results under name {it:name} using
+{helpb estimates store}. {cmd:nosuest} prevents applying {helpb suest}, which
+may cause biased standard errors.
+
+{phang} {opt nose} suppresses the computation of standard errors.
+
+{dlgtab:Model estimation}
+{marker mopts}
+{phang}
+{cmd:model1(}{it:model_opts}{cmd:)} and {cmd:model2(}{it:model_opts}{cmd:)}
+specify the estimation details for the two group-specific models. The syntax for
+{it:model_opts} is
+
+{p 12 16 2}[{it:{help estimation_commands:estcom}}] [{cmd:,}
+{opt sto:re(name)} {opt add:rhs(spec)} {it:estcom_options} ]
+
+{pmore}where {it:estcom} is the estimation command to be used and
+{it:estcom_options} are options allowed by {it:estcom}. The default
+estimation command is {helpb regress}. {opt store(name)} saves the model's
+estimation results under name {it:name} using
+{helpb estimates store}. {opt addrhs(spec)} adds {it:spec} to the
+"right-hand side" of the model. For
+example, use {cmd:addrhs()} to add extra variables to the model. Examples:
+
+            {cmd:model1(heckman, select(}{it:varlist_s}{cmd:) twostep)}
+
+            {cmd:model1(ivregress 2sls, addrhs((}{it:varlist2}{cmd:=}{it:varlist_iv}{cmd:)))}
+
+{pmore}Technical notes:
+
+{phang2}
+{space 2}o{space 1}{cmd:oaxaca9} uses the first equation
+for the decomposition if a model contains multiple equations.
+
+{phang2}
+{space 2}o{space 1}Coefficients that occur in one of the models only are assumed
+zero for the other group. It is important, however, that the associated
+variables contain non-missing values for all observations in both groups.
+
+{phang}
+{opt noi:sily} displays the models' estimation output.
+
+{dlgtab:Reporting}
+
+{phang}
+{opt xb} displays a table containing the regression coefficients
+and predictor values on which the decomposition is based.
+
+{phang}
+{opt level(#)} specifies the confidence level, as a percentage, for confidence
+intervals.  The default is {cmd:level(95)} or as set by {helpb set level}.
+
+{phang} {opt eform} specifies that the results be displayed in
+exponentiated form.
+
+{phang} {opt nolegend} suppresses the legend for the regressor sets
+defined by the {cmd:detail()} option.
+
+
+{title:Examples}
+
+        {com}. {stata "use http://fmwww.bc.edu/RePEc/bocode/o/oaxaca.dta"}
+
+        {com}. {stata oaxaca9 lnwage educ exper tenure, by(female)}{txt}
+
+        {com}. {stata oaxaca9 lnwage educ exper tenure, by(female) weight(1)}{txt}
+
+        {com}. {stata oaxaca9 lnwage educ exper tenure, by(female) pooled}{txt}
+
+        {com}. {stata svyset [pw=wt]}{txt}
+        {com}. {stata oaxaca9 lnwage educ exper tenure, by(female) svy}{txt}
+
+        {com}. {stata oaxaca9 lnwage educ exper tenure, by(female) vce(bootstrap)}{txt}
+
+
+{title:Saved Results}
+
+{synoptset 15 tabbed}{...}
+{p2col 5 15 19 2: Scalars}{p_end}
+{synopt:{cmd:e(N)}}number of observations
+    {p_end}
+{synopt:{cmd:e(N_1)}}number of observations in Group 1
+    {p_end}
+{synopt:{cmd:e(N_2)}}number of observations in Group 2
+    {p_end}
+{synopt:{cmd:e(N_clust)}}number of clusters
+    {p_end}
+
+{synoptset 15 tabbed}{...}
+{p2col 5 15 19 2: Macros}{p_end}
+{synopt:{cmd:e(cmd)}}{cmd:oaxaca9}
+    {p_end}
+{synopt:{cmd:e(depvar)}}name of dependent variable
+    {p_end}
+{synopt:{cmd:e(by)}}name group variable
+    {p_end}
+{synopt:{cmd:e(group_1)}}value of group variable for Group 1
+    {p_end}
+{synopt:{cmd:e(group_2)}}value of group variable for Group 2
+    {p_end}
+{synopt:{cmd:e(title)}}{cmd:Blinder-Oaxaca decomposition}
+    {p_end}
+{synopt:{cmd:e(model)}}type of decomposition
+    {p_end}
+{synopt:{cmd:e(weights)}}weights specified in the {cmd:weight()} option
+    {p_end}
+{synopt:{cmd:e(refcoefs)}}equation name used in {cmd:e(b0)} for the reference coefficients
+    {p_end}
+{synopt:{cmd:e(detail)}}{cmd:detail}, if detailed results were requested
+    {p_end}
+{synopt:{cmd:e(legend)}}regressor sets defined by the {cmd:detail()} option
+    {p_end}
+{synopt:{cmd:e(adjust)}}names of adjustment variables
+    {p_end}
+{synopt:{cmd:e(fixed)}}names of fixed variables
+    {p_end}
+{synopt:{cmd:e(suest)}}{cmd:suest}, if {cmd:suest} was used
+    {p_end}
+{synopt:{cmd:e(wtype)}}weight type
+    {p_end}
+{synopt:{cmd:e(wexp)}}weight expression
+    {p_end}
+{synopt:{cmd:e(clustvar)}}name of cluster variable
+    {p_end}
+{synopt:{cmd:e(vce)}}{it:vcetype} specified in {cmd:vce()}
+    {p_end}
+{synopt:{cmd:e(vcetype)}}title used to label Std. Err.
+    {p_end}
+{synopt:{cmd:e(properties)}}{cmd:b V}
+    {p_end}
+
+{synoptset 15 tabbed}{...}
+{p2col 5 15 19 2: Matrices}{p_end}
+{synopt:{cmd:e(b)}}decomposition results
+    {p_end}
+{synopt:{cmd:e(V)}}variance-covariance matrix of decomposition results
+    {p_end}
+{synopt:{cmd:e(b0)}}vector containing coefficients and X-values
+    {p_end}
+{synopt:{cmd:e(V0)}}variance-covariance matrix of {cmd:e(b0)}
+    {p_end}
+
+{synoptset 15 tabbed}{...}
+{p2col 5 15 19 2: Functions}{p_end}
+{synopt:{cmd:e(sample)}}marks estimation sample{p_end}
+{p2colreset}{...}
+
+
+{title:References}
+
+{phang} Jann, Ben (2008). The Blinder-Oaxaca decomposition for
+linear regression models. The Stata Journal 8(4): 453-479.
+
+{pstd}
+Working paper version available from: {browse "http://ideas.repec.org/p/ets/wpaper/5.html"}
+
+
+{title:Author}
+
+{p 4 4 2}Ben Jann, ETH Zurich, jannb@ethz.ch
+
+
+{title:Also see}
+
+{p 4 13 2}
+Online:  help for {helpb regress}, {helpb heckman}, {helpb suest}, {helpb svyset}

@@ -1,0 +1,66 @@
+{smcl}
+
+{* *! version 1.0  31may2014}{...}
+{cmd:help grouplabs}
+{hline}
+
+DESCRIPTION:
+------------
+
+{cmd:grouplabs} is a powerful command to create value labels for the groupped 
+variables from the variable and value labels of the original variables. It 
+supports string variables and reacts meaningfully to the presence of missing
+values.
+
+
+BASIC SYNTAX:
+-------------
+
+The basic syntax mirrors the {cmd:egen} statement that was used to create the grouping
+variable and is applicable to binary attributes:
+
+  grouplabs varlist, groupvar(varname) 
+
+such as
+  
+  egen x=group(x1 x2 x3 x4 x5)
+  grouplabs x1 x2 x3 x4 x5, groupvar(x)
+
+Additional options and their effects are described in detail at the
+{browse "http://www.radyakin.org/stata/grouplabs/index.htm":grouplabs home page}  <<-- web link.
+
+
+EXAMPLE OF OUTPUT:
+------------------
+
+Example of output based on value labels of multiple categorical variables in 
+NLSW88 example is {view "http://www.radyakin.org/stata/grouplabs/output1.txt":here}
+
+To create a similar output after installing {cmd:grouplabs} execute the following example:
+{stata `"do "http://radyakin.org/stata/grouplabs/example1.do""':do "http://radyakin.org/stata/grouplabs/example1.do"}
+
+
+Here is a truncated frequencies table using labels generated from 5 binary
+attributes (cheap heavy safe waterproof imported):
+
+                  group(x1 x2 x3 x4 x5) |      Freq.     Percent        Cum.
+----------------------------------------+-----------------------------------
+                                    --- |         25        2.50        2.50
+                               imported |         26        2.60        5.10
+                                  heavy |         31        3.10        8.20
+                     heavy and imported |         22        2.20       10.40
+                             waterproof |         38        3.80       14.20
+                waterproof and imported |         26        2.60       16.80
+                   waterproof and heavy |         38        3.80       20.60
+      waterproof and heavy and imported |         41        4.10       24.70
+
+....table continues but truncated here......................................
+
+
+AUTHOR:
+=======
+{cmd:grouplabs} was written by {browse "http://econpapers.repec.org/scripts/search/search.asp?ft=radyakin":Sergiy Radyakin}
+Support and updates information will be posted to {browse "http://www.radyakin.org/stata/grouplabs/index.htm":grouplabs home page}.
+
+
+

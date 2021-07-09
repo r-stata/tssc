@@ -1,0 +1,101 @@
+{smcl}
+{* 17jun2005}{...}
+{hline}
+help for {hi:lxpct_2}
+{hline}
+
+{title:Multistate Life Expectancy Calculator}
+
+{p 8 16 2}{cmd:lxpct_2}
+[{cmd:,} 
+{cmdab:i:(}{it:#}{cmd:)}
+{cmdab:d:(}{it:#}{cmd:)}]
+
+{p 4 4 2}where {cmdab:i} is the total number of states in the model (absorbing states and non-absorbing states){p_end}
+
+{p 4 4 2}and {cmdab:d} is the number of absorbing states (e.g. death).{p_end}
+
+
+{title:Description}
+
+{p 4 4 2}
+{cmd:lxpct_2} calculates multistate life expectancies from age-specific transition probabilities. 
+Like a standard life table, the multistate, or increment-decrement, life table allows a researcher to calculate expected years of life while adjusting 
+for age-related differences in the composition of various populations.{p_end}
+
+{p 8 8 2}The input file must contain the following variables:{p_end}
+
+{p 8 8 2}{ul:Variable name}{space 4}{ul:Details}{p_end}
+
+{p 8 8 1}age{space 15}Age 'x' in single years{p_end}
+{p 8 8 1}pij{space 15}Transition probability from state `i' at age `x' to {p_end}
+{p 8 8 1}{space 20}state `j' at age `x+1'{p_end}
+
+
+{p 8 8 2}For example in a model with the states disabled, non-diabled, and dead, the total number of states in the model 
+is three (i.e. {cmdab:i:(}{cmd:3)}  ) and the total number of non-absorbing states is one (i.e. {cmdab:d:(}{cmd:1)} ).
+An appropriately structured dataset would take the following shape*:{p_end}
+
+{p 12 12 2}age{space 6}p11{space 7}p12{space 7}p13{space 7}p21{space 7}p22{space 7}p23{p_end}
+{p 12 12 2}10{space 7}0.6468{space 4}0.3524{space 4}0.0008{space 4}0.1510{space 4}0.8489{space 4}0.0001{p_end}
+{p 12 12 2}11{space 7}0.6544{space 4}0.3450{space 4}0.0006{space 4}0.1515{space 4}0.8484{space 4}0.0001{p_end}
+{p 12 12 2}12{space 7}0.6612{space 4}0.3381{space 4}0.0007{space 4}0.1522{space 4}0.8476{space 4}0.0001{p_end}
+{p 12 12 2}13{space 7}0.6668{space 4}0.3321{space 4}0.0011{space 4}0.1530{space 4}0.8469{space 4}0.0001{p_end}
+{p 12 12 2}14{space 7}0.6717{space 4}0.3265{space 4}0.0018{space 4}0.1538{space 4}0.8461{space 4}0.0002{p_end}
+{p 12 12 2}15{space 7}0.6771{space 4}0.3204{space 4}0.0026{space 4}0.1547{space 4}0.8450{space 4}0.0003{p_end}
+{p 12 12 2}.{space 8}.{space 9}.{space 9}.{space 9}.{space 9}.{space 9}.{p_end}
+{p 12 12 2}.{space 8}.{space 9}.{space 9}.{space 9}.{space 9}.{space 9}.{p_end}
+{p 12 12 2}.{space 8}.{space 9}.{space 9}.{space 9}.{space 9}.{space 9}.{p_end}
+{p 12 12 2}60{space 7}0.9384{space 4}0.0000{space 4}0.0616{space 4}0.3969{space 4}0.5814{space 4}0.0217{p_end}
+
+{p 8 8 2}Notice that no transition probabilites are needed for transitions from absorbing to non-aborbing states 
+and that no transition probablities are needed for remaining within an absorbing state (i.e. I assume the dead remain dead).
+The program automatically sets the former to 0 and the later to 1.{p_end}
+
+
+{title:Results}
+
+{p 4 4 2}The {cmd:lxpct_2} command calculates and displays, by age, the life table functions which have been stored 
+as matrices. These entail the following:{p_end}
+
+{p 8 8 2} li_x{space 5}the survival function in state `i' at age `x'{p_end}
+{p 8 8 2} Li_x{space 5}the person-years in state `i' at age `x'{p_end}
+{p 8 8 2} Ti_x{space 5}the reverse-cumulative function of Li_x in state `i' at age `x'{p_end}
+{p 8 8 2} ei_x{space 5}the life expectancy in state `i' at age `x'{p_end}
+
+
+{title:Example}
+
+{p 4 4 2} A calcuation of multistate life table expectancies using the model and dataset described above involves the following syntax :{p_end}
+
+{p 8 8 2} . lxpct_2, i(3) d(1) {p_end}
+
+{p 4 4 2}The program calculates the matrices l1_x, l2_x, l3_x, L1_x, L2_x, L3_x, T1_x, T2_x, T3_x, e1_x, e2_x, and e3_x. 
+These matrices can be transposed into variables using the command {cmd:svmat}. 
+For example:{p_end}
+
+{p 8 8 2}. svmat e2_x, names(col)
+
+{p 4 4 2}The variables can then be manipulated within Stata using such commands as {cmd:summarize} and {cmd:graph}, or 
+they can be exported into another software package for manipulation.{p_end}
+
+
+{title:References}
+
+{p 4 4 2}For more information about the methods and models, please see the following references:{p_end}
+
+{p 4 8 2}Laditka, S.B. and Wolf, D.A. (1998) “New methods for analyzing active life expectancy”. {it:Journal of Aging and Health}. 10, 214-241.{p_end}
+{p 4 8 2}Schoen, R. (1988) {it:Modeling Multigroup Populations}. New York, NY: Plenum Press.{p_end}
+{p 4 8 2}Preston, S.H., Heuveline, P., Guillot, M. (2001) {it:Demography: Measuring and Modeling Population Processes}. Malden, MA: Blackwell Publishers.{p_end}
+
+{p 4 4 2}*The data for this example was abstracted with minor changes from a dataset obtained courtesy of Paula Diehr, University of Washington, Department of Biostatistics.{p_end}
+
+
+{title:Author}
+
+{p 4}Margaret M. Weden{p_end}
+{p 4}Robert Wood Johnson Health & Society Scholar {p_end}
+{p 4}University of Wisconsin- Madison {p_end}
+{p 4}Department of Population Health Sciences{p_end}
+{p 4}Madison, WI{space 2}53726{p_end}
+{p 4}weden@wisc.edu{p_end}

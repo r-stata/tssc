@@ -1,0 +1,99 @@
+{smcl}
+{* 12Nov2012}{...}
+{cmd:help tdpd}
+{hline}
+
+{title:Title}
+
+
+{p2colset 5 13 15 2}{...}
+{p2col :{hi:tdpd} {hline 2}}Third-degree price discriminating monopoly{p_end}
+{p2colreset}{...}
+
+
+{title:Syntax}
+
+{p 4 13 2}{cmd:tdpd} {it:a1 b1 a2 b2 c1 c2 c3}, [invd]
+
+{pstd}
+
+
+{title:Description}
+
+{pstd}
+{cmd:tdpd} computes the equilibrium of a third-degree discriminating 
+monopolist facing two groups of consumers: 
+total output and its allocation between the two groups of consumers, 
+prices charged to each group, profit of the monopolist, asf. 
+Results are provided with a precision of two decimals.
+
+{pstd}
+{cmd:tdpd} also computes the equilibrium of the market if the monopoly 
+does not price-discriminate. {break}
+
+{pstd}
+The 7 arguments {it:a1 b1 a2 b2 c1 c2 c3} are compulsory. 
+They define the demands of the two groups of consumers,
+and the total cost function of the monopolist:
+
+{p2colset 10 25 27 2}{...}
+{p2col :{bf:Demand i:}}Qi = {it:ai} - {it:bi}Pi, i = 1,2{p_end}
+{p2col :{bf:Total Cost:}}TC = {it:c1} + {it:c2}Q + {it:c3}Q^2{p_end}
+
+{pstd}
+Graphical representations are provided for the two equilibria 
+(discriminating + non-discriminating). 
+Only two combined figures are displayed ({it:MD} and {it:MND}), 
+but the six different graphs composing them 
+can be displayed indivudally using {helpb graph display}. 
+The names of the graphs are as follows:
+
+{p2colset 10 25 27 2}{...}
+{p2line}
+{p2col :{bf:Discriminating monopoly}}{p_end}
+{p2col :{it:group1d}}Segment 1{p_end}
+{p2col :{it:group2d}}Segment 2{p_end}
+{p2col :{it:marketd}}Entire market{p_end}
+{p2col :{it:DM}}The three previous graphs horizontally aligned{p_end}
+{p2line}
+{p2col :{bf:Non-discriminating monopoly}}{p_end}
+{p2col :{it:group1nd}}Segment 1{p_end}
+{p2col :{it:group2nd}}Segment 2{p_end}
+{p2col :{it:marketnd}}Entire market{p_end}
+{p2col :{it:NDM}}The three previous graphs horizontally aligned{p_end}
+{p2line}
+
+
+{title:Option}
+
+{pstd}
+{hi:invd} is used when the parameters {it:a1}, {it:b2}, 
+{it:a2} and {it:b2} define the inverse demands. 
+Algebraically: {break}
+{bf:Inverse demand i:}	Pi = {it:ai} - {it:bi}Qi, 
+and thus Qi = {it:ai}/{it:bi} - 1/{it:bi}Pi, i = 1,2 {break}
+
+
+{title:Examples}
+
+{pstd}{inp:. tdpd 100 1 60 1 0 20 .25, invd}{p_end}
+{pstd}{inp:. graph display marketd}{p_end}
+{pstd}{inp:. graph display marketnd}{p_end}
+
+{pstd}{inp:. tdpd 60 .2 60 .3 2000 40 0}{p_end}
+
+
+{title:Author}
+
+{pstd}
+Sylvain Weber {break}
+University of Neuchâtel (Switzerland) {break}
+Institute of Economic Research {break}
+sylvain.weber@unine.ch
+
+
+{title:Reference}
+
+{pstd}
+The economic theory underlying {cmd:tdpd} is reviewed in:
+Weber, Sylvain and Pasche, Cyril (2008) "Price Discrimination", {it:Journal of Industrial Organization Education}: Vol. 3, Iss. 1, Article 1.

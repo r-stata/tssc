@@ -1,0 +1,159 @@
+{smcl}
+{* 14sep2001/23jul2002}{...}
+{hline}
+help for {hi:regplot7}
+{hline}
+
+{title:Plots of regress or similar fit} 
+
+{p 8 16}{cmd:regplot7} [{cmd:,} {it:graph_options} 
+{cmdab:sep:arate(}{it:varname}{cmd:)} ]   
+
+{p 8 16}{cmd:regplot7} {it:varname} [{cmd:,} {it:graph_options} 
+{cmdab:sep:arate(}{it:varname}{cmd:)} ]    
+
+{title:Description}
+
+{p}{cmd:regplot7} plots fitted or predicted values from an immediately previous
+{cmd:regress} or similar command. By default the data for the response are also
+plotted. 
+
+
+{title:Remarks} 
+
+{p}With the first syntax, no varname is specified. {cmd:regplot7} shows the
+response and predicted values on the y axis and the covariate named first in
+the {cmd:regress} or similar command on the x axis. Thus with this syntax the
+plot shown is sensitive to the order in which covariates are specified in the
+estimation command. 
+
+{p}With the second syntax, a varname is supplied, which may name any numeric
+variable. This is used as the variable on the x axis. This permits changing
+graphs without reissuing the estimation command. 
+
+{p}Thus in practice {cmd:regplot7} is most useful when the fitted values are a
+smooth function of the variable shown on the x axis, or a set of such functions
+given also one or more dummy variables as covariates. However, other 
+applications also arise, such as plotting observed and predicted values
+from a time series model versus time. 
+
+{p}In more technical detail: {cmd:regplot7} plots 
+
+{p}1. both a single dependent or response variable as specified in
+{cmd:e(depvar)} and whatever single variable is calculated by the default of
+{cmd:predict} on the y axis, which makes sense whenever those variables are on
+the same scale; 
+
+{p}2. either the {it:varname} specified or what names the first column of
+{cmd:e(b)} on the x axis, which makes sense whenever {cmd:graph} can 
+understand that as specifying the x axis. 
+
+{p}If your estimation results do not meet these specifications, you are likely 
+to get either bizarre results or an error message. Note in particular 
+that {it:varname} must be specified after {cmd:nl}. 
+
+{p}Time series operators are allowed.
+
+{p}The plot is restricted to the estimation sample.  
+
+{p}{cmd:regplot7} is a renamed clone of {cmd:regplot} 1.2.0 which is for 
+Stata 7. Stata 8 users should use {cmd:regplot} 2.0.0 or later. 
+
+
+{title:Options}
+
+{p 0 4} 
+{it:graph_options} are options of {cmd:graph, twoway}. 
+
+{p 4 4} 
+The defaults include {cmd:connect()} of {cmd:.} for data and {cmd:s} for each
+subset of predicted values. 
+
+{p 4 4} 
+To suppress plotting of response data, specify {cmd:i} as the first 
+{cmd:symbol} to be shown.
+
+{p 0 4}
+{cmd:separate(}{it:varname}{cmd:)} specifies that predictions are to be 
+shown separately for different categories of {it:varname}. This will be 
+most appropriate when the categories of {it:varname} are associated 
+with one or more dummy or indicator variables. 
+
+{p 0 4}
+Note that {cmd:by(}{it:varname}{cmd:)} may be employed as usual 
+with {cmd:regplot7} and it also may be combined with {cmd:separate()}.
+
+
+{title:Examples}
+
+{p 4 8}{inp:. use auto}
+
+{p}continuous variables only: 
+
+{p 4 8}{inp:. regress mpg weight}
+
+{p 4 8}{inp:. regplot7}
+
+{p 4 8}{inp:. gen weightsq = weight^2}
+
+{p 4 8}{inp:. regress mpg weight weightsq}
+
+{p 4 8}{inp:. regplot7}
+
+{p 4 8}(N.B. {inp: weight} shown on x axis in both cases)
+
+{p}categorical variable also: 
+
+{p 4 8}{inp:. regress mpg weight foreign} 
+
+{p 4 8}{inp:. regplot7, sep(foreign) tr(1)}
+
+{p 4 8}{inp:. regress mpg weight weightsq foreign} 
+
+{p 4 8}{inp:. regplot7, sep(foreign) tr(1)}
+
+{p 4 8}{inp:. regplot7, by(foreign)} 
+
+{p 4 8}{inp:. regplot7, by(foreign) sep(foreign) tr(1) total}
+
+{p 4 8}{inp:. gen fw = foreign * weight}
+
+{p 4 8}{inp:. regress mpg weight foreign fw}
+
+{p 4 8}{inp:. regplot7, sep(foreign) tr(1)}
+
+{p}commands other than {cmd:regress}: 
+
+{p 4 8}{inp:. logit foreign weight} 
+
+{p 4 8}{inp:. regplot7} 
+
+{p 4 8}{inp:. glm mpg weight foreign, link(log)} 
+
+{p 4 8}{inp:. regplot7, sep(foreign) tr(1)}
+
+{p}fit an AR(1) plus trend model to time series:
+
+{p 4 8}{inp:. regress ERvol L.ERvol date} 
+
+{p 4 8}{inp:. regplot7 date} 
+
+
+{title:Author}
+
+    Nicholas J. Cox, University of Durham, U.K.
+    n.j.cox@durham.ac.uk
+    
+    
+{title:Acknowledgements} 
+
+    Ken Higbee and Kit Baum provided very helpful comments. 
+
+
+{title:Also see}
+
+{p 0 19}On-line:  help for {help regress}, {help graph}, {help regdiag}, 
+{help anovaplot} (if installed), {help sparl} (if installed)  
+{p_end}
+{p 1 19}Manual: {hi: [U] 21 Programming Stata} 
+{p_end}

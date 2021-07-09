@@ -1,0 +1,90 @@
+{smcl}
+{* 9sept2006/5nov2006}{...}
+{hline}
+help for {hi:nruns}{right:(SJ6-4: st0044_1)}
+{hline}
+
+{title:Number of runs compared with random shuffles}
+
+{p 8 17 2}
+{cmd:nruns}
+{it:varname}
+{ifin} 
+[
+{cmd:, nreps(}{it:#}{cmd:)}
+{cmd:saving(}{it:filename} [{cmd:, replace}]{cmd:)} 
+]
+
+
+{title:Description}
+
+{p 4 4 2}{cmd:nruns} counts runs in a sequence of values given by
+{it:varname}, which may be either numeric or string, showing the
+successive occurrence of categories, such as {cmd:1 2 2 2 3 3 3 1 1 1}
+or {cmd:A A A A B B A A}.  A run ends when values change from one
+category to another or at the end of the sequence. Thus in these
+examples there are four and three runs respectively.  
+
+{p 4 4 2}{cmd:nruns} shuffles the sequence randomly a given number of
+times. It displays the simulated frequency and probability distributions
+under randomness of the number of runs possible with the same values and
+the probabilities of less than, the same number as, or more than that
+observed. 
+    
+{p 4 4 2}To ensure reproducible results, {help generate:set seed}
+beforehand.
+
+
+{title:Options} 
+
+{p 4 8 2}{cmd:nreps()} indicates the number of shuffles to be simulated. 
+The default is 10000.
+
+{p 4 8 2}{cmd:saving()} indicates that results, meaning variables containing 
+values, number of runs, frequencies and probabilities, should be saved
+to the specified file. 
+
+
+{title:Examples}
+
+{p 4 8 2}{cmd:. nruns sequence}
+
+
+{title:Saved values}
+
+{col 5}r(pless)   {col 18}probability of less runs than observed 
+{col 5}r(psame)   {col 18}probability of same number of runs as observed 
+{col 5}r(pmore)   {col 18}probability of more runs than observed 
+
+
+{title:Authors}
+
+{p 4 4 2}Nicholas J. Cox, Durham University, UK{break} 
+n.j.cox@durham.ac.uk
+
+{p 4 4 2}Nigel C. Smeeton, King's College London, UK{break} 
+nigel.smeeton@kcl.ac.uk 
+
+
+{title:Acknowledgments} 
+
+{p 4 4 2}Kit Baum and William Gould made valuable suggestions on speeding up
+the Mata code. 
+
+
+{title:References}
+
+{p 4 8 2}Smeeton, N. and Cox, N.J. 2003. 
+Do-it-yourself shuffling and the number of runs under randomness.
+{it:Stata Journal} 3: 270{c -}277. 
+
+{p 4 8 2}Sprent, P. and Smeeton, N.C. in press. 
+{it:Applied Nonparametric Statistical Methods} 
+(4th edition; see section 7.6.2). 
+Boca Raton, FL: CRC. 
+
+
+{title:Also see} 
+
+{p 4 13 2}Online: {help nrunsi} 
+

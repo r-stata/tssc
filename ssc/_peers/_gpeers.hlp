@@ -1,0 +1,47 @@
+{smcl}
+{hline}
+help for {hi:peers}
+{hline}
+
+{title:An Extension to egen for the Computation of Peers' Average Characteristics}
+
+{p 8 27}
+{cmdab:egen}
+[{it:type}]
+{it:newvar} = peers({it:argument})
+[{it:if}] [{it:in}],
+{cmdab:by}{cmd:(}{it:varname}{cmd:)}
+
+{p}
+
+{title:Description}
+
+{p 0 0}
+{hi:peers} is an extension to {hi:egen} that computes the average characteristic
+of peers in a unit defined by {it:argument}.
+
+{title:Behaviour with missing values and small units}
+
+{p 0 0}
+{hi:peers} ignores missing values, ie they do not count in the mean. Moreover
+if a unit has only one observation, then {it:newvar} is set to missing.
+
+{title:Examples}
+
+egen average_age_of_peers = peers(age), by(classroom) 
+
+{title:Author}
+
+{p}
+Amine Ouazad, PhD Candidate of the Paris School of Economics,
+Webpage {browse "http://www.pse.ens.fr/junior/ouazad/"}
+Email {browse "mailto:amine.ouazad@pse.ens.fr":amine.ouazad@pse.ens.fr}
+
+{title:Also see}
+
+{help egen}
+
+
+
+
+

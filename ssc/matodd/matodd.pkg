@@ -1,0 +1,86 @@
+d 'MATODD': modules to produce various matrix tasks
+d
+d These matrix programs will work with either Stata 5.0 or Stata
+"d 6.0, with the exception of matdelrc, which will run only under"
+d Stata 6.0. The programs are a suite and some call others. matcfa
+d checks that (matrix newmat = argname1 + argname2) would execute
+d correctly: that is argname1 and argname2 name matrices with the
+"d same dimensions. If not, an error message will be issued. matcfm"
+d checks that (matrix newmat = argname1 * argname2) would execute
+"d correctly. That is, either both arguments are matrices such that"
+d the number of columns of argname1 equals the number of rows of
+d argname2; or one of the two arguments is a scalar and the other
+"d is a matrix. If not, an error message will be issued. matchk"
+"d checks that argname names an existing matrix. If not, an error"
+d message will be issued. matcname gives matrix1 the row and column
+"d names of matrix2, provided that the two matrices have the same"
+"d dimensions. If not, an error message will be issued. Given a"
+"d matrix, matdelrc deletes a specified row, or a specified column,"
+d or both. matdelrc requires Stata 6.0. matdelrc will not delete
+d (i.e. annihilate) entire row vectors or entire column vectors.
+"d Given matrices A and B of the same order, matewd calculates and"
+"d displays matrix C with typical element ( C[i,j] =  A[i,j] /"
+"d B[i,j] ) provided that no B[i,j] is equal to 0. C may overwrite A"
+d or B. A and B may be the same matrix. Given matrices A and B of
+"d the same order, matewm calculates and displays matrix C with"
+"d typical element ( C[i,j] =  A[i,j] * B[i,j] ) C may overwrite A"
+d or B. A and B may be the same matrix. Given matrices A and B of
+"d the same order and a user-supplied binary operator op, matewop"
+"d calculates and displays matrix C with typical element ( C[i,j] ="
+"d A[i,j] op B[i,j] ) provided that no C[i,j] would be missing. C"
+d may overwrite A or B. A and B may be the same matrix. Given a
+d column_vector A and a row vector B and a user-supplied binary
+"d operator op, matgop calculates and displays the generalized outer"
+"d product: matrix C with typical element ( C[i,j] =  A[i,1] op"
+"d B[1,j] ) provided that no C[i,j] would be missing. matmad"
+d calculates the maximum absolute deviation (MAD) between elements
+d of matrices A and B of the same order. matmad is likely to be
+d most useful for checking the convergence of iterative matrix
+d calculations within programs. matmps calculates the sum of a
+d scalar and a matrix and places it in a second matrix. For a
+"d scalar x and a matrix A, the second matrix B has typical element"
+"d ( B[i,j] =  x + A[i,j] ), where the order of the arguments is"
+d immaterial and matrix2 may overwrite matrix1. Given a square
+d matrix A and power p matpow calculates and displays the pth power
+d of A. The result is placed in a second matrix. mstdizem takes
+"d matrix_input and produces matrix_output, which is matrix_input"
+d scaled such that the row totals are given by row_total_vector and
+d the column totals given by column_total_vector. psbayesm takes
+"d data_matrix, which should be a set of frequencies, and shrinks or"
+d smooths it towards a set of frequencies implied by prior
+d probabilities. This will have the effect of replacing sampling
+d zeros by positive estimates whenever the priors are positive.
+d
+"d Author: Nicholas J. Cox, University of Durham"
+d Support: email  N.J.Cox@@durham.ac.uk
+d
+d Distribution-Date: 20000118
+
+f matcfa.ado
+f matcfm.ado
+f matchk.ado
+f matcname.ado
+f matdelrc.ado
+f matewd.ado
+f matewm.ado
+f matewop.ado
+f matgop.ado
+f matmad.ado
+f matmps.ado
+f matpow.ado
+f mstdizem.ado
+f ./p/psbayesm.ado
+f matcfa.hlp
+f matcfm.hlp
+f matchk.hlp
+f matcname.hlp
+f matdelrc.hlp
+f matewd.hlp
+f matewm.hlp
+f matewop.hlp
+f matgop.hlp
+f matmad.hlp
+f matmps.hlp
+f matpow.hlp
+f mstdizem.hlp
+f ./p/psbayesm.hlp

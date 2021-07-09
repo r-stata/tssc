@@ -1,0 +1,449 @@
+{smcl}
+{* 8nov2010}
+{hline}
+help for {hi:decomp}
+{hline}
+
+{title:Decomposition of wage gaps}
+
+{p} Syntax involves a sequence of steps:
+
+{p 8 14}{cmd:regress} {it:varlist} [{it:weight}] {cmd:if} {it:exp} (where
+{it:exp} is group==high wage, for example, race==1)
+
+{p 8} {cmd:himod} [{it:weight}] [,{cmd:ds}]
+
+{p 8 14}{cmd:regress} {it:varlist} [{it:weight}] {cmd:if} {it:exp} (where
+{it:exp} is group==low wage, for example, race==2)
+
+{p 8} {cmd:lomod} [{it:weight}] [,{cmd:ds}]
+
+{p 8} {cmd:decomp} [,{cmd:r}]
+
+{p 8 14} {cmd: aweight}s and {cmd:fweight}s are allowed; see {help weights}.
+
+
+{title:Description}
+
+{p 5 5}{cmd:decomp} computes Blinder-Oaxaca wage decompositions. It compares the
+results from two regressions, using intermediate commands ({cmd:himod} and
+{cmd:lomod}), and produces a  table of output containing the decompositions.
+These decompositions show how much of  the wage gap is due to differing
+endowments between the two groups, and how much is due to discrimination
+(regarded as the portion of the wage gap due to the combined effect of 
+coefficients and slope intercepts for the two groups).
+
+{p 5 5}{cmd:decomp} is designed for Stata's {help regress} command, but also
+works with other regression commands, such as {help ivreg} and {help tobit}. 
+The previous version required a {cmd:heck} option if {cmd:decomp} was
+used with Stata's {help heckman} command. This is no longer necessary. {cmd:decomp} now
+recognises if the regression is a heckman type and takes account of this. This
+is also the case with tobit regression, which {cmd:decomp} also automatically
+recognises. This means that the only option which may be specified with 
+{cmd:himod} or {cmd:lomod} is {cmd:ds}. Existing user syntax containing 
+the {cmd:heck} option should be edited to remove this term.
+
+
+{p 5 5} See {net "describe http://fmwww.bc.edu/RePEc/bocode/o/oaxaca":oaxaca} by 
+Ben Jann for a package which is far more comprehensive and up-to-date than {cmd: decomp}.
+
+{title:Options}
+
+{p 5 5}Option for {cmd:himod} and {cmd:lomod} is {cmd:ds} (details).This provides 
+a table of coefficients, means and predictions for each
+of the regressions. These are the data used by {cmd:decomp} to conduct the
+decomposition. 
+
+
+{p 5 5} Options for {cmd:decomp} are {cmd:r} (reverse), which computes the
+decomposition with the low-wage group as the reference point. See below for more
+details.
+
+{p 5 5} To make use of weighting, weights (either {cmd:aweight}s or
+{cmd:fweight}s) must be applied in the regression commands, and then repeated in
+the {cmd:himod} and {cmd:lomod} routines. No weights should be specified when
+{cmd:decomp} itself is run.
+
+
+{title:Method}
+
+{p 5 5}In essence, the Blinder-Oaxaca decomposition breaks down the wage gap
+between high-wage and low-wage workers into several components. The unexplained
+component is the difference in the shift coefficients (or constants) between the
+two wage equations. Being inexplicable, this component can be attributed to 
+discrimination. However, Blinder also argued that the explained component of the
+wage gap also contains a portion that is due to discrimination. To examine this Blinder 
+decomposed the explained component into:
+
+{p 10 13 10}1. the differences in endowments between the two groups, {it:"as evaluated}
+{it:by the high-wage group's wage equation"} ; and
+
+{p 10 13 10}2. "the difference between how the high-wage equation {it:would value} the
+characteristics of the low-wage group, and how the low-wage equation {it:actually values} them".
+
+{p 5 5}Blinder called the first part the amount "attributable to the endowments" and the second
+part the amount "attributable to the coefficients", and he argued that the second part should
+also be viewed as reflecting discrimination:
+
+{p 10 10 10}"[this] only exists because the market evaluates differently the identical
+bundle of traits if possessed by members of different demographic groups, [and]
+is a reflection of discrimination as much as the shift coefficient is."
+
+{p 5 5}{cmd:decomp} closely follows Blinder's exposition and uses both his method and
+his terminology. {cmd: decomp} takes the average endowment differences between the two 
+groups and weights them (multiplies them) by the high-wage workers'estimated coefficients. 
+The differences in the estimated coefficients are weighted (multiplied by) the average 
+characteristics of the low-wage workers.
+
+{p 5 5}Conventionally, the high-wage group's wage structure is regarded as the 
+"non-discriminatory norm", that is, the reference group. With the reverse option ({cmd:r})
+switched on, the low-wage group becomes the reference group. The average endowment 
+differences are now weighted by the low-wage workers' estimated coefficients, 
+and the coefficient differences are weighted by the mean characteristics of the 
+high-wage workers.
+
+{p 5 5} The results from {cmd: decomp} are presented using Blinder's (1973) original 
+formulation of E, C, U and D.
+
+{p 5 5} The endowments (E) component of the decomposition is the sum of (the
+coefficient vector of the regressors of the high-wage group) times (the
+difference in group means between the high-wage and low-wage groups for the
+vector of regressors).
+
+{p 5 5} The coefficients (C) component of the decomposition is the sum of the
+(group means of the low-wage group for the vector of regressors) times (the
+difference between the regression coefficients of the high-wage group and the
+low-wage group).
+
+{p 5 5} The unexplained portion of the differential (U) is the difference in
+constants between the high-wage wage and the low-wage group.
+
+{p 5 5} The portion of the differential due to discrimination is C + U.
+
+{p 5 5} The raw (or total) differential is E + C + U.
+
+
+{title:Examples}
+
+{hline}
+
+{p} Using {help regress} in a wage equation where high wage and low wage is based on race:
+
+{cmd:. use http://www.stata-press.com/data/r8/nlswork}
+(National Longitudinal Survey.  Young Women 14-26 years of age in 1968)
+
+{cmd:. keep if year==88}
+(26262 observations deleted)
+
+{cmd:. reg ln_wage age tenure collgrad if race==1}
+
+      Source |       SS       df       MS              Number of obs =    1636
+-------------+------------------------------           F(  3,  1632) =   90.03
+       Model |  81.4751215     3  27.1583738           Prob > F      =  0.0000
+    Residual |  492.287598  1632  .301646812           R-squared     =  0.1420
+-------------+------------------------------           Adj R-squared =  0.1404
+       Total |  573.762719  1635  .350925211           Root MSE      =  .54922
+
+------------------------------------------------------------------------------
+     ln_wage |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+         age |  -.0071553   .0044197    -1.62   0.106    -.0158241    .0015136
+      tenure |   .0292267   .0024998    11.69   0.000     .0243235    .0341298
+    collgrad |   .3271635   .0311724    10.50   0.000     .2660213    .3883057
+       _cons |   1.953557   .1737702    11.24   0.000     1.612721    2.294393
+------------------------------------------------------------------------------
+
+{cmd: himod, ds}
+
+Coefficients, means & predictions for high model
+
+------------------------------------------------------
+    Variable |    Coefficent        Mean    Prediction
+-------------+----------------------------------------
+         age |        -0.007      39.263        -0.281
+      tenure |         0.029       5.802         0.170
+    collgrad |         0.327       0.257         0.084
+       _cons |         1.954       1.000         1.954
+------------------------------------------------------
+
+Prediction (ln):     1.926
+Prediction ($):      6.86
+
+{cmd:. reg ln_wage age tenure collgrad if race==2}
+
+      Source |       SS       df       MS              Number of obs =     580
+-------------+------------------------------           F(  3,   576) =   59.86
+       Model |  45.9587803     3  15.3195934           Prob > F      =  0.0000
+    Residual |  147.408098   576  .255916836           R-squared     =  0.2377
+-------------+------------------------------           Adj R-squared =  0.2337
+       Total |  193.366878   579  .333966974           Root MSE      =  .50588
+
+------------------------------------------------------------------------------
+     ln_wage |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+         age |  -.0091953    .007085    -1.30   0.195    -.0231109    .0047204
+      tenure |   .0267151   .0037902     7.05   0.000     .0192708    .0341593
+    collgrad |   .5721103   .0558089    10.25   0.000     .4624966     .681724
+       _cons |   1.842348   .2754947     6.69   0.000     1.301252    2.383445
+------------------------------------------------------------------------------
+
+{cmd:. lomod, ds}
+
+Coefficients, means & predictions for low model
+
+------------------------------------------------------
+    Variable |    Coefficent        Mean    Prediction
+-------------+----------------------------------------
+         age |        -0.009      38.828        -0.357
+      tenure |         0.027       6.490         0.173
+    collgrad |         0.572       0.176         0.101
+       _cons |         1.842       1.000         1.842
+------------------------------------------------------
+
+Prediction (ln):     1.759
+Prediction ($):      5.81
+
+{cmd:. decomp}
+
+Decomposition results for variables (as %s)
+
+------------------------------------------------------
+    Variable |        Attrib       Endow         Coeff
+-------------+----------------------------------------
+         age |           7.6        -0.3           7.9
+      tenure |          -0.4        -2.0           1.6
+    collgrad |          -1.6         2.7          -4.3
+-------------+----------------------------------------
+    Subtotal |           5.6         0.3           5.2
+------------------------------------------------------
+
+
+
+Summary of decomposition results (as %)
+
+-------------------------------------------
+Amount attributable:             |      5.6
+- due to endowments (E):         |      0.3
+- due to coefficients (C):       |      5.2
+Shift coefficient (U):           |     11.1
+Raw differential (R) {E+C+U}:    |     16.7
+Adjusted differential (D) {C+U}: |     16.4
+---------------------------------+---------
+Endowments as % total (E/R):     |      2.0
+Discrimination as % total (D/R): |     98.0
+-------------------------------------------
+
+  U = unexplained portion of differential
+      (difference between model constants)
+  D = portion due to discrimination (C+U)
+
+  positive number indicates advantage to high group
+  negative number indicates advantage to low group
+
+{p 5 5 5}{it:Interpreting the results:} 
+
+{p 5 5 5}By comparing the output from the two
+regression equations is is clear that white workers have higher constants and
+this is reflected in the 11.1% advantage in U (the shift coefficient). White
+workers also have higher returns to age and tenure, but not to college
+graduation. Nevertheless, the size of the age coefficient is such as to offset
+this last factor, leaving white workers with a net advantage in C of 5.2%.
+There is little difference in endowments between the two groups, something evident
+from a comparison of the {cmd:himod} and {cmd:lomod} output, which shows that there is
+little difference (apart from college graduation) between the average group
+characteristics of white and black workers. This lack of group differences is
+reflected in the small figure for E, just 0.3%.
+
+{p 5 5 5}Consequently, there is little difference between the
+raw differential (16.7%) and the adjusted differential (16.4%) because the
+difference in endowments between white and black workers is so small. In other
+words, almost all of the difference (98%) is due to discrimination, and this is
+made up of the difference in the shift coefficient (U) and differences in how the
+endowments are rewarded (C).
+
+{hline}
+
+{p} Using {help heckman} in a wage equation where high wage and low wage is based on county. 
+Note the absence of the earlier {cmd:heck} option.
+
+{cmd:. use http://www.stata-press.com/data/r8/womenwk}
+(657 missing values generated)
+
+{cmd:. heckman lnwage educ age, select(married children educ age), if county==9}
+note: married dropped due to collinearity
+
+Iteration 0:   log likelihood = -74.063916  
+Iteration 1:   log likelihood = -74.036062  
+Iteration 2:   log likelihood = -74.036026  
+Iteration 3:   log likelihood = -74.036026  
+
+Heckman selection model                         Number of obs      =       200
+(regression model with sample selection)        Censored obs       =        36
+                                                Uncensored obs     =       164
+
+                                                Wald chi2(2)       =     28.14
+Log likelihood = -74.03603                      Prob > chi2        =    0.0000
+
+------------------------------------------------------------------------------
+             |      Coef.   Std. Err.      z    P>|z|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+lnwage       |
+   education |   .0351091   .0074637     4.70   0.000     .0204805    .0497376
+         age |   .0115728   .0039782     2.91   0.004     .0037757      .01937
+       _cons |   2.159828   .2213499     9.76   0.000      1.72599    2.593666
+-------------+----------------------------------------------------------------
+select       |
+    children |   .5907552    .119561     4.94   0.000       .35642    .8250904
+   education |   .0475423   .0426328     1.12   0.265    -.0360165    .1311011
+         age |   .0842936   .0297379     2.83   0.005     .0260084    .1425788
+       _cons |  -4.228175   1.466693    -2.88   0.004    -7.102841    -1.35351
+-------------+----------------------------------------------------------------
+     /athrho |   .3280496   .2852638     1.15   0.250    -.2310572    .8871564
+    /lnsigma |  -1.383954   .0590332   -23.44   0.000    -1.499657   -1.268251
+-------------+----------------------------------------------------------------
+         rho |   .3167672   .2566401                     -.2270313    .7099864
+       sigma |   .2505858   .0147929                      .2232067    .2813233
+      lambda |   .0793774   .0661307                     -.0502364    .2089911
+------------------------------------------------------------------------------
+LR test of indep. eqns. (rho = 0):   chi2(1) =     1.03   Prob > chi2 = 0.3097
+------------------------------------------------------------------------------
+
+{cmd:. himod, ds}
+
+Coefficients, means & predictions for high model
+
+------------------------------------------------------
+    Variable |    Coefficent        Mean    Prediction
+-------------+----------------------------------------
+   education |         0.035      14.820         0.520
+         age |         0.012      43.620         0.505
+       _cons |         2.160       1.000         2.160
+------------------------------------------------------
+
+Prediction (ln):     3.185
+Prediction ($):     24.17
+
+{cmd:. heckman lnwage educ age, select(married children educ age), if county==1}
+
+Iteration 0:   log likelihood = -105.65156  
+Iteration 1:   log likelihood = -105.44248  
+Iteration 2:   log likelihood =  -105.4423  
+Iteration 3:   log likelihood =  -105.4423  
+
+Heckman selection model                         Number of obs      =       200
+(regression model with sample selection)        Censored obs       =        87
+                                                Uncensored obs     =       113
+
+                                                Wald chi2(2)       =     27.98
+Log likelihood = -105.4423                      Prob > chi2        =    0.0000
+
+------------------------------------------------------------------------------
+             |      Coef.   Std. Err.      z    P>|z|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+lnwage       |
+   education |   .0404733   .0085642     4.73   0.000     .0236878    .0572588
+         age |   .0077226   .0026888     2.87   0.004     .0024527    .0129925
+       _cons |   2.231897   .1482204    15.06   0.000      1.94139    2.522403
+-------------+----------------------------------------------------------------
+select       |
+     married |   .9627806   .2389799     4.03   0.000     .4943886    1.431173
+    children |   .6902933   .0953078     7.24   0.000     .5034935    .8770932
+   education |   .0983743   .0361862     2.72   0.007     .0274507     .169298
+         age |   .0320238   .0118514     2.70   0.007     .0087954    .0552522
+       _cons |  -3.221248   .6438905    -5.00   0.000     -4.48325   -1.959246
+-------------+----------------------------------------------------------------
+     /athrho |   .6845914   .2330463     2.94   0.003      .227829    1.141354
+    /lnsigma |  -1.303502   .0810706   -16.08   0.000    -1.462398   -1.144607
+-------------+----------------------------------------------------------------
+         rho |   .5944962   .1506818                      .2239672    .8148694
+       sigma |    .271579   .0220171                      .2316801    .3183491
+      lambda |   .1614527   .0497236                      .0639962    .2589092
+------------------------------------------------------------------------------
+LR test of indep. eqns. (rho = 0):   chi2(1) =     7.33   Prob > chi2 = 0.0068
+------------------------------------------------------------------------------
+
+{cmd:. lomod, ds}
+
+Coefficients, means & predictions for low model
+
+------------------------------------------------------
+    Variable |    Coefficent        Mean    Prediction
+-------------+----------------------------------------
+   education |         0.040      11.480         0.465
+         age |         0.008      30.865         0.238
+       _cons |         2.232       1.000         2.232
+------------------------------------------------------
+
+Prediction (ln):     2.935
+Prediction ($):     18.82
+
+{cmd:. decomp}
+
+Decomposition results for variables (as %s)
+
+------------------------------------------------------
+    Variable |        Attrib       Endow         Coeff
+-------------+----------------------------------------
+   education |           5.6        11.7          -6.2
+         age |          26.6        14.8          11.9
+-------------+----------------------------------------
+    Subtotal |          32.2        26.5           5.7
+------------------------------------------------------
+
+
+
+Summary of decomposition results (as %)
+
+-------------------------------------------
+Amount attributable:             |     32.2
+- due to endowments (E):         |     26.5
+- due to coefficients (C):       |      5.7
+Shift coefficient (U):           |     -7.2
+Raw differential (R) {E+C+U}:    |     25.0
+Adjusted differential (D) {C+U}: |     -1.5
+---------------------------------+---------
+Endowments as % total (E/R):     |    105.9
+Discrimination as % total (D/R): |     -5.9
+-------------------------------------------
+
+  U = unexplained portion of differential
+      (difference between model constants)
+  D = portion due to discrimination (C+U)
+
+  positive number indicates advantage to high group
+  negative number indicates advantage to low group
+
+
+
+{title:References}
+
+{p 5 5} Alan S. Blinder (1973) 'Wage Discrimination: Reduced Form and
+Structural Estimates', Journal of Human Resources, 18:4, Fall,
+436-455.
+
+{p 5 5} Ronald Oaxaca (1973) 'Male-Female Wage Differentials in Urban
+Labor Markets', International Economic Review, 14:3, October,
+693-709.
+
+{title:Note on versions}
+
+{p 5 5} Version 1.7 of {cmd:decomp} has been written for Stata Release 8.2. It 
+differs from Version 1.6 in only one respect. If fixes a bug whereby when using
+selection models, {cmd:decomp} was using the full sample, rather than the wage 
+sample (ie. outcome sample). This has now been corrected. Two temporary variables
+are used for this: __fullsample and __wagesample. These are unlikely to already 
+exist in the user's dataset and they are removed when himod and lomod conclude.
+Thanks to Anne Busch for drawing this to my attention.
+
+
+
+{title:Author}
+
+   Ian Watson
+   Freelance researcher and
+   Visiting Senior Research Fellow
+   Macquarie University
+   Sydney Australia
+   mail@ianwatson.com.au
+   www.ianwatson.com.au
+

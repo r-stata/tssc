@@ -1,0 +1,101 @@
+{smcl}
+{* 05Nov2010}{...}
+{* 09Jul2008}{...}
+{* 17Jan2008}{...}
+{* 05Oct2003}{...}
+{hline}
+help for {hi:etime} {right:manual:  {hi:[R] none}}
+{right:dialog:  {hi: none}    }
+{hline}
+
+
+{title:Time how long a program runs; or, simply, keep track of the elapsed time from point A to point B in a program}
+
+{p 8 17 2}{cmd:etime}
+[ {cmd:,} {cmdab:s:tart}}
+{cmdab:d:atestart(}{it:start date}{cmd:)}
+{cmdab:t:imestart(}{it:start time}{cmd:)} ]{p_end}
+
+        
+{title:Description}
+
+{p 4 4 2}{cmd:etime} is designed for programmers who want to keep track of how long
+a program takes to run.  Using Stata's creturn variables: {cmd:c(current_date)} and
+{cmd:c(current_time)}, {cmd:etime} clocks the difference in time between calls.  
+Like a stopwatch, {cmd:etime} needs to be started and stopped.  The second and following
+times {cmd:etime} is submitted it displays a message that says how long it has been since 
+the first time {cmd:etime} was submitted (in the current Stata session).{p_end}
+
+{title:Options}
+
+{p 4 8 2}{cmd:start} specifies to set or reset {cmd:etime}.  Not specifying {cmd:start}
+is equivalent to ending or simply checking the elapsed time.{p_end}
+
+{p 4 4 2} {cmd:Options datestart() and timestart() need to be used when timing a command that runs etime or Stata's macro drop _all and sreturn clear}{p_end}
+
+{p 4 8 2}{cmd:datestart} specifies to {cmd:etime} to use this start date.  The date must be in the %dD_m_cy format
+like: 10 Jul 2008 which is the format of {help creturn##values:c(current_date)}. If you specify a start date you 
+also have to specify a start time.{p_end}
+
+{p 4 8 2}{cmd:timestart} specifies to {cmd:etime} to use this start time.  The time must be in hr:min:sec format like: 14:20:58 which is the format of {help creturn##values:c(current_time)}. If you specify a start time but not the start date, the current date will be used.{p_end}
+
+{title:Note}
+
+{p 4 4 2} {cmd:etime} creates global macros {cmd:$etime_stardate_} and {cmd:$etime_startime_}{p_end}
+
+{title:Examples}
+
+{p 4 8 2}{cmd:.  etime, start}{p_end}
+
+{p 4 8 2}{cmd:.  etime}{p_end}
+
+{p 8 8 2}Displays:{p_end}
+
+{p 8 8 2}Elapsed time is 2 hours 27 minutes 3 seconds{p_end}
+
+{p 4 4 2}If running {cmd:etime} to time a command that uses {cmd:etime}:{p_end}
+
+{p 4 8 2}{cmd:.  local date `c(current_date)' }{p_end}
+
+{p 4 8 2}{cmd:.  local time `c(current_time)' }{p_end}
+
+{p 4 8 2}{cmd:.  etime, d(`date') t(`time') }{p_end}
+
+{p 4 8 2}{cmd:.  etime, d(10 Jul 2008) t(03:48:14) }{p_end}
+
+{title:Saved Results}
+
+{p 4 4 2}The {cmd:etime} command saves in s():{p_end}
+ 
+{synoptset 20 tabbed}{...}
+{p2col 5 20 24 2: Scalars}{p_end}
+{synopt:{cmd:s(etime)}}days:hours:mins:secs elapsed since first call to {cmd:etime}{p_end}
+{synopt:{cmd:s(esecs)}}total number of seconds elapsed since first call to {cmd:etime}{p_end}
+{synopt:{cmd:s(stardate)}}days since Jan. 1, 1960 that {cmd:etime} started{p_end}
+{synopt:{cmd:s(startime)}}number of seconds into the day that {cmd:etime} started{p_end}
+{synopt:{cmd:s(endate)}}days since Jan. 1, 1960 that {cmd:etime} ended{p_end}
+{synopt:{cmd:s(endtime)}}number of seconds into the day that {cmd:etime} ended plus 86,400 seconds
+for each day since {cmd:etime} started.{p_end}
+
+{p2col 5 20 24 2: Global Macros}{p_end}
+{synopt:{cmd:$etime_stardate_}}days since Jan. 1, 1960 that {cmd:etime} started{p_end}
+{synopt:{cmd:$etime_startime_}}number of seconds into the day that {cmd:etime} started{p_end}
+
+
+{title:Author}
+
+{p 4 4 2}
+Dan Blanchette {break}
+The Carolina Population Center {break}
+University of North Carolina - Chapel Hill, USA {break}
+dan_blanchette@unc.edu{p_end}
+
+
+{title:Also see}
+
+{p 4 13 2}On-line: {help log}, {help datefun}, {help creturn}, {help profiler}, {help rmsg}, {help timer},
+{help usagelog} (if installed),
+{help savasas} (if installed), and
+{help usesas} (if installed){p_end}
+
+

@@ -1,0 +1,109 @@
+{smcl}
+{hline}
+help for {hi:corr_svy}
+{hline}
+
+{title:Correlation tables for survey data}
+
+{p 8 15}{cmd:corr_svy} {it:varlist} [{it:weight}]
+	[{cmd:if} {it:exp}] [{cmd:in} {it:range}] [{cmd:,} 
+	{cmdab:str:ata(}{it:varname}{cmd:)} {cmd:psu(}{it:varname}{cmd:)}
+	{cmd:fpc(}{it:varname}{cmd:)} {cmdab:sub:pop(}{it:varname}{cmd:)}
+	{cmd:pw} {cmdab:o:bs} {cmd:sig} {cmdab:p:rint(}{it:#}{cmd:)} 
+	{cmdab:st:ar(}{it:#}{cmd:)} ]
+
+
+{p}{cmd:pweight}s are allowed; see help {help weights}.
+
+{p}Warning:  Use of {cmd:if} or {cmd:in} restrictions will not produce correct
+variance estimates for subpopulations in many cases.  To compute estimates
+for subpopulations, use the {cmd:subpop()} option.
+
+
+{title:Description}
+
+{p}{cmd:corr_svy} displays the correlation matrix for varlist.  Optional
+significance levels are calculated, based on survey-based variance estimates for
+the correlations.
+
+{p}It allows any or all of the following:  probability sampling weights,
+stratification, and clustering.  The {cmd:subpop()} option will give estimates for a single
+subpopulation.  For a general discussion of various aspects of survey designs,
+including multistage designs, see {hi:[U] 30 Overview of survey estimation}.
+
+{p}To describe strata and PSUs of your data and to handle the error message
+"stratum with only one PSU detected", see help {help svydes}.
+
+
+{title:Options}
+
+{p 0 4}{cmd:strata()}, {cmd:psu()}, and {cmd:fpc()} are described in
+{cmd:svyset}; see help {help svyset}.
+
+{p 0 4}{cmd:subpop(}{it:varname}{cmd:)} specifies that estimates be computed
+for the single subpopulation defined by the observations for which
+{it:varname}~=0.  Typically, {it:varname}=1 defines the subpopulation and
+{it:varname}=0 indicates observations not belonging to the subpopulation.  For
+observations whose subpopulation status is uncertain, {it:varname} should be
+set to missing.
+
+{p 0 4}{cmd:obs} requests that the number of observations for each correlation
+be displayed. This only makes sense in conjunction with the {cmd:pw} option, but
+can be specified regardless.
+
+{p 0 4}{cmd:pw} specifies that pairwise correlations be calculated and displayed.
+
+{p 0 4}{cmd:sig} requests that the significance level of the coefficients be displayed.
+
+{p 0 4}{cmd:obs} requests that the number of observations for each correlation
+be displayed. This only makes sense in conjunction with the {cmd:pw} option, but
+can be specified regardless.
+
+{p 0 4}{cmd:star(}{it:#}{cmd:)} specifies the significance level of coefficients to be starred.  
+star(5) would star all coefficients significant at the 5% level or better.
+
+{p 0 4}{cmd:print(}{it:#}{cmd:)} specifies the significance level of correlation coefficients 
+	to be printed.  Coefficients with larger significance levels are left blank.  print(10) 
+	would list only coefficients significant at the 10% level or better.
+
+
+{title:Example}
+
+{p 8 12}{inp:. svyset pweight leadwt}{p_end}
+{p 8 12}{inp:. svyset strata stratid}{p_end}
+{p 8 12}{inp:. svyset psu psuid}
+
+{p 8 12}{inp:. corr_svy loglead age female region2-region4, obs sig}
+
+
+{title:Saved Results}
+
+{cmd:corr_svy} saves in r() the following, about the final correlation calculated:
+
+	r(N)   The number of observations
+	r(p)   The p-level
+	r(rho) The estimated rho
+
+
+{title:Methods and formulae}
+
+{p}Calculations are based on the methods explained by Bill Sribney in a post to the Statalist, 
+and reproduced in this Stata FAQ: {browse "http://www.stata.com/support/faqs/stat/survey.html"}.
+
+{p}Point estimates are calculated by {help correlate}, with {help weights:aweights}.  
+
+{p}With simple random sampling, the p-value from a linear regression of Y on X (or X on Y) is
+exactly the same as a p-value for Pearson's correlation coefficient for a
+simple random sample under the assumption of normality of the population.  With survey variance estimates,
+however, the p-value for the slope of the regression of Y on X is NOT the same as the
+p-value for the regression of X on Y, unlike the case for the OLS regression
+estimator.  So, {cmd:corr_svy} obtains the p-values from both regressions and displays the conservative (i.e. larger)
+of the two.
+
+
+{title:Author}
+
+	Nick Winter
+	Cornell University
+	nw53@cornell.edu
+

@@ -1,0 +1,221 @@
+{smcl}
+{* 22aug2002}{...}
+{hline}
+help for {hi:decompose}
+{hline}
+
+{title:Decomposition of wage differentials}
+
+
+{p} Standard syntax:
+
+{p 8 14}{cmd:decompose} {it:varlist} [{it:weight}] [{cmd:if} {it:exp}]
+ [{cmd:in} {it:range}] {cmd:,} {cmd:by(}{it:varname}{cmd:)}
+ [ {cmdab:d:etail} {cmdab:e:stimates} {cmdab:la:mbda}{cmd:(}{it:varname}{cmd:)}
+ {cmdab:n:oisy} {cmdab:gp:ooled} {cmdab:np:ooled} {it:regress_options} ]
+
+{p} {cmd:aweight}s, {cmd:fweight}s, {cmd:iweight}s, and {cmd:pweight}s are allowed;
+see help {help weights}.
+
+{p} Alternative syntax:
+
+{p 8 14}{cmd:decompose} {cmd:,} {cmdab:s:ave}{cmd:(}{cmdab:h:igh} | {cmdab:l:ow} |
+ {cmdab:p:ooled }{cmd:)}{p_end}
+{p 8 14}{cmd:decompose} [ {cmd:,} {cmdab:d:etail} {cmdab:e:stimates}
+ {cmdab:la:mbda}{cmd:(}{it:varname}{cmd:)} ]
+
+
+{title:Description}
+
+{p}Given the results from two regressions (one for each of two groups),
+{cmd:decompose} computes several decompositions of the outcome variable difference. The
+decompositions show how much of the gap is due to differing endowments between the
+two groups, and how much is due to discrimination. Usually this is applied to wage
+differentials using Mincer type earnings equations.
+
+{p}Standard syntax ({it:varlist} and {cmd:by(}{it:varname}{cmd:)} specified):
+Regression models will be estimated for each category of {it:varname} prior to the
+computation of the decomposition.
+
+{p}Alternative syntax: Results from stand-alone estimation commands may be saved
+using {cmd:decompose, save()}. The command {cmd:decompose}
+(without {it:varlist}, {cmd:by} or {cmd:save}) will capture these
+results and compute the decomposition.
+
+{p}See {net "describe http://fmwww.bc.edu/RePEc/bocode/d/decomp":decomp}
+by Ian Watson for a similar package.
+
+
+{title:Options}
+
+{p}Common options:
+
+{p 0 4}{cmd:detail} additionally displays decomposition results for variables.
+
+{p 0 4}{cmd:estimates} additionally displays a table of regressions coefficients and
+means.
+
+{p 0 4}{cmd:lambda(}{it:varname}{cmd:)} reduces the mean prediction by the effect of
+{it:varname} at its mean. This might be reasonable if {it:varname} is a selection
+variable.
+
+{p}Standard syntax options:
+
+{p 0 4}{cmd:by(}{it:varname}{cmd:)} specifies the grouping variable (which may be
+numeric or string). The group with highest mean on the dependent variable will be
+compared to each of the other groups.
+
+{p 0 4}{cmd:noisy} switches on regression output.
+
+{p 0 4}{cmd:npooled} deactivates the estimation of pooled regression models (which are
+required for the Neumark decomposition; see methods and formulas below).
+
+{p 0 4}{cmd:gpooled} requests the estimation of a pooled model over all groups rather
+than casewise pooled models (note: if {cmd:by(}{it:varname}{cmd:)} only specifies two
+groups this will have no effect).
+
+{p 0 4}{it:regress_options} control the regression estimation; see help {help regress}.
+
+{p}Alternative syntax options:
+
+{p 0 4}{cmd:save()} saves the coefficients, means and the number of cases (or the sum
+of weights, respectively) of the preceding estimation. Use {cmd:save(high)} for the
+high group (i.e. the group with the higher mean on the dependent variable),
+{cmd:save(low)} for the low group, and {cmd:save(pooled)} for the pooled model over
+both groups. The right-hand-side varlists of the high and low models do not
+necessarily need to be identical (if, e.g., a selection term is included in one
+model; note that the consideration of a pooled model is not possible in this case).
+
+
+{title:Examples}
+
+{p} Standard syntax:
+
+{p 8 12}{inp:. decompose lnwage educ exp exp2, by(female) detail estimates}
+
+{p 8 12}{inp:. decompose lnwage educ exp exp2 lbda [pweight=1/prob], by(female) lambda(lbda)}
+
+{p} Alternative syntax:
+
+{p 8 12}{inp:. regress lnwage educ exp exp2 [fweight=pop] if female==0}{p_end}
+{p 8 12}{inp:. decompose, save(high)}{p_end}
+{p 8 12}{inp:. regress lnwage educ exp exp2 [fweight=pop] if female==1}{p_end}
+{p 8 12}{inp:. decompose, save(low)}{p_end}
+{p 8 12}{inp:. regress lnwage educ exp exp2 [fweight=pop] if inlist(female,0,1)}{p_end}
+{p 8 12}{inp:. decompose, save(pooled)}{p_end}
+{p 8 12}{inp:. decompose}
+
+{p 8 12}{inp:. regress lnwage educ exp exp2 if female==0}{p_end}
+{p 8 12}{inp:. decompose, save(high)}{p_end}
+{p 8 12}{inp:. regress lnwage educ exp exp2 lbda if female==1}{p_end}
+{p 8 12}{inp:. decompose, save(low)}{p_end}
+{p 8 12}{inp:. decompose, lambda(lbda) detail}
+
+
+{title:Saved Results}
+
+{p}{cmd:r(fH)} {space 3} proportion of obs. (or sum of wgts) in high group (scalar){p_end}
+{p}{cmd:r(pred)} {space 1} vector of mean predictions{p_end}
+{p}{cmd:r(decomp)} detailed decomposition matrix{p_end}
+{p}{cmd:r(xb)} {space 3} matrix of coefficients and means
+
+
+{title:Methods and Formulas}
+
+{p}Let y1 and y2 be the means of the dependent variable Y, {bf:x}1 and {bf:x}2 the
+row vectors of the means of the explanatory variables X1,...,Xk, and {bf:b}1 and
+{bf:b}2 the column vectors of the coefficient for group 1 (high) and group 2 (low).
+The raw differential y1-y2 may then be expressed as
+
+{p 4 4}R = y1-y2 = ({bf:x}1-{bf:x}2){bf:b}2 + {bf:x}2({bf:b}1-{bf:b}2) +
+({bf:x}1-{bf:x}2)({bf:b}1-{bf:b}2) = E + C + CE
+
+{p}(Winsborough/Dickenson 1971; Jones/Kelley 1984; Daymont/Andrisani 1984), i.e., R
+is decomposed into a part due to differences in endowments (E), a part due to
+differences in coefficients (including the intercept) (C), and a part due to
+interaction between coefficients and endowments (CE). Depending on the model which is
+assumed to be non-discriminating, these terms may be used to determine the
+"unexplained" (U; discrimination) and the "explained" (V) part of the differential
+(the question is how to allocate the interaction term CE). Oaxaca (1973) proposed to
+assume either the low group model or the high group model as non-discriminating,
+which leads to U=C+CE and V=E or U=C and V=E+CE, respectively. More generally the
+decomposition may be written as
+
+{p 4 4}y1-y2 = ({bf:x}1-{bf:x}2)[{bf:D}*{bf:b}1+({bf:I}-{bf:D})*{bf:b}2] +
+[{bf:x}1*({bf:I}-{bf:D})+{bf:x}2*{bf:D}]({bf:b}1-{bf:b}2)
+
+{p}where {bf:I} is a identity matrix and {bf:D} is a diagonal matrix of weights. In
+the two cases proposed by Oaxaca (1973) {bf:D} is a nullmatrix or equals {bf:I},
+respectively ({bf:D}={bf:I} is also what Blinder 1973 suggested). Reimers (1983)
+proposed to use the mean coefficients between the low and the high model, i.e. the
+diagonal elements of {bf:D} equal 0.5, Cotton (1988) proposed to weight the
+coefficients by group size, i.e. the diagonal elements of {bf:D} equal fH, where
+fH is the relative proportion of subjects in the high group (or sum of weights,
+if weights are applied). Finally, Neumark (1988) proposed to
+estimate a pooled model over both groups, which leads to
+{bf:D}=diag({bf:b}P-{bf:b}2)*diag({bf:b}1-{bf:b}2)^-1 or
+
+{p 4 4}y1-y2 = ({bf:x}1-{bf:x}2){bf:b}P +
+[{bf:x}1({bf:b}1-{bf:b}P)+{bf:x}2({bf:b}P-{bf:b}2)]
+
+{p}where {bf:b}P is the column vector of the coefficients in the pooled model.
+
+{p}{cmd:decompose} calculates and displays R, E, C, CE, as well as U and V according to
+the methods described. The coefficient vectors are taken from "e(b)" returned by
+the estimation commands, the means of the explanatory variables and group sizes are
+calculated for "e(sample)" using {help summarize} (weighted if necessary).
+
+{p}Treatment of selection variables: Assume that a selection variable XS appears in
+both models. If it is not marked out by {cmd:lambda(}XS{cmd:)} it will be treated
+just as any other variable. If it is marked out, however, the group means of Y will be
+adjusted for selection, that is
+
+{p 4 4}yS1 = y1 - xS1*bS1{p_end}
+{p 4 4}yS2 = y2 - xS2*bS2
+
+{p}where xS1 and xS2 are the group means of XS, and bS1 and bS2 the corresponding
+coefficients. The raw differential will then be
+
+{p 4 4}RS = yS1 - yS2 = y1 - y2 - (xS1*bS1 - xS2*bS2)
+
+{p}Now assume that the selection variable XS appears in only one model (as possible
+via alternative syntax). If XS is not marked out its effect
+will be fully enclosed in the explained part V in any case (this is accomplished by
+assuming xS=0 in the other model and bS1=bS2) (see Dolton/Makepeace 1986 for an
+alternative treatment which I did not get to incorporate yet). If it is marked out,
+the mean of the corresponding group will be adjusted for selection as described
+above.
+
+
+{title:References}
+
+{p 0 4}Blinder, A.S. (1973). Wage Discrimination: Reduced Form and Structural
+Estimates. The Journal of Human Resources 8: 436-455.{p_end}
+{p 0 4}Cotton, J. (1988). On the Decomposition of Wage Differentials. The Review of
+Economics and Statistics 70: 236-243.{p_end}
+{p 0 4}Daymont, T.N., Andrisani, P.J. (1984). Job Preferences, College Major, and the
+Gender Gap in Earnings. The Journal of Human Resources 19: 408-428.{p_end}
+{p 0 4}Dolton, P.J., Makepeace, G.H. (1986). Sample Selection and Male-Female Earnings
+Differentials in the Graduate Labour Market. Oxford Economic Papers 38: 317-341.{p_end}
+{p 0 4}Jones, F.L., Kelley, J. (1984). Decomposing Differences Between Groups. A Cautionary
+Note on Measuring Discrimination. Sociological Methods and Research 12: 323-343.{p_end}
+{p 0 4}Neumark, D. (1988). Employers' Discriminatory Behavior and the Estimation of
+Wage Discrimination. The Journal of Human Resources 23: 279-295.{p_end}
+{p 0 4}Oaxaca, R. (1973). Male-Female Wage Differentials in Urban Labor Markets.
+International Economic Review 14: 693-709.{p_end}
+{p 0 4}Reimers, C.W. (1983). Labor Market Discrimination Against Hispanic and Black Men.
+The Review of Economics and Statistics 65: 570-579.{p_end}
+{p 0 4}Winsborough, H.H., Dickenson, P. (1971). Components of Negro-White Income
+Differences. Proceedings of the American Statistical
+Association, Social Statistics Section: 6-8.
+
+
+{title:Author}
+
+{p}Ben Jann, ETH Zurich, jann@soz.gess.ethz.ch
+
+
+{title:Also see}
+
+Manual:  {hi:[R] regress}
+{p 0 19}On-line:  help for {help regress}{p_end}

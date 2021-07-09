@@ -1,0 +1,135 @@
+{smcl}
+{hline}
+help for {hi:shapley2} {right:Version 1.5}
+{hline}
+
+{title: Computing the shapley values after a regression command}
+
+
+{p 8 17 2}{cmd:shapley2}
+, {cmdab:s:tat}{cmd:(}{it:str}{cmd:)} [{cmdab:c:ommand}{cmd:(}{it:str}{cmd:)}
+{cmdab:d:epvar}{cmd:(}{it:{depvars}}{cmd:)}
+{cmdab:i:ndepvars}{cmd:(}{it:{indepvars}}{cmd:)}
+{cmdab:gr:oups}{cmd:(}{it:special}{cmd:)}
+{cmd:force}
+{cmdab:mem:ory}
+{cmdab:noisily}]
+
+{title:Description}
+
+{p 4 4 2} This command performs a Shorrocks-Shapely decomposition of many estimation statistics such as the R squared in the OLS regression. It provides an additive decomposition of the statistic, allowing
+you to see the relative contribution of each regressor. The command is thought as a post-estimation command, hence you should use it right after the estimation.
+ 
+{p 4 4 2} {cmd:Comparison shapley vs. shapley2} 
+
+{p 8 10 2} - {cmd:shapley2} is faster than {stata findit shapley:shapley} but provides the same results (numerical differences are possible). However, the computation still takes some time and the maximum amount of RHS variables is 20.  
+
+{p 8 10 2} - {cmd:shapley2} allows you to regroup several regressors into groups and to compute the relative importance of the whole group. This allows as well to accelerate the computation. 
+
+{p 8 10 2} - {cmd:shapley2} is designed as a post-command routine. The model specifications are extracted from the previous estimation (ols, probit).
+
+{p 4 4 2} All four columns are stored as matrices in the estimation (type {stata ereturn list} to see all stored values), hence you can use them for instance with {it:estout} to publish the results in LaTeX. 
+
+{title:Options}
+
+{p 4 8 2}{cmdab:s:tat}{cmd:(}{it:str}{cmd:)} Indicate here the eclass-statistic for which you want to perform the decomposition. For instance, if you want to decompose the Rsquared of the OLS estimation 
+use {it:r2}, for the pseudo Rsquared of a probit {it:r2_p}. To find you want statistics are available, type {it:{stata ereturn list}} after the estimation. 
+
+{p 4 8 2}{cmdab:c:ommand}{cmd:(}{it:varlist}{cmd:)} Normally the command extracts from the previous estimation the model to estimate, if you want to overwrite this, you can use this option, for instance
+{it:command(probit)} to estimate a probit instead of a dprobit.
+
+{p 4 8 2}{cmdab:d:epvar}{cmd:(}{it:varlist}{cmd:)} Normally the command extracts from the previous estimation the dependent variable. If you want to change it or if the command 
+does it wrongly, you can specify it here. 
+
+{p 4 8 2}{cmdab:i:ndepvars}{cmd:(}{it:varlist}{cmd:)} Normally the independent variables are directly extracted from the previous estimation, however, you can change it specifying this option. 
+
+{p 4 8 2}{cmdab:gr:oups}{cmd:(}{it:special}{cmd:)} Instead of computing the shapley value for each variable, it might be interesting to do it by groups of variables. This allows computing the shapley value also 
+when having a lot of variables. Write as a string all variables you want to analyze and separate the groups by comma. Make sure all variables of the regression are in the list. For instance, if you have 
+four variables x1,x2,x3 and x4 you can use the option 'group(x1 x2,x3 x4)' to treat the first two variables as a group and the latter two as a second group.
+
+{p 4 8 2}{cmd:force} The command is limited to 20 RHS variables, because otherwise the number of runs becomes to large. If you still want to perform it, use the option {cmd:force} 
+(this might take a long tiem though)
+
+ {p 4 8 2}{cmdab:mem:ory} Use this option if you want to allow {cmd:shapley2} to change the memory used by Stata. This is no longer needed for Stata 12, since memory adapts on the fly. 
+
+ {p 4 8 2}{cmdab:n:oisily} Use this option to see some of the intermediate estimations.
+
+
+{title:Example}
+
+. {stata webuse auto,clear}
+(1978 Automobile Data)
+
+. {stata reg price mpg headroom trunk}
+
+      Source |       SS       df       MS              Number of obs =      74
+-------------+------------------------------           F(  3,    70) =    7.46
+       Model |   153861671     3  51287223.7           Prob > F      =  0.0002
+    Residual |   481203725    70  6874338.93           R-squared     =  0.2423
+-------------+------------------------------           Adj R-squared =  0.2098
+       Total |   635065396    73  8699525.97           Root MSE      =  2621.9
+
+------------------------------------------------------------------------------
+       price |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+         mpg |  -224.3597   65.27511    -3.44   0.001    -354.5468   -94.17263
+    headroom |   -659.463   484.5101    -1.36   0.178    -1625.788    306.8619
+       trunk |   126.6049   107.2399     1.18   0.242    -87.27846    340.4882
+       _cons |   11175.77   2431.134     4.60   0.000     6327.029    16024.52
+------------------------------------------------------------------------------
+. {stata estimates store reg1}  //Only needed to run 'shapley2' twice
+. {stata shapley2, stat(r2)}
+
+Factor     | Shapley value |  Per cent 
+           |  (estimate)   | (estimate)
+-----------+---------------+-----------+
+mpg        |  0.17207      |   71.02 % |
+headroom   |  0.01492      |    6.16 % |
+trunk      |  0.05528      |   22.82 % |
+-----------+---------------+-----------+
+TOTAL      |  0.24228      |  100.00 % |
+-----------+---------------+-----------+
+
+
+. {stata estimates restore reg1} //Only needed to run 'shapley2' twice
+. {stata shapley2, stat(r2) group(mpg,headroom trunk)}
+
+Factor     | Shapley value |  Per cent 
+           |  (estimate)   | (estimate)
+-----------+---------------+-----------+
+Group 1    |  0.17373      |   71.71 % |
+Group 2    |  0.06854      |   28.29 % |
+-----------+---------------+-----------+
+TOTAL      |  0.24228      |  100.00 % |
+-----------+---------------+-----------+
+Groups are:
+Group 1: mpg
+Group 2: headroom trunk
+
+{p 4 4 2}This very simple example computed the additive decomposition of the R squared for the case of a simple {help "regress":OLS} estimation. The results shows above indicate that {it:mpg} accounts 
+for about 70% of the R squared, while the contribution of {it:headroom} is less than 6%. In the second shapley2 command the two latter regressors are regrouped. Note that there are some small numerical differences, since 
+this is an abbreviated version to compute the shapley value. The numerical differences are very small in general. 
+
+
+{title:Known issues}
+{p 4 6 2} - The program has been tested on OLS, probit, logit and ordered logit model. It is supposed to work also for other models, as long as there is only one parameter by regressor (e.g. for mlogit the 
+method is not defined and the program will not work.}
+
+{p 4 6 2} - Factor variables ({help  fvvarlist}) such as i.var are currently not (yet) supported. F. and l. factor variables for the dependent variable are supported, but be careful and double check 
+with a manually created variable. 
+
+{p 4 6 2} - If you find another issue, please send me an email indicating the problem. 
+
+{title:Acknowledgements}
+{p 4 6 2} I would like to thank Philippe Jacquart, Lian Yujun, Sultan Orazbayev, Marcos Robles and Ahmed Abdalla for indicating small bugs in the program and the documentation. 
+
+{title:Alternatives}
+{p 4 6 2} shapley2 is not the only package allowing to compute the Shapley value. Alternatives include
+	'shapley', 'rego' (available at {browse "http://www.uni-leipzig.de/~rego/"}), 'shapleyx', 'adecompt' 
+
+{title:Author}
+
+{p 4 4 2} Florian Wendelspiess Chavez Juarez. CIDE, Mexico City.  {browse "mailto:florian@chavezjuarez.com":florian@chavezjuarez.com}
+
+{title:References}
+{p 4 4 2} Shorrocks, Anthony. "Inequality Decomposition by Factor Components", {it:Econometrica}, Vol. 50, No. 1 (Jan., 1982), pp. 193-211. Available at: {browse "http://www.jstor.org/stable/1912537":http://www.jstor.org/stable/1912537}

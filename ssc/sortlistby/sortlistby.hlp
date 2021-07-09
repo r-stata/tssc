@@ -1,0 +1,65 @@
+{smcl}
+{* 01mar2004}{...}
+{hline}
+help for {hi:sortlistby}, {hi:sortlistby2}
+{hline}
+
+{title:Sort a list at random or by the values of an ancillary number list}
+
+{p 8 15 2}
+{cmd:sortlistby} {it:list} {cmd:,}
+ { {cmdab:r:andom} | {cmd:by(}{it:numlist}{cmd:)} }
+ [ {cmdab:a:sis} {cmdab:n:oisily} ]
+
+{p 8 15 2}
+{cmd:sortlistby2} {it:list} {cmd:,}
+ { {cmdab:r:andom} | {cmd:by(}{it:numlist}{cmd:)} }
+ [ {cmdab:a:sis} {cmdab:n:oisily} ]
+
+
+{title:Description}
+
+{p 4 4 2} {cmd:sortlistby} will sort the items in {it:list} at random or by the
+values of an ancillary {it:numlist}. {cmd:sortlistby2} does the
+same; however, it is a little bit faster if the number of items in {it:list} is small
+(and much slower if the number is large).
+
+
+{title:Options}
+
+{p 4 8 2} {cmd:asis} specifies to take {it:list} as is. Default is to treat {it:list} as a
+number list (see {help numlist}).
+
+{p 4 8 2} {cmd:by(}{it:numlist}{cmd:)} specifies an ancillary number list
+(see {help numlist}) according to the values of which {it:list} should be sorted.
+
+{p 4 8 2} {cmd:noisily} displays the sorted list.
+
+{p 4 8 2} {cmd:random} specifies to sort {it:list} at random.
+
+
+{title:Examples}
+
+
+{p 8 12 2} {cmd:. set seed 3273692} {p_end}
+{p 8 12 2} {cmd:. sortlistby 1/1000, random}
+
+{p 8 12 2} {cmd:. sortlistby a b c d e, by(1 5 2 4 3) asis noisily}{p_end}
+{p 8 12 2} a c e d b
+
+
+{title:Saved Results}
+
+{p 4 4 2} Macros:
+
+{p 4 17 2} {cmd:r(list)} sorted list
+
+
+{title:Author}
+
+{p 4 4 2} Ben Jann, ETH Zurich, jann@soz.gess.ethz.ch
+
+
+{title:Also see}
+
+{p 4 13 2} Online:  help for {help seed}, {help numlist}, {help macrolists}

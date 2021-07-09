@@ -1,0 +1,329 @@
+{smcl}
+{* 29Oct2007}{...}
+{cmd:help episens}{right: ({browse "http://www.stata-journal.com/article.html?article=st0138":SJ8-1: st0138})}
+{hline}
+
+{title:Title}
+
+{p2colset 5 16 18 2}{...}
+{p2col :{hi:episens} {hline 2}}Deterministic and probabilistic sensitivity analysis of epidemiological results{p_end}
+{p2colreset}{...}
+
+
+{title:Syntax}
+
+{p 8 15 2}
+	{cmd:episens} {it:var_case} {it:var_exposed} [{it:var_time}] {ifin} {weight} [{cmd:,} {it:{help episens##options:options}}] 
+
+{p 8 15 2}
+	{cmd:episensi} {it:#a #b #c #d} [{cmd:,} {it:{help episens##options:options}}]
+
+
+{marker options}{...}
+{synoptset 23 tabbed}{...}
+{synopthdr}
+{synoptline}
+{syntab:{help episens##mie:Misclassification of the exposure}}
+{synopt:{cmdab:dsec:a(}{it:{help episens##pdf:pdf_option}}{cmd:)}}{...}
+	define the sensitivity among the cases{p_end}
+{synopt:{cmdab:dspc:a(}{it:{help episens##pdf:pdf_option}}{cmd:)}}{...}
+	define the specificity among the cases{p_end}
+{synopt:{cmdab:dsen:c(}{it:{help episens##pdf:pdf_option}}{cmd:)}}{...}
+	define the sensitivity among the noncases{p_end}
+{synopt:{cmdab:dspn:c(}{it:{help episens##pdf:pdf_option}}{cmd:)}}{...}
+	define the specificity among the noncases{p_end}
+{synopt:{cmdab:corrse:ns(}{it:#}{cmd:)}}{...}
+	set the correlation between case and noncase sensitivities to {it:#}{p_end}
+{synopt:{cmdab:corrsp:ec(}{it:#}{cmd:)}}{...}
+	set the correlation between case and noncase specificities to {it:#}{p_end}
+
+{syntab: {help episens##sel:Selection bias}}
+{synopt:{cmdab:dpsce:x(}{it:{help episens##pdf:pdf_option}}{cmd:)}}{...}
+	define the selection probability among cases exposed{p_end}
+{synopt:{cmdab:dpscu:n(}{it:{help episens##pdf:pdf_option}}{cmd:)}}{...}
+	define the selection probability among cases unexposed{p_end}
+{synopt:{cmdab:dpsne:x(}{it:{help episens##pdf:pdf_option}}{cmd:)}}{...}
+	define the selection probability among noncases exposed{p_end}
+{synopt:{cmdab:dpsnu:n(}{it:{help episens##pdf:pdf_option}}{cmd:)}}{...}
+	define the selection probability among noncases unexposed{p_end}
+{synopt:{cmdab:dsbf:actor(}{it:{help episens##pdf:pdf_option}}{cmd:)}}{...}
+	define the selection-bias factor{p_end}
+
+{syntab: {help episens##unc:Uncontrolled confounding}}
+{synopt:{cmdab:dpe:xp(}{it:{help episens##pdf:pdf_option}}{cmd:)}}{...}
+	define the prevalence of the confounder among the exposed{p_end}
+{synopt:{cmdab:dpu:nexp(}{it:{help episens##pdf:pdf_option}}{cmd:)}}{...}
+	define the prevalence of the confounder among the unexposed{p_end}
+{synopt:{cmdab:drr:cd(}{it:{help episens##pdf:pdf_option}}{cmd:)}}{...}
+	define the confounder-disease relative risk {p_end}
+{synopt:{cmdab:dor:ce(}{it:{help episens##pdf:pdf_option}}{cmd:)}}{...}
+	define the confounder-exposure odds ratio {p_end}
+{synopt:{cmdab:corrp:rev(}{it:#}{cmd:)}}{...}
+	set the correlation between exposure-specific confounder prevalences to {it:#}{p_end}
+
+{syntab:{help episens##sim:Simulations}}
+{synopt:{cmd:reps(}{it:#}{cmd:)}}{...}
+	specify the number of replications to be performed{p_end}
+{synopt:{cmd:nodots}}{...}
+	suppress the replication dots {p_end}
+{synopt:{cmd:seed(}{it:#}{cmd:)}}{...}
+	set the random-number seed to {it:#}{p_end}
+{synopt:{cmd:ndraw(}{it:#}{cmd:)}}{...}
+	number of observations drawn at each replication{p_end}
+{synopt:{help prefix_saving_option:{bf:saving(}{it:filename}{bf:, ...)}}}{...}
+	save results to {it:filename}{p_end}
+{synopt:{cmdab:grpr:ior}}{...} 
+	histogram of the priors{p_end}
+{synopt:{cmdab:grarrs:ys}}{...} 
+	histogram of the adjusted relative risk (systematic error){p_end}
+{synopt:{cmdab:grarrt:ot}}{...} 
+	histogram of the adjusted relative risk (systematic error plus random error){p_end}
+
+{syntab:{help episens##other:Study design, format, combined analysis}}
+{synopt:{cmdab:st:udy(}{cmd:cc}|{cmd:cs}|{cmd:ir}{cmd:)}}{...}
+	specify the type of study {p_end}
+{synopt:{cmdab:f:ormat(%}{it:{help fmt}}{cmd:)}}{...} 
+	set the display format for numbers{p_end}
+{synopt:{cmdab:comb:ined}}{...} 
+	specify combined analyses of multiple biases{p_end}
+{synoptline}
+{p2colreset}{...}
+
+
+{marker pdf}{...}
+{pstd}{bf: Probability distribution function (pdf) for the bias parameter}
+
+{synoptset 28}{...}
+{p2col 5 36 38 2:{it:pdf_option}}description{p_end}
+{synoptline}
+{synopt:{cmdab:c:onstant(}{it:#}{cmd:)}}{...}
+	constant value equal to {it:#}{p_end}
+{synopt:{cmdab:uni:form(}{it:a} {it:b}{cmd:)}}{...}
+	uniform between min={it:a} and max={it:b}{p_end}
+{synopt:{cmdab:tri:angular(}{it:a} {it:b} {it:c}{cmd:)}}{...}
+	triangular with min {it:a}, mode={it:b}, and max={it:c} {p_end}
+{synopt:{cmdab:tra:pezoidal(}{it:a} {it:b} {it:c} {it:d}{cmd:)}}{...}
+	trapezoidal with min={it:a}, modes between {it:b} and {it:c}, and max={it:d}{p_end}
+{synopt:{cmdab:logit-l:ogistic(}{it:m} {it:s} [{it:lb} {it:ub}]{cmd:)}}{...}
+	logit-logistic with mean={it:m} and scale={it:s}, shifted between [{it:lb} {it:ub}]{p_end}
+{synopt:{cmdab:logit-n:ormal(}{it:m} {it:s} [{it:lb} {it:ub}]{cmd:)}}{...}
+	logit-normal with mean={it:m} and scale={it:s}, shifted between [{it:lb} {it:ub}]{p_end}
+{synopt:{cmdab:log-l:ogistic(}{it:m} {it:s}{cmd:)}}{...}
+	loglogistic with mean={it:m} and scale={it:s}{p_end}
+{synopt:{cmdab:log-n:ormal(}{it:m} {it:s}{cmd:)}}{...}
+	lognormal with mean={it:m} and scale={it:s}{p_end}
+{synoptline}
+{p2colreset}{...}
+
+
+{title:Description}
+
+{pstd}
+{cmd:episens} performs deterministic and probabilistic sensitivity analysis of
+the exposure-disease relative risk for misclassification of the exposure,
+selection bias, and unmeasured or uncontrolled confounding.  The
+exposure-disease relative risk (and 95% confidence interval) is calculated
+using tables for epidemiologists; see {help epitab}.
+
+{pstd}
+{cmd:episensi} is the immediate form of {cmd:episens}. 
+
+
+{title:Options}
+
+{marker mie}{...}
+{dlgtab:Misclassification of the exposure}
+
+{p 4 8 2}
+{cmd:dseca(}{it:{help episens##pdf:pdf_option}}{cmd:)} defines the sensitivity
+(probability someone exposed is classified as exposed) among the cases. 
+
+{p 4 8 2}
+{cmd:dspca(}{it:{help episens##pdf:pdf_option}}{cmd:)} defines the specificity
+(probability someone unexposed is classified as unexposed) among the cases.
+
+{p 4 8 2}
+{cmd:dsenc(}{it:{help episens##pdf:pdf_option}}{cmd:)} defines the sensitivity
+among the noncases.
+
+{p 4 8 2}
+{cmd:dspnc(}{it:{help episens##pdf:pdf_option}}{cmd:)} defines the specificity
+among the noncases.
+
+{p 4 8 2}
+{cmd:corrsens(}{it:#}{cmd:)} sets the correlation between case and noncase
+sensitivities.  The default is {cmd:corrsens(1)}, corresponding to
+nondifferential misclassification of the exposure when
+{cmdab:dsec:a(}{it:{help episens##pdf:pdf_option}}{cmd:)} and
+{cmdab:dsen:c(}{it:{help episens##pdf:pdf_option}}{cmd:)} have the same
+{it:{help episens##pdf:pdf_option}}.  
+
+{p 4 8 2}
+{cmd:corrspec(}{it:#}{cmd:)} sets the correlation between case and noncase
+specificities.  The default is {cmd:corrspec(1)}, corresponding to
+nondifferential misclassification of the exposure when
+{cmdab:dspc:a(}{it:{help episens##pdf:pdf_option}}{cmd:)} and
+{cmdab:dsp:c(}{it:{help episens##pdf:pdf_option}}{cmd:)} have the same
+{it:{help episens##pdf:pdf_option}}.  
+
+{marker sel}{...}
+{dlgtab:Selection bias}
+
+{p 4 8 2}
+{cmd:dpscex(}{it:{help episens##pdf:pdf_option}}{cmd:)}
+defines the selection probability among cases exposed.
+
+{p 4 8 2}
+{cmd:dpscun(}{it:{help episens##pdf:pdf_option}}{cmd:)}
+defines the selection probability among cases unexposed.
+
+{p 4 8 2}
+{cmd:dpsnex(}{it:{help episens##pdf:pdf_option}}{cmd:)}
+defines the selection probability among noncases exposed.
+
+{p 4 8 2}
+{cmd:dpsnun(}{it:{help episens##pdf:pdf_option}}{cmd:)} 
+defines the selection probability among noncases unexposed.
+
+{p 4 8 2}
+{cmd:dsbfactor(}{it:{help episens##pdf:pdf_option}}{cmd:)}
+defines the selection-bias factor,
+[{cmdab:dpsce:x(}{it:{help episens##pdf:pdf_option}}{cmd:)}*
+{cmdab:dpsnu:n(}{it:{help episens##pdf:pdf_option}}{cmd:)}]/
+[{cmdab:dpsne:x(}{it:{help episens##pdf:pdf_option}}{cmd:)}*
+{cmdab:dpscu:n(}{it:{help episens##pdf:pdf_option}}{cmd:)}].
+This option is an alternative to specifying the other four
+selection probabilities.
+
+{marker unc}{...}
+{dlgtab:Uncontrolled confounding}
+
+{p 4 8 2}
+{cmd:dpexp(}{it:{help episens##pdf:pdf_option}}{cmd:)}
+defines the prevalence of the confounder among the exposed.
+
+{p 4 8 2}
+{cmd:dpunexp(}{it:{help episens##pdf:pdf_option}}{cmd:)}
+defines the prevalence of the confounder among the unexposed.
+
+{p 4 8 2}
+{cmd:drrcd(}{it:{help episens##pdf:pdf_option}}{cmd:)}
+defines the confounder-disease relative risk.
+	
+{p 4 8 2}
+{cmd:dorce(}{it:{help episens##pdf:pdf_option}}{cmd:)}
+defines the confounder-exposure odds ratio.
+
+{p 4 8 2}
+{cmd:corrprev(}{it:#}{cmd:)} sets the 
+correlation between exposure-specific confounder prevalences. The default is
+{cmd:corrprev(0)}.  A correlation of 1 means no confounder-exposure
+association; that is,
+{cmd:dorce(}{it:{help episens##pdf:pdf_option}}{cmd:)} is equal to 1.
+
+{marker sim}{...}
+{dlgtab:Simulations}
+
+{p 4 8 2}
+{opt reps(#)} specifies the number of replications to be performed. The default
+is {cmd:reps(2000)}.
+
+{p 4 8 2}
+{opt nodots} suppresses display of the replication dots.  By
+default, a single dot character is displayed for each successful replication.
+A single red `x' is displayed if {it:command} returns an error or
+if one of the values in {it:{help exp_list}} is missing.
+
+{p 4 8 2}
+{opt seed(#)} sets the random-number seed to {it:#}. Specifying this option is
+equivalent to typing the following command before calling {cmd:episens}:
+
+{pmore}
+{cmd:. set seed} {it:#}
+	
+{p 4 8 2}
+{opt ndraw(#)} sets the number of observations drawn at each replication. 
+
+{p 4 8 2}
+{help prefix_saving_option:{bf:saving(}{it:filename}{bf:, ...)}}
+saves the results (sampled bias parameters and bias-adjusted exposure-disease
+relative risk) of the simulations to {it:filename}. See
+{it:{help prefix_saving_option}} for details about {it:suboptions}.
+
+{p 4 8 2}
+{cmd:grprior} produces a histogram of the priors for the bias parameters.
+
+{p 4 8 2}
+{cmd:grarrsys} produces a histogram of the adjusted relative risk (systematic
+error).
+
+{p 4 8 2}
+{cmd:grarrtot} produces a histogram of the adjusted relative risk (systematic
+error plus random error).
+
+{marker other}{...}
+{dlgtab:Study design, format, combined analysis}
+
+{p 4 8 2} 
+{cmd:study(cc}|{cmd:cs}|{cmd:ir})} specifies the type of study: {cmd:cc}
+(case-control data), {cmd:cs} (cumulative-incidence data), or {cmd:ir}
+(incidence-rate data).  The default is {cmd:study(cc)}. See {help epitab} for
+more information. 
+
+{p 4 8 2}
+{cmd:format(%}{it:{help fmt}}{cmd:)} displays format for numbers; default is
+{cmd:format(%3.2f)}.
+
+{p 4 8 2}
+{cmd:combined} specifies combined analyses of multiple biases.  At each
+replication of the simulation, bias adjustment of the observed exposure-disease
+RR follows this order: misclassification of the exposure, selection bias, and
+unmeasured or uncontrolled confounding. 
+
+
+{title:Examples}
+
+{phang}{stata "episensi  45 94 257 945, st(cc) dseca(c(.9)) dspca(c(.9)) dsenc(c(.9)) dspnc(c(.9))": . episensi  45 94 257 945, st(cc) dseca(c(.9)) dspca(c(.9)) dsenc(c(.9)) dspnc(c(.9))"}
+
+{phang}{stata "episensi  45 94 257 945, st(cc) dpunexp(c(.55)) dorce(c(2.45)) drrcd(c(5))": . episensi  45 94 257 945, st(cc) dpunexp(c(.55)) dorce(c(2.45)) drrcd(c(5))"}
+
+{phang}{stata "episensi  45 94 257 945, st(cc) dpexp(uni(.4 .7)) dpunexp(uni(.4 .7)) drrcd(log-n(2.159 .280))": . episensi  45 94 257 945, st(cc) dpexp(uni(.4 .7)) dpunexp(uni(.4 .7)) drrcd(log-n(2.159 .280))"}
+
+{phang}{stata "episensi  45 94 257 945, st(cc) nodots dpunexp(uni(.4 .7)) drrcd(log-n(2.159 .280)) dorce(log-normal(0 .639))": . episensi  45 94 257 945, st(cc) nodots dpunexp(uni(.4 .7)) drrcd(log-n(2.159 .280)) dorce(log-normal(0 .639))"}
+
+
+{title:Reference}
+
+{p 4 8 2} Greenland, S. 1996. Basic methods for sensitivity analysis of biases.
+{it:International Journal of Epidemioly} 5: 1107-1116.{p_end}
+
+
+{title:Authors}
+
+{p 4 8 2}Nicola Orsini, Division of Nutritional Epidemiology,
+Institute of Environmental Medicine, Karolinska Institutet, Sweden{p_end}
+
+{p 4 8 2}Rino Bellocco, Department of Statistics, University of Milano-Bicocca, Milano, Italy{p_end}
+
+{p 4 8 2}Matteo Bottai, Department of Epidemiology and Biostatistics, Arnold School of Public Health, University of South Carolina{p_end}
+
+{p 4 8 2}Sander Greenland, Department of Epidemiology, UCLA School of Public Health, USA{p_end}
+
+
+{title:Author}
+
+{phang}Nicola Orsini{p_end}
+{p 4 8 2}{browse "http://nicolaorsini.altervista.org"}{p_end}
+{p 4 8 2}{browse "mailto:nicola.orsini@ki.se?subject=episens":nicola.orsini@ki.se}{p_end}
+
+
+{title:Also see}
+
+{psee}
+Article: {it:Stata Journal}, volume 8, number 1: {browse "http://www.stata-journal.com/article.html?article=st0138":st0138}{break}
+
+    Manual:  {bf:[ST] epitab}
+
+{psee}
+Online:  {help epitab}, {helpb episensrri} (if installed)
+{p_end}

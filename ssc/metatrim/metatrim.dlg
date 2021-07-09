@@ -1,0 +1,255 @@
+/* 
+
+*! metatrim dialog version 1.0.2, 22 Jul 2003, T. J. Steichen, steichen@triad.rr.com 
+*!    for metatrim version 1.0.5, 18 Oct 2002, T. J. Steichen, steichen@triad.rr.com 
+
+Nonparametric "trim and fill" analysis of publication bias in meta-analysis
+---------------------------------------------------------------------------
+
+syntax: metatrim varlist [if] [in] 
+       [ , Vari CI REffect PRint Funnel EForm LEvel(real 95) ESTimat(R|L|Q) 
+           GRaph IDvar(varname) FLIP SAve(filename [, REPLACE]) * ]
+
+Install in User Statistics menu via Stata commands:
+  . window menu append item "stUserStatistics" "meta&trim ("Trim and Fill" Analysis)" "db metatrim"
+  . window menu refresh
+To permanently install, place the commands in your -profile.do- file. 
+*/
+
+VERSION 8.0
+
+INCLUDE _std_small
+DEFINE _dlght 230
+INCLUDE header
+
+HELP hlp1, view("help metatrim")
+RESET res1, label("Reset")
+
+DIALOG main, label(`"metatrim 1.0.5 - "Trim and Fill" Analysis"') tabtitle("Main") 
+BEGIN
+  GROUPBOX gb_data      10    5  330     85,            ///
+     label("Type of Data")
+  RADIO    r_se         15   20  100      .,            ///
+     label("Theta, SE")        first                    ///
+     onclickon(script main_se_on)                       ///
+     option(NONE)
+  RADIO    r_var       115    @  100      .,            ///
+     label("Theta, Var")       middle                   ///
+     onclickon(script main_var_on)                      ///
+     option("var")
+  RADIO    r_ci        215    @  110      .,            ///
+     label("exp(Theta), CI")   last                     ///
+     onclickon(script main_ci_on)                       ///
+     option("ci")
+
+  TEXT     tx_se        15   40   320     .,            ///
+     label("Vars for theta, se(theta), in that order")
+  VARLIST  vl_se         @   _ss   @      .,            ///
+     label("Vars for theta, se(theta)")
+  TEXT     tx_var        @   40   320     .,            ///
+     label("Vars for theta, var(theta), in that order")
+  VARLIST  vl_var        @   _ss   @      .,            ///
+     label("Vars for theta, var(theta)")
+  TEXT     tx_ci         @   40   320     .,            ///
+     label("Vars for exp(theta), CI_LL, CI_UL, in that order")
+  VARLIST  vl_ci         @   _ss   @      .,            ///
+     label("Vars for exp(theta), CI_LL, CI_UL")
+
+  GROUPBOX gb_estimat   10   95   90     80,            ///
+     label("Estimate")
+  RADIO    r_linear     15  110   80      .,            ///
+     label("Linear")         first                      ///
+     option(NONE)
+  RADIO    r_run         @  130    @      .,            ///
+     label("Run")            middle                     ///
+     option("est(run)")
+  RADIO    r_quadratic   @  150    @      .,            ///
+     label("Quadratic")      last                       ///
+     option("est(quadratic)")
+
+  GROUPBOX gb_pool     105   95   90     60,            ///
+     label("Pooling")
+  RADIO    r_fixed     110   110  80      .,            ///
+     label("Fixed")           first                     ///
+     option(NONE)
+  RADIO    r_random      @   130   @      .,            ///
+     label("Random")          last                      ///
+     option("reffect")
+
+  CHECKBOX cb_eform    205   100  70      .,            ///
+     label("Eform")                                     ///
+     option("eform")
+
+  CHECKBOX cb_flip     205   120  70      .,            ///
+     label("Flip")                                      ///
+     option("flip")
+     
+  CHECKBOX cb_mixed    205   140  70      .,            ///
+     label("Mixed")                                     ///
+     option("mixed")
+
+  CHECKBOX cb_graph    275   100  70      .,            ///
+     label("Graph")                                     ///
+     onclickon(program main_cb_graph_on)                ///
+     onclickoff(program main_cb_graph_off)              ///
+     option("graph")
+     
+  CHECKBOX cb_funnel   275   120  70      .,            ///
+     label("Funnel")                                    ///
+     option("funnel")
+     
+  CHECKBOX cb_print    275   140  70      .,            ///
+     label("Print")                                     ///
+     option("print")                                    ///
+     onclickon(program main_cb_print_on)                ///
+     onclickoff(program main_cb_print_off)              
+
+  CHECKBOX cb_id       110   157 100      .,            ///
+     label("ID Variable:")                              ///
+     onclickon(main.vn_id.enable)                       ///
+     onclickoff(main.vn_id.disable)
+  VARNAME vn_id        210   160 130      .,            /// 
+     label("ID Variable")                               ///
+     option("id")
+
+  CHECKBOX cb_fill_save 10   185  90      .,            ///
+     label("Save filled:")                              ///
+     onclickon(main.fi_fill_save.enable)                ///
+     onclickoff(main.fi_fill_save.disable) 
+  FILE  fi_fill_save   110   185 230      .,            /// 
+     save                                               ///
+     label("File Name")                                 ///
+     error("Save File Name")                            /// 
+     dialogtitle("Save file")                           ///
+     filter("Stata Data|*.dta")                         ///
+     option("save")
+
+  CHECKBOX cb_gph_save  10   210  90      .,            ///
+     label("Save gph:")                                 ///
+     onclickon(main.fi_gph_save.enable)                 ///
+     onclickoff(main.fi_gph_save.disable) 
+  FILE  fi_gph_save    110   210 230      .,            /// 
+     save                                               ///
+     label("File Name")                                 ///
+     error("Saving File Name")                          /// 
+     dialogtitle("Saving file")                         ///
+     filter("Stata Graphs|*.gph")                       ///
+     option("saving")
+END
+ 
+INCLUDE ifin
+
+PROGRAM main_cb_graph_on
+BEGIN
+        call main.cb_id.enable
+        if main.cb_id {
+                call main.vn_id.enable
+        }
+END
+
+PROGRAM main_cb_graph_off
+BEGIN
+        if !main.cb_print {
+                call main.cb_id.disable
+                call main.vn_id.disable
+        }
+END
+
+PROGRAM main_cb_print_on
+BEGIN
+        call main.cb_id.enable
+        if main.cb_id {
+                call main.vn_id.enable
+        }
+END
+
+PROGRAM main_cb_print_off
+BEGIN
+        if !main.cb_graph {
+                call main.cb_id.disable
+                call main.vn_id.disable
+        }
+END
+
+SCRIPT main_se_on
+BEGIN
+  main.tx_se.show
+  main.vl_se.show
+  main.tx_se.enable
+  main.vl_se.enable
+
+  main.tx_var.disable
+  main.vl_var.disable
+  main.tx_var.hide
+  main.vl_var.hide
+  
+  main.tx_ci.disable
+  main.vl_ci.disable
+  main.tx_ci.hide
+  main.vl_ci.hide
+END
+
+SCRIPT main_var_on
+BEGIN
+  main.tx_var.show
+  main.vl_var.show
+  main.tx_var.enable
+  main.vl_var.enable
+
+  main.tx_se.disable
+  main.vl_se.disable
+  main.tx_se.hide
+  main.vl_se.hide
+  
+  main.tx_ci.disable
+  main.vl_ci.disable
+  main.tx_ci.hide
+  main.vl_ci.hide
+END
+
+SCRIPT main_ci_on
+BEGIN
+  main.tx_ci.show
+  main.vl_ci.show
+  main.tx_ci.enable
+  main.vl_ci.enable
+
+  main.tx_se.disable
+  main.vl_se.disable
+  main.tx_se.hide
+  main.vl_se.hide
+  
+  main.tx_var.disable
+  main.vl_var.disable
+  main.tx_var.hide
+  main.vl_var.hide
+END
+
+PROGRAM command
+BEGIN
+  put "metatrim "
+  if main.r_se {
+    varlist main.vl_se 
+  }
+  if main.r_var {
+    varlist main.vl_var 
+  }
+  if main.r_ci {
+    varlist main.vl_ci 
+  }
+  INCLUDE _ifin_pr
+  beginoptions
+    option radio(main r_se r_var r_ci)
+    option radio(main r_linear r_run r_quadratic)
+    option radio(main r_fixed r_random)
+    option main.cb_eform
+    option main.cb_flip
+    option main.cb_mixed
+    option main.cb_print
+    option main.cb_graph
+    option main.cb_funnel
+    optionarg main.vn_id
+    optionarg main.fi_fill_save
+    optionarg main.fi_gph_save
+  endoptions
+END

@@ -1,0 +1,110 @@
+{smcl}
+{hline}
+help for {hi:whotdeck}
+{hline}
+
+
+{title:Multiple Imputation using the Approximate Bayesian Bootstrap (hotdeck) with weights}
+
+{p 8 27}
+{cmdab:whotdeck}
+[{it:varlist}] [{cmd:using}] [{hi:if}{it:  exp}] [{hi:in}{it:  exp}]
+,
+{cmdab:predmis}{cmd:(}{it:string}{cmd:)}
+[
+{cmdab:by}{cmd:(}{it:varlist}{cmd:)}
+{cmd:store}
+{cmd:rep:lace}
+{cmd:output}
+{cmdab:noise} 
+{cmdab:quiet} 
+{cmdab:generate}{cmd:(}{it:varname}{cmd:)} 
+{cmdab:command}{cmd:(}{it:string}{cmd:)}
+{cmdab:parms}{cmd:(}{it:string}{cmd:)} 
+{cmdab:predmis}{cmd:(}{it:string}{cmd:)} 
+{cmdab:impute}{cmd:(}{it:#}{cmd:)}
+]
+
+{p}
+
+{title:Description}
+
+{p 0 0}
+{hi:whotdeck} will tabulate the missing data patterns within the {hi:varlist}.
+A row of data with missing values in any of the variables in the {hi:varlist}
+ is defined as a `missing line' of data, similarly a `complete line' is one where all the variables in 
+the {hi:varlist} contain data. The {hi:whotdeck} procedure
+replaces the {hi:varlist} variables in the `missing lines' with the 
+corresponding values in the `complete lines'.
+{hi:Whotdeck} should be used several times within a multiple imputation 
+sequence since missing data 
+are imputed stochastically, with weights determined by a logistic regression model of the missing
+data process, rather than deterministically. 
+
+{p 0 0}
+This is an adapted form of the
+Approximate Bayesian Bootstrap method of Rubin and Schenker(1986); 
+first a bootstrap sample of lines are sampled with replacement from 
+the entire dataset. Then a logistic regression model specified by {hi:predmis} is fitted to estimate the missingness
+weights. Then {hi:nmiss} lines are sampled, using the weights, with replacement from the {hi:nobs} complete lines of data.
+
+{p 0 0}
+One major assumption with the {hi:whotdeck} procedure is
+that the missing data are either missing completely at random (MCAR) or is 
+missing at random (MAR) conditional on the logistic regression model of the missing mechanism
+specified in the option {hi:predmis}. Additionally the sampling can be stratified using the {hi:by} option.
+
+{p 0 0}
+If a dataset contains a multivariate missingness pattern then it may contain
+very few complete lines of data. The {hi:whotdeck} procedure will not work 
+very well in such circumstances. There are more
+elaborate methods that {hi:only} replace missing values, rather than the whole row,
+ for imputed values.
+These multivariate multiple imputation methods are discussed by Schafer(1997).
+
+{title:Options}
+
+{cmdab:predmis}{cmd:(}{it:string}{cmd:)} specifies the linear predictor of the missingness model
+
+{cmdab:by}{cmd:(}{it:varlist}{cmd:)} specifies categorical variables defining strata within which 
+the imputation is to be carried out.
+
+{cmd:store}  specifies whether the imputed datasets are saved to disk.
+
+{cmdab:using}  specifies the root of the imputed datasets filenames. The default is
+"imp" and hence the datasets will be saved as imp1.dta, imp2.dta, ....
+
+{cmdab:command}{cmd:(}{it:string}{cmd:)} specifies the analysis performed on every imputed dataset.
+
+{cmdab:noise} specifies whether the individual analyses are displayed. By default the
+combined estimates are displayed.
+
+{cmdab:parms}{cmd:(}{it:string}{cmd:)}  specifies the parameters of interest from the
+analysis. If the {hi:command} is a regression command then the parameter list can
+include a subset of the variables specified in the regression command.The 
+final output consists of the combined estimates of these parameters.
+For non-standard commands that are "regression" commands the {hi:parms} option
+looks at the estimation matrix e(b) and requires the column names to identify
+the coefficients of interest.
+
+{cmdab:impute}{cmd:(}{it:#}{cmd:)} specifies the number of imputations to be used.
+
+
+{title:Examples}
+
+{inp: whotdeck y x, predmis(sex age) command(logit y x) parms(x _cons) impute(5)}
+Do not save imputed datasets but carry out a logistic regression on the imputed
+dataset and display the coefficients for x and the constant term of the model. Use the variables
+age and sex in the model for predicting missingness
+
+{title:Author}
+
+{p}
+Adrian Mander, Glaxo Smithkline, Harlow, UK.
+
+Click here to see Adrian Mander's {browse "http://www.mrc-bsu.cam.ac.uk/personal/adrian":WEB site}
+Email {browse "mailto:adrian.p.mander@gsk.com":adrian.p.mander@gsk.com}
+
+{title:Also see}
+
+On-line: help for {help hotdeck} (if installed). 

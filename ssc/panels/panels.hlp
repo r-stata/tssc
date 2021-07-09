@@ -1,0 +1,216 @@
+{smcl}
+{* 31aug2013}{...}
+{hi:help panels}
+{hline}
+
+{title:Title}
+
+{p 4 4 2}{hi:panels} {hline 2} Count panels (groups) / apply command to panel units
+
+
+{title:Syntax}
+
+
+{p 4 4 2} Syntax 1: count panels
+
+{p 8 15 2}
+    {cmd:panels} {it:{help varlist}} [{it:{help if}}] [{it:{help in}}] [{it:{help weight}}]
+    [{cmd:,}
+    {it:options}
+    ]
+
+
+{p 4 4 2} Syntax 2: apply {it:command} to panel units
+
+{p 8 15 2}
+    {cmd:panels} {varlist} {ifin} {weight}
+    [{cmd:,}
+    {it:options}
+    ] {cmd::} {it:command}
+
+
+    {it:options}{col 25}description
+    {hline 70}
+    {cmdab:m:issing}{col 25}{...}
+treat missing values in {it:varlist} like other values
+    {cmdab:g:enerate:(}{it:{help newvar}}{cmd:)}{col 25}{...}
+store panel sizes in {it:newvar}
+    {cmdab:fill:in}{col 25}{...}
+fill in {it:newvar} for all observations
+    {cmd:id(}{it:{help newvar}}{cmd:)}{col 25}{...}
+create a new panel ID variable
+    {cmdab:r:eplace}{col 25}{...}
+overwrite existing variables
+    {cmdab:isc:onstant:(}{it:{help varlist}}{cmd:)}{col 25}{...}
+verify that the specified variables
+{col 27}are constant within panels
+    {cmdab:n:oisily}{col 25}{...}
+display panel info with syntax 2
+    {cmdab:now:arn}{col 25}{...}
+suppress syntax 2 warning message
+    {hline 70}
+
+{p 4 4 2}
+    {cmd:fweight}s, {cmd:aweight}s, {cmd:iweight}s, and {cmd:pweight}s are
+    allowed; see help {help weight}. Weights are taken into account for the
+    selection of observations (observations will be excluded if the weight 
+    is zero or missing); they have no other effect (in particular, weights are
+    not passed through to {it:command} in syntax 2).
+
+
+{title:Description}
+
+{p 4 4 2}
+    {cmd:panels} counts the panels defined by {it:varlist} and displays
+    some basic information on panel sizes (syntax 1). A panel is a group of
+    observations with identical values for the variables in {it:varlist}.
+
+{p 4 4 2}
+    If used as a prefix command (syntax 2), {cmd:panels} applies the
+    specified command to the panel units defined by {it:varlist}. This is
+    useful, for example, if you want to compute frequency distributions or
+    summary statistics for panel characteristics. To be precise,
+    {cmd:panels} picks one observation per panel and then applies the
+    command to these observations. Variables referred to in {it:command}
+    are assumed to be constant within panels. Use the {cmd:isconstant()}
+    option to verify this assumption.
+
+{p 4 4 2}
+    {it:command} is required to follow standard Stata syntax and allow the
+    if qualifier.
+
+
+{title:Options}
+
+{p 4 8 2}
+    {cmd:missing} causes missing values in {it:varlist} ({cmd:.}, {cmd:.a}, 
+    {cmd:.b}, ... for numeric variables; "" for string variables) to be 
+    treated like any other values. The default is to exclude observations 
+    with missing values.
+
+{p 4 8 2}
+    {cmd:generate(}{it:{help newvar}}{cmd:)} stores in {it:newvar} the
+    sizes of the panels (i.e. the number of observations per panel). The
+    default is to use only one observation per panel to store this
+    information (the remaining observation are set to missing). Specify the
+    {cmd:fillin} option to store the panel sizes in all observations.
+
+{p 4 8 2}
+    {cmd:fillin} causes {it:newvar} stored by {cmd:generate()} to be filled
+    in for all observations within the panels.
+
+{p 4 8 2}
+    {cmd:id(}{it:{help newvar}}{cmd:)} stores in {it:newvar} unique
+    identification numbers for the panels (using values 1, 2, ...).
+
+{p 4 8 2}
+    {cmd:replace} allows {cmd:panels} to overwrite existing variables.
+
+{p 4 8 2}
+    {cmd:isconstant(}{it:{help varlist}}{cmd:)} verifies that the
+    specified variables are constant within panels. {cmd:check()} is a
+    synonym for {cmd:isconstant()}. Error is returned if any of the
+    variables is not constant within panels.
+
+{p 4 8 2}
+    {cmd:noisily} can be used with syntax 2 to request that the information
+    on the number of panels and the panel sizes be displayed. The default
+    is to suppress this information in syntax 2.
+    
+{p 4 8 2}
+    {cmd:nowarn} can be used with syntax 2 to suppress the note about 
+    variables being assumed constant within panels.
+
+
+{title:Examples}
+
+    {com}. webuse nlswork, clear
+    {txt}(National Longitudinal Survey.  Young Women 14-26 years of age in 1968)
+    
+    {com}. panels idcode
+    
+    {txt}Number of obs      = {res}    28534
+    {txt}Number of groups   = {res}     4711
+    
+    {txt}Obs per group: min = {res}        1
+    {txt}               avg = {res} 6.056888
+    {txt}               max = {res}       15
+    {txt}
+    {com}. panels idcode if race==2
+    
+    {txt}Number of obs      = {res}     8051
+    {txt}Number of groups   = {res}     1325
+    
+    {txt}Obs per group: min = {res}        1
+    {txt}               avg = {res} 6.076226
+    {txt}               max = {res}       15
+    {txt}
+    {com}. panels idcode: tabulate race
+    
+       {txt}1=white, {c |}
+       2=black, {c |}
+        3=other {c |}      Freq.     Percent        Cum.
+    {hline 12}{c +}{hline 35}
+              1 {c |}{res}      3,329       70.66       70.66
+    {txt}          2 {c |}{res}      1,325       28.13       98.79
+    {txt}          3 {c |}{res}         57        1.21      100.00
+    {txt}{hline 12}{c +}{hline 35}
+          Total {c |}{res}      4,711      100.00
+    
+    {txt}(variables assumed constant within panels; use {helpb panels:isconstant()} to verify)
+    
+    {com}. panels idcode: summarize birth_yr grade collgrad
+    
+    {txt}    Variable {c |}       Obs        Mean    Std. Dev.       Min        Max
+    {hline 13}{c +}{hline 56}
+    {space 4}birth_yr {c |}{res}      4711    48.25387    3.051795         41         54
+    {txt}{space 7}grade {c |}{res}      4709    12.74347    2.566536          0         18
+    {txt}{space 4}collgrad {c |}{res}      4711    .2061134    .4045558          0          1
+    
+    {txt}(variables assumed constant within panels; use {helpb panels:isconstant()} to verify)
+    
+    {com}. panels idcode, isconstant(age): summarize age
+    {txt}23762 contradictions in 28534 observations
+    {err}assertion is false
+    age not constant within panels
+    {txt}{search r(9):r(9);}
+    {txt}
+
+{title:Returned results}
+
+{p 4 4 2}{cmd:panels} saves the following scalars:
+
+        {cmd:r(N)}      Number of observations
+        {cmd:r(N_g)}    Number of panels (groups)
+        {cmd:r(g_min)}  Minimum panel size
+        {cmd:r(g_avg)}  Average panel size
+        {cmd:r(g_max)}  Maximum panel size
+
+{p 4 4 2}If {cmd:panels} is used as a prefix command (syntax 2), the 
+results returned by {cmd:panels} may be overwritten by the returns 
+from {it:command}.
+
+
+{title:Author}
+
+{p 4 4 2}
+    Ben Jann, Institute of Sociology, University of Bern, jann@soz.unibe.ch
+
+{p 4 4 2}
+    Thanks for citing this software as follows:
+
+{p 8 8 2}
+    Jann, B. (2009). panels: Stata module to count panels and apply a
+    command to panel units. Available from
+    {browse "http://ideas.repec.org/c/boc/bocode/s457086.html"}.
+
+
+{title:Also see}
+
+{p 4 8 2}
+    Cox, N. J. (2007). {browse "http://www.stata-journal.com/article.html?article=dm0033":Speaking Stata: Counting groups, especially panels}. The Stata 
+    Journal 7(4):571-581.
+
+{p 4 13 2}
+    Online:  help for
+    {helpb xt}

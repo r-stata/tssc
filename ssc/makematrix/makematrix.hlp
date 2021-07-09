@@ -1,0 +1,323 @@
+{smcl}
+{* 29aug2003/21nov2004/14nov2005/11june2006}{...}
+{hline}
+help for {hi:makematrix}
+{hline}
+
+{title:Make a matrix of results from other commands}
+
+{p 4 4 2}
+Outline syntax:
+
+{p 8 17 2}
+{cmd:makematrix} [{it:matrix_name}] {cmd: ,}{break}
+{cmd:from(}{it:results_list}{cmd:)} [{it:production_options}] [{it:list_options}] {cmd::}{break}
+[{cmd:"}]{it:command}[{cmd:"}] [{it:varlist}] ... [, {it:options} ]
+
+{p 4 4 2}
+A matrix name {it:matrix_name} may be specified. If so, a matrix with
+that name will be produced and remain in memory.
+
+{p 4 4 2}{it:command} must be specified together with whatever elements
+from [{it:varlist}] [{cmd:if} {it:exp}] [{cmd:in} {it:range}]
+[{it:weight}] [, {it:options} ] are appropriate.
+
+{p 4 4 2} 
+Strictly, {it:command} is the first token following the colon {cmd::}. 
+Hence bind commands specified by two or more words in double quotes. 
+Thus if {it:command} were {cmd:run mydo.do}, specify it as 
+{cmd:"run mydo.do"}. 
+
+
+{title:Description}
+
+{p 4 4 2}
+{cmd:makematrix} runs {it:command} repeatedly for a specified variable
+list (optionally, two variable lists) to produce a matrix of results. As
+usual, a matrix could be a vector. The matrix will be listed using
+{cmd:matrix list}, unless the {cmd:list} option is specified, in which
+case it will be listed using the {cmd:list} command. 
+
+{p 4 4 2} 
+There are various modes of operation, which are best appreciated by
+studying the detailed examples discussed in the next section.
+
+
+{title:Remarks} 
+
+{p 4 4 2}
+First, some terminology. We call a Stata (statistical) command
+essentially univariate if it requires only one variable; it may repeat
+itself if supplied with two or more variables.  {cmd:summarize} is an
+essentially univariate command; it does work for two or more variables,
+by repeating its operation for those variables. We call such a command
+essentially bivariate if it requires only two variables, and may repeat
+itself otherwise.  {cmd:correlate} is an essentially bivariate command;
+it does work for three or more variables, by repeating its operation for
+pairs of those variables.  {cmd:spearman} is also an essentially
+bivariate command, although it does not in fact accept more than two
+variables. Finally, we call such a command essentially multivariate if
+it produces just one set of results even if supplied with three or more
+variables.  {cmd:regress} is an essentially multivariate command. From
+now on the word "essentially" is not used, but should be understood. 
+
+{p 4 4 2}
+The output of {cmd:correlate} given a {it:varlist} of two or more
+variables is a matrix of correlations for every pair of variables in
+{it:varlist}. How could we produce an equivalent directly for 
+{help spearman}? We need to find out that {cmd:spearman} leaves a correlation
+behind in {cmd:r(rho)}: 
+
+{p 4 8 2}{cmd:. makematrix, from(r(rho)) : spearman head trunk length displacement weight} 
+
+{p 4 4 2}
+The result is displayed using {cmd:matrix list} and we will normally
+want to tidy up the presentation, say by
+
+{p 4 8 2}{cmd:. makematrix, from(r(rho)) format(%4.3f) : spearman head trunk length displacement weight} 
+
+{p 4 4 2}
+However, let us leave these details of presentation on one side. In this
+case, given a bivariate command, and a {it:varlist}, and a single result
+from which to compile the matrix, {cmd:makematrix} takes each pair of
+variables from {it:varlist}, runs a bivariate command for that pair, and
+puts a single result in the cell defined by each pair of variables. So
+both rows and columns are specified by {it:varlist}.
+
+{p 4 4 2}
+Alternatively, we might want different sets of variables on the rows and
+the columns, perhaps specifying a submatrix of the full matrix.  The
+option {cmd:cols()} can be used to specify variables to appear as
+columns. The variables in the {it:varlist} of {it:command} will then
+appear as rows.  Say we did a principal component analysis of five
+variables and followed with calculation of scores:
+
+{p 4 8 2}{cmd:. pca head trunk length displacement weight}{p_end}
+{p 4 8 2}{cmd:. score score1-score5}{p_end}
+{p 4 8 2}{cmd:. makematrix, from(r(rho)) cols(score?) : correlate head trunk length displacement weight}
+
+{p 4 4 2}Here the full correlation matrix of variables and scores, 
+as would be produced by {cmd:correlate}, is 10 X 10, and the submatrix 
+produced by {cmd:makematrix} is only 5 X 5. 
+
+{p 4 4 2}We can show two or more scalar results from each command run. 
+This is possible in various ways. A univariate command can be repeated, 
+each time yielding two or more scalars: 
+
+{p 4 8 2}{cmd:. makematrix, from(r(mean) r(sd) r(skewness)) : su}
+{cmd:head trunk length displacement weight, detail}
+
+{p 4 4 2} {cmd:makematrix} reasons in this way: The user wants three
+scalars, which I will show in three columns. So I must run the command
+specified in turn on each variable supplied, which I will show on the
+rows. So  for each variable in {it:varlist}, {cmd:makematrix} runs a
+univariate command, and puts two or more scalars in the cells of each
+row.   
+
+{p 4 4 2} A bivariate command can be repeated, each time yielding two or
+more scalars: 
+
+{p 4 8 2}
+{cmd:. makematrix, from(r(rho) r(p)) lhs(rep78-foreign) : spearman mpg} 
+
+{p 4 4 2}
+{cmd:makematrix} reasons in this way: The user wants two scalars, which
+I will show in two columns. So I must run the command specified in turn
+on the variable supplied. The option {cmd:lhs()} is also specified, so
+that must be used to supply the other variable. Whenever {cmd:lhs()} is
+specified, it specifies the rows of the matrix.  That is, in this case,
+the rows show the results of {cmd:spearman rep78 mpg} ... 
+{cmd:spearman foreign mpg}. Notice how the variables specified in {cmd:lhs()} 
+appear on the {cmdab:l:}eft-{cmdab:h:}and {cmdab:s:}ide of the {it:varlist} which
+{cmd:spearman} runs.  ({cmd:lhs()} also names the left-hand side of the
+matrix, but that is a happy accident.) This is also allowed: 
+
+{p 4 8 2}
+{cmd:. makematrix, from(r(rho) r(p)) rhs(rep78-foreign) : spearman mpg} 
+
+{p 4 4 2} 
+In this case, the rows show the results of {cmd:spearman mpg rep78} ...
+{cmd:spearman mpg foreign}, and are exactly the same as in the previous
+example. Again, whenever {cmd:rhs()} is specified, it specifies the rows
+of the matrix.  Notice how the variables specified in {cmd:rhs()} appear
+on the {cmdab:r:}ight-{cmdab:h:}and {cmdab:s:}ide of the {it:varlist} which
+{cmd:spearman} runs.  (By a small stretch, you can also think of it as
+naming the right-hand side of the matrix, given that we could repeat the
+row names on that side.) In other cases, which is used may well matter: 
+
+{p 4 8 2}
+{cmd:. makematrix, from(e(r2) e(rmse) _b[_cons] _b[mpg]) lhs(rep78-foreign) : regress mpg} 
+
+{p 4 8 2}
+{cmd:. makematrix, from(e(r2) e(rmse) _b[_cons] _b) rhs(rep78-foreign) : regress mpg} 
+
+{p 4 4 2} 
+The first series of regressions predicts {cmd:rep78} ... {cmd:foreign}
+in turn from {cmd:mpg}. The second series predicts {cmd:mpg} from
+{cmd:rep78} ...  {cmd:foreign} in turn. The r-square results will be the
+same, but not the root mean square errors, or the intercepts or slopes. 
+Note that {cmd:_b} by itself has the interpretation of {cmd:_b[}{it:row_variable}{cmd:]}. 
+
+{p 4 4 2} 
+In fact {cmd:lhs()} and {cmd:rhs()} can be used to produce a series of
+multivariate results. Suppose we have {cmd:weightsq = weight^2}. 
+
+{p 4 8 2}
+{cmd:. makematrix, from(e(r2) e(rmse)) lhs(mpg-trunk length-foreign) :}
+{cmd:regress weight weightsq}
+
+{p 4 4 2} 
+This series predicts {cmd:mpg} ... {cmd:foreign} in turn from
+{cmd:weight} and {cmd:weightsq}. When either {cmd:lhs()} or {cmd:rhs()}
+is specified they define the varying rows, while the {it:varlist}
+supplied is fixed for each run of {it:command}. 
+
+{p 4 4 2}
+There is one more nuance to be explained. Say you want a table of sums
+for a set of variables. You might try 
+
+{p 4 8 2}{cmd:. makematrix, from(r(sum)): su head trunk length displacement weight, meanonly} 
+
+{p 4 4 2}However, {cmd:makematrix} cannot distinguish between this and a
+similar problem with a bivariate command, so it will attempt to run
+{cmd:summarize} on all distinct pairs of variables. This will succeed,
+except that what is left behind in {cmd:r(sum)} will be the sum of the
+second of each pair of variables. What you will prefer is a
+{cmd:vector}, and that is the option to specify: 
+
+{p 4 8 2}{cmd:. makematrix, from(r(sum)) vector: su head trunk length displacement weight, meanonly} 
+
+
+{title:Options}
+
+{p 4 4 2} 
+{cmd:from(}{it:results_list}{cmd:)} is required. The {it:results_list}
+may in particular contain names of e-class results containing scalars
+(such as {cmd:e(rmse)}); names of r-class results containing scalars
+(such as {cmd:r(rho)}); estimates of intercepts, slopes or standard
+errors such as {cmd:_b[_cons]}, {cmd:_b[mpg]} or {cmd:_se[mpg]}; or
+names of globals (such as {cmd:S_1}).  Do not prefix global names with
+{cmd:$}. {cmd:_b} or {cmd:_se} by itself has the interpretation of
+{cmd:_b[}{it:row_variable}{cmd:]} or {cmd:_se[}{it:row_variable}{cmd:]}.
+Expressions such as {cmd:r(rho)^2} or {cmd:log10(r(p))} are also allowed. 
+However, note that no spaces must occur within any individual expression
+and that the more complicated the expression you use, the more likely 
+it is that it will not be acceptable as a matrix column name. 
+
+{p 4 4 2} 
+{it:production_options} are
+
+{p 8 8 2}{cmd:cols(}{it:column_varlist}{cmd:)} specifies a list of
+variables to appear on the columns of the matrix. ({it:varlist} then
+defines the rows only.}
+
+{p 8 8 2}{cmd:lhs(}{it:lhs_varlist}{cmd:)} specifies a list of variables
+to appear on the left-hand side of the variable list supplied to
+{it:command}. These will appear on the rows of the matrix. (The list of
+results in {cmd:from()} then defines the columns of the matrix.)
+
+{p 8 8 2}{cmd:rhs(}{it:rhs_varlist}{cmd:)} specifies a list of variables
+to appear on the right-hand side of the variable list supplied to
+{it:command}. These will appear on the rows of the matrix. (The list of
+results in {cmd:from()} then defines the columns of the matrix.)  
+
+{p 8 8 2}{cmd:vector} specifies that the results are to be compiled as a
+single vector. This option is necessary when, and only when, (1) there
+is a single result in {cmd:from()}; (2) there is no {cmd:cols()},
+{cmd:lhs()} or {cmd:rhs()}; (3) {it:command} is a univariate command.
+Without {cmd:vector}, {cmd:makematrix} would otherwise attempt to treat
+{it:command} as a bivariate command and carry out calculations for all
+pairs of variables.
+
+{p 8 8 2}Only one of {cmd:cols()}, {cmd:lhs()}, {cmd:rhs()} and
+{cmd:vector} may be specified.
+
+{p 8 8 2}{cmd:listwise} specifies that the results of {it:cmd} should be
+determined for as many observations as possible.  Note that as a
+consequence the number of observations used in each calculation may
+differ. By default casewise deletion is used to ensure consistency in
+observations selected.
+
+{p 4 4 2}{it:list_options} control the presentation of the matrix.
+
+{p 8 8 2}{cmd:list} specifies that the {help list} command be used to
+present the matrix. 
+
+{p 8 8 2}{cmdab:la:bel} specifies that an attempt be made to show variable
+labels wherever variables specify the rows of the matrix. Unless the
+{cmd:list} option is also specified, variable labels longer than 32
+characters will not be shown and periods which {cmd:matrix list} does
+not construe as time series operators will be suppressed.
+
+{p 8 8 2}{cmdab:f:ormat(}{it:format}{cmd:)} specifies the format to be
+used for columns with {cmd:list}. As an extension of standard format
+options, multiple formats may be specified, one for each column.
+For example, {cmd:format(%3.2f %4.3f %5.4f)} specifies that 
+the columns of the matrix have the specified formats. 
+
+{p 8 8 2}{cmd:dp(}{it:#} [ {it:#} [  ... ] ]{cmd:)} is an alternative
+to {cmd:format()} and specifies the number of decimal places to be shown
+with {cmd:list}. Note that, for example, {cmd:dp(2 3 4)} is equivalent
+to {cmd:format(%3.2f %4.3f %5.4f)}.
+
+{p 8 8 2}{cmdab:right:justify} specifies that row names are to be shown
+right-justified with {cmd:list}. The default is to present them
+left-justified. 
+
+{p 8 8 2}Other options may be specified that are options of {cmd:list}
+if the {cmd:list} option is specified or of {cmd:matrix list} otherwise.
+
+
+{title:Examples} 
+
+{p 4 8 2}{cmd:. sysuse auto, clear }
+
+{p 4 8 2}{cmd:. makematrix, from(r(rho)) : spearman head trunk length displacement weight}{p_end}
+{p 4 8 2}{cmd:. makematrix, from(r(rho)) format(%4.3f) : spearman head trunk length displacement weight}
+
+{p 4 8 2}{cmd:. pca head trunk length displacement weight}{p_end}
+{p 4 8 2}{cmd:. score score1-score5}{p_end}
+{p 4 8 2}{cmd:. makematrix, from(r(rho)) cols(score?) : correlate head trunk length displacement weight}{p_end}
+{p 4 8 2}{cmd:. makematrix R, from(r(rho)) cols(score?) : correlate head trunk length displacement weight}{p_end}
+{p 4 8 2}{cmd:. matrix colnames R = "score 1" "score 2" "score 3" "score 4" "score 5"}{p_end}
+{p 4 8 2}{cmd:. matrix li R, format(%4.3f)}
+
+{p 4 8 2}{cmd:. makematrix , from(r(rho) r(p)) label cols(price) : spearman mpg-foreign}{p_end}
+{p 4 8 2}{cmd:. makematrix , from(r(rho) r(p)) list label format(%4.3f %6.5f) sep(0) cols(price) : spearman mpg-foreign}
+
+{p 4 8 2}{cmd:. makematrix, from(r(mean) r(sd) r(skewness)) : su head trunk length displacement weight, detail}{p_end}
+{p 4 8 2}{cmd:. makematrix, from(r(mean) r(sd) r(skewness)) list format(%2.1f %2.1f %4.3f) sep(0) : su head trunk length displacement weight, detail}
+
+{p 4 8 2}{cmd:. makematrix, from(r(rho) r(p)) lhs(rep78-foreign) : spearman mpg}{p_end}
+{p 4 8 2}{cmd:. makematrix, from(r(rho) r(p)) rhs(rep78-foreign) : spearman mpg}{p_end}
+{p 4 8 2}{cmd:. makematrix, from(e(r2) e(rmse) _b[_cons] _b[mpg]) lhs(rep78-foreign) : regress mpg}{p_end}
+{p 4 8 2}{cmd:. makematrix, from(e(r2) e(rmse) _b[_cons] _b[mpg]) lhs(rep78-foreign) list dp(3 2 2 3) abb(9) sep(0) divider : regress mpg}{p_end}
+{p 4 8 2}{cmd:. makematrix, from(e(r2) e(rmse) _b[_cons] _b) rhs(rep78-foreign) : regress mpg}{p_end}
+{p 4 8 2}{cmd:. makematrix, from(e(r2) e(rmse) _b[_cons] _b) rhs(rep78-foreign) list dp(3 2 2 3) abb(9) sep(0) divider : regress mpg}
+
+{p 4 8 2}{cmd:. gen weightsq = weight^2}{p_end}
+{p 4 8 2}{cmd:. makematrix, from(e(r2) e(rmse)) lhs(mpg-trunk length-foreign) : regress weight weightsq}{p_end}
+{p 4 8 2}{cmd:. makematrix, from(e(r2) e(rmse)) lhs(mpg-trunk length-foreign) list dp(3 2) sep(0) divider : regress weight weightsq}
+
+{p 4 8 2}{cmd:. makematrix, from(r(sum)) vector: su head trunk length displacement weight, meanonly}{p_end}
+
+
+{title:Author}
+
+{p 4 4 2}Nicholas J. Cox, Durham University, U.K.{break} 
+n.j.cox@durham.ac.uk
+
+
+{title:Acknowledgments}
+
+{p 4 4 2}Ken Higbee made valuable comments on this help file.  
+Eric Uslaner pointed towards a bug. Herv{c e'} Stolowy pointed towards 
+another bug, and Alan Riley explained it. Lisa Gilmore alerted me
+to a problem with handling double quotes. 
+
+
+{title:Also see}
+
+{p 4 13 2}On-line:  help for {help list}, {help matutil:matrix list};
+                             {help statsby}, {help tabstat}
+

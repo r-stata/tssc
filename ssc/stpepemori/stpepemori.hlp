@@ -1,0 +1,132 @@
+{smcl}
+{* 16dec2007}{...}
+help for {cmd: help stpepemori}
+{hline}
+
+{title:Title}
+
+{p2colset 5 20 22 2}{...}
+{p2col :{hi:stpepemori} {hline 2}}Test equality of cumulative incidence or conditional probability in presence of competing risks
+{p2colreset}{...}
+
+
+{title:Syntax}
+
+{pstd}
+{cmd:stpepemori} {varname} {ifin} {cmd:,} {opt compet(numlist)}  [ {opt cond:itional} ]
+ 
+
+{pstd}
+{cmd:stpepemori} is for use with survival-time data; see help {help st}. In previous {cmd:stset} you must specify 
+{cmdab:f:ailure(}{it:varname}{cmd:==}{it:numlist}{cmd:)} where {it:numlist} refers to the event of interest.
+
+{pstd}
+{cmd:stpepemori} can be used just with single-record st data.
+
+
+{title:Description}
+
+{pstd}
+{cmd:stpepemori} tests the equality of cumulative incidences or conditional probabilities across two groups. So
+{it:varname} specifying the groups to be compared can take just two values.
+The values in {it:numlist} of the previous {cmd:stset} are assumed as occurrence of event of interest. In {cmd:compet()}
+you must specify {it:numlist} corresponding to the occurrence of the competing event. Then, {cmd:stpepemori} computes the test proposed
+by Pepe and Mori for the main and competing event.{p_end}
+
+
+{title:Options}
+
+{phang}
+{opt compet(numlist)} is not an option. A failure of a competing event occurs whenever 
+{it:failvar} specified in the previous {cmd:stset} takes on any of the values of this {it:numlist}.{p_end}
+
+{phang}
+{opt conditional} specifies that conditional probability difference must be tested.
+
+
+{title:Example}
+
+{pstd}Setup{p_end}
+{phang2}{cmd:. use follic}
+
+{pstd}Create the indicator variable for the event of interest and competing risk{p_end}
+{phang2}{cmd:. gen byte evcens = (resp=="NR" | relsite!="") + 2*(resp=="CR" & relsite=="" & stat==1)}{p_end}
+
+{pstd}Declare data to be survival-time data{p_end}
+{phang2}{cmd:. stset dftime, fail(evcens==1)}
+
+{pstd}Two groups are defined based on age, dichomotized at 65{p_end}
+{phang2}{cmd:. gen byte age65 = age>65}{p_end}
+
+{pstd}Pepe and Mori test comparing the cumulative incidence for the main event and competing risk between two age groups{p_end}
+{phang2}{cmd:. stpepemori age65, compet(2)}
+
+
+{pstd}Pepe and Mori test comparing the conditional probability for the main event and competing risk between two age groups{p_end}
+{phang2}{cmd:. stpepemori age65, compet(2) conditional}
+
+
+{p}Downloading ancillary files in one of your {cmd:`"`c(adopath)'"'} directory you can run this example.{p_end}
+
+	  {it:({stata "stpepemori_example follic":click to run})}
+
+
+{title:Remarks}
+
+{p}When competing risks are present Kalbfleish and Prentice (1980) suggest the use of the cumulative incidence
+to estimate the probability of an event. Pepe and Mori(1993) give a method for comparing this function estimated in two groups. 
+This statistic is based on cumulative weighted differences between these functions where the weights decrease as the time progresses. 
+At later time points, in fact, the number of observations still at risk is small so it seems reasonable to down-weights differences 
+at these time points.{p_end}
+
+{p}Pepe and Mori (1993) proposed the conditional probability as a function incorporating the cumulative incidence
+of the event of interest and the cumulative incidence of the competing risk. Note that an estimate of the conditional probability can be easily 
+obtained by the cumulative incidence. For example the conditional probability for the event of interest is: {it:CI_main/(1-CI_competing)}
+as shown by running the example. The same test comparing two cumulative incidences can be applied to the conditional probabilities.{p_end}
+
+
+
+{title:Saved results}
+
+{pstd}
+{cmd:stpepemori} saves the following in {cmd:r()}:
+
+{synoptset 15 tabbed}{...}
+{p2col 5 15 19 2: Scalars}{p_end}
+{synopt:{cmd:r(1)}}chi-squared statistic for event of interest{p_end}
+{synopt:{cmd:r(2)}}chi-squared statistic for competing risk{p_end}
+{synopt:{cmd:r(p1)}}p-value for event of interest{p_end}
+{synopt:{cmd:r(p2)}}p-value for competing risk{p_end}
+{p2colreset}{...}
+
+
+
+{title:Also see}
+
+{psee}
+{help stcompet} 
+
+{psee}
+{manhelp sts_test ST:sts test}
+{p_end}
+
+
+
+{title:References}
+
+{p}M.S. Pepe and M. Mori. Kaplan-Meier, marginal or conditional probability curves in summarizing competing risks
+failure time data. Stat in Med (1993), 12, 737 - 751.{p_end}
+
+{p}M. Pintilie. Competing risks: A practical perspective.
+Wiley, Chichester, 2006, p. 71 - 86 and 127 - 137.{p_end}
+
+
+
+{title:Authors}
+
+{p}Enzo Coviello ({browse "mailto:enzo.coviello@alice.it":enzo.coviello@alice.it}){p_end}
+
+
+{title:Aknowledgments}
+
+{p}I am grateful to prof. Melania Pintilie for making available R codes computing the above tests and for his book.{p_end}

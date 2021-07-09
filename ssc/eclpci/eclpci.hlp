@@ -1,0 +1,79 @@
+{smcl}
+{* 16June2005}{...}
+{hline}
+help for {hi:eclpci}
+{hline}
+
+{title:Exact and Approximate Confidence Limits for Poisson Counts}
+
+{p 4 14 10}{cmd:eclpci} {it:#obs} [{it:#exp}] [{cmd: ,} {cmdab:l:evel(}{it:#}{cmd:)} {cmdab:f:ormat(%}{it:fmt}{cmd:)} {cmdab:n:ormal} 
+{cmdab:ncc:orr}  {cmdab:rb} {cmdab:chi2} {cmdab:chi2c} ]{p_end}
+
+{p 4 14 10} where {p_end}
+
+{p 4 14 10}{it:#obs} observed number of events   {p_end}
+{p 4 14 10}[{it:#exp}] expected number of events  {p_end}
+
+{title:Description}
+
+{p 4 10 10}{cmd:eclpci} calculates exact and approximate confidence limits for a Poisson count (#obs). 
+It provides a Standardized Mortality Ratio (SMR=#obs/#exp) and its confidence limits if the expected number of events (#exp) is specified. 
+It is an immediate command.{p_end}
+ 
+{title:Options}
+
+{p 4 8 2}{cmdab:l:evel(}{it:#}{cmd:)} specifies the width of the confidence interval; see help {help level}.{p_end}
+
+{p 4 8 2}{cmdab:f:ormat(%}{it:fmt}{cmd:)} specifies the display format for presenting numbers.
+{cmd:format(%4.3f)} is the default; see help {help format}.{p_end}
+
+{p 4 8 2}{cmdab:n:ormal} specifies the normal approximation to calculate confidence limits of the counts (or SMR).{p_end}
+
+{p 4 8 2}{cmdab:n:ccorr} specifies the normal approximation with continuity correction to calculate confidence limits of the counts (or SMR).{p_end}
+
+{p 4 8 2}{cmdab:rb} specifies approximate limits of the counts (or SMR) as described by Rothman and Boyce (1979) or Breslow and Day (1987){p_end}
+
+{p 4 8 2}{cmdab:chi2} specifies a chi-square with simple continuity correction (eq. 2.10 pag.68, Breslow and Day, 1987){p_end}
+
+{p 4 8 2}{cmdab:chi2c} specifies chi-square with a better approximation to the exact Poisson test (eq. 2.12 pag.69, Breslow and Day, 1987){p_end}
+
+{title:Examples}
+
+     {cmd:* some examples are extracted from Table 2 page 356 of Daly L. (1992) }
+
+     {cmd:. eclpci 1 }
+     {cmd:. eclpci 10 }
+     {cmd:. eclpci 50 }
+     {cmd:. eclpci 100 }
+     {cmd:. eclpci 1, ncc}
+     {cmd:. eclpci 10, ncc}
+     {cmd:. eclpci 50, n }
+     {cmd:. eclpci 100, ncc}
+
+     {cmd:. eclpci 18 27.07}
+     {cmd:. eclpci 18 27.07, f(%5.4f) rb} 
+
+{title:References}
+
+{p 4 8 2}Daly, L., Simple SAS macros for the calculation of exact binomial and Poisson
+confidence limits, Comput Biol Med 22:351-361, 1992.{p_end}
+
+{p 4 8 2}Breslow NE, Day NE., Statistical Methods in Cancer Research: Volume II,
+The Design and Analysis of Cohort Studies. Lyon: International Agency for
+Research on Cancer, 1987, p.69.{p_end}
+
+{p 4 8 2}Rothman KJ., and Boice JD., Epidemiologic Analysis with a Programmable Calculator (NIH Publication 79-1649),
+Washington DC, US Government Printing Office, 1979.{p_end}
+
+{p 4 8 2}Guidelines for Using Confidence Intervals for Public Health Assessment{p_end}
+{p 8 8 2}{browse "http://www.doh.wa.gov/Data/Guidelines/WordDocs/CI_guidelines.pdf"}{p_end}
+
+{title:Support}
+
+{p 4 12}{browse "http://nicolaorsini.altervista.org"}{p_end}
+{p 4 12}{browse "mailto:nicola.orsini@imm.ki.se?subject=info eclpci":nicola.orsini@imm.ki.se}
+
+{title:Also see}
+
+{p 4 13 2} 
+Online:  help for {help propcii}, {help propci}, {help smr}, {help smri}, {help smrby} (if installed) 

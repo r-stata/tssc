@@ -1,0 +1,54 @@
+{smcl}
+{cmd:help metadata}
+{hline}
+
+{title:Title}
+
+    {hi: A metadata service for stata hosted at the IDSC of IZA(idsc.iza.org/metadata)}
+
+{title:Syntax}
+
+{p 8 17 2}
+{cmd:metadata}
+["search" or "registry"] [,from(<metadata_provider>) query(<search_string_NO_QUOTES>)] 
+
+{title:Description}
+
+{pstd}
+{cmd:metadata} is written in order to demonstrate that stata with its hypertext capabilities may
+be used to publish, browse and search metadata. Anyone can put up such a service and have it listed
+and searched by metadata. If you need info on how to do this contact the author.
+
+{pstd}
+Currently we offer metadata on Datasets related to the IZA Research Areas. The documentation is 
+based on an RSS feed at idsc.iza.org/metadata which holds the same info and is enriched with 
+Dublin Core elements. The feed is in turn based on DDI 2.1 documentation of 
+the datasets. The datasets ares searchable by means of concepts based on the Hasset Concept Hierarchy
+modified to suit our needs.
+For information on the details of the documentation please contact (Georgios Tassoukis at tassoukis@iza.org).
+
+{pstd}
+We are trying to get permission to post dummy datasets as well. This will allow the users to search locate 
+and practice analyzing data from within a stata session. For the moment we post a placeholder dataset.
+
+
+
+
+
+{title:Examples}
+The command below
+{phang}
+{cmd:. metadata search, from(idsc.iza.org) query(Wages and Workers)}{p_end}
+will search the metadata service at the IDSC for datasets on Wages and Workers.
+
+If you simply run:
+{phang}
+{cmd:. metadata registry}{p_end}
+you will be taken to the list of registered service providers while if you say
+{phang}
+{cmd:. metadata list, from(idsc.iza.org)}{p_end}
+you will be taken to the index page of the IDSC metadata service.
+
+{title: Author}
+Nikos Askitas, IZA, Bonn, Germany.
+Email: nikos@@iza.org

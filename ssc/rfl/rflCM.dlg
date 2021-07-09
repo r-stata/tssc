@@ -1,0 +1,114 @@
+*! rflCM.dlg version 3.6, 29 Nov 2005, Dankwart Plattner,  dankwart.plattner@web.de
+
+// Die Logik der Knöpfe Other DB und NoDB überdenken!
+// Die Logik von program setlogname überdenken!
+
+// Control = type
+// Button =   2
+// Checkbox = 1
+// Combobox = 8
+// Edit =     6
+// File =    12
+// Frame =   14
+// Groupbox = 5
+// Radio =    4
+// Spinner = 11
+// Text       3
+
+VERSION 8.2
+
+INCLUDE rfldef
+
+POSITION . . _wddlg _htdlg
+DIALOG main, title("rfl 3.6 - Recent files list: Clear memory, close logs") tabtitle("Main")
+BEGIN
+// Begin groupbox for datasets, descriptions, memory
+
+	GROUPBOX gb_Database    _lftgbdta     _upgbdta      _wd_gb        _htgbdta,	label(`"Data file to be opened"')
+
+	TEXT tx_file			   _lftstd       _upcombo      _wdstd        _htrad,     label("(no data file chosen)")
+
+	TEXT tx_desc            @             _uptxdesc     @             @,          left // Description
+
+// Begin groupbox for logfiles
+	GROUPBOX gb_Logfile     _lftgbdta     _upgblogs     _wd_gb        _htgblogs,  label(`"Log files to be opened"')
+	TEXT tx_log			      _lftstd       _uplog1       _wdstd        _htrad,     label(`"(no log file chosen)"')
+	TEXT tx_cmdlog			   @             _uplog2       @             @,          label(`"(no cmdlog file chosen)"')
+
+// controls for save and close
+	CHECKBOX cb_dsave  		@             _upcbsave     _wdcbsave     _htedit,    label(`"Save"') option("saved") nomemory
+	CHECKBOX cb_dclose  	   _lftcbclose   _upcbdclose   _wdstd        @,          label(`"Close data in memory"') option("closed") nomemory
+	CHECKBOX cb_lclose      @             _upcblclose   @             @,          label(`"Close (and save) open log"') option("closel") nomemory
+	CHECKBOX cb_cclose      @             _upcbcclose   @             @,          label(`"Close (and save) open cmdlog"') option("closec") nomemory
+
+// Hidden controls
+	EDIT ed_file            _lftstd       _upcmdlog3    @             @,          label("Enter a file") nomemory
+	EDIT ed_desc            @             _upcmdlog4    @             @,          label("Enter a description (<=244 Chars)") max(244) nomemory
+	EDIT ed_log             @             _upcmdlog5    @             @,          label("Enter a log") nomemory
+	EDIT ed_cmdlog          @             _upcmdlog6    @             @,          label("Enter a cmdlog") nomemory
+
+	EDIT ed_minmem          @             _upcmdlog7    _wdtxcmd2     @,          label("Min memory") option(minmem) nomemory
+	EDIT ed_maxmem          _lftspmaxmem  @             @             @,          label("Max memory") option(maxmem) nomemory
+	EDIT ed_memmult         _lfttxmaxmMB  @             @             @,          label("Memory multiplyer") option(memmult) nomemory
+
+	CHECKBOX cb_startdialog 1             1             10            10,         label("Should be last but one line. Hide some controls and start the dialog") nomemory onclickon("script startdialog") onclickoff("script startdialog") default(0)
+END
+
+OK			ok1,  label("OK")
+CANCEL	can1, label("Cancel")
+HELP     hlp1, view("help rfl")
+
+SCRIPT startdialog
+BEGIN
+	main.ed_file.hide
+	main.ed_desc.hide
+	main.ed_log.hide
+	main.ed_cmdlog.hide
+	main.ed_minmem.hide
+	main.ed_maxmem.hide
+	main.ed_memmult.hide
+	main.cb_startdialog.hide
+END
+
+PROGRAM command
+BEGIN
+//	call gaction main.ed_scri.append "R command"
+//	call gaction main.ed_scri.append " Vor erstem IF | "
+
+	put "rflbdlg "
+	beginoptions
+		if !main.ed_file & !main.ed_log {
+			put `"action(noaction) "'
+		}
+		if main.ed_file | main.ed_log {
+			put `" action(openfiles) "'
+			if main.ed_file {
+				//option dta
+				put /hidden `"dta(""' main.ed_file `"") "'
+			}
+			put "dtaisdesc(0) "
+			//option log
+			if main.ed_log {
+				put /hidden `"log(""' main.ed_log `"") "'
+			}
+			//option cmdlog
+			if main.ed_cmdlog {
+				put /hidden `"cmdlog(""' main.ed_cmdlog `"") "'
+			}
+		}
+		put `" from(program rflCMdlg) "'
+		optionarg main.cb_dsave
+		optionarg main.cb_dclose
+		optionarg main.cb_lclose
+		optionarg main.cb_cclose
+
+		put /hidden "minmem(" main.ed_minmem ") "
+		put /hidden "maxmem(" main.ed_maxmem ") "
+		put /hidden "memmult(" main.ed_memmult ") "
+	endoptions
+	stata hidden
+END
+
+
+
+

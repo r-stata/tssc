@@ -1,0 +1,64 @@
+{smcl}
+{* 31mar2004}{...}
+{hline}
+help for {hi:circcorr}
+{hline}
+
+{title:Correlation for circular data}
+
+{p 8 17 2} 
+{cmd:circcorr}
+{it:varname1 varname2}
+[{cmd:if} {it:exp}] 
+[{cmd:in} {it:range}]
+
+
+{title:Description} 
+
+{p 4 4 2} 
+{cmd:circcorr} produces a correlation coefficient appropriate for two
+circular variables taking on values between 0 and 360 degrees.
+The correlation is defined for {it:n} values of two such variables {it:x} and 
+{it:y} as
+
+                       SUM sin({it:x}[{it:i}] - {it:x}[{it:j}]) sin({it:y}[{it:i}] - {it:y}[{it:j}])
+                       {it:i}<{it:j}
+        r_T =   {hline 52}
+                              2                     2
+                ROOT [ SUM sin ({it:x}[{it:i}] - {it:x}[{it:j}]) SUM sin ({it:y}[{it:i}] - {it:y}[{it:j}]) ]
+                       {it:i}<{it:j}                   {it:i}<{it:j}
+
+{p 4 4 2}and takes on values between -1 and 1.
+
+{p 4 4 2} 
+The {it:P}-value associated with r_T can be computed for large samples,
+say {it:n} >= 25, but depends on the distribution of {it:x} and {it:y}. 
+If either has a
+mean resultant length (vector strength) of 0, then {it:n} * r_T is double
+exponential. Otherwise, ROOT of {it:n} * r_T has a Gaussian (normal)
+distribution. Both {it:P}-values are calculated.
+See Fisher (1993, pp.151-153) for details, but note that both {it:U} terms in
+(6.40) on p.152 should be rooted.
+
+
+{title:Example} 
+
+{p 4 8 2}{cmd:. circcorr wallasp axisasp} 
+
+
+{title:Reference}
+
+{p 4 8 2}Fisher, N.I. 1993. {it:Statistical analysis of circular data.}
+Cambridge: Cambridge University Press.
+
+
+{title:Author} 
+
+{p 4 4 2}Nicholas J. Cox, University of Durham, U.K.{break} 
+         n.j.cox@durham.ac.uk
+
+
+{title:Also see} 
+
+On-line: help for {help circscatter}, {help circlccorr}
+

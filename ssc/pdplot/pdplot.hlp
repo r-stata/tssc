@@ -1,0 +1,165 @@
+{smcl}
+{* 16nov2006}{...}
+{hline}
+help for {hi:pdplot}
+{hline}
+
+{title:Pareto dot plot} 
+
+{p 8 17 2} 
+{cmd:pdplot} 
+{it:catvar}  
+[{ifin}]
+[{it:weight}] 
+[ 
+{cmd:,}
+{cmdab:ai:opts(}{it:options}{cmd:)}
+{cmdab:dots:only} 
+{cmdab:h:orizontal} 
+{cmdab:l:evel(}{it:#}{cmd:)} 
+{cmd:nreps(}{it:#}{cmd:)} 
+{it:options}
+]
+
+{p 4 4 2}
+{cmd:fweight}s are allowed; see help {help weights}.
+
+
+{title:Description}
+
+{p 4 4 2}
+{cmd:pdplot} produces a Pareto dot plot as proposed by Wilkinson (2006).
+The frequencies of the categories of {it:catvar} are shown in order by a
+series of dots against a magnitude scale. As backdrop, corresponding
+acceptance intervals are shown by bars. 
+
+{p 4 4 2}
+The command is more flexible than this description of default behaviour
+implies. The intervals can be suppressed and the dot plot can be 
+{help advanced_options:recast()} to another kind of {help twoway} plot. 
+
+
+{title:Remarks} 
+
+{p 4 4 2}
+Wilkinson (2006) briefly reviews Pareto charts which commonly combine
+two displays in one. Frequencies in various categories are shown by a
+series of bars arranged in frequency order, from most common downwards.
+On that is often superimposed a rising curve showing cumulative
+frequency.  Frequency and cumulative frequency may or may not have
+consistent scales.  Examples from quality management studies often show
+categories of accidents, complaints, defects, failures, rejects,
+returns, or other such unwelcome phenomena. Wilkinson gives several
+cogent criticisms of this design and suggests an alternative: show
+frequencies in order, but by a dot plot, but add as reference a series
+of acceptance intervals. 
+
+{p 4 4 2} 
+The acceptance intervals are calculated by simulation. Imagine as
+benchmark a population in which k categories are equally probable, and
+imagine taking samples of size n. Here k and n are the same as those in
+the data under consideration. Just by chance the observed frequencies of
+the k categories will typically differ. For each sample we can label the
+frequencies f_(1) >= f_(2) > ... >= f_(k-1) >= f_(k): thus f_(1) is the
+frequency of the most abundant category, and so forth. Across several
+samples we can get order statistics for each f_(j) and use those to
+calculate intervals with desired coverage. 
+
+{p 4 4 2}
+The acceptance intervals should not be overinterpreted, for various
+different reasons. First, the reference distribution is just an agnostic
+guess assuming that we know just the numbers of values and categories
+and that we have no reason to suppose that categories differ in
+probability. More commonly, we would not really expect that the categories
+are equal in probability; it is just that we would rarely know how to
+make our expectations precise. Second, although making the sample size
+bigger will stabilise results, some variability will always be
+experienced in intervals produced by simulation. Third, there are
+various slightly different recipes for producing percent points from
+order statistics and only one is wired in here. 
+
+{p 4 4 2} 
+Vilfredo Pareto (1848{c -}1923) was an Italian sociologist, economist
+and philosopher, perhaps best remembered for his work on income
+distributions and what is now called Pareto efficiency. 
+See {browse "http://en.wikipedia.org/wiki/Vilfredo_Pareto":http://en.wikipedia.org/wiki/Vilfredo_Pareto}.
+Contrary to many statements, there appears to be no evidence that he
+used what is now known as the Pareto chart, which seems to have emerged
+in quality management after 1951. See Wilkinson (2006) for more on the 
+latter point. 
+
+{p 4 4 2}
+Pareto charts are commonly shown as vertical bar charts with the awkward
+consequence that long text labels are aligned vertically or obliquely, 
+and so made difficult to read. The {cmd:horizontal} option allows you
+to override the default. 
+
+
+{title:Options} 
+
+{p 4 8 2}{cmdab:ai:opts(}{it:options}{cmd:)} are options tuning the
+appearance of the acceptance intervals. Note that the default options
+are {cmd:barw(0.2) bcolor(none)}. The bars are laid down before the
+dots, so more colourful bars are possible. For comparison note that 
+the bars are centred at ranks 1, 2, etc., so that the default bar width is 20%
+of the possible. 
+
+{p 4 8 2}{cmdab:dots:only} suppresses the simulation and the addition of 
+acceptance intervals. In that case any {cmd:aiopts()}, {cmd:level()} 
+or {cmd:nreps()} has no effect. 
+
+{p 4 8 2}{cmdab:h:orizontal} specifies that the display should be
+aligned horizontally. The default is vertical. Note that {cmd:horizontal} 
+with {cmd:recast()} works but is not useful. 
+
+{p 4 8 2}{cmdab:l:evel(}{it:#}{cmd:)} specifies a coverage level as a
+percent for the acceptance intervals. The default is given by
+{cmd:c(level)}, which in turn defaults to 95. See help on {help level}
+if desired. 
+
+{p 4 8 2}{cmd:nreps(}{it:#}{cmd:)} specifies the number of repetitions
+of random drawing of a sample of size n from a population with k
+equally frequent categories. The default is 10000. For indicative,
+exploratory work, fewer repetitions may be adequate. Note that large
+numbers of repetitions, especially with large n, have implications for
+time and memory.  Positively, {cmd:pdplot} is most needed and most
+useful when the sample number is small. For reproducible results, 
+set {help seed} beforehand. 
+
+{p 4 8 2}{it:options} are other {help twoway} options tuning the
+appearance of the graph. For example, note that a dot display is not
+compulsory and can be replaced using with the 
+{help advanced_options:recast()} option.
+
+
+{title:Examples}
+
+{p 4 8 2}{cmd:. pdplot category}{p_end}
+{p 4 8 2}{cmd:. pdplot category, recast(bar) barw(0.1)}{p_end}
+{p 4 8 2}{cmd:. pdplot category, dotsonly} 
+
+
+{title:Acknowledgements}
+
+{p 4 4 2}
+William Gould and Vince Wiggins made very helpful suggestions. 
+
+
+{title:Author}
+
+{p 4 4 2}Nicholas J. Cox, Durham University{break} 
+         n.j.cox@durham.ac.uk
+
+
+{title:References} 
+
+{p 4 8 2} 
+Wilkinson, Leland. 2006. Revising the Pareto chart. 
+{it:American Statistician} 60(4): 332{c -}334. 
+
+	 
+{title:Also see}
+
+{p 4 13 2}On-line: help for {help graph bar}, {help graph dot}, 
+{help catplot} (if installed)
+

@@ -1,0 +1,272 @@
+//Revised 10/24/2010
+//Version 3.0
+
+VERSION 10.0
+POSITION . . 400 290
+
+DIALOG main, label("ASCOT (A SEVERITY CHARACTERIZATION OF TRAUMA)") tabtitle("Main") 
+BEGIN
+   GROUPBOX gb_ap_comp_cat_prefix 10 10  380 60,                        ///
+            label("AP Component Category Variable Name Prefix")
+   EDIT     ed_ap_comp_cat_prefix 20 35  50  20,                        ///
+            error("AP Component Category Variable Name Prefix")         ///
+            default("apc_")
+   TEXT     tx_ap_comp_cat_prefix 75 35  305 20,                        ///
+            label("Enter AP component category prefix")
+   GROUPBOX gb_sev_prefix         10 80  380 60,                        ///
+            label("Severity Variable Name Prefix")
+   EDIT     ed_sev_prefix         20 105 50  20,                        ///
+            error("Severity Variable Name Prefix")                      ///
+            default("sev_")
+   TEXT     tx_sev_prefix         75 105 305 20,                        ///
+            label("Enter severity prefix")
+   GROUPBOX gb_in_out_files       10 150 380 90,                        ///
+            label("Select Input and Output Files")
+   FILE     fn_in                 20 175 360 20,                        ///
+            label("Browse Input File")                                  ///
+            error("Input File Name")                                    ///
+            buttonwidth(100)                                            ///
+            filter("Stata Dataset (*.dta)|*.dta|All Files (*.*)|*.*") 
+   FILE     fn_out                20 205 360 20,                        ///
+            label("Browse Output File")                                 ///
+            error("Output File Name")                                   ///
+            buttonwidth(100)                                            ///
+            save                                                        ///
+            filter("Stata Dataset (*.dta)|*.dta|All Files (*.*)|*.*")
+END
+
+DIALOG ascot_var_names, label("ASCOT Variable Names") tabtitle("ASCOT Variable Names") 
+BEGIN
+   GROUPBOX gb_ascot_var_names 10 10 380  230,                     ///
+            label("ASCOT Variable Names")
+   EDIT     ed_rts             20 30 50   20,                      ///
+            error("Revised Trauma Score Variable Name")            ///
+            default("rts")
+   TEXT     tx_rts             75 30 305  20,                      ///
+            label("Revised Trauma Score")
+   EDIT     ed_cgcs            20 55 50   20,                      ///
+            error("Coded GCS Variable Name")                       ///
+            default("cgcs")
+   TEXT     tx_cgcs            75 55 305  20,                      ///
+            label("Coded GCS")
+   EDIT     ed_cbp             20 80 50   20,                      ///
+            error("Coded Systolic Blood Pressure Variable Name")   ///
+            default("cbp")
+   TEXT     tx_cbp             75 80 305  20,                      ///
+            label("Coded Systolic Blood Pressure")
+   EDIT     ed_crr             20 105 50  20,                      ///
+            error("Coded Respiratory Rate Variable Name")          ///
+            default("crr")
+   TEXT     tx_crr             75 105 305 20,                      ///
+            label("Coded Respiratory Rate")
+   EDIT     ed_maxais          20 130 50  20,                      ///
+            error("Maximum Severity Variable Name")                ///
+            default("maxais")
+   TEXT     tx_maxais          75 130 305 20,                      ///
+            label("Maximum Severity ")
+   EDIT     ed_age             20 155 50  20,                      ///
+            error("Age Variable Name")                             
+   TEXT     tx_age             75 155 305 20,                      ///
+            label("Age")
+   EDIT     ed_disch_stat      20 180 50  20,                      ///
+            error("Discharge Status Variable Name")                
+   TEXT     tx_disch_stat      75 180 305 20,                      ///
+            label("Discharge Status")
+   EDIT     ed_blunt_pen       20 205 50  20,                      ///
+            label("Blunt\Penetrating Trauma Variable Name")        ///
+            default("bluntpen")
+   TEXT     tx_blunt_pen       75 205 305 20,                      ///
+            label("Blunt\Pen Trauma")
+END
+
+DIALOG ascot_coefficients, label("ASCOT Coefficients") tabtitle("ASCOT Coefficients") 
+BEGIN
+   GROUPBOX gb_ascot_coefficients    10  10  380  260,                        ///
+            label("ASCOT Coefficients")
+   TEXT     tx_blunt_coeff_cat       148 35  60   20,                         ///
+            label("BLUNT")
+   TEXT     tx_pen_coeff_cat         230 35  60   20,                         ///
+            label("PEN")
+   TEXT     tx_constant              20  60  120  20,                         ///
+            label("Constant")
+   EDIT     ed_blunt_constant        140 60  50   20,                         ///
+            error("Blunt Trauma Constant")                                    ///
+            default("-1.1570")                                                ///
+            numonly
+   EDIT     ed_pen_constant          215 60  50   20,                         ///
+            error("Penetrating Trauma Constant")                              ///
+            default("-1.1350")                                                ///
+            numonly
+   TEXT     tx_gcs_coeff             20  85  120  20,                         ///
+            label("GCS")
+   EDIT     ed_blunt_gcs_coeff       140 85  50   20,                         ///
+            error("Blunt Trauma GCS Coefficient")                             ///
+            default("0.7705")                                                 ///
+            numonly
+   EDIT     ed_pen_gcs_coeff         215 85  50   20,                         ///
+            error("Penetrating Trauma GCS Coefficient")                       ///
+            default("1.0626")                                                 ///
+            numonly
+   TEXT     tx_systol_bp_coeff       20  110 120  20,                         ///
+            label("Systolic Blood Pressure")
+   EDIT     ed_blunt_systol_bp_coeff 140 110 50   20,                         ///
+            error("Blunt Trauma Systolic Blood Pressure Coefficient")         ///
+            default("0.6583")                                                 ///
+            numonly
+   EDIT     ed_pen_systol_bp_coeff    215 110 50  20,                         ///
+            error("Penetrating Trauma Systolic Blood Pressure Coefficient")   ///
+            default("0.3638")                                                 ///
+            numonly
+   TEXT     tx_resprate_coeff         20  135 120 20,                         ///
+            label("Respiratory Rate")
+   EDIT     ed_blunt_resprate_coeff   140 135 50  20,                         ///
+            error("Blunt Trauma Respiratory Rate Coefficient")                ///
+            default("0.2810")                                                 ///
+            numonly
+   EDIT     ed_pen_resprate_coeff     215 135 50  20,                         ///
+            error("Penetrating Trauma Respiratory Rate Coefficient")          ///
+            default("0.3332")                                                 ///
+            numonly
+   TEXT     tx_ap_a_comp_coeff        20  160 120 20,                         ///
+            label("AP A Component")
+   EDIT     ed_blunt_ap_a_comp_coeff  140 160 50  20,                         ///
+            error("Blunt Trauma AP A Component Coefficient")                  ///
+            default("-0.3002")                                                ///
+            numonly
+   EDIT     ed_pen_ap_a_comp_coeff    215 160 50  20,                         ///
+            error("Penetrating Trauma AP A Component Coefficient")            ///
+            default("-0.3702")                                                ///
+            numonly
+   TEXT     tx_ap_b_comp_coeff        20  185 120 20,                         ///
+            label("AP B Component")
+   EDIT     ed_blunt_ap_b_comp_coeff  140 185 50  20,                         ///
+            error("Blunt Trauma AP B Component Coefficient")                  ///
+            default("-0.1961")                                                ///
+            numonly
+   EDIT     ed_pen_ap_b_comp_coeff    215 185 50  20,                         ///
+            error("Penetrating Trauma AP B Component Coefficient")            ///
+            default("-0.2053")                                                ///
+            numonly
+   TEXT     tx_ap_c_comp_coeff        20  210 120 20,                         ///
+            label("AP C Component")
+   EDIT     ed_blunt_ap_c_comp_coeff  140 210 50  20,                         ///
+            error("Blunt Trauma AP C Component Coefficient")                  ///
+            default("-0.2086")                                                ///
+            numonly
+   EDIT     ed_pen_ap_c_comp_coeff    215 210 50  20,                         ///
+            error("Penetrating Trauma AP C Component Coefficient")            ///
+            default("-0.3188")                                                ///
+            numonly
+   TEXT     tx_age_coeff              20  235 120 20,                         ///
+            label("Age")
+   EDIT     ed_blunt_age_coeff        140 235 50  20,                         ///
+            error("Blunt Trauma Age Coefficient")                             ///
+            default("-0.6355")                                                ///
+            numonly
+   EDIT     ed_pen_age_coeff          215 235 50  20,                         ///
+            error("Penetrating Trauma Age Coefficient")                       ///
+            default("-0.8365")                                                ///
+            numonly
+END
+
+OK ok1, label("OK")
+CANCEL can1, label("Cancel")
+SUBMIT sub1, label("Submit")
+HELP hlp1, view("help ascot")
+RESET res1
+COPY copy1
+
+PROGRAM command
+BEGIN
+   require main.ed_ap_comp_cat_prefix
+   require main.ed_sev_prefix
+   require main.fn_in
+   require main.fn_out
+   require ascot_var_names.ed_rts
+   require ascot_var_names.ed_cgcs
+   require ascot_var_names.ed_cbp
+   require ascot_var_names.ed_crr
+   require ascot_var_names.ed_maxais
+   require ascot_var_names.ed_age
+   require ascot_var_names.ed_disch_stat
+   require ascot_var_names.ed_blunt_pen
+   require ascot_coefficients.ed_blunt_constant
+   require ascot_coefficients.ed_blunt_gcs_coeff
+   require ascot_coefficients.ed_blunt_systol_bp_coeff
+   require ascot_coefficients.ed_blunt_resprate_coeff
+   require ascot_coefficients.ed_blunt_ap_a_comp_coeff
+   require ascot_coefficients.ed_blunt_ap_b_comp_coeff
+   require ascot_coefficients.ed_blunt_ap_c_comp_coeff
+   require ascot_coefficients.ed_blunt_age_coeff
+   require ascot_coefficients.ed_pen_constant
+   require ascot_coefficients.ed_pen_gcs_coeff
+   require ascot_coefficients.ed_pen_systol_bp_coeff
+   require ascot_coefficients.ed_pen_resprate_coeff
+   require ascot_coefficients.ed_pen_ap_a_comp_coeff
+   require ascot_coefficients.ed_pen_ap_b_comp_coeff
+   require ascot_coefficients.ed_pen_ap_c_comp_coeff
+   require ascot_coefficients.ed_pen_age_coeff
+   put "ascot "
+   put `"""'
+   put main.fn_in
+   put `"""'
+   put " "
+   put `"""'
+   put main.fn_out
+   put `"""'
+   put " "
+   put main.ed_ap_comp_cat_prefix
+   put " "
+   put main.ed_sev_prefix
+   put " "
+   put ascot_var_names.ed_rts
+   put " "
+   put ascot_var_names.ed_cgcs
+   put " "
+   put ascot_var_names.ed_cbp
+   put " "
+   put ascot_var_names.ed_crr
+   put " "
+   put ascot_var_names.ed_maxais
+   put " "
+   put ascot_var_names.ed_age
+   put " "
+   put ascot_var_names.ed_disch_stat
+   put " "
+   put ascot_var_names.ed_blunt_pen
+   put " "
+   put ascot_coefficients.ed_blunt_constant
+   put " "
+   put ascot_coefficients.ed_blunt_gcs_coeff
+   put " "
+   put ascot_coefficients.ed_blunt_systol_bp_coeff
+   put " "
+   put ascot_coefficients.ed_blunt_resprate_coeff
+   put " "
+   put ascot_coefficients.ed_blunt_ap_a_comp_coeff
+   put " "
+   put ascot_coefficients.ed_blunt_ap_b_comp_coeff
+   put " "
+   put ascot_coefficients.ed_blunt_ap_c_comp_coeff
+   put " "
+   put ascot_coefficients.ed_blunt_age_coeff
+   put " "
+   put ascot_coefficients.ed_pen_constant
+   put " "
+   put ascot_coefficients.ed_pen_gcs_coeff
+   put " "
+   put ascot_coefficients.ed_pen_systol_bp_coeff
+   put " "
+   put ascot_coefficients.ed_pen_resprate_coeff
+   put " "
+   put ascot_coefficients.ed_pen_ap_a_comp_coeff
+   put " "
+   put ascot_coefficients.ed_pen_ap_b_comp_coeff
+   put " "
+   put ascot_coefficients.ed_pen_ap_c_comp_coeff
+   put " "
+   put ascot_coefficients.ed_pen_age_coeff
+END
+
+
+

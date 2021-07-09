@@ -1,0 +1,98 @@
+{smcl}
+{* $Date: 2008-08-20 $}{...}
+{hline}
+help for {hi:jonter}{right:Version 2.4 2008-08-20}
+{hline}
+
+{title:Jonckheere-Terpstra Test}
+
+{p 4 11} {cmd:jonter}
+ {it:varname}
+[{cmd:if} {it:exp}]
+[{cmd:in} {it:exp}]
+{cmd:,}
+    {cmd:by(}{it:groupvar}{cmd:)} [{cmdab:v:erbose} {cmdab:j:only} {cmdab:c:ontinuity}]
+
+
+{title:Description}
+
+{p}
+{cmd:jonter} calculates test statistics, {it:J} and {it:J*}, and 
+asymptotic {it:p}-values for the Jonckheere-Terpstra test for ordered 
+alternatives.
+
+
+{title:Options}
+
+{p}
+Note that the {cmd:by()} is mandatory. Both {it:varname} 
+and {it:groupvar} must be at least ordinal.
+
+{p}
+{cmd:verbose} allows display of the individual 
+Mann-Whitney U counts.
+
+{p}
+{cmd:jonly} limits the calculations to those for the {it:J} test statistic.  This
+allows the command to complete somewhat faster, and is highly recommended
+for use of {cmd:jonter} with {cmd:permute} when use is made only of the {it:J} test statistic.
+
+{p}
+{cmd:continuity} causes a continuity correction to be applied to {it:J*}.  This 
+might aid somewhat in the normal approximation, but use of a continuity correction 
+with the Jonckheere-Terpstra test is not widespread.
+
+
+{title:Remarks}
+
+{p}
+{cmd:jonter} provides an alternative to the nonparametric trend test 
+{cmd:nptrend}, which is Stata's implementation of the Cuzick 
+test.  The Jonckheere-Terpstra test's {it:p}-value asymptotically converges to 
+that for the test for Kendall's tau ({cmd:ktau}).  As with {cmd:ktau}, {cmd:jonter} is 
+intended for small to moderate-sized datasets; the duration of computations grows 
+disproportionately with sample size.
+
+{p}
+{cmd:jonter} corrects {it:J} and {it:J*} for tied values in {it:varname}.  It also reports 
+asymptotic {it:p}-values for the test of descending ordered alternatives, as well as for 
+that of ascending ordered alternatives.  This obviates the need to manually reverse 
+ordering of the values in the {it:by} or {it:varname} variables in order to test for a 
+descending ordering.  It also reports the asymptotic {it:p}-value for the alternative of 
+either an ascending or a descending ordering against the null hypothesis of no ordering 
+(i.e., the two-tailed test), when the direction of ordering in the {it:by} variable cannot 
+be independently specified in advance.
+
+{p}
+Test statistics and {it:p}-values are returned in scalars: 
+r(J){c 151}Jonckheere-Terpstra test statistic, {it:J}; 
+r(JH0){c 151}expectation of {it:J} under the null hypothesis;
+r(se_JH0){c 151}square-root of the variance of {it:J} under the null hypothesis;
+r(Jstar){c 151}asymptotic normal approximation of {it:J}; and 
+r(p), r(p_l) and r(p_u){c 151}{it:p}-values associated with {it:J*}.
+
+
+{title:Examples}
+
+{p 4}{inp:. jonter latency, by(dose)}
+
+
+{title:Author}
+
+Joseph Coveney
+jcoveney@bigplanet.com
+
+
+{title:Acknowledgment}
+
+{p}
+Nicholas J. Cox edited an earlier version of {cmd:jonter}, fixing bugs 
+and providing major improvements in efficiency and functionality.  Correspondence 
+regarding support should nevertheless be addressed to the author listed above.
+
+
+{title:Also see}
+
+ Manual:  {hi:[R] nptrend} {hi:[R] spearman}
+
+{p 0 19}On-line:  help for {help nptrend}, {help ktau}, {help somersd} (if installed)

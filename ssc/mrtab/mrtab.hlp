@@ -1,0 +1,471 @@
+{smcl}
+{* 21jun2019}{...}
+{hline}
+help for {hi:mrtab}
+{hline}
+
+{title:One- and two-way tables of multiple responses}
+
+{p 4 4 2} One-way tables:
+
+{p 8 15 2}
+{cmd:mrtab} {it:varlist} [{it:weight}] [{cmd:if} {it:exp}]
+ [{cmd:in} {it:range}] [{cmd:,}
+  {bind:{ {cmdab:r:esponse:(}{it:numlist}{cmd:)} | {cmdab:cond:ition:(}{it:exp}{cmd:)} }}
+  {cmdab:p:oly}
+  {cmdab:count:all}
+  {cmdab:in:clude}
+  {cmdab:includem:issing}
+  {cmdab:case:wise}
+  {cmdab:ti:tle:(}{it:string}{cmd:)}
+  {cmdab:w:idth:(}{it:#}{cmd:)}
+  {cmdab:ab:brev}
+  {cmdab:nol:abel}
+  {cmdab:non:ames}
+  {cmdab:f:ormat:(}{it:%fmt}{cmd:)}
+  {cmdab:int:eger}
+  {cmd:sort}[{cmd:(}{it:#}{cmd:)}]
+  {cmdab:des:cending}
+  {cmdab:g:enerate:(}{it:prefix}{cmd:)}
+  {cmdab:nof:req} ]
+
+{p 4 4 2} Two-way tables:
+
+{p 8 15 2}
+{cmd:mrtab} {it:varlist} [{it:weight}] [{cmd:if} {it:exp}]
+ [{cmd:in} {it:range}] {cmd:,} {cmd:by(}{it:varname}{cmd:)}
+ [ {cmdab:col:umn}
+   {cmd:row}
+   {cmdab:ce:ll}
+   {cmdab:rcol:umn}
+   {cmdab:rce:ll}
+   {cmdab:ch:i2}
+   {cmdab:lr:chi2}
+   {cmd:warn}
+   {cmdab:m:test}[{cmd:(}{it:spec}{cmd:)}]
+   {cmdab:mlr:chi2}
+   {cmdab:w:rap}
+   {it:one-way_options} ]
+
+
+{p 4 4 2} {cmd:by} {it:...} {cmd::} may be used with {cmd:mrtab}; see help
+{help by}.
+
+{p 4 4 2} {cmd:fweight}s and {cmd:aweight}s are allowed with {cmd:mrtab}; see
+help {help weights}.
+
+
+{title:Description}
+
+{p 4 4 2} {cmd:mrtab} tabulates multiple responses which are stored as a set of
+variables. For example, a survey question might be: "Which of the following
+devices do you have in your home?" The respondent is then given a list like "1.
+Television, 2. Dishwasher, 3. Computer, 4. Dry cleaner ..." and may mark any
+number of devices. Such information can be stored in several ways. Two of them
+can be handled by {cmd:mrtab}:
+
+{p 4 8 2} Indicator mode: Each item in the list is represented by
+an integer indicator variable (e.g., 1 = item was marked by the respondent, 0 =
+item was not marked).
+
+{p 4 8 2} Polytomous mode (option {cmd:poly}): Each response is represented by
+a polytomous variable (first response, second response, third response, ...;
+this is convenient if the list of possible response categories is open or
+half-open). With the polytomous approach, the response variables may take on
+either integer or string values.
+
+{p 4 4 2} In either case, {cmd:mrtab} will compute a one-way or a two-way table
+of the frequency distribution of the responses. For two-way tables {cmd:mrtab}
+also offers significance tests.
+
+{p 4 4 2} If the data are stored in numeric format according to
+the polytomous mode, the labels of the response categories are taken from the value
+labels of the {it:first} variable. It is therefore crucial that the first
+variable contain labels for all possible items.
+
+{p 4 4 2} There are several ways to determine the number of valid
+observations. By default, all cases with at least one valid response (as
+specified by {cmd:response()} or {cmd:condition()}) are taken into
+account. All other observations are treated as missing. In some situations,
+however, it is appropriate to include cases with zero responses (see the
+{cmd:include} and the {cmd:includemissing} option). Furthermore, one might
+want to consider cases with complete information only and neglect all cases
+with one or more missing values (option {cmd:casewise}).
+
+{p 4 8 2}Use {help mrgraph} to produce plots of multiple response distributions.
+
+
+{title:Options}
+
+{p 4 8 2} {cmd:abbrev} specifies that long response labels be
+abbreviated rather than wrapped.
+
+{p 4 8 2} {cmd:by(}{it:varname}{cmd:)} tabulates the distribution of responses
+against the categories of {it:varname} (two-way table). The by-variable may be
+string or numeric.
+
+{p 4 8 2} {cmd:casewise} specifies that cases with missing values for at least
+one of the response variables should be excluded listwise.
+
+{p 4 8 2} {cmd:cell} displays the relative frequency of each cell in a two-way
+table (base: total number of valid observations).
+
+{p 4 8 2} {cmd:chi2} requests the calculation of an overall Pearson chi-square
+statistic for the hypothesis that the distribution of response patterns is
+independent from the values of the by-variable (not allowed if {cmd:aweight}s
+are specified). That is: A standard chi2 test is applied to an expanded two-way
+table, where the rows represent unique combinations of responses.
+
+{p 4 8 2} {cmd:column} displays in each cell of a two-way table the relative
+frequency of that cell within its column (base: column total of observations).
+
+{p 4 8 2} {cmd:condition(}{it:exp}{cmd:)} is an alternative to the
+{cmd:response()} option. It specifies a true or false
+condition for the response values. The condition must include a wildcard
+{cmd:@} for which is substituted in turn each variable name. If the data
+are stored according to the indicator mode, {cmd:condition()} specifies the
+scope of values that indicate a response to the item. {cmd:condition()} defaults
+to {cmd:@==1} in this case. If the data are stored according to the polytomous
+mode, {cmd:condition()} specifies the scope of responses that are to be
+tabulated. The default is to tabulate every value observed for the response
+variables (except for missing values). In the case of string
+variables, the {cmd:condition()} option is obsolete. {cmd:condition()} may
+not be combined with {cmd:response()}.
+
+{p 4 8 2} {cmd:countall} requests that repeated identical responses be
+added up. By default, repeated identical responses will only be counted once
+per case. If the data are in indicator mode, {cmd:countall} specifies that
+the observed values be interpreted as response counts. Notes: Significance
+tests may not be requested if {cmd:countall} is specified. Be careful with
+interpreting results that are labeled "percentage of cases";
+though they reflect the mean number of responses per case, they cannot be
+interpreted as proportions.
+
+{p 4 8 2} {cmd:descending} specifies that the sort order be descending. The
+default is to sort in ascending order. This is only relevant if {cmd:sort} is
+specified.
+
+{p 4 8 2} {cmd:format(}{it:%fmt}{cmd:)} specifies the display format for
+relative frequencies.
+
+{p 4 8 2} {cmd:generate(}{it:prefix}{cmd:)} creates a set of indicator
+variables reflecting the observed responses. The variables will be labeled and
+named according to the {it:prefix} provided. If {cmd:name(}{it:string}{cmd:)}
+is specified, the first eight characters of {it:string} are inserted into the
+variable labels. If the {cmd:chi2} and/or {cmd:lrchi2} options are specified,
+{cmd:generate} will additionally return a composite string variable,
+{it:prefix}rp, which reflects response patterns (each unique combination of
+responses is represented by a string of zeros and ones).
+
+{p 4 8 2} {cmd:include} specifies that observations composed of zero responses be
+treated as valid. Only cases with "real" missings (., .a, .b, .c, ...) for all
+response variables will be excluded. Note that {cmd:include} will affect only
+the number of valid cases, i.e. both the absolute distribution of responses and
+the distribution relative to the total of responses will remain unchanged. In
+the case of string response variables, {cmd:include} specifies that cases with
+only empty strings ("") be treated as valid.
+
+{p 4 8 2} {cmd:includemissing} is an enhancement to {cmd:include} and specifies
+that cases be treated as valid even if all response variables are missing.
+{cmd:includemissing} implies {cmd:include}. Specifying {cmd:includemissing} in
+connection with {cmd:casewise} has the effect that cases with missing values
+for at least one of the response variables will be treated as valid cases
+composed of zero responses.
+
+{p 4 8 2} {cmd:integer} specifies the display of frequencies as integers even
+if {cmd:aweight}s are applied.
+
+{p 4 8 2} {cmd:lrchi2} requests the calculation of an overall likelihood-ratio
+chi-square statistic (as an alternative to {cmd:chi2}). Note that the
+{cmd:lrchi2} option is not allowed if {cmd:aweight}s are specified and that
+the statistic will not be calculated if there are empty cells.
+
+{p 4 8 2} {cmd:mtest} requests the calculation of separate Pearson chi-square
+statistics for each response response category. That
+is, a test is carried out for each response category to establish whether the
+probability of observing the response depends on the values of the by-variable
+(this option is not allowed if {cmd:aweight}s are specified). Multiple-test
+adjustments may be requested by specifying the method in brackets
+(e.g. {cmd:mtest(bonferroni)}). See help {help _mtest}.
+
+{p 4 8 2} {cmd:mlrchi2} requests {cmd:mtest} to use the likelihood-ratio
+chi-square statistics instead of Pearson chi-square.
+
+{p 4 8 2} {cmd:nofreq} suppresses printing the frequencies (i.e., the whole
+frequency table will be suppressed unless {cmd:cell}, {cmd:column}, {cmd:row},
+{cmd:rcell} or {cmd:rcolumn} is specified for two-way tables).
+
+{p 4 8 2} {cmd:nolabel} suppresses the printing of labels.
+
+{p 4 8 2} {cmd:nonames} suppresses the printing of variable names or category
+values in the left stub of the table, i.e. only the labels will be printed.
+(This option has no effect if the response variables are string variables.) Not
+allowed if the response variables are unlabeled or the {cmd:nolabel} option is
+specified.
+
+{p 4 8 2} {cmd:poly} specifies that the responses are stored according to the
+polytomous mode. If {cmd:poly} is not specified, {cmd:mrtab} assumes that the
+responses are stored according to the indicator mode. However, string response
+variables imply {cmd:poly}.
+
+{p 4 8 2} {cmd:rcell} displays the relative frequency of each cell in a two-way
+table (base: total number of responses).
+
+{p 4 8 2} {cmd:rcolumn} displays in each cell of a two-way table the relative
+frequency of that cell within its column (base: column total of responses).
+
+{p 4 8 2} {cmd:response(}{it:numlist}{cmd:)} specifies the (range of) response
+values. If the data are stored according to the indicator mode,
+{cmd:response()} specifies the value which indicates a response to the item.
+{cmd:response()} defaults to 1 in this case. Note that the indicator variables
+do not necessarily have to be dichotomous since a list or range of values may
+be specified. If the data are stored according to the polytomous
+mode, {cmd:response()} specifies the list or range of responses that are
+to be tabulated. The default is to tabulate every value observed for the
+response variables (except for missing values). In the case of string
+variables, the {cmd:response()} option is obsolete. {cmd:response()} may
+not be combined with {cmd:condition()}.
+
+{p 4 8 2} {cmd:row} displays in each cell of a two-way table the relative
+frequency of that cell within its row (base: row total of responses; this is
+equal to the row total of observations unless {cmd:countall} is specified).
+
+{p 4 8 2} {cmd:title(}{it:string}{cmd:)} may be used to label the multiple
+response set. {it:string} will be printed at the head of the table.
+
+{p 4 8 2} {cmd:sort} displays the table rows in ascending order of frequency.
+In the case of a two-way table the sorting will correspond to the row totals
+unless a reference column is specified in parentheses. That is, {cmd:sort(1)}
+will sort in order of the frequencies in the first column (first by-group),
+{cmd:sort(2)} in order of the frequencies in the second column, and so on. Specify
+the {cmd:descending} option to sort in descending order.
+
+{p 4 8 2} {cmd:warn} displays a warning message if more than 20 percent of
+the relevant cells for the chi-square test have an expected frequency smaller
+than 5 or any of the relevant cells has an expected frequency smaller
+than 1. {cmd:warn} is only allowed if {cmd:chi2} or {cmd:lrchi2}
+is specified.
+
+{p 4 8 2} {cmdab:width(}{it:#}{cmd:)} specifies the maximum width (number of
+chars) used to display the labels of the responses. Labels that are too wide
+are wrapped (or abbreviated if the {cmd:abbrev} option is specified). The
+default width is 30. The minimum width is 11.
+
+{p 4 8 2} {cmd:wrap} requests that Stata take no action on wide two-way tables
+to make them readable. Unless {cmd:wrap} is specified, wide tables are broken
+into pieces to enhance readability.
+
+
+{title:Examples}
+
+{p 4 4 2} Indicator mode:
+
+        {com}. use http://fmwww.bc.edu/RePEc/bocode/d/drugs.dta
+        {txt}(1997 Survey Data on Swiss Drug Addicts)
+
+        {com}. mrtab inco1-inco7, include title(Sources of income) width(24)
+
+                                     {txt}  {c |}                Pct. of     Pct. of
+                     Sources of income {c |}      Freq.   responses       cases
+        {hline 30}{hline 1}{c +}{hline 11}{hline 1}{hline 11}{hline 1}{hline 11}
+        inco1          private support {c |}  {res}      226       12.83       23.25
+                     {txt}(partner, family, {c |}
+                              friends) {c |}
+        inco2           public support {c |}  {res}      607       34.47       62.45
+              {txt}(unemployment insurance, {c |}
+                      social benefits) {c |}
+        inco3             drug dealing {c |}  {res}      293       16.64       30.14
+        {txt}inco4    housebreaking, theft, {c |}  {res}       50        2.84        5.14
+                               {txt}robbery {c |}
+        inco5             prostitution {c |}  {res}       82        4.66        8.44
+        {txt}inco6       "mischeln"/begging {c |}  {res}      151        8.57       15.53
+        {txt}inco7         legal occupation {c |}  {res}      352       19.99       36.21
+        {txt}{hline 30}{hline 1}{c +}{hline 11}{hline 1}{hline 11}{hline 1}{hline 11}
+                                 {txt}Total {c |}  {res}     1761      100.00      181.17
+
+        {txt}Valid cases:        972
+        Missing cases:        0
+
+{p 4 4 2} Polytomous mode:
+
+        {com}. mrtab pinco1-pinco6, poly response(1/7) include
+           title(Sources of income) width(27)
+
+                                     {txt}  {c |}                Pct. of     Pct. of
+                     Sources of income {c |}      Freq.   responses       cases
+        {hline 30}{hline 1}{c +}{hline 11}{hline 1}{hline 11}{hline 1}{hline 11}
+         1   private support (partner, {c |}  {res}      226       12.83       23.25
+                      {txt}family, friends) {c |}
+         2              public support {c |}  {res}      607       34.47       62.45
+              {txt}(unemployment insurance, {c |}
+                      social benefits) {c |}
+         3                drug dealing {c |}  {res}      293       16.64       30.14
+         {txt}4       housebreaking, theft, {c |}  {res}       50        2.84        5.14
+                               {txt}robbery {c |}
+         5                prostitution {c |}  {res}       82        4.66        8.44
+         {txt}6          "mischeln"/begging {c |}  {res}      151        8.57       15.53
+         {txt}7            legal occupation {c |}  {res}      352       19.99       36.21
+        {txt}{hline 30}{hline 1}{c +}{hline 11}{hline 1}{hline 11}{hline 1}{hline 11}
+                                 {txt}Total {c |}  {res}     1761      100.00      181.17
+
+        {txt}Valid cases:        972
+        Missing cases:        0
+
+
+{p 4 4 2} The {cmd:response()} option in indicator mode:
+
+        {com}. codebook crime1
+
+        {txt}{hline}
+        {res}crime1{right:hit someone}
+        {txt}{hline}
+
+        {col 19}type:  numeric ({res}byte{txt})
+        {ralign 22:label}:  {res:crime}
+
+        {col 18}range:  [{res}0{txt},{res}3{txt}]{col 55}units:  {res}1
+        {col 10}{txt}unique values:  {res}4{col 51}{txt}missing .:  {res}65{txt}/{res}972
+
+        {txt}{col 13}tabulation:  Freq.   Numeric  Label
+        {col 24}{res}    716{col 33}       0{col 43}{txt}no
+        {col 24}{res}     62{col 33}       1{col 43}{txt}yes, as committer
+        {col 24}{res}     97{col 33}       2{col 43}{txt}yes, as victim
+        {col 24}{res}     32{col 33}       3{col 43}{txt}yes, both
+        {col 24}{res}     65{col 33}       .{col 43}
+        {txt}
+        {com}. mrtab crime1-crime5, include response(2 3)
+           title(Crime (as victim)) nonames
+
+                                     {txt}  {c |}                Pct. of     Pct. of
+                     Crime (as victim) {c |}      Freq.   responses       cases
+        {hline 30}{hline 1}{c +}{hline 11}{hline 1}{hline 11}{hline 1}{hline 11}
+                           hit someone {c |}  {res}      129       41.08       14.22
+          {txt}use a weapon against someone {c |}  {res}       27        8.60        2.98
+               {txt}sexual harassment, rape {c |}  {res}       31        9.87        3.42
+        {txt}robbery (including drug theft) {c |}  {res}       99       31.53       10.92
+                             {txt}blackmail {c |}  {res}       28        8.92        3.09
+        {txt}{hline 30}{hline 1}{c +}{hline 11}{hline 1}{hline 11}{hline 1}{hline 11}
+                                 {txt}Total {c |}  {res}      314      100.00       34.62
+
+        {txt}Valid cases:        907
+        Missing cases:       65
+
+{p 4 4 2} Two-way table incl. tests:
+
+        {com}. mrtab crime1-crime5, include response(2 3)
+           title(Crime (as victim)) nonames width(18)
+           by(sex) column mtest(bonferroni)
+
+        {txt}{c TLC}{hline 1}{hline 22}{hline 1}{c TRC}
+        {c |} Key                    {c |}
+        {c LT}{hline 1}{hline 22}{hline 1}{c RT}
+        {c |} {it:frequency of responses} {c |}
+        {c |} {it: column pct. of cases } {c |}
+        {c BLC}{hline 1}{hline 22}{hline 1}{c BRC}
+
+                           {c |}   Sex of respondent
+         Crime (as victim) {c |}     female        male {c |}      Total   chi2/p*
+        {txt}{hline 18}{hline 1}{c +}{hline 11}{hline 1}{hline 11}{hline 1}{c +}{hline 11}
+               hit someone {c |}  {res}       35          94 {txt}{c |} {res}       129     0.014
+                          {txt} {c |}  {res}    14.46       14.16 {txt}{c |} {res}     14.24     1.000
+        {txt}{hline 18}{hline 1}{c +}{hline 11}{hline 1}{hline 11}{hline 1}{c +}{hline 11}
+              {txt}use a weapon {c |}  {res}        4          22 {txt}{c |} {res}        26     1.754
+           {txt}against someone {c |}  {res}     1.65        3.31 {txt}{c |} {res}      2.87     0.927
+        {txt}{hline 18}{hline 1}{c +}{hline 11}{hline 1}{hline 11}{hline 1}{c +}{hline 11}
+        {txt}sexual harassment, {c |}  {res}       31           0 {txt}{c |} {res}        31    88.071
+                      {txt}rape {c |}  {res}    12.81        0.00 {txt}{c |} {res}      3.42     0.000
+        {txt}{hline 18}{hline 1}{c +}{hline 11}{hline 1}{hline 11}{hline 1}{c +}{hline 11}
+        {txt}robbery (including {c |}  {res}       32          66 {txt}{c |} {res}        98     1.982
+               {txt}drug theft) {c |}  {res}    13.22        9.94 {txt}{c |} {res}     10.82     0.796
+        {txt}{hline 18}{hline 1}{c +}{hline 11}{hline 1}{hline 11}{hline 1}{c +}{hline 11}
+                 {txt}blackmail {c |}  {res}       14          14 {txt}{c |} {res}        28     8.005
+                          {txt} {c |}  {res}     5.79        2.11 {txt}{c |} {res}      3.09     0.023
+        {txt}{hline 18}{hline 1}{c +}{hline 11}{hline 1}{hline 11}{hline 1}{c +}{hline 11}
+                     {txt}Total {c |}  {res}      116         196 {txt}{c |} {res}       312
+                         {txt}  {c |}  {res}    47.93       29.52 {txt}{c |} {res}     34.44
+                     {txt}Cases {c |}  {res}      242         664 {txt}{c |} {res}       906
+
+        {txt}* {it:Pearson chi2(1) / }{ralign 1:{it:Bonferroni adjusted p-values}}
+
+        Valid cases:        906
+        Missing cases:       65
+
+
+{title:Saved Results}
+
+{p 4 4 2} Scalars:
+
+{p 4 17 2} {cmd:r(N)}{space 9}number of valid cases{p_end}
+{p 4 17 2} {cmd:r(N_miss)}{space 4}number of missing cases{p_end}
+{p 4 17 2} {cmd:r(r)}{space 9}number of response categories{p_end}
+{p 4 17 2} {cmd:r(c)}{space 9}number of by-groups if {cmd:by()} is
+            specified{p_end}
+{p 4 17 2} {cmd:r(chi2)}{space 6}overall Pearson chi-squared if {cmd:chi2} is
+           specified{p_end}
+{p 4 17 2} {cmd:r(p)}{space 9}p-value of the overall Pearson chi-squared{p_end}
+{p 4 17 2} {cmd:r(chi2_lr)}{space 3}overall likelihood-ratio chi-squared if
+           {cmd:lrchi2} is specified{p_end}
+{p 4 17 2} {cmd:r(p_lr)}{space 6}p-value of the overall likelihood-ratio
+           chi-squared{p_end}
+{p 4 17 2} {cmd:r(df)}{space 8}degrees of freedom of the overall
+           chi2 tests{p_end}
+{p 4 17 2} {cmd:r(warn)}{space 6}{cmd:1} if warning has been displayed, {cmd:0} else, if {cmd:warn} is specified{p_end}
+{p 4 17 2} {cmd:r(expect5)}{space 3}percentage of cells with expected frequency < 5 if {cmd:warn} is specified{p_end}
+{p 4 17 2} {cmd:r(expect1)}{space 3}number of cells with expected frequency < 1 if {cmd:warn} is specified{p_end}
+
+{p 4 4 2} Macros:
+
+{p 4 17 2} {cmd:r(list)}{space 6}list of the labels of the responses if
+           available{p_end}
+{p 4 17 2} {cmd:r(mode)}{space 6}either "indicator" or "poly" depending on the
+           mode of the multiple response variables{p_end}
+{p 4 17 2} {cmd:r(type)}{space 6}either "numeric" or "string" depending on the
+           storage type of the multiple response variables{p_end}
+{p 4 17 2} {cmd:r(bylist)}{space 4}list of the labels of the by-groups if
+           available{p_end}
+{p 4 17 2} {cmd:r(bytype)}{space 4}either "numeric" or "string" depending on the
+           storage type of the by-variable{p_end}
+
+{p 4 4 2} Matrices:
+
+{p 4 17 2} {cmd:r(responses)}{space 1}frequencies of responses{p_end}
+{p 4 17 2} {cmd:r(cases)}{space 5}cases in by-groups if {cmd:by()} is
+           specified{p_end}
+{p 4 17 2} {cmd:r(mchi2)}{space 5}Pearson chi-squared and (adjusted) p-values of
+           the separate tests if {cmd:mtest} is specified{p_end}
+{p 4 17 2} {cmd:r(mchi2_lr)}{space 2}likelihood-ratio chi-squared and (adjusted)
+           p-values of the separate tests if {cmd:mtest} and {cmd:mlrchi2} are
+           specified{p_end}
+
+
+{title:Authors}
+
+{p 4 4 2} Ben Jann, University of Bern, ben.jann@soz.unibe.ch
+
+{p 4 4 2} Hilde Schaeper, HIS, Hannover, schaeper@his.de
+
+{p 4 4 2}
+    Thanks for citing this software as
+
+{p 8 8 2}
+    Jann, B. 2005. {browse "http://www.stata-journal.com/article.html?article=st0082":Tabulation of multiple responses}. The
+    Stata Journal 5(1): 92-122.
+
+{p 4 4 2}
+    or
+
+{p 8 8 2}
+    Jann, B., H. Schaeper 2004. MRTAB: Stata module to compute one- and two-way
+    tables of multiple responses. Available from
+    {browse "http://ideas.repec.org/c/boc/bocode/s437201.html"}.
+
+
+{title:Also see}
+
+{p 4 13 2} Manual:  {hi:[R] tabulate}
+
+{p 4 13 2} Online:  help for {help mrgraph}, {help _mrsvmat}, {help tabulate},
+{help _mtest}
+
+{p 4 13 2} FAQ:
+{browse "http://www.stata.com/support/faqs/data/multresp.html":How do I deal with multiple responses?}

@@ -1,0 +1,207 @@
+{smcl}
+{* version 1.0  26Feb2009}{...}
+{hline}
+help for {hi:saswrapper} {right:manual:  {hi:[R] none}}
+{right:dialog:  {hi: none}    }
+{hline}
+
+
+{title:Run a SAS program from within Stata}
+
+{p 8 17 2}
+{cmd:saswrapper}
+[{varlist}]
+{ifin}
+[{cmd:using} {it:sas program filename}]
+[{cmd:,} 
+{cmdab:pre:_sas_prog(`"}{it:sas code}{cmd:"')}
+{cmdab:post:_sas_prog(`"}{it:sas code}{cmd:"')}
+{cmdab:ch:eck}
+{cmdab:me:ssy}
+{cmd:usesas}
+{cmd:nodata}
+{cmd:savasas(}{it:sas dataset name}{cmd:)}
+{cmd:noformats}
+{cmd:rename}
+{cmd:clear}
+{cmd:char2lab}
+{cmd:float}
+{cmdab:qu:otes}]{p_end}
+
+        
+{title:Description}
+
+{p 4 4 2}{cmd:saswrapper} runs a SAS program in batch and prints the output in the Stata results window/log file.  
+This usually occurs by specifying a SAS program file after {cmd:using}, but {cmd:saswrapper} can also run  
+SAS code specified by the {cmd:pre_sas_prog()} and/or {cmd:post_sas_prog()} options.  By default, {cmd:saswrapper} 
+will save the current data in memory using {help savasas:savasas} and make it available in SAS's WORK library.  If 
+that is not desired, use the {cmd:nodata} option.  The {cmd:usesas} option tells {cmd:saswrapper} to load the 
+last SAS dataset created in the WORK library by the submitted SAS program into Stata using the {cmd:SAVASTATA} SAS macro.{p_end}
+
+{p 4 4 2}{cmd:NOTE:  saswrapper} calls SAS to run the SAS program.  This requires the ability to run SAS on your computer.
+If {cmd:saswrapper} does not run SAS for you, your {cmd:sasexe.ado} file may need to be edited to set the location of your 
+SAS executable file ({cmd:sas.exe}) and your {cmd:SAVASTATA} SAS macro file ({cmd:savastata.sas}).  
+It may be that {cmd:saswrapper} will be able to run with the default settings in {cmd:sasexe.ado}.  See the
+{help saswrapper##setup:setup instructions} below.{p_end}
+
+{p 4 4 2}{cmd:saswrapper} uses the {cmd:SAVASTATA} SAS macro to create the Stata dataset from the SAS dataset when the 
+{cmd:usesas} option is specified.  {cmd:saswrapper} downloads the {cmd:SAVASTATA} SAS macro and stores it where 
+user-written Stata ado-files are stored that begin with the letter "s".  This macro can be used in SAS.
+Learn about {cmd:SAVASTATA} here: 
+{browse "http://www.cpc.unc.edu/research/tools/data_analysis/sas_to_stata/savastata.html":http://www.cpc.unc.edu/research/tools/data_analysis/sas_to_stata/savastata.html }{p_end}
+
+ 
+{title:Options}
+
+{p 4 8 2}{cmd:using} {it:sas program filename} specifies {cmd:saswrapper} to run this SAS program.  {cmd:saswrapper} 
+assumes the SAS program file extension {cmd:.sas} if no file extension/suffix is specified.{p_end}
+
+{p 4 8 2}{cmd:pre_sas_prog()} and/or {cmd:post_sas_prog()} contain SAS code to be run by {cmd:saswrapper}.  If SAS 
+programming code is supplied by {cmd:using}, {cmd:pre_sas_prog()}, and {cmd:post_sas_prog()} then the order the 
+code will be run is:{p_end}
+
+{p 14 18 2}{cmd:pre_sas_prog()}{p_end}
+
+{p 14 18 2}{cmd:using}{p_end}
+
+{p 14 18 2}{cmd:post_sas_prog()}{p_end}
+
+{p 8 8 2}It is best to enclose the SAS code within compound double quotes:{p_end}
+
+{p 8 8 2}{cmd:. saswrapper, pre_sas_prog(`"proc means;"')  }{p_end}
+
+{p 8 8 2} in case the SAS code contains any double quotes.  An interesting way to submit SAS code is
+to first put it in a {help local:local} macro and use three forward slashes to continue the line:{p_end}
+
+{p 8 8 2}{cmd:. local pre_sas_prog  data new; /// }{p_end}
+{p 8 8 2}{cmd:  set work.stata_data; /// }{p_end}
+{p 8 8 2}{cmd:   gender = "female"; /// }{p_end}
+{p 8 8 2}{cmd:  run;               }{p_end}
+
+{p 8 8 2}{cmd:.  saswrapper , pre_sas_prog(`" `pre_sas_prog' "')}{p_end}
+
+{p 8 8 2}You can put a lot of SAS code in a {help local:local} macro if you don't use an equal sign ({cmd:=}) 
+after then local macro name.  For the above example to work, Stata has to be using the carriage
+return as an end-of-line delimiter and not semi-colons which is changed by the {help #delimit:#delimit}
+command.  Stata will see Stata-style {help comments:comments} in the SAS code as Stata comments so 
+avoid starting a line with a star/asterisk "*":{p_end}
+
+{p 8 8 2}{cmd:  * some comment   ; /// }{p_end}
+
+{p 8 8 2} because Stata will comment out the three forward slashes at the end and thus end the input to the 
+local macro.  Since the contents of the local macro will be one long line, do not attempt to do anything 
+in your SAS code that expects carriage returns like the SAS datalines statement that reads in raw data.{p_end}
+
+{p 4 8 2}{cmd:check} specifies to generate basic stats for both the SAS and Stata datasets for the user 
+to make sure {cmd:saswrapper} created the files correctly.  This is a comparison that should be done after 
+any datafile is converted to any other type of datafile by any software.  The SAS file is created in the 
+same directory as the SAS program specified in {cmd:using} or if no program was specified in {cmd:using} 
+then it will be created in the current directory.  The file is named starting with the name of the datafile 
+followed by "_SAScheck.lst" (SAS).  e.g. "mySASdata_SAScheck.lst"{p_end}
+
+{p 4 8 2}{cmd:messy} specifies that all the intermediary files created by {cmd:saswrapper} during its operation
+are not to be deleted.  The {cmd:messy} option prevents {cmd:saswrapper} from cleaning up after it has
+finished.  This option is mostly useful for debugging purposes in order to find out where something went 
+wrong.  All intermediary files have a name starting with an underscore "_" followed by the process ID and 
+are located in Stata's temp directory.{p_end}
+
+{p 4 8 2}{cmd:usesas} specifies to load the SAS dataset into memory that was most recently created in the 
+SAS WORK library in the SAS program submitted to {cmd:saswrapper}.  {cmd:saswrapper} figures out how much 
+memory the SAS dataset will require to be loaded into Stata and sets Stata's memory for you if your memory 
+setting is less than is required.{p_end}
+
+
+{p 4 8 2}{cmd:nodata} specifies to override the default behavior of {cmd:saswrapper} which is to save the 
+current dataset in memory to the SAS WORK library.  Use this option when your SAS program is not going to 
+use the dataset in memory.{p_end}
+
+{p 4 8 2}{cmd:savasas} specifies a different dataset name than the name of the dataset in memory.
+If the dataset in memory does not have a name and the option {cmd:savasas} is not used, then the
+dataset in memory will be available in SAS's WORK library as "stata_data" (a.k.a. "WORK.STATA_DATA").{p_end}
+
+{title:Options when saving data to SAS}
+
+{p 4 8 2}{cmd:varlist} specifies what selection of variables in the dataset in memory are to be saved
+to the SAS dataset in the WORK library in the SAS program submitted to {cmd:saswrapper}. If no variables
+are specified then all variables will be saved the SAS dataset.{p_end}
+
+{p 4 8 2}{cmd:if} {it:exp} subsets the dataset in memory before saving the dataset to the SAS dataset in 
+the WORK library in the SAS program submitted to {cmd:saswrapper}.{p_end}
+
+{p 4 8 2}{cmd:in} {it:range} subsets the dataset in memory before saving the dataset to the SAS dataset in 
+the WORK library in the SAS program submitted to {cmd:saswrapper}.{p_end}
+
+{p 4 8 2}{cmd:noformats} specifies that no value labels be saved as SAS formats.{p_end}
+
+{p 4 8 2}{cmd:rename} specifies that any required renaming of file name and/or variable names is
+to be done when saving the dataset in memory to SAS using {help savasas:savasas}.  The {cmd:rename} 
+option is only necessary when variable names are not unique in SAS.  {cmd:savasas} displays the list 
+of renamed variables.  {cmd:rename} also renames the SAS file name when the name provided is not a 
+valid SAS file name.{p_end}
+
+{title:Options when using the usesas option}
+
+{p 4 8 2}{cmd:clear} specifies to clear the data currently in memory before running {cmd:saswrapper}.{p_end}
+
+{p 4 8 2}{cmd:char2lab} specifies to encode long SAS character variables like the Stata 
+command {help encode:encode}.  Character variables that are too long for a Stata string 
+variable are maintained in value labels.{p_end}
+
+{p 4 8 2}{cmd:float} specifies that numeric variables that would otherwise be stored as numeric type
+double be stored with numeric type float.  This option should only be used if you are certain you
+have no integer variables that have more than 7 digits (like an id variable).{p_end}
+
+{p 4 8 2}{cmd:quotes} specifies that double quotes that exist in string variables are to be replaced 
+with single quotes.  Since the data are written out to an ASCII file and then read into Stata, 
+there are rare instances when double quotes are not allowed inside string variables.{p_end}
+
+
+
+{title:Examples}
+
+{p 4 8 2}{cmd:. saswrapper using "mySASprog.sas" }{p_end}
+
+{p 4 8 2}{cmd:. saswrapper using "mySASprog.sas", nodata usesas clear }{p_end}
+
+{p 4 8 2}{cmd:. saswrapper using "c:\data\mySASprog.sas", savasas(tester) check }{p_end}
+
+{p 4 8 2}{cmd:. saswrapper , pre_sas_prog(`" proc print; "')}{p_end}
+    
+{p 4 8 2}{cmd:. saswrapper , pre(`" data new; set work.stata_data; if income > 0 then do; employed = 1; output; end; run; "') usesas clear}{p_end}
+
+{p 4 8 2}{cmd:. saswrapper , post(`" proc univariate; "')}{p_end}
+
+
+
+{p 4 8 2}{cmd:NOTE:}  If you are setting up this program on your computer for
+the first time, please edit sasexe.ado to set the location of your SAS
+executable file (sas.exe).  If you do not, {cmd:saswrapper} will try to set it
+for you.  The sasexe.ado file is an ASCII text file and should
+be saved as such after editing.  Stata's {cmd:do-file} editor will do the trick.{p_end}
+
+{marker setup}
+{title:Setting up saswrapper}
+
+{p 4 4 2}
+If you are setting up this program on your computer for the first time, you may need to edit the {cmd:sasexe.ado} file to 
+set the location of your SAS executable file ({cmd:sas.exe}).  If you do not, {cmd:saswrapper} will look in the "usual" 
+locations for it.  {cmd:saswrapper} also may need to have the location of the SAS macro {cmd:savastata.sas} set.  The 
+{cmd:sasexe.ado} file is an ASCII text file and should be saved as such after editing.  Stata's do-file editor will do 
+the job.  {stata quietly adoedit sasexe:edit sasexe.ado} (click, to edit the {cmd:sasexe.ado} file, remember to save when 
+done.){p_end}
+
+
+{title:Author}
+
+{p 4 4 2}
+Dan Blanchette {break}
+The Carolina Population Center {break}
+University of North Carolina - Chapel Hill, USA {break}
+dan_blanchette@unc.edu{p_end}
+
+
+{title:Also see}
+
+{p 4 13 2}On-line: {help savasas:savasas}, {help usesas:usesas}{p_end}
+
+

@@ -1,0 +1,115 @@
+{smcl}
+{* 9 Feb 2009}{...}
+{hline}
+{cmd:help doubmass}
+{hline}
+
+{title:Double mass plot}
+
+{p 8 16 2}
+{cmd:doubmass}
+{it:yvar}
+{it:xvarlist}
+[{cmd:if} {it:exp}]
+[{cmd:in} {it:range}] 
+[{cmd:,}
+{cmd:ratio}
+{it:scatter_options} ]
+
+
+{title:Description} 
+
+{p 4 4 2}
+{cmd:doubmass} plots the cumulative sum of {it:yvar} against the average
+of the cumulated sums of each variable in {it:xvarlist}. If
+{it:xvarlist} contains just one variable {it:xvar}, {cmd:doubmass}
+reduces to a plot of the cumulative sum of {it:yvar} against the
+cumulative sum of {it:xvar}.
+
+{p 4 4 2} 
+It is assumed that data are {help tsset} and that no more than one panel
+is considered in any call. Otherwise put, {cmd:doubmass} expects a data
+structure in which contemporaneous panels constitute parallel time
+series.
+
+
+{title:Remarks}
+
+{p 4 4 2} 
+In hydrology double mass plots are a standard method of checking the 
+consistency of time series. For precipitation or stream discharge in 
+particular, nearby sites often have averages differing by a multiplier, 
+so that their ratio is constant, to a good approximation. Any breaks of 
+slope on the graph may indicate discontinuities such as station shift, 
+instrument breakdown, or changes in site conditions. 
+
+{p 4 4 2} 
+This technique appears not to be covered in literature on cusum charts for 
+quality control (e.g. Woodward and Goldsmith 1964). 
+
+
+{title:Options} 
+
+{p 4 8 2} 
+{cmd:ratio} plots the slope 
+
+	cumulative sum of {it:yvar} 
+	{hline 38} 
+	average of cumulative sums of {it:xvarlist} 
+
+{p 4 8 2}
+against average of cumulative sums of {it:xvarlist}. 
+
+{p 4 8 2}
+{it:graph_options} are any of the options allowed with {help scatter}.
+
+
+{title:Example}
+
+{p 4 8 2}{cmd:. doubmass site1 site2}
+
+
+{title:Author} 
+
+{p 4 4 2}Nicholas J. Cox, Durham University, U.K.{break}
+         n.j.cox@durham.ac.uk
+
+
+{title:References} 
+
+{p 4 8 2}
+Clarke, R.T. 1994. 
+{it:Statistical Modelling in Hydrology.}
+Chichester: John Wiley, 
+
+{p 4 8 2}
+Dingman, S.L. 1994. 
+{it:Physical Hydrology.} 
+Englewood Cliffs, NJ: Prentice-Hall. 
+
+{p 4 8 2}
+Dunne, T. and L.B. Leopold. 1978. 
+{it:Water in Environmental Planning.} 
+San Francisco: W.H. Freeman. 
+
+{p 4 8 2}
+McCuen, R.H. 1998. 
+{it:Hydrologic Analysis and Design.} 
+Upper Saddle River, NJ: Prentice-Hall. 
+pp.193-197. 
+
+{p 4 8 2}
+Searcy, J.K. and C.H. Hardison. 1960. 
+Double-mass curves. 
+{it:United States Geological Survey Water-Supply Paper} 1541B. 
+
+{p 4 8 2}
+Woodward, R.H. and P.L. Goldsmith. 1964. 
+{it:Cumulative Sum Techniques.}
+Edinburgh: Oliver and Boyd for Imperial Chemical Industries. 
+
+
+{title:Also see} 
+
+{p 4 13 2}help for {help scatter} 
+

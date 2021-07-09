@@ -1,0 +1,141 @@
+
+{smcl}
+{* Help for -scdcor- version 1.0.1 4April2012, Joerg Luedicke}{...}
+{hline}
+help {hi:scdcor}
+{hline}
+
+{title:Plot original and corrected self-consistent density estimates}
+
+
+{title:Syntax}
+
+{p 8 17 2}
+{cmd:scdcor} {varname} {ifin} 
+[
+{cmd:,}  
+{opt add:kde(kernel)}
+{opt bw(#)}
+{opt n(#)}
+{opt r:ange(# #)}
+{opt ex:pand}
+{opt gtd}
+{opt tol:erance(#)}
+{opt ini:tial(#)}
+{opt inter:val(#)}
+{cmdab:cline1:opts(}{it:{help cline_options}}{cmd:)}
+{cmdab:cline2:opts(}{it:{help cline_options}}{cmd:)}
+{cmdab:cline3:opts(}{it:{help cline_options}}{cmd:)}
+{it:{help twoway_options}}
+]  
+
+
+{title:Description}
+
+{p 4 4 2}
+{cmd:scdcor} is a convenience wrapper for {cmd:scdensity} and plots original
+and corrected density estimates, overlaid in one graph. Optionally, a kernel 
+density estimate can be added to the graph. The number of grid points and the 
+evaluation grid of the kernel estimate will be the same as for the self-consistent 
+estimate. Kernel density estimates are performed with {cmd:kdens} (Jann 2005a).
+
+
+{title:Options} 
+
+{dlgtab:Main}
+
+{p 4 8 2}{cmd:n(}#{cmd:)} Number of grid points to be used at which the density 
+is evaluated. If the number of data points is greater than N=1,000, the number 
+of grid points defaults to n=1,000. If the number of data points is lower than 
+N=1,000, the number of grid points defaults to n=N. If a number larger than the 
+actual sample size is requested, n is set to N.
+  
+{p 4 8 2}{cmdab:r:ange(}# #{cmd:)} Defines the grid range at which the density 
+is to be evaluated. Per default, the endpoints of the evaluation grid are 
+determined by the minimum and maximum value of the actual data points and 
+the {cmdab:r:ange()} option can be used to change this default behavior.
+The input of two numbers is required with the first one being the minimum 
+and the second one being the maximum of the range.
+ 
+{p 4 8 2}{cmdab:ex:pand} Expands the evaluation grid as a function of sample size 
+(see {help scdensity} for details). The default grid range is determined by the 
+endpoints of the data range.
+ 
+{p 4 8 2}{cmd:gtd} Use the alternative algorithm to find {it:z}. 
+See {help scdensity} for further details about this and the 
+default algorithm.
+
+{p 4 8 2}{cmdab:tol:erance(}#{cmd:)} Change the default tolerance.
+
+{p 4 8 2}{cmdab:ini:tial(}#{cmd:)} Change the initial value of {it:xi} at which the search is started.
+
+{p 4 8 2}{cmdab:inter:val(}#{cmd:)} Change the default search interval.
+
+
+{dlgtab:Kernel density}
+
+{p 4 8 2}{cmdab:add:kde(}{it:kernel}{cmd:)} Add kernel estimate. {it:kernel} can be any type 
+of kernel that is supported by {help kdens}. The evaluation grid is the same as for the 
+self-consistent estimate (i.e., range and number of grid points).
+
+{p 4 8 2}{cmd:bw(}#|{it:type}{cmd:)} Smoothing parameter for the kernel estimate,
+which either needs to be a positive real number or one of {help kdens}' automatic 
+bandwidth selectors. Defaults to {cmdab:s:ilverman}.
+
+
+{dlgtab:Graph options}
+
+{p 4 8 2}{cmdab:cline1:opts} {it:{help cline_options}} for the original self-consistent
+density estimate.
+
+{p 4 8 2}{cmdab:cline2:opts} {it:{help cline_options}} for the corrected self-consistent
+density estimate.
+
+{p 4 8 2}{cmdab:cline3:opts} {it:{help cline_options}} for the kernel density estimate.
+
+{p 4 8 2}{it:{help twoway_options}} Any options other than {opt by()} 
+documented in {bind:{bf:[G] {it:twoway_options}}}.
+
+
+{title:Dependencies}
+
+{p 4 8 2}
+{cmd:scdcor} requires Stata version 9.2 or higher and {cmd:moremata} (Jann 2005b), 
+available from SSC. Type -ssc install moremata- in Stata to obtain it. Also, if 
+the added kernel functionality wants to be used, Ben Jann's (2005a) {cmd:kdens} package
+needs to be installed, also available from SSC (-ssc install kdens-).
+
+
+{title:Examples}
+
+{p 4 8 2}{inp:. webuse head}
+
+{p 4 8 2}{inp:. scdcor jaw, ex}
+
+{p 4 8 2}{inp:. scdcor jaw, ex add(gauss) bw(sjpi) cline1(lpattern(dash) lwidth(.6)) cline2(lwidth(.5)) cline3(lpattern(dot) lcolor(gs1)) ylabel(, angle(0)) ytitle(f(x))}
+
+
+{title:References} 
+
+{p 4 4 2}
+Jann, B. (2005a). KDENS: Stata module for univariate kernel density estimation, 
+{it:Statistical Software Components S456410, Boston College Department of Economics},
+revised 26 May 2008.
+
+{p 4 4 2}
+Jann, B. (2005b). MOREMATA: Stata module (Mata) to provide various functions, 
+{it:Statistical Software Components S455001, Boston College Department of Economics},
+revised 19 Feb 2009.
+
+
+{title:Author}
+
+{p 4 4 2}Joerg Luedicke{break}
+Yale University and University of Florida{break}
+United States{break} 
+email: joerg.luedicke@ufl.edu
+
+
+{title:Also see}
+
+{p 4 13 2}Help {help scdensity}, {help kdensity}, {help kdens} (if installed)

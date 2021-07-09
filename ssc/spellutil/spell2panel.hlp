@@ -1,0 +1,49 @@
+{smcl}
+{hline}
+help for {hi:spell2panel}{right:(E. Leuven)}
+{hline}
+
+{title:Create panel data from time-span data}
+
+{p 8 15}{cmdab:spell2panel} [{it:clist}] {cmd:,} {cmd:spell(}{it:date0 date1}{cmd:)} {cmd:p(}{it:period}{cmd:)} 
+[{cmd:by(}{it:varlist}{cmd:)} nojoin]
+
+{p}where {it:clist} can be a {it:varlist} or
+
+{p}where {it:clist} can be [{cmdab:(}stat{cmdab:)}] {it:varlist} [ [{cmdab:(}stat{cmdab:)} ... ]
+
+{p}and stat is either {cmdab:mean} or {cmdab:sum}
+
+{title:Description}
+
+{p}{cmd:spell2panel} creates a panel from time-span data.
+
+{p}By default overlapping spells are broken up in disjoint adjacent spells. {it:clist} with statistics
+instructs how to treat variables when spells overlap; to sum them or take an average.
+ 
+{p}As an example, if two overlapping spells
+refer to a job and the variable is hours worked one would like to sum (to get the total hours worker), 
+whereas if the variable is the worker's
+age one would like to take the average (which will just be the worker's age).
+
+{p}Option {cmd:nojoin} allows the user to avoid the above procedure. Note that {cmd:spell2panel} only
+generates sensical results if spells do not overlap.
+
+{title:Options}
+
+{p 0 4} {cmd:spell(}{it:date0 date1}{cmd:)} start and end date of spell.
+
+{p 0 4} {cmd:p(}{it:period}{cmd:)} define aggregation period:
+y,h,q,m,w,d. That is: yearly, halfyearly, quarterly, monthly, weekly, daily.
+
+{p 0 4} {cmd:by(}{it:varlist}{cmd:)} defines the groups (id's) for which the panel must be constructed.
+
+{title:Example}
+
+{title:Acknowledgement}
+
+{p}Thanks to Barbara Sianesi for suggesting the clever use of expand and pointing me to Stata's time series formats.
+
+{title:Author}
+
+{p}E. Leuven, Department of Economics, University of Amsterdam. If you observe any problems {browse "mailto:leuven@fee.uva.nl"}.

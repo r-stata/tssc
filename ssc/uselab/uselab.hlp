@@ -1,0 +1,83 @@
+{smcl}
+{* version 1.0.4 07jan2012}{...}
+{cmd:help uselab}
+{hline}
+
+{title:Title}
+
+{p 5}
+{cmd:uselab} {hline 2} List value labels and variables using them
+
+
+{title:Syntax}
+
+{p 8}
+{cmd:uselab} [{it:namelist}] [{opt c:urrent} {opt var:iables}]
+
+
+{p 5 5}
+where {it:namelist} is a list of value label names, a {varlist}, or a
+combination of the two
+
+
+{title:Description}
+
+{pstd}
+{cmd:uselab} lists value label names and all variables they are 
+attached to. It provides the same information as official Stata's 
+{helpb uselabel}, but without creating a dataset. If {it:namelist} 
+is not specified, all value labels in memory are listed together with 
+all variables that use them.
+
+
+{title:Options}
+
+{phang}
+{opt current} lists value label names in the current 
+{help label language} only.
+
+{phang}
+{opt variables} causes {it:namelist} to be interpreted as a 
+{it:varlist}. If not specified, {cmd:uselab} will figure out 
+whether {it:name} is a {it:labelname} or a {it:varname} for 
+itself.
+
+
+{title:Example}
+
+{phang2}{cmd:. sysuse nlsw88}{p_end}
+{phang2}{cmd:. uselab}{p_end}
+{phang2}{cmd:. uselab mar coll}{p_end}
+
+
+{title:Saved results}
+
+{pstd}
+{cmd:uselab} saves the following in {cmd:r()}:
+
+{pstd}
+Macros{p_end}
+	{cmd:r(}{it:lblname}{cmd:)} varlist using value label {it:lblname}
+	{cmd:r(languages)} value label languages (multiligual datasets only)
+
+
+{title:Acknowledgements}
+
+{pstd}
+The major part of the code used is borrowed from official Stata's 
+{help uselabel}.
+
+
+{title:Author}
+
+{pstd}Daniel Klein, University of Bamberg, klein.daniel.81@gmail.com
+
+
+{title:Also see}
+
+{psee}
+Online: {help uselabel}, {help label}
+{p_end}
+
+{psee}
+if installed: {help labutil2}{p_end}

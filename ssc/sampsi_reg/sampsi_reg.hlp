@@ -1,0 +1,132 @@
+{smcl}
+{hline}
+help for {hi:sampsi_reg}
+{hline}
+
+{title: Calculates Sample Size or Power for Simple Linear Regression}
+
+{p 8 22}
+{cmdab:sampsi_reg}
+[,
+{opt null(#)}
+{opt alt(#)}
+{opt n1(#)}
+{opt sd1(#)}
+{opt a:lpha(#)}
+{opt p:ower(#)}
+{opt s:olve(string)}
+{opt sx(#)}
+{opt sy(#)}
+{opt var:method(string)}
+{opt yxcorr(#)}
+{opt onesided}
+}
+]
+
+{p}
+
+{title:Description}
+
+{p 0 0}
+{hi: sampsi_reg} calculates the power and sample size for a simple linear regression. The theory behind this
+command is described in Dupont and Plummer (1998) Power and Sample Size Calculations for Studies involving 
+Linear Regression, Controlled Clinical Trials 19:589-601.
+
+{p 0 0}
+The calculations require an estimate of the residual standard error. There are three methods for
+doing this: enter the estimate directly; enter the standard deviation of the Y's; or enter the correlation
+between Y and X values.
+
+{p 0 0}
+This command can be combined with {hi:samplesize} in order to look at multiple calculations and to plot the results.
+
+{title:Updating this command}
+
+{p 0 0}
+To obtain the latest version click the following to uninstall the old version
+{p_end}
+{stata ssc uninstall sampsi_reg}
+And click here to install the new version
+{stata ssc install sampsi_reg}
+
+{title:Options}
+
+{p 0 0}
+{opt null(#)} specifies the "null slope".
+
+{p 0 0}
+{opt alt(#)} specifies the "alternative slope".
+
+{p 0 0}
+{opt n1(#)} size of sample.
+
+{p 0 0}
+{opt sd1(#)} standard deviation of the residuals.
+
+{p 0 0}
+{opt a:lpha(#)} significance level of test; default is {hi:a(0.05)}.
+
+{p 0 0}
+{opt p:ower(#)} power of test; default is {hi:p(0.9)}.
+
+{p 0 0}
+{opt s:olve(string)} specifies whether to solve for the sample size or power; default is {hi:s(n)} solves for n and
+the only other choice is {hi:s(power)} solves for power.
+
+{p 0 0}
+{opt sx(#)} the standard deviation of the X's.
+
+{p 0 0}
+{opt sy(#)} the standard deviation of the Y's.
+
+{p 0 0}
+{opt yxcorr(#)} the correlation between Y's and X's.
+
+{p 0 0}
+{opt var:method(string)} specifies the method for calculating the residual standard deviation. 
+{opt varmethod(r)} uses the Y-X correlation and  {opt varmethod(sdy)} uses the standard deviation of the Y's,
+the default uses a direct estimate of the residual sd {opt sd1(#)}. 
+
+{p 0 0}
+{opt onesided} one-sided test; default is two-sided.
+
+{title:Examples}
+
+{p 0 0}
+Calculate power for a two-sided test:
+{p_end}
+
+{p 2 2}
+{stata sampsi_reg, null(0) alt(0.25) n(100) sx(0.25) yxcorr(0.2) varmethod(r) s(power)}
+
+{p 0 0}
+Compute sample size:
+
+{p 2 2}
+{stata sampsi_reg, null(0) alt(0.25) sx(0.25) sy(1) varmethod(r) s(n)}
+
+When specifying the variance of the y's you must have a {opt varmethod} option
+{p 2 2}
+WRONG: {stata sampsi_reg, null(0) alt(5) sx(0.5) sy(12.3)}{p_end}
+{p 2 2}
+CORRECT: {stata sampsi_reg, null(0) alt(5) sx(0.5) sy(12.3) var(sdy)}
+
+{title:Author}
+
+{p}
+Adrian Mander, MRC Biostatistics Unit, Cambridge, UK.
+
+Email {browse "mailto:adrian.mander@mrc-bsu.cam.ac.uk":adrian.mander@mrc-bsu.cam.ac.uk}
+
+{title:See Also}
+Related commands:
+
+{p 2 2}
+{help sampsi}, {help samplesize} (if installed), {help sampclus} (if installed), {help xsampsi} (if installed), {help artmenu} (if installed)
+
+
+
+
+
+ 
+

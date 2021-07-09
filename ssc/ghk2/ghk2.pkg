@@ -1,0 +1,31 @@
+d 'GHK2': module (enhanced Mata function) to implement the Geweke-Hajivassiliou-Keane multivariate normal simulator
+d
+d   ghk2() estimates cumulative multivariate normal probabilities
+d and optionally  computes scores. It is modeled on Stata 10's
+"d ghkfast(), using pre-generated draws for speed.  It differs in"
+d the following significant respects: (1) It accepts lower as well
+d as upper bounds  of integration. (2) It works in Stata 9. (3) It
+d is an order of magnitude faster than ghkfast()  when the number
+d of observations is high relative to the number of simulation
+"d draws per  observation, though it can be slower at the opposite"
+"d extreme. (4) It does not ""pivot"" bounds of integration, putting"
+"d the larger entries toward the end, which somewhat increases  the"
+d variability of the simulated probability but eliminates
+d discontinuities in the function  that can otherwise stymie a
+d likelihood search by -ml- when draws are few.
+d
+d KW: multivariate normal
+d KW: Geweke-Hajivassiliou-Keane
+d KW: Mata
+d
+d Requires: Stata version 9.2
+d
+d Distribution-Date: 20170629
+d
+"d Author: David Roodman, Givewell.org"
+d Support: email DRoodman@@outlook.com
+d
+f ghk2version.ado
+f ghk2.mata
+f ghk2.hlp
+f ./l/lghk2.mlib

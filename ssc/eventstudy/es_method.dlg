@@ -1,0 +1,91 @@
+/*
+
+es_method.dlg
+
+*!version 1.0.1 08mar2013
+
+*/
+
+VERSION 12
+
+POSITION . . 350 200
+RESET res1
+
+DIALOG method , label("EventStudy Parameters") ///
+	tabtitle("Research Windows")
+BEGIN
+	TEXT tx_savefile 10 15 330 .,                 	 ///
+		label("Save the Result file in this folder:")
+	FILE fi_savefile @ +20 @   ., 				 	 ///
+		error("missing output file path")                  	 ///
+		label("Save in ...")                      	 ///
+		directory	nomemory								 
+
+	GROUPBOX group_method @ +30 @ 130,         	      ///
+		label("Input the date relative to the event")
+
+	TEXT tx_estwinst +10 +25 240 .,                  ///
+		label("Start Date of Estimate Window")    	 
+
+	SPINNER sp_estwinst +240 @ 50 .,                 ///
+		label("Start Date of Estimate Window")         ///
+		min(-300) max(0) default(-200) nomemory                           
+		
+	TEXT  tx_estwinend -240 +25 240 .,               ///
+		label("End Date of Estimate Window")         
+	SPINNER sp_estwinend +240 @ 50 .,                ///
+		label("End Date of Estimate Window")         ///
+		min(-300) max(0) default(-10) nomemory                           
+
+	TEXT  tx_evewinst -240 +25 240 .,                ///
+		label("Start date of event Window")          
+	SPINNER sp_evewinst +240 @ 50 .,                 ///
+		label("Start date of event Window")          ///
+		min(-50) max(+50)  default(-3) nomemory					
+	
+	TEXT tx_evewinend -240 +25 180 ., 				 ///
+		label("End date of event Window")
+	SPINNER sp_evewinend +240 @ 50 .,                ///
+		label("End date of event Window")            ///
+		min(-50) max(+50)   default(+2)  nomemory                      
+
+
+END
+
+OK ok1
+SUBMIT sub1, uaction(command)
+CANCEL can1, uaction(command)
+COPY COPY1
+
+
+PROGRAM command
+BEGIN
+
+	require method.fi_savefile
+
+	require method.sp_estwinst
+	require method.sp_estwinend
+	require method.sp_evewinst
+	require method.sp_evewinend
+	call create STRING str_method_return
+
+	call str_method_return.setvalue  ///
+		class method.fi_savefile.value
+	call str_method_return.append "*"
+	call str_method_return.append    ///
+		class method.sp_estwinst.value
+	call str_method_return.append "*"
+	call str_method_return.append   ///
+		class method.sp_estwinend.value
+	call str_method_return.append "*"
+	call str_method_return.append   ///
+		class method.sp_evewinst.value
+	call str_method_return.append "*"
+	call str_method_return.append   ///
+		class method.sp_evewinend.value
+
+	put str_method_return
+
+	
+END
+

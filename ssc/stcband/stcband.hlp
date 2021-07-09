@@ -1,0 +1,109 @@
+{smcl}
+{* 26jul2008}{...}
+help for {cmd:stcband}
+{hline}
+
+{title:Title}
+
+{p2colset 5 20 22 2}{...}
+{p2col :{hi:stcband} {hline 2}}Hall-Wellner and equal precision confidence band for the survival and cumulative hazard function{p_end}
+{p2colreset}{...}
+
+
+{title:Syntax}
+
+{p 8 15 2}
+{cmd:stcband} {ifin} [{cmd:,} 
+	{cmd:nair} 
+	{cmdab:tlo:wer(}{it:#}{cmd:)} 
+	{cmdab:tup:per(}{it:#}{cmd:)} 
+	{cmd:na}
+	{cmdab:tran:sform(}{it:string}{cmd:)} 
+	{cmdab:genlo:w(}{help newvar}{cmd:)} 
+	{cmdab:genhi:gh(}{help newvar}{cmd:)} 
+	{cmdab:l:evel(}{it:#}{cmd:)} 
+	{cmdab:nog:raph} 
+	{it:{help twoway_options}} ]
+
+{synoptset 29 tabbed}
+{synopthdr}
+{synoptline}
+{syntab:Options}
+{synopt :{opt nair}}specify equal precision (Nair) confidence band be computed. Default is Hall-Wellner confidence band{p_end}
+{synopt :{opt tlow:er}}specify the lower time boundary for confidence band. Default is the smallest time event{p_end}
+{synopt :{opt tup:per}}specify the upper time boundary for confidence band. Default is the largest time event{p_end}
+{synopt :{opt na}}compute confidence band for the cumulative hazard function{p_end}
+{synopt :{opt tran:sform}}produce {it:log}, {it:linear} or {it:arcsine} transformed confidence band. Default is {it:log}{p_end}
+{synopt :{opt genlo:w}}create a variable saving lower confidence band{p_end}
+{synopt :{opt genhi:gw}}create a variable saving upper confidence band{p_end}
+{synopt :{opt l:evel}}set confidence level. Values allowed are 90, 95 and 99. Default is 95{p_end}
+{synopt :{opt nog:raph}}suppress graph{p_end}
+
+
+{syntab :Y-Axis, X-Axis, Legend}
+{synopt :{it:{help twoway_options}}}some of the options documented in 
+{bind:{bf:[G]} {it:twoway_options}}{p_end}
+
+{syntab :Add plot}
+{synopt :{opth "plot(addplot_option:plot)"} {opth "addplot(addplot_option:plot)"}}add other plots to generated graph{p_end}{synoptline}
+{p2colreset}{...}
+
+{p 4 6 2}You must {cmd:stset} your data before using {cmd:stcband}; see {helpb stset}.{p_end}
+
+
+{title:Description}
+
+{p}{cmd:stcband} graphs and optionally saves the confidence bands for the survival function.{p_end}
+
+{p}The usual pointwise confidence intervals for the survival function are valid for a single fixed time. Often
+limits which contain {it:S(t)} for all {it:t} in an interval [{it:tlow,tup}] are of interest. Two important types
+of confidence bands are the Hall-Wellner bands (Hall and Wellner, 1980) and the equal precision bands (Nair,1984).
+To construct these confidence bands critical values are taken from {it:NairTables.dta} or {it:HallWellnerTables.dta} ({it:see reference}).
+There are three possible forms for the confidence bands: linear, log-minus-log and arcsine-square root transformed.{p_end}
+
+
+
+{title:Examples}
+
+{p 12 20}{inp: use "C:\Data\BMT", clear}{p_end}
+{p 12 20}{inp: stset Time2,failure(DeathRelapse)}{p_end}
+
+
+{p 4}Graph equal precision 95% confidence band in time interval 100 - 600  in patients with acute lymphoblastic leukemia{p_end}
+
+{p 12 20}{inp: stcband if Dis==1, nair tlower(100) tupper(600) xla(0(100)600) yla(0(.2)1, gstyle(minor))}{p_end}
+
+
+{p 4}Generate and graph Hall-Wellner 95% confidence band in time interval 100 - 600{p_end}
+
+{p 12 20}{inp: stcband if Dis==1, tlower(100) tupper(600) genlo(lohw_band) genhi(uphw_band) xla(0(100)600) yla(0(.2)1, gstyle(minor))}{p_end}
+
+
+{p 4}Graph simultaneously pointwise log-log confidence interval and Hall-Wellner arcsine transformed 95% confidence band{p_end}
+
+{p 12 20}{inp: sts gen pw_lo=lb(s) pw_hi= ub(s) if Dis==1}{p_end}
+{p 12 20}{inp: stcband if Dis==1, tlower(100) tupper(600) xla(0(100)600) transform(arcsine) yla(0(.2)1, gstyle(minor)) legend(ring(0) pos(7) size(*.7)) plot(line pw_hi pw_lo _t if _t<600, sort c(J J) lc(red red))}{p_end}
+
+
+{p}Downloading ancillary files in one of your {cmd:`"`c(adopath)'"'} directory you can run this example.{p_end}
+
+	  {it:({stata "stcband_example BMT":click to run})}
+
+
+
+{title:Also see}
+
+{psee}
+{manhelp sts_test ST:sts gen}
+{p_end}
+
+
+
+{title:References}
+
+{p}Klein JP, and Moeschberger ML: Survival Analysis: techniques for Censored and Truncated Data - 2nd ed., pp. 109 - 117.
+New York: Springer-Verlag, 2003{p_end}
+
+{title:Authors}
+
+{p}Enzo Coviello ({browse "mailto:enzo.coviello@alice.it":enzo.coviello@alice.it}){p_end}

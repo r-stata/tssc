@@ -1,0 +1,62 @@
+{smcl}
+{* 15jul2001}{...}
+{hline}
+help for {hi:hadrilm}{right:(StataList distribution 20 July 2001)}
+{hline}
+
+{title:Hadri panel stationarity test}
+
+{p 8 14}{cmd:hadrilm} {it:varname} 
+[{cmd:if} {it:exp}] [{cmd:in} {it:range}] 
+
+{p}{cmd:hadrlim} is for use with panel data.  You must {cmd:tsset} your
+data before using {cmd:hadrilm}, using the panel form of {cmd:tsset}; see help {help tsset}.
+
+{p} {it:varname} may contain time-series operators; see help {help varlist}.
+
+{p}Users of Stata 11+ should use the official {cmd:xtunitroot hadri} command.
+ 
+{title:Description}
+
+{p}{cmd:hadrilm} performs a test for stationarity in heterogeneous panel data
+(Hadri, 2000). This Lagrange Multiplier (LM) test has a null of stationarity,
+and its test statistic is distributed as standard normal under the null.
+The series may be stationary around a deterministic level, specific to the
+unit (i.e. a fixed effect) or around a unit-specific deterministic trend.
+The error process may be assumed to be homoskedastic across the panel,
+or heteroskedastic across units. Serial dependence in the disturbances can
+also be taken into account using a Newey-West estimator of the long run
+variance.  The residual-based test is based on the 
+squared partial sum process of residuals from a demeaning (detrending) model of 
+level (trend) stationarity.
+
+Test results and p-values are placed in the return array.
+
+{title:Examples}
+
+{p 8 12}{inp:.} {stata "use http://fmwww.bc.edu/ec-p/data/hayashi/sheston91.dta,clear":use http://fmwww.bc.edu/ec-p/data/hayashi/sheston91.dta,clear}
+
+{p 8 12}{inp:. hadrilm rgdppc if country<11}
+
+{p 8 12}{inp:. hadrilm D.rgdppc if country<11}
+
+
+{title:References}	
+
+Hadri, Kaddour. Testing for stationarity in heterogeneous panel data.
+The Econometrics Journal, 3, 2000, 148-161.
+
+{title:Acknowledgements}	
+
+
+Thanks to Kameliia Petrova for assistance with validation of this code.
+
+{title:Author}
+
+Christopher F Baum, Boston College, USA
+baum@@bc.edu
+
+{title:Also see}
+{p 0 19}On-line:  {help kpss} (if installed), {help nharvey} (if installed)
+
+

@@ -1,0 +1,132 @@
+{smcl}
+{* 30april2003}{...}
+{hline}
+help for {hi:slideplot}
+{hline}
+
+{title:Sliding bar plot for frequencies or percents} 
+
+{p 8 17 2} 
+{cmd:slideplot} 
+{c -(} {cmd:bar} {c |} {cmd:hbar} {c )-} 
+{it:varname}
+[{it:weight}]
+[{cmd:if} {it:exp}] 
+[{cmd:in} {it:range}]
+{cmd:,}
+{cmdab:neg:ative(}{it:valuelist}{cmd:)}
+{cmdab:pos:itive(}{it:valuelist}{cmd:)}
+[
+{cmd:by(}{it:byvarlist}{cmd:)} 
+{cmdab:perc:ent}
+{it:graph_options}
+]
+
+{p 8 17 2} 
+{cmd:slideplot} 
+{c -(} {cmd:bar} {c |} {cmd:hbar} {c )-} 
+{it:varlist}
+[{it:weight}]
+[{cmd:if} {it:exp}] 
+[{cmd:in} {it:range}]
+{cmd:,}
+{cmdab:neg:ative(}{it:varlist}{cmd:)}
+{cmdab:pos:itive(}{it:varlist}{cmd:)}
+[
+{cmd:by(}{it:byvarlist}{cmd:)} 
+{cmdab:perc:ent}
+{it:graph_options}
+]
+
+
+{title:Description}
+
+{p 4 4 2} {cmd:slideplot} produces a sliding bar plot showing frequencies (or
+optionally percents) of categories using data from one or more variables. The
+plot is most helpful if these categories can be ordered naturally, at least
+approximately. 
+ 
+{p 4 4 2} The bar plot may be vertical or horizontal. The syntaxes
+{cmd:slideplot bar} and {cmd:slideplot hbar} are specified to indicate use of
+{help graph_bar:graph bar} and {help graph_bar:graph hbar} respectively. The
+choice is a matter of personal taste, although in general horizontal displays
+make it easier to identify names or labels of categories. Each bar is stacked
+and each straddles zero. The frequencies or percents shown are plotted as 
+positive or negative.  
+ 
+{p 4 4 2}There are two syntaxes. The first is for a long data structure in
+which categories are recorded in a single variable, which may be numeric or
+string.  The second is for a wide data structure in which frequencies of
+categories are recorded in two or more variables, which must be numeric. 
+ 
+{p 4 4 2}{cmd:fweight}s and {cmd:aweight}s may be specified. 
+
+
+{title:Options}
+
+{p 4 8 2} {cmd:negative()} and {cmd:positive()} are required options.  With the
+first syntax, the argument of each is a {it:valuelist}, i.e. a numeric list or
+a list of string values. With the second syntax, it is a {it:varlist} of
+numeric variables. 
+ 
+{p 8 8 2}In the first syntax, suppose we have data in a numeric variable
+{cmd:opinion} on a 5 point opinion scale which we wish to plot, treating
+frequencies of 1 and 2 as positive and frequencies of 4 and 5 as negative, and
+ignoring the frequency of 3. The syntax is, minimally, 
+{cmd:slideplot hbar opinion, neg(5 4) pos(2 1)} or 
+{cmd:slideplot bar opinion, neg(5 4) pos(2 1)}. 
+Although {cmd:negative()} and {cmd:positive()} may be
+specified in any order, both treat the order of values literally and as
+specifying the order from left to right or from above to below. Thus the order
+of bars plotted with this example is 5 4 2 1 with bars for 5 and 4 being
+plotted on the negative side of 0 and bars for 2 and 1 being plotted on the
+positive side of 0. 
+ 
+{p 8 8 2} Or suppose that we have data in a string variable {cmd:candidate}
+which we wish to plot in terms of votes for "Bush" (on the right, naturally)
+and of votes for "Gore" (on the left). The syntax is, minimally, 
+{cmd:slideplot hbar candidate, neg("Gore") pos("Bush")}.
+ 
+{p 8 8 2}In the second syntax, suppose we have data in three numeric variables,
+{cmd:Bush}, {cmd:Gore} and {cmd:Nader}, which we wish to plot. The order might
+deserve discussion but one possibility is  
+{cmd:slideplot hbar Bush Gore Nader, neg(Nader Gore) pos(Bush)}.  
+ 
+{p 4 8 2}{cmd:by()} specifies that bars are to be shown separately for the
+distinct combinations of {it:byvarlist}.  This is not a required option but in
+practice perhaps the most useful handle provided by {cmd:slideplot}.  The
+number of variables in {it:byvarlist} must not exceed two. 
+ 
+{p 4 8 2}{cmd:percent} stipulates that each bar be plotted in terms of percents
+of the total. Thus 
+{cmd:slideplot hbar Bush Gore Nader, neg(Nader Gore) pos(Bush) percent} 
+will show totals for Bush, Gore and Nader as percents
+of the total for all candidates, while 
+{cmd:slideplot hbar Bush Gore, neg(Gore) pos(Bush) percent} 
+will report Bush and Gore as percents of their total. 
+ 
+{p 4 8 2}{it:graph_options} refers to options of {help graph_bar:graph bar}
+or {help graph_bar:graph hbar}. 
+
+
+{title:Examples}
+
+{p 4 8 2}{inp:. use http://www.stata-press.com/data/r8/voter.dta}{p_end}
+{p 4 8 2}({inp:candidat} is 2 for Clinton, 3 for Bush){p_end}
+{p 4 8 2}{inp:. slideplot hbar candidat [w=frac], neg(2) pos(3) by(inc)}{p_end}
+{p 4 8 2}{inp:. slideplot hbar candidat [aw=pfrac], neg(2) pos(3) by(inc)}
+
+{p 4 8 2}{inp:. slideplot hbar answer [w=freq], by(lifecycle car) percent neg(1 2) pos(4 5) ylabel(-60(20)60)}
+
+
+{title:Author}
+
+        Nicholas J. Cox, University of Durham
+        n.j.cox@durham.ac.uk
+
+	 
+{title:Also see}
+
+{p 0 19}On-line:  help for {help majority} (if installed);
+{help catplot} (if installed){p_end}
+

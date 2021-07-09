@@ -1,0 +1,143 @@
+{smcl}
+{* *! version 1.0.3  27jan2015  Ben Jann}{...}
+{hi:help addplot}
+{hline}
+
+{title:Title}
+
+{pstd}
+    {hi:addplot} {hline 2} adding twoway plot objects to an existing twoway graph
+
+
+{title:Syntax}
+
+{p 8 15 2}
+    {cmd:addplot} [{it:graphname}] [{it:{help numlist}}] {cmd::} {it:{help twoway:twoway_plots}}
+
+
+{title:Description}
+
+{pstd}
+    {cmd:addplot} adds twoway plot objects to an existing twoway graph. This is
+    useful if you want to add objects such as titles or extra data points to a
+    twoway graph after it has been created. Most of what {cmd:addplot} can do,
+    can also be done by rerunning the original graph command including
+    additional options or plot statements. {cmd:addplot}, however, might be
+    useful if you have to modify a graph for which you cannot rerun the
+    original command, for example, because you only have the graph file but not
+    the data that were used to create the graph. Furthermore, {cmd:addplot} can
+    do certain things that would be difficult to achieve in a single graph
+    command (e.g. customizing individual subgraphs within a by-graph).
+    {cmd:addplot} also provides a substitute for some of the functionality of
+    the {helpb graph_editor:graph editor}.
+    
+{pstd}
+    {it:graphname} is the name of the memory graph to be modified. The current 
+    (topmost) graph is used if {it:graphname} is omitted. 
+    
+{pstd}
+    {it:numlist} provides the numbers of the subgraphs to be modified
+    (shorthand conventions as explained in help {it:{help numlist}} apply). This is
+    useful if you apply {cmd:addplot} to a graph that has been created using
+    {helpb graph combine} or the {help by_option:{bf:by()}} option. The default
+    is to modify all twoway subgraphs found in the graph. If you only want to
+    modify, say, the second and third subgraph, you could type
+    
+        {cmd:. addplot 2 3: ...}
+
+{pstd}
+    The {cmd:norescaling} option: When modifying a plot using {cmd:addplot},
+    the axes of the plot will be recompiled using default settings. This is to
+    ensure that all data points fit into the plot region, even if they are
+    outside the range of the existing plot. To prevent {cmd:addplot} from
+    recompiling the axes (so that axis labels and ranges are preserved), apply
+    option {cmd:norescaling} to the added twoway command. See the example
+    on {help addplot##norescaling:Addressing subgraphs in a by-graph}
+    below.
+
+{pstd}
+    The legend: {cmd:addplot} may cause a legend to be added to the graph. To 
+    suppress adding a legend, apply option {cmd:legend(off)} to the added 
+    twoway command (see the first example below). Furthermore, {cmd:addplot} 
+    always recreates an existing legend using default legend keys. To preserve
+    or create a custom legend you need to specify an appropriate 
+    {cmd:legend(order())} option with the added twoway command (see help 
+    {it:{help legend_options}}).
+
+{title:Examples}
+
+{pstd}
+    Basic example:
+    
+        . {stata sysuse auto}
+        . {stata scatter price mpg}
+        . {stata "addplot: scatter price mpg if price>15000, ms(i) mlabel(make) legend(off)"}
+        . {stata `"addplot: pcarrowi 14000 23 15500 21.5 "expensive car""'}
+        . {stata "addplot: (line price mpg if mpg>30) (dropline price mpg if price<3300)"}
+        . {stata graph drop Graph}
+
+{pstd}
+    Working with named graphs:
+        
+        . {stata sysuse auto}
+        . {stata scatter price mpg, name(g1, replace)}
+        . {stata scatter price weight, name(g2, replace)}
+        . {stata "addplot g1: , title(price by mpg)"}
+        . {stata "addplot g2: , title(price by weight)"}
+        . {stata graph drop g1 g2}
+        
+{pstd}
+    Modifying a graph from file:
+        
+        . {stata sysuse auto}
+        . {stata scatter price mpg}
+        . {stata graph save mygraph.gph}
+        . {stata graph drop Graph}
+        . ...
+        . {stata graph use mygraph.gph}
+        . {stata `"addplot mygraph: pcarrowi 14000 23 15500 21.5 "expensive car", legend(off)"'}
+        . {stata graph drop mygraph}
+        . {stata erase mygraph.gph}
+
+{marker norescaling}{...}
+{pstd}
+    Addressing subgraphs in a by-graph:
+
+        . {stata sysuse auto}
+        . {stata scatter price mpg, by(foreign)}
+        . {stata "addplot: , xline(21.3, lp(dash)) yline(6165, lp(dash)) norescaling"}
+        . {stata "addplot 1: , xline(19.8) yline(6072) norescaling"}
+        . {stata "addplot 2: , xline(24.8) yline(6385) norescaling"}
+        . {stata graph drop Graph}
+
+
+{title:Acknowledgement}
+
+{pstd}
+    Vince Wiggins from StataCorp provided critical help and comments.
+
+
+{title:Author}
+
+{pstd}
+    Ben Jann, University of Bern, ben.jann@soz.unibe.ch
+    
+{pstd}
+    Thanks for citing this software as follows:
+
+{pmore}
+    Jann, B. (2014). addplot: Stata module to add twoway plot 
+    objects to an existing twoway graph. Available from 
+    {browse "http://ideas.repec.org/c/boc/bocode/s457917.html"}.
+
+
+{title:Also see}
+
+{psee}
+    Online:  help for 
+    {helpb graph_twoway:graph twoway},
+    {helpb graph combine:graph combine},
+    {it:{help by_option}},
+    {it:{help addplot_option}},
+    {manhelp graph_editor G-1:graph editor}
+

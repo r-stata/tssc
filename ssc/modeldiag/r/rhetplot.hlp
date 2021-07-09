@@ -1,0 +1,133 @@
+{smcl}
+{* 2april2003/3nov2004}{...}
+{hline}
+help for {hi:rhetplot}
+{hline}
+
+{title:Plot checking for residual heteroscedasticity after model fit}
+
+{p 8 17 2}{cmd:rhetplot}
+{cmd:,} {cmd:by(}{it:byvarlist}{cmd:)}
+[{it:residualtype} 
+{cmdab:var:iance}
+{it:lowess_options}
+{cmd:plot(}{it:plot}{cmd:)} ] 
+
+{p 8 17 2}{cmd:rhetplot} 
+{it:varname} 
+[{cmd:, at(}{it:numlist}{cmd:)} {c |} {cmdab:g:roup(}{it:#}{cmd:)}] 
+[{it:residualtype} 
+{cmdab:var:iance}
+{it:lowess_options}
+{cmd:plot(}{it:plot}{cmd:)} ] 
+
+{p 8 17 2}{cmd:rhetplot}
+[{cmd:,} {cmd:at(}{it:numlist}{cmd:)} {c |} {cmdab:g:roup(}{it:#}{cmd:)}] 
+{it:residualtype} 
+{cmdab:var:iance}
+{it:lowess_options}
+{cmd:plot(}{it:plot}{cmd:)} ] 
+
+
+{title:Description}
+
+{p 4 4 2}{cmd:rhetplot} is for use after {cmd:regress} and similar commands;
+see help on the command of interest. 
+ 
+{p 4 4 2}With the first syntax, {cmd:rhetplot} graphs standard deviations
+(optionally variances) of residuals for the distinct groups formed by
+combinations of {it:byvarlist}.  If {it:byvarlist} is a single numeric
+variable, it is used for the {it:x} axis; otherwise {it:byvarlist} is used as
+the argument to {cmd:egen, group() label} to define a grouped variable. See
+{help egen}. 
+
+{p 4 4 2}With the second syntax, {cmd:rhetplot} graphs standard deviations
+(optionally variances) of residuals against means of groups of {it:varname}.
+Groups are defined by the argument of either {cmd:at()} or {cmd:cut()}, used as
+the corresponding option for {cmd:egen, cut()}. See {help egen}.
+
+{p 4 4 2}With the third syntax, {cmd:rhetplot} graphs standard deviations
+(optionally variances) of residuals against means of groups of fitted values
+from the model.  Groups are defined by the argument of either {cmd:at()} or
+{cmd:cut()}, used as the corresponding option for {cmd:egen, cut()}. 
+See {help egen}. 
+
+{p 4 4 2}The residuals are, by default, those calculated by 
+{cmd:predict, residuals} or (if the previous estimation command was {cmd:glm}) 
+by {cmd:predict, response}. 
+
+{p 4 4 2}The graph is produced by {help lowess}. The `smooth' curve shown
+(unless the number of groups specified is very small) is best regarded as an
+informal indication of the general pattern of variability of residuals.
+
+{p 4 4 2}The graph is restricted to the estimation sample. 
+
+
+{title:Options}
+
+{p 4 8 2}{cmd:by(}{it:byvarlist}{cmd:)}, required with the first syntax,
+specifies that the plot should be of variability of residuals among the
+distinct groups defined by combinations of {it:byvarlist}.
+
+{p 4 8 2}{cmd:at(}{it:numlist}{cmd:)} or {cmd:group(}{it:#}{cmd:)}, required
+with the second and third syntaxes, specifies how groups of either a specified
+variable (second syntax) or fitted values (third syntax) are to be determined.
+{cmd:at()} and {cmd:group()} are options of {cmd:egen, cut()}: see help on
+{help egen}.  In brief, {cmd:at()} specifies lower limits of user-defined
+classes and {cmd:group()} specifies the number of quantile-based groups with
+(approximately) equal frequency to be used. (With {cmd:at()}, supply one high
+value beyond the maximum of the data for best results.) 
+
+{p 4 8 2}{it:residualtype} specifies a type of residual other than the default.
+The following types are currently supported: {cmdab:a:nscombe},
+{cmdab:d:eviance}, {cmdab:l:ikelihood}, {cmdab:p:earson}, {cmdab:r:esiduals},
+{cmdab:resp:onse}, {cmdab:rsta:ndard}, {cmdab:rstu:dent}, {cmdab:s:core},
+{cmdab:w:orking}. 
+
+{p 4 8 2}{cmd:variance} specifies plotting of variances rather than 
+standard deviations. Occasionally, especially with counted variables, 
+the natural question may be how far variance is constant or a 
+function of mean fitted values. 
+
+{p 4 8 2}{it:lowess_options} are any of the options allowed with  
+{help lowess}. 
+
+{p 4 8 2}{cmd:plot(}{help plot_option:plot}{cmd:)} provides a way to add other
+plots to the generated graph; see {help plot_option}. 
+
+
+{title:Examples}
+
+{p 4 8 2}{cmd:. webuse systolic}{p_end}
+{p 4 8 2}{cmd:. anova systolic drug disease}{p_end}
+{p 4 8 2}{cmd:. rhetplot, by(drug disease) xla(1/12, valuelabel)}
+
+{p 4 8 2}{cmd:. sysuse auto}  {p_end}
+{p 4 8 2}{cmd:. glm mpg weight, link(power -1)}{p_end}
+{p 4 8 2}{cmd:. rhetplot weight, g(7)}
+
+{p 4 8 2}{cmd:. reg turn length}{p_end}
+{p 4 8 2}{cmd:. regplot} {p_end}
+{p 4 8 2}{cmd:. rhetplot, g(7)}{p_end}
+{p 4 8 2}{cmd:. rhetplot length, g(7)}
+
+{p 4 8 2}{cmd:. insheet using http://www.kgs.ku.edu/Mathgeo/Books/Stat/ASCII/OCS.TXT, clear}{p_end}
+{p 4 8 2}{cmd:. label data "petroleum reservoirs, Outer Continental Shelf, Texas and Louisiana"}{p_end}
+{p 4 8 2}{cmd:. label var mmboe "ultimate production, million barrels oil equivalent"}{p_end}
+{p 4 8 2}{cmd:. label var area "area of closure, acres"}{p_end}
+{p 4 8 2}{cmd:. regress mmboe area}{p_end}
+{p 4 8 2}{cmd:. rhetplot area, g(7)}{p_end}
+{p 4 8 2}{cmd:. regress log10mmboe log10area}{p_end}
+{p 4 8 2}{cmd:. rhetplot log10area, g(7)}
+   
+
+{title:Author}
+
+{p 4 4 2}Nicholas J. Cox, University of Durham, U.K.{break}
+n.j.cox@durham.ac.uk
+
+
+{title:Also see}
+
+{p 4 13 2}On-line:  help for {help predict}, {help modeldiag} 
+

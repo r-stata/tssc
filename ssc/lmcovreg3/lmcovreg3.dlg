@@ -1,0 +1,29 @@
+/*
+lmcovreg3
+VERSION 2.0 25/01/2014
+*/
+VERSION 10.0
+INCLUDE _std_medium
+INCLUDE _ht150
+INCLUDE header
+HELP hlp1, view("help lmcovreg3")
+RESET res1
+
+DIALOG main, label("lmcovreg3- (3SLS-SUR) Breusch-Pagan Diagonal Covariance Matrix Test") /*
+	*/ tabtitle("Main")
+BEGIN
+  TEXT     tx_message1  _lft      _top      _iwd      .,	/*
+*/ label("lmcovreg3 computes Breusch-Pagan LM Test")
+  TEXT     tx_message2  @         _ms      @         .,	/*
+*/ label("of Diagonal Covariance Matrix")
+  TEXT     tx_message3  @         _ms      @         .,	/*
+*/ label("after reg3 and sureg Regression.")
+  TEXT     tx_message4  @         _ls       @         .,	/*
+*/ label("Press OK to compute lmcovreg3")
+END
+
+PROGRAM command
+BEGIN
+put "lmcovreg3 "
+END
+

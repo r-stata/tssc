@@ -1,0 +1,62 @@
+.-
+help for ^cf3^ (v2.1.9; a Stata version 6 program)         (see manual:  ^[R] cf^)
+.-
+
+Compare two datasets
+--------------------
+
+	^cf3^ varlist ^using^ filename ^, id(^varname^)^ [^nov^erbose]
+
+
+Description
+-----------
+
+^cf3^ is a variation on ^cf^ and ^cf2^ that matches observations by a record id 
+variable and lists the observations where differences exist.  Like ^cf^ and ^cf2^,
+^cf3^ compares variables of the dataset in memory (the 'master' data) to the 
+corresponding variables in a file (the 'using' data).  The variables to be 
+compared are specified in varlist.  Alternatively, ^_all^ may be specified to 
+request that all variables be compared.  ^cf3^ returns 0 if the specified 
+variables are identical and 9 if there are any differences.  Only the variable 
+values are compared.  Variable labels, value labels, notes, characteristics, 
+etc. are not compared.
+
+^cf3^ also differs from ^cf^ (and from ^cf2^, if installed) in that: 1) the ^id()^ 
+option, which names the common record id variable in each file, is required;
+2) ^verbose^ is presumed but option ^noverbose^ will suppress some output; and 
+3) it will not stop if there is a differing number of observations in the two 
+files.  Generally, the id variable values should be unique within each file. 
+If the id values are not unique then proper matching may not occur; ^cf3^ will 
+warn the user but will continue.  Incorrectly-matched observations, where the 
+variables being compared also differ, and unmatched observations will be 
+reported as differences.
+
+In the listings, variable names given for the 'using' dataset are a slight 
+modification of the actual variable names.  If necessary, they are truncated 
+to 7 characters, and all are preceded by an underscore character.
+
+
+Options
+-------
+
+^id(^varname^)^ is a required option that specifies the record id variable 
+    within the datasets. This id is displayed as part of the output.
+
+^noverbose^ suppresses the detailed listing of observations where differences 
+    exist in each variable.  If specified, only the number of differences
+    will be mentioned.
+
+
+Examples
+--------
+
+	. ^cf3 mpg weight displ using mydata, id(make)^
+
+	. ^cf3 _all using mydata, id(make) noverbose^
+
+
+Also see
+--------
+
+ Manual:  ^[R] cf^
+On-line:  help for @cf@; @compare@; @cf2@ (if installed)

@@ -1,0 +1,149 @@
+//Revised 10/24/2010
+//Version 3.0
+
+VERSION 10.0
+POSITION . . 340 200
+
+DIALOG main, label("RTS (REVISED TRAUMA SCORE)") tabtitle("Main") 
+BEGIN
+   GROUPBOX gb_rts_inc_var  10 10  320 70,                              ///
+            label("RTS Inclusion Variable")
+   RADIO    rd_inc_no       20 30  150 20,                              ///
+            first                                                       ///
+            label("No")                                                 ///
+            onclickon(script rts_inc_disable)
+   RADIO    rd_inc_yes      20 50  150 20,                              ///
+            last                                                        ///
+            label("Yes")                                                ///
+            onclickon(script rts_inc_enable)
+   GROUPBOX gb_in_out_files 10 90  320 90,                              ///
+            label("Select Input and Output Files")
+   FILE     fn_in           20 115 300 20,                              ///
+            label("Browse Input File")                                  ///
+            error("Input File Name")                                    ///
+            buttonwidth(100)                                            ///
+            filter("Stata Dataset (*.dta)|*.dta|All Files (*.*)|*.*") 
+   FILE     fn_out          20 145 300 20,                              ///
+            label("Browse Output File")                                 ///
+            error("Output File Name")                                   ///
+			buttonwidth(100)                                            ///
+            save                                                        ///
+            filter("Stata Dataset (*.dta)|*.dta|All Files (*.*)|*.*")
+END
+
+DIALOG rts_var_names, label("RTS Variable Names") tabtitle("RTS Variable Names") 
+BEGIN
+   GROUPBOX gb_rts_var_names 10 10  320 130,                 ///
+            label("RTS Variable Names")
+   EDIT     ed_gcs           20 30  50  20,                  ///
+            error("GCS Variable Name")
+   TEXT     tx_gcs           75 30  245 20,                  ///
+            label("GCS")
+   EDIT     ed_systol_bp     20 55  50  20,                  ///
+            error("Systolic Blood Pressure Variable Name")
+   TEXT     tx_systol_bp     75 55  245 20,                  ///
+            label("Systolic Blood Pressure")
+   EDIT     ed_resprate      20 80  50  20,                  ///
+            error("Respiratory Rate Variable Name")
+   TEXT     tx_resprate      75 80  245 20,                  ///
+            label("Respiratory Rate")
+   EDIT     ed_rts_inc       20 105 50  20,                  ///
+            label("RTS Inclusion Variable Name")
+   TEXT     tx_rts_inc       75 105 245 20,                  ///
+            label("RTS Inclusion")
+END
+
+DIALOG rts_coefficients, label("RTS Coefficients") tabtitle("RTS Coefficients") 
+BEGIN
+   GROUPBOX gb_rts_coefficients 10 10 320 105,             ///
+            label("RTS Coefficients")
+   EDIT     ed_gcs_coeff        20 30 50  20,              ///
+            error("GCS Coefficient")                       ///
+            default("0.9368")                              ///
+            numonly
+   TEXT     tx_gcs_coeff        75 30 245 20,              ///
+            label("GCS")
+   EDIT     ed_systol_bp_coeff  20 55 50  20,              ///
+            error("Systolic Blood Pressure Coefficient")   ///
+            default("0.7326")                              ///
+            numonly
+   TEXT     tx_systol_bp_coeff  75 55 245 20,              ///
+            label("Systolic Blood Pressure")
+   EDIT     ed_resprate_coeff   20 80 50  20,              ///
+            error("Respiratory Rate Coefficient")          ///
+            default("0.2908")                              ///
+            numonly
+   TEXT     tx_resprate_coeff   75 80 245 20,              ///
+            label("Respiratory Rate")
+END
+
+SCRIPT rts_inc_disable
+BEGIN
+   rts_var_names.ed_rts_inc.disable
+   rts_var_names.tx_rts_inc.disable
+END
+
+SCRIPT rts_inc_enable
+BEGIN
+   rts_var_names.ed_rts_inc.enable
+   rts_var_names.tx_rts_inc.enable
+END
+
+OK ok1, label("OK")
+CANCEL can1, label("Cancel")
+SUBMIT sub1, label("Submit")
+HELP hlp1, view("help rts")
+RESET res1
+COPY copy1
+
+PROGRAM command
+BEGIN
+   require main.fn_in
+   require main.fn_out
+   require rts_var_names.ed_gcs
+   require rts_var_names.ed_systol_bp
+   require rts_var_names.ed_resprate
+   if main.rd_inc_yes {
+      require rts_var_names.ed_rts_inc
+   }
+   require rts_coefficients.ed_gcs_coeff
+   require rts_coefficients.ed_systol_bp_coeff
+   require rts_coefficients.ed_resprate_coeff
+   put "rts "
+   put `"""'
+   put main.fn_in
+   put `"""'
+   put " "
+   put `"""'
+   put main.fn_out
+   put `"""'
+   put " "
+   if main.rd_inc_no {
+      put "1 "
+   }
+   if main.rd_inc_yes {
+      put "2 "
+   }
+   put rts_var_names.ed_gcs
+   put " "
+   put rts_var_names.ed_systol_bp
+   put " "
+   put rts_var_names.ed_resprate
+   put " "
+   if main.rd_inc_no {
+      put `"""'
+      put `"""'
+   }
+   if main.rd_inc_yes {
+      put rts_var_names.ed_rts_inc
+   }
+   put " "
+   put rts_coefficients.ed_gcs_coeff
+   put " "
+   put rts_coefficients.ed_systol_bp_coeff
+   put " "
+   put rts_coefficients.ed_resprate_coeff
+END
+
+
+

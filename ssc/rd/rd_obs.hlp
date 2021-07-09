@@ -1,0 +1,274 @@
+{smcl}
+{* 7oct2008}{...}
+{hline}
+help for {hi:rd_obs}
+{hline}
+
+{title:Regression discontinuity (RD) estimator: obsolete version provided for backward compatibility}
+
+{title:Syntax}
+
+{p 6 16 2}
+{cmd:rd_obs} [{vars}] {ifin} {weight}
+[{cmd:,} {it:{help rd_obs##options:options}}]
+
+{p 6 16 2}where
+{cmd:varlist} has the form {it:outcomevar} [{it:treatmentvar}]
+{it:assignmentvar} 
+
+{marker weights}{dlgtab:Weights}
+
+{pstd}
+{cmd:aweight}s, {cmd:fweight}s, and {cmd:pweight}s
+are allowed; see help {help weights}.  Under Stata 
+versions 9.2 or before (using
+{help locpoly} to construct local regression estimates)
+{cmd:aweight}s and {cmd:pweight}s will be converted to {cmd:fweight}s
+automatically and the data {help expand}ed. If this would
+exceed system memory limits, error {search r(901)} will be issued; in 
+this case, the user is advised to round weights.  In any case, 
+the validity of bootstrapped standard errors will depend on
+the {help expand}ed data correctly representing sampling variability,
+which may require rounding or replacing weight variables.
+Under Stata 
+versions 10 or later (using
+{help lpoly} to construct local regression estimates), all weights
+will be treated as {cmd:aweight}s.  
+
+{marker note}{dlgtab:Important Note}
+
+{pstd}Standard errors are currently only 
+available by {help bootstrap}ping the command like so:
+
+{p 6 16 2}
+{cmd: bs} [, {it:{help bootstrap:options}}]: {cmd:rd_obs} {vars} {ifin} {weight}
+[{cmd:,} {it:{help rd_obs##options:options}}]
+
+{marker contents}{dlgtab: Table of Further Contents}
+{p 6 16 2}
+
+{p 2}{help rd_obs##description:General description of estimator}{p_end}
+{p 2}{help rd_obs##examples:Examples}{p_end}
+{p 2}{help rd_obs##options:Detailed syntax}{p_end}
+{p 2}{help rd_obs##options:Description of options}{p_end}
+{p 2}{help rd_obs##macros:Remarks and saved results}{p_end}
+{p 2}{help rd_obs##refs:References}{p_end}
+{p 2}{help rd_obs##acknow:Acknowledgements}{p_end}
+{p 2}{help rd_obs##citation:Citation of {cmd:rd_obs}}{p_end}
+{p 2}{help rd_obs##citation:Author information}{p_end}
+
+{marker description}{dlgtab:Description}
+
+{p}{cmd:rd_obs} implements a set of regression-discontinuity 
+estimation methods that are thought to have very good 
+internal validity, for estimating the causal effect of 
+some explanatory variable (called the treatment variable) 
+for a particular subpopulation, under some often plausible 
+assumptions.  In this sense, it is much like an 
+experimental design, except that levels of the treatment 
+variable are not assigned randomly by the researcher. 
+Instead, there is a jump in the conditional mean of the 
+treatment variable at a known cutoff in another variable, 
+called the assignment variable, which is perfectly observed,
+and this allows us to estimate the effect of treatment {it:as if} it were randomly assigned in 
+the neighborhood of the known cutoff.
+
+{p}{cmd:rd_obs} is an alternative to various regression techniques
+that purport to allow causal inference (e.g. panel methods such as {help xtreg}), instrumental
+variables (IV) and other IV-type methods
+(see the {stata "view http://fmwww.bc.edu/repec/bocode/i/ivreg2.hlp":ivreg2} 
+help file and references therein),
+and matching estimators (see the {stata "view http://fmwww.bc.edu/repec/bocode/p/psmatch2.hlp":psmatch2} 
+and {stata "view http://fmwww.bc.edu/repec/bocode/n/nnmatch.hlp":nnmatch} help files and references therein).
+The {cmd:rd_obs} approach is closest in spirit to an IV model with one exogenous variable excluded
+from the regression ({it:excluded instrument}),
+and one endogenous regressor.
+
+{p}{cmd:rd_obs} estimates local linear or "kernel" regression models on both sides of the cutoff.
+Estimates are sensitive to the choice of bandwidth, so by default several estimates
+are constructed using different bandwidths.
+
+{p}Further discussion of {cmd:rd_obs} appears in {help rd_obs##refs:Nichols (2007)}.
+
+{marker examples}{dlgtab:Examples}
+
+{p}In the simplest case, assignment to treatment depends on a variable Z being above a cutoff Z0.  
+Frequently, Z is defined so that Z0=0. In this case, treatment is 1 for Z>=0 and 0 for Z<0, and we estimate 
+local linear regressions on both sides of the cutoff to obtain estimates of the outcome at Z=0. 
+The difference between the two estimates (for the samples where Z>=0 and where Z<0) is the estimated 
+effect of treatment. 
+
+{p}For example, having a Democratic representative in the US Congress may be considered a treatment
+applied to a Congressional district, and the
+assignment variable Z is the vote share garnered by the Democratic candidate.  At Z=50%, the probability
+of treatment=1 jumps from zero to one. Suppose we are interested in the effect a
+Democratic representative has on the federal spending
+within a Congressional district.
+{cmd:rd_obs} estimates local linear regressions on both sides of the cutoff like so:
+
+{col 9}{stata "ssc inst rd, replace" : ssc inst rd, replace}
+{col 9}{stata "net get rd" : net get rd}
+{col 9}{stata "use votex if i==1" : use votex if i==1}
+{col 9}{stata `"rd_obs lne d, gr mbw(100)"' : rd lne d, gr mbw(100)}
+{col 9}{stata `"rd_obs lne d, gr mbw(100) line(`"xla(-.2 "Repub" 0 .3 "Democ", noticks)"')"' : rd_obs lne d, gr mbw(100) line(`"xla(-.2 "Repub" 0 .3 "Democ", noticks)"')}
+{col 9}{stata "rd_obs lne d, gr ddens" : rd_obs lne d, gr ddens}
+{col 9}{stata "bs: rd_obs lne d, x(pop-vet)" : bs: rd_obs lne d, x(pop-vet)}
+
+{p}In a fuzzy RD design, the conditional mean of treatment jumps at the cutoff, and that jump forms the 
+denominator of a Local Wald Estimator. The numerator is the jump in the outcome, and both are reported
+along with their ratio. Note that any sharp RD design may be estimated 
+using the fuzzy RD syntax, since the denominator in that case is just one:
+
+{col 9}{stata "use votex if i==1" : use votex if i==1}
+{col 9}{stata "rd_obs lne win d, gr mbw(100)" : rd_obs lne win d, gr mbw(100)}
+{col 9}{stata "bs: rd_obs lne win d, x(pop-vet)" : bs: rd_obs lne win d, x(pop-vet)}
+{col 9}{stata "erase votex.dta" : erase votex.dta}
+
+{marker options}{dlgtab:Detailed Syntax and Options}
+
+{p}There should be two or three variables specified after the {cmd:rd_obs} command; if two are specified, a sharp
+RD design is assumed, where the treatment variable jumps from zero to one at the cutoff.  If no variables
+are specified after the {cmd:rd_obs} command, the estimates table is displayed.
+
+{p 6 16 2}
+{cmd:rd_obs} {it:outcomevar} [{it:treatmentvar}]
+{it:assignmentvar} {ifin} {weight}
+[{cmd:,} {it:{help rd_obs##options:options}}]
+
+{pstd}
+
+{dlgtab:Options summary}
+
+{p 0 4}{cmd:mbw({it:numlist})} specifies a list of multiples for bandwidths, in percentage terms. 
+The default is "100 50 200" (i.e. half and twice the requested bandwidth) and 100 is always included in the list,
+regardless of whether it is specified.
+
+{p 0 4}{cmd:z0({it:real})} specifies the cutoff Z0 in {it:assignmentvar}.
+
+{p 0 4}{cmd:x({it:varlist})} requests estimates of jumps in control variables {it:varlist}.
+
+{p 0 4}{cmdab:dd:ens} requests a computation of a discontinuity in the density of Z.  This is computed in a relatively ad hoc way, 
+and should be redone using McCrary's test described at 
+{browse "http://www.econ.berkeley.edu/~jmccrary/DCdensity/":http://www.econ.berkeley.edu/~jmccrary/DCdensity/}.{p_end}
+
+{p 0 4}{cmd:s({it:stubname})} requests that estimates be saved as new variables beginning with {it:stubname}.
+
+{p 0 4}{cmdab:gr:aph} requests that graphs for each bandwidth be produced.
+
+{p 0 4}{cmdab:nosc:atter} suppresses the scatterplot on those graphs.
+
+{p 0 4}{cmdab:sco:pt(}{it:string}{cmd:)} supplies an option list to the scatter plot.
+
+{p 0 4}{cmdab:line:opt(}{it:string}{cmd:)} supplies an option list to the overlaid line plots.
+
+{p 0 4}{cmd:n({it:real})} specifies the number of points at which to calculate local linear regressions. 
+The default is to calculate the regressions at 50 points above the cutoff, with equal steps in the grid, and to
+use equal steps below the cutoff, with the number of points determined by the step size.
+
+{p 0 4}{cmdab:bw:idth(}{it:real}{cmd:)} allows specification of a bandwidth for local linear regressions. 
+The default 
+is to choose a bandwidth that gives positive weight to at least 30 observations on each side of 
+the discontinuity when estimating the conditional mean at the cutoff.
+
+{p 0 4}{cmdab:k:ernel(}{it:kerneltype}{cmd:)} allows specification of a kernel for local linear regressions.
+
+{p 4 6 2}
+
+{synoptset 29}{...}
+{marker kernel}{...}
+{synopthdr :kerneltype}
+{synoptline}
+{synopt :{opt epa:nechnikov}}Epanechnikov kernel function{p_end}
+{synopt :{opt epan2}}alternative Epanechnikov kernel function{p_end}
+{synopt :{opt bi:weight}}biweight kernel function{p_end}
+{synopt :{opt cos:ine}}cosine trace kernel function{p_end}
+{synopt :{opt gau:ssian}}Gaussian kernel function{p_end}
+{synopt :{opt par:zen}}Parzen kernel function{p_end}
+{synopt :{opt rec:tangle}}rectangle kernel function{p_end}
+{synopt :{opt tri:angle}}triangle kernel function; the default{p_end}
+{synoptline}
+{p2colreset}{...}
+{p 4 6 2}
+
+
+{marker macros}{dlgtab:Remarks and saved results}
+
+{p}{cmd:rd_obs} does not report standard errors by default, nor does
+it report all saved estimates.
+Instead, it reports the Local Wald Estimate for each bandwidth used,
+and its components where applicable. To get all saved estimates,
+type {cmd:rd_obs} without arguments or type {help ereturn:ereturn list}.
+
+{p}To facilitate {help bootstrap}ping, {cmd:rd_obs} saves the following results in {cmd:e()}:
+
+Scalars
+{col 4}{cmd:e(N)}{col 18}Number of observations used in estimation
+{p 3 18 2}{cmd:e(w)} {space 8} Bandwidth in base model; other bandwidths are reported in e.g. e(w50) for the 50% multiple.
+
+Macros
+{col 4}{cmd:e(cmd)}{col 18}{cmd:rd_obs}
+{col 4}{cmd:e(rdversion)}{col 18}Version number of {cmd:rd_obs}
+{col 4}{cmd:e(depvar)}{col 18}Name of dependent variable
+
+Matrices
+{p 3 18 2}{cmd:e(b)} {space 8} Coefficient vector of estimated jumps in variables at different percentage bandwidth multiples
+
+Functions
+{col 4}{cmd:e(sample)}{col 18}Marks estimation sample
+
+
+{marker refs}{title:References}
+
+{p}Complete references appear in 
+
+{phang}Nichols, Austin. 2007.
+"Causal Inference with Observational Data."
+Prepublication draft available as {browse "http://pped.org/stata/ciwod.pdf":http://pped.org/stata/ciwod.pdf}{p_end}
+
+{p}The interested reader is directed also to
+
+{phang}Imbens, Guido and Thomas Lemieux. 2007. "Regression Discontinuity Designs: A Guide to Practice." 
+{browse "http://nber.org/papers/w13039":NBER Working Paper 13039}.
+
+{phang}McCrary, Justin. 2007. "Manipulation of the Running Variable in the Regression Discontinuity Design: 
+A Density Test." {browse "http://nber.org/papers/t0334":NBER Technical Working Paper 334}.
+
+{phang}Shadish, William R., Thomas D. Cook, and Donald T. Campbell. 2002. 
+{it: Experimental and Quasi-Experimental Designs for Generalized Causal Inference}. 
+Boston: Houghton Mifflin.
+ 
+
+{marker acknow}{title:Acknowledgements}
+
+{p}I would like to thank Justin McCrary for helpful discussions.  Any errors are my own.
+
+{marker citation}{title:Citation of {cmd:rd_obs}}
+
+{p}{cmd:rd_obs} is not an official Stata command. It is a free contribution
+to the research community, like a paper. Please cite it as such: {p_end}
+
+{phang}Nichols, Austin. 2007.
+rd: Stata module for regression discontinuity estimation.
+{browse "http://ideas.repec.org/c/boc/bocode/s456888.html":http://ideas.repec.org/c/boc/bocode/s456888.html}{p_end}
+
+{title:Author}
+
+    Austin Nichols
+    Urban Institute
+    Washington, DC, USA
+    austinnichols@gmail.com
+
+{title:Also see}
+
+{p 1 14}Manual:  {hi:[U] 23 {help est: Estimation} and {help postest: post-estimation} commands}{p_end}
+{p 10 14}{manhelp bootstrap R}{p_end}
+{p 10 14}{manhelp lpoly R} in Stata 10, else {help locpoly} ({stata "findit locpoly":findit locpoly} to install){p_end}
+{p 10 14}{manhelp ivregress R} in Stata 10, else {manhelp ivreg R}{p_end}
+{p 10 14}{manhelp regress R}{p_end}
+{p 10 14}{manhelp xtreg XT}{p_end}
+
+{p 1 10}On-line: help for (if installed)  {help rd} (newer version), {help ivreg2},
+{help overid}, {help ivendog}, {help ivhettest}, {help ivreset},
+{help xtivreg2}, {help xtoverid}, {help ranktest},
+{help condivreg}; {help psmatch2}, {help nnmatch}.
+{p_end}

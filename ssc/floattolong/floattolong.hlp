@@ -1,0 +1,73 @@
+{smcl}
+{* 13-Aug2004; rev 18-Oct2004}
+{hline}
+help for {hi:floattolong}
+{hline}
+
+{title:Change float-type variables to long where possible.}
+
+{p 8 17 2}
+{cmd:floattolong} [{it:varlist}]
+
+{title:Description}
+
+{p 4 4 2}
+This is simply a convenience, issuing {cmd:recast long} {it:varlist2}, where
+{it:varlist2} is the set of variables in {it:varlist} that are of type
+{cmd:float}.
+This has some resemblance to, and is intended to complement {cmd:compress},
+but the emphasis is on the
+appropriateness of the type rather than the reduction of storage space.
+(While {cmd:compress} does potentially change {cmd:float}s and {cmd:double}s
+to integer types, it omits the possibility of changing a {cmd:float} to a
+{cmd:long}, as that does not reduce the storage space.)
+
+{p 4 4 2}
+{cmd:floattolong} would be typically used immediately following (or preceding)
+{cmd:compress}, and saves you the trouble of seeking out all the remaining
+{cmd:float} variables.
+
+{p 4 4 2}
+If no {it:varlist} is specified, {cmd:_all} is assumed.
+
+{p 4 4 2}
+{cmd:floattolong} ignores variables that are not {cmd:float}.
+
+
+{title:Examples}
+
+{p 4 8 2}{cmd:. floattolong}{p_end}
+
+{p 4 8 2}{cmd:. floattolong wage income}{p_end}
+
+
+{title:Remarks}
+
+{p 4 4 2}
+{cmd:floattolong} can be used at any point, but is best used
+in conjunction with (immediately after or before) {cmd:compress}; without
+{cmd:compress}, it may recast
+some variables to {cmd:long} that might otherwise become {cmd:int} or
+{cmd:byte}.
+
+{p 4 4 2}
+In general data preparation, {cmd:floattolong} would usually be called
+without a {it:varlist}; there is little point in calling it with a specific
+set of variables, since you could just as well type {cmd:recast long} 
+with the same {it:varlist}.  The exception is where you use it within a
+program that generates a variable that is initially {cmd:float}, and you
+want to clean up that one variable without affecting others.
+
+{p 4 4 2}
+For a similar related program, see {help doubletofloat} by the same author.
+
+
+{title:Author}
+
+{p 4 4 2}
+David Kantor, Institute for Policy Studies, Johns Hopkins University.
+Email {browse "mailto:dkantor@jhu.edu":dkantor@jhu.edu} if you observe any
+problems.
+
+{title:Also see}
+{help compress}, {help recast}, {help doubletofloat}, {help datatypes}

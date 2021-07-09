@@ -1,0 +1,85 @@
+{smcl}
+{* 13sept2002/2apr2003}{...}
+{hline}
+help for {hi:rvpplot27}
+{hline}
+
+{title:Graph residual-versus-predictor plot after regression-type command}
+
+{p 8 16}{cmd:rvpplot27} 
+{it:varname} 
+[{cmd:,} {it:residualtype} 
+{cmd:force} 
+{cmdab:sc:ale(}{it:exp}{cmd:)}
+{cmd:ksm(}{it:ksm_options}{cmd:)}
+{it:graph_options}]
+
+
+{p}{cmd:rvpplot27} is for use after {cmd:regress} and similar commands; see help
+on the command of interest. It is a generalisation of official Stata's 
+{cmd:rvpplot}, except for different defaults for the {cmd:l1title()} option. 
+
+
+{title:Description}
+
+{p}{cmd:rvpplot27} graphs a residual-versus-predictor plot 
+(a.k.a. independent variable plot, a.k.a. carrier plot), a graph of 
+the residuals versus the specified predictor {it:varname}  
+from the last regression-type model. The residuals are, by default,
+those calculated by {cmd:predict, residuals} or (if the previous estimation
+command was {cmd:glm}) by {cmd: predict, response}. 
+This is a clone of {cmd:rvpplot2} 1.0.0 for users of Stata 7. 
+Users of Stata 8 should use {cmd:rvpplot2} 2.0.0 or later. 
+
+{title:Options}
+
+{p 0 4}{it:residualtype} specifies a type of residual other than the default.
+The following types are currently supported: {cmdab:a:nscombe},
+{cmdab:d:eviance}, {cmdab:l:ikelihood}, {cmdab:p:earson}, {cmdab:r:esiduals},
+{cmdab:resp:onse}, {cmdab:rsta:ndard}, {cmdab:rstu:dent}, {cmdab:s:core},
+{cmdab:w:orking}. 
+
+{p 0 4}{cmd:force} allows you to specify a predictor variable 
+not included in the previous model. 
+
+{p 0 4}{cmd:scale(}{it:exp}{cmd:)} specifies a transformed scale on which to
+show the residuals using Stata syntax and {cmd:X} as a placeholder for the
+residual variable name. Thus {cmd:scale(X^2)} specifies squaring, to show relative
+contribution to residual variance; {cmd:scale(abs(X))} specifies absolute
+value, to set aside sign; {cmd:scale(sqrt(abs(X)))} specifies root of absolute
+value, a useful scale on which to check for heteroscedasticity.
+
+{p 0 4}{cmd:ksm(}{it:ksm_options}{cmd:)} specifies that the residuals will be 
+smoothed as a function of the predictor using {cmd:ksm} with the options named. 
+
+{p 0 4}{it:graph_options} are any of the options allowed with 
+{cmd:graph, twoway}. See help on {help grtwoway}.
+
+
+{title:Examples}
+
+{p 8 12}{inp:. reg width length}{p_end}
+	{inp:. rvpplot27 length}
+	
+{p 8 12}{inp:. glm price weight, link(log)}{p_end}
+	{inp:. rvpplot27 weight, anscombe yli(0)}
+
+
+{title:Author}
+
+    Nicholas J. Cox, University of Durham, U.K.
+    n.j.cox@durham.ac.uk
+    
+    
+{title:Acknowledgements} 
+
+    Kit Baum identified an error in a previous version of this help. 
+
+
+{title:Also see}
+
+{p 1 10}Manual:  {hi:[R] regression diagnostics}{p_end}
+{p 0 19}On-line:  help for {help graph}, {help regdiag}; {help predict}
+{p_end}
+
+

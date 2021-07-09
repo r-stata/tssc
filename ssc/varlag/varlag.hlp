@@ -1,0 +1,188 @@
+{smcl}
+{* 24may2002}{...}
+{hline}
+help for {hi:varlag}{right:[P.Joly]}
+{hline}
+
+{title:Statistics to determine the appropriate lag length in VARs, ECMs}
+
+{p 8 26}
+{cmd:varlag}
+[{it:varlist}]
+[{cmd:if} {it:exp}]
+[{cmd:in} {it:range}]
+{cmd:,}
+    {cmdab:l:ags(}{it:#}{cmd:)}
+[
+    {cmdab:testl:ag(}{it:#}{cmd:)}
+    {cmdab:nom:ulti}
+    {cmdab:ex:og}({it:varlist})
+    {cmdab:t:rend}
+    {cmdab:noc:onstant}
+    {cmdab:s:ingle}
+    {cmdab:nod:etail}
+    {cmd:cov}
+    {cmdab:cor:r}
+    {cmd:large}
+    {cmdab:l:evel(}{it:#}{cmd:)}
+    {it:vececm_options}
+]
+
+
+{p}
+{cmd:varlag} is for use with time-series data.  You must {cmd:tsset}
+your data before using these commands; see help {help tsset}.
+
+{p}
+{it:varlist} may contain time-series operators; see help
+{help varlist}.
+
+
+{title:Description}
+
+{p}
+{cmd:varlag} reports various statistics that are meant to help select
+the proper lag structure to use in the estimation of Vector
+autoregressions (VARs) and Error Correction Models (ECMs).
+For each lag length up to {cmd:lags(}{it:#}{cmd:)}, {cmd:varlag}
+reports the Multivariate portmanteau (Ljung-Box) statistic for white
+noise residuals, p-values from Omnibus tests of multivariate normality
+of the residuals, as well as the Breusch-Pagan statistic for the
+independence of residuals between equations.
+{cmd:varlag} also performs likelihood ratio tests to test successive
+null hypotheses of smaller lag length.
+
+{p}
+Whether a varlist is specified determines if the tests should be
+computed for a VAR or an ECM.
+If varlist is omitted, {cmd:varlag} assumes the tests are for an ECM
+and options normally required by {cmd:vececm} must be specified; see
+help {help vececm}.
+This means that Johansen's ML cointegration rank test must have been
+performed prior to running {cmd:varlag}; see help {help johans}.
+Otherwise, if varlist is specified, {cmd:varlag} is implemented in the
+context of a VAR.
+
+{p}
+In the context of a VAR, {cmd:varlag} can report various other
+statistics for each individual equation in the system and each lag
+length if option {cmd:single} is declared.
+It computes the RMSE, FPE, and Schwartz criterion, as well as p-values
+of Breusch-Godfrey LM tests for autocorrelated disturbances of order
+1, 4, and larger (up to {it:min}[.25*N,{cmd:testlag(}{it:#}{cmd:)}]).
+The p-value of the Breusch-Pagan LM statistic for heteroskedasticity
+is also reported as an indicator of potential mispecification.
+However, the univariate Ljung-Box portmanteau statistic is not
+reported as these tests are not appropriate when stochastic regressors
+other than lagged values of the dependent variable are included in
+individuals regressions.
+
+{p}
+For each statistic, the apparent optimal number of lags is reported.
+
+
+{title:Options}
+
+{p 0 4}
+{cmd:lags(}{it:#}{cmd:)} specifies the largest lag length to be
+considered.
+
+{p 0 4}
+{cmd:testlag(}{it:#}{cmd:)} specifies the largest lag length to use in
+LM tests of serial correlation as well as for Multivariate portmanteau
+statistics.
+The default is for the portmanteau to use {it:min}([N/2]-2,40) and the
+LM to use {it:min}(.25*N,40).
+
+{p 0 4}
+{cmd:nomulti} suppresses the calculation multivariate statistics for
+the system such as Multivariate portmanteau statistics, Omnibus tests
+for multivariate normality or residuals (Doornik & Hansen (1994)),
+and Breusch-Pagan tests for the independence of the residuals between
+equations, i.e., that the disturbance covariance matrix is diagonal.
+
+{p 0 4}
+{it:vececm_options} are options used with {cmd:vececm}; see help
+{help vececm}.
+Options such as {cmd:cir(}{it:#}{cmd:)} and {cmd:sm(}{it:case}{cmd:)}
+are required.
+
+{p 0 4}
+{cmd:exog(}{it:varlist}{cmd:)} is only allowed in the context of VARs
+(i.e. if a varlist is specified) and specifies the exogenous variables
+that enter the VAR. {cmd:vececm} takes its exogenous variables from
+those specified at {help johans}.
+
+{p 0 4}
+{cmd:trend} is only allowed in the context of VARs and specifies that
+a linear trend be included in each equation.
+
+{p 0 4}
+{cmd:noconstant} is only allowed in the context of VARs and suppresses
+the inclusion of an intercept in each equation of the VAR.
+
+{p 0 4}
+{cmd:single} is only allowed in the context of VARs and displays
+diagnostic statistics for each individual equation in the system, for
+each lag length up to {cmd:lags(}{it:#}{cmd:)}.
+
+{p 0 4}
+{cmd:nodetail} is relevant only with {cmd:single} and suppresses the
+display of individual statistics for every lag length.
+Instead, the optimal lag with respect to each statistic is reported.
+
+{p 0 4}
+{cmd:cov} requests the display of the variance-covariance matrix of
+residuals between equations.
+
+{p 0 4}
+{cmd:corr} requests the display of the correlation matrix of residuals
+between equations.
+
+{p 0 4}
+{cmd:large} specifies that large sample statistics are to be used,
+specifically, that the number of sample observations, {it:T}, be used
+as a divisor in computing the covariance matrix for the equation
+errors rather than alternate divisor, {it:T-K}.
+The covariance matrix of equation errors is used in the sequence of
+likelihood ratio tests for smaller lag length.
+As asymptotically justified estimators, vector autoregressions and
+error correction models may use large sample statistics.
+
+{p 0 4}
+{cmd:level(}{it:#}{cmd:)} specifies the confidence level, in percent,
+for confidence intervals of the coefficients; see help {help level}.
+
+
+{title:Examples}
+
+{p 8 12}{inp:.} {stata "use http://fmwww.bc.edu/ec-p/data/macro/wgmacro.dta, clear":use http://fmwww.bc.edu/ec-p/data/macro/wgmacro.dta, clear}
+
+{p 8 12}{inp:. varlag investment income consumption, l(8)}
+
+{p 8 12}{inp:. varlag investment income consumption, l(8) single corr}
+
+In Error correction models:
+
+{p 8 12}{inp:. johans investment income consumption, lags(6)}{p_end}
+{p 8 12}{inp:. varlag, lags(10) c(1) sm(1)}{p_end}
+
+
+{title:Author}
+
+Patrick Joly, Industry Canada
+pat.joly@utoronto.ca
+
+
+{title:Also see}
+
+{p 0 19}
+On-line:  help for
+	{help vecar} (if installed),
+	{help vececm} (if installed),
+	{help johans} (if installed),
+	{help reg3},
+	{help wntstmvq},
+	{help omninorm}
+{p_end}
+

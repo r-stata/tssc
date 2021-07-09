@@ -1,0 +1,53 @@
+{smcl}
+{.-}
+help for {cmd:mcenter}
+{.-}
+
+{title:Utility for Centering Variables at Their Mean}
+
+{p 8 8}
+{cmd:mcenter}
+{it:varlist}
+[{cmd:if} {it:exp}] [{cmd:in} {it:range}] 
+{cmd:,}
+[{cmd:hl}{cmd:(}{it:varlist}{cmd:)}]
+[{cmd:sd}{cmd:(}{it:#}{cmd:)}]
+
+{p 8 27}
+{it:varlist} = Variable list employs casewise deletion 
+(i.e., variables are centered for the subset of observations that are not missing for all variables in varlist).
+
+
+
+{title:Description}
+
+{p}
+This centers variables at their mean and creates new variables, C_varname, with a mean of zero. New variable names 
+are unique and will append numbers to the end as needed. 
+Variable labels specifying the variable is centered (and the subset the centering was based upon) are attached to the variables.
+Use of the options can center variables at mean +/- some multiple of the sd. C_varnamehi = C_varname-(sd), C_varnamelo=C_varname-(-sd).
+
+{title:Options}
+
+{p}
+{cmd:hl}{cmd:(#)} specifies variables for which an alternative center is desired.
+
+{p}
+{cmd:sd}{cmd:(#)} specifies value of alternative center, in sd units, default = 1.0.
+
+{p}
+
+{title:Examples}
+
+mcenter x y z
+mcenter x y z,hl(x)
+mcenter x y z,hl(x y) sd(2)
+
+
+{bf}Author
+
+{sf}Jeffrey S. Simons - jsimons@usd.edu
+
+{bf}Also see
+
+{help sslope}

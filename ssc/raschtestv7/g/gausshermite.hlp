@@ -1,0 +1,43 @@
+{smcl}
+{* 5may2005}{...}
+{hline}
+help for {hi:gausshermite}{right:Jean-Benoit Hardouin}
+{hline}
+
+{title:Estimation of integrals using Gauss Hermite quadratures}
+
+{p 8 14 2}{cmd:gausshermite} {it:function} , {cmdab:s:igma}({it:#}) {cmd:mu}({it:#}) {cmdab:n:odes}({it:#}) {cmdab:d:isplay}
+
+{title:Description}
+
+{p 4 4 2}{cmd:gausshermite} estimate the integrals of the form f(x)g(x/mu,sigma) on all the reals where g(x/mu,sigma) is the gaussian distribution function with mean mu and variance sigma^2.
+
+{title:Options}
+
+{p 4 4 2}{it:function} define f(x). For example, if f(x)=x^2, {it:function} is x^2. It is necessary to use x for the variable of integration.
+
+{p 4 4 2}{cmd:mu} define the mean of x (0 by default).
+
+{p 4 4 2}{cmd:sigma} define the standard deviation of x (1 by default).
+
+{p 4 4 2}{cmd:nodes} define the number of quadrature nodes (12 by default).
+
+{p 4 4 2}{cmd:display} allow to automatically display the estimation.
+
+{p 4 4 2}Note that the quadrature nodes and the associated weights are computed using the {cmd:ghquadm} Stata command. Find this command with {stata findit ghquadm:findit ghquadm}.
+
+{title:Example}
+
+	{cmd:. gausshermite x^2}
+
+	{cmd:. gausshermite x^4+exp(x)-2, sigma(1.5) mu(-.4) d n(10)}
+
+
+{title:Outputs}
+
+{p 4 4 2}The estimated value of the integral is saved in {cmd:r(int)}.
+
+{title:Author}
+
+{p 4 8 2}Jean-Benoit Hardouin, Regional Health Observatory (ORS) - 1, rue Porte Madeleine - BP 2439 - 45032 Orleans Cedex 1 - France.
+You can contact the author at {browse "mailto:jean-benoit.hardouin@orscentre.org":jean-benoit.hardouin@orscentre.org} and visit the websites {browse "http://anaqol.free.fr":AnaQol} and {browse "http://freeirt.free.fr":FreeIRT}

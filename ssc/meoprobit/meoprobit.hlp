@@ -1,0 +1,87 @@
+{smcl}
+{* 16nov2006}{...}
+{hline}
+help for {hi:meoprobit} {right: (version 1.0.1) }
+{hline}
+
+{title:Compute marginal effects at means an their standard errors after {help oprobit}}
+
+{p 8 20}{cmd:meoprobit} [in] [if]
+[, {cmdab:nod:iscrete} {cmdab:stats}({it:statistics}) {cmdab:var:iance} {cmdab:exp}]  
+
+{p 8 20} where {it:statistics} can be one of the elements {cmd:sd}, {cmd:z} or {cmd:p}.
+
+{title:Description}
+
+{p}{cmd:meoprobit} computes marginal effects at means and their standard errors in an ordered probit model.
+{cmd:meoprobit} is executed after Stata's {help oprobit} command.
+
+{p}{cmd:meoprobit} computes the marginal effects and standard errors (based on the delta method) analytically 
+and is therefore faster than {help mfx} and -mfx2-, which proceed numerically.
+
+{p}An alternative to {cmd:meoprobit} is -margeff-, which has the advantage of greater generality, more options
+and is better linked with other Stata commands such as {help lincom} and others after estimation.
+
+{p}The advantages of {cmd:meoprobit} are its speed, its compact way of displaying the results and the fact that
+it is capable to compute also the marginal effect of the regressors on the expected mean of the outcome variable.
+
+{p}(Note of caution: If we have chosen to estimate an ordered probit model then this is because we think that the dependent 
+variable carries only ordinal information but that the scaling of the variable, apart from preserving the order,
+ carries no meaning. Therefore, strictly speaking, computing and interpreting the mean value of the ordinal 
+dependent variable makes no sense. The user should question whether in the specific context it seems justified
+to look at the mean of the dependent variable.)
+
+{title:Options} 
+
+{p 0 12}{cmdab:nod:iscrete} specifies that dummy (indicator) variables be treated as continuous.
+
+{p 0 8}{cmdab:stats}() specifying {cmd:sd}, {cmd:z} or {cmd:p} in parentheses determines whether 
+standard errors (the default), z-values or p-values are displayed.
+
+{p 0 7}{cmdab:if, in} These options serve to restrict the means and frequency computation to a sub sample and allow
+to compute marginal effects at the mean values for a specific subgroup. The underlying regression coefficients and
+standard errors remain those from the original estimation.
+
+{p 0 9}{cmdab:var:iance} specifies that you want the covariance matrix of the marginal effects 
+to be saved as matrix V.
+
+{p 0 4}{cmdab:exp} requests the computation of the marginal effect of the regressors on the expected mean 
+of the outcome variable.
+
+{title:Output}
+
+{p}The columns labeled c1, c2 ... cn refer to the categories of the dependent variable. If the option {cmdab:exp} is chosen,
+the column labeled E[Y] refers to the expected mean of the dependent variable.
+
+{title:Saved results}
+
+{p 0 3}{cmd:PS} The row vector {cmd:PS} contains sample frequencies for the categories of 
+the dependent variable and its sample mean.
+
+{p 0 2}{cmd:P} The row vector {cmd:P} contains probabilities predicted at means
+for the categories of the dependent variable and the resulting predicted sample mean.
+
+{p 0 4}{cmd:RES} The matrix {cmd:RES} contains the results: marginal effects  
+and standard errors (or z-values or P-values).
+
+{p 0 2}{cmd:V} If the options {cmdab:var:iance} or {cmdab:exp} are chosen, the 
+matrix {cmd:V} contains the covariance matrix of the marginal effects.
+
+{title:Example}
+
+{p 4 8}{inp:. oprobit y x}
+
+{p 4 8}{inp:. meoprobit, stats(p)}
+
+
+{title:Author}
+
+        Thomas Corneliﬂen, University of Hannover, Germany
+        cornelissen@ewifo.uni-hannover.de
+
+
+{title:Also see}
+
+{p 0 9}On line: help for 
+{help oprobit}, 
+{help mfx}.

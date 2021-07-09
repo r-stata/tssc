@@ -1,0 +1,60 @@
+{smcl}
+{* 10 January 2003}{...}
+{hline}
+help for {hi:nearest}
+{hline}
+
+{title:Distance and identity of nearest neighbour from point coordinates}
+
+{p 2 11}
+{cmd:nearest} 
+{it:xvar} 
+{it:yvar} 
+[{cmd:if} {it:exp}] 
+[{cmd:in} {it:range}] 
+, 
+{cmd:dist(}{it:distvar}{cmd:)} 
+[{cmd:id(}{it:idvar}{cmd:)}] 
+
+
+{title:Description}
+
+{p}{cmd:nearest} calculates the distance from each point to its nearest
+neighbour given the planar point coordinates given in {it:xvar} and {it:yvar}.
+Distance is calculated as straight-line (crow-fly) Euclidean or Pythagorean
+distance.  Optionally, the identity (observation number in current sort order)
+of the nearest neighbour may also be generated. 
+
+
+{title:Remarks}
+
+{p}British English {it:neighbour} corresponds to American English 
+{it:neighbor}. 
+
+
+{title:Options}
+ 
+{p 0 4}{cmd:dist(}{it:distvar}{cmd:)} specifies a new variable 
+for holding the distances. This is a required option. 
+
+{p 0 4}{cmd:id(}{it:idvar}{cmd:)} specifies a new variable for holding the
+identifiers (observation numbers in current sort order) of the nearest
+neighbours.  If two or more points are equally distant from any given point,
+that with the lowest observation number is regarded as the nearest neighbour. 
+ 
+
+{title:Examples}
+
+{p 4 8}{inp:. nearest x y, id(id) dist(dist)}
+
+
+{title:Author} 
+
+        Nicholas J. Cox, University of Durham, U.K.
+        n.j.cox@durham.ac.uk
+	 
+	 
+{title:Acknowledgements} 
+
+	This problem was suggested by Benoit Dulong. 
+

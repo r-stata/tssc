@@ -1,0 +1,73 @@
+{smcl}
+{* 10sep2003}{...}
+{hline}
+help for {hi:msplot}
+{hline}
+
+{title:Multiple median-spline plots}
+
+{p 8 17 2}
+{cmd:msplot}
+{it:yvarlist} 
+{it:xvar} 
+[{cmd:if} {it:exp}] 
+[{cmd:in} {it:range}]
+[ 
+{cmd:,}
+{cmdab:clc:olor(}{it:{help colorstyle}}{cmd:)} 
+{cmdab:clp:attern(}{it:{help linepatternstyle}}{cmd:)} 
+{cmdab:clsty:le(}{it:{help linestyle}}{cmd:)} 
+{cmdab:clw:idth(}{it:{help linewidthstyle}}{cmd:)} 
+{it:mspline_options} 
+{cmd:plot(}{it:plot}{cmd:)}
+{it:graph_options} 
+]
+
+
+{title:Description}
+
+{p 4 4 2}{cmd:msplot} plots {it:yvarlist} versus {it:xvar} such that each 
+variable in {it:yvarlist} is shown by a median spline as implemented 
+in {help twoway_mspline:twoway mspline}. That is, apart from some 
+intelligence to improve legend and axis titles, 
+{cmd:msplot y1 y2 y3 x} is a convenience command in place of 
+{cmd:twoway mspline y1 x || mspline y2 x || mspline y3 x}. 
+
+
+{title:Options}
+ 
+{p 4 8 2}The {it:{help connect_options:connect options}} 
+{cmd:clcolor()}, {cmd:clpattern()}, 
+{cmd:clstyle()} and {cmd:clwidth()} specify how the median splines 
+are to be shown. Multiple arguments are taken in turn to apply to successive
+variables in {it:yvarlist}, and each option understands the syntax of 
+{it:{help stylelists}}. 
+
+{p 4 8 2}{it:mspline_options} are the {cmd:bands()} and {cmd:n()} 
+options of {help twoway_mspline:twoway mspline}. 
+
+{p 4 8 2}{cmd:plot(}{it:plot}{cmd:)} provides a way to add other plots to the 
+generated graph; see help {help plot_option:plot option}.
+
+{p 4 8 2}{it:graph_options} are other appropriate options of 
+{help twoway}. 
+
+
+{title:Examples} 
+
+{p 4 8 2}{cmd:. msplot mpg weight, plot(scatter mpg weight)}
+
+{p 4 8 2}{cmd:. separate mpg, by(foreign) shortlabel}{p_end}
+{p 4 8 2}{cmd:. msplot mpg? weight, clcolor(red blue) clp(solid dash) plot(scatter mpg? weight, ms(Oh Dh) mcolor(red blue))}
+
+
+{title:Author}
+
+	{p 8 8 2}Nicholas J. Cox, University of Durham, U.K.{break} 
+        n.j.cox@durham.ac.uk
+
+
+{title:Also see} 
+
+On-line: help for {help lowess}  
+

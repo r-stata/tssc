@@ -1,0 +1,48 @@
+{smcl}
+{* 12/12/2005}
+{hline}
+help for {hi:xtregre2}
+{hline}
+
+
+{title:Weighted random effects linear model}
+
+{p 8 14}{cmd:xtregre2} {depvar} [{indepvars}]
+{weight}
+{ifin}
+{bind:[  {cmdab:i(}{it:varname}{cmd:)} {cmd:theta} }]
+
+
+{p 4 6 2}{cmd:xtregre2} is an update to Kevin McKinney's -rfregk-.
+
+{p 4 6 2} Only {cmd:aweight}s are allowed; see {help weight}.{p_end}
+
+{title:Description}
+
+ {p}{cmd:xtregre2} estimates a random effects model with aweights. 
+
+{title:Options}
+
+{p 0 4} {cmd:  i(varname)} specifies the variable name that contains the unit to which the observation belongs. Note that you need not specify i() if the data have been previously tsset or if iis has been previously specified--in these cases, the group variable is taken from the previous setting. See help {help tsset}.
+
+
+{p 0 4}{cmd:theta} specifies that the output should include the estimated value of theta used in combining the between and fixed estimators.  For balanced data, this is a constant, and for unbalanced data, a summary of the values is presented in the header of the output.
+
+
+{title:Examples}
+
+{p 8 12}{inp:.} {stata "webuse grunfeld,clear":webuse grunfeld, clear}
+
+{p 8 12}{inp:.} xtregre2 investment kstock [aw = mvalue]
+
+
+{title:Author}
+
+Scott Merryman, Risk Management Agency
+smerryman@kc.rr.com
+
+
+{title:Also see}
+
+{p 0 19}On-line:  help for {help xtreg}  
+{p_end}

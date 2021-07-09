@@ -1,0 +1,83 @@
+{smcl}
+{hline}
+help for {cmd:factortest}{right:Joao Pedro Azevedo}
+{hline}
+
+
+{title:Calculate specification tests before {cmd:factor} or {cmd:pca}}
+
+
+{p 8 27}{cmdab:factortest}
+[{it:varlist}]
+[{cmd:if} {it:exp}]
+[{cmd:in} {it:range}]
+
+
+{title:Description}
+
+{p 4 4 2}{cmd:factortest} performs the {hi:Bartlett's test for sphericity} and
+the {hi:Kaiser-Meyer-Olkin Measure of Sampling Adequacy}. Both tests should be used 
+prior to a factor or a principal component analysis.{p_end}
+
+
+{title:Technical details}
+
+{p 4 4 2}{bf:Determinant of the matrix of correlation}: This determinant will equal 1.0 
+only if all correlations equal 0, otherwise the determinant will be less than 1.{p_end}
+
+{p 4 4 2}{bf:Bartlett's test for sphericity}: Calculates the determinant of the matrix of 
+the sums of products and cross-products (S) from which the intercorrelations
+matrix is derived. The determinant of the matrix S is converted to a chi-square 
+statistic and tested for significance.{p_end}
+    
+{p 4 4 2}The null hypothesis is that the intercorrelation matrix comes from a population
+in which the variables are noncollinear (i.e. an identity matrix), and that the 
+non-zero correlations in the sample matrix are due to sampling error.{p_end}
+    
+{p 4 4 2}{bf:Kaiser-Meyer-Olkin Measure of Sampling Adequacy}: is an index for comparing the 
+magnitudes of the observed correlation coefficients to the magnitudes of the 
+partial correlation coefficients.{p_end}
+    
+{p 4 4 2}Large values for the KMO measure indicate that a factor analysis of the variables 
+is a good idea. {p_end}
+    
+{p 32 0 0}90 or above, excelent{p_end}
+{p 32 0 0}80 or above, meritorious{p_end}
+{p 32 0 0}70 or above, middling{p_end}
+{p 32 0 0}60 or above, mediocre{p_end}
+{p 32 0 0}50 or above, miserable; and{p_end}
+{p 32 0 0}below .50, unacceptable.{p_end}
+
+{title:Examples}
+
+{p 8 12 2}{cmd:. factortest price mpg rep78 rep77 hdroom rseat trunk}
+
+
+{title:References}
+
+{p 4 8 2}Box,G.E.P.(1949) "A general distribution theory for a class of likelihood 
+criteria." {it:Biometrica}, 36: 317-346.
+    
+{p 4 8 2}Cureton, E.E., & D'Agostino, R.B. (1983). Factor analysis: An applied 
+approach. Hillsdale, NJ: Erlbaum.
+
+
+{title:Authors}
+
+    Joao Pedro Azevedo, IPEA, Brazil
+    jazevedo@ipea.gov.br
+
+
+{title:Aknowledgements}
+
+{p 4 8 2}I would like to thank May M. Boggess for her help and Roberto De Miguel for his suggestions.  
+
+
+{title:Also see}
+
+{p 4 13 2}Manual:  {hi:[R] factor} {hi:[R] pca} {hi:[R] alpha}{p_end}
+{p 4 13 2}Online:  help for {help factor}; {help pca}; {help alpha} {p_end}
+
+
+
+

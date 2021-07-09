@@ -1,0 +1,51 @@
+{smcl}
+{* 16apr2009}{...}
+{hline}
+help for {hi:matnames}
+{hline}
+
+{title:Return matrix row and column names}
+
+{title:Syntax}
+
+{p 6 16 2}
+{cmd:matnames} [{it:matrixname}] 
+
+{marker description}{dlgtab:Description}
+
+{p}{cmd:matnames} returns matrix row and column names as {help local}s in {help return:r()}.  
+The {help extended_fcn:macro extended functions} that
+retrieve {help matrix} row and column names (e.g. {stata "loc c: colnames b":loc c: colnames b}) do not {help quotes:quote} the names, so that
+if names contain spaces, the number of {help token}s may not match the number of rows or columns (that is, you may not be able to rename
+the {help matrix} rows or columns with its own names that you just retrieved).  {cmd:matnames} uses the {help Mata} functions 
+{help mf_st_matrixrowstripe:st_matrixrowstripe} and 
+{help mf_st_matrixcolstripe:st_matrixcolstripe} to circumvent this difficulty.{p_end}
+
+{marker examples}{dlgtab:Examples}
+
+{p}Cut and paste the entire block of example code to the Command window, or click on commands one by one to run:{p_end}
+
+{p 6 16 2}{stata `"mat b=J(2,3,1)                                            "': mat b=J(2,3,1)                                            }{p_end}
+{p 6 16 2}{stata `"mat rownames b="row x: item 1" "row y: item 2"            "': mat rownames b="row x: item 1" "row y: item 2"            }{p_end}
+{p 6 16 2}{stata `"mat colnames b="eq1: item 1" "eq1: item 2" "eq.2: item 3" "': mat colnames b="eq1: item 1" "eq1: item 2" "eq.2: item 3" }{p_end}
+{p 6 16 2}{stata `"mat li b                                                  "': mat li b                                                  }{p_end}
+{p 6 16 2}{stata `"mat c=J(2,3,0)                                            "': mat c=J(2,3,0)                                            }{p_end}
+{p 6 16 2}{stata `"matnames b                                                "': matnames b                                                }{p_end}
+{p 6 16 2}{stata `"ret li                                                    "': ret li                                                    }{p_end}
+{p 6 16 2}{stata `"mat colnames c=`r(c)'                                     "': mat colnames c=`r(c)'                                     }{p_end}
+{p 6 16 2}{stata `"mat rownames c=`r(r)'                                     "': mat rownames c=`r(r)'                                     }{p_end}
+{p 6 16 2}{stata `"mat li c                                                  "': mat li c                                                  }{p_end}
+
+{title:Author}
+
+    Austin Nichols
+    Urban Institute
+    Washington, DC, USA
+    {browse "mailto:austinnichols@gmail.com":austinnichols@gmail.com}
+
+{title:Also see}
+
+{p 1 10}On-line: help for {help macro},
+{help matrix}, {help mf_st_matrixrowstripe:st_matrixrowstripe},
+{help mf_st_matrixcolstripe:st_matrixcolstripe}, etc.
+{p_end}

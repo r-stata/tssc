@@ -1,0 +1,141 @@
+{smcl}
+{* April 15, 2008 @ 21:14:32}{...}
+{cmd:help metandiplot} {right: (Roger Harbord)}
+{right:also see:  {help metandi}}
+{hline}
+
+{title:Title}
+
+    {hi:metandiplot} {hline 2} SROC plot of results from metandi
+
+
+{title:Syntax}
+
+{p 8 17 2}
+{cmdab:metandiplot}
+[{it: tp fp fn tn}]
+[{it:{help if}}]
+[{it:{help in}}]
+[{it:{help weight}}]
+[{cmd:,}
+{cmdab:notr:uncate}
+{cmdab:l:evel(}{it:#}{cmd:)}
+{cmdab:predl:evel(}{it:{help numlist}}{cmd:)}
+{cmdab:n:points(}{it:#}{cmd:)}
+{it:{help metandiplot##subplot_options:subplot_options}}
+{cmd:addplot(}{it:{help addplot_option:plot}}{cmd:)}
+{it:{help twoway_options}}
+]
+
+{p 4 8 2}
+{cmd:aweight}s, {cmd:fweight}s, and {cmd:pweight}s are allowed;
+see {help weight}.
+
+
+{title:Description}
+
+{p 4 4 2}
+{cmd:metandiplot} graphs the results from {helpb metandi}
+on a summary receiver operating characteristic (SROC) plot.
+By default the display includes:{p_end}
+
+{p 8 12 2}- a {hi:summary point}
+showing the summary sensitivity and specificity{p_end}
+{p 8 12 2}- a {hi:confidence contour}
+outlining the confidence region for the summary point{p_end}
+{p 8 12 2}- one or more {hi:prediction contours}
+outlining the prediction region
+for the true sensitivity and specificity in a future study{p_end}
+{p 8 12 2}- the {hi:HSROC curve}
+from the hierarchical Summary ROC (HSROC) model
+
+{p 4 4 2}
+If the optional variables
+{it: tp fp fn tn} are included on the command line,
+the plot also includes {hi: study estimates}
+indicating the sensitivity and specificity
+estimated using the data from each study separately.
+
+{p 4 4 2}
+Any of these features may be customised or turned off using the
+{help metandiplot##subplot_options:subplot_options}.
+
+
+{title:Options}
+
+{p 4 8 2}
+{cmd:notruncate} specificies that the HSROC curve will {it:not} be truncated
+outside the region of the data.
+By default, the HSROC curve is not shown when
+the sensitivity or specificity is less than
+its smallest study estimate.
+
+
+{p 4 8 2}
+{cmd:level(}{it:#}{cmd:)} specifies the confidence level, in percent,
+for the confidence contour; see help {help level}.
+
+{p 4 8 2}
+{cmd:predlevel(}{it:{help numlist}}{cmd:)} specifies the levels,
+in percent, for the prediction contour(s).
+The default is a single contour
+at the same probability level as the confidence region.
+Up to five prediction contours are allowed.
+
+{p 4 8 2}
+{cmd:npoints(}{it:#}{cmd:)} specifies the number of points to use in drawing
+the outlines of the confidence and prediction regions.
+The default is 500.
+
+{p 4 8 2}{marker subplot_options}
+{it:subplot_options}:
+{cmdab:su:mmopts()}, {cmdab:co:nfopts()},
+{cmdab:pr:edopts()}, {cmdab:cu:rveopts()} and {cmdab:st:udyopts()}
+specify options that control the display of the
+summary point, confidence contour, prediction contour(s), HSROC curve
+and study symbols respectively.
+The options within each set of parantheses
+are simply passed through to the appropriate {helpb twoway} plot.
+In addition, any of the plots can be turned off
+by specifying, for example, {cmd:summopts(off)}.
+
+{p 4 8 2}
+{cmd:addplot(}{it:plot}{cmd:)} allows adding additional
+{cmd:graph} {cmd:twoway} plots to the graph;
+see {it:{help addplot_option}}.
+For example, empirical Bayes predictions could be generated
+by using {helpb predict} after {helpb metandi} and added to the graph.
+See {help metandipostestimation}.
+
+{p 4 8 2}
+{it:twoway_options} are most of the options documented in 
+{it:{help twoway_options}}, including options for titles, axes, labels,
+schemes and saving the graph to disk.
+The {cmd:by()} option is not allowed, however.
+
+
+{title:Remarks}
+
+{p 4 4 2}
+The default is to weight the study estimates
+by the total number in each study,
+giving symbols (open circles by default)
+scaled according to the size of the weights;
+see {help scatter##remarks14:weighted markers}.
+To make the symbols all the same size,
+specify constant weights, e.g. {cmd:[aw=1]}.
+
+
+{title:Examples}
+
+{p 4 8 2}{cmd:. metandiplot}
+
+{p 4 8 2}{cmd:. metandiplot tp fp fn tn}
+
+{p 4 8 2}{cmd:. metandiplot tp fp fn tn [aw=1], conf(off) curve(off) predlevel(50 80 95 99)}
+
+
+{title:Also see}
+
+{p 4 13 2}
+Online:  {helpb metandi}, {help metandi postestimation}.

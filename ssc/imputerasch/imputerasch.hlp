@@ -1,0 +1,63 @@
+{smcl}
+{* 30june2008}{...}
+{hline}
+help for {hi:imputerasch}{right:Jean-Benoit Hardouin}
+{hline}
+
+{title:Imputation of missing binary variables by a Rasch model}
+
+{p 8 14 2}{cmd:imputerasch} {it:varlist} [{cmd:,} {cmdab:pref:ix}({it:string}) {cmdab:noran:dom} {cmdab:savep:roba}({it:string}) {cmdab:nbit:eration}({it:#}) {cmdab:det:ails} {cmdab:max}({it:#})]
+
+{p 8 14 2}{it:varlist} is a list of two or more existing dichotomous variables.
+
+{title:Description}
+
+{p 4 8 2}{cmd:imputerasch} imputes missing binary data by a Rasch model. 
+The parameters of the Rasch model are estimated on complete data, then the missing data are imputed from the  estimated probability 
+for each individual to response to each item.
+By default, the imputed value is a result of a random draw within a Bernouilli random variable with this probability used like 
+parameter, but it is possible to affect more deterministically the value of the missing data (0 if p<0.5 and 1 if p>=.5) with 
+the {cmd:norandom} option.
+ An iterative procedure can be run in a second time by estimating parameters of the Rasch model on existing and imputing data, 
+ and by eventually correcting missing data at each step (see the {cmd:nbiteration} option).
+ This procedure is stopped as soon the allowed maximal number of iterations is attained, or as soon the imputed values are stable.
+
+{title:Options}
+
+{p 4 8 2}{cmd:prefix}. The former variables (with missing data) are keeped. New variables are created by imputing new values to missing data. 
+The name of these new variables are the names of the former variables preeceded by the prefix defined in this option. By default, this prefix is "imp".
+
+{p 4 8 2}{cmd:norandom} avoids to randomly draw the value of imputation (by default). A deterministic process is used : if the expected probability is <0.5, imputed value is 0, else imputed value is 1 
+(the old name of this option, {cmd:nobinomial}, continues to run).
+
+{p 4 8 2}{cmd:saveproba} allows saving the expected probability in variables whose the names begin by the string defined in this option.
+
+{p 4 8 2}{cmd:nbiteration} realizes an iterative procedure which is stopped as soon as the maximal number of iterations is attained, or as soon as the imputed data are stable.
+
+{p 4 8 2}{cmd:details} gives details on the imputation.
+
+{p 4 8 2}{cmd:max} allows imputing missing values only for individuals with a maximal number of missing values defined with this option.
+
+
+
+{title:Example}
+
+	{inp:. imputerasch item*}
+
+	{inp:. imputerasch item*, norandom saveproba(p) prefix(dataimputed) max(4)}
+
+	{inp:. imputerasch item1-item5, nbiteration(5) details}
+
+
+{title:Author}
+
+{p 4 8 2}Jean-Benoit Hardouin, PhD, assistant professor{p_end}
+{p 4 8 2}EA 4275 "Biostatistics, Clinical Research and Subjective Measures in Health Sciences"{p_end}
+{p 4 8 2}University of Nantes - Faculty of Pharmaceutical Sciences{p_end}
+{p 4 8 2}1, rue Gaston Veil - BP 53508{p_end}
+{p 4 8 2}44035 Nantes Cedex 1 - FRANCE{p_end}
+{p 4 8 2}Email:
+{browse "mailto:jean-benoit.hardouin@univ-nantes.fr":jean-benoit.hardouin@univ-nantes.fr}{p_end}
+{p 4 8 2}Websites {browse "http://www.anaqol.org":AnaQol}
+and {browse "http://www.freeirt.org":FreeIRT}
+

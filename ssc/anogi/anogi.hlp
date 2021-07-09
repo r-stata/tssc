@@ -1,0 +1,252 @@
+{smcl}
+{* 07aug2007}{...}
+{cmd:help anogi}
+{hline}
+
+{title:Title}
+
+    {hi:anogi} {hline 2} Analysis of Gini
+
+
+{title:Syntax}
+
+{p 8 17 2}
+{cmd:anogi}
+{varname}
+{ifin} {weight} {cmd:,} {opt by(groupvar)} [ {opt d:etail}
+ {opt nol:abel} {opt f:ji} {opt o:ji} {cmd:vce(}{it:{help anogi##vce:vcespec}}{cmd:)} ]
+
+
+{p 4 6 2}
+{cmd:fweight}s, {cmd:aweight}s, and {cmd:pweight}s are allowed; see {help weight}.{p_end}
+
+
+{title:Description}
+
+{pstd}
+{cmd:anogi} computes the "Analysis of Gini" for population subgroups
+proposed by Frick et al. (2006).
+
+
+{title:Requirements}
+
+{pstd}
+{cmd:anogi} requires {cmd:moremata}. To install the package, type
+
+        {com}. {net "describe moremata, from(http://fmwww.bc.edu/repec/bocode/m/)":ssc describe moremata}{txt}
+
+
+{title:Options}
+
+{phang}{opt by(groupvar)} defines the groups over which the Gini be
+decomposed. {it:groupvar} may be numeric or string.
+
+{phang}{opt detail} displays detailed results for the subgroups.
+
+{phang}{opt fji} causes the matrix of average between-group ranks
+to be displayed.
+
+{phang}{opt oji} causes the matrix of between-group overlapping
+indices to be displayed.
+
+{phang}{opt nolabel} causes the numeric codes of the groups to be
+displayed rather than the value labels.
+
+{marker vce}{phang}{cmd:vce(}{it:vcetype} [{cmd:,} {it:vceopts}]{cmd:)}
+indicates that standard errors be estimated. {it:vcetype} is either
+{opt boot:strap} or {opt jack:knife}. {cmd:fweight}s and
+{cmd:aweight}s are not allowed if {cmd:vce()} is specified.
+
+{pmore}The following {it:vceopts} are available:
+
+{phang2}
+{opth str:ata(varname)} specifies a variable that
+identifies strata. If this option is specified, bootstrap samples
+are taken independently within each stratum /
+stratified jackknife estimates are produced.
+
+{phang2}
+{opth cl:uster(varname)} specifies a variable that identifies
+sample clusters. If this option is specified, the sample
+drawn during each bootstrap replication is a sample of clusters /
+clusters are left out for jackknife estimation.
+
+{phang2}
+{opt nod:ots} suppresses display of the replication dots. By default,
+a single dot character is displayed for each successful replication.
+A single red 'x' is displayed, if a replication is not successful.
+
+{phang2}
+{opt mse} indicates that the variances be computed using
+deviations of the replicates from the estimate based on
+the entire dataset. By default,
+variances are computed using deviations from
+the average of the replicates.
+
+{pmore}Additional option for {cmd:vce(jackknife)}:
+
+{phang2}
+{opth fpc(varname)} requests a finite population correction for the variance
+estimates. The values in {it:varname} are
+interpreted as stratum sampling rates. The values must be in [0,1]
+and are assumed to be constant within each stratum.
+
+{pmore}Additional option for {cmd:vce(bootstrap)}:
+
+{phang2}
+{opt r:eps(#)} specifies the number of bootstrap replications to be
+ performed. The default is 50. More replications are usually required
+ to get reliable results. {cmd:reps()} is only allowed when {it:vcetype}
+ is {cmd:bootstrap}.
+
+
+{title:Examples}
+
+        {com}. set obs 100
+        {txt}obs was 0, now 100
+
+        {com}. generate x = invnormal(uniform())^2
+        {txt}
+        {com}. generate g = (x + uniform()) >= 1
+        {txt}
+        {com}. anogi x, by(g)
+        {res}
+        {txt}Analysis of Gini
+
+        {hline 26}{c TT}{hline 23}
+                                  {c |}      Coef.          %
+        {hline 26}{c +}{hline 23}
+        Overall Gini              {c |}{res}   .6108943     100.00
+        {txt}                          {c |}
+        G_wo = sum s_i*G_i*O_i    {c |}{res}   .3548043      58.08
+        {txt}G_b                       {c |}{res}     .25609      41.92
+        {txt}                          {c |}
+        IG   = sum s_i*G_i        {c |}{res}   .4922952      80.59
+        {txt}IGO  = sum s_i*G_i(O_i-1) {c |}{res}  -.1374909     -22.51
+        {txt}BGp  = G_bp               {c |}{res}   .3427792      56.11
+        {txt}BGO  = G_b - G_bp         {c |}{res}  -.0866893     -14.19
+        {txt}{hline 26}{c +}{hline 23}
+        Mean of x                 {c |}{res}   .7756576
+        {txt}N. of obs                 {c |}{res}        100
+        {txt}N. of subgroups           {c |}{res}          2
+        {txt}{hline 26}{c BT}{hline 23}
+
+        {com}. ret list
+
+        {txt}scalars:
+                          r(N) =  {res}100
+                       {txt}r(mean) =  {res}.7756576325441711
+                          {txt}r(k) =  {res}2
+
+        {txt}matrices:
+                          r(b) : {res} 1 x 7
+                      {txt}r(stats) : {res} 2 x 7
+        {txt}
+        {com}. anogi x, by(g) vce(jack)
+        {res}{txt}
+        Jackknife replications ({res}100{txt})
+        {txt}{hline 4}{c +}{hline 3} 1 {hline 3}{c +}{hline 3} 2 {hline 3}{c +}{hline 3} 3 {hline 3}{c +}{hline 3} 4 {hline 3}{c +}{hline 3} 5
+        ..................................................    50
+        ..................................................   100
+
+        Analysis of Gini
+
+        {hline 26}{c TT}{hline 34}
+                                  {c |}      Coef.   Std.Err.          %
+        {hline 26}{c +}{hline 34}
+        Overall Gini              {c |}{res}   .6108943   .0484469     100.00
+        {txt}                          {c |}
+        G_wo = sum s_i*G_i*O_i    {c |}{res}   .3548043   .0482766      58.08
+        {txt}G_b                       {c |}{res}     .25609   .0443328      41.92
+        {txt}                          {c |}
+        IG   = sum s_i*G_i        {c |}{res}   .4922952   .0567645      80.59
+        {txt}IGO  = sum s_i*G_i(O_i-1) {c |}{res}  -.1374909   .0316388     -22.51
+        {txt}BGp  = G_bp               {c |}{res}   .3427792    .037861      56.11
+        {txt}BGO  = G_b - G_bp         {c |}{res}  -.0866893   .0221666     -14.19
+        {txt}{hline 26}{c +}{hline 34}
+        Mean of x                 {c |}{res}   .7756576
+        {txt}N. of obs                 {c |}{res}        100
+        {txt}N. of subgroups           {c |}{res}          2
+        {txt}{hline 26}{c BT}{hline 34}
+
+        {com}. eret list
+
+        {txt}scalars:
+                          e(N) =  {res}100
+                       {txt}e(df_r) =  {res}99
+                       {txt}e(mean) =  {res}.7756576325441711
+                          {txt}e(k) =  {res}2
+
+        {txt}macros:
+                        e(cmd) : "{res}anogi{txt}"
+                 e(properties) : "{res}b V{txt}"
+
+        matrices:
+                          e(b) : {res} 1 x 7
+                          {txt}e(V) : {res} 7 x 7
+                      {txt}e(stats) : {res} 2 x 7
+        {txt}
+        {com}. test _b[BGO]=0
+
+        {txt} ( 1)  {res}BGO = 0
+
+        {txt}       F(  1,    99) ={res}   15.29
+        {txt}{col 13}Prob > F ={res}    0.0002
+        {txt}
+
+{title:Saved Results}
+
+{pstd}See examples above. Results are returned in {cmd:r()}, unless
+{cmd:vce()} is specified, in which case results are returned in
+{cmd:e()}. {cmd:b} is a matrix containing the overall
+decomposition results. {cmd:stats} is a matrix containing the
+subgroup results. If {cmd:fji} is specified, {cmd:F_ji} contains the
+matrix of mean ranks. If {cmd:oji} is specified, {cmd:O_ji} contains the
+matrix of overlapping indices.
+
+
+{title:Methods and Formulas}
+
+{pstd}The implementation deviates from the description
+in Frick et al. (2006) in that 1/n is used in the formula for the
+Gini instead of 1/(n-1).
+
+
+{title:References}
+
+{phang}
+Frick, J. R., Goebel, J., Schechtman, E., Wagner, G. G., Yitzhaki, S. (2006).
+Using Analysis of Gini (ANOGI) for Detecting Whether Two
+Subsamples Represent the Same Universe. The German Socio-Economic
+Panel Study (SOEP) Experience. Sociological Methods and Research
+34:427-468.
+
+
+{title:Authors}
+
+{pstd}
+Ben Jann, ETH Zurich, jann@soz.gess.ethz.ch
+
+{pstd}
+Tom Masterson, Levy Economics Institute of Bard College, masterso@levy.org
+
+{pstd}You may cite this software as follows:
+
+{pmore}
+Jann, B., and T. Masterson (2007). anogi: Stata module to generate Analysis
+of Gini. Available from
+http://ideas.repec.org/c/boc/bocode/s456730.html.
+
+
+{title:Also see}
+
+{psee}
+Online:  {helpb moremata}, {helpb mf_mm_gini:mata mm_gini()}
+{p_end}
+
+{psee}
+Links to user-written programs:
+{net "describe ginidesc, from(http://fmwww.bc.edu/RePEc/bocode/g)":ginidesc},
+{net "describe descogin, from(http://fmwww.bc.edu/RePEc/bocode/d)":descogin},
+{net "describe ineqdeco, from(http://fmwww.bc.edu/RePEc/bocode/i)":ineqdeco},
+{net "describe ineqdec0, from(http://fmwww.bc.edu/RePEc/bocode/i)":ineqdec0}

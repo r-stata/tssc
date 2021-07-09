@@ -1,0 +1,120 @@
+{smcl}
+{* 23nov2007}{...}
+{hline}
+help for {hi:inequal7}{right:(Ph. Van Kerm)}
+{hline}
+
+{title:Measures of inequality (revised)}
+
+{p 8 15}{cmd:inequal7} {it:varlist} [{it:weight}] [{cmd:if}
+{it:exp}] [{cmd:in} {it:range}] [{cmd:,}
+{cmdab:f:ormat}{cmd:(%}{it:fmt}{cmd:)} {cmdab:returns:calars}]
+
+{p}{cmd:aweight}s and {cmd:fweight}s are allowed; see help {help weights}.
+
+
+{title:Description}
+
+{p}{cmd:inequal7} computes a series of inequality measures of the variables in
+{it:varlist}. It is a revised and upgraded version of {cmd:inequal}
+published by
+Edward Whitehouse in STB-23. {cmd:inequal7} also supersedes the previously
+released {cmd:inequal2}. 
+
+{p}Up to 5 variables can be specified in {it:varlist}.
+
+{p}The inequality measures computed are: the "relative mean deviation",
+the "coefficient of variation", the "standard deviation of logs", the"Gini
+index", the "Mehran index", the "Piesch index", the "Kakwani index", "Theil
+entropy index", the "mean log deviation" and the "generalised entropy measure"
+with sensitivity parameters -1 and 2 [see, e.g., Cowell [1995] for a
+definition
+of these measures].
+
+{p}Seven changes have been made compared to {cmd:inequal}:{p_end}
+{p 3 7}- Inclusion of the "generalised entropy measure" with sensitivity 
+parameters -1 and 2;{p_end}
+{p 3 7}- The procedure accepts {cmd:aweight}s;{p_end}
+{p 3 7}- The procedure computes inequality measures for up to 5
+variables;{p_end}
+{p 3 7}- The procedure returns results in r() format (and in global
+macros);{p_end}
+{p 3 7}- Ranks are computed in a modified way with weighted data, so that 
+results obtained with grouped data are consistent with individual data;{p_end}
+{p 3 7}- Output appearence conforms to Stata 7 standards;{p_end}
+{p 3 7}- Control over the display format is given to the user with a standard 
+{cmd:format(%}{it:fmt}{cmd:)} option.{p_end}
+
+
+{title:Options}
+
+{p 0 4}{cmd:format(%}{it:fmt}{cmd:)} specifies the format to be used to
+display the estimated inequality indices. The default is to use a
+{cmd:%6.5f} format.
+
+{p 0 4}{cmd:returnscalars} requests that estimated indices be returned in r()
+scalars (instead of r() locals).
+
+
+{title:Saved Results}
+
+{p}For historical reasons, {cmd:inequal7} returns results in r() locals and in global macros.
+However, to allow using {cmd:inequal7} with the {cmd:bootstrap} or {cmd:jkknife}
+commands, results can be saved in r() scalars by specifying the 
+{cmd:returnscalars} option.
+
+{p}[Important notice: When multiple variables are entered in {it:varlist},
+returned results are the inequality measures of the {bf:last} variable
+listed.] 
+
+{p 4 7}r(rmd) and S_1     contain the "relative mean deviation"{p_end}
+{p 4 7}r(cov) and S_2     contain the "coefficient of variation"{p_end}
+{p 4 7}r(sdl) and S_3     contain the "standard deviation of logs"{p_end}
+{p 4 7}r(gini) and S_4    contain the "Gini coefficient"'{p_end}
+{p 4 7}r(mehran) and S_5  contain the "Mehran index"{p_end}
+{p 4 7}r(piesch) and S_6  contain the "Piesch index"{p_end}
+{p 4 7}r(kakwani) and S_7 contain the "Kakwani index"{p_end}
+{p 4 7}r(theil) and S_8   contain the "Theil index (or generalised
+entropy measure with sensitivity parameter 1)"{p_end}
+{p 4 7}r(mld) and S_9     contain the "Mean Log Deviation (or
+generalised entropy measure with sensitivity parameter 0)"{p_end}
+{p 4 7}r(ge_1) and S_10   contain the "Generalised entropy measure
+with sensitivity parameter -1"{p_end}
+{p 4 7}r(ge2) and S_11    contain the "Generalised entropy measure
+with sensitivity parameter 2"{p_end}
+
+
+{title:Acknowledgements}
+
+{p}{cmd:inequal7} is an upgrade of {cmd:inequal} published in Stata Technical Bulletin 23.  
+Edward Whitehouse, the original author, is therefore the key contributor to {cmd:inequal7}.
+Useful comments and testing by Stephen Jenkins are 
+gratefully acknowledged. Thanks also to A. Peichl and A. Paulus
+for detailed bug reports.{p_end}
+
+
+{title:References}
+
+{p 5 10}Coulter Ph. (1989), Measuring Inequality -A Methodological Handbook-,
+Westview Press USA.
+
+{p 5 10}Cowell, F.A. (1995). Measuring Inequality (second edition).
+Prentice-Hall/Harvester-Wheatsheaf, Hemel Hempstead.
+
+{p 5 10}Whitehouse, E. (1994). sg30:Measures of inequality in Stata.
+ Stata Technical Bulletin 23.
+
+ 
+{title:Author}
+
+{p 5}Philippe VAN KERM <philippe.vankerm@ceps.lu>{p_end}
+{p 5}CEPS/INSTEAD{p_end}
+{p 5}Differdange, G.-D. Luxembourg{p_end}
+
+
+{title:Also see}
+
+ Manual:  {hi:[R] lorenz}
+    STB:  {hi:sg30 (STB-23)}
+{p 0 19}On-line:  help for {help inequal} (if installed), {help ineqdeco}
+(if installed), {help ineqerr} (if installed){p_end}

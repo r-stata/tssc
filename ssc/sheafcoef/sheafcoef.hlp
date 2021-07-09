@@ -1,0 +1,287 @@
+{smcl}
+{* 1.4.0 MLB 01Sep2010}{...}
+{* 1.0.8 MLB 21Dec2009}{...}
+{* 1.0.7 MLB 15Dec2009}{...}
+{* 1.0.1 MLB 02Feb2009}{...}
+{* 1.0.0 MLB 25Jan2009}{...}
+help for {hi:sheafcoef}
+{hline}
+
+{title:Title}
+
+{p2colset 5 18 20 2}{...}
+{p2col :{hi: sheafcoef} {hline 2}}Post-estimation command that displays
+sheaf coefficients.{p_end}
+{p2colreset}{...}
+
+{title:Syntax}
+
+{p 8 15 2}
+{cmd:sheafcoef} {cmd:,} 
+{opt lat:ent(latend_spec)}
+[
+{cmdab:eq:uation(#}{it:#} | {it:name}{cmd:)}
+{opt eform}
+{opt beta}
+{opt post}
+{opt level(#)}
+]
+
+
+{title:Description}
+
+{pstd}
+{cmd:sheafcoef} is a post-estimation command that estimates sheaf coefficients 
+(Heise 1972). A sheaf coefficient assumes that a block of variables influence
+the dependent variable through a latent variable. {cmd:shearcoef} displays
+the effect of the latent variable and the effect of the observed variables on 
+the latent variable. The scale of the latent variable is identified by setting 
+the standard deviation equal to one. The origin of the latent variable is 
+identified by setting it to zero when all observed variables in its block are 
+equal to zero. This means that the mean of the latent variable is not 
+(necesarily) equal to zero. The final identifying assumption is that the effect
+of the latent variable is always positive, so to give a substantive interpretation
+of the direction of the effect, one needs to look at the effects of the observed
+variables on the latent variable. Alternatively, one can specify one "key" variable
+in each bloack of variables, which identifies the direction of a latent variable, 
+either by spedifying that the latent variable has a high value when the key variable
+has a high value or that the latent variable has a low value when the key variable 
+has a high value.
+
+{pstd}
+The assumption that the effect of a block of variables occurs through a latent
+variable is not a testable constraint; it is just a different way of presenting 
+the results from the original model. Its main usefulness is in comparing the
+relative strength of the influence of several blocks of variables. For example,
+say we want to know what determines the probability of working non-standard 
+hours and we have a block of variables representing characteristics of the job
+and another block of variables representing the family situation of the 
+respondent, and we want to say something about the relative importance of job
+characteristics versus family situation. In that case one could estimate a 
+{cmd:logit} model with both blocks of variables and optionally some other
+control variables. After that one can use {cmd:sheafcoef} to display the
+effects of two latent variables, family background and job characteristics,
+which are both standardized to have a standard deviation of 1, and can thus be
+more easily compared. 
+
+{pstd}
+The output is divided into a number of equations. The top equation, labeled 
+"main", represents the effects of the latent variables and other control 
+variables (if any) on the dependent variable. The names of the latent variables
+are as specified in the {cmd:latent()} option. If no names are specified, they
+will be called "lvar1", "lvar2", etc. Below the main equation, one additional 
+equation for every latent variable is displayed, labelled "on_name1", 
+"on_name2", etc., where "name1" and "name2" are the names of the latent 
+variables. These are the effects of the observed variables on the latent variable.
+
+{pstd}
+The sheaf coeficients and the variance covariance matrix of all the coefficients
+are estimated using {helpb nlcom}. {cmd:sheafcoef} can be used after any regular
+estimation command (that is, a command that leaves its results behind in e(b) 
+and e(V)), The only constraint is that the observed variables that make up the
+latent variable(s) must all come from the same equation. 
+
+
+{title:Options}
+
+{phang}
+{opt lat:ent(latent_spec)} specifies the blocks of variables that make up the 
+latent variabls. In summary, the syntax for {it:latent_spec} is:
+
+{pmore} 
+   [{it:name1}:]{it:varlist_1 }[{it:{help if}}] 
+[; [{it:name2}:]{it:varlist_2 }[{it:{help if}}]
+[; [{it:name3}:]{it:varlist_3 }[{it:{help if}}][...]]]
+
+{pmore}
+It consists of blocks each such that each block is seperated by a semicolon (;). 
+Each block needs to constist of at least two variables. These variables must be 
+explanatory variables in the estimation command preceding {cmd:sheafcoef}, and 
+the same variable can only appear in one block. Optionally, each block of 
+variables can be preceded by a name for the latent variable followed by a colon 
+(:). 
+
+{pmore}
+Moreover, one can identify one key variable in each block of variables, by 
+attaching a {cmd:+} or {cmd:-} (without a space) to a variable in a block. If one 
+of the observed variables has {cmd:+} attached to it, then the latent variable 
+will have a high value when that observed variable is high and a low value 
+when that observed variable is low. The opposite is true when one of the observed
+variables has a {cmd:-} attached to it. If no observed variable in a block has a 
+{cmd:+} or a {cmd:-} attached to it, than the direction of that latent variable 
+is identified such that it's effect on the dependent variable is positive.
+
+{pmore}
+Finaly the {it:if} conditions determine which observations are used to identify the
+scale of the latent variable. This can be useful when comparing effects across
+groups. Consider the following example:
+
+{cmd}
+        sysuse nlsw88, clear
+
+        gen ln_w = ln(wage)
+
+        drop if race == 3
+        gen byte black = race == 2
+        gen byte white = race == 1
+
+        gen blackXmarried = black*married
+        gen blackXnever_married = black*never_married
+        gen whiteXmarried = white*married
+        gen whiteXnever_married = white*never_married
+
+        reg ln_w black* white*, nocons
+{txt}
+{p 8 8 2}({stata "sheafcoef_ex 4":click to run}){p_end}
+
+{pmore}
+In this example we look at the effect of marital status on income for black and white
+women. The interaction effect with {it:black} are the effects of the marital status
+variables in the black sample, while the interaction effects with {it:white} are the
+effects of the marital status variables in the white sample. To use {cmd:sheafcoef}
+in this case we need to make sure that we identifiy the scale of the latent martial
+status variable for the black sample using only the black respondents and identify
+the scale of the latent variable for the white sample using only the white respondents.
+This is what the {it:if} conditions are for:
+
+{cmd}
+        sheafcoef, latent(black_marst: blackXmarried blackXnever_married if black ; ///
+                          white_marst: whiteXmarried whiteXnever_married if white )
+{txt}
+{p 8 8 2}({stata "sheafcoef_ex 5":click to run}){p_end}
+
+{phang}
+{cmdab:eq:uation(#}{it:#} | {it:name}{cmd:)} specifies the equation from the 
+previous estimation command to be used when computing the sheaf coefficients.
+This option is relevant when using {cmd:sheafcoef} after commands like {help mlogit}
+or {help heckman} that return results in multiple equations. One can either 
+specify whether {cmd:sheafcoef} should consider the first, second, etc. equation
+or one can type in the name of that equation. In the former case the number of the
+equation should be preceded by a {cmd:#}.
+
+{phang}
+{opt eform} specifies that the effects of the latent variable and the control
+variables are exponentiated. The effects of the observed variables in each 
+block on its latent variable are not exponentiated, because these represent
+the effects of these variables on the standardized latent variable and not on
+the dependent variable.
+
+{phang}
+{opt beta} asks that standardized beta coefficients be reported.  The beta 
+coefficients are the regression coefficients obtained by first standardizing all 
+variables to have a mean of 0 and a standard deviation of 1. When specifying
+the {cmd:beta} option after {help logit}, {help logistic} or {help probit} the 
+latent dependent variable (often refered to as y*) is standardized. {cmd:beta} 
+may only be specified after {help regress}, {help logit}, {help logistic}, or 
+{help probit}, and may not be specified when the previous estimation command
+ used clustered standard errors or the {cmd:svy} prefix.
+
+{phang}
+{opt post} causes {cmd:sheafcoef} to behave like a Stata estimation ({cmd:eclass})
+command.  When {opt post} is specified, {cmd:sheafcoef} will post the vector of
+transformed estimators and its estimated variance-covariance matrix to
+{cmd:e()}. This option, in essence, makes the transformation permanent.  Thus
+you could, after {opt post}ing, treat the transformed estimation results in
+the same way as you would treat results from other Stata estimation commands.
+For example, after posting, you could use {helpb test} to perform simultaneous
+tests of hypotheses on linear combinations of the transformed estimators.
+
+{pmore}
+Specifying {opt post} clears out the previous estimation results,
+which can be recovered only by refitting the original model or by storing the
+estimation results before running {cmd:nlcom} and then restoring them; see
+{manhelp estimates_store R:estimates store}.
+
+{phang}
+{opt level(#)} specifies the confidence level, as a percentage,
+for confidence intervals.  The default is {cmd:level(95)} or as set by
+{helpb set level}.
+
+
+{title:Examples}
+
+{cmd}
+    sysuse nlsw88, clear
+    gen byte lower = inlist(occupation, 9, 10, 11, 12, 13) if occupation < .
+    gen byte middle = inlist(occupation, 3, 4, 5, 6, 7, 8) if occupation < .
+	
+    glm wage lower middle married never_married union grade, link(log)
+	
+    sheafcoef, latent(class:   lower middle;          ///
+                      marital: married never_married) ///
+               post
+    test [main]_b[class]=[main]_b[marital]
+{txt}
+{p 4 4 2}({stata "sheafcoef_ex 1":click to run}){p_end}
+
+{pstd}
+Notice that in the example above the scale of class, as shown in the equation "on_class", runs from
+lower (large negative value) to higher (0) indicating that the effect of class 
+is possitive: women with higher occupations receive more income.
+
+{cmd}
+    sysuse nlsw88, clear
+    gen byte lower = inlist(occupation, 9, 10, 11, 12, 13) if occupation < .
+    gen byte middle = inlist(occupation, 3, 4, 5, 6, 7, 8) if occupation < .
+	
+    logit union middle lower married never_married
+	
+    sheafcoef, latent(class:   lower middle;          ///
+                      marital: married never_married)
+    sheafcoef, latent(class:   lower middle;          ///
+                      marital: married never_married) ///
+               eform
+{txt}
+{p 4 4 2}({stata "sheafcoef_ex 2":click to run}){p_end}
+
+{pstd}
+Notice that in the example above the scale of class, as shown in the equation "on_class", runs from
+higher (0) to lower (large positive value) indicating that the effect of class 
+is negative: women with higher occupations are less likely to be a union member.
+
+{cmd}
+    sysuse nlsw88, clear
+    gen byte lower = inlist(occupation, 9, 10, 11, 12, 13) if occupation < .
+    gen byte middle = inlist(occupation, 3, 4, 5, 6, 7, 8) if occupation < .
+	
+    logit union middle lower married never_married
+	
+    sheafcoef, latent(class:  -lower middle;         ///
+                      marital: married never_married)
+{txt}
+{p 4 4 2}({stata "sheafcoef_ex 3":click to run}){p_end}
+
+{pstd}
+Notice that in the example above, by attaching a {cmd:-} to {it:lower}, we are saying that we want 
+the latent variable to have a low value when the observed variable {it:lower} 
+has a high value and {it:vice versa}. The consequence is that we changed the 
+direction of latent variable class such that the scale of class runs from 
+lower (large negative number) to higher (zero), and the effect of class now 
+becomes negative.
+
+
+{title:Author}
+
+{p 4 4}
+Maarten L. Buis{break}
+Universitaet Tuebingen{break}
+Institut fuer Soziologie{break}
+maarten.buis@uni-tuebingen.de
+{p_end}
+
+
+{title:References}
+
+{phang}
+Heise, David R. (1972). Employing nominal variables, induced 
+variables, and block variables in path analysis. 
+{it:Sociological Methods & Research}, {cmd:1}(2): 147--173.
+
+{title:Also see}
+
+{psee}
+Online: {helpb nlcom}
+
+{psee}
+If installed: {helpb propcnsreg}  
+{p_end}

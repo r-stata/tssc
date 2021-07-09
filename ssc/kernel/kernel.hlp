@@ -1,0 +1,76 @@
+{smcl}
+{hline}
+help for {hi:kernel}{right:{browse "http://econ.chavezjuarez.com/vcheck.php?i=kernel&v=1.0":Version 1.0}}
+{hline}
+
+{title:Computation of different kernels}
+
+
+{p 4 17 2}{cmd:kernel} {it:var} [if] [in] ,
+	{cmdab:v:alue(}{it:real}{cmd:)}
+	{cmdab:b:w(}{it:real}{cmd:)}
+	[
+	{cmdab:t:ype(}{it:str}{cmd:)}
+	{cmdab:o:ut(}{it:str}{cmd:)}
+		]
+
+{title:Description}
+
+{p 4 4 4} {cmd:kernel} computes the value of a kernel around a given point. The routine supports different kernel functions such as the epanechnikov ({it:default}), 
+the normal or the Parzen kernel. The value of the kernel can be saved in a new variable and used for instance for non-parametric estimation.  A kernel is a function whose integral 
+over the full range is equal to 1 and whose values are always greater or equal to zero. The kernel is generally used in non-parametric methods to give a certain weight to different observations. 
+Let us define the variable of interest as {it:X} and further define {it:X0] to be the value around which we compute the kernel. We can then define Z = (X-X0)/BW, where BW is the bandwidth. 
+The kernel is then defined as K(Z)>0 for all values of Z. 
+
+{p 4 4 4} {it:var} is the variable for which the kernel should be computed. 
+
+{title:Options}
+
+{p 4 4 4} {cmdab:v:alue(}{it:real}{cmd:)} is a required option and refers to the value of the variable in {it:varlist} around which the kernel should be 
+estimated. 
+
+{p 4 4 4} {cmdab:b:w(}{it:real}{cmd:)} is also required and refers to the bandwidth you would like to use. Note that the same bandwidth has different meanings for different kernels. 
+
+{p 4 4 4} {cmdab:t:ype(}{it:str}{cmd:)} allows you to change the kernel type. The options are as follows: 
+
+{col 15} {it:default} {col 28} The default epanechnikov kernel
+{col 15} normal {col 28} The normal density kernel
+{col 15} triangle {col 28} The triangle kernel
+{col 15} beta {col 28} The beta kernel
+{col 15} logit {col 28} The logit density kernel
+{col 15} uniform {col 28} The uniform kernel
+{col 15} cosine {col 28} The cosine kernel
+{col 15} parzen {col 28} The Parzen kernel
+
+{p 4 4 4} {cmdab:o:ut(}{it:str}{cmd:)} allows you to specify the name of the variable to which the kernel values should be saved. By default the output variable 
+is called {it:_kernel_type} where {it:type} changes in function of the chosen kernel.
+
+
+{title:Output}
+{p 4 4 15} {cmd:kernel} returns several values which can be accessed through {stata return list:return list}:
+
+{col 10} r(bw): {col 25} the bandwidth
+{col 10} r(max): {col 25} the maximum of the variable in {it:varlist} for which K(var)>0. In case of open end kernels a point is reported.
+{col 10} r(diff): {col 25} the maximum of the variable in {it:varlist} for which K(var)>0. In case of open end kernels a point is reported.
+{col 10} r(kernel): {col 25} the kernel function used in the computation
+
+
+
+{title:Example}
+{p 0 4 0}First, we load a sample database containing severl thousand individuals:{break}{stata sysuse nlsw88, clear} 
+
+{p 0 4 0}Then we estimate two kernels (epanechnikov and normal) around the value of 40 with a bandwidth of 2{break}
+{stata kernel tenure, value(10) bw(2) out(tenure_kernel_epan)}{break}
+{stata kernel tenure, value(10) bw(2) out(tenure_kernel_norm) type(normal)}
+
+{p 0 4 0}Finally, to illustrate the two kernels, we first sort the data and plot then the kernel function against the variable {it:age}{break}
+{stata sort tenure}{break}{stata twoway (line tenure_kernel_epan tenure)(line tenure_kernel_norm tenure),legend(cols(1))}
+
+{title:Author}
+{p 4 4 4}	For suggestions and questions, please contact the author: {break} 
+Florian Chávez Juárez: {browse "mailto:florian@chavezjuarez.com?subject=Stata kernel:":florian@chavezjuarez.com}
+
+{title:Update}
+{browse "http://econ.chavezjuarez.com/vcheck.php?i=kernel&v=1.0":Click here to check if you have the newest version}
+
+

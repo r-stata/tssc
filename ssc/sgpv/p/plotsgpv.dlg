@@ -1,0 +1,289 @@
+/*
+plotsgpv dialog version 1.00, 15.03.2020, Sven-Kristjan Bormann
+for plotsgpv version 1.00
+
+To install in User Statistics menu via Stata commands:
+  
+  . window menu append item "stUserStatistics" "SGPV Plot Interval Estimates (&plotsgpv)" "db plotsgpv"
+
+  . window menu refresh
+
+To permanently install, place the commands in your -profile.do- file.
+
+*The color setting does not work yet
+*/
+
+VERSION 12.0
+INCLUDE _std_medium
+INCLUDE header
+HELP hlp1,   view("help plotsgpv")  
+RESET res1
+
+*The following lists are inspired by the way Stata handles selection of colors in their dialogs
+LIST cl_nullcol_sel
+BEGIN
+        colors.cl_nullcol.show
+        colors.cl_nullcol.hide
+END
+
+LIST cl_intcol1_sel
+BEGIN
+        colors.cl_intcol1.show
+        colors.cl_intcol1.hide
+END
+
+LIST cl_intcol2_sel
+BEGIN
+        colors.cl_intcol2.show
+        colors.cl_intcol2.hide
+END
+
+LIST cl_intcol3_sel
+BEGIN
+        colors.cl_intcol3.show
+        colors.cl_intcol3.hide
+END
+
+LIST setorder_list
+BEGIN
+	sgpv
+END
+
+DIALOG main, label("Plotsgpv 1.00 - Plotting SGPVs") tabtitle("Main")
+BEGIN
+	GROUPBOX gb_est	 	_lft  _top  400    110, label("Estimated Interval") 
+	TEXT tx_estlo 		+10   _ss   80      ., label("Lower Bound") 
+	EXP ex_estlo	 	@     _ss   380     ., option(estlo) label("Expression") /// 
+										   	tooltip("Set lower bound of the estimated interval") error(Lower Bound estimated interval)
+										   
+	TEXT tx_esthi	 	20   +20    80      ., label("Upper Bound")
+	EXP ex_esthi	 	@ 	 _ss    380     ., option(esthi) label("Expression") ///
+										   	tooltip("Set upper bound of the estimated interval") error(Upper Bound estimated interval)
+										   
+	GROUPBOX gb_null   _lft  +40    400    110, label("Null-Hypothesis Interval")
+	TEXT tx_nulllo 		+10  _ss    80       ., label("Lower Bound") 
+	EXP ex_nulllo		@    _ss    380      ., label("Expression")  option(nulllo) ///
+										   	tooltip("Set lower bound of the null-hypothesis interval") error(Lower Bound null-hypothesis interval)
+										   
+	TEXT tx_nullhi 		20   +20     80      ., label("Upper Bound")
+	EXP ex_nullhi	 	@	 _ss    380      ., label("Expression") option(nullhi) ///
+										   	tooltip("Set upper bound of the null-hypothesis interval") error(Upper Bound null-hypothesis interval)
+END
+
+INCLUDE ifin
+
+DIALOG colors, tabtitle("Color options")
+BEGIN
+	// COLOR cl_nullcol 10 10 100 ., label("Null interval color") option(nullcol) default(208 216 232)
+	
+	TEXT     tx_nullcol   10   	10  	140    	., label("Null interval color") right
+	COMBOBOX cb_nullcol  160    @    	100  	 ., dropdownlist contents(colors) option(nullcol)           ///
+													onselchangelist(cl_nullcol_sel) default(208 216 232)
+	COLOR    cl_nullcol  270 	@     	20  	 .,   default(208 216 232)  tooltip("The color is shown as a reference.")  option(nullcol)
+  
+	GROUPBOX gb_intcol  _lft 	+40 	300 	110, label("SGPV Interval colors")
+	TEXT     tx_intcol1   15   _ss  	140  	., label("SGPV = 0 interval color") right
+	COMBOBOX cb_intcol1  160     @     	100   	., dropdownlist contents(colors) option(intcol1)           ///
+												onselchangelist(cl_intcol1_sel) default(205 38 38)
+	COLOR    cl_intcol1  270     @     20  	 .,  default(205 38 38)  tooltip("The color is shown as a reference.")  option(intcol1)
+	
+	TEXT     tx_intcol2   15    _ls     140  	., label("0 < SGPV < 1 interval color") right
+	COMBOBOX cb_intcol2  160     @     100  	 ., dropdownlist contents(colors) option(intcol2)           ///
+												onselchangelist(cl_intcol2_sel) default(100 149 237)
+	COLOR    cl_intcol2  270     @     20   	.,  default(100 149 237) tooltip("The color is shown as a reference.")  option(intcol2)
+  
+  	TEXT     tx_intcol3   15    _ls     140 	., label("SGPV = 1 interval color") right
+	COMBOBOX cb_intcol3  160     @     100   	., dropdownlist contents(colors) option(intcol3)           ///
+												onselchangelist(cl_intcol3_sel) default(72 61 139)
+	COLOR    cl_intcol3  270     @     20   	., default(72 61 139)  tooltip("The color is shown as a reference.")  option(intcol3)
+
+END
+
+DIALOG titles, tabtitle("Title options")
+BEGIN
+	TEXT tx_title 10 	10 	50 	., label("Plot title") right
+	EDIT ed_title 65 	10	350 	.,option(title) tooltip("Title of the plot")
+	
+	TEXT tx_xtitle 10 	_ls	50 	.,label("X-axis title") right
+	EDIT ed_xtitle 65	@	350		.,option(xtitle)	tooltip("Label of the x-axis")
+	
+	TEXT tx_ytitle 10 	_ls	50 	.,label("Y-axis title") right
+	EDIT ed_ytitle 65	@	350		.,option(ytitle) tooltip("Label of the y-axis")
+
+END
+
+DIALOG options, tabtitle("Further options")
+BEGIN
+	GROUPBOX gb_noplot  _lft 	_top	200		80 ,label("No plotting of ...")
+	CHECKBOX ck_noy 	+10 	+15 	80 	.,label("... Y-axis") option(noploty_axis) tooltip("Deactive showing the y-axis")
+	CHECKBOX ck_nox		+110 	@ 		80 	.,label("... X-axis") option(noplotx_axis) tooltip("Deactive showing the x-axis")
+	CHECKBOX ck_noout	20 		_ls 	100 	.,label("... outline zone") option(nooutlinezone) ///
+												tooltip("Deactivate drawing a slim white outline around the null zone")
+	CHECKBOX ck_nol		+110 	@ 		80 	.,label("... legend") option(nolegend)
+	
+	
+	CHECKBOX ck_nomata  +100   	20     @        ., label("No Mata") option(nomata) ///
+												tooltip("Do not use the Mata routines for large input matrices and instead use variables for the calculations.")
+	CHECKBOX ck_replace @   	_ss     @        ., label("Replace") option(replace) ///
+												tooltip("Replace existings variables if 'No Mata' option is set or variables are used as inputs for the estimated interval bounderies.")
+	CHECKBOX ck_noshow @   		_ss      @        ., label("No Show") option(noshow) ///
+												tooltip("Do not show the calculated results which can be useful for large amount of calculated SGPVs and delta-gaps.")
+												
+	TEXT 	tx_seto		20		_xls	@	.,label("Setorder:")
+	VARNAME vn_seto		+100	@		@	.,default("sgpv") option(setorder) ///
+											tooltip("a variable giving the desired order along the x-axis. If {bf:setorder} is set to {bf:"sgpv"}, the second-generation {it:p}-value ranking is used. If {bf:setorder} is empty, the original input ordering is used.")
+											
+	TEXT 	tx_xshow	20		_ls		120	.,label("Maximum ranking:")
+	EDIT 	ed_xshow 	+100	@		100	.,option(xshow) numonly ///
+											tooltip("A number representing the maximum ranking on the x-axis that is displayed. Default is to display all intervals.")	
+	TEXT	tx_nullpt	20		_ls		80	.,label("Null point:")
+	EDIT 	ed_nullpt 	+100	@		40	.,option(nullpt) numonly ///
+											tooltip("A number representing a point null hypothesis. If set, the command will draw a horizontal dashed red line at this location.")
+	
+	TEXT 	tx_twoway 	20 		_ls		100		.,label("Additional plotting options:")
+	EDIT 	ed_twoway 	+100 	@		250		.,option(twoway_opt) tooltip("Any additional options for the plotting. Any option set here may override the default options")
+	BUTTON  bu_twoway   +255	@  		40 	.,label("Help") onpush("view help twoway")
+	
+		
+END
+
+PROGRAM nullcol_output 
+BEGIN
+	if !colors.cb_nullcol.isdefault() & !colors.cl_nullcol.isvisible() {
+		optionarg colors.cb_nullcol
+	}	
+	if !colors.cb_nullcol.isdefault() & colors.cl_nullcol.isvisible() {
+		optionarg /quoted colors.cl_nullcol
+	}
+END
+
+
+PROGRAM intcol_output 
+BEGIN
+		if !colors.cb_intcol1.isdefault() & !colors.cl_intcol1.isvisible() {
+			optionarg /hidedefault colors.cb_intcol1
+		}	
+		if !colors.cb_intcol1.isdefault() & colors.cl_intcol1.isvisible() {
+			optionarg /quoted colors.cl_intcol1
+		}
+		
+		if !colors.cb_intcol2.isdefault() & !colors.cl_intcol2.isvisible() {
+			optionarg /hidedefault colors.cb_intcol2
+		}	
+		if !colors.cb_intcol2.isdefault() & colors.cl_intcol2.isvisible() {
+			optionarg /quoted colors.cl_intcol2
+		}
+		
+		if !colors.cb_intcol3.isdefault() & !colors.cl_intcol3.isvisible() {
+			optionarg /hidedefault colors.cb_intcol3
+		}	
+		if !colors.cb_intcol3.isdefault() & colors.cl_intcol3.isvisible() {
+			optionarg /quoted colors.cl_intcol3
+		}
+END
+
+PROGRAM setorder_output
+BEGIN
+	if options.vn_seto.isdefault(){
+		optionarg /quoted options.vn_seto
+	}
+	else{
+		optionarg options.vn_seto
+	}
+
+END
+
+
+PROGRAM command
+BEGIN
+	put "plotsgpv "
+	INCLUDE _ifin_pr
+	beginoptions
+		require main.ex_estlo
+		optionarg main.ex_estlo
+		
+		require main.ex_esthi
+		optionarg main.ex_esthi
+		
+		require main.ex_nulllo
+		optionarg main.ex_nulllo
+		
+		require main.ex_nullhi
+		optionarg main.ex_nullhi
+		
+		*Color options
+		put " " /program nullcol_output
+		put " " /program intcol_output
+		
+		*Title options
+		optionarg /oquoted titles.ed_title
+		optionarg /oquoted titles.ed_xtitle
+		optionarg /oquoted titles.ed_ytitle
+		
+		
+		*Further options
+		option options.ck_nox
+		option options.ck_noy
+		option options.ck_nol
+		option options.ck_noout
+		
+		option options.ck_nomata
+		option options.ck_replace
+		option options.ck_noshow
+		
+		put " " /program setorder_output
+		optionarg /oquoted options.ed_xshow
+		optionarg options.ed_nullpt
+		optionarg /asis options.ed_twoway
+		
+	endoptions 
+END
+
+/*
+PROGRAM command2
+BEGIN
+	put "plotsgpv "
+	INCLUDE _ifin_pr
+	beginoptions
+		require main.ex_estlo
+		optionarg main.ex_estlo
+		
+		require main.ex_esthi
+		optionarg main.ex_esthi
+		
+		require main.ex_nulllo
+		optionarg main.ex_nulllo
+		
+		require main.ex_nullhi
+		optionarg main.ex_nullhi
+		
+		*Title options
+		optionarg /oquoted titles.ed_title
+		optionarg /oquoted titles.ed_xtitle
+		optionarg /oquoted titles.ed_ytitle
+		
+		*Color options
+		put " " /program nullcol_output
+		put " " /program intcol_output
+		
+		
+		*Further options
+		option options.ck_nox
+		option options.ck_noy
+		option options.ck_nol
+		option options.ck_noout
+		
+		option options.ck_nomata
+		option options.ck_replace
+		option options.ck_noshow
+		
+		put " " /program setorder_output
+		optionarg options.ed_xshow
+		optionarg options.ed_nullpt
+		optionarg /asis options.ed_twoway
+		
+		
+	endoptions 
+END
+*/
+

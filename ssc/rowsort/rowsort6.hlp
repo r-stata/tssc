@@ -1,0 +1,60 @@
+.-
+help for ^rowsort6^
+.-
+
+Row sort a set of integer variables
+-----------------------------------
+
+    ^rowsort6^ varlist, ^g^enerate^(^newvarlist^)^ [ ^a^scend ^d^escend ]
+
+Description
+-----------
+
+^rowsort6^ creates new variables sort_1, ... , sort_p corresponding to 
+var_1, ... , var_p in varlist such that sort_1, ... , sort_p contain
+the sorted (ordered) values in each observation of varlist. varlist should 
+contain all numeric variables with integer values. Missing values are allowed. 
+
+By default, sort_1 contains the lowest value within each observation.
+The ^descend^ option may be used to reverse order. 
+
+Note:^rowsort6^ is no longer the current version of ^rowsort^ and 
+is only of interest to users of Stata 6 or 7. Users of Stata 8 
+upwards should switch to ^rowsort^. 
+
+
+Remarks
+-------
+
+^rowsort6^ loops over observations and may be relatively slow. 
+It may be faster to ^reshape^, ^sort^ within blocks, and ^reshape^ again. 
+
+
+Options
+-------
+
+^generate(^newvarlist^)^ specifies new variable names for the 
+    variables to be generated, one for each variable in varlist. 
+    newvarlist may be specified in hyphenated form, as in ^s1-s5^. 
+    This option is required. 
+
+^ascend^ specifies that newvarlist should contain ascending values 
+    and is the default.
+
+^descend^ specifies that newvarlist should contain descending values, 
+    such that sort_1 contains the largest value in each observation. 
+
+
+Examples
+--------
+
+        . ^rowsort6 x1-x5, gen(s1-s5)^
+        . ^rowsort6 x1-x5, gen(s1-s5) descend^
+
+
+Author
+------
+
+         Nicholas J. Cox, University of Durham, U.K.
+         n.j.cox@@durham.ac.uk
+

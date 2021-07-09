@@ -1,0 +1,92 @@
+{smcl}
+{* 19June2002}{...}
+{hline}
+help for {hi:survtime}{right:(see also:  {hi:[R] stset})}
+{hline}
+
+{title:Survival Time for use in stset}
+
+{p 8 17}{cmd:survtime} [{cmd:if} {it:exp}] [{cmd:in} {it:range}]
+	   {cmd:,} {cmdab:e:vents(}{it:varlist}{cmd:)} 
+         {cmdab:c:ensors(}{it:varlist}{cmd:)} 
+         [{cmdab:g:enerate(}{it:newvarname}{cmd:)}
+	   {cmdab:s:equential}
+         {cmdab:o:rigin(}{it:varlist}{cmd:)}
+         {cmdab:a:ddone}]
+
+{p 2 4}NOTE: if {cmdab:g:enerate(}{it:newvarname}{cmd:)} is not used {cmd:survtime} 
+	will create or overwrite two variables called
+	{it:event_d}: the first occurring date & 
+	{it:event_i}: the corresponding event indicator.
+
+{title:Description}
+
+{p 0 4}{cmd:survtime} finds the first occurring date of a list of events and censor dates
+and creates one variable {it:event_d} (or {it:newvariable_d})
+for the date and a second variable {it:event_i} (or {it:newvariable}) 
+indicating the status of that date as an event (1,2,...) or a censor (0) 
+of types provided in {cmdab:e:vents(}{it:varlist}{cmd:)} and 
+{cmdab:c:ensors(}{it:varlist}{cmd:)}, respectively.{p_end}
+
+{p 0 4}{cmd:survtime} was written with meaningful date (see {help dates}) variables in mind. There 
+is no check made for compatible numeric variables specified in 
+{cmdab:e:vents(}{it:varlist}{cmd:)}, {cmdab:c:ensors(}{it:varlist}{cmd:)}, or
+{cmdab:o:rigin(}{it:varname}{cmd:)}.{p_end}
+
+{p 2 4}{cmd:stset} will use the resulting variable and event indicator. Example syntax of 
+{help stset} following {cmd:survtime}:
+
+{p 8 16}{cmd:stset} {it:event_d} [{cmd:if} {it:exp}] [{cmd:in} {it:range}] 
+	[{cmd:,} {cmdab:f:ail(}{it:event_i==}{it:numlist}{cmd:)} 
+      {cmdab:o:rigin(}{it:varname}{cmd:)}
+      {cmdab:s:cale(}{it:#}{cmd:)}
+      {cmdab:id:(}{it:varname}{cmd:)}].
+
+{title:Options}
+	   
+{p 0 4}{cmdab:g:enerate(}{it:newvarname}{cmd:)} specifies that new variables be 
+created. The date will have the suffix _d added. The event indicator will have no 
+suffix added. By default {it:event_d} and {it:event_i} will be created or overwritten. 
+
+{p 0 4}{cmdab:s:equential} specifies that the {cmdab:e:vents(}{it:varlist}{cmd:)} are 
+in descending order of interest and values 1,2,... will be so assigned and labeled 
+indicating which event occurs first. Tied events will take the preceding event type. If 
+{cmdab:s:equential} is not specified all {cmdab:e:vents(}{it:varlist}{cmd:)} get 
+the value, 1.
+
+{p 0 4}{cmdab:o:rigin(}{it:varname}{cmd:)} specifies that the number of elapsed days be 
+found from this origin. It will contain the number gotten by subtracting the provided 
+origin from the event or censor date. The resulting variable will reflect this in its 
+label. If this option is used it is not necessary to use the origin() option in {cmd:stset}.
+
+{p 0 4}{cmdab:a:ddone} specifies that one be added to the interval. If this option is 
+specified without {cmdab:o:rigin(}{it:varname}{cmd:)}, zero is used as the origin.
+
+{p 0 4}[{cmd:if} {it:exp}] [{cmd:in} {it:range}] options result in missing values for
+records excluded thereby. In general, it is recommend that the analysis set be defined
+in {help stset}, or by some other means, rather than in {cmd:survtime}. If {it:timevar} in 
+{cmd:stset} contains missing values {cmd:stset} responds by indicating {it:probable error}, 
+which can mask substantial information about survival data. This, however, does not matter if
+{cmd:survtime} is used without {cmd:stset} to find observation time for a certain subset.
+
+{title:Example}
+
+{p 8 12}{inp:. survtime , e(die dmarrel) c(dlast cutoff) gen(dfs) seq }{p_end}
+{p 8 12}{inp:. stset dfs_d, failure(dfs==1/2) origin(begin_d) scale(365) id(idnumber)}{p_end}
+
+{p 8 12}{inp:. survtime , e(die dmarrel) c(dlast cutoff) gen(dfs) }{p_end}
+{p 8 12}{inp:. stset dfs_d, failure(dfs==1) origin(begin_d) scale(365) id(idnumber)}{p_end}
+
+{title:Author}
+
+{p 8 12} Allen Buxton, {p_end}
+{p 8 12} Assistant Statistician {p_end}
+{p 8 12} Children's Oncology Group {p_end}
+{p 8 12} Arcadia, CA {p_end}
+
+{title:Also see}
+
+{p 1 14}Manual: {hi:[R] stset} {p_end}
+
+{p 0 19}On-line: help for {help stset} {help survtime} {p_end}
+

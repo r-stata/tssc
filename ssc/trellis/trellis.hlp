@@ -1,0 +1,156 @@
+{smcl}
+{* 22May2006}{...}
+{cmd:help trellis}
+{hline}
+
+{title:Title}
+
+    {hi: Produces a Trellis Plot}
+
+{title:Syntax}
+
+{p 8 17 2}
+{cmdab:trellis}
+[{varlist}]
+[{cmd:,} {it:options}]
+
+{synoptset 20 tabbed}{...}
+{synopthdr}
+{synoptline}
+{syntab:Main}
+{synopt:{opt by(varname varname)}} specifies the two variables that determine the array of graphs.{p_end}
+{synopt:{opt labels}} specifies that the value labels for the by-variables are used as titles.{p_end}
+{synopt:{opt f:unction(string)}} specifies the command to draw each graph in the trellis.{p_end}
+{synopt:{opt fopt(graph_options)}}  specifies the options applied to each graph in the matrix.{p_end}
+{synopt:{opt single:opt(string)}} specifies the options applied to a single identified graph.{p_end}
+{synopt:{opt sr(#)}} specifies the row of the single identified graph.{p_end}
+{synopt:{opt sc(#)}} specifies the column of the identified single graph.{p_end}
+{synopt:{help graph combine} options } additional options from graph combine.{p_end}
+{synoptline}
+{p2colreset}{...}
+
+{title:Description}
+
+{pstd}
+This command creates a trellis plot using {hi: graph combine}. This trellis plot is an array of the same graph type by the levels of two factor variables. 
+It is a convenient way to represent the graphic of interest and whether it changes with respect to two other variables.
+
+{pstd}
+The individual graph type can be any of STATA's graphic commands, even the matrix plot.
+Any of the options of the graph can be specified and in addition any options 
+for the {hi:graph combine} command.
+
+{pstd}
+The latest version of this command can be found at the SSC website or by the following command
+{stata ssc install trellis, replace}.
+
+
+{title:Options}
+
+{dlgtab:Main}
+
+{phang}
+{opt by(varname varname)} specifies the two variables that determine the array of graphs.
+
+{phang}
+{opt labels} specifies that the value labels for the by-variables are used as titles.
+
+{phang}
+{opt f:unction(string)} specifies the command to draw each graph in the trellis. This can be a simple scatter graph of two variables {hi:twoway scatter x y} or much more complicated commands shown in the examples
+
+{phang}
+{opt fopt(graph_options)} specifies the options applied to each graph in the matrix. 
+
+{phang}
+{opt single:opt(string)} specifies the options applied to a single identified graph.
+
+{phang}
+{opt sr(#)} specifies the row of the single identified graph.
+
+{phang}
+{opt sc(#)} specifies the column of the identified single graph.
+
+{title:Examples}
+
+{pstd}
+The trellis command can be as complex as the user specifies so only a few of the options can
+be demonstrated. NOTE you must click on the {hi: webuse} command below to load up the data
+for the trellis commands to work.
+
+** {stata webuse bdendo}  (MUST load data first) **
+
+Scatter plots        : {stata trellis, by(gall ob) f(twoway scatter age duration)}
+Line plots           : {stata trellis, by(gall ob) f(twoway line age duration) fopt(sort)}
+Box plot             : {stata trellis, by(gall ob) f(graph box duration)}
+Box plot (grouped)   : {stata trellis, by(gall ob) f(graph box duration) fopt(over(agegrp))}
+HBox plot (grouped)  : {stata trellis, by(gall ob) f(graph hbox duration) fopt(over(agegrp))}
+Scatter Matrix       : {stata trellis, by(gall ob) f(graph matrix age agegrp duration)}
+Dot plot (grouped)   : {stata trellis, by(gall ob) f(graph dot age duration) fopt(over(agegrp))}
+Bar chart (grouped)  : {stata trellis, by(gall ob) f(graph bar age duration) fopt(over(agegrp))}
+Horizontal Bar chart : {stata trellis, by(gall ob) f(graph hbar age duration) fopt(over(agegrp))}
+Pie chart            : {stata trellis, by(gall ob) f(graph pie age duration) }
+Histogram            : {stata trellis, by(gall ob) f(histogram age)}
+Sunflower plot       : {stata trellis, by(gall ob) f(sunflower duration age) fopt(legend(off))}
+QQ plot              : {stata trellis, by(gall ob) f(qnorm age) }
+
+
+** {stata webuse nhanes2f} MUST use this dataset for the following examples **
+
+{pstd}
+Scatter plot with 2 y-variables
+
+{pstd}
+{stata trellis, by(health region) f(twoway scatter copper zinc iron) fopt(legend(off)) }
+
+{pstd}
+Same plot except each individual graph is now plotted by race. 
+The graph needs a few more options to look perfect but it demonstrates the flexibility
+
+{pstd}
+{stata trellis, by(health region) f(twoway scatter copper zinc iron) fopt(xtitle("") by(race, im(0 0 0 0) noixlabel noiylabel note("") legend(off) ) legend(off)) }
+
+{pstd}
+The data from the previous graph are better represented by the box plot below
+
+{pstd}
+{stata trellis, by(health region) f(graph box copper zinc iron) fopt(legend(off) over(race)) }
+
+{pstd}
+Another added complexity is that you can combine mulitple graphing functions and display a single legend.
+
+{pstd}
+{stata trellis, by(health region) f(twoway (scatter zinc copper iron, ms(p p))||(mspline zinc iron,n(40) clw(*3))||(mspline copper iron,n(40) clw(*3))) sr(2) sc(3) singleopt(legend(on ring(0) pos(1) col(1)))  fopt(legend(off)) }
+
+{pstd}
+The same data represented by boxplots.
+
+{pstd}
+{stata trellis,by(health region) f(graph box copper zinc iron) fopt(legend(off) ylab(50 175 300) yscale(r(50,310))) sr(2) sc(2) singleopt(legend(on ring(0) pos(1) col(1) bm(tiny) symx(*0.2) keyg(*0.2) region(m(zero) lw(none))) yscale(r(50,310)))}
+
+{pstd}
+Only the race Other is displayed and the box plots are further divided by sex. This highlights what happens when there are graphs
+with no information
+
+{pstd}
+{stata trellis if race==3, by(health region) f(graph box copper zinc iron) fopt(over(sex) legend(off) ylab(50 175 300) yscale(r(50,310)))}
+
+{pstd}
+Now add labels for health and region
+
+{pstd}
+{stata trellis if race==3, labels by(health region) f(graph box copper zinc iron) fopt(over(sex) legend(off) ylab(50 175 300) yscale(r(50,310)))}
+
+{title:Author}
+
+{p}
+Adrian Mander, MRC Human Nutrition Research, Cambridge, UK.
+Email {browse "mailto:adrian.mander@mrc-hnr.cam.ac.uk":adrian.mander@mrc-hnr.cam.ac.uk}
+
+{title:Also see}
+
+Related commands
+
+{help graph} {help twoway}.
+
+
+

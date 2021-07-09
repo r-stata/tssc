@@ -1,0 +1,73 @@
+.-
+help for ^svmatf^
+.-
+
+Saves a matrix to a file
+----------------------------
+
+    ^svmatf^ ^, mat() fil(string) [row(string) varn(string) verb ]
+
+Description
+-----------
+
+^svmatf^ saves a matrix as a dataset. It can be saved
+as a separate dataset - or it can be added to an 
+existing dataset.
+
+The matrix can be added at the bottom (append) or
+to the right of existing observations. 
+
+
+Options
+-------
+
+^mat(^matrix^)^ specifies the matrix that is to be saved
+
+^fil(string)^ is the name of the file that will contain
+the matrix. If it exists, the data are appended.
+
+^row^ specifies the variable name that will hold the
+row numbers
+
+^varn^ specifies the variable names of the matrix 
+columns. If not specified, they will be taken from
+the column names of the matrix
+
+^verb^ is for verbose output, mostly debugging purposes.
+
+Remarks 
+-------
+^svmatf^ can be used to store a series of related matrices 
+stacked on top of each other in one file. 
+
+The example shows how to compare results from a logistic regression 
+models with different covariates.
+
+
+Examples
+--------
+
+	.logit astma age gender
+	.lrmatx
+	.mat astma=r(or),r(ci)
+	.svmatf , mat(astma) fil(result.dta) 
+
+	.logit astma age gender region
+	.lrmatx
+	.mat astma=r(or),r(ci)
+	.svmatf , mat(astma) fil(result.dta) 
+
+	.logit astma age gender region hayfever
+	.lrmatx
+	.mat astma=r(or),r(ci)
+	.svmatf , mat(astma) fil(result.dta)  
+
+
+Authors
+-------
+
+    Jan Brogger, University of Bergen, Norway
+    jan.brogger@@med.uib.no
+
+
+

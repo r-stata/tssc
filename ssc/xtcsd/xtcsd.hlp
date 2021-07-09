@@ -1,0 +1,109 @@
+{smcl}
+{* 19May06}{...}
+{hline}
+help for {hi:xtcsd}
+{hline}
+
+
+{title:Test for cross-sectional dependence in panel data models}
+
+{p 8 16 2}	{cmd: xtcsd} {cmd:,} [{cmdab:pes:aran} {cmdab:fri:edman} {cmdab:fre:es} {cmdab:abs} {cmdab:show}]  
+
+
+	{p 4 8 2} {cmd:xtcsd} is a post-estimation command for use with cross-section time-series data
+				following {cmd:fe} or {cmd:re} models.  You must {help tsset} your data before using {cmd:xtcsd}; see 
+				help {help tsset}.
+
+
+{title:Description}
+
+	{p 4 4 2} {cmd:xtcsd} tests for cross-sectional dependence in Fixed Effects of Random Effects panel data models. 
+			One of method's options {cmd:pesaran} {cmd:friedman} or {cmd:frees} must be specified. 
+	
+	{p 4 4 2} A standard assumption in panel data models ({help xtreg}) is that the error terms are independent across cross-sections.
+			This assumption is employed for identification purposes rather than descriptive accuracy. In the context of large T 
+			and small N, the LM test statistic proposed by Breusch and Pagan (1980) can be used to test for cross-sectional 
+			dependence (see help {help xttest2}). However, in most cases, cross-sectional time-series data sets come in the form of
+			small T and large N. In this case the Breusch-Pagan test is not valid. 
+
+    	{p 4 4 2} {cmd:xtcsd} test the hypothesis of cross-sectional independence
+			in panel data models with small T and large N by implementing two semi-parametric tests proposed by 
+			Friedman (1937) and Frees (1995,2004), as well as the parametric testing procedure proposed by Pesaran (2004). 
+			{cmd:xtcsd} with option {cmd:pesaran} can handle balanced as well as unbalanced panels.   
+	
+
+{title:Options}
+
+	{p 4 8 2} {cmd:pesaran} test for cross-sectional dependence following the methods shown in Pesaran (2004). Pesaran's 
+			statistic follows a standard normal distribution and it is able to handle balanced and unbalanced panels.  
+			 
+	{p 4 8 2} {cmd:friedman} test for cross-sectional dependence using Friedman's chi-square distributed statistic.
+			For unbalanced panels Friedman's test uses only the observations available for all cross-sectional units.
+
+	{p 4 8 2} {cmd:frees} test for cross-sectional dependence using Frees' Q distribution (T-asymptotically distributed).
+			For unbalanced panels Frees' test uses only the observations available for all cross-sectional units.    
+	
+	{p 4 8 2} {cmd:abs} computes the average absolute value of the off-diagonal elements of the cross-sectional 
+			correlation matrix of residuals.
+
+	{p 4 8 2} {cmd:show} shows the cross-sectional correlation matrix of residuals. 
+	
+
+{title:Notes}
+
+	{p 4 8 2} The small sample comparative performance of these tests under various model specifications is examined
+		in Sarafidis and De Hoyos (2006). 
+
+
+{title:Examples}
+
+	{p 4 8 2} . use "http://www.econ.cam.ac.uk/phd/red29/xtcsd_baltagi.dta"
+
+	{p 4 8 2} . xtreg  lngsp lnpcap lnpc lnemp unemp, fe 
+
+	{p 4 8 2} . xtcsd, frees 
+
+	{p 4 8 2} . xtcsd, pesaran show 
+
+	{p 4 8 2} . xtreg  lngsp lnpcap lnpc lnemp unemp, re 
+
+	{p 4 8 2} . xtcsd, friedman show abs
+
+
+{title:References}
+
+	{p 4 8 2} Frees, E.W. (1995) `Assessing cross-sectional correlations in panel data', 
+		{it:Journal of Econometrics}, 64, 393-414.
+
+	{p 4 8 2} Frees, E.W. (2004) `Longitudinal and panel data: analysis and applications in the social sciences', 
+		{it:Cambridge University Press}. 
+
+	{p 4 8 2} Friedman, M. (1937) `The use of ranks to avoid the assumption of normality implicit in the analysis of variance', 
+		{it:Journal of the American Statistical Association}, 32, 675-701.
+
+	{p 4 8 2} Pesaran, M.H. (2004) `General diagnostic tests for cross section dependence in panels', 
+		 {it:Cambridge Working Papers in Economics}, 0435, University of Cambridge.
+
+	{p 4 8 2} Sarafidis, V. and De Hoyos, R.E. (2006) `On testing for cross sectional dependence in panel data models',
+			 {it:mimeo}, University of Cambridge.
+
+
+{title:Acknowledgements}
+
+	{p 4 8 2} Our code benefited greatly from Christopher Baum's {help xttest2}. Thanks to David Drukker for very useful suggestions. 
+
+
+{title:Authors}
+
+{browse "http://www.econ.cam.ac.uk/phd/red29/":Rafael E. De Hoyos}, Faculty of Economics, University of Cambridge. {browse "mailto:red29@cam.ac.uk":red29@cam.ac.uk} 
+
+{browse "http://www.econ.usyd.edu.au/15583.html":Vasilis Sarafidis}, Discipline of Econometrics and Business Statistics, University of Sydney. {browse "mailto:V.Sarafidis@econ.usyd.edu.au":V.Sarafidis@econ.usyd.edu.au}
+
+
+{title:Also see}
+
+Manual:	{hi:[U] 23 Estimation and post-estimation commands}
+	{hi:[XT] xtreg}
+
+Online:	help for {help xttest2} (if installed), {help bpagan} (if installed), {help ivreg2} (if installed)
+

@@ -1,0 +1,118 @@
+{smcl}
+{* 22jun2019}{...}
+{hline}
+help for {hi:_mrsvmat}
+{hline}
+
+{title:Post-{help mrtab} utility}
+
+
+{p 8 15 2}
+{cmd:_mrsvmat}
+ [ {cmd:,}
+   {cmdab:s:tat:(}{it:statname}{cmd:)}
+   {cmdab:rt:otal}
+   {cmdab:ct:otal}
+   {cmdab:nop:ercent}
+   {cmdab:nol:abel}
+   {cmd:clear}  ]
+
+{p 4 8 2}where {it:statname} is {c -(} {cmdab:f:req} | {cmdab:co:lumn} |
+{cmdab:r:ow} | {cmdab:ce:ll} | {cmdab:rcol:umn} | {cmdab:rce:ll} {c )-}
+
+
+{title:Description}
+
+{p 4 4 2} {cmd:_mrsvmat} can be used after {help mrtab} to create a data matrix
+from the results left behind (note that the data in memory will be lost). Do
+not use {cmd:_mrsvmat} unless you are confident that {help mrgraph} does not
+meet your needs.
+
+{p 4 4 2} Each row of the data created by {cmd:_mrsvmat} will represent one
+response category. The variables are:
+
+{p 8 20 2}R {space 10}Values/names of the response categories.
+
+{p 8 20 2}L {space 10}Labels of the response categories (if available).
+
+{p 8 20 2}C1, C2, ... Frequencies. Each variable represents one column of the
+                      two-way frequency table. In the case of one-way tables,
+                      just one variable, C1, will be created.
+
+{p 8 20 2}T {space 10}Row totals (optionally).
+
+
+{title:Options}
+
+{p 4 8 2} {cmd:clear} allows {cmd:_mrsvmat} to clear the data in memory without
+asking for confirmation.
+
+{p 4 8 2} {cmd:ctotal} specifies that column totals be saved.
+
+{p 4 8 2} {cmd:nolabel} specifies that labels be ignored.
+
+{p 4 8 2} {cmd:nopercent} specifies that relative frequencies be formatted as
+proportions (.271) rather than percentages (27.1).
+
+{p 4 8 2} {cmd:rtotal} specifies that row totals be saved.
+
+{p 4 8 2} {cmd:stat(}{it:statname}{cmd:)} determines the statistic to be
+saved. {it:statname} is either {cmd:freq} for raw frequencies or
+{cmd:column} (base: column total of observations), {cmd:row} (base: row total),
+{cmd:cell} (base: grand total of valid observations), {cmd:rcolumn} (base: column
+total of responses), or {cmd:rcell} (base: grand total of responses) for
+relative frequencies. {cmd:stat(freq)} is the default.
+
+
+{title:Example}
+
+        {com}. use http://fmwww.bc.edu/RePEc/bocode/d/drugs.dta
+        {txt}(1997 Survey Data on Swiss Drug Addicts)
+
+        {com}. mrtab crime1-crime5, include response(2 3) by(sex) nofreq
+        {txt}
+        {com}. preserve
+        {txt}
+        {com}. _mrsvmat, stat(column) ctotal rtotal clear
+        {txt}
+        {com}. list, clean string(20)
+        {txt}
+               {res}     R   L                              C1         C2          T {txt}
+          1.   {res}crime1   hit someone              14.46281   14.15663   14.23841 {txt}
+          2.   {res}crime2   use a weapon against..   1.652893   3.313253   2.869757 {txt}
+          3.   {res}crime3   sexual harassment, r..   12.80992          0   3.421633 {txt}
+          4.   {res}crime4   robbery (including d..   13.22314   9.939759   10.81678 {txt}
+          5.   {res}crime5   blackmail                5.785124   2.108434   3.090508 {txt}
+          6.   {res}     T   Total                    47.93388   29.51807   34.43708 {txt}
+
+        {com}. generate x=_n
+        {txt}
+        {com}. scatter C1 C2 x in 1/5, xtitle(Type of crime) ytitle(Percent)
+           title(Criminal experiences (as a victim))
+        {txt}
+
+{title:Author}
+
+{p 4 4 2} Ben Jann, University of Bern, ben.jann@soz.unibe.ch
+
+{p 4 4 2}
+    Thanks for citing this software as
+
+{p 8 8 2}
+    Jann, B. 2005. {browse "http://www.stata-journal.com/article.html?article=st0082":Tabulation of multiple responses}. The
+    Stata Journal 5(1): 92-122.
+
+{p 4 4 2}
+    or
+
+{p 8 8 2}
+    Jann, B., H. Schaeper 2004. MRTAB: Stata module to compute one- and two-way
+    tables of multiple responses. Available from
+    {browse "http://ideas.repec.org/c/boc/bocode/s437201.html"}.
+
+
+{title:Also see}
+
+{p 4 13 2} Manual:  {hi:[P] matrix mkmat}
+
+{p 4 13 2} Online:  help for {help mrtab}, {help mrgraph}, {help svmat}

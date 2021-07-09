@@ -1,0 +1,113 @@
+{smcl}
+{* 11jul2003/12mar2004}{...}
+{hline}
+help for {hi:chitesti}
+{hline}
+
+{title:Chi-square test for univariate frequency distributions}
+
+{p 8 17 2}
+{cmd:chitesti}
+{it:#obs1 #obs2} [...]
+[ {cmd:\}
+{it:#exp1 #exp2} [...]
+]
+[
+{cmd:, nfit(}{it:#}{cmd:)}
+{cmd:replace}
+{it:list_options}
+]
+
+
+{title:Description}
+
+{p 4 4 2}The input for {cmd:chitesti} must consist of
+
+{p 12 12 2}either a single row of values
+    
+{p 12 12 2}or two rows of values separated by a backslash {cmd:\}.
+
+{p 4 4 2}The first row is taken to be observed frequencies, which must be zeros
+or positive integers. The second row, if present, is taken to be
+expected frequencies under some hypothesis, which must be positive.
+These may be given either as numbers or as numeric expressions 
+without embedded spaces. If the second row is not present, the expected
+frequencies are taken to be equal, i.e. equal to the mean of the
+observed frequencies.
+
+{p 4 4 2}The display includes the Pearson chi-square statistic and its {it:P}-value
+for a test of the hypothesis, the likelihood-ratio chi-square statistic
+and its {it:P}-value, observed frequencies, expected frequencies,
+residuals (observed - expected), and Pearson residuals, defined as
+(observed - expected) / sqrt(expected).
+
+{p 4 4 2}Any cells with expected frequencies less than 5 are flagged.
+
+
+{title:Options} 
+
+{p 4 8 2}{cmd:nfit()} indicates the number of parameters that have been estimated from
+the data. This number will be subtracted from (number of cells - 1)
+to give the number of degrees of freedom. The default is 0.
+
+{p 4 8 2}{cmd:replace} indicates that the observed and expected frequencies are to be
+left as the current data in place of whatever data were there. These
+variables will be called {cmd:observed} and {cmd:expected}.
+
+{p 4 8 2}{it:list_options} are options of {help list}. 
+
+
+{title:Examples}
+
+{p 4 4 2}Breiman (1973, p.191) lists the frequencies of the digits 0 ... 9 in
+the first 608 decimal places of pi as 60 62 67 68 64 56 62 44 58 67.
+
+{p 4 8 2}{cmd:. chitesti 60 62 67 68 64 56 62 44 58 67}
+
+{p 4 4 2}Breiman (1973, p.191) also gives data from one of Mendel's
+experiments. He observed 315 round yellow peas, 108 round green peas, 101
+wrinkled yellow peas and 32 wrinkled green peas.  According to theory, the
+expected frequencies should be in the ratio 9:3:3:1. 
+
+{p 4 8 2}{cmd:. chitesti 315 108 101 32 \ 556*9/16 556*3/16 556*3/16 556*1/16}
+
+{p 4 8 2}{cmd:. gen lastdigit = mod(myvar, 10)}{p_end}
+{p 4 8 2}{cmd:. qui forval i = 0/9 {c -(}}{p_end}
+{p 4 8 2}{cmd:. {space 8}count if lastdigit == `i'}{p_end}
+{p 4 8 2}{cmd:. {space 8}local obs "`obs' `r(N)'"}{p_end}
+{p 4 8 2}{cmd:. {c )-}}{p_end}
+{p 4 8 2}{cmd:. chitesti `obs'}
+
+
+{title:Saved values}
+
+{col 5}r(k)       {col 18}number of classes in distribution
+{col 5}r(df)      {col 18}degrees of freedom
+{col 5}r(chi2)    {col 18}Pearson chi-square
+{col 5}r(p)       {col 18}{it:P}-value of Pearson chi-square
+{col 5}r(chi2_lr) {col 18}likelihood-ratio chi-square
+{col 5}r(p_lr)    {col 18}{it:P}-value of likelihood-ratio chi-square
+{col 5}r(emean)   {col 18}mean expected frequency
+
+
+{title:Author}
+
+         {p 4 4 2}Nicholas J. Cox, University of Durham, U.K.{break} 
+         n.j.cox@durham.ac.uk
+
+
+{title:Acknowledgements}
+
+         {p 4 4 2}Benoit Dulong pointed towards a precision problem. 
+
+
+{title:References}
+
+{p 4 4 2}Breiman, L. 1973. {it:Statistics: with a view towards applications.} Boston:
+Houghton Mifflin. 
+
+
+{title:Also see}
+
+{p 4 17 2}On-line:  help for {help chitest}, {help tabulate}
+

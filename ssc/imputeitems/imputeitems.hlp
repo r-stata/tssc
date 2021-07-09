@@ -1,0 +1,70 @@
+{smcl}
+{* 6May2013}{...}
+{hline}
+help for {hi:imputeitems}{right:Jean-Benoit Hardouin}
+{hline}
+
+{title:Imputation of missing item responses}
+
+{p 8 14 2}{cmd:imputeitems} {it:varlist} [{it:if}] [,{cmdab:pref:ix}({it:string}) {cmdab:meth:od}({it:string}) {cmdab:rand:om} {cmdab:max}({it:#})]
+
+
+{title:Description}
+
+{p 4 4 2}{cmd:imputeitems} imputes missing item responses by different ways : Item Mean Substitution (IMS), Person Mean Substitution (PMS), Corrected Item Mean Substiutution (CIM), Interitem Correlation Substitution (ICS), logistic model (LOG) and Worst Case (WORST). A random process can be added to several methods.
+
+{title:Options}
+
+{p 4 8 2}{cmd:prefix} defines the prefix to use to name the imputted variables (this prefix is followed by the name of the initial variable). By default, this prefix is "imp".
+
+{p 4 8 2}{cmd:method} defines the method to impute missing data :
+
+{p 8 8 2}{it:pms} computes the proportion of positive response of each individual on non missing items, and impute a deterministic result (if p<.5 then 0, else 1),
+
+{p 8 8 2}{it:ims} computes the proportion of positive response to each items, and impute a deterministic result (if p<.5 then 0, else 1),
+
+{p 8 8 2}{it:cim} computes the proportion of positive response to each items, corrected by the ability of the individual and impute a deterministic result (if p<.5 then 0, else 1),
+
+{p 8 8 2}{it:ics} searchs for each item the more correlated item and replaces a missing data by the data of this more correlated item (if the other response is missing too, there is no imputation),
+
+{p 8 8 2}{it:log} explains the responses of each item by a logistic model where the independent variables are the responses to the others items. Only significant variables are rettained (5%). These methods impute a deterministic result (if p<.5 then 0, else 1) [{it:log}] to missing responses (if the response to an independant variable is missing, there is no imputation),
+
+{p 8 8 2}{it:worst} replaces the missing data by a 0.
+
+{p 4 8 2}{cmd:random} adds a random effect to the imputation process (available only with {it:pms}, {it:ims}, {it:cim} or {it:log}). In these cases, the imputed value is randomly drawed from a binomial distribution using the parameter p.
+
+{p 4 8 2}{cmd:noround} avoids to round the imputed values to the nearest integer.
+
+{p 4 8 2}{cmd:max} allows imputing missing values only for individuals with a maximal number of missing values defined with this option.
+
+{p 4 8 2}By default, {it:pms} method is working.
+
+{p 4 8 2}Old names of methods ({it:bip}, {bii}, {it:bic} and {it:bil} continues to run. They actually correspond to the add of the {cmd:random} option to the {it:pms}, {it:ims}, {it:cim} and {it:log} methods.
+
+
+{title:Example}
+
+	{cmd:. imputeitems itemA*} /*PMS method, IMP prefix*/
+
+	{cmd:. imputeitems itemA*, prefix(cim) method(cim)}
+
+	{cmd:. imputeitems itemA*, method(log) random}
+
+
+{title:Reference}
+
+{p 4 8 2}{cmd:Huisman M.} (2000), Imputation of missing item responses: some simple techniques. {it: Quality & Quantity}, {cmd:34}, 331-351.
+
+
+{title:Author}
+
+{p 4 8 2}Jean-Benoit Hardouin, PhD, assistant professor{p_end}
+{p 4 8 2}EA 4275 "Biostatistics, Clinical Research and Subjective Measures in Health Sciences"{p_end}
+{p 4 8 2}University of Nantes - Faculty of Pharmaceutical Sciences{p_end}
+{p 4 8 2}1, rue Gaston Veil - BP 53508{p_end}
+{p 4 8 2}44035 Nantes Cedex 1 - FRANCE{p_end}
+{p 4 8 2}Email:
+{browse "mailto:jean-benoit.hardouin@univ-nantes.fr":jean-benoit.hardouin@univ-nantes.fr}{p_end}
+{p 4 8 2}Websites {browse "http://www.anaqol.org":AnaQol}
+and {browse "http://www.freeirt.org":FreeIRT}
+

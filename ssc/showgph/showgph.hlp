@@ -1,0 +1,84 @@
+.-
+help for ^showgph^
+.-
+
+Show graphs previously saved
+----------------------------
+
+    ^showgph^ [filespec] [ ^, d^ir^(^directory^) a^sis ^l^ist ]
+
+Description
+-----------
+
+^showgph^ shows graphs previously saved as .gph files and present in
+the same directory or folder. Graphs are drawn one at a time in
+alphanumeric filename order.
+
+filespec can take one of the following forms:
+
+             (nothing) -- treated as ^*.gph^
+ ^*^                                   ^*.gph^
+ ^*.gph^                               ^*.gph^
+ name                                name^.gph^
+ name.^gph^                            name^.gph^
+ name^*^                               name^*.gph^
+ name^*.gph^                           name^*.gph^
+
+In addition, ^?^ means any single character. For example, 
+^t?^ will pick up any of ^t0^ to ^t9^ or ^ta^ to ^tz^ if they exist. 
+
+
+Options
+-------
+
+^dir(^directory^)^ specifies a directory or folder in which to look.
+    The default is the current directory as indicated by ^cd^.
+
+^asis^ specifies that graphs should be shown as is. By default, each
+    graph is shown with its filename shown as a ^t1title^. ^asis^ turns
+    off this feature.
+
+^list^ specifies that graph filenames should be listed in alphanumeric 
+   order. Note that by default (and necessarily) the results of a ^dir^ 
+   command are shown on the monitor, although not necessarily in 
+   alphanumeric order. 
+
+
+Remarks 
+-------
+
+Except under Unix, any log file open when ^showgph^ is invoked is closed 
+temporarily, and the results of a call to ^dir^ are logged to a temporary 
+file. Thus such results will not be shown in the log file. The ^list^ option 
+should be used if it is desired to have a list of graph filenames in the 
+current log file. 
+
+Under Unix, the system ^ls^ is used to write to a temporary file and any 
+log file open is not affected. 
+
+
+Examples
+--------
+
+    . ^showgph k*^
+    . ^showgph k*, d(\another\folder)^
+    . ^showgph k*, d(\another\folder) l^
+    . ^showgph k?^ 
+
+
+Authors
+-------
+
+    Jan Brogger, University of Bergen, Norway
+    jan.brogger@@med.uib.no
+
+    Nicholas J. Cox, University of Durham, U.K.
+    n.j.cox@@durham.ac.uk
+
+
+Acknowledgement
+--------------
+
+    Kit Baum gave much help on Macintosh and Unix matters.
+
+

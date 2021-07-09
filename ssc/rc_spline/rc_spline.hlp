@@ -1,0 +1,135 @@
+.-
+help for ^rc_spline^,
+.-
+
+Restricted Cubic Splines
+------------------------
+
+    ^rc_spline^ xvar [fw] [^if^ exp] [^in^ range][,^nk^nots^(^#^)^ ^kn^ots^(^numlist^)^] 
+
+ 
+Description
+-----------
+
+^rc_spline^ creates variables that can be used for regression models
+in which the linear predictor f(xvar) is assumed to equal a restricted cubic 
+spline function of an independent variable xvar.  In these regressions, the 
+user explicitly or implicitly specifies k knots located at xvar = t1, t2, ..., tk.
+f(xvar) is defined to be a continuous smooth function that is linear before t1,
+is a piecewise cubic polynomial between adjacent knots, and is linear after
+tk.  See Harrell (2001) for additional details.
+
+^rc_spline^ creates variables called _Sxvar1, _Sxvar2, ..., _Sxvar(k-1), where 
+"xvar" is the input variable name.  There are always one fewer variables created
+than there are knots. If the model has k parameters beta0, beta1, ... , beta(k-1)
+then
+
+f(xvar) = beta0 + beta1*_Sxvar1 + beta2*_Sxvar2 + ... + beta(k-1)*_Sxvar(k-1).
+
+An important aspect of restricted cubic splines is that the variables _Sxvar1,
+... , _Sxvar(k-1) are functions of xvar and the knots only and are not affected by
+the response variable.  This means that we can use ^rc_spline^ to define the 
+_Sxvar* variables before specifying the response variable or the type of regression
+model.  
+
+Restricted cubic splines are also called natural splines.
+
+Options
+-------
+
+^nknots^ specifies the number of  knots.
+
+^knots^ specifies the exact location of the  knots.  The values of these knots must 
+        be given in increasing order.
+
+
+If both of these options are given they must both specify the same number on knots.
+When ^knots^ is omitted the default knot values are chosen according to Table 2.3 of 
+Harrell (2001) with the additional restriction that the smallest knot may not be 
+less than the 5th smallest value of xvar and the largest knot may not be greater than 
+the 5th largest value of xvar.  The values of the all knots are displayed.  When
+^knots^ is omitted the number of knots specified by ^nknots^ must be between 3 and 7.
+The default number of knots when neither ^nknots^ nor ^knots^ is given is 5.
+
+Frequency weights are allowed.
+
+Examples
+--------
+
+    *
+    * Perform a linear regression of y against a restricted cubic spline (RCS)  
+    * function of x with 5 knots.
+    *
+    . rc_spline x
+    . regress y _Sx1 _Sx2 _Sx3 _Sx4
+    *
+    * Perform a logistic regression of fate against the RCS function of x defined above.
+    *
+    . logistic fate _S*
+    
+    *
+    * Perform a linear regression of y against a RCS of x with 3 knots chosen
+    * at their default values according to Harrell (2001).  Graph the observed
+    * and expected values of y against x
+    *
+    . drop _S*
+    . rc_spline x, nknots(3)
+    . regress y _S*
+    . predict yhat
+    . scatter y x || line yhat x
+    
+    *
+    * Perform a proportional hazard regression analysis of fate against a RCS 
+    * function of x with four knots specified at x =  2, 4, 6 and 8.
+    *
+    . drop _S*
+    . stset time, failure(fate)
+    . rc_spline x, knots(2 (2) 8)
+    . stcox _S*
+    
+Remarks
+-------
+
+Restricted cubic splines provide a fairly general and robust approach for adapting linear
+methods to model non-linear relationships between a response variable and one or more
+continuous covariates.  They can often be used effectively as an alternative to converting
+continuous to categorical variables, which results in the discarding of information.
+See Harrell (2001) for arguments in favor of this approach and guidance on how to build
+models with RCSs.
+
+This program is similar to ^spline^ (Sasieni 1994).  It differs in the choice of default
+knots and in its output.  ^spline^ requires the user to specify a response and independent
+variable.  It then allows the user to specify a number of different regression models and
+version 7 graphs.  In contrast, ^rc_spline^ only calculates the RCS covariates.  However,
+this allows the use of the full range and power of Stata's regression, post-
+estimation and v.8 graph commands.  In particular, more sophisticated
+residual analyses and graphs can be generated as well as multiple regression models 
+involving more than one independent variable.
+
+See also ^mkspline^ for fitting models involving linear splines.
+
+Authors
+-------
+
+William D. Dupont 
+W. Dale Plummer, Jr.
+Department of Biostatistics
+Vanderbilt University School of Medicine
+Nashville, TN 37232-2158
+
+e-mail:  william.dupont@vanderbilt.edu
+	 dale.plummer@vanderbilt.edu
+
+References
+----------
+
+Harrell, F.E: Regression Modeling Strategies with Applications to Linear Models, Logistic
+Regression and Survival Analysis. New York: Springer-Verlag 2001.
+
+Sasieni, P: Natural cubic splines STB reprints. 1994; 4: 19-22.  See also STB reprints 
+1995; 4:174, and  package snp7_1 from http://www.stata.com/stb/stb24.
+
+
+
+    
+    

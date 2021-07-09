@@ -1,0 +1,49 @@
+d 'SIMARWILSON': module to perform Simar & Wilson (2007) efficiency analysis
+d
+d   simarwilson implements the procedures proposed by Simar and
+d Wilson (2007) for regression analysis of DEA (data envelopment
+"d analysis) efficiency scores. Unlike naive two-step approaches,"
+d the Simar and Wilson procedure accounts for (i) DEA efficiency
+d scores being bounded - depending on how inefficiency is defined -
+"d from above or from below at the value of one, and (ii) for DEA"
+d generating a complex and generally unknown correlation pattern
+d among estimated efficiency scores. In technical terms a
+d multi-step procedure is pursued that involves (i) estimation of a
+"d radial measure of technical efficiency, (ii) truncated regression"
+"d analysis, (iii) simulating the unknown error correlation, and"
+d (iv) calculating bootstrap standard errors and CIs. From a purely
+"d technical perspective, one may interpret simarwilson as a"
+d procedure for correcting the standard errors one gets from using
+d truncreg for regressing DEA scores on explanatory variables.
+d Simar and Wilson (2007) propose two algorithms (alg. #1 and alg.
+d #2) that differ in either using uncorrected (alg. #1) or
+d bias-corrected (alg. #2) efficiency scores. Both algorithms are
+d implemented. simarwilson allows for either using externally
+d estimated DEA scores (spec. depvar) or for internally conducting
+d the DEA (sepc. (outputs = inputs)). For the latter simarwilson
+d requires the user-written command teradial (Badunenko and
+"d Mozharovskyi, 2016). Note that the procedure for bias correction"
+d suggested in Simar & Wilson (2007) - though similar - deviates
+d from what is implemented in the user-written program teradialbc
+"d (Badunenko and Mozharovskyi, 2016) and is closely linked to the"
+d regression analysis on the second stage of the procedure. For
+"d this reason, it is recommended not to use externally estimated"
+"d scores, if one wants to apply algorithm #2."
+d
+d KW: efficiency analysis
+d KW: two-step approach
+d KW: data envelopment analysis
+d KW: truncated regression
+d
+d Requires: Stata version 12 and teradial (st0444) from SJ16:3 (q.v.)
+d
+d Distribution-Date: 20181116
+d
+"d Author: Oleg Badunenko, University of Portsmouth"
+d Support: email oleg.badunenko@@port.ac.uk
+d
+"d Author: Harald Tauchmann, Friedrich-Alexander-Universität Erlangen-Nürnberg"
+d Support: email harald.tauchmann@@fau.de
+d
+f simarwilson.ado
+f simarwilson.sthlp

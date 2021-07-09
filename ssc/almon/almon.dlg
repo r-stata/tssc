@@ -1,0 +1,692 @@
+/*
+ almon
+*! VERSION 1.0 01/01/2016
+*/
+VERSION 11.0
+INCLUDE _std_large
+DEFINE _dlght 465
+INCLUDE header
+HELP hlp1, view("help almon")
+RESET res1
+
+SCRIPT main_PREINIT
+BEGIN
+	script _constraints_main_setOptionalOn
+END
+
+SCRIPT main_POSTINIT
+BEGIN
+	script max_enableGTolerance
+END
+
+DIALOG main, label("almon - Shirley Almon Generalized Polynomial Distributed Lag Model") ///
+	tabtitle("Main")
+BEGIN
+ DEFINE _x _xsetbu
+ DEFINE _y _top
+ INCLUDE _bu_tsset
+
+  TEXT tx_yv 		_lft	+17    140  	.,	///
+	label("Dependent Variable:")
+  TEXT tx_xv		160 	@     330 	.,	///
+	label("Independent Variables:")
+  VARNAME vn_yv		_lft 	_ss  	140	.,	///
+	ts						///
+	label("Dependent Variable")
+  VARLIST vl_xv		160	@  	330	.,	///
+	fv ts						///
+	allowcat					///
+	label("Independent Variables")
+  CHECKBOX ck_nocons @   _ms   _cwd1  .,	/*
+	*/ label("No Constant")	/*
+	*/ option("noconstant")		/*
+	*/
+  GROUPBOX gb_estimator	_lft	_ss	_ibwd	_ht9 ,	///
+	label("Model")
+  RADIO rb_m1	_ilft	_ss	_inwd	.,	///
+	first					///
+	option(model(ols))			///
+	label("Ordinary Least Squares (OLS)")	///
+	onclickon(script ck_model1_off)
+  RADIO rb_m2	_ilft2	@	_iwd	.,	///
+	option(model(gls))			///
+	label("Generalized Least Squares (GLS)")	///
+	onclickon(script ck_model1_off)
+  RADIO rb_m3	_ilft	_ss	_inwd	.,	///
+	option(model(bcox))			///
+	label("Box-Cox Regression Model (Box-Cox)")	///
+	onclickon(script ck_model1_off)
+  RADIO rb_m4	_ilft2	@	_iwd	.,	///
+	option(model(als))			///
+	label("Autoregressive Least Squares (ALS)")	///
+	onclickon(script ck_model1_off)
+  RADIO rb_m5	_ilft	_ss	_iwd	.,	///
+	option(model(qreg))			///
+	label("Quantile Regression")	///
+	onclickon(script ck_model1_off)
+  RADIO rb_m6	_ilft2	@	_iwd	.,	///
+	option(model(rreg))			///
+	label("Robust Regression")	///
+	onclickon(script ck_model1_off)
+  RADIO rb_m7	_ilft	_ss	_inwd	.,	///
+	option(model(arch))			///
+	label("Autoregressive Conditional Heteroskedasticity (ARCH)")	///
+	onclickon(script ck_model1_off)
+  RADIO rb_m8	_ilft	_ss	_iwd	.,	///
+	last					///
+	option(model(gmm))			///
+	label("Generalized Method of Moments (GMM)")	///
+	onclickon(script ck_model1_on)
+
+ GROUPBOX gb_optgmm	_lft	_ls	_ibwd	_ht15 ,	///
+	label("GMM - Generalized Method of Moments Options:")
+  RADIO    rb_g0  _ilft           _ss        300    ., 	/*
+	*/ label("White Method") /*
+	*/ first			/*
+	*/ option("hetcov(white)")	/*
+*/
+DEFINE y @y
+  RADIO    rb_g1  _ilft           _ss        300    ., 	/*
+	*/ label("Bartlet Method") /*
+	*/ option("hetcov(bart)")	/*
+*/
+  RADIO    rb_g2  _ilft           _ss        300    ., 	/*
+	*/ label("Cragg Method") /*
+	*/ option("hetcov(crag)")	/*
+*/
+  RADIO    rb_g3  _ilft           _ss        300    ., 	/*
+	*/ label("Daniell Method")	/*
+	*/ option("hetcov(dan)")	/*
+*/
+  RADIO    rb_g4  _ilft           _ss        300    ., 	/*
+	*/ label("Hinkley Method") /*
+	*/ option("hetcov(hink)")	/*
+*/
+  RADIO    rb_g5  _ilft           _ss        300    ., 	/*
+	*/ label("Horn-Duncan Method") /*
+	*/ option("hetcov(hdun)")	/*
+*/
+  RADIO    rb_g6  _ilft           _ss        300    ., 	/*
+	*/ label("Jackknife Mackinnon-White Method") /*
+	*/ option("hetcov(jack)")			/*
+*/
+  RADIO    rb_g7   _ilft           _ss        300    .,	/*
+	*/ label("Newey-West Method")	/*
+	*/ option("hetcov(nwest)")	/*
+*/
+  RADIO    rb_g8   _ilft2           y        300   .,	/*
+	*/ label("Parzen Method")	/*
+	*/ option("hetcov(parzen)")	/*
+*/
+  RADIO    rb_g9   _ilft2           _ss       300    .,	/*
+	*/ label("Quadratic Spectral Method")	/*
+	*/ option("hetcov(quad)")	/*
+*/
+  RADIO    rb_g10  @           _ss   300    .,	/*
+	*/ label("Tent Method")	/*
+	*/ option("hetcov(tent)")	/*
+*/
+  RADIO    rb_g11  @   _ss    300    .,	/*
+	*/ label("Truncated Method")	/*
+	*/ option("hetcov(trunc)")		/*
+*/
+  RADIO    rb_g12  @           _ss        300    .,	/*
+	*/ label("Tukey Method") /*
+	*/ option("hetcov(tukey)")		/*
+*/
+  RADIO    rb_g13  @           _ss        300    .,	/*
+	*/ label("Tukey-Hamming Method")	/*
+	*/ option("hetcov(tukeym)")		/*
+*/
+  RADIO    rb_g14  @           _ss        300    .,	/*
+	*/ label("Tukey-Hanning Method")	/*
+	*/ last					/*
+	*/ option("hetcov(tukeyn)") /*
+*/
+
+ CHECKBOX ck_mfx  _lft    _xxls   _ibwd    _ht2 , 	///
+	groupbox					///
+	onclickon(script ck_model0_on)			///
+	onclickoff(script ck_model0_off)		///
+	label("Marginal Effects - Elasticities:")
+ 
+  RADIO rb_lin	_ilft  _ss  80  ., /*
+	*/ label("Linear")	 /*
+	*/ first			/*
+	*/ option("mfx(lin)")		/*
+*/
+DEFINE y @y
+ RADIO rb_log	100   y  @ .,	/*
+	*/ label("Log-Log") /*
+	*/ clickon(program main_gmm_on)	/*
+	*/ last				/*
+	*/ option("mfx(log)")		/*
+*/	
+
+  CHECKBOX ck_tolog    190   y 250 ., option("tolog") /*
+*/ label("Log Transform Variables") /*
+*/
+
+END
+
+DIALOG est1, tabtitle("Model")
+BEGIN
+
+*/
+
+  GROUPBOX gb_almon	_lft	_top	_iwd	_ht7 ,	///
+	label("Shirley Almon Polynomial Distributed Lag Model Options:")
+  EDIT ed_pdl  _ilft   _ss    100  ., 	///
+	label("PDL: Polynomial Degree Order")	///
+	option("pdl")
+  TEXT tx_pdl 150  @  200    .,	///
+	label("pdl: Polynomial Degree Order")
+  EDIT ed_endpr  _ilft   _ms    100  ., 	///
+	label("endpr: Endpoint Restriction")	///
+	option("endpr")
+  TEXT tx_endpr 150  @  200    .,	///
+	label("endpr: Endpoint Restriction")
+
+  VARLIST vl_zlag _ilft _ms   300  .,	///
+	label("zlag: Polynomial Variables") 	///
+	option(zlag)
+  TEXT tx_zlag 330  @  150    .,	///
+	label("zlag: Polynomial Variables")
+
+  CHECKBOX ck_rid  _lft   _xls    _iwd    _ht7 , ///
+	groupbox				 ///
+	onclickon(script ck_model2_on)		 ///
+	onclickoff(script ck_model2_off)	 ///
+	label("Ridge Regression:")
+  RADIO rb_orr	_ilft   _ss     _iwd	.,	///
+	option("ridge(orr)")			///
+	first			 ///
+	label("ORR - Ordinary Ridge Regression")	///
+	onclickon(script kridge_on)
+  EDIT ed_ridge  250   @    70   ., 	/*
+	*/ label("Ridge Value")		/*
+	*/ option("kr")
+  TEXT tx_ridge 330  @  100    .,	/*
+	*/ label("Ridge Value")  	/*
+*/
+  RADIO rb_grr1   _ilft  _ss	300	., /*
+	*/ label("GRR1 - Generalized Ridge Regression") /*
+	*/ onclickon(script kridge_off)	 /*
+	*/ option("ridge(grr1)")	/*
+*/
+  RADIO rb_grr2	_ilft	_ss	300 .,	/*
+	*/ label("GRR2 - Iterative Generalized Ridge Regression") /*
+	*/ onclickon(script kridge_off)	 /*
+	*/ option("ridge(grr2)")	/*
+*/
+  RADIO rb_grr3	_ilft	_ss	300 .,	/*
+	*/ label("GRR3 - Adaptive Generalized Ridge Regression") /*
+	*/ onclickon(script kridge_off)	 /*
+	*/ last				 /*
+	*/ option("ridge(grr3)")	/*
+*/
+
+  CHECKBOX ck_box  _lft    +33   _iwd    _ht8 , ///
+	groupbox				 ///
+	onclickon(script ck_model4_on)		 ///
+	onclickoff(script ck_model4_off)	 ///
+	label("Box-Cox Regression Model (Box-Cox):")
+
+  RADIO rb_box1	_ilft   _ss     _iwd	.,	///
+	option("lamp(lhs)")			///
+	first			 ///
+	label("LHS - Power Transformations on (LHS) Left Hand Side Only")
+*/
+  RADIO rb_box2   _ilft  _ss	350	., /*
+	*/ label("RHS - Power Transformations on (RHS) Right Hand Side Only") /*
+	*/ option("lamp(rhs)")	/*
+*/
+  RADIO rb_box3	_ilft	_ss	350 .,	/*
+	*/ label("ALLS - Power Transformations on both (LHS) & (RHS) are the Same") /*
+	*/ option("lamp(alls)")	/*
+*/
+  RADIO rb_box4	_ilft	_ss	350 .,	/*
+	*/ label("ALLD - Power Transformations on both (LHS) & (RHS) are Different") /*
+	*/ last				 /*
+	*/ option("lamp(alld)")	/*
+*/
+
+END
+
+DIALOG est2, tabtitle("Options")
+BEGIN
+ CHECKBOX ck_rest       _ilft     _top    _ckwd  ., 	/*
+	*/ clickon("gaction est2.ed_rest.enable")	/*
+	*/ clickoff("gaction est2.ed_rest.disable")		
+ EDIT ed_rest     _cksep        @    _spwd   ., /*
+	*/ label("Restrictions Range")	/*
+	*/ option("rest")
+ TEXT     tx_rest     _spsep        @  _rbsprb    ., /*
+	*/ label("Restrictions Range")
+
+
+ CHECKBOX ck_model6  _lft    _ms   _ibwd    _ht29 , ///
+	groupbox				 ///
+	onclickon(script ck_model6_on)		 ///
+	onclickoff(script ck_model6_off)	 ///
+	label("Options:")
+ CHECKBOX ck_tests    _ilft  _ss   370  ., option("tests") /*
+*/ label("Display ALL Tests") 
+ CHECKBOX ck_lmauto   @  _ss   @  ., option("lmauto") /*
+*/ label("Autocorrelation Tests") 
+ CHECKBOX ck_lmhet   @  _ss   @  ., option("lmhet") /*
+*/ label("Heteroscedasticity Tests") 
+ CHECKBOX ck_lmnorm   @   _ss  @  ., option("lmnorm") /*
+*/ label("Non Normality Tests") 
+ CHECKBOX ck_diag   @  _ss  @  ., option("diag") /*
+*/ label("Model Selection Diagnostic Criteria") 
+ CHECKBOX ck_dn   _ilft  _ss  @  ., option("dn") /*
+*/ label("Use (N) divisor instead of (N-K) for DF") 
+ CHECKBOX ck_two _ilft  _ss   @  ., option("twostep") /*
+*/ label("Two-Step Estimation") 
+ CHECKBOX ck_nolag _ilft  _ss   @  ., option("nolag") /*
+*/ label("nolag: Use Independent Variables in current period X(t) instead of lag X(t-1)") 
+ CHECKBOX ck_cond _ilft  _ss   @  ., option("condition") /*
+*/ label("Use Conditional MLE instead of Full MLE") 
+*/
+  CHECKBOX ck_dlag       _ilft     _ls    _ckwd  ., 	/*
+	*/ clickon("gaction est2.sp_dlag.enable")	/*
+	*/ clickoff("gaction est2.sp_dlag.disable")		
+  SPINNER  sp_dlag     _cksep        @    _spwd   ., /*
+	*/ label("dlag")	/*
+	*/ min(1)		/*
+	*/ max(c(N))		/*
+	*/ option("dlag")
+  TEXT     tx_dlag     _spsep        @  _rbsprb    ., /*
+	*/ label("Location of Lagged DepVar (Durbin h, Harvey LM tests)")
+
+  CHECKBOX ck_lags       _ilft     _ms    _ckwd  ., 	/*
+	*/ clickon("gaction est2.sp_lags.enable")	/*
+	*/ clickoff("gaction est2.sp_lags.disable")		
+  SPINNER  sp_lags     _cksep        @    _spwd   ., /*
+	*/ label("Lag Length Order Tests")	/*
+	*/ min(1)		/*
+	*/ max(c(N))		/*
+	*/ option("lag")
+  TEXT     tx_lags     _spsep        @  _rbsprb    ., /*
+	*/ label("Lag Length Order Tests")
+
+  CHECKBOX ck_ar       _ilft     _ms    _ckwd  ., 	/*
+	*/ clickon("gaction est2.sp_ar.enable")	/*
+	*/ clickoff("gaction est2.sp_ar.disable")		
+  SPINNER  sp_ar     _cksep        @    _spwd   ., /*
+	*/ label("Autoregressive Variables Lag Length")	/*
+	*/ min(1)		/*
+	*/ max(c(N))		/*
+	*/ option("ar")
+  TEXT     tx_ar     _spsep        @  _rbsprb    ., /*
+	*/ label("Autoregressive Variables Lag Length")
+
+  CHECKBOX ck_quant       _ilft     _ms    _ckwd  ., 	/*
+	*/ clickon("gaction est2.sp_quant.enable")	/*
+	*/ clickoff("gaction est2.sp_quant.disable")		
+  SPINNER  sp_quant     _cksep        @    _spwd   ., /*
+	*/ label("Quantile Value")	/*
+	*/ min(50)			/*
+	*/ max(100)			/*
+	*/ option("quantile")
+  TEXT     tx_quantile     _spsep        @  _rbsprb    ., /*
+	*/ label("Quantile Value")
+
+  CHECKBOX ck_tune       _ilft2     @    _ckwd  ., 	/*
+	*/ clickon("gaction est2.sp_tune.enable")	/*
+	*/ clickoff("gaction est2.sp_tune.disable")		
+  SPINNER  sp_tune     _cksep        @    _spwd   ., /*
+	*/ label("Tune Value")	/*
+	*/ default(7)			/*
+	*/ min(1)			/*
+	*/ max(100)			/*
+	*/ option("tune")
+  TEXT     tx_tune     _spsep        @  _rbsprb    ., /*
+	*/ label("Tune Value")
+END
+
+DIALOG est3, tabtitle("Weight")
+BEGIN
+  CHECKBOX ck_model7  _lft    _top   _ibwd    _ht23 , ///
+	groupbox				 ///
+	onclickon(script ck_model7_on)		 ///
+	onclickoff(script ck_model7_off)	 ///
+	label("Weighted Variable Type:")
+  TEXT tx_wv 		_ilft	_ss    140  	., ///
+	label("Weighted Variable (X)")
+  VARNAME vn_wv		_ilft 	_ss  	140	., ///
+	ts				 ///
+	label("Weighted Variable")	 ///
+	option("wvar")
+  RADIO    rb_w1  _ilft     _ls     300    ., 	/*
+  	*/ onclickon(script vn_off)	 /*
+	*/ label("Yh - Predicted Value (Default)") /*
+	*/ first			/*
+	*/ option("weights(yh)")		/*
+*/
+  RADIO    rb_w2  _ilft     _ss     300    ., 	/*
+  	*/ onclickon(script vn_off)	 /*
+	*/ label("Yh^2 - Predicted Value Squared") /*
+	*/ option("weights(yh2)")		/*
+*/
+  RADIO    rb_w3  _ilft     _ss     300    ., 	/*
+  	*/ onclickon(script vn_off)	 /*
+	*/ label("abs(E) - Residual Absolute Value") /*
+	*/ option("weights(abse)")		/*
+*/
+  RADIO    rb_w4  _ilft     _ss     300    ., 	/*
+  	*/ onclickon(script vn_off)	 /*
+	*/ label("E^2 - Residual Squared") /*
+	*/ option("weights(e2)")		/*
+*/
+  RADIO    rb_w5  _ilft     _ss     300    ., 	/*
+  	*/ onclickon(script vn_off)	 /*
+	*/ label("log(E^2) - Log Residual Squared") /*
+	*/ option("weights(le2)")		/*
+*/
+  RADIO    rb_w6  _ilft     _ms     300    ., 	/*
+  	*/ onclickon(script vn_on)	 /*
+	*/ label("(X) Variable") /*
+	*/ option("weights(x)")		/*
+*/
+  RADIO    rb_w7  _ilft     _ss     300    ., 	/*
+  	*/ onclickon(script vn_on)	 /*
+	*/ label("(1/X) Inverse Variable") /*
+	*/ option("weights(xi)")	/*
+*/
+  RADIO    rb_w8  _ilft     _ss     300    ., 	/*
+  	*/ onclickon(script vn_on)	 /*
+	*/ label("(X^2) Squared Variable") /*
+	*/ option("weights(x2)")		/*
+*/
+  RADIO    rb_w9  _ilft     _ss     300    ., 	/*
+  	*/ onclickon(script vn_on)	 /*
+	*/ label("(1/X^2) Inverse Squared Variable") /*
+	*/ last					/*
+	*/ option("weights(xi2)")		/*
+*/
+
+ TEXT tx_predict _ilft _ms   200 .,	///
+	label("Predicted Variable")
+ TEXT tx_resid   _ilft2 @     200 .,	///
+	label("Residuals Variable")
+ VARNAME vn_predict _ilft _ss   200  .,	///
+	label("predict") 		///
+	option(predict)
+ VARNAME vn_resid   _ilft2 @     200  .,	///
+	label("resid") 			///
+	option(resid)
+
+  CHECKBOX ck_tek  _lft    _ms   _iwd    _ht7 , ///
+	groupbox				 ///
+	onclickon(script ck_model8_on)		 ///
+	onclickoff(script ck_model8_off)	 ///
+	label("Maximization of LLF Technique Algorithm:")
+  RADIO rb_tek1	_ilft   _ss     _iwd	.,	///
+	option("tech(nr)")			///
+	first			 ///
+	label("NR - Newton-Raphson (NR)")
+*/
+  RADIO rb_tek2   _ilft  _ss	350	., /*
+	*/ label("BHHH - Berndt-Hall-Hall-Hausman") /*
+	*/ option("techn(bhhh)")	/*
+*/
+  RADIO rb_tek3   _ilft  _ss	350	., /*
+	*/ label("DFP - Davidon-Fletcher-Powell") /*
+	*/ option("techn(dfp)")	/*
+*/
+  RADIO rb_tek4	_ilft	_ss	350 .,	/*
+	*/ label("BFGS - Broyden-Fletcher-Goldfarb-Shanno") /*
+	*/ last				 /*
+	*/ option("techn(bfgs)")	/*
+*/
+
+ DEFINE _x _ilft
+ DEFINE _cx _spr
+ DEFINE _y _ls
+ INCLUDE _sp_level
+
+END
+
+SCRIPT PREINIT
+BEGIN
+ script se_createAsML
+END
+
+SCRIPT POSTINIT
+BEGIN
+ script max_setDefaultOPG
+ script se_setCluster_off
+END
+
+SCRIPT ck_model0_on
+BEGIN
+ main.rb_lin.enable
+ main.rb_log.enable
+ main.ck_tolog.enable
+END
+SCRIPT ck_model0_off
+BEGIN
+ main.rb_lin.disable
+ main.rb_log.disable
+ main.ck_tolog.disable
+END
+
+SCRIPT ck_model1_on
+BEGIN
+ main.rb_g0.enable
+ main.rb_g1.enable
+ main.rb_g2.enable
+ main.rb_g3.enable
+ main.rb_g4.enable
+ main.rb_g5.enable
+ main.rb_g6.enable
+ main.rb_g7.enable
+ main.rb_g8.enable
+ main.rb_g9.enable
+ main.rb_g10.enable
+ main.rb_g11.enable
+ main.rb_g12.enable
+ main.rb_g13.enable
+ main.rb_g14.enable
+END
+SCRIPT ck_model1_off
+BEGIN
+ main.rb_g0.disable
+ main.rb_g1.disable
+ main.rb_g2.disable
+ main.rb_g3.disable
+ main.rb_g4.disable
+ main.rb_g5.disable
+ main.rb_g6.disable
+ main.rb_g7.disable
+ main.rb_g8.disable
+ main.rb_g9.disable
+ main.rb_g10.disable
+ main.rb_g11.disable
+ main.rb_g12.disable
+ main.rb_g13.disable
+ main.rb_g14.disable
+END
+
+SCRIPT kridge_on
+BEGIN
+ est1.ed_ridge.enable
+END
+SCRIPT kridge_off
+BEGIN
+ est1.ed_ridge.disable
+END
+
+SCRIPT ck_model2_on
+BEGIN
+ est1.rb_orr.enable
+ est1.rb_grr1.enable
+ est1.rb_grr2.enable
+ est1.rb_grr3.enable
+END
+SCRIPT ck_model2_off
+BEGIN
+ est1.rb_orr.disable
+ est1.rb_grr1.disable
+ est1.rb_grr2.disable
+ est1.rb_grr3.disable
+END
+
+SCRIPT ck_model4_on
+BEGIN
+ est1.rb_box1.enable
+ est1.rb_box2.enable
+ est1.rb_box3.enable
+ est1.rb_box4.enable
+END
+SCRIPT ck_model4_off
+BEGIN
+ est1.rb_box1.disable
+ est1.rb_box2.disable
+ est1.rb_box3.disable
+ est1.rb_box4.disable
+END
+
+SCRIPT ck_model6_on
+BEGIN
+ est2.ck_lmauto.enable
+ est2.ck_lmhet.enable
+ est2.ck_lmnorm.enable
+ est2.ck_diag.enable
+ est2.ck_tests.enable
+ est2.ck_dn.enable
+ est2.ck_two.enable
+ est2.ck_cond.enable
+ est2.ck_dlag.enable
+ est2.ck_ar.enable
+ est2.ck_lags.enable
+ est2.ck_tune.enable
+ est2.ck_quant.enable
+ est2.ck_nolag.enable
+END
+SCRIPT ck_model6_off
+BEGIN
+ est2.ck_lmauto.disable
+ est2.ck_lmhet.disable
+ est2.ck_lmnorm.disable
+ est2.ck_diag.disable
+ est2.ck_tests.disable
+ est2.ck_dn.disable
+ est2.ck_two.disable
+ est2.ck_cond.disable
+ est2.ck_dlag.disable
+ est2.ck_ar.disable
+ est2.ck_lags.disable
+ est2.ck_tune.disable
+ est2.ck_quant.disable
+ est2.ck_nolag.disable
+END
+
+SCRIPT ck_rest_on
+BEGIN
+ est2.ed_rest.enable
+END
+SCRIPT ck_rest_off
+BEGIN
+ est2.ed_rest.disable
+END
+
+SCRIPT ck_model7_on
+BEGIN
+ est3.rb_w1.enable
+ est3.rb_w2.enable
+ est3.rb_w3.enable
+ est3.rb_w4.enable
+ est3.rb_w5.enable
+ est3.rb_w6.enable
+ est3.rb_w7.enable
+ est3.rb_w8.enable
+ est3.rb_w9.enable
+ est3.vn_wv.enable
+END
+SCRIPT ck_model7_off
+BEGIN
+ est3.rb_w1.disable
+ est3.rb_w2.disable
+ est3.rb_w3.disable
+ est3.rb_w4.disable
+ est3.rb_w5.disable
+ est3.rb_w6.disable
+ est3.rb_w7.disable
+ est3.rb_w8.disable
+ est3.rb_w9.disable
+ est3.vn_wv.disable
+END
+
+SCRIPT ck_model8_on
+BEGIN
+ est3.rb_tek1.enable
+ est3.rb_tek2.enable
+ est3.rb_tek3.enable
+ est3.rb_tek4.enable
+END
+SCRIPT ck_model8_off
+BEGIN
+ est3.rb_tek1.disable
+ est3.rb_tek2.disable
+ est3.rb_tek3.disable
+ est3.rb_tek4.disable
+END
+
+SCRIPT vn_on
+BEGIN
+ est3.vn_wv.enable
+END
+SCRIPT vn_off
+BEGIN
+ est3.vn_wv.disable
+END
+
+INCLUDE byifin
+INCLUDE se
+INCLUDE max_ml
+
+PROGRAM command
+BEGIN
+ put /program by_output " "
+ put "almon "
+ varlist main.vn_yv [main.vl_xv]
+ put " " /program ifin_output
+ beginoptions
+ option radio(main rb_m1 rb_m2 rb_m3 rb_m4 rb_m5 rb_m6 rb_m7 rb_m8)
+option radio(main rb_g0 rb_g1 rb_g2 rb_g3 rb_g4 rb_g5 rb_g6 rb_g7 rb_g8 rb_g9 rb_g9 rb_g10 rb_g11 rb_g12 rb_g13 rb_g14)
+ option main.ck_nocons
+ option radio(est1 rb_orr rb_grr1 rb_grr2 rb_grr3)
+ optionarg est1.ed_ridge
+ optionarg est1.ed_pdl
+ optionarg est1.ed_endpr
+ optionarg est1.vl_zlag
+ option radio(est1 rb_box1 rb_box2 rb_box3 rb_box4)
+ option est2.ck_tests
+ option est2.ck_lmauto
+ option est2.ck_lmhet
+ option est2.ck_lmnorm
+ option est2.ck_diag
+ option est2.ck_dn
+ option est2.ck_two
+ option est2.ck_cond
+ optionarg est2.ed_rest
+ optionarg est2.sp_dlag
+ optionarg est2.sp_ar
+ optionarg est2.sp_lags
+ optionarg est2.sp_tune
+ optionarg est2.sp_quant
+ option radio(main rb_lin rb_log)
+ optionarg est3.vn_predict
+ optionarg est3.vn_resid
+ optionarg est3.vn_wv
+ option radio(est3 rb_w1 rb_w2 rb_w3 rb_w4 rb_w5 rb_w6 rb_w7 rb_w8 rb_w9)
+ option radio(est3 rb_tek1 rb_tek2 rb_tek3 rb_tek4)
+ optionarg /hidedefault est3.sp_level
+ put " " /program se_output
+ put " " /program max_output
+ endoptions
+ END
+

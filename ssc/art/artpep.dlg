@@ -1,0 +1,76 @@
+/*
+artpep.dlg
+
+VERSION 1.0.1 SB/PR 15oct2009.
+
+projecting power
+
+keyword: rclass
+
+*/
+
+VERSION 10.0
+
+INCLUDE _std_large
+
+DIALOG artpep, title("ARTPEP - PROJECTION OF POWER AND EVENTS") tabtitle("Artpep")
+BEGIN
+ GROUPBOX gb_artpep	10	10	_iwd	_ht23h, label("Artpep")
+ 
+ DEFINE _x 15
+  DEFINE _y 30
+ INCLUDE _artset
+ 
+ TEXT tx_pts		15	60	280	., label("Patients recruited in each period so far")
+ EDIT vl_pts		280	@	180	., label("Patients recruited in each period so far") option(pts)
+ TEXT tx_epts		15	90	280	., label("Additional patients to be recruited")
+ EDIT vl_epts		280	@	180	., label("Additional patients to be recruited") option(epts)
+ TEXT tx_eperiods		15	120	280	., label("Number of periods over which to project")
+ EDIT vl_eperiods		280	@	180	., label("Number of periods over which to project") option(eperiods)
+ TEXT tx_stoprec		15	150	280	., label("Period in which recruitment to cease")
+ EDIT vl_stoprec		280	@	180	., label("Period in which rec. to cease") option(stoprecruit)
+ TEXT tx_startpd		15	180	280	., label("Period to start reporting projections")
+ EDIT vl_startpd		280	@	180	., label("Period to start reporting projections") option(startperiod)
+ * TEXT tx_npep		15	210	280	., label("No. of pts. recruited at end of current period")
+ * EDIT vl_npep		280	@	180	., label("Number of pat. rec. at end of current period") option(n)
+ TEXT tx_using		15	210	280	., label("Save using filename")
+ EDIT vl_using		280	@	180	., label("Save using filename") option(using)
+ TEXT tx_date		15	240	280	., label("Start date of trial (ddmmmyyyy)")
+ EDIT vl_date		280	@	180	., label("Start date of trial") option(datestart)
+ 
+END
+
+INCLUDE header
+HELP   hlp1, label("Help") view("help artpepdlg")
+RESET  res1
+
+PROGRAM command
+BEGIN
+
+	put "artpep "
+	
+	if artpep.vl_using {
+		put "using " artpep.vl_using
+	} 
+
+	beginoptions
+	
+		optionarg artpep.vl_pts
+		
+		optionarg artpep.vl_epts
+		
+		optionarg artpep.vl_eperiods
+		
+		* optionarg artpep.vl_npep
+		
+		optionarg artpep.vl_startpd
+		
+		optionarg artpep.vl_stoprec
+
+		optionarg artpep.vl_date
+
+		put "$S_ARTPEP "
+	endoptions
+	
+END
+

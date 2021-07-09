@@ -1,0 +1,205 @@
+{smcl}
+{* 10june2004}{...}
+{hline}
+help for {hi:circular} statistics commands
+{hline}
+
+{title:Introduction} 
+
+{p 4 4 2} 
+Circular data are a large class of directional data, which are of interest to
+scientists in many fields, including biologists (movements of migrating
+animals), meteorologists (winds), geologists (directions of joints and faults)
+and geomorphologists (landforms, oriented stones).  Such examples are all
+recordable as compass bearings relative to North.  Other examples include
+phenomena that are periodic in time, including those dependent on time of day
+(of interest to biomedical statisticians: hospital visits, times of birth,
+etc.) or time of year (of interest to applied economists: unemployment or sales
+variations).  
+
+{p 4 4 2} 
+The elementary but also fundamental property of circular data is that the
+beginning and end of the scale coincide: for example, 0 degrees = 360 degrees.
+An immediate implication is that the arithmetic mean is likely to be a poor
+summary: the mean of 1{c 176} and 359{c 176} cannot sensibly be 180{c 176}.
+The solution is to use the vector mean direction as circular mean. More
+generally, the different outcome space means that many standard methods
+designed for variables measured on the line are of little or no use with
+circular variables. 
+
+{p 4 4 2} 
+The programs written rest, so far, on the assumption that data are recorded in
+degrees. Users working with other scales (e.g. time of day on a 24 hour clock,
+day or month of year) could write their own trivial preprocessor and fix
+cosmetic details such as graph axis labels. In due course I may implement,
+possibly through characteristics modified by some {cmd:circset} command, user
+setting of different scales. Stata expects angles to be in radians (pi radians
+= 180{c 176}), but I have never seen radians used for reporting data. In Stata,
+the factors {cmd:_pi / 180} and {cmd: 180 / _pi} are thus useful for conversion
+between angles and radians. 
+
+{p 4 4 2} 
+In addition, the compass or clock convention of measurement clockwise from a
+vertical axis (e.g. North) is used throughout for circular graphs, not the
+mathematical convention of measuring angles counterclockwise (anticlockwise)
+from a horizontal axis. 
+
+{p 4 4 2} 
+The degree symbol may be invoked (e.g. in text for graphs) as
+{cmd:"{c -(}c 176{c )-}"}. If that fails, try {cmd:"`=char(176)'"}. To 
+see such symbols in various Stata windows, you may need to change the font. 
+
+
+{title:Utilities}
+
+{p 4 4 2} 
+{help circcentre} rotates a set of directions to a new centre: the result is
+between -180{c 176} and 180{c 176}. 
+
+{p 4 4 2} 
+{help circdiff} measures difference between circular variables or constants as
+the shorter arc around the circle. 
+
+{p 4 4 2} 
+{help fourier} generates pairs of sine and cosine variables sin {it:j}
+{it:theta}, cos {it:j} {it:theta} for {it:j} = 1, ..., {it:k}. 
+
+{p 4 4 2} 
+{help egencirc:atan2()} is an arctangent {help egen} function 
+giving results on the whole circle. 
+
+
+{title:Summary statistics and significance tests}
+
+{p 4 4 2} 
+{help circsummarize} is a basic workhorse that calculates vector mean and
+strength and the circular range and offers, as options, approximate confidence
+intervals for the vector mean and Rayleigh and Kuiper tests of uniform
+distribution on the circle.  (The abbreviation {help circsu} is allowed.) 
+
+{p 4 4 2} 
+{help circrao} carries out a uniformity test suggested by J.S. Rao.  One merit
+of this test is that it works well for data which are not unimodal.
+
+{p 4 4 2} 
+If circular data arrive coarsely grouped (e.g. 4 or 8 points of the compass), 
+then a chi-square test as applied by {help chitest} or {help chitesti} 
+is a possible alternative test of uniformity. If data are measured more 
+precisely, then it is arguable that the chi-square test is a poor choice
+compared with the alternatives: not only does it require arbitrary 
+decisions on bin width and origin, it takes no account of the circular
+nature of the data. 
+
+{p 4 4 2} 
+{help circmedian} calculates the circular median and mean deviation from the
+median.
+
+{p 4 4 2} 
+{help circovmean} and {help circovstr} show the effects of omitting
+individual values on the vector mean and the vector strength. 
+
+{p 4 4 2} 
+{help circtwosample} and {help circwwmardia} offer nonparametric tests for
+comparing two or more subsets of directions. {help circtwosample} offers two
+test statistics based on empirical distribution functions to test whether two
+distributions are identical, namely Watson's U{c 178} and Kuiper's k*.  
+{help circwwmardia} carries out a homogeneity test due to Wheeler and Watson and to
+Mardia given subdivision into two or more groups. 
+
+
+{title:Univariate and bivariate graphics}
+
+{p 4 4 2} 
+{help circrplot} loosely resembles {help spikeplot}; {help circdplot} loosely
+resembles {help dotplot}.  {help circvplot} shows the ordered directions added
+end to end with the vector mean as resultant.  Many users like such
+intrinsically circular representations, but note that it may be necessary to
+use {help graph_display:graph display}, typically with equal {cmd:xsize()} 
+and {cmd:ysize()}, to fix the aspect ratio. 
+
+{p 4 4 2} 
+Another approach is to wrap around the scale, showing up to two full cycles on
+a linear graph. {help circhistogram} is a wrapper for {help histogram}, adding
+a pad of values (default 180{c 176}) to both extremes. (The abbreviation 
+{help circhist} is allowed.)  {help circscatter} is a wrapper for {help scatter}
+that adds a pad to both extremes on either or both of {it:x} and {it:y} axes.
+(The abbreviation {help circsc} is allowed.) 
+
+{p 4 4 2} 
+{help circqqplot} is a quantile-quantile plot for two circular 
+variables. It is a wrapper for {help qqplot}. Data are rotated so that 
+each variable is centred on a specified value.  
+
+{p 4 4 2} 
+Note that a quantile plot of directions can be useful: {help quantile} {c -} or
+alternatively, {help qplot} (see {it:Stata Journal} 4(1): 97, 2004) {c -} is already
+available for this purpose.  
+
+
+{title:Smoothing, relationships and modelling}
+
+{p 4 4 2} 
+{help circkdensity} drives a nonparametric density estimation 
+routine with biweight kernel. Despite the name, it does not call 
+{help kdensity}. 
+
+{p 4 4 2} 
+For exploratory smoothing, {help circylowess} is for circular response and
+non-circular covariate and {help circxlowess} is for non-circular response and
+circular covariate. Both are wrappers for {help lowess}.  With 
+{help circylowess}, the recipe is to smooth sine and cosine components and to
+recombine using arctangent: smooth of {it:theta} = arctan(smooth of sin
+{it:theta}, smooth of cos {it:theta}).  With {help circxlowess}, the recipe is
+to smooth around the circle by temporarily adding sufficiently large pads at
+each end. 
+
+{p 4 4 2} 
+{help circlccorr} and {help circcorr} implement correlation methods for
+cases where one or both variables are circular.
+
+{p 4 4 2} 
+Note that regression of a non-circular response on various terms of a Fourier
+series requires nothing extra in Stata beyond {help regress} and other basic
+modelling commands (although {help fourier} can help in producing covariates).
+It is often extremely useful, and can be extended to include non-circular
+covariates. 
+
+
+{title:von Mises distributions}
+
+{p 4 4 2} 
+{help circvm} fits a von Mises distribution, the most important unimodal 
+reference distribution on the circle, using an approximate maximum likelihood 
+method. (Doing it properly with {help ml} is on the agenda.) 
+
+{p 4 4 2} 
+{help circqvm} shows a quantile-quantile plot for data versus a 
+fitted von Mises distribution. Data are rotated so that the mean is at the 
+centre of the plot.
+
+{p 4 4 2} 
+{help circpvm} shows a probability plot (P-P plot) for data versus a 
+fitted von Mises distribution. 
+
+{p 4 4 2} 
+{help circdpvm} shows a density probability plot for data versus a 
+fitted von Mises distribution. 
+
+{p 4 4 2} 
+{help egen} functions {help egencirc:invvm()}, 
+{help egencirc:rndvm()}, {help egencirc:vm()} and  
+{help egencirc:vmden()} and a calculator function {help i0kappa} are supporting 
+utilities, occasionally used directly.
+
+
+{title:Author}
+
+{p 4 4 2}Nicholas J. Cox, University of Durham, U.K.{break}
+         n.j.cox@durham.ac.uk
+
+	 
+{title:Acknowledgements}
+
+{p 4 4 2}Ian S. Evans has kindly provided me with information and requests on
+circular statistics over more than thirty years. 
+        

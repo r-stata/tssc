@@ -1,0 +1,137 @@
+{smcl}
+{hline}
+help for {cmd:dfl}{right:Joao Pedro Azevedo}
+{hline}
+
+
+{title:{cmd:DiNardo, Fortin and Lemieux Counterfacual Kernel Density}}
+
+
+{p 8 12 2}{cmdab:dfl}
+{it:depvar} {it:indepvars}
+[{cmdab:if}{it: exp}]
+[{cmdab:in}{it: range}]
+{cmd:,}
+    {cmdab:outcome}{cmd:(}{it:varname}{cmd:)}
+    [{cmdab:group}{cmd:(}{it:varname}{cmd:)}
+    {cmdab:min}{cmd:(}{it:integer}{cmd:)}
+    {cmdab:max}{cmd:(}{it:integer}{cmd:)}
+    {cmdab:nbins}{cmd:(}{it:integer}{cmd:)}
+    {cmdab:w}{cmd:(}{it:bandwidth}{cmd:)}
+    {cmdab:step}{cmd:(}{it:varlist}{cmd:)}
+    {cmd:adaptive}
+    {cmd:gauss}
+    {cmd:epan}
+    {cmd:oaxaca}
+    {cmd:quietly}
+    {cmd:probit}
+    {cmdab:nxvar(}{it:string}{cmd:)}
+    {cmdab:ncfactual(}{it:string}{cmd:)}
+    {cmdab:nufactual(}{it:string}{cmd:)}
+    {cmdab:nfactual(}{it:string}{cmd:)}
+    {it:{help graph_combine}}
+    {it:{help axis_selection_options}}
+    {it:{help axis_scale_options}}
+    {it:{help title_options}}
+    {cmd:nogroupt}
+    {cmdab:name3(}{it:string}{cmd:)}]
+
+{title:Description}
+
+
+{p 4 4 2}{cmd:dfl} estimates DiNardo, Fortin and Lemieux Counterfacual Kernel Densities.
+Treatment status is identified by depvar==1 for the treated and depvar==0
+for the untreated observations.{p_end}
+
+{p 4 4 2}The propensity score - the conditional treatment probability - is estimated by
+the program on the indepvars.{p_end}
+
+{p 4 4 2}{cmdab:outcome} variable has to be specified.{p_end}
+
+{p 4 4 2}{cmd:dfl} also support graph options such as {it:{help graph_combine}}, {it:{help title_options}} and
+{it:{help axis_selection_options}}.{p_end}
+
+{p 4 4 2}Several different weight can be used on this procedure. In this ado we use the following weight.
+Weight=1-Prob(Depvar=1)/Prob(Depvar=0).{p_end}
+
+{title:Options}
+
+{p 4 4 2}{cmdab:group} the group variable.{p_end}
+
+{p 4 4 2}{cmdab:graph} cfactual (compares the (Depvar=0) distribution to
+the (Depvar=0) distribution that would have prevailed if they had been paid like (Depvar=1)) , ufactual
+(compares the (Depvar=1) distribution to the counterfactual.  These will be different to the extent
+that the X's of the two groups differ) and diff (difference between the how (Depvar=0) distribution
+that would have prevailed if they had been paid like (Depvar=1) and (Depvar=1) distribution).{p_end}
+
+{p 4 4 2}{cmdab:min} sets the minimum value. When omited {cmd:dfl} uses the minimum value of the specified outcome.{p_end}
+
+{p 4 4 2}{cmdab:max} sets the maximum value. When omited {cmd:dfl} uses the maximum value of the specified outcome.{p_end}
+
+{p 4 4 2}{cmdab:nbins} number of equaly spaced intervals.Default value 200.{p_end}
+
+{p 4 4 2}{cmd:adaptive} produces density estimates using adaptive kernel estimation methods.
+Please note that the method is slower than than the default one.{p_end}
+
+{p 4 4 2}{cmdab:step} Sequential decomposition. This option runs N+1 models (N being the number of variables in the varlist). The first
+model will consider all variables. Each subsequent model will remove one variable at the time. The final output
+is a single graph with overlaying kernel density differences for the N+1 models. My impression is that if N>2 the figure
+gets very clutered.{p_end}
+
+{p 4 4 2}{cmd:gauss} specify the kernel (gaussian).{p_end}
+
+{p 4 4 2}{cmd:epan} specify the kernel (epanechnikov).{p_end}
+
+{p 4 4 2}{cmd:oaxaca} compute mean using the estimated density to and compare to the actual mean of log wages
+or oaxaca wages (the predicted values).{p_end}
+
+{p 4 4 2}{cmd:quietly} do not print output of propensity score estimation.{p_end}
+
+{p 4 4 2}{cmd:probit} use probit instead of the default logit to estimate the propensity score.{p_end}
+
+{p 4 4 2}{cmd:nxvar} assign a label to the x-axis.
+
+{p 4 4 2}{cmd:ncfactual} assign a label to cfactual.
+
+{p 4 4 2}{cmd:nfactual} assign a label to factual.
+
+{p 4 4 2}{cmd:nufactual} assing a label to ufactual.
+
+{p 4 4 2}{cmd:nogroupt} drops the group names from the figure.
+
+{title:Examples}
+
+{p 4 8}{stata "webuse nlsw88, clear" :. webuse nlsw88, clear}{p_end}
+{p 4 8}{stata "g ttl_exp2 = ttl_exp^2" :. g ttl_exp2 = ttl_exp^2}{p_end}
+{p 4 8}{stata "g lwage = log(wage)" :. g lwage = log(wage)}{p_end}
+{p 4 8}{stata "dfl union ttl_exp ttl_exp2 married grade , outcome(lwage)" :. dfl union ttl_exp ttl_exp2 married grade , outcome(lwage)}{p_end}
+{p 4 8}{stata "dfl union ttl_exp ttl_exp2 married grade , outcome(lwage) w(.05)" :. dfl union ttl_exp ttl_exp2 married grade , outcome(lwage) w(.05)}{p_end}
+{p 4 8}{stata "dfl union ttl_exp ttl_exp2 married grade , outcome(lwage) adaptive" :. dfl union ttl_exp ttl_exp2 married grade , outcome(lwage) adaptive}{p_end}
+{p 4 8}{stata "dfl union ttl_exp ttl_exp2 married grade , outcome(lwage) step(tenure  collgrad)" :. dfl union ttl_exp ttl_exp2 married grade , outcome(lwage) step(tenure  collgrad)}{p_end}
+
+{title:References}
+
+
+{p 4 8 2}DiNardo, J., N.M. Fortin, and T.Lemieux (1996) "Labour Market Insitutions and
+the Distribution of Wages, 1973-1992: A Semiparametric Approach,"
+{it:Econometrica}, 64(5): 1001-1044.{p_end}
+
+{p 4 8 2}Van Kerm, P. (2003) "Adaptive kernel density estimation."{it:The Stata Journal}
+, 3(2): 148-156.{p_end}
+
+
+{title:Author}
+
+{p 4 4 2}Joao Pedro Azevedo, World Bank, jazevedo@worldbank.org{p_end}
+
+{title:Aknowledgements}
+
+{p 4 4 2}This ado uses part of the code written by John DiNardo.{p_end}
+{p 4 4 2}I would like to thank some Stata users who have made comments to an earlier release of this ado, in particular Jean Ries.{p_end}
+{p 4 4 2}The usual disclaimer applies.{p_end}
+
+
+{title:Also see}
+
+{p 4 4 2} Manual:  {hi:[R] kdensity}{p_end}
+{p 4 19 2}Online:  help for {help kdensity} and help for {help akdensity} and {help decompose} and {help jmp} if installed.{p_end}

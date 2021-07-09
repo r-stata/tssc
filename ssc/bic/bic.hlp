@@ -1,0 +1,84 @@
+.-
+help for ^bic^ - 1.0 - 6 Mar 2005
+.-
+
+Estimate the statistical significance of variables in a model
+.-
+
+^bic^ [^,^ ^s^mallest(integer) ^l^argest(integer) ^minp^rob(real) ^best^(integer) ^dots^ ]
+
+Description
+-----------
+
+^bic^ is a post-estimation command that uses the Bayesian Information Criterion 
+(BIC) for estimating the probability that a variable is part of a model, the 
+equivalent of the statistical significance of a variable’s effect. bic estimates
+models based on all possible combinations of the independent variables - it is 
+computationally intensive.  For each of these models it calculates the BIC 
+statistic. It then calculates the probability of each of these models, based 
+on Bayesian principles as first proposed by Schwarz (1978) and further developed
+by Raftery (1995). 
+
+The probability that a given independent variable is in the "true" model is 
+based on the sum of the probabilities for the models containing that variable, 
+divided by the sum of the probabilities for all models.
+
+Basyesian based methods, such as BIC-based methods, are an alternative to the 
+traditional t-test for statistical significance. The BIC is not as sensitive 
+to N unlike the traditional null hypothesis t-test and some would argue it is
+a better method of determining the likelihood that a slope is non-zero.
+
+Note that bic uses bicdrop1 probabilities to limit the models considered,
+rather than the leaps and bounds algorithm used by Raftery.
+
+bic works after the following estimation commands:
+^regress^, ^logistic^, ^logit^, ^ologit^, ^oprobit^, ^mlogit^, ^poisson^, ^nbreg^. 
+
+bic requires the installation of the following commands:
+matsort, bicdrop1, pre
+
+Options
+-------
+^s^mallest(integer)  (default 1)
+  The smallest number of explanatory variables allowed in the models
+  Used to limit the models to be considered
+
+^l^argest(integer)   (default is all variables)
+  The largest number of explanatory variables allowed in the models
+  Used to limit the models to be considered
+
+^minp^rob(real)      (default .05)
+  The minimum probability, based on bicdrop1, to be considered
+  Used to limit the models to be considered to likely ones
+  Setting this to zero forces all the models to be considered
+
+^best^(integer)      (default 10)
+  The number of "best" models to list at the end
+
+^dots^ prints out dots to show the program is working
+
+Examples
+--------
+ . sysuse auto
+ . regress price mpg rep78 foreign disp length turn gear_ratio  headroom
+ . bic
+
+
+Author: Paul Millar
+        www.paulmillar.ca
+        paulmi@@nipissingu.ca
+
+Acknowledgements
+----------------
+This program was developed with the support of:
+Augustine Brannigan, University of Calgary
+         
+See also:
+---------
+Online:     help for @bicdrop1@, @pre@ (if installed)
+
+References:  Raftery, Adrian (1995) Bayesian Model Selection in Social Research
+                                    Sociological Methodology, V. 25, p. 111-163. 
+	     Schwarz, Gideon (1978) Estimating the Dimension of a Model
+                                    The Annals of Statistics v. 6, p.461-64.
+

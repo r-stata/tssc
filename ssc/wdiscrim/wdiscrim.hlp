@@ -1,0 +1,183 @@
+{smcl}
+{* Help file revised 2009-09-03,2014-03-14}{...}
+{hline}
+help for {hi:wdiscrim}{right:P. Van Kerm (September 2009)}
+{hline}
+
+{title:Title}
+
+{pstd}{hi:wdiscrim} {hline 2} Earnings discrimination statistics 
+
+
+{title:Syntax}
+
+{p 8 15 2}
+{cmd:wdiscrim}
+{it:actvar refvar} 
+[{it:weight}] 
+[{cmd:if} {it:exp}] 
+[{cmd:in} {it:range}] 
+[{cmd:,} {it:options}]
+
+{synoptset 20 tabbed}
+{synopthdr}
+{synoptline}
+{synopt :{opt r:index}}compute R-index measures{p_end}
+{synopt :{opt adgc} {opt rdgc}}compute FGT discrimination measures{p_end}
+{synopt :{opth gen:erate(newvar)}}create unit-level relative differential measure{p_end}
+{synopt :{opth coord:inates(newvarlist)}}create generalized Lorenz and concentration curve coordinates{p_end}
+{synopt :{opth for:mat(%fmt)}}display format; default is {cmd:format(%4.3f)}{p_end}
+{synopt:{opt inst:all}}check installation of required user-written packages{p_end}
+
+{synoptline}
+                  
+{p 4 8 2}
+{cmd:aweights} and {cmd:fweights} are allowed; see help {help weights:weights}.
+
+
+{title:Description}
+
+{pstd}
+{hi:wdiscrim} computes the `distributionally sensitive' earnings discrimination measures
+proposed in Jenkins (1994) and the `FGT' discrmination measures proposed in del Rio et al. (2011). 
+{p_end}
+
+{pstd}
+{hi:wdiscrim} takes two variables as input. The first ({it:actvar}) contains an earnings prediction from a model for the observed `discriminated' population.  
+The second ({it:refvar}) contains a counterfactual prediction from a model for a reference population (the non-discriminatory benchmark).  
+Based on these pairs of actual and counterfactual wage predictions {hi:wdiscrim} reports descriptive statistics about the distribution of 
+individual-level earnings differentials and computes the summary indices proposed by Jenkins (1994) (and del Rio et al. (2011)).
+{p_end}
+
+{pstd}
+See Jenkins (1994) and del Rio et al. (2011) for full details on these methods. An {browse "http://medim.ceps.lu/stata/wdiscrim.pdf":online manual} 
+provides formulas and a short illustrative example.
+{p_end}
+
+
+{title:Options}
+
+{phang}
+{opt rindex} requests computation Jenkins (1994) R-index.
+{p_end}
+
+{phang}
+{opt adgc} requests computation of the absolute del Rio et al. (2011) FGT measures.
+{p_end}
+
+{phang}
+{opt rdgc} requests computation of the relative del Rio et al. (2011) FGT measures.
+{p_end}
+
+{phang}
+{opth generate(newvar)} fills the new variable {it:newvar} with the relative differences between {it:actvar} and {it:refvar}, that is
+{hline 2}exp(ln({it:refvar}) - ln( {it:actvar})) - 1{hline 2}. The sub-option {cmd:replace} can be used to replace any already existing variable named {it:newvar}.
+{p_end}
+
+{phang}
+{opth coordinates(newvarlist)} creates four new variables filled with generalized Lorenz and concentration curves ordinates. The first variable is filled with the x-ordinates (the cumulative population share
+ordered in increasing value of {it:actvar}). The second variable contains the ordinates of the generalized Lorenz curve of {it:actvar}. The third variable contains the ordinates of the generalized concentration
+curve of {it:refvar}. The fourth variable contains the ordinates of the generalized concentration curve of |{it:refvar}-{it:actvar}|.  
+Exactly four new variable names must be supplied in {it:varlist}. The sub-option {cmd:replace} can be used to replace any already existing variable in {it:newvarlist}.
+{p_end}
+
+{phang}
+{opth format(%fmt)} controls the display format; default is {cmd:format(%4.3f)}{p_end}
+
+{phang}
+{opt install} checks installation of required user-written packages and prompts user for installation if needed.
+{p_end}
+
+{title:Dependencies}
+
+{pstd}
+{hi:wdiscrim} requires two user-written packages. The first is the {cmd:makematrix} package
+by Nicholas J. Cox available from the SSC archive. The second is the {cmd:glcurve} package by 
+Stephen P. Jenkins and Philippe Van Kerm available from the SSC archive or Stata Journal website. 
+Both packages can be installed easily with the {opt install} option. 
+{p_end}
+
+
+{title:Saved Results}
+
+{synoptset 15 tabbed}{...}
+{p2col 5 15 19 2: Matrices}{p_end}
+{synopt:{cmd:r(desc)}}Summary statistics of individual-level differentials{p_end}
+{synopt:{cmd:r(jindex)}}Estimates of the J-index{p_end}
+{synopt:{cmd:r(rindex)}}Estimates of the R-index (if requested){p_end}
+{synopt:{cmd:r(adgcindex)}}Estimates of the absolute FGT-discrimination index (if requested){p_end}
+{synopt:{cmd:r(rdgcindex)}}Estimates of the relative FGT-discrimination index (if requested){p_end}
+
+{synoptset 15 tabbed}{...}
+{p2col 5 15 19 2: Scalars}{p_end}
+{synopt:{cmd:r(prop)}}Proportion of observations `discriminated', that is with {it:refvar} larger than {it:actvar}{p_end}
+{synopt:{cmd:r(N)}}Number of observations{p_end}
+
+{synoptset 15 tabbed}{...}
+{p2col 5 15 19 2: Macros}{p_end}
+{synopt:{cmd:r(actvar)}}{it:actvar}{p_end}
+{synopt:{cmd:r(refvar)}}{it:refvar}{p_end}
+{synopt:{cmd:r(generate)}}{it:newvar} if {opt generate(newvar)} specified{p_end}
+{synopt:{cmd:r(pvar)}}First element in {it:newvarlist} if {opt coordinates(newvarlist)} specified{p_end}
+{synopt:{cmd:r(glyvar)}}Second element in {it:newvarlist} if {opt coordinates(newvarlist)} specified{p_end}
+{synopt:{cmd:r(glrvar)}}Third element in {it:newvarlist} if {opt coordinates(newvarlist)} specified{p_end}
+{synopt:{cmd:r(gldvar)}}Fourth element in {it:newvarlist} if {opt coordinates(newvarlist)} specified{p_end}
+
+
+{title:Example}
+
+{p 8 12 2}{inp:. use http://www.stata-press.com/data/r9/nlswork , clear }
+
+{p 8 12 2}{inp:. regress  ln_wage  age msp collgrad not_smsa south if race==1 }
+
+{p 8 12 2}{inp:. predict wref if race==2}
+
+{p 8 12 2}{inp:. replace wref = exp(wref + 0.5*e(rss)/(e(N)-1))}
+
+{p 8 12 2}{inp:. regress  ln_wage  age msp collgrad not_smsa south if race==2 }
+
+{p 8 12 2}{inp:. predict wact if race==2}
+
+{p 8 12 2}{inp:. replace wact = exp(wact + 0.5*e(rss)/(e(N)-1))}
+
+{p 8 12 2}{inp:. wdiscrim wact wref }
+
+{p 8 12 2}{inp:. wdiscrim wact wref , rdgc adgc rindex}
+
+{p 8 12 2}{inp:. wdiscrim wact wref , gen(gap) coordinates(p gly glr gld, replace)}
+
+{p 8 12 2}{inp:. twoway line gly glr p , sort }
+
+
+{title:References}
+
+{p 4 8 2}del Rio, C., Gradin, C. and Canto, O. (2011). The measurement of gender wage discrimination: The distributional approach revisited, 
+{it:Journal of Economic Inequality}, 9(1): 57{c -}86.
+
+{p 4 8 2}Jenkins, S.P. (1994). Earnings discrimination measurement: A distributional approach. {it:Journal of Econometrics}, 61: 81{c -}102.
+
+
+{title:Also see}
+
+{psee}
+Online:  {helpb oaxaca} (if installed)
+{p_end}
+
+
+{title:Author}
+
+{pstd}Philippe Van Kerm, CEPS/INSTEAD, Luxembourg, philippe.vankerm@ceps.lu
+
+
+{title:Acknowlegdments}
+
+{pstd}
+This work is part of the MeDIM project 
+({it:Advances in the Measurement of Discrimination, Inequality and Mobility}) 
+supported by the Luxembourg Fonds National de la Recherche (contract FNR/06/15/08) 
+and by core funding for CEPS/INSTEAD by the
+Ministry of Higher Education and Research of Luxembourg. 
+
+
+
+{* Version 2.0.1 2014-03-14}

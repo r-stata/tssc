@@ -1,0 +1,115 @@
+{smcl}
+{* 9jan2004}{...}
+{hline}
+help for {hi:circdplot}
+{hline}
+
+{title:Raw data plot for circular data with point symbols}
+
+{p 8 17 2}
+{cmd:circdplot}
+{it:varname}
+[{cmd:if} {it:exp}] 
+[{cmd:in} {it:range}]
+[{cmd:,}
+{cmdab:cla:bel(}{it:label_specification}{cmd:)} 
+{cmdab:ctic:k(}{it:numlist}{cmd:)}
+{cmd:fudge(}{it:#}{cmd:)} 
+{cmdab:result:ant(}{it:resultant_options}{cmd:)} 
+{cmd:round(}{it:#}{cmd:)} 
+{cmdab:tick:length(}{it:#}{cmd:)}
+{cmd:unit(}{it:#}{cmd:)}
+{it:twoway_options} 
+] 
+
+
+{title:Description} 
+
+{p 4 4 2} 
+{cmd:circdplot} produces a raw data plot for {it:varname} with point symbols 
+showing values. {it:varname} should be a circular variable taking on values
+between 0 and 360 degrees.
+
+{p 4 4 2} 
+Strictly, the values of {it:varname} are rounded to the nearest degree, or to
+the argument of {cmd:round()}. Rays of point symbols are drawn outwards from
+the circumference of a circle pointing in each direction present in the data.
+The length of each ray is proportional to the frequency of that direction.
+The resultant or mean direction is indicated by an arrow from the centre of the
+circle with length the radius of the circle X the vector strength. Hence an
+arrow representing a mean direction with vector strength 1 would touch the
+circle. 
+
+{p 4 4 2} 
+The graph will usually best be shown with {cmd:xsize()} and {cmd:ysize()}
+equal, or nearly so. It may be helpful to know that the centre of the circle is
+at {it:x} = 0, {it:y} = 0 and that it has radius 1, so that the cardinal points
+North, East, South, West are at 0,1; 1,0; 0,-1; -1,0. 
+
+
+{title:Options} 
+
+{p 4 8 2} 
+{cmd:clabel()} specifies labels to be shown inside the circle at angles 
+measured clockwise from 0 (North) through 360 degrees. Single text labels 
+may be specified within {cmd:" "} following each label. For example, 
+the default is {cmd:clabel(0 "N" 90 "E" 180 "S" 270 "W")}.
+
+{p 4 8 2} 
+{cmd:ctick()} specifies positions of ticks to be shown inside the circle
+at angles measured clockwise from 0 (North) through 360 degrees.
+
+{p 4 8 2} 
+{cmd:fudge()} specifies a fudge factor controlling the radial spacing of point
+symbols. Default 1 means that the outermost point symbol will be
+plotted at distance from the circle equal to the radius of that
+circle. # means maximum distance # X that radius. Most graphs will
+need some hand-tuning of {cmd:fudge()} for better appearance. See
+also {cmd:round()}. 
+
+{p 4 8 2}{cmd:resultant()} specifies options controlling the rendering of the
+arrow showing the resultant. In particular, {cmdab:arrowhead:length()} specifies
+the arrowhead length (default 0.1).  Otherwise, such options are typically
+appropriate {help connect_options}. 
+
+{p 4 8 2}
+{cmd:round()} indicates the bin or class width to be used (default 1 deg).
+See also {cmd:fudge()}. 
+
+{p 4 8 2} 
+{cmd:ticklength()} specifies the tick length (default 0.05).
+
+{p 4 8 2} 
+{cmd:unit()} specifies that a point symbol should represent at most {it:#}
+observations, which number should be >= 1. That is, {cmd:unit(10)} specifies
+that a point symbol should represent at most 10 observations.  Strictly,
+frequencies in each bin will be rounded up to the nearest multiple of {it:#},
+so that with {cmd:unit(10)} 1 to 10 observations would be represented by one
+point symbol, 11 to 20 two symbols, and so forth. 
+
+{p 4 8 2} 
+{it:twoway_options} are options of {help twoway_options:twoway}.  
+By default the {cmd:subtitle()} indicates the mean direction and vector 
+strength and is at {cmd:pos(6)}.  Note that the degree symbol can be specified 
+by {cmd:`=char(176)'}. 
+
+
+{title:Example} 
+
+{p 4 8 2}{cmd:. circdplot wallasp, result(clcolor(blue) clw(thick)) round(2) fudge(0.25) ms(Oh) mcolor(red) text(-0.5 0 "Wall aspect", size(large))}{p_end}
+{p 4 8 2}{cmd:. graph display, xsize(4) ysize(4)} 
+
+
+{title:Author}
+
+{p 4 4 2}
+Nicholas J. Cox, University of Durham, U.K.{break} 
+n.j.cox@durham.ac.uk
+
+
+{title:Also see}
+
+{p 4 13 2} 
+On-line: help for {help circrplot} (if installed), 
+{help circvplot} (if installed) 
+

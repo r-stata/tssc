@@ -1,0 +1,63 @@
+{smcl}
+{hline}
+help for {hi:clustervar}{right:{hi: Matthias Schonlau}}
+{hline}
+
+{title:Constructing cluster membership Variables}
+
+{p 8 27}
+{cmd:clustervar} 
+{it:varlist} 
+{cmd:,} 
+{cmdab:al:gorithm(}{it:string}{cmd:)} 
+{cmdab:dist:ance(}{it:string}{cmd:)} 
+[
+{cmd:min(}{it:#}{cmd:)}
+{cmd:max(}{it:#}{cmd:)}
+]
+
+
+{title:Description}
+
+{p}{cmd:clustervar} constructs variables named cluster{it:i} 
+that indicate cluster membership. {it:i} refers to the number of clusters. 
+
+{p}{it:varlist} contains the variables which are used as input to the cluster 
+analyses.
+
+{title:Options}
+
+{p 0 4} {cmd:algorithm(}{it:string}{cmd:)} name of the cluster algorithm to be used.
+Valid algorithms are kmeans, kmedians, singlelinkage, averagelinkage and completelinkage.
+Because of ties it is possible that for a particular data set clusters with exactly i clusters
+cannot be formed. Adding a very small number to all observations will usually break the tie. 
+Another option is to use the min() and max() options to avoid the number
+of clusters for which this happens.
+
+{p 0 4}{cmd:distance(}{it:string}{cmd:)} specifies the distance criterion to be 
+used by the cluster algorithm. Typically this is either L2 or L1.
+
+{p 0 4} {cmd:min(}{it:#}{cmd:)} optionally specifies the smallest number of clusters.  By default this is 
+set to 1. 
+
+{p 0 4} {cmd:max(}{it:#}{cmd:)} optionally species the largest number of clusters. By default this is set to 10.
+
+{title:Examples}
+
+{p 4 8}{inp:. clustervar var1-var7, algorithm(kmeans) distance(L2)}
+
+{p 4 8}{inp:. clustervar sepallen-petalwid, algorithm(averagelinkage) distance(L1) min(5) max(8)}
+
+
+{title:Author}
+
+	Matthias Schonlau, University of Waterloo
+	schonlau at uwaterloo dot ca
+
+
+{title:Also see}
+
+{p 0 19}Manual:  {hi:[R] cluster}, {hi:[R] cluster dendrogram}, {hi:[R] cluster kmeans}, 
+{p_end}
+{p 0 19}On-line:  help for {help cluster}{p_end}
+

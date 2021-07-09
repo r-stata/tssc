@@ -1,0 +1,111 @@
+{smcl}
+{* 10sep2014}{...}
+{cmd:help leftalign}
+{hline}
+
+{title:Title}
+
+{phang}
+{bf:leftalign} {hline 2} Change the {help format} of variables to left-aligned
+
+
+{title:Syntax}
+
+	{cmd:leftalign} [{varlist}] , [{opt l:abel} {opt a:ll}]
+
+
+{title:Description}
+
+{pstd}
+Stata uses a variable's {help format} to determine how values
+are displayed in the Data Browser, Data Editor, and in various listings.
+{cmd:leftalign} changes the variable's {help format} so that values are
+aligned to the left. {cmd:leftalign} does not change the values
+stored in a variable. 
+
+{pstd}
+If {varlist} is omitted, all variables in memory are processed. 
+
+{pstd}
+By default, only string variables are changed as these are the most likely
+to benefit from being displayed flush left.
+
+{pstd}
+When the {opt l:abel} option is used, numeric variables 
+that use value labels are also left-aligned.
+
+{pstd}
+The {opt a:ll} option indicates that all variables in {varlist} should
+switch to a left-aligned format.
+
+{pstd}
+Once all variables are processed by {cmd:leftalign}, {help describe}
+is used to report which variables changed {help format}. Variables that
+were already left-aligned are omitted.
+
+
+{title:Examples}
+
+{pstd}
+Load some data in memory
+
+        {cmd:.} {stata sysuse lifeexp}
+        
+{pstd}
+There's only one variable that is string and right-aligned
+
+        {cmd:.} {stata leftalign}
+        
+{pstd}
+When creating new string variables, the format reverts to right-align.
+The same is true if a string variable is encoded.
+
+        {cmd:.} {stata gen country2 = upper(country)}
+        {cmd:.} {stata encode country, gen(countryn)}
+        {cmd:.} {stata list region country* in 42/46}
+        
+{pstd}
+Using the {opt l:abel} option will left-align both string variables and 
+numeric variables that use value labels.
+
+        {cmd:.} {stata leftalign, label}
+        {cmd:.} {stata list region country* in 42/46}
+
+{pstd}
+While it rarely makes sense to left-align numbers, you may have a numeric
+variable with codes based on a hierarchical coding system 
+(e.g. {browse "http://www.census.gov/eos/www/naics/":North American Industry Classification System}).
+These codes are better visualized when aligned to the left. The following
+targets only variable {bf:gnppc} and {opt a:ll} is used to
+force {cmd:leftalign} to change the format, even it is not a string variable or
+a variable that uses value labels.
+
+       {cmd:.} {stata leftalign gnppc, all}
+
+
+
+{title:Author}
+
+{pstd}Robert Picard{p_end}
+{pstd}picard@netbox.com{p_end}
+
+
+{title:Also see}
+
+{psee}
+SSC:  {stata "ssc des ljs":ljs} module to left-justify string variables for printing.
+Note that this program changes the values by trimming leading spaces and padding
+to the right.
+{p_end}
+
+{psee}
+SSC:  {stata "ssc des listsome":listsome} list a sample of observations.
+{p_end}
+
+{psee}
+Help:  {manhelp data_types D:data types}, 
+{manhelp format D},  
+{manhelp compress D}
+{manhelp encode D}
+{manhelp list D}
+{p_end}

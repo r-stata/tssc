@@ -1,0 +1,116 @@
+/*
+artbin
+
+VERSION 1.0 SB 03mar2004.
+
+Binary outcomes
+
+keyword: rclass
+
+*/
+
+VERSION 8.0
+
+INCLUDE _std_large
+
+
+
+DIALOG main, title("ART - ANALYSIS OF RESOURCES FOR TRIALS - Binary outcomes") tabtitle("Main")
+BEGIN
+ /*--+----1----+----2----+----3----+----4----+----5----+----6----+----7----+*/
+ 
+ GROUPBOX gb_setup    	10      10      _iwd    _ht11h, label("Set-up")	
+ TEXT tx_nu		15	30	90	., label("Number of groups") 
+ EDIT vl_ngroups	110	@	40	., label("Number of groups") default(2) option(ngroups)
+ TEXT tx_all		250	@	90	., label("Allocation ratios") 
+ EDIT vl_aratios	350	@	120	., label("aratios") default(1 1) option(aratios)
+ TEXT tx_alp		15	60	90	., label("Alpha (2-sided)")
+ EDIT vl_alpha	110	@	40	., label("alpha") default(0.05) option(alpha)
+ TEXT tx_pow		250	@	90	., label("Power or N")
+ EDIT vl_pow		350	@	40	., label("power") default(0.8) option(pow)
+ CHECKBOX ck_trend	15	90	90	., label("Trend") option(trend) onclickon("script dose_on") onclickoff("script dose_off")
+ TEXT tx_doses		250	@	90	., label("Dose")
+ EDIT vl_doses	350	@	90	., label("Dose") option(doses)
+ TEXT tx_pro		15	120	90	., label("Proportions")
+ EDIT vl_pr		110	@	160	., label("Proportions")	option(pr)
+ 
+ 
+ GROUPBOX gb_options 	10	160	_iwd	_ht10h, label("Options")
+ RADIO r1_rpow		15	180	170	., first label("Specify power") option(rpow)
+ RADIO r2_samp		250	@	170	., last label("Specify sample size") option(samp)
+ RADIO r1_loc		15	210	170	., first label("Local alternatives")
+ RADIO r2_dist		250	@	170	., last label("Distant alternatives") option(distant)
+ RADIO r1_unc		15	240	170	., first label("Unconditional test")
+ RADIO r2_con		250	@	170	., last label("Conditional test (Peto)") option(con)
+ CHECKBOX ck_ni		15	270	170	., label("Non-inferiority design") option(ni)
+ CHECKBOX ck_ones	250	@	170	., label("One-sided alpha") option(onesided)
+
+ 
+END
+
+SCRIPT dose_on
+BEGIN
+  main.vl_doses.enable
+END
+
+SCRIPT dose_off
+BEGIN
+  main.vl_doses.disable
+END
+
+PROGRAM disable_doses
+BEGIN
+	call gaction main.ck_trend.disable
+END
+
+PROGRAM enable_doses
+BEGIN
+	call gaction main.ck_trend.enable
+	if main.ck_trend {
+		call script dose_on
+	}
+	if ! main.ck_trend {
+		call script dose_off
+	}
+END
+
+
+INCLUDE header
+HELP   hlp1, label("Help") view("help artbindlg")
+RESET  res1
+
+PROGRAM command
+BEGIN
+
+	require main.vl_pr
+
+	put "artbin "
+
+	beginoptions
+		optionarg main.vl_pr
+		optionarg main.vl_ngroups
+		optionarg main.vl_aratios
+		if main.r2_con {
+			put "condit "
+		}
+		optionarg main.r2_dist
+		optionarg main.vl_alpha
+		if main.r1_rpow {
+			put "power("main.vl_pow ") "
+		}
+		if main.r2_samp {
+			put "n("main.vl_pow ") "
+		}
+		option main.ck_trend
+		optionarg main.vl_doses
+		optionarg main.ck_ones
+		optionarg main.ck_ni
+	endoptions
+	
+END
+
+	
+
+
+
+

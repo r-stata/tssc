@@ -1,0 +1,265 @@
+/*
+Draft of a dialog box for SGPV
+To-Do/Further improvements: 	Add additional input checks for nullweights and altweighs to allow only certain inputs for nullspace and altspace
+								Add another tab to launch the other dialogs for the other commands to make SGPV the central dialog.
+*/
+/*
+sgpv dialog version 1.02, 23.03.2020, Sven-Kristjan Bormann
+for sgpv version 1.03
+
+To install in User Statistics menu via Stata commands:
+  
+  . window menu append item "stUserStatistics" "SGPV (Main Command) (&sgpv)" "db sgpv"
+
+  . window menu refresh
+
+To permanently install, place the commands in your -profile.do- file.
+
+
+*/
+
+VERSION 12.0
+POSITION . . 420 400
+INCLUDE _std_large
+//INCLUDE _ht320
+//INCLUDE header
+OK ok1,      label("OK")
+CANCEL can1, label("Cancel")
+SUBMIT sub1, label("Submit") 
+HELP hlp1,   view("help sgpv")  
+RESET res1
+COPY copy1
+
+
+LIST nullweights_list
+BEGIN
+	Point
+	Uniform
+	TruncNormal
+END
+
+LIST altweights_list
+BEGIN
+	Uniform
+	TruncNormal
+END
+
+LIST bonus_values
+BEGIN
+	none // a filler option introduced to have a default option for the dropdownlist
+	deltagap
+	fdrisk
+	all
+END
+
+LIST bonus_list
+BEGIN
+	None
+	Delta-Gap
+	False discovery risk
+	Both
+END
+
+
+LIST bonus_action
+BEGIN
+	script fdrisk_off
+	script fdrisk_off
+	script fdrisk_on
+	script fdrisk_on	 
+	  
+
+END
+
+LIST inttype_list
+BEGIN
+	confidence
+	likelihood
+END
+
+
+DIALOG main, label("sgpv 1.03 - Second Generation P-Values") tabtitle("Main")
+BEGIN
+
+	GROUPBOX gp_calcfor 		5 	5 		410 	110, label("Calculate SGPVs for:")
+	RADIO 	r1 				_lft	20		50 		., first label("Replay") onclickon(script replay_on) ///
+													tooltip("Replay the previous estimation command and calculate the SGPVs and bonus statistics for it")
+	RADIO 	r2 				+70		@ 	 	150 	., 	middle label("Stored Estimate") onclickon(script estimate_on) ///
+														tooltip("Calculate SGPVs for a previously stored estimate.")
+	COMBOBOX cb_estimate 	80	 	_ss	 	150		., dropdown content(estimates) option(estimate)
+
+	RADIO 	r3 				+180 	20	 	@ 		., middle label("Matrix") onclickon(script matrix_on)
+	COMBOBOX cb_matrix	 	@ 		_ss 	150	 	., dropdown content(matrix) option(matrix) ///
+														tooltip("The selected needs to have the same layout as the matrix r(table) which is returned by Stata estimation commands. See the help file for more information.")
+	RADIO 	r4  			10 		_ls 	150		 ., last label("Estimation command") onclickon(script cmd_on) ///
+														tooltip("Enter the estimation command for which you want to calculate the SGPVs and bonus statistcs.")
+	EDIT ed_cmd 			@ 		_ss 	400 	., label(resource LBL_STATA_COMMAND_TO_RUN) 
+	
+	CHECKBOX ck_coefficient 10  	_ls 	400 	., label(resource ESTIMATES_TABLE_OPT_CK_KEEP) ///
+														clickon(main.vl_coefficient.enable) clickoff(main.vl_coefficient.disable)
+	VARLIST vl_coefficient 	@ 		_ss 	@ 		., option(coefficient) numeric ///
+														tooltip("The variable name needs to be exactly the same as returned by estimation output in the matrix r(table). If you did not use factor-variable notation, then the names are identical to the variable names. Otherwise you have to use the factor-variable notation e.g. 1.foreign if you estimated 'reg price mpg i.foreign'.")
+	TEXT tx_coefficient 	@ 		_ss		@ 		., label(resource ESTIMATES_TABLE_OPT_TX_KEEP)
+	TEXT tx_coefficient2 	@ 		_vss 	@ 		., label(resource ESTIMATES_TABLE_OPT_TX_KEEP2)
+	//TEXT tx_coefficient3	@		_vss	@		., label("The variable name needs to be exactly the same as returned by estimation output in the matrix r(table). If you did not use factor-variable notation, then the names are identical to the variable names.  For example: 1.foreign ")
+	
+	GROUPBOX gb_null 		5 		_ls 	190 	80, label("Null-Hypothesis Interval")
+	TEXT tx_nulllo 			15 		_ss 	70 		., label("Lower Bound") 
+	EDIT ed_nulllo 			@ 		_ss		 60 	., option(nulllo) default(0) numonly tooltip("The default value 0 is just meant to be used for an easier beginning when starting to use SGPVs. Please change this value to something more reasonable. Using this default value will always result in having SGPVs of value 0 or 0.5!")
+	
+	TEXT tx_nullhi 			+100 	-20 	70 		., label("Upper Bound") 
+	EDIT ed_nullhi 			@ 		_ss 	60 		., option(nullhi) default(0) numonly tooltip("The default value 0 is just meant to be used for an easier beginning when starting to use SGPVs. Please change this value to something more reasonable. Using this default value will always result in having SGPVs of value 0 or 0.5!")
+	
+
+END
+
+DIALOG display ,tabtitle("Display options")
+BEGIN
+
+	CHECKBOX ck_quiet 		10 		_lft 	100 	., label("Quietly") option(quiet) tooltip("Do not display estimation results.")
+	CHECKBOX ck_nonull		120		_lft    200		., label("No 0 Point Null-Hypothesis warnings") option(nonullwarnings) tooltip("Deactive the warning messages shown when using the default point 0 null-hypothesis.")
+	
+	TEXT tx_matlist 		10 		_ls 	200 	., label("Further results display options")
+	EDIT ed_matlist 		@ 		_ss 	320 	., option(matlistopt)
+	BUTTON bu_matlist 		+330	@ 		60 		., label("Help") onpush("view help matlist") 
+			
+	TEXT tx_bonus 		10 		_ss 	150 	., label("Bonus Statistics:")
+	COMBOBOX cb_bonus 	10 		_ss 	180 	., dropdownlist content(bonus_list) values(bonus_values) option(bonus) default(none)  ///
+														tooltip(Display and calculate the bonus statistics delta-gap and fdr/fcr. If `"None"' is selected then no bonus statistcs are calculated and displayed.) ///
+														onselchangelist(bonus_action) 
+	TEXT     tx_format    	_lft    +35     _iwd    .,   label(resource LBL_FORMAT) 
+	EDIT     ed_format    	@       _ss     320   .,    label(resource LBL_FORMAT) option(format) default(%5.4f) ///
+													 tooltip("specifies the format for displaying the individual elements of the result matrix.   This option is NOT identical to the same named option of {cmd:matlist}, but works independently of it. Setting the format option via matlistopt() overrides the setting here and also changes the format of the column names.")
+	BUTTON   bu_format    340  @       60      .,    label(resource LBL_BU_CREATE) onpush(script showFormatDialog) tooltip(resource LBL_CREATE_DISPLAY_FORMAT)
+
+END
+
+DIALOG fdrisk, tabtitle("Fdrisk options")
+BEGIN
+	TEXT tx_nullspace      10    10    200    ., label("Null hypothesis parameter space:")
+	EXP ex_nullspace       @    _ss    400    ., option(nullspace) error(Nullspace) label("Expression") tooltip("Support of the null probability distribution.")
+	
+	TEXT tx_nullweights     10    _ls    150    ., label("Null hypothesis distribution:")
+	COMBOBOX cb_nullweights @    _ss     100    ., dropdownlist content(nullweights_list) option(nullweights) error(Nullweights) default(Point) ///
+													tooltip("The probability distribution for the null parameter space.")
+	
+	TEXT tx_altspace     	10   _ls      200    ., label("Alternative hypothesis parameter space:")
+	EXP ex_altspace        	@   _ss      400    ., option(altspace) error(Altspace) label("Expression") tooltip("Support for the alternative probability distribution")
+	
+	TEXT tx_altweights      @   _ls      200    ., label("Alternative hypothesis distribution:")
+	COMBOBOX cb_altweights  @   _ss      100    ., dropdownlist content(altweights_list) option(altweights) error(Altweights) default(Uniform) ///
+												tooltip("Probability distribution for the alternative parameter space")
+	
+	TEXT tx_inttpye       	@  _xxls      @    ., label("Interval type:")
+	COMBOBOX cb_inttype     @  _ss      @    ., dropdownlist content(inttype_list) option(inttype) error(Interval type) default(confidence)
+	
+	TEXT tx_intlevel 		 @  _ls      @    ., label("Interval level:")
+	EDIT ed_intlevel         @  _ss      @    ., option(intlevel) error(Interval level) default(0.05)
+	
+	TEXT tx_pi0           +150  -70     120   ., label("Prior probability of H0:")
+	EDIT ed_pi0              @  _ss      50   ., option(pi0) default(0.5) numonly tooltip("This value can be only between 0 and 1 (exclusive).")
+
+	
+END
+
+//Copied from format.dlg
+SCRIPT showFormatDialog 
+BEGIN
+        create CHILD format_chooser
+        format_chooser.setExitString formatString
+        format_chooser.setExitAction "main.ed_format.setvalue class formatString.value"
+END
+
+
+SCRIPT replay_on
+BEGIN
+	main.cb_estimate.disable
+	main.cb_matrix.disable
+	main.ed_cmd.disable
+END
+
+SCRIPT estimate_on
+BEGIN
+	main.cb_estimate.enable
+	main.cb_matrix.disable
+	main.ed_cmd.disable
+END
+
+SCRIPT matrix_on
+BEGIN
+	main.cb_estimate.disable
+	main.cb_matrix.enable
+	main.ed_cmd.disable
+END
+
+SCRIPT cmd_on
+BEGIN
+	main.cb_estimate.disable
+	main.cb_matrix.disable
+	main.ed_cmd.enable
+END
+
+
+//Deactive display of fdrisk options if nobonus is set to all or fdrisk 
+SCRIPT fdrisk_off
+BEGIN
+	fdrisk.ex_nullspace.disable
+	fdrisk.ex_altspace.disable
+	fdrisk.cb_altweights.disable
+	fdrisk.cb_nullweights.disable
+	fdrisk.cb_inttype.disable
+	fdrisk.ed_intlevel.disable
+	fdrisk.ed_pi0.disable
+END
+
+SCRIPT fdrisk_on
+BEGIN
+	fdrisk.ex_nullspace.enable
+	fdrisk.ex_altspace.enable
+	fdrisk.cb_altweights.enable
+	fdrisk.cb_nullweights.enable
+	fdrisk.cb_inttype.enable
+	fdrisk.ed_intlevel.enable
+	fdrisk.ed_pi0.enable
+END
+
+
+PROGRAM sgpv_options
+BEGIN
+	put "sgpv "
+	
+	beginoptions
+		
+		optionarg main.cb_matrix
+		optionarg main.cb_estimate
+		optionarg main.vl_coefficient
+		optionarg /hidedefault main.ed_nullhi
+		optionarg /hidedefault main.ed_nulllo
+		
+		option display.ck_quiet
+		option display.ck_nonull
+		
+		optionarg display.ed_matlist
+		optionarg /hidedefault display.cb_bonus
+		optionarg /hidedefault display.ed_format
+		
+		optionarg fdrisk.ex_nullspace
+		optionarg /hidedefault fdrisk.cb_nullweights 
+		optionarg fdrisk.ex_altspace
+		optionarg /hidedefault fdrisk.cb_altweights 
+		optionarg /hidedefault fdrisk.cb_inttype 
+		optionarg /hidedefault fdrisk.ed_intlevel
+		optionarg /hidedefault fdrisk.ed_pi0
+	endoptions
+END
+
+PROGRAM command // inspired by the structure use in bootstrap.dlg
+BEGIN
+	put /program sgpv_options
+	
+	if main.ed_cmd.isenabled(){
+		put " " ": "
+		put main.ed_cmd
+	} 
+END
+

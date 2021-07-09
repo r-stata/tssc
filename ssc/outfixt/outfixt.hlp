@@ -1,0 +1,65 @@
+{smcl}
+{* 9dec2008}{...}
+{hline}
+help for {hi:outfixt}
+{hline}
+
+{title:Outputting formatted data in fixed format}
+
+{p 4 12 2}
+{cmd:outfixt}
+{varlist} {ifin} {help using} {it:filename},  {cmdab:c:ols(}{help numlist}{cmd:)} [ {cmdab:f:ormat} {cmdab:flist(}{it:string}{cmd:)} {cmd:dct(}{it:filename} [, replace]{cmd:)}]
+
+{title:Description}
+
+{p 4 4 2}{cmd:outfixt} lists {varlist} in {it:filename}. {p_end}
+
+{title:Remarks}
+
+{p 4 4 2}{cmd:outfixt} writes variables to a text file in fixed format, at specific column numbers.  {p_end}
+
+
+{title:Options} 
+
+{p 4 8 2}{cmdab:c:ols(}{help numlist}{cmd:)} is a required option specifying the columns in which 
+    the values for each variable should start. {cmd:outfixt} checks only that 
+    the numbers in numlist are ascending integers. It is the user's
+    responsibility to check that the column specification provides enough 
+    space for data to be shown properly. {p_end}
+
+{p 4 8 2}{cmdab:f:ormat} specifies that the format of each variable should be used in 
+    listing. The format may be used to control number of decimal places 
+    shown and right- or left-justification. See {help format}. {p_end}
+
+{p 4 8 2}{cmdab:flist(}{it:list}{cmd:)} specifies a list of formats for each variable. See {help format}. {p_end}
+
+{p 4 8 2}{cmdab:dct(}{it:filename}{cmd:)} requests that a data dictionary be written to {it:filename}. {p_end}
+
+{title:Example} 
+
+{p 4 8 2}{stata "sysuse auto, clear":sysuse auto, clear}{p_end}
+{p 4 8 2}{stata "outfixt price weight mpg using auto.txt, cols(1 11 21)":outfixt price weight mpg using auto.txt, cols(1 11 21)}{p_end}
+
+
+{title:Acknowledgement} 
+
+{p 4 8 2}{cmd:outfixt} is a modification of {cmd:outfix2} (by Nick Cox) which takes ideas from a program {cmd:outfix} (by Gero 
+	Lipsmeier), both of which are on SSC. 	 {p_end}
+
+
+{title:Author} 
+
+{p 4 4 2}
+Austin Nichols{break}
+austinnichols@gmail.com
+
+{title:Also see:} 
+
+{p 1 14 2}Manual: {hi:[R] outfile}{p_end}
+
+{p 1 14 2}
+Online:  help for {help outfile}; {help outfix2} (if installed),
+{help outfix} (if installed){p_end}
+
+
+

@@ -1,0 +1,384 @@
+{smcl}
+{* April 15, 2008 @ 21:51:02}{...}
+{cmd:help metandi} {right: (Roger Harbord)}
+{right:also see:  {help metandi postestimation}}
+{hline}
+
+{title:Title}
+
+{hi:metandi} {hline 2} Meta-analysis of diagnostic accuracy
+
+
+{title:Syntax}
+
+{p 8 17 2}
+{cmd:metandi}
+{it: tp fp fn tn}
+[{it:{help if}}]
+[{it:{help in}}]
+[{cmd:,}
+{cmdab:p:lot}
+{cmdab:g:llamm}
+{cmd:ip(g|m)}
+{cmdab:ni:p(}{it:#}{cmd:)}
+{cmdab:nob:ivariate}
+{cmdab:noh:sroc}
+{cmdab:nos:ummarypt}
+{cmdab:d:etail}
+{cmdab:l:evel(}{it:#}{cmd:)}
+{cmd:allc}
+{cmdab:tr:ace}
+{cmdab:nolo:g}
+{cmdab:do:ts}]
+
+{p 4 6 2}
+{cmd:by} may be used with {cmd:metandi}; see {helpb by}.{break}
+
+{p 4 4 2}
+See {help metandi postestimation} for features available after estimation,
+in particular the {cmd: predict} command.
+{helpb metandiplot} graphs the results from {cmd:metandi}.
+
+{title:Contents}
+
+{p 2 4 2}{help metandi##s_description:Description} -
+{help metandi##s_options:Options} -
+{help metandi##s_remarks:Remarks} -
+{help metandi##s_examples:Examples} -
+{help metandi##s_references:References} -
+{help metandi##s_acknowledgements:Acknowledgements} -
+{help metandi##s_author:Author} -
+{help metandi##s_citation:Citation of metandi} -
+{help metandi##s_also_see:Also see}
+
+
+{marker s_description}{title:Description}
+
+{p 4 4 2}
+{cmd:metandi} performs meta-analysis of diagnostic test accuracy studies
+in which both the index test under study and the reference test (gold standard)
+are dichotomous.
+It takes as input four variables {it:tp fp fn tn} giving the number of
+true positives, false positives, false negatives and true negatives
+within each study.
+It fits a two-level mixed logistic regression model,
+with independent binomial distributions
+for the true positives and true negatives
+conditional on the sensitivity and specificity in each study,
+and a bivariate normal model
+for the {help f_logit:logit} transforms of sensitivity and specificity
+between studies.
+
+
+{p 4 4 2}
+In Stata 10 {cmd:metandi} fits the model
+using the built-in command {helpb xtmelogit} by default.
+In Stata 8 or 9 it makes use of the user-written command {helpb gllamm}, 
+which must therefore be installed.
+To ensure you have the most recent version of {cmd:gllamm},
+type {cmd: ssc install gllamm, replace}.
+
+{p 4 4 2}
+{cmd: metandi} does not allow covariates to be fitted,
+i.e. meta-{it:regression} of diagnostic accuracy is not supported.
+
+
+{marker s_options}{title:Options}
+
+{dlgtab:Plot}
+
+{p 4 8 2}
+{cmd:plot} requests a plot of the results
+on a summary receiver operating characteristic (SROC) plot.
+This is a convenience option equivalent to executing the
+{helpb metandiplot} command after {cmd:metandi}
+with the same list of variables {it: tp fp fn tn}
+(and the same {it:if} and {it:in} qualifiers if specified).
+Greater control of the plot is available
+through the options of the {cmd:metandiplot} command when issued separately.
+
+{p 4 4 2}
+The remaining options below control details of the estimation algorithm
+and reporting of results.
+Typically you will not need to specify any of them.
+However, this model can be difficult or slow to fit to certain datasets,
+in which case they may prove useful.
+
+{dlgtab:Estimation}
+
+{p 4 8 2}
+{cmd:gllamm} specifies that the model be fitted using {helpb gllamm}.
+This is the default in Stata 8 and 9
+so the option is only of use in Stata 10,
+in which the model is fitted using {helpb xtmelogit} by default.
+
+{p 4 8 2}
+{cmd:ip(g}{c |}{cmd:m)} specifies the quadrature method:
+{cmd:ip(g)}, the default, gives Cartesian product quadrature.
+{cmd:ip(m)} is only available when the model is fitted using {cmd:gllamm}.
+It gives spherical quadrature,
+which can be more efficient though its properties are less well known
+and it can sometimes cause adaptive quadrature to take longer to converge.
+See {help metandi##rhsp:Rabe-Hesketh, Skrondal & Pickles (2005)}.
+
+{p 4 8 2}
+{cmd:nip(#)} specifies the number of integration points used for
+quadrature.
+Higher values should result in greater accuracy,
+but typically at the expense of longer execution times.
+Specifying too small a value can lead to convergence problems,
+or even failure of adaptive quadrature -
+if {cmd:gllamm} reports the error "log-likelihood cannot be computed",
+try increasing {cmd:nip()}.
+For Cartesian product quadrature,
+{cmd:nip()} specifies the number of points for each of the two random effects;
+the default is {cmd:nip(5)}.
+For spherical quadrature,
+{cmd:nip()} specifies the degree {it:d} of the approximation;
+the default is {cmd:nip(9)},
+and the only values currently supported by {cmd:gllamm} are 5, 7, 9, 11 and 15.
+These defaults give approximately the same accuracy,
+as degree {it:d} for spherical quadrature
+corresponds in accuracy approximately to
+({it:d} + 1)/2 points per random effect for Cartesian product quadrature.
+({help metandi##rhs:Rabe-Hesketh & Skrondal 2005}, appendix B.)
+
+{dlgtab:Reporting}
+
+{p 4 8 2}
+{cmd:nobivariate}, {cmd:nohsroc} and {cmd:nosummarypt} suppress reporting of
+the bivariate parameter estimates,
+the HSROC parameter estimates
+or the summary point estimates respectively.
+
+{p 4 8 2}
+{cmd:detail} displays the default output of all
+{cmd:gllamm} or {cmd:xtmelogit} commands issued.
+If the model is fitted using {cmd:gllamm},
+this includes the output of two univariate models
+used to give good starting values for the bivariate model.
+
+{p 4 8 2}
+{cmd:level(}{it:#}{cmd:)} specifies the confidence level, in percent,
+for confidence intervals of the coefficients; see help {help level}.
+
+{p 4 8 2}
+{cmd:nolog} suppresses display of the iteration log.
+
+{p 4 8 2}
+{cmd:trace} adds a display of the current parameter vector to the iteration log.
+
+
+{marker s_remarks}{title:Remarks}
+
+{dlgtab:Models}
+
+{p 4 4 2}
+Estimates are displayed for the parameters of both the bivariate model
+({help metandi##reitsma:Reitsma et al. 2005})
+and the Hierarchical Summary Receiver Operating Characteristic (HSROC) model
+({help metandi##rutter:Rutter & Gatsonis 2001}).
+In the models without covariates fitted by {cmd:metandi},
+these are different parameterisations of the same model
+({help metandi##harbord:Harbord et al. 2007},
+{help metandi##arends:Arends 2006}).
+
+{p 4 4 2}
+{cmd:metandi} fits the model using the approach 
+{help metandi##chu:Chu & Cole (2006)} refer to
+as a generalized linear mixed model approach
+to bivariate meta-analysis of sensitivity and specificity.
+As they indicate,
+in the common situation of low cell counts this may be preferable
+to the approach originally used by
+{help metandi##reitsma:Reitsma et al. (2005)}
+involving empirical logit transforms.
+This generalized linear mixed model approach
+corresponds to the "empirical Bayes" approach to fitting the HSROC model
+introduced by
+{help metandi##macaskill:Macaskill (2004)}.
+
+{dlgtab:Output}
+
+{p 4 4 2}
+In the output of {cmd:metandi},
+the bivariate parameters are denoted using E() for expectation (mean),
+Var() for variance, Corr() for correlation,
+logitSe for logit(sensitivity)
+and logitSp for logit(specificity).
+The HSROC parameters are denoted using the
+notation of {help metandi##rutter:Rutter & Gatsonis (2001)},
+giving Latin names for Greek letters
+but abbreviating {it:sigma}^2_{it:alpha} and {it:sigma}^2_{it:theta}
+to s2alpha and s2theta.
+
+{p 4 4 2}
+The correlation rather than the covariance is displayed
+for the bivariate parameterisation
+as the correlation is more interpretable
+and its confidence interval can usually be computed.
+However, the correlation is often estimated imprecisely
+and may sometimes be estimated as -1 (or +1)
+({help metandi##riley:Riley et al. 2007}).
+This corresponds to estimating s2alpha (or s2theta)
+to be very close to zero. 
+When this occurs
+the estimated standard error and confidence interval for both
+are unreliable and will often be displayed as missing values.
+
+{p 4 4 2}
+The following estimates for the summary point are also displayed:
+sensitivity (Se), specificity (Sp), diagnostic odds ratio (DOR),
+positive likelihood ratio (LR+), negative likelihood ratio (LR-),
+inverse of the negative likelihood ratio (1/LR-).
+
+{p 4 4 2}
+Confidence intervals are computed assuming asymptotic normality
+after a log transformation for variance parameters and for DOR, LR+ and LR-,
+an {help atanh} (Fisher's {it:z}) transformation for the correlation,
+and a {help f_logit:logit} transformation for proportions.
+{* (This is implemented using {help _diparm}.) }
+
+{p 4 4 2}
+The covariance between the estimates of E(logitSe) & E(logitSp)
+is displayed at the end of the output
+as this is  needed in addition to the other bivariate parameter estimates
+to construct confidence or prediction regions
+around the summary point.
+
+{dlgtab:GLLAMM}
+
+{p 4 4 2}
+For detailed information on the {cmd:gllamm} command,
+see the GLLAMM manual
+({help metandi##gllammmanual:Rabe-Hesketh, Skrondal & Pickles 2004})
+and {help metandi##rhs:Rabe-Hesketh & Skrondal (2005)}.
+
+
+{marker s_examples}{title:Examples}
+
+{p 4 8 2}{cmd:. metandi tp fp fn tn}
+
+{p 4 8 2}{cmd:. metandi tp fp fn tn, plot}
+
+{p 4 8 2}{cmd:. metandi a b c d, nobivariate nohsroc plot}
+
+{p 4 8 2}{cmd:. metandi}  (Replays default output)
+
+{p 4 8 2}{cmd:. metandi a b c d if test==2, detail}
+
+
+{marker s_references}{title:References}
+
+{p 4 8 2}{marker arends}
+Arends LR (2006).
+Multivariate meta-analysis: modelling the heterogeneity.
+Doctoral Thesis,
+Erasmus University Rotterdam.
+{browse "http://hdl.handle.net/1765/7845":http://hdl.handle.net/1765/7845}
+
+{p 4 8 2}{marker chu}
+Chu H, Cole SR (2006).
+Bivariate meta-analysis of sensitivity and specificity with sparse data:
+a generalized linear mixed model approach.
+Journal of Clinical Epidemiology 59:1331-1332.
+{browse "http://dx.doi.org/10.1016/j.jclinepi.2006.06.011":doi:10.1016/j.jclinepi.2006.06.011}
+
+{p 4 8 2}{marker harbord}
+Harbord RM, Deeks JJ, Egger M, Whiting P, Sterne JA (2007).
+A unification of models for meta-analysis of diagnostic accuracy studies.
+{it:Biostatistics} 8:239-251.
+{browse "http://dx.doi.org/10.1093/biostatistics/kxl004":doi:10.1093/biostatistics/kxl004}
+
+{p 4 8 2}{marker macaskill}
+Macaskill P (2004).
+Empirical Bayes estimates generated in a hierarchical summary ROC analysis
+agreed closely with those of a full Bayesian analysis.
+Journal of Clinical Epidemiology 57:925-932.
+{browse "http://dx.doi.org/10.1016/j.jclinepi.2003.12.019":doi:10.1016/j.jclinepi.2003.12.019}
+
+{p 4 8 2}{marker rhs}
+Rabe-Hesketh S, Skrondal A (2005).
+{it:Multilevel and Longitudinal Modeling Using Stata.}
+College Station, TX: Stata Press.
+{browse "http://www.stata.com/bookstore/mlmus.html":http://www.stata.com/bookstore/mlmus.html}
+
+{p 4 8 2}{marker gllammmanual}
+Rabe-Hesketh S, Skrondal A, Pickles A (2004).
+GLLAMM Manual.
+{it:U.C. Berkeley Division of Biostatistics Working Paper Series.}
+Working Paper 160. 
+{browse "http://www.bepress.com/ucbbiostat/paper160":http://www.bepress.com/ucbbiostat/paper160} 
+
+{p 4 8 2}{marker rhsp}
+Rabe-Hesketh S, Skrondal A, Pickles A (2005).
+Maximum likelihood estimation of limited and discrete dependent variable models
+with nested random effects.
+{it:Journal of Econometrics} 128:301-323.
+{browse "http://dx.doi.org/10.1016/j.jeconom.2004.08.017":doi:10.1016/j.jeconom.2004.08.017}
+
+{p 4 8 2}{marker reitsma}
+Reitsma JB, Glas AS, Rutjes AWS, Scholten RJPM, Bossuyt PM, Zwinderman AH (2005).
+Bivariate analysis of sensitivity and specificity
+produces informative summary measures in diagnostic reviews.
+{it:Journal of Clinical Epidemiology} 58:982-990.
+{browse "http://dx.doi.org/10.1016/j.jclinepi.2005.02.022":doi:10.1016/j.jclinepi.2005.02.022}
+
+{p 4 8 2}{marker riley}
+Riley RD, Abrams KR, Sutton AJ, Lambert PC, Thompson JR (2007).
+Bivariate random-effects meta-analysis
+and the estimation of between-study correlation.
+{it:BMC Medical Research Methodology} 7:3.
+{browse "http://dx.doi.org/10.1186/1471-2288-7-3":doi:10.1186/1471-2288-7-3}
+
+{p 4 8 2}{marker rutter}
+Rutter CM, Gatsonis CA (2001).
+A hierarchical regression approach to meta-analysis of diagnostic test accuracy evaluations.
+{it:Statistics in Medicine} 20:2865-2884.
+{browse "http://dx.doi.org/10.1002/sim.942":doi:10.1002/sim.942}
+
+
+{marker s_acknowledgements}{title:Acknowledgements}
+
+{p 4 4 2}
+Joseph Coveney worked out how to fit the bivariate model
+using {cmd:gllamm} and posted the syntax on Statalist.
+I also thank him for generous and helpful email correspondence.
+{cmd:metandi} is essentially a wrapper for {cmd:gllamm}
+and I thank the authors of {cmd:gllamm} for their work,
+and Sophia-Rabe-Hesketh in particular for helpful email correspondence.
+Thanks also to Susan Mallett for pointing out a bug in a previous version.
+
+
+{marker s_author}{title:Author}
+
+{p 4 4 2}
+Roger Harbord,
+Department of Social Medicine, University of Bristol, UK.
+{browse "mailto:roger.harbord@bristol.ac.uk":roger.harbord@bristol.ac.uk}
+
+
+{marker s_citation}{title:Citation of metandi}
+{* based on that in help ivreg2}{...}
+
+{p 4 4 2}
+{cmd:metandi} is not an official Stata command.
+It is a free contribution to the research community, like a paper.
+Please cite it as such:
+
+{p 4 8 2}
+Harbord, RM (2008).
+metandi: Stata module for meta-analysis of diagnostic accuracy.
+Statistical Software Components, Boston College Department of Economics.
+Revised 15 Apr 2008.
+
+{p 4 4 2}
+{cmd:metandi} is based on the ideas and relies on the results in
+{help metandi##harbord:Harbord et al. (2006)},
+which should therefore be cited as well.
+
+
+{marker s_also_see}{title:Also see}
+
+{p 4 13 2}
+Online:  {helpb metandiplot}, {helpb xtmelogit} (in Stata 10 or above), {helpb gllamm} (if installed) {helpb metan} (if installed).

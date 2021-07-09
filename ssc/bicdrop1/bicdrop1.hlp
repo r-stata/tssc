@@ -1,0 +1,68 @@
+.-
+help for ^bicdrop1^ - 1.0 - 6 Mar 2005
+.-
+
+Estimate the probability a model is more likely without each explanatory variable
+.-
+
+    ^bicdrop1^ [^, h^ighlight^(name)^ ]
+
+Description
+-----------
+
+^bicdrop1^ is a post-estimation command that uses the Bayesian Information Criterion
+(BIC) to estimate the probability that the model would be more likely after dropping
+one of the explanatory variables.  The BIC was first proposed by Schwarz (1978) and 
+further developed by Raftery (1995).
+
+It works after the following estimation commands:
+^regress^, ^logistic^, ^logit^, ^ologit^, ^oprobit^, ^mlogit^, ^poisson^, ^nbreg^. 
+
+It also reports Akaike's AIC, an earlier measure of model likelihood, and BIC' (BIC 
+prime), an alternative measure proposed by Raftery for model comparison.
+
+The command drops each explanatory variable from the model and reports the AIC, BIC 
+and BIC' associated with the resulting nested model and uses the differences between 
+the BIC for the reduced model and the full (original) model to calculate a 
+probability that the model is less likely if that explanatory (or independent) 
+variable is removed.
+
+Note that the BIC difference is not a traditional hypothesis test, but a comparison 
+between the likelihood of two models: the original model and the model without one 
+of the variables.  Nevertheless, the BIC difference is a more rigourous test of 
+whether the "true" model (i.e. the most likely model, given the data and the 
+likelihood form) contains the variable in question, especially where the traditional 
+significance tests are weak: where N is large; or where there are a lot of 
+explanatory variables (where k is large).
+
+Acknowledgements
+----------------
+This program was based on the approach taken by the command lrdrop1 (developed by 
+Z. Wang)  and was suggested by Richard Williams of the University of Notre Dame.  
+The author is grateful for assistance and encouragement from Richard Williams of 
+the University of Notre Dame in the testing of this routine.
+
+Options
+-------
+  ^h^ighlight(^"colour"^) highlights variables which are likely to be part of the model.
+      "colour" can be any of "^w^hite" "^g^reen" "^y^ellow" "^r^ed" or "^s^pecial"
+
+Examples
+--------
+ . ^regress cbecs09 cprcs03 cprcs05 ^
+ . ^bicdrop1^
+
+
+Author: Paul Millar
+        www.ucalgary.ca/~pemillar/stata.htm
+        pemillar@@ucalgary.ca
+         
+See also:
+---------
+Online:     help for @lrdrop1@, @fitstat@ (if installed)
+
+References:  Raftery, Adrian (1995) Bayesian Model Selection in Social Research
+                                    Sociological Methodology, Vol. 25, pp. 111-163. 
+	     Schwarz, Gideon (1978) Estimating the Dimension of a Model
+                                    The Annals of Statistics vol. 6, pp.461-64.
+

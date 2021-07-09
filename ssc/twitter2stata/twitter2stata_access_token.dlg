@@ -1,0 +1,51 @@
+/*
+  twitter_setk.dlg
+
+*!  VERSION 1.0.0  19jul2017
+*/
+
+VERSION 15.0
+
+INCLUDE _std_medium
+INCLUDE header
+
+RESET res1
+HELP hlp1, view("help twitter2stata")
+
+DIALOG main, title("twitter2stata - Set Twitter consumer and access settings")
+BEGIN
+  TEXT	tx_consumer_key		_lft	_top	_iwd	.,		///
+	label("Consumer key:")
+  EDIT	ed_consumer_key		@	_ss	@	.,		///
+	error("Consumer key")
+  TEXT	tx_consumer_secret	@	_ls	@	.,		///
+	label("Consumer secret:")
+  EDIT  ed_consumer_secret	@	_ss	@	.,		///
+	label("Consumer secret")
+
+  TEXT	tx_access_token		@	_ls	@	.,		///
+	label("Access token:")
+  EDIT	ed_access_token		@	_ss	@	.,		///
+	error("Access token")
+  TEXT	tx_access_secret	@	_ls	@	.,		///
+	label("Access token secret:")
+  EDIT ed_access_secret		@	_ss	@	.,		///
+	label("Access token secret")
+END
+
+PROGRAM command
+BEGIN
+	require main.ed_consumer_key
+	require main.ed_consumer_secret
+	require main.ed_access_token
+	require main.ed_access_secret
+
+	put "twitter2stata setaccess "
+	put main.ed_consumer_key
+	put " "
+	put main.ed_consumer_secret
+	put " "
+	put main.ed_access_token
+	put " "
+	put main.ed_access_secret
+END

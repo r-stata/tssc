@@ -1,0 +1,64 @@
+TITLE
+ 'HUMMELS': module to compute intensive and extensive trade margins
+
+DESCRIPTION/AUTHOR(S)
+Hummels calculates intensive and extensive trade margins as described in Hummels & Klenow(2005).The module treats imports from all other trading partners (excluding `j') as total imports from reference economy `k' and requires complete sector-level trade dataset for country `m'.
+
+KW: Extensive margin
+KW: Intensive margin
+KW: Trade Decomposition
+
+Requires: Stata version 9
+Distribution-Date: 20130923
+      
+Author: 
+Muhammad Rashid Ansari, INSEAD Business School
+Support: email rashid.ansari@insead.edu
+
+*Version September 2013
+--------------------
+basic syntax:
+hummels var, j(exporter) m(importer) i(trade_varieties) by(time) [outfile, replace]
+
+Description:
+Hummels computes intensive and extensive trade margins as described in Hummels & Klenow(2005). Extensive margin measures significance of set of observed product categories(Ijm) in which country `j' has positive exports to `m'. Intensive margin compares exports of country `j' relative to exports of country `k' to `m' for set of observed categories (Ijm) in which country `j' has positive exports to `m'
+
+EMjm= Summation {Ijm.(Pkmi*Xkmi)}/Summation {I.(Pkmi*Xkmi)
+
+IMjm= Summation{Ijm.(Pjmi*Xjmi)}/Summation {Ijm.(Pkmi*Xkmi)
+
+
+where,
+EMjm=Extensive margin
+IMjm=Intensive margin
+
+P=Price of exports
+X=Quantity of exports
+k=Reference economy (rest of the world)
+j=Exporter
+m=Importer
+i=Categories traded(trade_varieties)
+Ijm= Set of observed categories in which country 'j' has positive exports to 'm'
+
+Note: The module treats imports from all other trading partners (excluding `j') as total imports from reference economy `k' and therefore requires complete sector-level trade dataset for country `m'.
+
+Options
+-------
+by(varlist): allows groups defined by `varlist' e.g. (year)
+
+outfile: export output in .csv table format 
+
+Examples:
+----------
+hummels x, j(exporter) m(importer) i(trade_varieties)
+hummels x, j(exporter) m(importer) i(trade_varieties) by(year) outfile
+hummels x, j(exporter) m(importer) i(trade_varieties) by(year) outfile replace
+
+Author:
+Muhammad Rashid Ansari						
+INSEAD Business School						
+1 Ayer Rajah Avenue, Singapore 138676						
+rashid.ansari@insead.edu
+
+Reference: 
+Hummels, David, and Peter J. Klenow. 2005. "The Variety and Quality of a Nation's Exports." American Economic Review, 95(3): 704-723.

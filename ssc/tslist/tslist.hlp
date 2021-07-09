@@ -1,0 +1,54 @@
+{smcl}
+{* 30jul2004}{...}
+{hline}
+help for {hi:tslist} 
+{hline}
+
+{title:{cmd:Time-series list command}}
+
+{p 8 14}{cmdab:tslist} [{it:varlist}] [{cmd:if} {it:exp}]
+[{cmd:in} {it:range}] [{cmd:,} 
+notimevar {it:list_options}] 
+
+{p 8 14}{cmdab:tslist} is for use with time-series data. You must {cmd:tsset} your data before using these routines,
+and in addition set a time-series {cmd:format} for the time variable. 
+
+{title:Description}
+
+{p}{cmd:tslist} is a wrapper for {cmd:list} that will automatically suppress the observation number
+and place separator lines according to the frequency of the data: every four lines for quarterly data, 
+every twelve lines for monthly, every ten lines for annual, etc. The time variable (that established
+with {cmd:tsset} will be included as the first variable.
+
+{title:Options}
+
+{p}Options available to {cmd:list} may be specified.{p_end}
+
+{p}The {cmd:notimevar} option specifies that the time variable (that established by {cmd:tsset} is not to be included.{p_end}
+
+{title:Examples}
+
+{p 8 12}{stata "webuse wpi1" :. webuse wpi1}{p_end}
+{p 8 12}{stata "tslist wpi ln_wpi" :. tslist wpi ln_wpi}{p_end}
+
+{p 8 12}{stata "webuse air2" :. webuse air2}{p_end}
+{p 8 12}{stata "format t %tm" :. format t %tm}{p_end}
+{p 8 12}{stata "tslist  air " :. tslist  air }{p_end}
+
+{p 8 12}{stata "webuse klein" :. webuse klein}{p_end}
+{p 8 12}{stata "tsset yr" :. tsset yr}{p_end}
+{p 8 12}{stata "format yr %ty" :. format yr %ty}{p_end}
+{p 8 12}{stata "tslist  consump wagepriv" :. tslist  consump wagepriv}{p_end}
+
+{title:Authors}
+
+{p 0 4} Christopher F. Baum (baum@bc.edu), Boston College{p_end}
+{p 0 4} Michael S. Hanson (mshanson@wesleyan.edu), Wesleyan University{p_end}
+
+
+{title:Acknowledgements}
+
+{p 0 4} We received useful suggestions from Nicholas J. Cox. 
+
+{title:Also see}
+help for {help list}, {help format} 

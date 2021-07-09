@@ -1,0 +1,154 @@
+{smcl}
+{* 2September2006}{...}
+{hline}
+help for {hi:sumdist}{right:Stephen P. Jenkins (September 2006)}
+{hline}
+
+
+{title:Distribution summary statistics, by quantile group}
+
+{p 8 15 2}
+{cmd:sumdist} {it:varname}  [{cmd:if} {it:exp}]
+ [{cmd:in} {it:range}] [{cmd:,} {cmdab:n:gp:(}{it:#}{cmd:)}
+ {cmdab:qgp:(}{it:newvarname}{cmd:)} {cmdab:pv:ar:(}{it:newvarname}{cmd:)} 
+ {cmdab:lv:ar:(}{it:newvarname}{cmd:)} {cmdab:glv:ar:(}{it:newvarname}{cmd:)} ]
+
+{p 4 4 2} {cmd:fweight}s and {cmd:aweights} are allowed; see {help weights}.
+
+{p 4 4 2} {cmd:by} may be used with {cmd:sumdist}; see {help by}. 
+
+
+{title:Description}
+
+{p 4 8 2}{cmd:sumdist} estimates distributional summary statistics commonly used
+by income distribution analysts, complementing those available via
+{cmd:pctile}, {cmd:xtile}, and {cmd:summarize, detail}. Calculations are based on
+all non-missing values of {it:varname}. Use {cmd:if} if you wish to exclude values
+less than or equal to zero.
+
+{p 4 8 2}For variable x and distribution function F(x), the statistics are:
+
+{p 4 8 4}(1) quantiles k = 1,2,...,K-1, for K = # quantile groups; 
+
+{p 4 8 4}(2) the quantiles expressed as a percentage of median(x);
+
+{p 4 8 4}(3) the quantile group shares of x in total x (expressed as a %); 
+
+{p 4 8 4}(4) the cumulative quantile group shares of total x (with 
+    cumulation in ascending order of x), i.e. the Lorenz ordinates 
+    L(p_k) at each p_k = F(x_k) for quantile points x_k (expressed as a %); 
+
+{p 4 8 4}(5) the generalised Lorenz ordinates at each p_k = F(x_k), i.e.
+     GL(p_k) = mean(x)*L(p_k).
+
+{p 4 4 2}
+Bootstrapped standard errors for the estimates can be derived using 
+{help bootstrap}. Standard errors derived using linearization 
+methods can be calculated for Lorenz and generalized ordinates
+using {cmd:svylorenz}.
+
+
+{title:Options}
+
+{p 4 8 2}{cmd:ngp(}{it:#}{cmd:)} specifies the number of quantile groups,
+and must be an integer between 1 and 100. The default is 10.
+
+{p 4 8 2}{cmd:qgp(}{it:newvarname}{cmd:)} creates a new variable in the 
+current data set that identifies the quantile group membership of each 
+observation. If this option (or any of the three below) is combined with 
+{cmd:by}, the variables refer to the last bygroup only.
+
+{p 4 8 2}The following options may be used to graph Lorenz curves and 
+generalized Lorenz curves (see also {cmd:glcurve} which is a more general
+program for this task):
+
+{p 4 8 2}{cmd:pvar(}{it:newvarname}{cmd:)} creates a new variable in the 
+current data set containing the values of p_k = F(x_k) corresponding
+to each k, plus 0. 
+
+{p 4 8 2}{cmd:lvar(}{it:newvarname}{cmd:)} creates a new variable in the 
+current data set containing the cumulative shares L(p_k), plus L(0) = 0.
+
+{p 4 8 2}{cmd:glvar(}{it:newvarname}{cmd:)} creates a new variable in the 
+current data set containing the generalized Lorenz ordinates GL(p_k), 
+plus GL(0) = 0.
+
+
+{title:Examples}
+
+{p 4 8 2}{inp:. sumdist x [aw = wgtvar]}
+
+{p 4 8 2}{inp:. sumdist x [aw = wgtvar], ngp(20)}
+
+{p 4 8 2}{inp:. sumdist x [aw = wgtvar], ngp(5) qgp(quintilegroup) }
+
+{p 4 8 2}{inp:. bysort famtype: sumdist x [aw = wgtvar]}
+
+{p 4 8 2}{inp:. // bootstrapped standard errors for share of poorest fifth (Stata version 8)}
+
+{p 4 8 2}{inp:. preserve}
+
+{p 4 8 2}{inp:. keep if x > 0 & x < .}
+
+{p 4 8 2}{inp:. version 8: bootstrap "sumdist x, ngp(5)" cush1 = r(cush1), reps(100)}
+
+{p 4 8 2}{inp:. restore}
+
+{p 4 8 2}{inp:. // bootstrapped standard errors for share of poorest fifth (Stata version 9)}
+
+{p 4 8 2}{inp:. preserve}
+
+{p 4 8 2}{inp:. keep if x > 0 & x < .}
+
+{p 4 8 2}{inp:. bootstrap cush1 = r(cush1), reps(100): sumdist x, ngp(5) }
+
+{p 4 8 2}{inp:. restore}
+
+{p 4 8 2}{inp:. // draw basic Lorenz curve}
+
+{p 4 8 2}{inp:. sumdist x, ngp(20) pvar(p) lvar(l) }
+
+{p 4 8 2}{inp:. twoway (connect p p) (connect l p, sort) }
+
+
+{title:Saved Results}
+
+{p 4 17 2}Scalars: {p_end}
+
+{p 4 17 2}{cmd:r(mean)}{space 11}mean of {it:varname} {p_end}
+{p 4 17 2}{cmd:r(median)}{space 9}median of {it:varname} {p_end}
+{p 4 17 2}{cmd:r(N)}{space 14}number of observations {p_end}
+{p 4 17 2}{cmd:r(sum_w)}{space 10}sum of weights {p_end}
+{p 4 17 2}{cmd:r(ngps)}{space 11}number of quantile groups {p_end}
+{p 4 17 2}{cmd:r(q{it:k})}{space 13}quantile {it:k}, where {it:k} = 1, ..., {it:ngps}{c -}1 {p_end}
+{p 4 17 2}{cmd:r(sh{it:k})}{space 12}share of {it:varname} held by each quantile group {it:k} {p_end}
+{p 4 17 2}{cmd:r(cush{it:k})}{space 10}cumulative share of {it:varname} held by each quantile group {it:k} {p_end}
+{p 4 17 2}{cmd:r(gl{it:k})}{space 12}generalized Lorenz ordinate of {it:varname} held by each quantile group {it:k} {p_end}
+
+{p 4 17 2}Matrices: {p_end}
+
+{p 4 17 2}{cmd:r(quantiles)}{space 6}1 x ({it:ngps}{c -}1) vector of quantiles {p_end}
+{p 4 17 2}{cmd:r(relquantiles)}{space 3}1 x ({it:ngps}{c -}1) vector of quantiles relative to median{p_end}
+{p 4 17 2}{cmd:r(shares)}{space 9}1 x ({it:ngps}) vector of shares {p_end}
+
+
+{title:Author}
+
+{p 4 4 2}
+Stephen P. Jenkins, Institute for Social and Economic Research, University of Essex. Email: stephenj@essex.ac.uk
+
+
+{title:References}
+
+Cowell, F.A. 1995. {it:Measuring Inequality}, second edition.
+Hemel Hempstead: Prentice-Hall/Harvester-Wheatsheaf.
+
+
+{title:Also see}
+
+{p 4 13 2}
+{help xtile} {help pctile} {help summarize} 
+
+{p 4 13 2}
+{cmd:svylorenz}, {cmd:glcurve}, if installed.
+

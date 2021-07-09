@@ -1,0 +1,114 @@
+/*
+ pem
+*! VERSION 2.0 15/04/2015
+*/
+VERSION 11.0
+INCLUDE _std_large
+DEFINE _dlght 420
+INCLUDE header
+HELP hlp1, view("help pem")
+RESET res1
+
+DIALOG main, label("pem - Partial EquiLibrium Model (PEM)") ///
+	tabtitle("Main")
+BEGIN
+
+ DEFINE _x _xsetbu
+ DEFINE _y _top
+ INCLUDE _bu_tsset
+  
+ TEXT tx_pd	_lft	+30	160	., ///
+	label("Domestic Price (Pd)")
+ TEXT tx_pw	190	@	160	., ///
+	label("World Price (Pw)")
+ VARNAME vn_pd  _lft	 _ss	160 .,	 ///
+	label("Domestic Price (Pd)")
+ VARNAME vn_pw  190	 @	160 ., ///
+	label("World Price (Pw)")
+
+ TEXT tx_qp	_lft	_ls	160	., ///
+	label("Production Quantity (QP)")
+ TEXT tx_qc	190	@	160	., ///
+	label("Consumption Quantity (QC)")
+ VARNAME vn_qp  _lft	 _ss	160 .,	 ///
+	label("Production Quantity (QP)") ///
+	option(qp)
+ VARNAME vn_qc  190	 @	160 ., ///
+	label("Consumption Quantity (QC)") ///
+	option(qc)
+
+ TEXT tx_es	_lft	_ls	160	., ///
+	label("Supply Price Elasticity (ES)")
+ TEXT tx_ed	190	@	160	., ///
+	label("Demand Price Elasticity (ED)")
+ VARNAME vn_es  _lft	 _ss	160 .,	 ///
+	label("Supply Elasticity (ES)") ///
+	option(es)
+ VARNAME vn_ed  190	 @	160 ., ///
+	label("Demand Elasticity (ED)") ///
+	option(ed)
+
+  GROUPBOX gb_estimator	_lft	_ls	_ibwd	_ht12 ,	///
+	label("PEM Model")
+  RADIO rb_pem1	_ilft   _ss     _iwd	.,	///
+	option("model(expbl)")			///
+	first			 ///
+	label("expbl - Bale-Lutz (PEM) Model - Export Case")
+
+  RADIO rb_pem2   _ilft  _ss	350	., /*
+	*/ label("impbl - Bale-Lutz (PEM) Model - Import Case") /*
+	*/ option("model(impbl)")	/*
+*/
+  RADIO rb_pem3   _ilft  _ss	350	., /*
+	*/ label("expd - Export Tax : Private (Financial Price) - Intervention") /*
+	*/ option("model(expd)")	/*
+*/
+
+  RADIO rb_pem4	_ilft	_ss	350 .,	/*
+	*/ label("expw - No Export Tax : Social (Economic Price) - No Intervention") /*
+	*/ option("model(expw)")	/*
+*/
+  RADIO rb_pem5	_ilft	_ss	350 .,	/*
+	*/ label("impd - Import Tariff : Private (Financial Price) - Intervention") /*
+	*/ option("model(impd)")	/*
+*/
+  RADIO rb_pem6	_ilft	_ss	350 .,	/*
+	*/ label("impw - No Import Tariff : Social (Economic Price) - No Intervention") /*
+	*/ last				/*
+	*/ option("model(impw)")	/*
+*/
+
+ CHECKBOX ck_ptab    _lft  _xls   350  ., option("nolist") /*
+*/ label("Don't Display All Indicators") 
+
+ TEXT tx_fn	_lft	_ss	460 	.,		///
+	label("Save Partial EquiLibrium Model (PEM) Results in File (*.txt):") 
+ FILE fi_fn     @	_ss	@ 	.,		///
+	option(save)						///
+	label("Save As...")					///
+	filter("Stata dta File (*.txt)|*.csv|All (*.*)|*.*")	///
+	defext(txt)						///
+	error("Filename") save
+END
+
+INCLUDE byifin
+
+PROGRAM command
+BEGIN
+ put "pem "
+ varlist main.vn_pd main.vn_pw
+ put " " /program ifin_output
+ require main.vn_qp
+ require main.vn_qc
+ require main.vn_es
+ require main.vn_ed
+beginoptions
+ option radio(main rb_pem1 rb_pem2 rb_pem3 rb_pem4 rb_pem5 rb_pem6)
+ optionarg main.vn_qp
+ optionarg main.vn_qc
+ optionarg main.vn_es
+ optionarg main.vn_ed
+ option main.ck_ptab
+ optionarg main.fi_fn
+ endoptions
+END

@@ -1,0 +1,59 @@
+{smcl}
+{.-}
+help for {cmd:lincheck}
+{.-}
+
+{title:Check linearity of continuous covariate}
+
+{p 8 27}
+{cmd:lincheck}
+{it:full GLM command}
+
+
+{p 4 4 10}
+The continuous covariate to be checked for linearity must be first in the list of independent variables.
+
+
+{title:Description}
+
+{p 4 4 10}
+{cmd:lincheck} provides a quick-and-dirty check of whether a continuous covariate in a general linearized model (GLM) is linear in the link function.
+{cmd:lincheck} makes a new categorical variable that breaks the continuous covariate into quartiles, 
+then re-estimates the GLM using dummy variables for the quartiles, and finally provides a graph of estimated coefficients 
+plotted against the midpoints (actually: medians) of the quartiles. A linear graph supports the assumption of linearity 
+of the continuous covariate. {cmd:lincheck} works with most GLM commands such as regress, logit/logistic, probit, 
+poisson, stcox etc. and their svy-versions.
+
+
+{title:Remarks}
+
+{p 4 4 10}
+{cmd:lincheck} implements a method suggested by Hosmer & Lemeshow (Applied Logistic Regression, 2nd ed., 2000, Wiley, p.99f).
+Its reason of existence is the fact that linearity of a continuous covariate can be checked in the presence of other 
+covariates in the model. If the graph is not linear, the continuous covariate might have to enter the model linearized. 
+{cmd:fracpoly} can be used to suggest appropriate transformations. Indeed, Hosmer & Lemeshow recommend to use 
+{cmd:fracpoly} in any case, since its results might not always agree with those of {cmd:lincheck}, and the question of 
+linearity should be assessed in the light of the results of both methods.
+
+
+{title:Examples}
+
+{p 4 8}{cmd:. lincheck logit smoker age sex weight if syst_bp>120, nolog or}{p_end}
+{p 4 8}{cmd:. lincheck xi:logit smoker age sex i.race, nolog}{p_end}
+{p 4 8}{cmd:. lincheck stcox weight sex}{p_end}
+{p 4 8}{cmd:. lincheck svyprobit smoker weight age sex}{p_end}
+
+{p 6 6}The first two examples test linearity for 'age', the others test linearity for 'weight'.{p_end}
+
+
+{title:Author}
+
+{p 4 4 10}
+Alex Gamma, University Hospital of Psychiatry, Research Department, Zurich, Switzerland. Email: gamma@bli.unizh.ch
+
+
+{title:Also see}
+
+{p 4 8}
+Online:  help for {view "http://www.stata.com/stb/stb30/sg50/lintrend.hlp":lintrend}, {help fracpoly}, {help lowess}
+{p_end}

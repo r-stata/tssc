@@ -1,0 +1,107 @@
+.-
+help for ^tabchi^, ^tabchii^
+.-
+
+Two-way tables of frequencies with chi-square and residuals
+-----------------------------------------------------------
+
+    ^tabchi^ rowvar colvar [weight] [^if^ exp] [^in^ range]
+    [ ^, r^aw ^p^earson ^c^ont ^a^djust ^noo noe^ tabdisp_options]
+
+    ^tabchii^ #11 #12 [...] ^\^ #21 #22 [...] [^\^ ...]
+    [ ^, replace r^aw ^p^earson ^c^ont ^a^djust ^noo noe^ tabdisp_options]
+
+Description
+-----------
+
+^tabchi^ displays information derived from the r x c table for rowvar
+and colvar. 
+
+The display contains 
+
+   row and column identifiers, 
+   
+   (by default) observed frequencies and expected frequencies on a null
+   hypothesis of no association between the row and column variables, 
+   
+   and (if desired)
+
+        raw residuals, observed - expected, 
+    
+        Pearson residuals, (observed - expected) / sqrt(expected),
+    
+        contributions to chi-square, (observed - expected)^^2 / expected
+    
+   and  adjusted residuals, Pearson residuals divided by an estimate of their 
+        standard error.
+
+The Pearson and likelihood-ratio chi-square statistics and their
+P-values are also given.
+
+^tabchii^ displays the same information derived from the r x c table
+using the values specified; rows are separated by the backslash ^\^.
+
+
+Options
+-------
+
+^replace^ indicates that the variables listed by the ^tabchii^ command
+    are to be left as the current data in place of whatever data were
+    there.
+
+^raw^, ^pearson^, ^cont^ and ^adjust^ produce displays of raw residuals,
+    Pearson residuals, contributions to chi-square and adjusted
+    residuals respectively.
+
+^noo^, ^noe^ suppress display of observed and expected frequencies.
+    These options may be useful when the focus is on residuals. ^noo^
+    and ^noe^ without at least one of ^raw^, ^pearson^, ^cont^ and ^adjust^
+    suppress the tabular display.
+
+tabdisp_options are options of ^tabdisp^ other than ^cellvar( )^, which
+    may be used to tune the tabular display.
+
+
+Examples
+--------
+
+        . ^tabchi age library, a^
+
+        . ^tabchi age library, a noo noe^
+
+        . ^tabchii 1 28 7 \ 9 53 68 \ 28 3 21^
+
+        . ^tabchii 1 28 7 \ 9 53 68 \ 28 3 21, replace^
+
+
+Saved results
+-------------
+
+^tabchi^ and ^tabchii^ leave behind appropriate rclass results produced by 
+^tabulate^.
+
+
+Author
+------
+
+         Nicholas J. Cox, University of Durham, U.K.
+         n.j.cox@@durham.ac.uk
+
+
+Acknowledgments
+---------------
+
+         William Gould provided much help in the early development of 
+	 ^tabchi^.
+
+	 Torbjorn Messner and Eric Zbinden pointed out bugs in earlier 
+	 versions of ^tabchi^.
+
+
+Also see
+--------
+
+ Manual:  [U] 25 Immediate commands, [R] glm, [R] tabdisp, [R] tabulate
+On-line:  help for @immed@, @tabdisp@, @tabulate@ (if installed)
+    STB:  sg57 in STB-33
+

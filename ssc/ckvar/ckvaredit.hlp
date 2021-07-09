@@ -1,0 +1,286 @@
+{smcl}
+{* September 19, 2007 @ 14:24:22}{...}
+{hi:help ckvaredit}{right:dialogs: {stata ckvaredit}          }
+{right:{stata ckvaredit, stepthru}}
+{hline}
+
+{title:Title}
+
+{pstd}
+{cmd:ckvaredit} - Editing attached validation rules
+{p_end}
+
+{title:Syntax}
+{* put the syntax in what follows. Don't forget to use [ ] around optional items}
+{p 8 16 2}
+   {cmd: ckvaredit}
+   [{varlist}]
+   [, {cmdab:step:thru}]
+{p_end}
+
+{title:Description}
+
+{pstd}
+{cmd:ckvaredit} brings up a dialog box which can be used to set validation
+(or scoring) rules which are then used by {help ckvar} for data
+validation.
+This help file will describe the use of the dialog box.
+{p_end}
+
+{title:Options}
+
+{marker stepthru}{...}
+{phang}
+{opt stepthru} allows stepping through the variables one at a time. If specified, the first variable in the {varlist} is automatically chosen at the start, and clicking the {help ckvaredit##save:save} button advances the variable to the next variable in the variable list when clicked. This can be useful for working with large datasets.
+{p_end}
+
+{title:Using the {cmd:ckvaredit} Dialog Box}
+
+{title:Overview}
+
+{pstd}
+The steps are simple:
+{p_end}
+{phang}
+1. {help ckvaredit##chooseVar:Choose a variable}.
+{p_end}
+{phang}
+2. {help ckvaredit##chooseChar:Choose a purpose}.{p_end}
+{phang2}
+This is typically done just once for the first variable, and typically is the default choice of Validation.
+{p_end}
+{phang}
+3. {help ckvaredit##editRule:Edit the rule}.
+{p_end}
+{phang}
+4. {help ckvaredit##markReq:Decide if missing values are errors}.
+{p_end}
+{phang}
+5. {help ckvaredit##otherVars:Include names of other variables needed for validation/scoring}.
+{p_end}
+{phang}
+6. {help ckvaredit##buttons:Pick which of the buttons at the bottom to push}.
+{p_end}
+{phang2}
+6.1. Click {hi:Save} to
+{help ckvaredit##save:Save your changes and keep working}, or
+{p_end}
+{phang2}
+6.2. Click {hi:Reset} to
+{help ckvaredit##reset:Discard your changes and keep working}, or
+{p_end}
+{phang2}
+6.3. Click {hi:Done} to
+{help ckvaredit##done:Save your changes and stop}, or
+{p_end}
+{phang2}
+6.4. Click {hi:Cancel} to
+{help ckvaredit##cancel:Quit without saving any changes for this variable}
+{p_end}
+{phang}
+7. Repeat as needed. If you get frustrated, see the {help ckvaredit##notes:notes} below.
+{p_end}
+
+{title:Details}
+
+{marker chooseVar}{...}
+{title:Choosing a Variable}
+
+{pstd}
+Choose a variable from the dropdown box under {hi:Variable to Check}.
+If you specified the {helpb ckvaredit##stepthru:stepthru} option, this will already have a variable name in it, but you can select another variable if you like.
+The box will be grayed out if you have made changes in the right column which have not yet been saved.
+If you made the changes to the wrong variable, click the wide
+{help ckvaredit##reset:Reset button} extending across the dialog box near the bottom.
+{p_end}
+
+{marker chooseChar}{...}
+{title:Choosing a Purpose}
+
+{pstd}
+The two main choices are either {hi:Validation (valid)} or {hi:Scoring (score)}.
+{p_end}
+
+{pstd} 
+The default choice of {hi:Validation} will be the correct choice for validating the data, and hence will be correct most of the time.
+{p_end}
+
+{pstd}
+If you will use {cmd:ckvar} to score an instrument or test, select the {hi:Scoring} choice.
+{p_end}
+
+{pstd}
+You should rarely, if ever, need to select the {hi:Other} button and then specify your own stub.
+The only time this could be useful would be if there were multiple scoring algorithms for the same data, and you would like to include all of them in the same dataset.
+If you do choose this option, you need to read and understand how {help ckvar} uses
+{help char:characteristics}. (You can read about it {help ckchar##stubs:here}.) 
+{p_end}
+
+{marker editRule}{...}
+{title:Editing the Rule}
+
+{pstd}
+There are two types of rules: {hi:simple} and {hi:complex}.
+(Valid validation rules are described
+{help ckvaredit##validvalid:below}.)
+Most validation rules will be simple.
+
+{pmore}
+If you have a simple validation rule, enter it in the field
+provided.
+{p_end}
+
+{pmore}
+If you have a complex validation rule, click the {hi:Edit Complex Rule}
+button, and edit the rule in the window that opens up. Do {hi:not}
+edit the complex rule directly in the dialog box field, because it will {hi:not}
+get saved properly. Some other oddities occur when editing complex
+validation rules, because of switching to a Do-file editor window to do the editing:
+{p_end}
+
+{pmore2}
+A {help more} condition will appear in the results window. Do {bf:not}
+clear it. If you do, the changes you make in the do editor window will be lost.
+{p_end}
+
+{pmore2}
+When you are satisfied with the mini-do-file you have written, close the window, saving
+the changes when prompted.
+{p_end}
+
+{pmore2}
+Click the {hi:Done Editing Complex Rule} button. This will clear the
+{help more} condition, save the changes, and put a message in the
+results window. 
+{p_end}
+
+{pmore2}
+Click the {hi:Refresh Complex Rule} button to update the rule in the
+dialog box.
+{p_end}
+
+{pstd}
+If you would like more information about editing complex rules without
+using the {help doedit:do editor}, take a
+look {help docharprog##editComplexByHand:here}.
+{p_end}
+
+{marker markReq}{...}
+{title:Missing Values}
+
+{pstd}
+By default {help ckvar} considers missing values to be valid values.
+Click the {hi:Required to be non-missing} checkbox if missing values are considered errors
+for the variable you are working on.
+{p_end}
+
+{pstd}
+If you check the {hi:Required to be non-missing} checkbox, you can also enter a value which will be used in the error-marking variable for missing values.
+By default, {help ckvar} uses -1 as the value for missing values when validating data and +1 as the value for other errors to distinguish between errors of
+omission and errors of commission. If you do not want to make this distinction,
+change the {hi:Value Used to Mark Missing Values} to 1.
+{p_end}
+
+{pstd}
+If you are scoring an instrument or test rather than doing data validation, the default score for missing values is 0.
+{p_end}
+
+{marker otherVars}{...}
+{title:Noting Other Variables}
+
+{pstd}
+If you specified a complex rule which uses other variables to validate
+the current variable, be sure to enter the names of those
+variables in the {hi:Other Variables Needed for Checking} box. Filling
+this in allows {help ckdrop}, {help ckkeep}, and {help ckrename} to
+work properly in keeping the data verification from failing at a
+future time. It also helps {help ckvar} prevent odd error messages
+from cropping up.
+You do not need to enter any variables if you use a {cmd:like} syntax, because
+the helper commands for {cmd:ckvar} will track them down.
+{p_end}
+
+{marker buttons}{...}
+{title:Buttons to Push!}
+
+{marker save}{...}
+{title:Save button}
+
+{pstd}
+To save the changes and continue working, click the {hi:Save}
+button. You do not need to separately save complex rules, as they
+are saved at the time you click the {hi:Done Editing Complex Rule}
+button.
+Note that saved changes are saved changes. You cannot revert to old
+rules after committing the changes.
+{p_end}
+
+{pstd}
+If you specified the {helpb ckvaredit##stepthru:stepthru} option, clicking the {hi:Save} button will automatically choose the next variable for editing.
+In this case, the {hi:Save} button can be used as a {hi:Next Variable} button---there is no danger of destroying anything by clicking it when no changes have been made.
+{p_end}
+
+{marker reset}{...}
+{title:Reset button}
+
+{pstd}
+The {hi:Reset} button repopulates the dialog box with the current
+state of the saved rules for the given
+variable. It thus can be used to either get rid of unwanted and
+unsaved changes or to refresh the dialog box with current, saved
+rules. There is no way to revert anything which has already been saved.
+{p_end}
+
+{marker cancel}{...}
+{title:Cancel button}
+
+{pstd}
+The {hi:Cancel} button acts as one would expect: it closes the dialog
+box without saving any changes for the currently selected
+variable. Hitting the escape key has the same effect.
+{p_end}
+
+{marker done}{...}
+{title:Done button}
+
+{pstd}
+The {hi:Done} button saves the current changes, if any, and closes the
+dialog box. Unlike standard Stata dialog boxes, it does not result in
+executing a Stata command.
+{p_end}
+
+{marker notes}{...}
+{title:Notes}
+
+{pstd}
+This dialog box is {hi:not} a standard Stata dialog box, because its
+purpose is to edit information in the dataset rather than construct a
+single Stata command. It does its best to prevent careless errors by
+disabling items which it thinks should not be edited. If you really
+are stuck, hit the {help ckvaredit##reset:Reset button}. You will lose
+minor changes that you might have made, but you will also be given
+access to all the items in the dialog box again. If you run into
+problems, please let {help ckvaredit##me:me} know about them.
+{p_end}
+
+{pstd}
+The validation rules you specify using the {cmd:ckvaredit} dialog box are attached to the variables using {help char:characteristics}.
+Since this is meant to be as transparent as possible, you do not need to understand {help char:characteristics} either to use the dialog box or {help ckvar} itself.
+{p_end}
+
+INCLUDE help ckvar_rule_syntax
+
+{title:Also see}
+
+{psee}
+Online: {help ckvar}, {help ckchar}
+{p_end}
+
+{marker me}{...}
+{title:Author}
+
+{pstd}
+Bill Rising, StataCorp{break}
+email: brising@stata.com{break}
+web: {browse "http://homepage.mac.com/brising":http://homepage.mac.com/brising}
+{p_end}

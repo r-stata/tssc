@@ -1,0 +1,168 @@
+{smcl}
+{* 3nov2004}{...}
+{hline}
+help for {hi:regplot}
+{hline}
+
+{title:Plots of regress or similar fit}
+
+{p 8 17 2}{cmd:regplot} 
+[{cmd:,} 
+{cmdab:plottype(}{it:plottype}{cmd:)} 
+{cmdab:fit:opts(}{it:graph_options}{cmd:)} 
+{cmdab:sep:arate(}{it:varname}{cmd:)} 
+{it:scatter_options} 
+{cmd:plot(}{it:plot}{cmd:)}  
+] 
+
+{p 8 17 2}{cmd:regplot}
+{it:varname}
+[{cmd:,} 
+{cmdab:plottype(}{it:plottype}{cmd:)} 
+{cmdab:fit:opts(}{it:graph_options}{cmd:)} 
+{cmdab:sep:arate(}{it:varname}{cmd:)} 
+{it:scatter_options} 
+{cmd:plot(}{it:plot}{cmd:)} 
+] 
+ 
+
+{title:Description}
+
+{p 4 4 2}{cmd:regplot} plots fitted or predicted values from an immediately
+previous {cmd:regress} or similar command. By default the data for the response
+are also plotted. 
+ 
+
+{title:Remarks} 
+
+{p 4 4 2}With the first syntax, no {it:varname} is specified. {cmd:regplot}
+shows the response and predicted values on the {it:y} axis and the predictor
+named first in the {cmd:regress} or similar command on the {it:x} axis. Thus
+with this syntax the plot shown is sensitive to the order in which predictors
+are specified in the estimation command. 
+ 
+{p 4 4 2}With the second syntax, a {it:varname} is supplied, which may name any
+numeric variable. This is used as the variable on the {it:x} axis. This permits
+changing graphs without reissuing the estimation command. 
+ 
+{p 4 4 2}Thus in practice {cmd:regplot} is most useful when the fitted values
+are a smooth function of the variable shown on the {it:x} axis, or a set of
+such functions given also one or more dummy variables as predictors. However,
+other applications also arise, such as plotting observed and predicted values
+from a time series model versus time. 
+
+{p 4 4 2}By default, {cmd:regplot} shows the fitted values using 
+{help:twoway mspline}. The {cmd:plottype()} option may be used to specify 
+another {help twoway} plottype. 
+ 
+{p 4 4 2}In more technical detail: {cmd:regplot} plots 
+
+{p 4 4 2}1. both a single dependent or response variable as specified in
+{cmd:e(depvar)} and whatever single variable is calculated by the default of
+{cmd:predict} on the {it:y} axis, which makes sense whenever those variables are on
+the same scale; 
+
+{p 4 4 2}2. either the {it:varname} specified or what names the first column of
+{cmd:e(b)} on the {it:x} axis, which makes sense whenever {cmd:graph} can 
+understand that as specifying the {it:x} axis. 
+
+{p 4 4 2}If your estimation results do not meet these specifications, you are likely 
+to get either bizarre results or an error message. Note in particular 
+that {it:varname} must be specified after {cmd:nl}. 
+
+{p 4 4 2}Time series operators are allowed.
+
+{p 4 4 2}The plot is restricted to the estimation sample. 
+
+{p 4 4 2}This command provides graphics after model fitting. Its aims 
+thus differ from those of {help twoway_lfit:twoway lfit}, 
+{help twoway_qfit:twoway qfit}, {help twoway_fpfit:twoway fpfit}, etc., 
+which fit models on the fly and are restricted to the application 
+of particular modelling commands. 
+
+
+{title:Options}
+
+{p 4 8 2} 
+{cmd:plottype()} specifies an alternative to {cmd:mspline} as 
+a {help twoway} plottype for showing the fitted model values. 
+
+{p 4 8 2} 
+{cmd:fitopts()} specifies graph options tuning the display of fitted values. 
+
+{p 4 8 2} 
+{cmd:separate()} specifies that values of fitted and observed responses 
+be plotted as separate groups corresponding to the distinct values of 
+the variable specified. 
+
+{p 4 8 2}
+{it:scatter_options} are options allowed with {help twoway scatter}. 
+
+{p 8 8 2}  
+As usual, {cmd:by(}{it:varname}{cmd:)} specifies that predictions are to be 
+shown separately for different categories of {it:varname}. This will often be 
+appropriate when the categories of {it:varname} are associated 
+with one or more dummy or indicator variables, but see also the {cmd:separate()} 
+option. 
+
+{p 4 8 2}{cmd:plot(}{help plot_option:plot}{cmd:)} provides a way to add other
+plots to the generated graph; see {help plot_option}. 
+
+
+{title:Examples}
+
+{p 4 8 2}{cmd:. sysuse auto}
+
+{p}continuous variables only: 
+
+{p 4 8 2}{cmd:. regress mpg weight}{p_end}
+{p 4 8 2}{cmd:. regplot}{p_end}
+{p 4 8 2}{cmd:. gen weightsq = weight^2}{p_end}
+{p 4 8 2}{cmd:. regress mpg weight weightsq}{p_end}
+{p 4 8 2}{cmd:. regplot}
+
+{p 4 8 2}(N.B. {cmd: weight} shown on {it:x} axis in both cases)
+
+{p}categorical variable also: 
+
+{p 4 8 2}{cmd:. regress mpg weight foreign}{p_end}
+{p 4 8 2}{cmd:. regplot, by(foreign)}{p_end}
+{p 4 8 2}{cmd:. regplot, sep(foreign)}{p_end}
+{p 4 8 2}{cmd:. regress mpg weight weightsq foreign}{p_end}
+{p 4 8 2}{cmd:. regplot, by(foreign)}{p_end} 
+{p 4 8 2}{cmd:. regplot, sep(foreign)}
+
+{p 4 8 2}{cmd:. gen fw = foreign * weight}{p_end}
+{p 4 8 2}{cmd:. regress mpg weight foreign fw}{p_end}
+{p 4 8 2}{cmd:. regplot, by(foreign)}{p_end}
+{p 4 8 2}{cmd:. regplot, sep(foreign)}
+
+{p}commands other than {cmd:regress}:
+
+{p 4 8 2}{cmd:. logit foreign weight}{p_end}
+{p 4 8 2}{cmd:. regplot}
+
+{p 4 8 2}{cmd:. glm mpg weight foreign, link(log)}{p_end}
+{p 4 8 2}{cmd:. regplot, by(foreign)}
+
+{p}fit an AR(1) plus trend model to time series:
+
+{p 4 8 2}{cmd:. regress ERvol L.ERvol date}{p_end}
+{p 4 8 2}{cmd:. regplot date}
+
+
+{title:Author}
+
+{p 4 4 2}Nicholas J. Cox, University of Durham, U.K.{break} 
+n.j.cox@durham.ac.uk
+    
+    
+{title:Acknowledgements} 
+
+{p 4 4 2}Ken Higbee and Kit Baum provided very helpful comments on an earlier 
+version. 
+
+
+{title:Also see}
+
+{p 4 13 2}On-line:  help for {help twoway}, {help scatter}, {help modeldiag}

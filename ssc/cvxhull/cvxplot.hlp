@@ -1,0 +1,139 @@
+{smcl}
+{* 11jan2004}
+{hline}
+help for {hi:cvxplot}{right:R Allan Reese, University of Hull, UK}
+{hline}
+program cvxplot
+    version 8.0
+    syntax varlist(min=4) [if] [in] ///
+    [ , Hulls(numlist int min=0 max=2 >0) MDPlot(int 8) ///
+        GROup(varname) SELect(numlist int min=0 >0 sort) ///
+        noREPort MEAns SCATopt(string) SAVing(string)]
+
+{title:Draws convex hulls on scatterplot, using values returned by cvxhull.}
+
+                ANY OTHER USE IS ENTIRELY AT THE USER'S RISK
+
+{p 8 17 2}
+{cmd:cvxplot}
+{it:yvar xvar list of hulls}
+[{cmd:if} {it:exp}]
+[{cmd:in} {it:range}]
+[{cmd:,}
+{break}   
+     {cmdab:h:ulls:(}{it:int}{cmd:[}{it:, int}{cmd:])}
+     {cmdab:gro:up:(}{it:varname}{cmd:)}
+     {cmdab:sel:ect:(}{it:numlist}{cmd:)}
+{break}
+     {cmdab:norep:ort}
+     {cmdab:mea:ns}
+     {cmdab:scat:opt:(}{it:string}{cmd:)}
+     {cmdab:sa:ving:(}{it:graph_filename}{cmd:[, replace])}]
+
+{title:Description}
+
+{p 4 4 2}
+
+{cmd:cvxplot} makes a scatterplot and draw convex hulls of a group of
+points in two-dimensional space. Each hull is defined by two lines
+joining the bottom-left point to the top-right point. The observations
+do not need to be sorted before calling the routine, but the group
+variable {it:must} match the one used in setting up the hulls. The coding
+used for each hull is as set up by cvxplot, the "left" and "right"
+vectors containing the "y" values for a line.
+
+Typical use may be to call cvxhull to calculate many hulls and save
+them, then call cvxplot to draw selected hulls for selected groups. 
+
+eg
+{p 8 8 2}
+cvxhull yv xv, hulls(50) group(gv) mdp(5) prefix(hn) saving(first5)
+{break}
+cvxplot yv xv hn1l-hn50r, hulls(50 10) group(gv) saving(by10)
+{break}
+cvxplot yv xv hn1l-hn50r, h(50 2) gro(gv) sav(odds)
+{break}
+cvxplot yv xv hn2l-hn50r, h(50 2) gro(gv) sav(evens)
+
+
+{title:Parameters}
+
+There must be a varlist with an even number of names. The first two are
+the y and x; the remainder are pairs of variables for each layer of
+hull. The routine cvxhull saves the hull variables in a block so that
+normally you need refer only to first-last.
+
+The {cmd:if} and {cmd:in} qualifiers act as usual to prescribe a subset 
+of observations to be considered. It is left to the user to decide if a
+selection different from the one in force for cvxhull gives sensible
+results. 
+
+{title:Options}
+
+Main options
+{p 4 8 2}
+
+{cmd:hulls(}{it:numlist}{cmd:)} one or two integers that define the maximum 
+number of hulls to be plotted from the varlist. Defaults to 1.  
+If the second integer has a value n, only the first and every n'th
+hull {it:from the varlist} are plotted.
+   
+Some spurious comments relating to pen styles may be output for hull
+levels when large numbers of hulls are defined.  These appear to be
+harmless.
+
+{cmd:group(}{it:varname}{cmd:)} separate hulls are defined for each set of
+points identified with a different value of {it:varname}. The variable
+may be numeric or string.  A table is generated showing the equivalence 
+of numbers with the original values.
+
+{cmd:select(}{it:numlist}{cmd:)} only groups indexed in the list will have
+hulls drawn, but other groups will be plotted as points.  
+Different plots may therefore be obtained by the commands
+
+           cvxplot  y x if group==1
+    and
+           cvxplot  y x, group(group) select(1)
+
+{cmd:means} group means of y-x will be added to the graph as solid triangles.
+
+{cmd:scatopt(}{it:string}{cmd:)} provides a string of options that will
+be applied to the scatterplot. Any scatterplot options can be applied, 
+obvious examples being scatopt(ms(i)) to make the points invisible 
+leaving only the hull outlines, scatopt(mlab(var)) to mark each point 
+with a value.
+    
+{cmd:noreport suppresses the progress messages while the program is running.
+
+{cmd:saving(}{it:graph_filename}{cmd:[,replace])} saves the graph in a .gph file.
+
+
+{title:Examples}
+
+    . {cmd:cvxplot  yvar xvar _cvxh1l _cvxh1r}
+    Draws a default scatterplot with one convex hull containing all
+    the observations using cvxhull's standard names.
+
+    . {cmd:cvxhull  y x, h(5) group(year) prefix(hl) scat(mlab(month))}
+    . {cmd:cvxplot  y x hl1l-hl5r, group(year) scat(ms(i)) h(5)}
+    The first call computes 5 hulls but draws just one for each year and
+    the month identifiers will be enclosed by a boundary.  The second call
+    shows all the hulls but not the points.
+
+    . {cmd:gen lab = _n if hlpts==1}
+    . {cmd:cvxplot  y x hl1l-hl5r, group(year) prefix(hl) h(2) scat(mlab(lab))}
+    Draws two levels of hull but labels only the points on the outer one. 
+
+{title:Author}
+
+         R Allan Reese, University of Hull, UK
+         r.a.reese@hull.ac.uk
+
+
+{title:Also see}
+
+{p 4 4 2}
+On-line: help for {cmd:cvxhull} {cmd:graph} {cmd:scatter}
+{break} 
+ Manual: [R] graph, [R] connectlines
+

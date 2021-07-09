@@ -1,0 +1,31 @@
+*! version 1.0.1  11aug2007
+
+class {
+	string pattern="pattern10"
+	string mview=""
+} , inherit(yxkey_g)
+
+// ---------------------------------------------------------------------------
+
+program new
+	syntax anything(name=keyid),  view(string) pattern(string) [ * ]
+	.pattern = `"`pattern'"'
+	.mview   = `"`view'"'
+	.Super.new ,  view(`view') `options'
+end
+
+
+program draw_parea
+	local x0=0
+	local y0=0
+	if `:word count `0''==2 args x1 y1
+	                   else args x0 y0 x1 y1
+	.`.mview'.style.line.setgdifull
+	.`.mview'.style.area.setgdifull
+	gdi shadepattern= `.pattern'
+	gdi shadechange
+        gdi rectangle `x0' `y0' `x1' `y1'
+end
+
+
+exit

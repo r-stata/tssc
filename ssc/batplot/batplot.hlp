@@ -1,0 +1,128 @@
+{smcl}
+{* 9May2008}{...}
+{cmd:help batplot}
+{hline}
+
+{title:Title}
+
+    {hi: Produces a Bland-Altman plot when there is a relationship between paired differences and their average}
+
+
+{title:Syntax}
+
+{p 8 17 2}
+{cmdab:batplot} {it:varname1 varname2} [if] [in]
+[{cmd:,} {it:options}]
+
+{synoptset 20 tabbed}{...}
+{synopthdr}
+{synoptline}
+{syntab:Main}
+{synopt:{opt info:}} specifies that the percentage of points outside the limits of agreement are displayed as a subtitle.{p_end}
+{synopt:{opt val:abel}({varname})} specifies that the points outside the limits of agreement be labelled using the variable {it:varname}.{p_end}
+{synopt:{opt shading:}(min max)} specifies the extent of shading beyond the range of the data.{p_end}
+{synopt:{opt notrend:}} specifies that the original Bland-Altman plot (without a trend) be plotted.{p_end}
+{synopt:{opt moptions:}} specifies options for the markers that lie outside the limits of agreement.{p_end}
+{synopt:{opt sc:atter}} specifies options for the scatter part of the final plot, see {help scatter}.{p_end}
+{synopt:{help twoway_options}} specifies options for example titles and labels.{p_end}
+{synoptline}
+{p2colreset}{...}
+
+
+{title:Description}
+
+{pstd}
+{cmd:batplot} produces a Bland-Altman plot adjusted for trend.
+
+{pstd}
+The standard Bland-Altman plot is between the difference of paired variables versus the average, this is produced
+using the {bf:notrend} option. The main addition that this command handles is when there is a linear relationship between
+the the paired difference and the paired average. A regression model is used to adjust the limits of agreement accordingly. 
+This is particularly useful when the two variables might be measured on different scales and hence a straight conversion 
+factor would recalibrate the two variables.
+
+{title:Options}
+
+{dlgtab:Main}
+
+{phang}
+{opt info:} specifies that the percentage of points outside the limits of agreement are displayed as a subtitle. Additionally
+when using the notrend option the limits of agreement and mean difference are included in the subtitle.
+
+{phang}
+{opt val:abel}({varname}) specifies that the points outside the limits of agreement be labelled using the variable {it:varname}.
+
+{phang}
+{opt shading:}(min max) specifies the extent of shading beyond the range of the data. The default is that the limits of 
+shading is determined by the values in the {hi:xlabel} option.
+
+{phang}
+{opt notrend:} specifies that the original Bland-Altman plot (without a trend) be plotted.
+
+{phang}
+{opt moptions:} specifies options for the markers that lie outside the limits of agreement, the options can be anything from
+the scatter marker options {help scatter##marker_options}.
+
+{phang}
+{opt sc:atter} specifies options for the scatter part of the final plot.
+
+{title:Examples}
+
+{pstd}
+Using the {hi:auto.dta} dataset supplied with STATA 8 this command can check whether there is agreement between 
+turning circle (ft) and miles per gallon, click the highlighted text in order,
+
+{phang}{stata sysuse auto, clear}
+
+{phang}{stata batplot mpg turn}
+
+{pstd}
+This is the most basic graphic and using twoway options the look can be improved by clicking below,
+
+{phang}
+{stata batplot mpg turn, title(Agreement between mpg and turn) xlab(26(4)38) }
+
+{pstd}
+By specifying extra options the outlying points can be labelled and identified by the car make,
+
+{phang}
+{stata batplot mpg turn, title(Agreement between mpg and turn) info valabel(make) xlab(26(4)38) }
+
+{pstd}
+To obtain the original Bland Altman plot use the notrend option,
+
+{phang}
+{stata batplot mpg turn, title(Agreement between mpg and turn) info valabel(make) notrend xlab(26(4)38) }
+
+{pstd}
+To improve the labelling of the point VW it may be preferable to change the clock position of the label i.e.
+labels could appear to the left of the point. This is handled below with {hi: moptions()}.
+
+{phang}
+{stata batplot mpg turn, title(Agreement between mpg and turn) info valabel(make) notrend xlab(26(4)38) moptions(mlabp(9))}
+
+{pstd}
+Additionally in the case of multiple scatter points by using the {hi:scatter()} option the user can specify to "{hi:jitter}" datapoints
+
+{phang}
+{stata batplot mpg turn, notrend xlab(26(4)38) moptions(mlabp(9)) sc(jitter(4))}
+
+
+{title:Author}
+
+{p}
+Adrian Mander, MRC Human Nutrition Research, Cambridge, UK.
+
+Email {browse "mailto:adrian.mander@mrc-hnr.cam.ac.uk":adrian.mander@mrc-hnr.cam.ac.uk}
+
+{title:Also see}
+
+Related commands
+
+HELP FILES
+{help baplot} (if installed)
+
+
+
+
+

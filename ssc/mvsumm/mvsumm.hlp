@@ -1,0 +1,154 @@
+{smcl}
+{* 16oct2005}{...}
+{hline}
+help for {hi:mvsumm}
+{hline}
+
+{title:Generate moving-window descriptive statistics in time series or panel}
+
+{p 8 17 2}{cmd:mvsumm}
+{it:tsvar}
+[{cmd:if} {it:exp}]
+[{cmd:in} {it:range}]
+[{it:weight}] 
+{cmd:,} {cmdab:g:enerate(}{it:newvar}{cmd:)}
+{cmdab:s:tat(}{it:statistic}{cmd:)}
+[
+{cmdab:w:indow(}{it:#}{cmd:)}
+{cmd:end}
+{cmd:force}
+]
+
+{p 4 4 2}
+{cmd:mvsumm} is for use with time-series data.  You must {cmd:tsset} your
+data before using {cmd:mvsumm}; see help {help tsset}.
+
+{p 4 4 2}
+{it:varname} may contain time-series operators; see help {help varlist}.
+
+{title:Description}
+
+{p 4 4 2}{cmd:mvsumm} computes a moving-window descriptive statistic for {it:tsvar}
+which must be a time series variable under the aegis of {cmd:tsset}.  If a
+panel calendar is in effect, the statistic is calculated for each time series
+within the panel.  The moving-window statistic is placed in a new variable,
+specified with the {cmd:generate()} option.  The statistics available include
+minimum, maximum, other key percentiles, mean and standard deviation:  one of
+these and/or other statistics returned by {cmd:summarize}, or easily computable
+from what it returns, may be specified.  aweights or fweights may be specified.
+Although {cmd:mvsumm} works with unbalanced panels (where the start and/or end points 
+differ across units), {cmd:mvsumm} does not allow gaps within the observations 
+of a time series; that is, the value of an observation for a given period may be 
+missing, but the observation itself must be defined. Gaps in time series may be 
+dealt with via the {cmd:tsfill} command.
+
+
+{title:Options}
+
+{p 4 8 2}{cmd:stat(}{it:statistic}{cmd:)} specifies the statistic
+desired, from the following list. This is a required option. 
+
+    one of           statistic
+    {hline 6}           {hline 9}          
+    n N count        number of non-missing observations
+    sum              sum 
+    sum_w            sum of weight
+    mean             mean
+    sd SD            standard deviation
+    Var var          variance
+    se SE semean     standard error of the mean
+    skew skewness    skewness
+    kurt kurtosis    kurtosis
+    min              minimum
+    max              maximum
+    p1               1st percentile 
+    p5               5th percentile
+    p10              10th percentile
+    p25              25th percentile
+    p50 med median   50th percentile (median)
+    p75              75th percentile
+    p90              90th percentile
+    p95              95th percentile
+    p99              99th percentile 
+    iqr IQR          interquartile range (p75 - p25) 
+    range            range (max - min) 
+    
+{p 4 8 2}{cmd:generate(}{it:newvar}{cmd:)} specifies the name of a new variable
+in which the results are to be placed.
+This is a required option. 
+ 
+{p 4 8 2}{cmd:window(}{it:#}{cmd:)} specifies the width of the window for
+computation of the statistics, which should be an integer at least 2. By
+default, results for odd-length windows are placed in the middle of the window
+and results for even-length windows are placed at the end of the window. The
+defaults can be over-ridden by the {cmd:end} option.
+The default is 3. 
+
+{p 4 8}{cmd:end} forces results to be placed at the end of the window in 
+the case where the window width is an odd number.
+
+{p 4 8}{cmd:force} forces results to be computed when some of a particular 
+window's values are missing.
+
+
+{title:Remarks} 
+
+{p 4 4 2}Occasionally people want to use {cmd:if} 
+and/or {cmd:in} when calculating moving summaries, but 
+that raises a complication not usually encountered. 
+What would you expect from a moving summary calculated with 
+either kind of restriction? Let us identify two possibilities: 
+
+{p 8 8 2}Weak interpretation: I don't want to see any results for 
+the excluded observations. 
+
+{p 8 8 2}Strong interpretation: I don't even want you to use the 
+values for the excluded observations. 
+
+{p 4 4 2}Here is a concrete example. Suppose as a consequence of 
+some restriction, observations 1-42 are included, but not 
+observations 43 on. But the moving summary for 42 will depend, 
+among other things, on the value for observation 43 if the summary
+extends backwards and forwards and is of length at least 3, 
+and it will similarly depend on some of the observations 44 
+onwards in some circumstances. 
+
+{p 4 4 2}Our guess is that most people would go for the weak 
+interpretation, which is employed in {cmd:mvsumm}. If not, 
+you should ignore what you don't want or even set unwanted values 
+to missing afterwards by using {cmd:replace}. 
+
+
+{title:Examples}
+
+{p 4 8 2}{stata "webuse grunfeld" :. webuse grunfeld}{p_end}
+ 
+{p 4 8 2}{stata "mvsumm invest, stat(mean) win(3) gen(inv3yavg) end" :. mvsumm invest, stat(mean) win(3) gen(inv3yavg) end}
+
+{p 4 8 2}{stata "mvsumm invest, stat(sd) win(5) gen(inv5ysd) end" :. mvsumm invest, stat(sd) win(5) gen(inv5ysd) end}
+
+{p 4 8 2}{stata "mvsumm D.mvalue, stat(median) win(5) gen(meddmval) end" :. mvsumm D.mvalue, stat(median) win(5) gen(meddmval) end}
+
+
+{title:Authors}
+
+{p 4 4 2}Christopher F. Baum, Boston College, USA{break} 
+       baum@bc.edu
+    
+{p 4 4 2}Nicholas J. Cox, Durham University, U.K.{break} 
+       n.j.cox@durham.ac.uk
+
+
+{title:Acknowledgements}     
+
+{p 4 4 2}This routine is based on Cox's {cmd:movsumm} and the authors'
+{cmd:statsmat}. Its development was inspired by a July 2002 discussion on
+Statalist.  Nick Winter and Vince Wiggins provided helpful comments. Ernest Berkhout
+helpfully identified some problems with the routine.
+ 
+
+{title:Also see}
+
+{p 4 13 2}On-line: {help summarize}, {help tsset}, {help tsfill} 
+
+

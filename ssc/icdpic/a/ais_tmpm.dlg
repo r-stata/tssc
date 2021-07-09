@@ -1,0 +1,55 @@
+// Revised 10/24/2010
+// Version 3.0
+
+VERSION 10.0
+POSITION . . 420 190
+
+DIALOG main, label("AIS TMPM (AIS TRAUMA MORTALITY PREDICTION MODEL)") tabtitle("Main")
+BEGIN
+   GROUPBOX gb_ais_prefix   10 10  400 60,                              ///
+            label("AIS Code Variable Name Prefix")
+   EDIT     ed_ais_prefix   20 35  50  20,                              ///
+            error("Diagnosis Code Variable Name Prefix")
+   TEXT     tx_ais_prefix   75 35  305 20,                              ///
+            label("Enter AIS code prefix")
+   GROUPBOX gb_in_out_files 10 80  400 90,                              ///
+            label("Select Input and Output Files")
+   FILE     fn_in           20 105 380 20,                              ///
+            label("Browse Input File")                                  ///
+            error("Input File Name")                                    ///
+            buttonwidth(100)                                            ///
+            filter("Stata Dataset (*.dta)|*.dta|All Files (*.*)|*.*") 
+   FILE     fn_out          20 135 380 20,                              ///
+            label("Browse Output File")                                 ///
+            error("Output File Name")                                   ///
+		    buttonwidth(100)                                            ///
+            save                                                        ///
+            filter("Stata Dataset (*.dta)|*.dta|All Files (*.*)|*.*")
+END
+
+OK ok1, label("OK")
+CANCEL can1, label("Cancel")
+SUBMIT sub1, label("Submit")
+HELP hlp1, view("help ais_tmpm")
+RESET res1
+COPY copy1
+
+PROGRAM command
+BEGIN
+   require main.ed_ais_prefix
+   require main.fn_in
+   require main.fn_out
+   put "ais_tmpm "
+   put `"""'
+   put main.fn_in
+   put `"""'
+   put " "
+   put `"""'
+   put main.fn_out
+   put `"""'
+   put " "
+   put main.ed_ais_prefix
+END
+
+
+

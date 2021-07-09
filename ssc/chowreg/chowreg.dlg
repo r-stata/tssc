@@ -1,0 +1,96 @@
+/*
+ chowreg
+*! VERSION 2.0 25/12/2012
+*/
+VERSION 10.0
+INCLUDE _std_large
+DEFINE _dlght 330
+INCLUDE header
+HELP hlp1, view("help chowreg")
+RESET res1
+
+SCRIPT PREINIT
+BEGIN
+program parseMessage
+script se_createAsSvyOLS
+script se_setBias_on
+program svy_check_title
+END
+
+PROGRAM parseMessage
+BEGIN
+if __MESSAGE.contains("__MI__") {
+call script se_setMI_on
+}
+END
+
+SCRIPT POSTINIT
+BEGIN
+program check_bytab
+program se_setFinalInitState
+END
+
+PROGRAM check_bytab
+BEGIN
+if ! __MESSAGE.contains("__MI__") {
+call script sub_set_by_on
+}
+END
+
+DIALOG main, label("chowreg - Structural Change Regression and Chow Test") ///
+	tabtitle("Main")
+BEGIN
+ DEFINE _x _xsetbu
+ DEFINE _y _top
+ INCLUDE _bu_tsset
+  
+ TEXT tx_yvar	_lft	+30	120	., ///
+	label("Dependent Variable:")
+ TEXT tx_xvar	_vlx	@	300	., ///
+	label("Independent Variables:")
+
+ VARNAME vn_yvar  _lft	 _ss	120 .,	 ///
+	label("Dependent Variable")
+ VARLIST vl_xvar  _vlx	 @	300 ., ///
+	label("Independent Variables")
+
+  CHECKBOX ck_nocons @         _ms       @         .,	/*
+		*/ label("No Constant")	/*
+		*/ option("noconstant")			/*
+*/
+
+  SPINNER  sp_dum   _ilft     _xls       _spwd  .,	/*
+	*/ min(1) max(c(N)) default(1)		/*
+	*/ option("dum")			/*
+	*/ label("dum")
+  TEXT     tx_dum   _spsep    @         _sprb  .,	/*
+	*/ label("Number of First Period Observations")
+	
+  SPINNER  sp_type   _ilft     _xls       _spwd  .,	/*
+	*/ min(1) max(3) default(1)		/*
+	*/ option("type")			/*
+	*/ label("type")
+  TEXT     tx_type   _spsep    @         _sprb  .,	/*
+	*/ label("Functional Form Dummy Variables Type")
+END
+
+INCLUDE byifin
+INCLUDE weights_fpai
+INCLUDE se
+
+PROGRAM command
+BEGIN
+ put "chowreg "
+ varlist main.vn_yvar main.vl_xvar 
+ put " " /program ifin_output
+ put " " /program weights_output
+ put /program by_output " "
+ put /program se_prefix_output " "
+ beginoptions
+ option main.ck_nocons
+ optionarg main.sp_dum
+ optionarg main.sp_type 
+ put " " /program se_output
+ endoptions
+END
+

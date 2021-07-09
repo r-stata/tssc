@@ -1,0 +1,102 @@
+{smcl}
+{hline}
+help for {hi:svrmodel}
+{hline}
+
+{title:Model estimates with balance repeated replication (BRR) based standard errors}
+
+{p 8 15}{cmd:svrmodel} {it:varlist} [{cmd:if} {it:exp}] [{cmd:in} {it:range}] [{cmd:,}
+	{cmd:deff} {cmd:deft}
+	{cmd:cmd(}{it:command name}{cmd:)}
+	{cmdab:l:evel(}{it:#}{cmd:)} {cmd:or} {it:command_options} ]
+
+
+{p}This command is for use with replication weights.  You must set your data for
+replication based survey estimation with {help svrset} or {help survwgt} before
+using this command.
+
+{p}Typing {cmd:svrmodel} without arguments
+redisplays previous results.
+
+
+{title:Description}
+
+{p}{cmd:svrmodel} estimates regression-type models for complex survey data.
+Standard errors are calculated using a series of user-supplied replication weights, by
+balanced repeated replication (BRR) or survey jackknife (JK1, JK2, or JKn).
+This is an alternate method to the Taylor series linearization methods
+used by Stata's {help svy} commands.  See {help survwgt} for details on the
+creation of weights and estimation of variances with replication.
+
+{p}{cmd:svrmodel} will run ols regression, logit/probit, ordered logit/probit, multinomial
+logit, and poisson regression models.  For other models, see {help svrest}.
+
+
+{title:Options}
+
+{p 0 4}{cmd:deff} and {cmd:deft} request that design effects deff and deft be displayed with the model
+estimates.  See {cmd:[R] svymean} for details.
+
+{p 0 4}{cmd:cmd()} specifies the model estimation command.
+Valid options are {help regress} {help logit} {help probit} {help logistic}
+{help oprobit}, {help ologit}, {help mlogit} and {help poisson}.  The default is ols regression.
+
+{p 0 4}{cmd:or} specifies that coefficients from a logit model should be displayed as odds-ratios.  See {help logit}.
+
+
+{title:Example command and output}
+
+{p 8 12}{inp:. svrmodel income region sex asset } {p_end}
+
+{txt}        OLS estimates with replicate-based (jkn) standard errors
+
+{txt}        Analysis weight:      wgt{col 48}Number of obs       ={res}{ralign 10:1904}
+{txt}        Replicate weights:    {help svrset:jkn_1...}{txt}{col 48}Population size     ={res}{ralign 10:10738}
+{txt}        Number of replicates: 30{txt}{col 48}Degrees of freedom{col 68}={res}{ralign 10:20}
+{txt}        {col 48}F({res}{ralign 4:3}{txt},{res}{ralign 7:18}{txt})     ={res}{ralign 10:86.40}
+{txt}        {col 48}Prob > F{col 68}={res}{ralign 10:0.0000}
+{txt}        {col 48}R-squared{col 68}={res}{ralign 10:0.0057}{txt}
+
+        {hline 13}{c TT}{hline 64}
+              income {c |}      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+        {hline 13}{c +}{hline 64}
+              region {c |}{res}   .6214526    .116294     5.34   0.000     .3788676    .8640376
+        {txt}         sex {c |}{res}  -1.121041   .2671536    -4.20   0.000    -1.678313   -.5637684
+        {txt}       asset {c |}{res}   .1274654   .0077771    16.39   0.000     .1112427    .1436881
+        {txt}       _cons {c |}{res}   37.61598   .5194737    72.41   0.000     36.53238    38.69959
+        {txt}{hline 13}{c BT}{hline 64}
+
+
+{title:Saved Results}
+
+{cmd:svrmodel} is an estimation command, so it saves model estimates and svr-based (co)variance
+matrix in e(b) and e(V) and creates e(sample) to reflect the estimation sample.  It also stores design effects
+in e(deff) and e(deft), and the simple-random-sampling-without-replacement (co)variance matrix in e(V_srs).
+
+{p}{help svytest} will estimate adjusted Wald linear hypothesis tests after BRR model estimation.
+({cmd:svrmodel} specifies the estimation command as "svysvrmodel" in order to allow {cmd:svytest} to function.)
+
+Scalars e(N_strata) and e(N_psu) are set in order to allow {cmd:svytest} to operate correctly.  N_strata
+is set to the degrees of freedom for the model (by default the number of replicates), and N_psu is set to twice the
+degrees of freedom.
+
+{help predict} after an estimation should work as documented for the relevant command.  {input}Warning: this
+has not been tested extensively{txt}.
+
+
+{title:Methods and formulae}
+
+{p}See {help survwgt}.
+
+
+{title:Acknowledgements}
+
+{p}I would like to thank Bobby Gutierrez at StataCorp for advice on implementation of BRR.
+
+
+{title:Author}
+
+	Nick Winter
+	Cornell University
+	nw53@cornell.edu
+

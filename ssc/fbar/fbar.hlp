@@ -1,0 +1,74 @@
+.-
+help for ^fbar^
+.-
+
+Bar charts showing frequencies of categorical variables 
+-------------------------------------------------------
+
+    ^fbar^ varname [weight] [^if^ exp] [^in^ range]
+    [ ^, by(^byvar^) perc^ent ^t^otalpc { ^f^sort | ^rf^sort } graph_options ]
+
+Description
+-----------
+
+^fbar^ produces a bar chart showing the frequencies (counts or percents) 
+of the categories of varname as vertical bars. The default is to show 
+counts, as modified by any weights (aweights, fweights and iweights 
+are allowed). 
+
+^fbar^ is a wrapper for ^graph, bar^. 
+
+
+Options
+-------
+
+^by(^byvar^)^ means that each category of varname is subdivided by the 
+    categories of byvar, and thus represented by a group of bars, or,  
+    with the ^stack^ option, by a divided bar. byvar may have up to 6 
+    categories in the observations graphed. See @limits@. 
+
+^percent^ means that results are to be reported as percents.  By default, 
+    if ^by()^ is also specified, percents are percents of the total in 
+    each category of varname. To override this default, use the ^totalpc^ 
+    option. 
+
+^totalpc^ specifies that percents are to be calculated with respect to 
+    the total of all categories. See ^percent^ just above. ^totalpc^ by 
+    itself to held to imply ^percent^. 
+
+^fsort^ specifies that bars are sorted from left to right in order of 
+    increasing frequency of varname.
+    
+^rfsort^ specifies that bars are sorted from left to right in order of 
+    decreasing frequency of varname. 
+
+^fsort^ and ^rfsort^ are mutually exclusive.     
+
+graph_options are other options allowed with ^graph, bar^. See help for
+    @graph@, especially @grbar@ and @grcolor@, including details on ^stack^, 
+    ^shading()^ and ^alt^.
+
+
+Examples
+--------
+
+        . ^fbar rep78^
+        . ^fbar rep78, by(for)^
+        . ^fbar rep78, by(for) perc^
+        . ^fbar rep78, by(for) perc totalpc^
+        . ^fbar rep78, by(for) perc totalpc stack^
+
+
+Author
+------
+         Nicholas J. Cox, University of Durham, U.K.
+         n.j.cox@@durham.ac.uk
+
+
+Also see
+--------
+
+On-line: help for @grbar@, @grcolor@, @hist@, 
+         @tabhbar@ (if installed), @hbar@ (if installed), @vbar@ (if installed)
+
+

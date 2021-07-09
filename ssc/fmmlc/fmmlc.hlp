@@ -1,0 +1,116 @@
+{smcl}
+{* *! version 1.0.0 10June2011, Joerg Luedicke}{...}
+{hline}
+help {hi:fmmlc}
+{hline}
+
+{title:Postestimation for finite mixture models}
+
+{p 8 17 2}{cmd:fmmlc}
+[
+{cmd:,}  
+{cmdab:savec}
+{cmdab:savep} 
+]  
+
+
+{title:Description}
+
+{p 4 4 2}
+{cmd:fmmlc} is a postestimation command for {cmd:fmm}. {cmd:fmm} is a 
+user-written command (Deb 2008) that fits finite mixture regression 
+models. Being called after {cmd:fmm}, {cmd:fmmlc} provides a convenient 
+overview of latent class posterior probabilities, classification of 
+subjects based on most likely latent class membership, average posterior
+probabilities by latent class, the quality of a classification (entropy),
+and the information criteria AIC, BIC, and a sample size adjusted BIC.
+
+{title:Options} 
+
+{p 4 8 2}{cmd:savec} saves the categorical latent variable based on most 
+likely latent class membership. When using this option, a variable with 
+the name -_class_1- will be saved. If this variable already exists, a 
+variable with the name -_class_2- will be saved, and so on.
+
+{p 4 8 2}{cmd:savep} saves latent class posterior probabilities. When 
+using this option, predicted posterior probabilities are saved as 
+variables. The number of variables corresponds to the number 
+of components from the mixture model and are indexed accordingly. 
+
+{title:Technical note} 
+
+{p 4 4 2}
+The entropy measure implemented in {cmd:fmmlc} uses formula 24 in
+Ramaswamy et al. (1993). Calculation of the Akaike information criterion 
+(AIC) follows Akaike (1987). In the calculation of the Bayesian information
+criterion (BIC, Schwartz 1978), the number of observations from the 
+previous {cmd:fmm} run is used (also see: {help bic_note}). The sample size
+adjusted BIC follows Sclove's (1987) suggestion to replace the number of 
+observations (n) with ((n+2)/24).
+
+ 
+{title:Saved results} 
+
+{pstd}
+{cmd:fmmlc} saves the following in {cmd:r()}:
+
+{synoptset 15 tabbed}{...}
+{p2col 5 15 19 2: Scalars}{p_end}
+{synopt:{cmd:r(AIC)}}Akaike information criterion{p_end}
+{synopt:{cmd:r(BIC)}}Bayesian information criterion{p_end}
+{synopt:{cmd:r(BIC2)}}Sample size adjusted BIC{p_end}
+{synopt:{cmd:r(entropy)}}Entropy measure{p_end}
+
+{synoptset 15 tabbed}{...}
+{p2col 5 15 19 2: Matrix}{p_end}
+{synopt:{cmd:r(app)}}Average posterior probabilities{p_end}
+
+{title:Examples}
+
+{p 4 8 2}{inp:. webuse nlsw88}
+
+{p 4 8 2}{inp:. gen lnwage=log(wage)}
+
+{p 4 8 2}{inp:. fmm lnwage tenure age, components(2) mix(normal)}
+
+{p 4 8 2}{inp:. fmmlc} 
+
+{p 4 8 2}{inp:. fmm lnwage tenure age, components(3) mix(normal)}
+
+{p 4 8 2}{inp:. fmmlc, savec savep} 
+
+
+{title:References} 
+
+{p 4 4 2}
+Akaike, H. (1987). Factor analysis and AIC. {it:Psychometrika, 52}, 317–332.
+
+{p 4 4 2}
+Deb, P. (2008). FMM: Stata module to estimate finite mixture models. 
+{it:Statistical Software Components, Boston College Department of Economics}, 
+{browse "http://econpapers.repec.org/RePEc:boc:bocode:s456895"}.
+
+{p 4 4 2}
+Ramaswamy, V., DeSarbo, W., Reibstein, D., and Robinson, W. (1993). 
+An empirical pooling approach for estimating marketing mix
+elasticities with PIMS data. {it:Marketing Science, 12}, 103–124.
+
+{p 4 4 2}
+Schwartz, G. (1978). Estimating the dimension of a model. {it:The Annals}
+{it:of Statistics, 6}, 461–464.
+
+{p 4 4 2}
+Sclove, L. (1987). Application of model-selection criteria to some
+problems in multivariate analysis. {it:Psychometrika, 52}, 333–343.
+
+
+{title:Author}
+
+{p 4 4 2}Joerg Luedicke, Yale University, Department of Psychology, New Haven, USA{break} 
+
+{p 4 4 2}email: joerg.luedicke1@gmail.com
+
+
+{title:Also see}
+
+{p 4 13 2}Help {help fmm} and {help fmm postestimation} (if installed)

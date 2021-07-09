@@ -1,0 +1,95 @@
+{smcl}
+{* 14jul2004}{...}
+{hline}
+help for {hi:glmcorr}
+{hline}
+
+{title:Correlation measure of predictive power and RMS error for GLMs}
+
+{p 8 17 2}{cmd:glmcorr} [ , {cmdab:jack:knife} ] 
+
+
+{title:Description}
+
+{p 4 4 2}{cmd:glmcorr} calculates the correlation between the response and the
+fitted or predicted response, its square, and the root mean square error after
+{cmd:glm}. 
+
+
+{title:Remarks}
+
+{p 4 4 2}Zheng and Agresti (2000) discuss the correlation between the 
+response and the fitted or predicted response as a general measure
+of predictive power for GLMs. This measure has the advantages of 
+referring to the original scale of measurement, of 
+being applicable to all types of GLM and of being familiar to many 
+users of statistics. Preferably, it should be used 
+as a comparative measure for different models applied to the
+same data set, given that restrictions on values of the response 
+may imply limitations on its value (see e.g. Cox and Wermuth, 1992). 
+
+{p 4 4 2}For an arbitrary GLM, this correlation is invariant under a
+location-scale transformation and it is the positive square root of the average
+proportion of variance explained by the predictors. However, again for an
+arbitrary GLM, it need not equal the positive square root of other definitions
+of R-square (e.g. Hardin and Hilbe, 2001); and it need not be monotone
+increasing in the complexity of the predictors, although in practice that is
+common. The correlation is necessarily sensitive to outliers. 
+
+{p 4 4 2}As the predicted is a function of the observed, the correlation
+calculated from a sample may be expected to be biased upwards.  A jackknifed
+correlation is provided as one alternative.  Zheng and Agresti provide more
+discussion of this point, including other estimators and a bootstrap approach
+to providing confidence intervals for the correlation and to estimating the
+degree of overfitting. 
+
+{p 4 4 2}The root mean square error is calculated as the square root of the sum
+of squares of (observed - fitted) divided by the residual degrees of freedom. 
+
+
+{title:Options} 
+
+{p 4 8 2}{cmd:jackknife} specifies that a jackknifed estimate of 
+the correlation be provided. 
+
+
+{title:Examples}
+
+{p 4 8 2}{inp:. glm {it:whatever}}{p_end}
+{p 4 8 2}{inp:. glmcorr}
+
+
+{title:Author}
+
+{p 4 4 2}Nicholas J. Cox, University of Durham, U.K.{break} 
+	 n.j.cox@durham.ac.uk
+
+
+{title:References}
+
+{p 4 4 2}Cox, D.R. and N. Wermuth. 1992. A comment on the coefficient of 
+determination for binary responses. {it:American Statistician} 46: 1-4. 
+
+{p 4 4 2}Hardin, J. and J. Hilbe. 2001. 
+{it:Generalized linear models and extensions.} 
+College Station, TX: Stata Press.   
+
+{p 4 4 2}Zheng, B. and A. Agresti. 2000. Summarizing the predictive power of a 
+generalized linear model. {it:Statistics in Medicine} 19: 1771-1781.  
+
+
+{title:Saved results}
+
+{p 4 4 2}{cmd:r(rho)}{space 9}correlation between observed and predicted{p_end}
+{p 4 4 2}{cmd:r(rsq)}{space 9}square of correlation between observed and predicted{p_end}
+{p 4 4 2}{cmd:r(jrho)}{space 8}jackknifed correlation between observed and predicted (if requested){p_end}
+{p 4 4 2}{cmd:r(rmse)}{space 8}root mean square error                     
+
+
+{title:Also see}
+
+{p 4 13 2} 
+Manual:  {hi:[R] glm}, {hi:[R] jknife}{p_end}
+{p 4 13 2}
+On-line:  help for {help glm}, {help jknife}
+

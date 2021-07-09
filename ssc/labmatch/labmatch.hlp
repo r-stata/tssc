@@ -1,0 +1,55 @@
+{smcl}
+{* 1apr2011}{...}
+{hline}
+help for {hi:labmatch}
+{hline}
+
+{title:Find observations by label values}
+
+{p 8 14}{cmd:labmatch} {help varname} {help f_strmatch:stringpattern} [ {help varname} {help f_strmatch:stringpattern} ... ] [{help if} {help exp}] {bind: [, {cmd:nolist}}
+  {cmdab:a:lsolist(}{help varlist}{cmd:)} {cmdab:t:abulate(}{help varlist}{cmd:)} {cmd:id(}{help varname}{cmd:)} ]
+
+{p}{cmd:labmatch} lists observations where the value labels of variables listed match the string pattern given for each.  
+Option {cmd:nolist} suppresses listing observations, and option {cmd:alsolist} requests additional variables to be listed. 
+Option {cmd:tabulate} requests a {help tabulate:tabulation} of up to two variables for observations that match the criteria specified.
+Option {cmd:id} returns all values of the specified variable for observations that match the criteria, in {help return:r(id)}, along
+with a comma-delimited list in {help return:r(idcomma)} suitable for use with {help inlist} or other functions.
+The {help if} qualifier needed to list observations (et cetera) is returned in {help return:r(cond)}. Support for {help in} is not provided
+because it would unnecessarily complicate the returned local {cmd:cond}.
+
+
+{title:Examples}
+
+   sysuse nlsw88, clear
+   labmatch race other married marr* collgrad col* occ Sal*
+   ret li
+
+   *note that the next example does not find anything because it is looking for "Sal*," not "Sal*"
+   labmatch race other married marr* collgrad col* occ Sal*, id(idcode) a(idcode)
+   *easy solution is to bind the stringpattern in quotes
+   labmatch race other married marr* collgrad col* occ "Sal*", id(idcode) a(idcode)
+   *or leave a space before the comma
+   labmatch race other married marr* collgrad col* occ Sal* , id(idcode) a(idcode)
+
+   labmatch race other married marr* occ *ers
+   labmatch race other married marr* occ *ers if _n<1600
+   labmatch race other married marr* occ "*ers", t(id age) nolist id(idcode) a(idcode)
+   ret li
+   su i* if inlist(idcode,`r(idcomma)')
+   labmatch race other married marr* occ "*ers", nolist id(idcode) a(idcode)
+   su i* `r(cond)'
+    
+{title:Author of {cmd:labmatch}}
+
+	Austin Nichols
+	<austinnichols@gmail.com>
+
+{title:Acknowledgments}
+
+{p 8 14}This program was suggested by 
+    {browse "http://www.stata.com/statalist/archive/2011-04/msg00008.html":Stefan Gawrich} and
+    {browse "http://www.stata.com/statalist/archive/2011-03/msg01918.html":Daniel Klein}.{p_end}
+
+{title:Also see}
+
+{p 0 19}On-line:  help for {help mf_st_vlload}, {help labelbook}.{p_end}

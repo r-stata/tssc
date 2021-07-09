@@ -1,0 +1,96 @@
+{smcl}
+{* 26feb2003}{...}
+{hline}
+help for {hi:rdplot7}
+{hline}
+
+{title:Graph residual distribution after regression-type command}
+
+{p 8 16}{cmd:rdplot7} [{cmd:,} {it:residualtype} {cmdab:sc:ale(}{it:exp}{cmd:)}
+{cmd:by(}{it:varname}{cmd:)}{break} 
+{c -(} {cmd:at(}{it:numlist}{cmd:)} {c |} {cmdab:g:roup(}{it:#}{cmd:)} {c )-}{break}
+{c -(} {cmdab:hi:stogram} {c |} {cmdab:b:ox} {c )-} {it:graph_options}]
+
+
+{p}{cmd:rdplot7} is for use after {cmd:regress} and similar commands; see help
+on the command of interest. 
+
+
+{title:Description}
+
+{p}{cmd:rdplot7} graphs residual distributions. The residuals are, by default,
+those calculated by {cmd:predict, residuals} or (if the previous estimation
+command was {cmd:glm}) by {cmd: predict, response}. The graph by default is a
+single or multiple dotplot, as produced by {cmd:dotplot}: histograms or box
+plots may be selected by specifying either the {cmd:histogram} or the {cmd:box}
+option. 
+ 
+{p}{cmd:rdplot7} is a renamed clone of {cmd:rdplot} 1.0.0 which is for 
+Stata 7. Stata 8 users should use {cmd:rdplot} 2.0.0 or later. 
+
+{title:Options}
+
+{p 0 4}{it:residualtype} specifies a type of residual other than the default.
+The following types are currently supported: {cmdab:a:nscombe},
+{cmdab:d:eviance}, {cmdab:l:ikelihood}, {cmdab:p:earson}, {cmdab:r:esiduals},
+{cmdab:resp:onse}, {cmdab:rsta:ndard}, {cmdab:rstu:dent}, {cmdab:s:core},
+{cmdab:w:orking}. 
+
+{p 0 4}{cmd:scale(}{it:exp}{cmd:)} specifies a transformed scale on which to
+show the residuals using Stata syntax and {cmd:X} as a placeholder for the
+residual variable name. Thus {cmd:scale(X^2)} specifies squaring, to show relative
+contribution to residual variance; {cmd:scale(abs(X))} specifies absolute
+value, to set aside sign; {cmd:scale(sqrt(abs(X)))} specifies root of absolute
+value, a useful scale on which to check for heteroscedasticity. 
+
+{p 0 4}{cmd:by(}{it:varname}{cmd:)} specifies that plots should be 
+given for groups of {it:varname}. If {cmd:at()} or {cmd:group()} is 
+also specified, as below, groups are as specified by that option. Otherwise, 
+groups are the distinct values of {it:varname}. 
+
+{p 0 4}{cmd:at(}{it:numlist}{cmd:)} or {cmd:group(}{it:#}{cmd:)} specifies how 
+groups of a classifying variable are to be determined. 
+If {cmd:by(}{it:varname}{cmd:)} 
+is specified, as above, {cmd:at()} or {cmd:group()} is applied to that 
+variable. Otherwise, the first-named predictor or covariate used in the 
+previous regression-type command is used. {cmd:at()} and {cmd:group()} 
+are options of {cmd:egen, cut()}: see help on {help egen}. In brief, 
+{cmd:at()} specifies lower limits of user-defined classes and {cmd:group()} 
+specifies the number of quantile-based groups with (approximately) 
+equal frequency to be used. (With {cmd:at()}, supply one high value beyond
+the maximum of the data for best results.) 
+
+{p 0 4}{cmd:histogram} specifies that plots should be histograms.
+
+{p 0 4}{cmd:box} specifies that plots should be box plots. 
+
+{p 0 4}The default is that plots are dotplots. 
+
+{p 0 4}{it:graph_options} are any of the options allowed with either 
+{cmd:dotplot} or {cmd:graph, histogram} or {cmd:graph, box}. See help 
+on {help dotplot} or {help graph} as appropriate.
+
+
+{title:Examples}
+
+{p 8 12}{inp:. reg width length}{p_end}
+	{inp:. rdplot7, g(3)}
+	{inp:. foreach X in width length {c -(} gen log`X' = log(`X') {c )-}} 
+	{inp:. reg logwidth loglength}
+	{inp:. rdplot7, g(3)} 
+	
+{p 8 12}{inp:. glm price weight, link(log)}{p_end}
+	{inp:. rdplot7, anscombe yli(0)}
+
+
+{title:Author}
+
+    Nicholas J. Cox, University of Durham, U.K.
+    n.j.cox@durham.ac.uk
+
+
+{title:Also see}
+
+{p 1 10}Manual:  {hi:[R] regression diagnostics}{p_end}
+{p 0 19}On-line:  help for {help graph}, {help regdiag}; {help predict}
+{p_end}

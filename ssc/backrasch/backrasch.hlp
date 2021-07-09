@@ -1,0 +1,54 @@
+{smcl}
+{* 23may2005}{...}
+{hline}
+help for {hi:backrasch}
+{hline}
+
+{title:Backward procedure on a Rasch model}
+
+{p 8 14 2}{cmd:backrasch} {it:varlist} {cmd:,} [{cmdab:m:ethod}({it:keyword})
+{cmdab:t:est}({it:keyword}) {cmdab:nodetail}
+{cmdab:p}({it:#.###}) {cmdab:nbsc:ales}({it:#}) 
+{cmdab:noautog:roup}]
+
+{title:Description}
+
+{p 4 8 2}{cmd:backward} realizes a Backward procedure on a Rasch model: the
+items are removed one per one if they have a bad fit to the Rasch model. The 
+fit of the items is valuated by a first-order statistics (test R1c, R1m or Q1)
+It is possible to build several sub-scales of items, the second sub-scale is
+build with the items unselected in the first sub-scales, the third one
+with the items unselected in the two first sub-scales, and so on... By default,
+the parameters of the Rasch model are estimated by conditional maximum
+likelihood (CML), but it is possible to estimate them by marginal maximum
+likelihood (MML) or generalized estimating equations (GEE).
+
+{title:Options}
+
+{p 4 8 2}{cmd:method}({it:cml/mml/gee}) defines the method of estimation of the difficulty parameters among conditional maximum likelihood (cml - by default), marginal maximum likelihood (mml) or generalized estimating equations (gee).
+
+{p 4 8 2}{cmd:test}({it:R/Q}) defines the first order statistics to use between R-type test (R1c or R1m - by default) or the Q1 test of Van den Wollenberg.
+
+{p 4 8 2}{cmd:nodetail} does not display the description of the algorithm.
+
+{p 4 8 2}{cmd:p}({it:#.###}) defines the level of signification who define a significantly bad fitted item (0.05 by default).
+
+{p 4 8 2}{cmd:nbscales}({it:#}) defines the maximal number of sub-scales to build. By default, the program builds only one sub-scale.
+
+{p 4 8 2}{cmd:noautograoup} forces the program to compute the first order fit statistics with the groups defined by the value of the score. by default, the scores are grouped to obtained groups of 30 individuals or more.
+
+{title:Examples}
+
+{p 4 8 2}{cmd:. backrasch item1 item2 item3 item4} /*estimation by CML, test R1c, only one scale is built*/
+
+{p 4 8 2}{cmd:. backrasch item1 item2 item3 item4 , p(0.2) method(mml) nodetail} /*estimation by MML, test R1m, only one scale*/
+
+{p 4 8 2}{cmd:. backrasch item1 item2 item3 item4 , p(0.1) nbsc(5) noautog} /*CLM estimation, R1c tests, 5 scales will be build*/
+
+{title:Author}
+
+{p 4 8 2}Jean-Benoit Hardouin, Regional Health Observatory (ORS) - 1, rue Porte
+Madeleine - BP 2439 - 45032 Orleans Cedex 1 - France. You can contact the author at
+{browse "mailto:jean-benoit.hardouin@orscentre.org":jean-benoit.hardouin@orscentre.org}
+and visit the websites {browse "http://anaqol.free.fr":AnaQol} and 
+{browse "http://freeirt.free.fr":FreeIRT}

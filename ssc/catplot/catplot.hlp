@@ -1,0 +1,209 @@
+{smcl}
+{* 16may2004/7jun2010}{...}
+{hline}
+help for {hi:catplot}
+{hline}
+
+{title:Plots of frequencies, fractions or percents of categorical data} 
+
+{p 8 17 2} 
+{cmd:catplot} 
+{it: catvar1} [{it:catvar2} [{it:catvar3}]]
+[{it:weight}]
+[{cmd:if} {it:exp}] 
+[{cmd:in} {it:range}]
+[ 
+{cmd:,}
+{c -(}{cmdab:fr:action}{c |}{cmdab:fr:action(}{it:varlist}{cmd:)}{c |}{cmdab:perc:ent}{c |}{cmdab:perc:ent(}{it:varlist}{cmd:)}{c )-} {break} 
+{cmd:var1opts(}{it:over_options}{cmd:)}
+{cmd:var2opts(}{it:over_options}{cmd:)}
+{cmd:var3opts(}{it:over_options}{cmd:)} {break} 
+{cmd:recast(}{it:plottype}{cmd:)} 
+{it:graph_options}
+]
+
+
+{title:Description}
+
+{p 4 4 2}
+{cmd:catplot} shows frequencies (or optionally fractions or percents) of
+the categories of one, two or three categorical variables. The first
+named variable is innermost on the display; that is, its categories vary
+fastest. Often, but not necessarily, it will be the response or outcome
+of interest. By default {cmd:catplot} is a wrapper for 
+{help graph_bar:graph hbar}. Optionally {cmd:catplot} may be recast as a
+wrapper for {help graph_bar:graph bar} or {help graph_dot:graph dot}.
+The choice is a matter of personal taste, although in general horizontal
+displays make it easier to identify names or labels of categories. 
+
+{p 4 4 2}{cmd:fweight}s, {cmd:aweight}s and {cmd:iweight}s may be
+specified. This opens a door to use of {cmd:catplot} for plotting any
+set of values for each of several different categories. 
+
+
+{title:Remarks} 
+
+{p 4 4 2}This version of {cmd:catplot} (2.0.0 or up) is not compatible
+with previous versions. 
+
+{p 4 4 2}The default display using {cmd:graph hbar} or {cmd:graph bar}
+is graphically conservative, reflecting the view that height or length of bars and
+text indicating categories are good ways of conveying information.
+If you wish also to have bars in different colours, specify the option
+{cmd:asyvars}, which differentiates the categories of the {it:first}
+named variable {it:catvar1}. If you wish also to stack bars of different
+colours, specify the further option {cmd:stack}. 
+
+{p 4 4 2}The default display with {cmd:graph dot} is similarly
+conservative.  If you wish to have point symbols in different colours,
+specify the option {cmd:asyvars}, which differentiates the categories of
+the {it:first} named variable {it:catvar1}. If you wish also to use
+different point symbols, use the further option {cmd:marker()}. 
+
+{p 4 4 2}Note some simple principles in this territory:
+
+{p 8 8 2}It is difficult to create a great graph, but easy to improve a 
+bad one. 
+
+{p 8 8 2}Comparisons must be easy. That could mean in one dimension,
+across a row or down a column, or it could mean using a table structure. 
+
+{p 8 8 2}Ordering by magnitude may be even more useful than ordering
+by category. 
+
+{p 8 8 2}Bars are better than pie slices as length is easier to judge
+than angle. Dots on a scale are a good way to include magnitudes. 
+
+{p 8 8 2}Text is better read as horizontal than as vertical. 
+
+{p 8 8 2}Showing numbers as text as well by graphical elements can be
+helpful. 
+
+{p 8 8 2}Lose the legend if you can. A great advantage of 
+{cmd:graph hbar {c |} bar {c |} dot} is strong support for category labels, 
+which can be nested too. 
+
+{p 8 8 2}The sum of one value is just that value, so weights allow showing
+any values, not just frequencies or percents. 
+
+{p 8 8 2}{cmd:by()} allows table structures to be shown with
+{cmd:graph hbar {c |} bar {c |} dot}. 
+
+{p 8 8 2}{cmd:by()} can look like another {cmd:over()}. 
+
+
+{title:Options} 
+
+{p 4 8 2}{cmd:fraction} indicates that all frequencies should be shown
+as fractions (with sum 1) of the total frequency of all values being
+represented in the graph.
+
+{p 4 8 2}{cmd:fraction(}{it:varlist}{cmd:)} indicates that all
+frequencies should be shown as fractions (with sum 1) of the total
+frequency for each distinct category defined by the combinations of
+{it:varlist}. For example, given a variable {cmd:sex} with two
+categories male and female, the fractions shown for male would have sum
+1 and those for female would have sum 1. 
+
+{p 4 8 2}{cmd:percent} indicates that all frequencies should be shown as
+percents (with sum 100) of the total frequency of all values being
+represented in the graph.
+
+{p 4 8 2}{cmd:percent(}{it:varlist}{cmd:)} indicates that all
+frequencies should be shown as percents (with sum 100) of the total
+frequency for each distinct category defined by the combinations of
+{it:varlist}.  For example, given a variable {cmd:sex} with two
+categories male and female, the percents shown for male would have sum
+100 and those for female would have sum 100. 
+
+{p 4 8 2}Only one of these {cmd:fraction}[{cmd:()}] and
+{cmd:percent}[{cmd:()}] options may be specified. 
+
+{p 4 8 2}{cmd:recast()} recasts the graph to another {it:plottype}, one
+of {cmd:hbar}, {cmd:bar}, {cmd:dot}. 
+
+{p 8 8 2}Note for users of Stata 10 up: using the {help Graph Editor} is another 
+way to produce these and many other changes. 
+
+{p 8 8 2}Note for experienced users: although the name is suggested by another
+{help advanced_options:recast()} option, this is not a back door to recasting
+to a {cmd:twoway} plot. 
+
+{p 4 8 2}{cmd:var1opts()}, {cmd:var2opts()} and {cmd:var3opts()} contain
+calls to an {cmd:over()} option of 
+{help graph_bar:graph bar}, {help graph_bar:graph hbar} or 
+{help graph_bar:graph dot} as appropriate  
+controlling the display of elements for {it:catvar1},
+{it:catvar2} and {it:catvar3} respectively. For example,
+{cmd:var1opts(sort(1) descending)} specifies that values of {it:catvar1}
+should be sorted on frequency or percent and displayed increasing
+downwards or from left to right. 
+
+{p 4 8 2}{it:graph_options} refers to options of 
+{help graph_bar:graph bar}, {help graph_bar:graph hbar} or 
+{help graph_bar:graph dot} as appropriate.  
+{cmd:by()} is one useful
+example. Note: any categorical axis title that appears by default is
+produced by {cmd:l1title()} with {cmd:hbar} or {cmd:dot} or by 
+{cmd:b1title()} with {cmd:bar} or the (otherwise undocumented) 
+{cmd:vertical} option.
+
+
+{title:Examples}
+
+{p 4 8 2}{cmd:. set scheme s1color}
+
+{p 4 4 2}(Stata's auto data){p_end}
+{p 4 8 2}{cmd:. sysuse auto, clear}
+
+{p 4 8 2}{cmd:. catplot rep78}{p_end}
+{p 4 8 2}{cmd:. catplot rep78, blabel(bar, pos(base) size(4)) bar(1, bfcolor(none)) ysc(off)}{p_end}
+{p 4 8 2}{cmd:. catplot rep78 foreign}{p_end}
+{p 4 8 2}{cmd:. catplot rep78 foreign, nofill}{p_end}
+{p 4 8 2}{cmd:. catplot rep78, by(foreign) percent(foreign)}{p_end}
+{p 4 8 2}{cmd:. catplot rep78, by(foreign) percent(foreign) recast(bar)}{p_end}
+{p 4 8 2}{cmd:. catplot rep78 foreign, percent(foreign) bar(1, bcolor(blue)) blabel(bar, position(outside) format(%3.1f)) ylabel(none) yscale(r(0,60))}
+
+{p 4 8 2}{cmd:. gen himpg = mpg > 25}{p_end}
+{p 4 8 2}{cmd:. label def himpg 1 "mpg > 25" 0 "mpg <= 25"}{p_end}
+{p 4 8 2}{cmd:. label val himpg himpg}{p_end}
+{p 4 8 2}{cmd:. catplot himpg rep78 foreign}{p_end}
+{p 4 8 2}{cmd:. catplot rep78 foreign, by(himpg, col(1) note("")) subtitle(, pos(9) ring(1) bcolor(none) nobexpand place(e))}{p_end}
+{p 4 8 2}{cmd:. catplot rep78 foreign, recast(dot) by(himpg, col(1) note("")) subtitle(, pos(9) ring(1) bcolor(none) nobexpand place(e))}{p_end}
+{p 4 8 2}{cmd:. catplot rep78 foreign, recast(bar) by(himpg, row(1) note("")) subtitle(, pos(6) ring(1) bcolor(none) nobexpand)}
+
+{p 4 8 2}{cmd:. catplot rep78, var1opts(sort(1)) }{p_end}
+{p 4 8 2}{cmd:. catplot rep78, var1opts(sort(1) descending) }{p_end}
+
+{p 4 4 2}(Titanic data){p_end}
+{p 4 8 2}{cmd:. use titanic, clear}{p_end}
+{p 4 8 2}{cmd:. collapse survived, by(age sex class)}{p_end}
+
+{p 4 8 2}{cmd:. catplot age sex [aw=100*survived],  by(class, compact note("") col(1)) bar(1, blcolor(gs8) bfcolor(gs14)) blabel(bar, format(%4.1f) pos(base))}
+{cmd: subtitle(, pos(9) ring(1) bcolor(none) nobexpand place(e)) ytitle(% survived from Titanic, place(e)) var1opts(gap(0)) var2opts(gap(*.2)) outergap(*.2) ysize(5) yla(0(25)100, glcolor(gs14) glw(*.5))}
+
+{p 4 8 2}{cmd:. catplot age sex [aw=100*survived],  by(class, compact note("") col(1) ) bar(1, blcolor(gs8) bfcolor(pink*.2)) blabel(bar, format(%4.1f) pos(base))}
+{cmd: subtitle(, pos(9) ring(1) bcolor(none) nobexpand place(e)) ytitle(% survived from Titanic) var1opts(gap(*0.1) axis(noline)) var2opts(gap(*.2)) ysize(5) yla(none) ysc(noline)  plotregion(lcolor(none))}
+
+
+{title:Author}
+
+{p 4 4 2}Nicholas J. Cox, Durham University{break} 
+         n.j.cox@durham.ac.uk
+
+	 
+{title:Acknowledgments} 
+
+{p 4 4 2}The first version of {cmd:catplot} was written and revised in
+2003 and 2004.  At that time, Vince Wiggins provided very helpful
+comments, Fred Wolfe asked for sorting and David Schwappach provided
+feedback on limitations. During revision in 2010, Vince Wiggins and 
+Ron{c a'}n Conroy made encouraging noises. 
+
+
+{title:Also see}
+
+{p 4 8 2}On-line:  help for {help graph_hbar:graph hbar}; 
+{help graph_bar:graph bar}; {help graph_dot:graph dot}; {help histogram}; 
+{help tabplot} (if installed)
+

@@ -1,0 +1,67 @@
+*! cddrop_vars.dlg
+*! version 1.0.0 July 22, 2006 @ 09:15:20
+*! sponged completely from version 2.0.0 of drop_vars.dlg (Stata Corp)
+VERSION 9.0
+
+INCLUDE _std_medium
+INCLUDE header
+HELP hlp1, view("help ckdrop")
+RESET res1
+
+DIALOG main, label("ckdrop - Keep or drop variables")			///
+	tabtitle("Main")
+BEGIN
+  GROUPBOX gb_type		_lft	_top	_iwd	_ht4,		///
+  	label("Keep or drop variables")
+  RADIO    rb_keep		_indent	_ss	_inwd	.,		///
+  	label("Keep variables") first					///
+  	onclickon(script main_keep_on)
+  RADIO    rb_drop		@	_ss	@	.,		///
+  	label("Drop variables") last					///
+  	onclickon(program main_drop_on)
+
+  TEXT     tx_vars		_lft	_xls	_iwd	.,		///
+  	label("Variables to keep:")
+  VARLIST  vl_vars		@	_ss	@	.,		///
+  	label("Variables to keep")
+  CHECKBOX ck_all		@	_ls	@	.,		///
+  	label("Drop all variables") 					///
+  	onclickon(main.vl_vars.disable)					///
+  	onclickoff(main.vl_vars.enable)
+END
+
+SCRIPT main_keep_on
+BEGIN
+	main.tx_vars.setlabel "Variables to keep:"
+	main.vl_vars.setlabel "Variables to keep"
+	main.vl_vars.enable
+	main.ck_all.hide
+END
+
+PROGRAM main_drop_on
+BEGIN
+	call main.tx_vars.setlabel "Variables to drop:"
+	call main.vl_vars.setlabel "Variables to drop"
+	call main.ck_all.show
+	if main.ck_all {
+		call main.vl_vars.disable
+	}
+END
+
+PROGRAM command
+BEGIN
+	if main.rb_keep {
+		put "ckkeep "
+	}
+	if main.rb_drop {
+		put "ckdrop "
+	}
+	if main.rb_drop & main.ck_all {
+		stopbox rusure "This will drop all variables. Do you wish to continue?"
+		put "_all"
+		exit
+	}
+
+	require main.vl_vars
+	put main.vl_vars
+END

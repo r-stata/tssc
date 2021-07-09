@@ -1,0 +1,68 @@
+{smcl}
+{* 8mar2006} 
+{hline}
+help for {hi:numids}
+{hline}
+
+{title:Generating numeric identifiers for neighbours}
+
+{p 8 17 2} 
+{cmd:numids}
+{it:locivar locjvar}
+{cmd:,}
+{cmdab:g:enerate(}{it:numid1var numid2var}{cmd:)} 
+  
+
+{title:Description} 
+
+{p 4 4 2} 
+{cmd:nunids} converts spatial neighbourhood information of the form 
+
+{p 8 8 2}{it:locivar  locjvar}{p_end}
+{p 8 8 2}{hline 7}{space 1}{hline 7}{p_end}
+        123      456
+        678      901
+
+{p 4 4 2}or of the form 
+
+        "TX"     "OK"
+        "TX"     "NM"
+
+{p 4 4 2} 
+that is, using any numeric or string identifiers, into identifiers 
+that are observation numbers 1, ..., _N. The order will be the sort 
+order of {it:locivar}. 
+    
+
+{title:Remarks}
+
+{p 4 4 2} 
+{cmd:numids} is a utility for users of {cmd:spautoc}. 
+
+{p 4 4 2}
+It is assumed that every pair of neighbours is recorded twice, once as
+i and j, once as j and i. If not, use {cmd:dupneigh} first. 
+
+
+{title:Options}
+
+{p 4 8 2}{cmd:generate(}{it:numid1var numid2var}{cmd:)} specifies two new variables
+to contain numeric identifiers. It is a required option. 
+
+
+{title:Examples}
+
+{p 4 8 2}{cmd:. numids i j , gen(ni nj)}
+
+
+{title:Author}
+
+{p 4 4 2}Nicholas J. Cox, Durham University, U.K.{break} 
+         n.j.cox@durham.ac.uk
+
+
+{title:Also see}
+
+{p 4 13 2} 
+On-line: help for {help spautoc}, {help dupneigh}, {help neigh} 
+

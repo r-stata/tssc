@@ -1,0 +1,67 @@
+{smcl}
+{* July 2008}{...}
+{hline}
+{cmd:help for paverage} 
+{hline}
+
+{title:Title}
+
+{p 4 8 2}
+{bf:paverage --- Generates series of averages in a panel dataset.}
+
+{title:Syntax}
+
+{phang}
+{cmd: paverage} {helpb varlist}{cmd:,} {opt p(#)} {opth ind:iv(varname)} {opth yr(varname)}
+
+
+{title:Description}
+
+
+{pstd}{cmd:paverage} (pronounced p-average) generates series of averages in a panel dataset. In the process,  
+the labels of the original variables, if present, are attached to the average variables. The time period must 
+be a multiple of the subperiod over which averages need to be calculated. Using series of averages is a common 
+way of reducing business-cycle effects and measurement error when analyzing a panel dataset with a long time 
+period.{p_end}
+
+{pstd}
+A side-effect of taking variable averages is that some variations in the data will be lost.
+
+{pstd}
+Note that {cmd:paverage} works on any yearly compiled {it:balanced} panel datasets.
+
+
+{title:Options}
+
+{dlgtab:Options}
+
+
+{pstd}
+{opt p(#)} indicates the number of years over which averages need to be calculated. # ranges from 2 to 10. For example, specifying p(5) 
+will create a 5-year average dataset.
+
+{pstd}
+{opth ind:iv(varname)} indicates the identifier variable which may hold country, individual, or firm names or identification numbers.
+
+{pstd}
+{opth yr(varname)} specifies the variable containing the years.
+
+
+{dlgtab:Example}
+
+{phang}{cmd:. paverage gdp fdi import trade, p(5) indiv(countryname) yr(year)}
+ 
+
+{title:Author}
+
+{p 4 4 2}{hi: P. Wilner Jeanty}, Dept. of Agricultural, Environmental, and Development Economics,{break} 
+           The Ohio State University{break}
+           
+{p 4 4 2}Email to {browse "mailto:jeanty.1@osu.edu":jeanty.1@osu.edu} for any comments or suggestions.
+
+
+{title:Also see}
+
+{p 4 13 2}Manual: {hi:[D] collapse} 
+{p 4 13 2}Online: {helpb collapse}, {helpb egen}
+

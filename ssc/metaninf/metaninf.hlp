@@ -1,0 +1,174 @@
+.-
+help for ^metaninf^                                     version 1.0.2
+.-
+
+Influence of a single study in meta-analysis estimation
+-------------------------------------------------------
+
+    ^metaninf^ varlist [^if^ exp] [^in^ range] [, ^fixed fixedi random randomi^
+             ^rr or rd peto cornfield hedges cohen glass nosta^ndard 
+             ^label(^label_vars^) il^evel^(^#^) ol^evel^(^#^) notable nograph^ 
+             ^sav^e^(^varname [^, replace^]^)^ ]
+
+
+Description
+-----------
+
+^metaninf^ investigates the influence of each individual study on the overall 
+meta-analysis summary estimate. The command presents a table and a graph of 
+the results of an influence analysis in which the meta-analysis is reestimated
+omitting each study in turn.  
+
+The table numerically provides the results, with the rows of the table being
+the meta-analysis of all studies except the "omitted" study named in that row,
+and the usual, full meta-analysis (omitting none of the studies) being given 
+as the "combined" results at the bottom of the table.
+
+The graph visually provides the same results in a plot, naming the omitted 
+study on the left margin and presenting the resulting "omitted" meta-analytic 
+summary statistics as a horizontal confidence interval. The full, "combined" 
+results are shown as the solid vertical lines.
+
+No formal test of influence is given; rather, the program provides and displays
+results to which some general guidelines can be applied to assess influence.
+One such guideline is that an individual study is suspected of excessive 
+influence if the point estimate of its "omitted" analysis lies outside the
+confidence interval of the "combined" analysis.  Another quideline is that a
+study is excessively influential if its "omitted" meta-analytic estimate 
+differs in significance relative to the "combined" analysis.  Neither of these
+quidelines provides definitive proof that such a study should, or should not, 
+be removed from the analysis; they merely provide a suggestion that some 
+attention be paid to potential reasons for its influence.
+
+^metaninf^ uses program ^metan^ as its meta-analysis engine and its options are
+a direct subset of ^metan^'s. It is expected that users will merely edit a ^metan^
+command line by adding the "inf" suffix to the program name to run ^metaninf^.
+
+Like ^metan^, ^metaninf^ requires either four or six variables to be declared. 
+When four variables are specified, analysis of binary data is performed.  
+When six variables are specified, the data are assumed continuous.
+
+Binary data is presented as the 4 cell counts (a b c d) of a 2x2 table where
+a and b are the number of event & no-event subjects in the intervention group
+and c and d are similar numbers for the control group.
+
+    . ^metaninf a b c d^
+
+Continuous data is presented as 6 values: the n, mean and sd for the treatment
+(or intervention) group followed by similar values for the control group.
+
+    . ^metaninf nt mt sdt nc mc sdc^
+
+
+Options
+-------
+
+Scaling and pooling options
+---------------------------
+
+Options for binary data
+
+   ^rr^ pools risk ratios (the default).
+
+   ^or^ pools odds ratios.
+
+   ^rd^ pools risk differences.
+
+   ^fixed^ specifies a fixed effect model using the method of Mantel & Haenszel
+     (the default).
+
+   ^fixedi^ specifies a fixed effect model using the inverse variance method.
+
+   ^peto^ specifies that Peto's assumption free method is used to pool odds 
+     ratios.
+
+   ^random^ specifies a random effects model using the method of DerSimonian &
+     Laird, with the estimate of heterogeneity being taken from the
+     Mantel-Haenszel model.
+
+   ^randomi^ specifies a random effects model using the method of DerSimonian &
+     Laird, with the estimate of heterogeneity being taken from the inverse
+     variance fixed effect model.
+
+   ^cornfield^ computes confidence intervals for odds ratios by the method of 
+     Cornfield, rather than the (default) Woolf method.
+
+
+Options for continuous data
+
+   ^cohen^ pools standardized mean differences by the method of Cohen 
+     (the default).
+
+   ^hedges^ pools standardized mean differences by the method of Hedges.
+
+   ^glass^ pools standardized mean differences by the method of Glass.
+
+   ^nostandard^ pools unstandardized mean differences.
+
+   ^fixed^ specifies a fixed effect model using the inverse variance method
+     (the default).
+
+   ^random^ specifies a random effects model using the DerSimonian & Laird 
+     method.
+
+
+General output options
+----------------------
+
+   ^label(^[^namevar^=namevar] [^, yearvar^=yearvar]^)^
+     labels the data by its name, year or both. However, neither option 
+     is required. For the table display the overall length of the label is
+     restricted to 16 characters.
+
+   ^ilevel()^ specifies the significance level (eg 90,95,99) for the 
+     individual trial confidence intervals.
+
+   ^olevel()^ specifies the significance level (eg 90,95,99) for the 
+     overall (pooled) confidence intervals.
+
+     ^ilevel^ and ^olevel^ need not be the same, and by default are equal 
+     to the significance level specified using the ^set level^ command.
+       
+   ^notable^ prevents display of the table of results.
+
+   ^nograph^ prevents display of the graph.
+   
+   ^save(^varname [^, replace^]^)^ saves the jackknifed estimates.
+
+
+Note
+----
+
+To run ^metaninf^, the ^metan^ command [STB-44: sbe24] must be installed.
+
+
+Acknowledgements
+----------------
+
+^metaninf^ is a direct rip-off of ^metainf^ (by Aurelio Tobias; see STB-47: sbe26;
+STB-56: sbe26.1).  It blatently uses ^metan^ (by Michael J Bradburn, Jonathan J 
+Deeks and Douglas G Altman; see STB-44: sbe24) as its meta-analysis calculation
+engine and ^mhplot^, a slight variation of ^hplot^ (by Nicolas Cox), as its 
+graphic engine.  The current author is indebted to the above authors for all 
+their hard work, thus allowing this program to be written with no apparent 
+personal intellectual input.  Thanks guys!
+
+
+Examples
+--------
+
+    . ^metaninf a b c d, fixedi or label(namevar=studyid, yearvar=year)^ 
+    . ^metaninf nt mt sdt nc mc sdc, cohen notable^ 
+
+
+Author
+------
+
+       Thomas J Steichen, steichen@triad.rr.com
+
+
+Also see
+--------
+
+On-line:  help for @metan@, and if installed: @metainf@, @meta@, @metareg@, @metacum@,
+          @metabias@, @metatrim@, @metap@, @galbr@, @funnel@, @labbe@, and @hplot@.

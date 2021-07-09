@@ -1,0 +1,59 @@
+{smcl}
+{* 18 June 2003}{...}
+{hline}
+help for {hi:tabcount7}
+{hline}
+
+{title:Tabulate frequencies, with zeros explicit}
+
+{p 2 11}
+{cmd:tabcount7}
+{it:varname} 
+[{cmd:if} {it:exp}] 
+[{cmd:in} {it:range}] 
+{cmd:,}
+{cmdab:v:alues(}{it:value list}{cmd:)}
+
+{p}{cmd:by ... :} may be used with {cmd:tabcount7}; see {cmd:help by}.  
+
+  
+
+{title:Description}
+
+{p}{cmd:tabcount7} tabulates frequencies. Its one distinctive feature 
+is that zero frequencies -- of one or more specified values -- are    
+shown explicitly. 
+
+{p}{cmd:tabcount7} was called {cmd:tabcount}. Stata 8 users 
+are recommended to use the much more general {cmd:tabcount} from 
+SSC. 
+
+
+{title:Options}
+
+{p 0 4}{cmd:values(}{it:value list}{cmd:)} specifies a list of values 
+whose frequencies (zero or more) are to be shown. Numeric values
+may be (strictly, must be) shown as a {help numlist}. String values 
+containing spaces or double quotes should be in double quotes
+or compound double quotes. This is a required option. 
+
+
+{title:Examples}
+
+{p 4 8}{inp:. tabcount7 rep78, v(1/5)}
+
+{p 4 8}{inp:. bysort foreign: tabcount7 rep78, v(1/5)}
+
+
+{title:Author} 
+
+        Nicholas J. Cox, University of Durham, U.K.
+        n.j.cox@durham.ac.uk
+
+
+{title:Acknowledgements} 
+
+	Kit Baum made many useful comments on a more general 
+	version of this problem. 
+
+	 

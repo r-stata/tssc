@@ -1,0 +1,309 @@
+{smcl}
+{* 31jul2008}{...}
+{cmd:help pv} {right:also see:  {help pvtest}}
+{hline}
+
+{title:Title}
+
+{p2colset 5 11 19 2}{...}
+{p2col :{hi:pv} {hline 2}}Estimation with plausible values{p_end}
+{p2colreset}{...}
+
+{title:Syntax 1}
+
+{p 8 21 2}{cmdab:pv}{cmd:,} {cmdab:pv}{cmd:(}{varlist}{cmd:)} [{it:options}]: {it:command 1} ||| {it:command 2} ||| {it:command 3} ...
+
+{p 8 8 2}where {it:command} is any valid stata command with @pv specifying the locations of the plausible value in the command.  See examples below.
+
+{title:Syntax 2}
+
+{p 8 21 2}{cmdab:pv} [{indepvars}] {ifin} {weight} {cmd:,} {cmdab:pv}{cmd:(}{varlist}{cmd:)} [{it:options}]
+
+{p 8 21 2}For help with syntax 2 see {helpb pv0}
+
+
+{synoptset 22 tabbed}{...}
+{synopthdr}
+{synoptline}
+{syntab :Main}
+
+{synopt :{cmdab:pv}{cmd:(}{it:varlist}{cmd:)}}set of plausible values for a latent variable{p_end}
+{synopt :{cmdab:pv1}{cmd:(}{it:varlist}{cmd:)}}set of plausible values for an optional second latent variable{p_end}
+{synopt :{cmdab:pv2}{cmd:(}{it:varlist}{cmd:)}}set of plausible values for an optional third latent variable{p_end}
+{synopt :{cmdab:mdd}}multi-dimensional draws for all sets of plausible values{p_end}
+{synopt :{cmdab:mdd1}}multi-dimensional draws for the second and third sets of plausible values only{p_end}
+{synopt :{cmdab:rclass}}specifies the command is an r-class commands (like {helpb margins}){p_end}
+{synopt :{cmdab:@pv}}Specifies in {it:command} where to place the plausible values from {opt pv}.  See examples below.{p_end}
+{synopt :{cmdab:@1pv}}Specifies in {it:command} where to place the plausible values from {opt pv1}.  See examples below.{p_end}
+{synopt :{cmdab:@2pv}}Specifies in {it:command} where to place the plausible values from {opt pv2}.  See examples below.{p_end}
+
+{syntab :VCE Balanced Repeated Replicates (e.g.: PISA)}
+{synopt :{cmdab:brr}}specifies Balanced Repeated Replication (BRR) be used for VCE{p_end}
+{synopt :{cmdab:weight}{cmd:(}{it:varname}{cmd:)}}Main sampling weight to be used{p_end}
+{synopt :{cmdab:rw}{cmd:(}{it:varlist}{cmd:)}}BRR replicate weights to be used{p_end}
+{synopt :{cmdab:fays}{cmd:(}{it:real}{cmd:)}}Fay's adjustment{p_end}
+{synopt :{cmdab:@w}}Specifies in {it:command} where to place the main weight and replicate weights.  See examples below.{p_end}
+
+{syntab :VCE Jackknife without replicate weights (e.g.: TIMSS or PIRLS)}
+{synopt :{cmdab:jrr}}specifies Jackknife be used for VCE{p_end}
+{synopt :{cmdab:weight}{cmd:(}{it:varname}{cmd:)}}Main sampling weight to be used{p_end}
+{synopt :{cmdab:jkzone}{cmd:(}{it:varname}{cmd:)}}Sampling zone variable{p_end}
+{synopt :{cmdab:jkrep}{cmd:(}{it:varname}{cmd:)}}Zone replicate weight variable{p_end}
+{synopt :{cmdab:@w}}Specifies in {it:command} where to place the main weight and replicate weights.  See examples below.{p_end}
+
+{syntab :VCE Jackknife with replicate weights (e.g.: PIAAC)}
+{synopt :{cmdab:jrr}}specifies Jackknife be used for VCE{p_end}
+{synopt :{cmdab:weight}{cmd:(}{it:varname}{cmd:)}}Main sampling weight to be used{p_end}
+{synopt :{cmdab:rw}{cmd:(}{it:varlist}{cmd:)}}Replicate weights to be used{p_end}
+{synopt :{cmdab:jk}{cmd:(}{it:real}{cmd:)}}Specifies either delete-one jackknife (1) or paired jackknife (2) be used.{p_end}
+{synopt :{cmdab:@w}}Specifies in {it:command} where to place the main weight and replicate weights.  See examples below.{p_end}
+
+{syntab :VCE Aggregation}
+{synopt :{cmdab:timss}}specifies TIMSS formula for aggregating VCE be used{p_end}
+{synopt :{cmdab:pirls}}specifies PIRLS formula for aggregating VCE be used{p_end}
+{synoptline}
+
+{p2colreset}{...}
+{p 4 6 2}
+See {help pvtest} for post estimation hypothesis testing.{p_end}
+{p 4 6 2}
+The default VCE utilizes the VCE reported by the command for each plausible value.{p_end}
+
+
+{title:Description}
+
+{pstd}
+{opt pv} estimates statistics when there are multiple estimates (or imputations) of a variable
+(which are referred to as plausible values in the student assessment literature) using Rubin's (1987) combination methods.
+This program can be used with any statistics estimation command. It is specially (but not exclusively) designed
+to be used with the PISA, TIMSS and PIRLS student achievement datasets as well as the OECD's PIAAC and World Bank's STEP household survey data.
+{p_end}
+
+{pstd}
+{opt pv} acts as a prefix.  Commands specified after the pv command are computed for each plausible value specified in option {opt pv}.
+For each plausible value, the characters @pv specified in each command are replaced with the plausible value (see examples below).
+{p_end}
+
+{pstd}
+If more than one set of plausible values are specified (using option {opt pv1} or {opt pv2} then the commands are computed for every combination
+of plausible values.  If {opt mdd} is specified, then the different sets of plausible values are treated as doubles or triples (see below).
+{p_end}
+
+{pstd}
+The VCE can be calculated in one of three ways. The default is to use the sampling variance reported by the last command.  The second approach is
+balanced repeated replicates (BRR) as used in PISA.  The third approach is Jackknife which can either be used without pre-determined replicate
+weights (as in TIMSS or PIRLS) or with pre-determined replicate weights as in PIAAC.
+{p_end}
+
+{pstd}
+See the Formulas section below.
+{p_end}
+
+{title:Options}
+
+{dlgtab:Main}
+
+{phang}
+{cmdab:pv}{cmd:(}{it:varlist}{cmd:)} the list of plausible values for a latent variable.
+  See examples below on how to specify the latent variable as a dependent or independent variable.
+
+{phang}
+{cmdab:pv1}{cmd:(}{it:varlist}{cmd:)} the list of plausible values for a second latent variable.
+
+
+{phang}
+{cmdab:pv2}{cmd:(}{it:varlist}{cmd:)} the list of plausible values for a third latent variable.
+
+{phang}
+{cmdab:mdd} multi-dimensional draws: if more than one latent variable is included (i.e.: {opt pv1} or {opt pv2} is specified), {opt mdd}
+specifies that the plausible values for all the latent variables were generated as a single draw from a multi-dimensional posterior distribution
+(e.g.: achievement sub-domains in TIMSS).
+If ommitted, it is assumed that the plausibe values for the different latent variables were drawn independently (e.g.: math and science achievement in TIMSS).
+If {opt mdd} is specified, the number of plausible vales for each latent variable must be the same and must be in the same order: the first plausible value
+of latent variables {opt pv}, {opt pv1} and (if included) {opt pv2} are all from the same draw, as are the second, third, etc.  Each {it:command} is executed for each 
+draw of plausible
+values.  If {opt mdd} is not specified, plausible values of the latent variables can be in any order and each {it:command} is executed for every combination of
+plausible values.  This option is not applicable unless {opt pv1} or {opt pv2} is specified.
+
+{phang}
+{cmdab:mdd1} multi-dimensional draws: this specifies that the plausible values for
+ the second and third latent varabiables (specified in the pv1 and pv2 options) were drawn together and seperately from the first latent
+variable (specified in the pv option).
+
+{phang}
+{cmdab:rclass} r-class command: this specifies that the command to collect the data from is an r-class command.
+
+
+{dlgtab:VCE Balanced Repeated Replicates}
+
+{phang}
+{cmdab:brr} specifies that Balanced Repeated Replication be used for estimating the sampling variance.
+
+{phang}
+{cmdab:rw}{cmd:(}{it:varlist}{cmd:)} specifies the variable list of replicate weights to be used. In PISA 2000,
+2003, 2006 and 2009 these variables are w_fstr1 - w_fstr80.
+
+{phang}
+{cmdab:fays}{cmd:(}{it:real}{cmd:)} is the Fay's adjustment. In PISA 2000, 2003, 2006, and 2009 this is 0.5.
+
+{phang}
+{cmdab:weight}{cmd:(}{it:varname}{cmd:)} The sampling weight to be used.  In PISA this is w_fstuw.
+
+
+{dlgtab:VCE Jackknife without replicate weights}
+
+{phang}
+{cmdab:jrr} specifies that Jackknife be used for estimating the sampling variance where replicate weights are not specified.
+
+{phang}
+{cmdab:jkzone}{cmd:(}{it:varname}{cmd:)} is a categorical variable that specifies the sampling zone; for TIMSS and PIRLS
+this variable is jkzone.
+
+{phang}
+{cmdab:jkrep}{cmd:(}{it:varname}{cmd:)} is a binary variable that specifies the observation's weighting within its zone; for
+TIMSS and PIRLS, this variable is jkrep.
+
+{phang}
+{cmdab:weight}{cmd:(}{it:varname}{cmd:)} The sampling weight to be used.  In TIMSS this could be totwgt, matwgt, sciwgt, etc.
+
+
+{dlgtab:VCE Jackknife with replicate weights}
+
+{phang}
+{cmdab:jrr} specifies that Jackknife be used for estimating the sampling variance where replicate weights are provided (as in PIAAC).
+
+{phang}
+{cmdab:jk}{cmd:(}{it:real}{cmd:)} specifies either (1) delete-one jackknife or (2) paired jackknife.  The default is 1.
+
+{phang}
+{cmdab:rw}{cmd:(}{it:varlist}{cmd:)} specifies the variable list of replicate weights to be used.
+
+{phang}
+{cmdab:weight}{cmd:(}{it:varname}{cmd:)} The sampling weight to be used.
+
+
+{dlgtab:VCE Aggregation}
+
+{phang}
+{cmdab:timss} tells the program to aggregate the VCE according to the formula on 2-52 of IEA (2005).
+
+{phang}
+{cmdab:pirls} tells the program to aggregate the VCE according to the formula on 2-52 of IEA (2005); see
+the description of formulas below.
+
+{title:Examples}
+
+
+{pstd}
+Estimating statistics with PISA
+
+{phang2}{cmd:. pv, pv(pv*math) weight(w_fstuwt) brr rw(w_fstr*) fays(0.5): reg @pv stratio propqual [aw=@w]}{p_end}
+
+{phang2}{cmd:. pvtest stratio=propqual}{p_end}
+
+{phang2}{cmd:. pv, pv(pv*math): svy: reg @pv stratio propqual}{p_end}
+
+{phang2}{cmd:. pv, pv(pv*math): xtmixed @pv wealth schsize || schoolid:}{p_end}
+
+{phang2}{cmd:. pv, pv(pv*math) brr fays(0.5) weight(w_fstuwt) rw(w_fstr*): mean wealth [aw = @w] if @pv < 500}{p_end}
+
+{pstd}
+Estimating statistics with TIMSS and PIRLS
+
+{phang2}{cmd:. pv, pv(asrrea*) jkzone(jkzone) jkrep(jkrep) weight(totwgt) jrr timss: mean @pv [aw=@w]}{p_end}
+
+{phang2}{cmd:. pv, pv(asrrea*) jkzone(jkzone) jkrep(jkrep) weight(totwgt) jrr timss: xi: reg @pv i.asbgsex [aw=@w]}{p_end}
+
+{pstd}
+Estimating statistics with the latent variable as an independent variable
+
+{phang2}{cmd:. pv, pv(pv*math) weight(w_fstuwt) brr rw(w_fstr*) fays(0.5): reg stratio wealth @pv [aw=@w]}{p_end}
+
+{phang2}{cmd:. pvtest pv = wealth}{p_end}
+
+{pstd}
+Estimating statistics with PIAAC 
+
+{phang2}{cmd:. pv, pv(pvlit*) jrr jk(1) weight(spfwt0) rw(spfwt1 - spfwt80): oprobit monthlyincpr @pv [aw = @w]}{p_end}
+
+{pstd}
+Estimating statistics with STEP
+
+{phang2}{cmd:. svyset cluster [pw=W_FinSPwt]}{p_end}
+
+{phang2}{cmd:. pv, pv(l_PVLIT*p): svy: mean extraversion, over(@pv)}{p_end}
+
+{phang2}{cmd:. pv, pv(l_PVLIT*p): svy: oprobit @pv age gender i.ses}{p_end}
+
+{pstd}
+Estimating statistics with more than one command
+
+{phang2}{cmd:. pv, pv(l_PVLIT*p) rclass: svy: oprobit @pv age gender i.ses ||| margins ses, predict(outcome(1)) atmeans grand}{p_end}
+
+{phang2}{cmd:. pv, pv(pvlit*) jrr jk(1) weight(spfwt0) rw(spfwt1 - spfwt80) rclass: oprobit monthlyincpr @pv [aw = @w] ||| margins, predict(outcome(1)) dydx(_all)}{p_end}
+
+{pstd}
+Estimating statistics with more than one latent variable
+
+{phang2}{cmd:. pv, weight(w_fstuwt) pv(pv*math) pv1(pv*read) brr rw(w_fstr*) fays(0.5): reg @pv @1pv [aw = @w]}{p_end}
+
+{phang2}{cmd:. pv, weight(w_fstuwt) pv(pv*read1) pv1(pv*read2) brr rw(w_fstr*) fays(0.5) mdd: reg @pv @1pv [aw = @w]}{p_end}
+
+{phang2}{cmd:. pv, weight(w_fstuwt) pv(pv*math) pv1(pv*read) pv2(pv*scie) brr rw(w_fstr*) fays(0.5): reg @pv @1pv @2pv [aw = @w]}{p_end}
+
+{phang2}{cmd:. pv, weight(w_fstuwt) pv(pv*math) pv1(pv*read1) pv2(pv*read2) mdd1 brr rw(w_fstr*) fays(0.5): reg @pv @1pv @2pv [aw = @w]}{p_end}
+
+{phang2}{cmd:. pvtest pv1 = pv2}{p_end}
+
+{title:Formulas}
+
+{pstd}
+To calculate a statistic that is a function of a latent variable measured by plausible values, 
+Rubin’s (1987) combination rules are used: the statistic is calculated for each plausible value 
+and then averaged.  Its sampling variance is based on the variation between the statistic calculated 
+for each plausible value as well as their sampling variances.  Formulas for the statistic, 
+its standard error, and its distribution can be found in OECD (2005a:79; 2005b:131) and 
+Harringa, West and Berglund (2010:356-357).  The IEA recommends a different formula for calculating 
+the standard error of the statistic for TIMSS and PIRLS data (IEA 2005: pp 2-52) which is implemented
+ by specifying the {opt timss} or {opt pirls} option.
+
+{pstd}The formula for calculating the sampling variance using Balanced Repeated Replicates is found in 
+OECD (2005a:79).  The formula for creating the jackknife replicate weights in the TIMSS and PIRLS data 
+is found in IEA (2005: pp 2-50). 
+
+{pstd}If more than one latent variable is included in the calculation of the statistic then the plausible values
+for each latent variable are either drawn independently from two different posterior distributions or
+together as pairs from a joint posterior distribution.  In the former case, the statistic would be calculated 
+for each combination of plausible values while in the latter case the statistic would be calculated for each 
+ordered pair of plausible values.  Options {opt mdd} and {opt mdd1} are specified for the latter case.
+
+{pstd}PIAAC provides stata modules specially designed for their data: see piaacdes, piaacreg, and piaactab (Artur Pokropek & Maciej Jakubowski 2013).
+
+{title:References}
+
+{phang}Heeringa, West, and Berglund (2010), {it:Applied Survey Data Analysis}, Chapman and Hall/CRC{p_end}
+
+{phang}Lauzon D. (2004), "Variance estimation with plausible value achievement data: Two STATA programs for use with YITS/PISA data",
+{it:Information and Technical Bulletin}, Statistics Canada, Ottawa{p_end}
+
+{phang}IEA (2005), {it:TIMSS 2003 User Guide for the International Database}, IEA, Chestnut Hill, MA {p_end}
+
+{phang}OECD (2005a), {it:PISA 2003 Data Analysis Manual}, OECD, Paris{p_end}
+
+{phang}OECD (2005b), {it:PISA 2003 Technical Report}, OECD, Paris{p_end}
+
+{phang}Rubin, D. B. (1987), {it:Multiple imputations for nonresponse in surveys}, New York, John Wiley and Sons{p_end}
+
+{title:Author}
+
+{pstd}Note that this is a significant revision to the original pv module.  Please send questions, comments or problems to the author, Kevin Macdonald, at kadmacdonald@gmail.com.{p_end}
+
+{title:Also see}
+
+{psee}
+{helpb pvtest}
+
+{title:Version}
+
+{pstd}Last updated 2014-01-25{p_end}
+

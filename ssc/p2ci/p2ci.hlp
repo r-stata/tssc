@@ -1,0 +1,42 @@
+{smcl}
+{* 04feb2005}{...}
+{hline}
+help for {hi:p2ci}
+{hline}
+
+{title:From P-value to Confidence Interval}
+
+{p 4 14 10}{cmd:p2ci} {it:#b} {it:#pval} [{cmd:,} {cmdab:dfr(}{it:#}{cmd:)} {cmdab:l:evel(}{it:#}{cmd:)} {cmdab:f:ormat(%}{it:fmt}{cmd:)} {cmdab:eform} ]{p_end}
+
+{p 4 14 10} where  {p_end}
+
+{p 4 14 10}{it:#b}    is the regression coefficient {p_end}
+{p 4 14 10}{it:#pval} is the p-value of {it:#b} {p_end}
+
+{title:Description}
+
+{p 4 10 10}{cmd:p2ci} provides the standard error and confidence limits of the regression coefficient when only its p-value
+                      is available. It is an immediate command, see help {help immed}.{p_end}
+
+{title:Options}
+
+{p 4 8 2}{cmdab:dfr(}{it:#}{cmd:)} specifies the degrees of freedom if {it:#b} is t-distributed. The default is z-distributed.{p_end}
+
+{p 4 8 2}{cmdab:l:evel(}{it:#}{cmd:)} specifies the width of the confidence interval; see help {help level}.{p_end}
+
+{p 4 8 2}{cmdab:f:ormat(%}{it:fmt}{cmd:)} specifies the display format for presenting numbers.
+{cmd:format(%3.2f)} is the default; see help {help format}.{p_end}
+
+{p 4 8 2}{cmdab:eform} specifies that {it:#b} and confidence limits are to be exponentiated.{p_end}
+
+{title:Examples}
+
+     {cmd:. p2ci .90  0.107 , dfr(48)}
+     {cmd:. p2ci .0457  0.674  }
+     {cmd:. p2ci .0457  0.674  , eform  }
+     {cmd:. p2ci .0457  0.674  , eform  f(%3.2f)}
+
+{title:Support}
+
+{p 4 12}{browse "http://nicolaorsini.altervista.org"}{p_end}
+{p 4 12}{browse "mailto:nicola.orsini@imm.ki.se?subject=info p2ci":nicola.orsini@imm.ki.se}

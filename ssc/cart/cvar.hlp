@@ -1,0 +1,68 @@
+.-
+help for ^cvar^    					Version 5/5/97
+.-
+Programming utility.
+
+Puts ^C^haracteristics of a ^VAR^iable in a new variable and macro's.
+
+ ^cvar^ var [ ^,^ no^m^is ^n^am^(^string^) sel^ect^(^string^)^
+
+Generates 
+
+- an integer variable (if specified by ^select()^) ^`nam'^  with values
+  1,2,3,.., corresponding to the ordered values of var, am. 
+
+and 
+
+- several global macro's 
+
+^$`nam'`i'^ containing the value label of the i-th value of ^var^ (if existing). 
+	If no value label is associated with (the i-th value of) ^var^ it will 
+	contain the value itself. The label is embedded in double quotes " ",
+	unless there is no value label associated with the variable ^var^.
+
+^$v`nam'`i'^ containing the i-th value of ^var^.
+
+^$n`nam'^ the number of different values of ^var^.
+
+^$l`nam'^ the variable label of ^var^ if it exists, otherwise the name of ^var^.
+
+^$f`nam'^ the display format in case ^var^ is not string or has no value label. 
+
+^$w`nam'^ width required to display the $`nam'`i', i.e. max(length("$nam`i'")).
+
+^var^ may be any type of variable.
+
+
+^Options^
+^-------^
+
+[^no^]^mis^  If ^mis^ specified (default) the missing value of ^var^ (or empty 
+	string) will be considered a separate class. If ^nomis^ is specified, 
+	records with ^var^ missing will be ^deleted^! 
+
+^nam()^ specifies the pre- or suffix `nam' for the macro's and the name of the
+	variable that will be generated. ^`nam'^ should not start with an 
+	underscore _, and may be maximum 5 characters long. If not, `nam' will
+	be shortened and/or the underscore removed. If ^nam()^ is not specified
+	it will be the first 4 characters of the name of ^var^, followed by 
+	an underscore _. 
+
+^select()^ offers the possibility to make a selection.
+	If not specified: all macro's and the new variable will be created. 
+	If specified macro's and variable will be created dependent on the 
+	characters present in the string in ^select()^:
+   v|V	           the variable `nam'. ^`nam'^ must be a new varname. 
+   n|N|w|W|f|F 	   all the macro's 
+   l|L		   the l`nam' macro
+		
+
+^Author:^
+^-------^ 
+	Wim van Putten
+	Erasmus MC - Daniel den Hoed Cancer Center
+	Rotterdam
+	The Netherlands
+	FAX: +31.10.4391028
+	e-mail:	w.vanputten@@erasmusmc.nl 
+

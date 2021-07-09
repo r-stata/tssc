@@ -1,0 +1,65 @@
+{smcl}
+{* 2mar2013}{...}
+{hline}
+help for {hi:alignmicro}{right:Jinjing Li (2 Mar 2014)}
+{hline}
+
+{title:Stata module to perform alignment in microsimulation}
+
+{p 4 12}{cmd:alignmicro} {it:varname} [{cmd:if} {it:exp}]
+	{cmd:,} {cmdab:target(}{it:number}{cmd:)} {cmdab:outcome(}{it:varname}{cmd:)} 
+	{cmdab:method(}{it:name}{cmd:)}
+
+
+{title:Description}
+
+{p}{cmd:alignmicro} implements some common microsimulation alignment algorithms for binary variables as described in Li and O'Donoghue (2014).
+The command creates a binary variable as an output, based on the observation's original probability, overall target probability, and the alignment method selected.
+
+{title:Options}
+
+{p 0 4}{cmd:varname} specifies the original probability variable. 
+
+{p 0 4}{cmd:target(}{it:number}{cmd:)} specifies the alignment target. If the target is a probability value (0~1), the specified proportion of the 
+observations will be selected. If the target is an integer value greater than one, the specified number of observations will be selected.
+
+{p 0 4}{cmd:outcome(}{it:varname}{cmd:)} specifies the outcome variable name.
+
+{p 0 4}{cmd:method(}{it:varname}{cmd:)} specifies the alignment method. The following methods are supported.
+
+{p 4 4} {it:ms}: multiplicative scaling {break}
+{it:sidewalk}: Sidewalk method (original) {break}
+{it:sidewalknl}: Sidewalk method with non-linear adjustment (eta = 0.5, lambda = 0.03){break}
+{it:clt}: Central limit theorem approach {break}
+{it:sbp}: Sort by predicted probability {break}
+{it:sbd}: Sort by the difference between predicted probability and random number {break}
+{it:sbdl}: Sort by the difference between logistic adjusted predicted probability and random number
+
+{title:Return Values}
+
+{p 4 4} {it:r(ctime)} reports the total number of seconds used in the alignment operation. {break}
+ {it:r(method)} reports the method used.
+{break}
+
+{title:Examples}
+
+{p 8 8 2}{inp:clear}{break}{inp:set obs 1000}{break}
+{inp:gen simprob = uniform()}{break}
+{inp: alignmicro simprob, target(0.8) outcome(out) method(sbp)}{break}
+{inp:alignmicro simprob, target(200) outcome(out2) method(sbdl)}
+
+
+{title:Author}
+
+{p 4 4}Jinjing Li, The National Centre for Social and Economic Modelling (NATSEM), The Institute for Governance and Policy Analysis (IGPA), University of Canberra, Australia{break}
+{browse "mailto:jinjing.li@canberra.edu.au"}
+
+
+{title:Reference}
+
+{p 4 8} Li, J., & O'Donoghue, C. (2014). Evaluating Binary Alignment Methods in Dynamic Microsimulation Models. 
+{it:Journal of Artificial Society and Simulation}, 17(1) {break}
+{browse "http://ideas.repec.org/a/jas/jasssj/2013-16-3.html"}
+
+
+ 

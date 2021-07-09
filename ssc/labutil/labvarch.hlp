@@ -1,0 +1,153 @@
+{smcl}
+{* 25sept2001}{...}
+{hline}
+help for {hi:labvarch}
+{hline}
+
+{title:Change variable labels}
+
+{p 8 16}{cmd:labvarch} [{it:varlist}] [ {cmd:,} {it:transformation_option}
+{cmdab:d:isplay} {cmd:test} {cmdab:sy:mbol(}{it:str}{cmd:)} ]
+
+{p 12}where {it:transformation_option} is one of
+
+{col 17}{cmdab:u:pper}{col 40}{cmdab:l:ower}
+
+{col 17}{cmdab:pref:ix(}{it:str}{cmd:)}{col 40}{cmdab:postf:ix(}{it:str}{cmd:)} (synonym {cmdab:suff:ix(}{it:str}{cmd:)})
+
+{col 17}{cmdab:pres:ub(}{it:str1 str2}{cmd:)}{col 40}{cmdab:posts:ub(}{it:str1 str2}{cmd:)}
+
+{col 17}{cmdab:bef:ore(}{it:str}{cmd:)}{col 40}{cmdab:aft:er(}{it:str}{cmd:)}
+
+{col 17}{cmdab:fr:om(}{it:str}{cmd:)}{col 40}{cmdab:to(}{it:str}{cmd:)}
+
+{p 16}{cmdab:sub:st(}{it:str1 str2}{cmd:)}{p_end}
+
+{col 17}{cmdab:pred:rop(}{it:#}{cmd:)}{col 40}{cmdab:postd:rop(}{it:#}{cmd:)}
+
+{p 16}{cmdab:t:rim(}{it:#}{cmd:)}
+
+{p 16}{cmdab:m:ap(}{it:string exp}{cmd:)}
+
+
+{title:Description}
+
+{p}{cmd:labvarch} changes variable labels for the variables listed in 
+{it:varlist}.  If not specified, {it:varlist} defaults to {cmd:_all}.
+
+One selected {it:transformation_option} is applied to each variable 
+label for each variable in {it:varlist}.
+
+
+{title:Options}
+
+One of the following {it:transformation_options} should be specified. Where 
+appropriate, remember to use {cmd:" "} to bind strings containing spaces. 
+
+{p 4 25}{cmd:upper}{space 15}
+ converts the variable labels to uppercase{p_end}
+{*}{...}
+{p 4 25}{cmd:lower}{space 15}
+ converts the variable labels to lowercase{p_end}
+{*}{...} 
+{p 4 25}{cmd:prefix(}{it:str}{cmd:)}{space 9}
+ prefixes variable labels with {it:str}{p_end}
+{*}{...}
+{p 4 25}{cmd:postfix(}{it:str}{cmd:)}{space 8}
+ postfixes variable labels with {it:str}.  {cmd:suffix(}{it:str}{cmd:)}
+ is an exact synonym{p_end}
+{*}{...} 
+{p 4 25}{cmd:presub(}{it:str1 str2}{cmd:)}{space 3}
+ replaces the leading string {it:str1} by {it:str2} in variable
+ labels.  {bind:{it:str2} may be empty}{p_end}
+{*}{...}
+{p 4 25}{cmd:postsub(}{it:str1 str2}{cmd:)}{space 2}
+ replaces the trailing string {it:str1} by {it:str2} in variable
+ labels.  {bind:{it:str2} may be empty}{p_end}
+{*}{...} 
+{p 4 25}{cmd:before(}{it:str}{cmd:)}{space 9} selects text before (i.e. deletes
+any text including and after) the first occurrence of {it:str} in variable
+labels. Labels not containing {it:str} are not changed{p_end}
+{*}{...}
+{p 4 25}{cmd:after(}{it:str}{cmd:)}{space 10} selects text after (i.e. deletes 
+any text before and including) the first occurrence of {it:str} in variable 
+labels. Labels not containing {it:str} are not changed{p_end}
+{*}{...}
+{p 4 25}{cmd:from(}{it:str}{cmd:)}{space 11} selects text from (i.e. deletes any 
+text before) the first occurrence of {it:str} in variable labels. Labels not 
+containing {it:str} are not changed{p_end}
+{*}{...}
+{p 4 25}{cmd:to(}{it:str}{cmd:)}{space 13} selects text to (i.e. deletes
+any text after) the first occurrence of {it:str} in variable labels. Labels not
+containing {it:str} are not changed{p_end}
+{*}{...}
+{p 4 4}Thus given the variable label {cmd:foreign==Domestic}, {cmd:before(==)} 
+returns {cmd:foreign}, {cmd:after(==)} returns {cmd:Domestic}, {cmd:to(==)} 
+returns {cmd:foreign==} and {cmd:from(==)} returns {cmd:==Domestic}.{p_end}
+{*}{...} 
+{p 4 25}{cmd:subst(}{it:str1 str2}{cmd:)}{space 4} substitutes (all occurrences
+of) {it:str1} by {it:str2} in variable labels.  {bind:{it:str2} may be empty}{p_end}
+{*}{...} 
+{p 4 25}{cmd:predrop(}{it:#}{cmd:)}{space 10} removes the first {it:#}
+characters from variable labels{p_end}
+{*}{...}
+{p 4 25}{cmd:postdrop(}{it:#}{cmd:)}{space 9} removes the last {it:#}
+characters from variable labels{p_end}
+{*}{...}
+{p 4 25}{cmd:trim(}{it:#}{cmd:)}{space 13} keeps (at most) the first {it:#}
+characters from variable labels, dropping the remaining characters: note that
+{cmd:trim(0)} deletes variable labels{p_end}
+{*}{...} 
+{p 4 25}{cmd:map(}{it:string_exp}{cmd:)}{space 5} specifies a rule for
+building new variable labels from existing variable names.  By default {cmd:@}
+is the placeholder for existing names.  This placeholder can be changed by
+specifying {cmd:symbol( )}.
+
+{p 0 4}{cmd:display} specifies that {cmd: describe} be run to show changes.
+
+{p 0 4}{cmd:test} specifies that each change is displayed but not
+performed.
+
+{p 0 4}{cmd:symbol(}{it:str}{cmd:)} specifies a symbol is to be used as a
+placeholder for the existing name in the map expression.  The
+default is {cmd:@}.  The symbol used should not  include characters
+used in existing variable names.  It is difficult to imagine why
+you might want to use this option.
+
+
+{title:Examples}
+
+{p 4 8}{inp:. labvarch *, lower}
+
+{p 4 8}{inp:. labvarch log*, map(@)}
+ 
+{p 4 8}{inp:. labvarch log*, subst(log "log ")}
+
+{p 4 8}{inp:. labvarch f*, pref("First ")}
+
+{p 4 8}{inp:. labvarch f*, suff(" (first)")}
+
+{p 4 8}{inp:. qui tab rep78, gen(r)}
+
+{p 4 8}{inp:. for any before to after from: labvarch r?, X(==) test}
+
+{p 4 8}{inp:. labvarch d*, before(" ")} (usually, first word selected) 
+
+
+{title:Author}
+
+    Nicholas J. Cox, University of Durham, U.K.
+    n.j.cox@durham.ac.uk
+
+
+{title:Acknowledgements}     
+
+    Fred Wolfe was the stimulus for this program, which is based on 
+    {cmd:renvars}, jointly written by Jeroen Weesie.
+
+
+{title:Also see}
+
+{p 0 20}On-line:  {help label}, {help labedit} (if installed), 
+{help copydesc} (if installed){p_end}
+

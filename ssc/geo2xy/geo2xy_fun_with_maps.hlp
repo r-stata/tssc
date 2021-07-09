@@ -1,0 +1,239 @@
+{smcl}
+{* *! version 1.0.0  31jan2017}{...}
+{cmd:help geo2xy_fun_with_maps}
+{hline}
+
+{title:Title}
+
+{phang}
+{bf:geo2xy} {hline 2} Fun with maps
+
+{pstd}
+This help file contains additional examples of how to produce
+maps with {cmd:geo2xy}. The examples require {cmd:geo2xy}'s ancillary datasets
+in the current directory. Click 
+{stata `"net get geo2xy, from("http://fmwww.bc.edu/repec/bocode/g")"':here}
+to download them.
+
+
+
+{marker world_wiki}{...}
+{title:An Albers projection of the world}
+
+{pstd}
+The following example replicates the map of the world included
+in the Wikipedia entry for the 
+{it:{browse "https://en.wikipedia.org/wiki/Albers_projection":Albers projection}}.
+The projected map was generated using standard parallels of 20 degrees north and 50 degrees north. 
+The map does not include Antarctica.
+
+{pstd}
+The first step is to create a polygon that will cover the coordinate
+bounds of the world map. This is drawn first and filled with blue.
+With all country boundaries overlaid, the areas that are not
+covered depict the oceans and lakes of the world.
+
+{pstd}
+The four line segments that form the map's base polygon (coordinate bounds)
+need to include intermediary points because the projection will distort
+the position of points along the line segments. In the example below, 
+each side of the map is defined using 100 points.
+Note that a polygon starts with a missing point, followed by a series of points.
+The last point closes the loop and has the same coordinates as the start
+point. This base polygon is given an identifier of 0 so as to not conflict
+with the range of values for {cmd:_ID} in the shapefile's coordinates dataset.
+
+{pstd}
+The next step is to create the map's graticule (major coordinate grid).
+The Wikipedia map example depicts 23 meridians and 11 parallels. As with
+the base polygon, these 34 lines need to include intermediary points so
+that each line follows the computed distorsions of the {it:{help geo2xy_albers:albers}}
+projection. Each line is given a negative identifier to avoid conflicts
+with other polygons. Each line starts with missing coordinates.
+
+{pstd}
+The graticule lines are then combined with the map's base polygon and
+with the polygons that define the boundaries of countries. The polygon
+that represents Antarctica is dropped to match the target map.
+Then {cmd:geo2xy} is called to generate projected (x,y) coordinates.
+In order to specify the required standard parallels, all parameters
+must be provided.
+
+{pstd}
+The map is created by overlaying a series of Stata graphs.
+The base map (the polygon with {cmd:_ID == 0}) comes first. 
+To color the area of the polygon, a {helpb twoway area:[G-2] graph twoway area}
+plot is used with a suitable bluish fill color.
+
+{pstd}
+The next plot overlays all the country boundary polygons at once
+(all these have {cmd:_ID > 0}). Since these polygons are also to be filled,
+another {helpb twoway area:[G-2] graph twoway area} plot is used
+with a greenish color palette.
+
+{pstd}
+For Antarctica and Greenland (whose {cmd:_ID} are 7 and 66
+respectively), we color the area in light gray since these
+are mostly covered in ice.
+
+{pstd}
+Continuing to build up the graph, all graticule line segments are
+plotted using a {helpb twoway line:[G-2] graph twoway line} plot.
+These are all identified using a negative value for {cmd:_ID}.
+
+{pstd}
+Finally, a couple of {cmd:line} plots are overlaid to highlight the
+prime meridian (in dark gray) and the equator (in maroon). 
+The remaining options handle the overall appearance of the graph.
+
+{space 8}{hline 27} {it:example do-file content} {hline 27}
+{cmd}{...}
+{* example_start - fun_albers_world}{...}
+	// create a polygon for the coordinate bounds of the map
+	clear
+	input order double(lat lon)
+	1   .     .
+	2  90  -180
+	3  90   180
+	4 -90   180
+	5 -90  -180
+	6  90  -180
+	end
+	gen double next_lat = lat[_n+1]
+	gen double next_lon = lon[_n+1]
+	expand 100 if !mi(lat, next_lat)
+	bysort order: gen double _Y = lat + (next_lat - lat) / 100 * (_n-1)
+	bysort order: gen double _X = lon + (next_lon - lon) / 100 * (_n-1)
+	gen _ID = 0
+	tempfile bounds
+	save "`bounds'"
+
+	// create 23 meridians and 11 parallels, 34 lines in total
+	clear
+	set obs 34
+	gen _ID = -_n
+	gen double _Y = -90 + (180 / 12) * _n if _ID > -12
+	gen double _X = -180 + (360 / 24) * (_n-11) if _ID <= -12
+	expand 102
+	bysort _ID: replace _Y = -90 + 180/100 * (_n-2) if mi(_Y)
+	by _ID: replace _X = -180 + 360/100 * (_n-2) if mi(_X)
+	by _ID: replace _Y = . if _n == 1
+	by _ID: replace _X = . if _n == 1
+	
+	// combine the graticules with the base polygon and the country boundaries
+	append using "`bounds'"
+	append using "geo2xy_world_coor.dta"
+
+	geo2xy _Y _X , gen(ylat xlon) proj(albers, 6378137 298.257223563 20 50 0 0)
+
+	return list
+	local yheight = 6 * `r(aspect)'
+
+	twoway area ylat xlon if _ID == 0, color("20 120 160") nodropbase ///
+	|| ///
+	area ylat xlon if _ID > 0, lwidth(vthin) lcolor(mint) color("20 70 40") ///
+		cmissing(n) nodropbase ///
+	|| ///
+	area ylat xlon if inlist(_ID,7,66), lwidth(vthin) lcolor(gs14) color(gs14) ///
+		cmissing(n) nodropbase ///
+	|| ///
+	line ylat xlon if _ID < 0, lwidth(vthin) lcolor(gs10) cmissing(n) ///
+	|| ///
+	line ylat xlon if _ID == -6, lwidth(vthin) lcolor(maroon) ///
+	|| ///
+	line ylat xlon if _ID == -23, lwidth(vthin) lcolor(gs4) ///
+		xsize(6) ysize(`yheight') ///
+		ylabel(minmax, nogrid) yscale(off) ///
+		xlabel(minmax, nogrid) xscale(off) ///
+		plotregion(margin(small)) graphregion(margin(small)) ///
+		legend(off) name(fun_albers_world)
+{* example_end}{...}
+{txt}{...}
+{space 8}{hline 80}
+{space 8}{it:({stata geo2xy_run fun_albers_world using geo2xy_fun_with_maps.hlp, requires("geo2xy_world_coor.dta") preserve:click to run})}
+
+
+{marker composite_us}{...}
+{title:A composite map of the 48 conterminous states with Alaska and Hawaii}
+
+{pstd}
+The following example creates a map of the U.S.A. using a shapefile
+that is distributed with {cmd:geo2xy}. Requires {cmd:spmap}
+(from SSC, {it:{stata ssc install spmap:click to install}}):
+
+{space 8}{hline 27} {it:example do-file content} {hline 27}
+{cmd}{...}
+{* example_start - fun_composite_all}{...}
+	use "geo2xy_us_data.dta", clear
+
+	spmap using "geo2xy_us_coor.dta", id(_ID)  name(fun_composite_all, replace)
+{* example_end}{...}
+{txt}{...}
+{space 8}{hline 80}
+{space 8}{it:({stata geo2xy_run fun_composite_all using geo2xy_fun_with_maps.hlp, requires("geo2xy_us_data.dta geo2xy_us_coor.dta") preserve:click to run})}
+
+{pstd}
+To move Alaska, Hawaii, and Puerto Rico
+closer to the 48 conterminous states, you could 
+manipulate the geographic coordinates (latitude and longitude) directly 
+but it's better to apply specific map projections first and then scale and move
+each map part to create a final map with a pleasant composition. 
+
+{pstd}
+The example below uses an {it:{help geo2xy_albers:albers}} projection for all parts.
+The {it:{help geo2xy_albers:albers}} has the property that areas on the map are proportional
+to the same areas on the Earth. It is used
+by the USGS to represent the 48 conterminous states as well as for maps of Alaska
+and Hawaii. 
+Note that both Hawaii and Alaska have islands on the other side of
+the International date line so we need to flip the longitudes
+to reconnect each side.
+The example implements the USGS-recommended standard parallels.
+To use these, all parameters must be specified.
+The central meridian is manually computed at mid-longitude.
+
+{space 8}{hline 27} {it:example do-file content} {hline 27}
+{cmd}{...}
+{* example_start - fun_composite}{...}
+	use "geo2xy_us_coor.dta", clear
+
+	// flip longitudes to reconnect Hawaii and Alaska
+	replace _X = cond(_X > 0, _X - 180, _X + 180) if inlist(_ID, 14, 42)
+	
+	// Alaska - USGS recommends standard parallels of 55 and 65 north
+	sum _X if _ID == 14
+	local midlon = (r(min) + r(max)) / 2
+	geo2xy _Y _X if _ID == 14, replace ///
+		proj(albers, 6378137 298.257223563 55 65 0 `midlon')
+	replace _Y = _Y / 3 + 800000 if _ID == 14
+	replace _X = _X / 3 - 1700000 if _ID == 14
+
+	// Hawaii - USGS recommends standard parallels of 8 and 18 north
+	sum _X if _ID == 42
+	local midlon = (r(min) + r(max)) / 2
+	geo2xy _Y _X if _ID == 42, replace ///
+		proj(albers, 6378137 298.257223563 8 18 0 `midlon')
+	replace _Y = _Y / 1.2 + 850000 if _ID == 42
+	replace _X = _X / 1.2 - 800000 if _ID == 42
+	
+	// Puerto Rico
+	geo2xy _Y _X if _ID == 39, replace proj(albers)
+	replace _Y = _Y + 500000 if _ID == 39
+	replace _X = _X + 2000000 if _ID == 39
+
+	// 48 states - USGS recommends standard parallels of 29.5 and 45.5 north
+	sum _X if !inlist(_ID, 14, 42, 39)
+	local midlon = (r(min) + r(max)) / 2
+	geo2xy _Y _X if !inlist(_ID, 14, 42, 39), replace ///
+		proj(albers, 6378137 298.257223563 29.5 45.5 0 `midlon')
+
+	save "xy_coor.dta", replace
+	
+	use "geo2xy_us_data.dta",clear
+	spmap using "xy_coor.dta", id(_ID)  name(fun_composite, replace)
+{* example_end}{...}
+{txt}{...}
+{space 8}{hline 80}
+{space 8}{it:({stata geo2xy_run fun_composite using geo2xy_fun_with_maps.hlp, requires("geo2xy_us_data.dta geo2xy_us_coor.dta") preserve:click to run})}
+
+

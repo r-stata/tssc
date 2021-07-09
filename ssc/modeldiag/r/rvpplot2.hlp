@@ -1,0 +1,84 @@
+{smcl}
+{* 3nov2004}{...}
+{hline}
+help for {hi:rvpplot2}
+{hline}
+
+{title:Plot residuals versus predictor values after model fit}
+
+{p 8 17 2}{cmd:rvpplot2} 
+{it:varname} 
+[ {cmd:,} {it:residualtype} 
+{cmd:force} 
+{cmdab:rsc:ale(}{it:exp}{cmd:)}
+{cmd:lowess}[{cmd:(}{it:lowess_options}{cmd:)}]
+{it:scatter_options}
+{cmd:plot(}{it:plot}{cmd:)} ] 
+
+
+{title:Description}
+
+{p 4 4 2}{cmd:rvpplot2} graphs a residual-versus-predictor plot 
+(a.k.a. independent variable plot, a.k.a. carrier plot), a graph of 
+the residuals versus the specified predictor {it:varname}  
+from the last regression-type model. The residuals are, by default,
+those calculated by {cmd:predict, residuals} or (if the previous estimation
+command was {cmd:glm}) by {cmd:predict, response}. 
+
+{p 4 4 2}{cmd:rvpplot2} is for use after {cmd:regress} and similar commands; 
+see help on the command of interest. It is a generalisation of official Stata's 
+{cmd:rvpplot}. 
+
+
+{title:Options}
+
+{p 4 8 2}{it:residualtype} specifies a type of residual other than the default.
+The following types are currently supported: {cmdab:a:nscombe},
+{cmdab:d:eviance}, {cmdab:l:ikelihood}, {cmdab:p:earson}, {cmdab:r:esiduals},
+{cmdab:resp:onse}, {cmdab:rsta:ndard}, {cmdab:rstu:dent}, {cmdab:s:core},
+{cmdab:w:orking}. 
+
+{p 4 8 2}{cmd:force} allows you to specify a predictor variable 
+not included in the previous model. 
+
+{p 4 8 2}{cmd:rscale(}{it:exp}{cmd:)} specifies a transformed scale on which to
+show the residuals using Stata syntax and {cmd:X} as a placeholder for the
+residual variable name. Thus {cmd:rscale(X^2)} specifies squaring, to show relative
+contribution to residual variance; {cmd:rscale(abs(X))} specifies absolute
+value, to set aside sign; {cmd:rscale(sqrt(abs(X)))} specifies root of absolute
+value, a useful scale on which to check for heteroscedasticity.
+
+{p 4 8 2}{cmd:lowess[(}{it:lowess_options}{cmd:)}] specifies that the residuals 
+will be smoothed as a function of the predictor using {help twoway lowess} 
+(options may be specified).
+
+{p 4 8 2}{it:scatter_options} are options of {help twoway_scatter:twoway scatter}. 
+
+{p 4 8 2}{cmd:plot(}{help plot_option:plot}{cmd:)} provides a way to add other
+plots to the generated graph; see {help plot_option}. 
+
+
+{title:Examples}
+
+{p 4 8 2}{cmd:. reg width length}{p_end}
+{p 4 8 2}{cmd:. rvpplot2 length}
+	
+{p 4 8 2}{cmd:. glm price weight, link(log)}{p_end}
+{p 4 8 2}{cmd:. rvpplot2 weight, anscombe yli(0)}
+
+
+{title:Author}
+
+{p 4 4 2}Nicholas J. Cox, University of Durham, U.K.{break} 
+n.j.cox@durham.ac.uk
+    
+    
+{title:Acknowledgements} 
+
+{p 4 4 2}Kit Baum identified an error in a previous version of this help. 
+
+
+{title:Also see}
+
+{p 4 13 2}On-line:  help for {help scatter}, {help predict}, {help modeldiag}
+

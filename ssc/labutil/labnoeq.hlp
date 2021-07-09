@@ -1,0 +1,53 @@
+.-
+help for ^labnoeq^ 
+.-
+
+Remove text up to and including "==" from variable labels 
+---------------------------------------------------------
+
+    ^labnoeq^ varlist 
+
+Description
+-----------
+
+^labnoeq^ removes text up to and including "==" from the variable labels 
+of the variables in varlist. The labels of any variables whose labels do 
+not contain the text "==" are unaffected. 
+
+Remarks 
+-------
+
+Some Stata commands generate variables and attach to them variable 
+labels of the form 
+
+	"varname == value" 
+	
+or of the form 
+
+	"varname1, varname2 == value" 
+
+This program offers a way of removing the text up to and including "==".
+Note, however, that any variable label which contains "==" will be 
+modified. 
+
+
+Examples
+--------
+
+    . ^tab rep78, gen(rep78_)^ 	
+    . ^labnoeq rep78_?^
+
+    . ^separate weight, by(foreign)^ 
+    . ^labnoeq weight?^ 
+
+
+Author
+------
+
+         Nicholas J. Cox, University of Durham, U.K.
+         n.j.cox@@durham.ac.uk
+
+
+On-line: help for @label@ 
+ Manual: ^[U] 15.6^, ^[R] label^
+

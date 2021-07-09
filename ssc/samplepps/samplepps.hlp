@@ -1,0 +1,120 @@
+{smcl}
+{* 28 May 2008}{...}
+{hline}
+help for {hi:samplepps}{right: Stephen P. Jenkins (June 2005, help revised May 2008))}
+{hline}
+
+{title:Draw random sample, proportional to size, of n cases}
+
+{p 4 12}{cmd:samplepps} {it:newvar} [{cmd:if} {it:exp}] [{cmd:in} {it:range}] 
+	, {cmdab:n:cases(}{it:integer}{cmd:)} {cmdab:s:ize(}{it:sizevar}{cmd:)} 
+	  [{cmdab:with:repl} ]
+
+{title:Description}
+
+{p 4 4}{cmd:samplepps} draws a random sample with {it:ncases} observations from
+the current data set, with probabilities proportional to size (`pps'). The default
+is to select cases without replacement; optionally cases may be selected with 
+replacement. 
+
+{p 4 4}If sampling is without replacement, the variable {it:newvar} is 
+equal to 1 for selected cases, and 0 for non-selected cases. The program returns
+an error if either the number of cases to be selected is greater than the 
+number of valid observations, or if any observation has {it:sizevar}/(SUM_i {it:newvar}) 
+>= 1/{it:ncases}.
+
+{p 4 4}If sampling is with replacement, the variable {it:newvar} is equal to a 
+positive integer for selected cases (the integer is the number of times the case has 
+been selected), and 0 for non-selected cases. For both types of sampling, 
+{it:newvar} is missing if {it:sizevar} is missing.
+
+{p 4 4}If you are serious about drawing random samples, you must first set the 
+random number seed; see {help generate}.
+
+{p 4 4}Methods for sampling with probabilities proportional to size are discussed by 
+Lohr (1999). See also Levy and Lemeshow (1991, chapter 11) and Som (1973, chapter 5), 
+who focus on the with-replacement case. The algorithm used by {cmd:samplepps} 
+for the with-replacement case is the standard `cumulative method'.
+For the without-replacement case, I used an algorithm described by Jean-Yves Pip 
+Courbois (formerly at the University of Washington), orginally due to Madow (1949).
+For more details, see Brewer and Hanif (1983) and Cochran (1977, p. 265) who cites 
+Hartley and Rao (1962) and Madow (1949).
+
+{title:Options}
+
+{p 4 4}{cmd:ncases(}{it:integer}{cmd:)} specifies the number of observations to be selected.
+
+{p 4 4}{cmd:size(}{it:sizevar}{cmd:)} specifies the name of the existing variable summarizing
+`size'.
+
+{p 4 4}{cmd:withrepl} specifies selection with replacement. (If the option
+is specified, a given obs may be selected more than once.)
+
+{title:Saved results}
+
+{p 4 4}{cmd:r(ncases)} is the integer {it:ncases}.
+
+{p 4 4}{cmd:r(nobs)} is the number of valid observations at risk of being sampled.
+
+{p 4 4}{cmd:r(sizevar)} contains the name {it:sizevar}.
+
+{p 4 4}{cmd:r(withrepl)} = 1 if the with-replacement option was specified.
+
+{p 4 4}{cmd:r(sample)} contains the name {it:newvar}.
+
+{title:Examples}
+
+{p 8 12}{inp:. // select a sample of schools with selection probabilities depending on # pupils per school.}
+
+{p 8 12}{inp:. use schools.dta, clear}
+
+{p 8 12}{inp:. set seed 123517}
+
+{p 8 12}{inp:. samplepps pick1, size(n_pupils) n(100) }
+
+{p 8 12}{inp:. samplepps pick2, size(n_pupils) n(50) withrepl }
+
+{title:Acknowledgements}
+
+{p 4 4}Program written with support of ESRC grant number RES-000-22-0995 
+("Social segregation in UK schools: benchmarking with international comparisons").
+For helpful discussions, I thank project colleagues John Micklewright and 
+Sylke Schnepf, and also Philippe Van Kerm. Steven Samuels due my attention to the
+references by Cochran, Hartley and Rao, and Madow. Ben Jann drew my attention to the
+Brewer and Hanif reference.
+
+{title:Author}
+
+{p 4 4}Stephen P. Jenkins, ISER, University of Essex, U.K.{break}
+<stephenj@essex.ac.uk>
+
+
+{title:References}
+
+
+{p 4 8}Brewer, K. R. W. and Muhammad Hanif. 1983. Sampling with Unequal Probabilities. New York: Springer.
+
+{p 4 8}Cochran, William G. 1977. {it:Sampling Techniques, 3rd Edition}. New York: Wiley.
+
+{p 4 8}Madow, William G. 1949. On the theory of systematic sampling. II. {it:Annals of Mathematical Statistics}, 19: 535{c -}545.
+
+{p 4 8}Hartley, H.O. and J.N.K. Rao. 1962. Sampling with unequal probabilities and without replacement. 
+{it:Annals of Mathematical Statistics}, 33: 350{c -}374.
+
+{p 4 8} Levy, Paul S. and Stanley Lemeshow. 1991. {it:Sampling of Populations: Methods and Applications, 2nd edition}.
+New York: John Wiley and Sons.
+
+{p 4 8} Lohr, Sharon L. 1999. {it:Sampling: Design and Analysis}. Pacific Grove CA: Duxbury Press.
+
+{p 4 8} Som, Ranjan K. 1973. {it:Practical Sampling Techniques, second edition, revised and expanded}.
+New York: Marcel Dekker.
+
+
+{title:Also see}
+
+{p 1 14}Manual:  {hi:[S-Z] sample}
+
+{p 0 19}On-line:  help for {help sample}, and {help gsample} if installed. {p_end}
+
+
+

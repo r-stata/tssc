@@ -1,0 +1,78 @@
+{smcl}
+{* *!version 1.0.0 16dec2011}{...}
+{cmd: help margintegrate}
+{hline}
+
+{title:Title}
+{phang}
+{bf: margintegrate} {hline 2} Estimate generalized additive non-parametric functions of two dependent variables; output
+graphical representation of {bf: E(yvar|xvar1)}.
+
+{title:Syntax}
+{phang}
+{cmd:margintegrate} yvar xvar1 xvar2 {ifin} {opt ,} {opt bw(numlist)} [{it:options}]
+{p_end}
+
+{title:Description}
+{pstd}
+{cmd:margintegrate} estimates a non-parametric regression of {it:yvar} on {it:xvar1} and {it:xvar2}, treating the 
+expectation of {bf:yvar|xvar1} as the quantity of interest. It integrates out the effect of the "nuisance" variable 
+xvar2 by means of marginal integration, following the methods outlined in Linton and Neilsen (1996), Tjostheim
+and Auestad (1994); see also Li and Racine (2007, 283-289).
+
+
+{title:Required Argument}
+{phang}
+{opt bw(numlist)} must contain two values, bw_1 and bw_2, the bandwidths for xvar1 and xvar2, respectively. The 
+literature on generalized additive models has suggested using a multiple of the standard deviation as the 
+bandwidth each independent variable of interest (i.e. .7, .9, 1.1 times sd); this solution is not optimal in the
+mean squared error sense, but visual inspection can provide a good guide to appropriate levels of smoothing. 
+
+{title:Options}
+{phang}
+{opt n(integer 50)} contains the number of points at which the estimation will be executed. The maximum is 800; default
+is 50. The marginal integration estimator requires {it: n x n} regression smoothes to get predicted values, so {opt n(100)}
+estimates 10,000 regression smoothes. Points are chosen according to percentile values of the data sorted by xvar1
+and xvar2. 
+
+{phang}
+{opt gen:erate(varlist)} can contain up to two variable names, the first for the predicted value of the estimator,
+the second for the pointwise estimate of the variance.
+
+{phang}
+{opt ci(level)} shows pointwise confidence intervals at specified level, assuming asymptotic normal distribution of
+the expected value. If {opt boot} is not specified, the estimator uses asymptotic variance (see Li and Racine 
+(2007, p.285)) to construct confidence intervals; this expression can be fragile, especially if the support for 
+either of the independent variables is not compact.
+
+{phang}
+{opt boot(integer)} estimates confidence intervals by bootstrapping original data {it:integer} number of times. 
+
+{phang}
+{opt trim(real)} specifies that a total of {it: real} percent of the data will be trimmed for the purposes of estimation;
+trims {it: real/2} percent at top and bottom of the data sorted by xvar1.
+
+{phang}
+{opt nograph} specifies no graphical output: predicted values will be calculated and stored if {opt gen:erate(varlist)}
+is specified; use to incorporate your own graph preferences.
+
+
+{title:Examples}
+{pstd}
+Estimate a locally linear regression of y on x1 and x2 and use the asymptotic variance to show 95% confidence 
+intervals. Use 100 points to in the distribution of x1 and x2 to derive estimates.
+
+{phang2}
+{cmd: . margintegrate y x1 x2, bw(4 5) n(100) ci(95)}
+
+
+{pstd}
+Estimate a locally linear regression of y on x1 and x2 without producing any graphical output, but using
+the bootstrap procedure to estimate pointwise variances. Use 100 points to in the distribution of x1 and x2 to derive 
+estimates.
+{phang2}
+{cmd: . margintegrate y x1 x2, bw(4 5) n(100) boot(50) nograph}
+
+
+
+

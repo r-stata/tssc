@@ -1,0 +1,159 @@
+.-
+help for ^ridder^             [STB-17: ssi5.2; STB-19: ssi5.3; STB-24: ssi5.4]
+.-
+
+Equation solving by Ridders' Method
+-----------------------------------
+
+
+ ^ridder^ fcnmask ^=^ exp_y ^from^ exp_0 ^to^ exp_1 [^tol^ exp_t] [^ltol^ exp_l]
+
+
+where exp_y, exp_0, exp_1, exp_t, and exp_l refer to expressions (but are 
+typically specified as numbers) and where fcnmask is either:
+
+
+	(1)    an expression containing ^X^
+
+	(2)    progname [args] ^X^ [args] ^returns^ {^exp^|^macro^} name
+
+
+If one of ^tol^ or ^ltol^ is omitted, ^ridder^ ignores that constraint.
+^tol 1e-6^ is assumed if neither ^tol^ nor ^ltol^ is specified.
+
+
+
+
+Description
+----------- 
+
+
+^ridder^ finds the value of X such that
+
+		         f(X) = exp_y 
+
+or, more precisely:
+
+	|f(X) - exp_y| < e   and   |x - x_hat| < exp_t
+
+where e = exp_y*max(|exp_y|,1).
+
+The search is carried out over the range exp_0 <= X <= exp_1.  The function
+f() may be specified on the command line (first syntax for fcnmask) or as a
+user-written program (second sytnax).
+
+
+
+
+
+
+
+Example 1
+---------
+
+Find the value of chi-square with 2 degrees of freedom that is just signif-
+icant at the 5% level.
+
+Solution:  Stata's ^chiprob(^d^,^x^)^ function returns the reverse cumulative for
+chi-square value x with d degrees of freedom (e.g., ^chiprob(2,3)^ is .2231, 
+meaning chi-square 2 with 3 degrees of freedom is significant at the 22.3%
+percent level).  Thus, we want to find X such that ^chiprob(2,^X^)^=.05.  From
+knowledge of the chi-square distribution, we know the answer lies between
+3 and 20.  We type:
+
+	. ^ridder chiprob(2,X)=.05 from 3 to 20^
+
+
+
+
+
+
+
+
+
+
+Example 1, second solution
+--------------------------
+
+We define the following program:
+
+	^program define mychi^
+		^global S_1 = chiprob(`1',`2')^
+	^end^
+
+and then type 
+
+	. ^ridder mychi 2 X returns macro S_1 =.05 from 3 to 8^
+
+Alternatively, we define the program
+
+	^program define mychi^
+		^scalar answer = chiprob(`1',`2')^
+	^end^
+
+and then type 
+
+	. ^ridder mychi 2 X returns exp answer =.05 from 3 to 8^
+
+
+Example 2
+---------
+
+Given 
+                       a
+                        t-1              1.1       -2
+	S   =  [ ( -----------   - 2 ) ( ------- ) ]
+        t          sqrt(S   )             a
+                         t-1               t
+
+Let a[1] = 1.5 and a[2], a[3], ..., be 1.  Find S[1] such that S[19]=1/22^^2.
+
+A program to calculate S[t], t=1,...,19 is given S[1] is:
+
+	^program define simul^
+		^drop _all^
+		^set obs 19^
+		^gen a = cond(_n==1,1.5,1)^
+		^gen S = `1' in 1^
+		^replace S=((a[_n-1]/sqrt(S[_n-1])-2)*(1.1/a))^^-2 in 2/l^
+	^end
+
+Typing "^simul .1^" would create the series based on S[1]=.1.
+
+Example 2, continued
+--------------------
+
+We can find S[1] such that S[19]==1/22^^2 by typing:
+
+	. ^ridder simul X returns exp S[19] =1/22^^2 from .001 to .75^
+
+Deciphering:
+
+"^simul X^" means ^ridder^ can calculate values of the function by issuing
+the command ^simul^ followed by the number at which it wants the function 
+evaluated.  ^X^ is a placeholder.
+
+"^returns exp S[19]^" means simul returns the answer as the expression S[19],
+meaning the 19th observation of the data variable S.
+
+"^=1/22^^2^" means we want the answer to be 1/22^^2.
+
+"^from .001 to .75^" means we want to search over the range .001 to .75 for
+the solution.
+
+
+
+
+Author
+------
+
+       Tim McGuire, Stata Corporation
+       EMAIL  tech-support@@stata.com
+
+
+Also see
+--------
+
+   STB:  ssi5.4 (STB-24), ssi5.3 (STB-19), ssi5.2 (STB-17), 
+         ssi5 (STB-16), ssi5.1 (STB-16)
+On-line:  ^help^ for @fcnplot@ (if ssi5.1 installed)

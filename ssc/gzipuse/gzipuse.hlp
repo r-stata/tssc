@@ -1,0 +1,47 @@
+{smcl}
+help for {cmd:gzipuse}                             (Nikos Askitas)
+
+{title:Use and save compressed dta files. Compress .dta files.}
+
+        {cmd:gzipuse filename[.dgz] [,clear]} will use a gzipped dta file.
+        {cmd:gzipsave filename[.dgz] [,replace remove verbose]} will save data in memory to filename.dgz.
+
+{title:Description}
+These three modules are disk space saving utilities. Stata .dta files are known
+to compress well (sizes go down by factors of up to about 20). If you are dealing in 
+volumes of these things it can get expensive...
+The penalty you pay is a small delay when you {cmd:gzipuse} or {cmd:gzipsave}. 
+
+{cmd:gzipuse}:  {cmd:use}s gzipped files ending in .dgz. You may or 
+may not specify the suffix. You may or may not specify the clear option. 
+The bahavior is the one you know from stata's {cmd:use}.
+
+{cmd:gzipsave}:  {cmd:save}s data in memory in compressed form with a 
+.dgz suffix in addition to the .dta. If you specify the replace option 
+it will overwrite existing .dta .dgz files with the same name. The remove option
+removes the .dta file. The verbose option will return the disk saving in 
+percentage if you kept the .dgz file only.
+
+
+
+
+ 
+{title:Technical note}
+
+{cmd:gzipuse} and {cmd:gzipsave} were written and tested on a Unix system. If it 
+does not work directly on windows a small amount of tweaking 
+will get it going there as well.
+
+You can convert existing files into .dgz files by either {cmd:use}ing them and then
+{cmd:gzipsave}ing them or by doing {cmd:! gzip -c filename.dta | filename.dgz}.
+If you have a filename.dgz and you need to restore it into a .dta version just 
+do {cmd:! gzcat -S.dgz  filename.dgz > filename.dta}.
+
+You may need to edit the files and set the paths to your rm, gzip, gzcat commands  correctly.
+We suggest installing ashell (i.e. {cmd:ssc install ashell}) since in its presence 
+the user path will be queried about the paths to the commands.
+{title:Author}
+
+Dr Nikos Askitas, IZA, Bonn, Germany.
+Email: {cmd:nikos@@iza.org}
+

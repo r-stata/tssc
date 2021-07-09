@@ -1,0 +1,35 @@
+d 'TMPDIR': module to indicate the directory Stata is using for a temporary directory
+d
+d tmpdir is designed for programmers who want to know what
+d directory  Stata writes temp files to.  This can be helpful when
+d using the file command to  write intermediary files for a
+d program.  Since spaces in directory names can cause  problems for
+"d programs running in Windows operating system, tmpdir replaces"
+"d directory / subdirectory names that contain spaces, or optionally"
+"d any name  longer than 8 characters, with the first 6 non-space"
+"d characters plus ""~1"" or  ""~2"" (up to ""~4"").  After that it gets a"
+d bit crazy with hexadecimal replacements.  Tmpdir shells out to
+d DOS and finds the short directory name that DOS has come  up
+"d with, so there's no attempt to guess the short name.  This makes"
+d it possible to  use this program on many different versions of
+d Windows and always get the short name right.    Tmpdir works on
+d all operating systems.
+d
+d KW: tempdir
+d KW: directory
+d KW: temporary
+d
+d Requires: Stata version 8.0
+d
+d
+"d Author: Dan Blanchette, The Carolina Population Center, UNC-CH"
+d Support: email  dan_blanchette@@unc.edu
+d
+d Distribution-Date: 20110226
+d
+f tmpdir.ado
+f tmpdir.hlp
+f ./s/shortdir.ado
+f ./s/shortdir.hlp
+f ./c/confirmdir.ado
+f ./c/confirmdir.hlp

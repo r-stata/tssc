@@ -1,0 +1,591 @@
+{smcl}
+{* 21aug2007}{...}
+{hline}
+help for {hi:stpm}{right:Patrick Royston}
+{hline}
+
+{title:Flexible parametric models for survival-time data}
+
+{p 8 17 2}
+{cmd:stpm}
+[{it:varlist}]
+[{cmd:if} {it:exp}]
+[{cmd:in} {it:range}]
+{cmd:,}
+{it:model_complexity}
+{cmdab:sc:ale(}{cmdab:h:azard}|{cmdab:n:ormal}|{cmdab:o:dds)}
+    [{cmd:all}
+    {cmdab:cl:uster(}{it:cluster_var}{cmd:)}
+    {cmdab:l:eft(}{it:leftvar}){cmd:)}
+    {cmdab:ml:maxopts(}{it:ml_maximize_options}{cmd:)}
+    {cmdab:nocons:tant}
+    {cmdab:nolo:g}
+    {cmdab:noorth:og}
+    {cmdab:off:set(}{it:offsetvar}{cmd:)}
+    {cmd:q(}{it:orthog_matrix}{cmd:)}
+    {cmdab:sp:line(}{it:splinevar derivativevar}{cmd:)}
+    {cmdab:st:ratify(}{it:strat_varlist}{cmd:)}
+    {cmdab:tech:nique:(}{it:algorithm_spec}{cmd:)}
+    {cmdab:th:eta(est}|{it:#}{cmd:)}]
+
+{pstd}
+where
+
+{pin}
+{it:model_complexity} is
+{cmd:df(}{it:#}{cmd:)}
+or {cmd:stpmdf(}{it:#}{cmd:)}
+or {cmdab:k:nots(}[{cmd:l}|{cmd:%}]{it:knotlist}{cmd:)}
+or {cmdab:k:nots(u}{it:#1 #2 #3}{cmd:)}.
+
+
+{pstd}
+{cmd:stpm} is for use with survival-time data; see {help st}.  You must have {cmd:stset}
+your data before using this command; see help {help st}. Weights are to be set by
+{cmd:stset}. All weight-types are supported.
+
+{pstd}
+The syntax of {help predict} following {cmd:stpm} is
+
+{p 8 16 2}{cmd:predict} [{it:type}] {it:newvarname} [{cmd:if} {it:exp}]
+	[{cmd:in} {it:range}] [{cmd:,} {it:statistic}
+	{it:at_stuff} {cmdab:nocons:tant} {cmdab:nooff:set} {cmd:stdp}
+	{cmdab:st:ore(}{it:global_macro_name} [{it:#}]{cmd:)}
+	{cmdab:t:ime(}{it:#}|{it:vn}{cmd:)} {cmdab:z:ero}]
+
+
+{pstd}
+where
+{it:at_stuff} is
+	{it:varname #} |{it:vn} [{it:varname #}|{it:vn} ...]{cmd:)} or
+	{cmdab:a:t(}{cmd:@}{it:varname #}|{it:string}{cmd:)} or
+	{cmdab:a:t(}{cmd:+}{it:#}{cmd:)}
+
+{pstd}
+and {it:statistic} is
+
+{p 8 30 2}{cmd:xb} {space 18} index (linear predictor for equation {cmd:[xb]}); the default{p_end}
+{p 8 30 2}{cmdab:cumo:dds} {space 13} log cumulative odds function{p_end}
+{p 8 30 2}{cmdab:cumh:azard} {space 11} log cumulative hazard function{p_end}
+{p 8 30 2}{cmdab:n:ormal} {space 14} Normal deviate function{p_end}
+{p 8 30 2}{cmdab:sp:line} {space 14} fitted spline function{p_end}
+{p 8 30 2}{cmdab:dz:dy} {space 16} derivative of fitted spline function w.r.t. ln(_t){p_end}
+{p 8 30 2}{cmdab:d:ensity} {space 13} density function{p_end}
+{p 8 30 2}{cmdab:dev:iance} {space 12} deviance residuals{p_end}
+{p 8 30 2}{cmdab:h:azard} {space 14} hazard function{p_end}
+{p 8 30 2}{cmdab:mar:tingale} {space 10} martingale residuals{p_end}
+{p 8 30 2}{cmdab:s:urvival} {space 12} survival function{p_end}
+{p 8 30 2}{cmdab:f:ailure} {space 13} failure (cumulative incidence) function{p_end}
+{p 8 30 2}{cmdab:ce:ntile(}{it:#}|{it:varname}{cmd:)} {space 2} {it:#}
+th centile of survival time distribution (or centiles stored in {it:varname}){p_end}
+{p 8 30 2}{cmdab:tv:c(}{it:varname}{cmd:)} {space 9}time-varying 
+coefficient for {it:varname} (see {it:Options for predict}){p_end}
+
+{pstd}
+All statistics are available both in and out of sample; type
+"{cmd:predict} ... {cmd:if e(sample)} ..." if wanted only for the estimation sample. The default is
+linear prediction of the covariate part of the model, i.e. for statistic {cmd:xb}.
+
+{pstd}
+Not all of the options for {cmd:predict} are available with every statistic. The
+SE ({cmd:stdp} option of {cmd:predict}) is not available for every statistic.
+
+
+{title:Description}
+
+{pstd}
+{cmd:stpm} fits spline-based distributional models to right- or interval-censored
+data. {it:varlist} is a set of covariates. Multistate models are also supported.
+
+
+{title:Options for stpm}
+
+{pstd}
+Note that the complexity of the spline part of the model is defined by
+{cmd:df()} or {cmd:stpmdf()} or {cmd:knots()}. Just one
+of these options must be specified.
+
+{phang}
+{cmd:all} includes out-of-sample observations in generated variables which contain
+the spline basis functions.
+
+{phang}
+{cmd:cluster(}{it:cluster_var}){cmd:)} adjusts standard errors for intra-group
+correlation, where the grouping variable is {it:cluster_var}; implies {cmd:robust}
+
+{phang}
+{cmd:df(}{it:#}{cmd:)} specifies the degrees of freedom for the natural spline function. {it:#} must
+    be between 1 and 6. The {cmd:knots()} option is not applicable and the knots are
+    placed at the following centiles of the distribution of the uncensored log
+    times:
+
+        {hline 27}
+        df        Centile positions
+        {hline 27}
+         1        (no knots)
+         2        50
+         3        33 67
+         4        25 50 75
+         5        20 40 60 80
+         6        17 33 50 67 83
+        >6        (not allowed)
+        {hline 27}
+
+{phang}
+{cmd:knots(}[{cmd:l}|{cmd:%}]{it:knotlist}{cmd:)} (syntax 1) defines the internal
+    knot positions for the spline.  If you specify {cmd:knots(}{it:knotlist}{cmd:)} then
+    {it:knotlist} should consist of values of log time. If you specify
+    {cmd:knots(l}{it:knotlist}{cmd:)} then the values in {it:knotlist} are
+    taken to be times and are automatically log transformed by {cmd:stpm}. (This
+    is a convenience feature; it is easier to enter times than log times). If
+    you specify {cmd:knots(%}{it:knotlist}{cmd:)} then the values in {it:knotlist}
+    are taken to be centile positions in the distribution of the uncensored log times.
+    
+{phang}
+{cmd:knots(u}{it:#1 #2 #3}{cmd:)} (syntax 2) also defines the internal knots for the
+    spline. {it:#1} knots are
+    assigned at random uniformly distributed positions between {it:#2} and {it:#3},
+    where {it:#2} is the lowest centile position of the uncensored log times you
+    wish to entertain and {it:#3} is the highest. A suggested choice is {it:#2}=10,
+    {it:#3}=90; knots are to be placed at random positions between the 10th and
+    90th centiles of the uncensored log times.
+
+{phang}
+{cmd:left(}{it:leftvar}{cmd:)} specifies that some or all of the survival-time observations
+    are interval-censored. The rules for specifying values of {it:leftvar} and their
+    meanings in terms of interval censoring are as follows:
+
+        {hline 67}
+        Value of {it:leftvar}   _d   Meaning
+        {hline 67}
+        . or _t             0   Right censored at _t
+        . or _t             1   Event at _t
+        0                   0   Right censored at _t
+        0                   1   Interval censored, event in (0,_t]
+        <_t                 0   Late entry at {it:leftvar}, right censored at _t
+        <_t                 1   Interval censored, event in [{it:leftvar},_t]
+        {hline 67}
+
+{pin}
+    Note that {cmd:stpm} support datasets with late entry and interval censoring only when
+    late entry is specified through {it:leftvar} and the value of _d, as given
+    in the above table.
+
+{phang}
+{cmd:mlmaxopts(}{it:ml_maximize_options}{cmd:)} control the likelihood
+maximization process; seldom used. The {cmd:difficult} option is probably
+the most important. See {help ml##ml_maxopts} for details.
+
+{phang}
+{cmd:noconstant} suppresses the constant term in the {cmd:[xb]} equation.
+
+{phang}
+{cmd:nolog} suppresses the iteration log while the model is fit.
+
+{phang}
+{cmd:noorthog} suppresses orthogonalisation of the spline basis functions. You should
+    rarely need this option, which is provided for compatibility with early versions of
+    {cmd:stpm}, and for pedagngic reasons.
+
+{phang}
+{cmd:offset(}{it:offsetvar}{cmd:)} defines the offset for the {cmd:[xb]} equation.
+    {it:offsetvar} is added to the linear predictor.
+
+{phang}
+{cmd:q(}{it:orthog_matrix}{cmd:)} is required with the {cmd:spline()} option,
+unless the {cmd:noorthog} option was used when the model
+was fitted. The Q-matrix {it:orthog_matrix} is a linear transformation between
+the regression coefficients on the orthogonalised and original spline basis
+functions. It may be stored following a run of {cmd:stpm} by extracting it from {cmd:e(Q)}:
+
+{pin}{cmd:stpm ...}{break}
+{cmd:matrix q = e(Q)}
+
+{phang}
+{cmd:scale(}{cmd:hazard}|{cmd:normal}|{cmd:odds)} is not optional and specifies the scale of the
+    model. The {cmd:hazard}, {cmd:normal} and {cmd:odds} options fit models on the scale of the
+    log cumulative hazard, normal equivalent deviate or log cumulative odds of
+    failure respectively.
+
+{phang}
+{cmd:spline(}{it:splinevar derivativevar}{cmd:)} allows you to specify the baseline spline
+    function and its derivative with respect to ln(_t). For a given model
+    where the spline function has been estimated, {it:splinevar} can be created by
+    using for example
+
+{pin}
+    {cmd:predict} {it:splinevar}{cmd:, spline zero} {break}
+
+{pin}
+    {it:derivativevar} may be created by using for example {break}
+
+{pin}
+    {cmd:predict} {it:derivativevar}{cmd:, dzdy}
+
+{pin}
+Note also that the {cmd:noconstant} option of {cmd:predict} subtracts
+the constant term from the spline function. This will ensure that if the model
+is refitted using {it:splinevar} and {it:derivativevar}, the constant will
+be reported as (close to) zero.
+
+{phang}
+{cmd:stpmdf(}{it:#}{cmd:)} is identical to {cmd:df()}. {cmd:stpmdf()} is for
+inputting the df required for stpm to {help mfp}, which has its own {cmd:df()} option.
+
+{phang}
+{cmd:stratify(}{it:strat_varlist}{cmd:)} stratifies the spline functions according to the
+    variables in {it:strat_varlist}. It will rarely make sense for the variables in
+    {it:strat_varlist} not to be among those in {it:varlist}, but this is not checked.
+
+{phang}
+{cmd:technique()} specifies how the likelihood function is to be maximized by {cmd:ml}.
+The following algorithms are currently implemented in {cmd:ml}: {cmd:nr} (the default),
+{cmd:bhhh}, {cmd:dfp}, {cmd:bfgs}.  For further details,
+see {help ml} or the book 
+{it:{browse "http://www.stata.com/bookstore/mle.html":Maximum Likelihood Estimation with Stata, 2d Edition}}
+(Gould, Pitblado, and Sribney 2003).
+
+{phang}
+{cmd:theta(est}|{it:#}{cmd:)} applies only with {cmd:scale(odds)}
+    and estimates the transformation
+    parameter (theta) or performs estimation with theta set to {it:#}. The
+    transformation of the (baseline) survival function S_0(t) is then
+    
+{pin}
+    g_theta(S_0(t)) = ln(S_0(t)^(-theta)-1)/theta)
+
+{pin}
+    theta = 0 corresponds to the cumulative hazards model. With {cmd:theta(est)},
+    theta is estimated and presented on a log scale, i.e. ln(theta). With
+    {cmd:theta(}{it:#}{cmd:)}, {it:#} must be positive.
+
+
+{title:Options for predict}
+
+{phang}
+{cmd:at(}{it:varname #}|{it:vn} [{it:varname #}|{it:vn} ...]{cmd:)} (syntax 1)
+    computes the various statistics at value(s) ({it:#} or {it:vn})... of model
+    covariates {it:varname}..., where {it:vn} means "variable name". The
+    {cmd:at()} option is a convenient way of specifying
+    out-of-sample prediction for some or all of the covariates in the model.
+    Covariates in {cmd:stpm}'s {it:varlist} but NOT listed in {cmd:at()} are used in
+    computing predicted values, unless the {cmd:zero} option is specified, in which
+    case adjustment is to value 0 of such predictors.
+
+{phang}
+{cmd:at(@}{it:varname #}|{it:string}{cmd:)}(syntax 2) computes the various
+    statistics at the mean
+    of the covariate values for observations in which varname equals {it:#} (if
+    {it:varname} is numeric) or in which {it:varname} equals {it:string}
+    (if {it:varname} is a
+    string variable). {it:varname} may typically be an identification number, e.g.
+    a row number of the dataset. Note that {it:varname} is not usually one of the
+    covariates in the model (i.e. it is not a member of {it:varlist}).
+
+{phang}
+{cmd:at(+}{it:#}{cmd:)}(syntax 3) computes the various
+    statistics after adding {it:#} to the linear predictor
+    from the {cmd:[xb]} equation. This can be used to examine the effects of
+    applying specific offsets to the predicted values on other statisics
+    of interest.
+
+{phang}
+{cmd:deviance} creates deviance-like residuals. The same formula is used as in
+{help streg}.
+
+{phang}
+{cmd:martingale} creates martingale-like residuals. The same formula is used as in
+{help streg}.
+
+{phang}
+{cmd:noconstant} removes the constant (if any) in equation {cmd:[xb]} when
+    computing a statistic of interest. This includes the fitted spline function
+    using the {cmd:spline} option.
+
+{phang}
+{cmd:nooffset} is relevant only if you specified {cmd:offset()} with {cmd:stpm}.
+    It modifies the calculations made by {cmd:predict, xb} so that they ignore the offset
+    variable.  The linear prediction for equation {cmd:[xb]} is treated as x*b
+    rather than x*b + offset.
+
+{phang}
+{cmd:stdp} computes the standard error of statistics {cmd:xb}, {cmd:cumhazard}, {cmd:cumodds},
+    {cmd:normal}, {cmd:dzdy}, or of the log (note: log) survival time for
+    {cmd:centile()}. {cmd:stdp} is also implemented for {cmd:hazard} with hazard-scaled
+    models ({cmd:scale(hazard)}) only, when it calculates the S.E. of the log
+    (note: log) hazard function. {cmd:stdp} is
+    not implemented for other statistics, but note that confidence intervals
+    for the survival function may be found by back-transformation of
+    confidence intervals for the cumulative hazard or odds or normal function,
+    and those for the hazard function similarly,
+    through the formula exp(ln(hazard) +/- z * SE(log hazard)).
+
+{phang}
+{opt spline} computes the fitted spline function. This incorporates all covariate
+effects and by default is evaluated at the observed failure times. Use of the
+{opt zero} option evaluates the spline with all covariate values set to zero
+(i.e. the baseline spline). If there are variables in the model with time-dependent
+effects, specified through the {opt stratify()} option, and the {opt time(#)}
+option is also used, the result is effectively the prognostic index evaluated
+at time {it:#}.
+
+{phang}
+{cmd:store(}{it:global_macro_name} [{it:#}]{cmd:)} stores the contents of
+    {it:newvarname} in a global macro called {it:global_macro_name}.
+    Successive non-missing values are stored, separated by spaces.
+    Optionally, rounding to {it:#} decimal places is allowed, to save
+    space and make the results more readable. The {cmd:store()} option
+    is not often used, but may be helpful when passing the output to
+    another program.
+
+{phang}
+{cmd:time(}{it:#}|{it:vn}{cmd:)} predicts at time {it:#} or at the time values
+    in {it:vn}. If {cmd:time()} is not specified, prediction is made for time _t.
+
+{phang}
+{cmd:tvc(}{it:varname}{cmd:)} stands for "time-varying coefficient" and computes
+    the estimated coefficient for {it:varname}, a covariate in {cmd:stpm}'s
+    {it:varlist}. If {it:varname} is "time-fixed", then {it:newvarname} will be a
+    constant, namely {cmd:[xb]_b[}{it:varname}{cmd:]}. If {it:varname} is
+    included in {it:strat_varlist}, then {it:newvarname} will depend on _t
+    and may be interpreted as the time-varying effect of {it:varname} on the chosen
+    scale of the model (proportional hazards, proportional odds or probit).
+    For example, in a hazards-scale model ({cmd:scale(hazard)}), {it:newvarname}
+    multiplied by {it:varname} will give an estimate of the time-varying log
+    cumulative hazard ratio for {it:varname} (compared with {it:varname} = 0) at every
+    observed value of {it:varname}. {it:newvarname} alone will give the log cumulative
+    hazard ratio for a one-unit change in {it:varname}. Note that the time-varying
+    log cumulative hazard ratio for {it:varname} will NOT be identical to the time-
+    varying log hazard ratio for {it:varname}.
+
+{phang}
+{cmd:zero} predicts at zero values of covariates in {it:varlist} and similarly for
+    {it:strat_varlist}, if {cmd:stratify()} is specified. See also option {cmd:at()}.
+
+
+{title:Remarks}
+
+{pstd}
+Let t denote time. {cmd:stpm} works by first calculating the survival function
+S(t) non-parametrically by using the Kaplan-Meier estimator. The procedure is
+illustrated for proportional hazards models, specified by option
+{cmd:scale(hazard)}. S(t) is converted to an estimate of the log cumulative hazard
+function Z(t) by the formula
+
+{pin}
+	Z(t) = ln(-ln S(t))
+
+{pstd}
+This Z(t) is then smoothed on ln(t) using regression splines with knots placed
+at certain quantiles of the distribution of t. The knot positions are chosen
+automatically if the spline complexity is specified by the {cmd:df()} option, or
+manually by way of the {cmd:knots()} option. (Note that the knots are values of
+ln(t), not t.) Denote the predicted values of the log cumulative hazard
+function by Zhat(t). The density function f(t) is
+
+{pin}
+	f(t) = -dS(t)/dt = dS/dZhat dZhat/dt = S(t) exp(Zhat) dZhat(t)/dt
+
+{pstd}
+dZhat(t)/dt is computed from the regression coefficients of the fitted spline
+function. A smoothed survival function is calculated as
+
+{pin}
+	Shat(t) = exp(-exp Zhat(t)).
+
+{pstd}
+The hazard function is calculated as f(t)/Shat(t).
+
+{pstd}
+If {it:varlist} is specified, the baseline survival function (i.e. at zero values
+of the covariates) is used instead of the survival function of the raw
+observations. With {cmd:df(1)} a Weibull model is fitted.
+
+{pstd}
+With {cmd:scale(normal)}, smoothing is of the Normal quantile function,
+invnorm(1-S(t)), instead of the log cumulative hazard function. With {cmd:df(1)}
+a lognormal model is fitted.
+
+{pstd}
+With {cmd:scale(odds)}, smoothing is of the log odds of failure function,
+ln((1-S(t))/S(t)), instead of the log cumulative hazard function. With {cmd:df(1)}
+a log-logistic model is fitted.
+
+{pstd}
+Estimation is performed by maximum likelihood. Optimisation uses the
+default technique ({cmd:nr}, meaning Stata's version of Newton-Raphson iteration.
+
+{pstd}
+As an example of output from {cmd:stpm}, consider the following. A stratifying
+variable {cmd:nn} has two levels, 0 and 1. There are two covariates,
+{cmd:x5a} and {cmd:x5b}, with effects assumed to act proportionately
+on the cumulative hazard function:
+
+{pstd}
+{cmd:. stpm x5a x5b nn, stratify(nn) scale(odds) df(2)}
+
+    initial:       log likelihood = -1124.6562
+    rescale:       log likelihood = -1124.6562
+    rescale eq:    log likelihood = -1124.6562
+    Iteration 0:   log likelihood = -1124.6562  
+    Iteration 1:   log likelihood =  -1112.096  
+    Iteration 2:   log likelihood = -1111.5188  
+    Iteration 3:   log likelihood = -1111.5173  
+    Iteration 4:   log likelihood = -1111.5173  
+    
+                                                      Number of obs   =       1289
+                                                      Wald chi2(1)    =      10.48
+    Log likelihood = -1111.5173                       Prob > chi2     =     0.0012
+    
+    ------------------------------------------------------------------------------
+          _t |      Coef.   Std. Err.       z     P>|z|       [95% Conf. Interval]
+    ---------+--------------------------------------------------------------------
+    s0       |
+          nn |  -1.735629   .5360622     -3.238   0.001      -2.786292   -.6849664
+       _cons |   3.416165   .4057033      8.420   0.000       2.621001    4.211329
+    ---------+--------------------------------------------------------------------
+    s1       |
+          nn |  -.1167243    .046288     -2.522   0.012      -.2074471   -.0260015
+       _cons |   .1590071   .0349978      4.543   0.000       .0904127    .2276016
+    ---------+--------------------------------------------------------------------
+    xb       |
+         x5a |   .9971947   .1749101      5.701   0.000       .6543773    1.340012
+         x5b |   1.844591   .2142359      8.610   0.000       1.424696    2.264486
+          nn |  -.5830707   .3702606     -1.575   0.115      -1.308768    .1426267
+       _cons |  -2.039426   .2662178     -7.661   0.000      -2.561203   -1.517649
+    ------------------------------------------------------------------------------
+    Deviance =  2223.035 (1289 observations.)
+
+{title:Notes on the output}
+
+{pstd}
+1. The equations: {cmd:s0} and {cmd:s1} represent the first and second spline basis
+   functions, with {cmd:[s0]_cons} and {cmd:[s1]_cons} being the coefficients for value 0
+   of the stratifying variable {cmd:nn}, and {cmd:[s0]_cons}+{cmd:[s0]_b[nn]} and
+   {cmd:[s1]_cons}+{cmd:[s1]_b[nn]} the coefficients for value 1 of {cmd:nn}.
+
+{pstd}
+2. If you wanted to test for the need to stratify by {cmd:nn} you could type
+   {cmd:test [s0]nn [s1]nn}. This would give a 2 degree of freedom Wald test of any
+   difference between the spline functions for {cmd:nn}.
+
+{pstd}
+3. The value of "Wald chi2(1)" should be ignored.
+
+{title:Reproducing the model}
+
+{pstd}
+Sometimes one wishes to reproduce a model, that is, to
+incorporate the linear predictor in {cmd:[xb]} and
+the spline function representing the baseline distribution function
+without re-fitting any parameters. This can be done by
+using the {cmd:spline}, {cmd:xb} and {cmd:dzdy} options
+of {cmd:predict} to create the necessary variables, and storing the matrix
+{cmd:e(Q)} for later use. The model is reproduced by using the
+{cmd:spline()}, {cmd:offset()}, {cmd:noconstant} and {cmd:q()}
+options of {cmd:stpm}. The reason for the use of {cmd:noconstant}
+with {cmd:predict, xb} is
+that the constant of the {cmd:[xb]} equation is already included in
+the spline function by {cmd:predict, spline} and should not
+be introduced again. A specific example:
+
+{pin}
+ . {cmd:stpm} {it:model_specifications}{break}
+ . {cmd:predict sp, spline zero}{break}
+ . {cmd:predict dz, dzdy}{break}
+ . {cmd:predict xb, xb noconstant}{break}
+ . {cmd:matrix Q = e(Q)}{break}
+
+{pstd}
+To refit the model in the subset of the data for which {cmd:z} equals 1
+without re-estimating any parameters (only the deviance is displayed):
+
+{pin}
+ . {cmd:stpm if z==1, offset(xb) spline(sp dz) q(Q) noconstant}
+
+{pstd}
+To re-estimate the constant in the {cmd:[xb]} equation in a subset
+of the data:
+
+{pin}
+ . {cmd:stpm if z==1, offset(xb) spline(sp dz) q(Q)}
+
+{pstd}
+At present, the approach cannot be used to reproduce time-varying models,
+i.e. models fitted with the {cmd:stratify()} option.
+
+
+{title:Stored results}
+
+{pstd}
+{cmd:stpm} returns the deviance (minus twice the maximised log likelihood) and
+the Akaike Information Criterion (AIC) in scalars {cmd:e(dev)} and {cmd:e(aic)}
+respectively. Additional quantities are stored in {cmd:e()} functions and may be
+inspected by using {cmd:ereturn list}.
+
+
+{title:Examples}
+
+{phang} {cmd:. stpm, scale(hazard) df(1)}{p_end}
+{phang} {cmd:. stpm, df(3) scale(normal)}{p_end}
+{phang} {cmd:. stpm, df(3) scale(odds)}{p_end}
+{phang} {cmd:. stpm, df(3) scale(odds) theta(2)}{p_end}
+{phang} {cmd:. stpm, df(3) scale(odds) theta(est)}{p_end}
+{phang} {cmd:. stpm treatmnt, scale(odds) knots(%10 90)}{p_end}
+{phang} {cmd:. xi: stpm x1 x2 x3 i.pop, df(2) scale(o) stratify(i.pop)}{p_end}
+{phang} {cmd:. stpm x1 x2 x3, df(3) scale(h) left(left)}{p_end}
+
+{phang} {cmd:. predict s0, survival zero}{break}[baseline survival function]{p_end}
+{phang} {cmd:. predict surv3, survival time(3)}{break}[survival probs at time 3]{p_end}
+{phang} {cmd:. predict median, centile(50)}{break}[median survival, given covars]{p_end}
+{phang} {cmd:. predict semedian, centile(50) stdp}{p_end}
+{phang} {cmd:. predict h0, hazard zero}{break}[baseline hazard function]{p_end}
+{phang} {cmd:. predict h1, hazard zero at(z 1)}{p_end}
+{phang} {cmd:. predict lnH, cumhazard at(@@id 25)}{break}[at covars for obs #id[25]]{p_end}
+
+{phang} {cmd:. gen hr = h1/h0}{break}[hr is defined for all obs.]{p_end}
+{phang} {cmd:. predict bz, tvc(z)}{break}[time-varying coeff for z]{p_end}
+{phang} {cmd:. predict sbz, tvc(z) stdp}{break}[SE of bz]{p_end}
+
+{phang} {cmd:. stpm, scale(hazard) df(2)}{p_end}
+{phang} {cmd:. gen times = _n in 1/10}{p_end}
+{phang} {cmd:. predict surv, survival time(times) store(survlist 4)}{p_end}
+{phang} {cmd:. display "$survlist"}{p_end}
+
+{phang} {cmd:. stpm x1 x2 x3, df(3) scale(h)}{p_end}
+{phang} {cmd:. matrix q = e(Q)}{p_end}
+{phang} {cmd:. predict spline, spline zero noconstant}{p_end}
+{phang} {cmd:. predict dspline, dzdy}{p_end}
+{phang} {cmd:. stpm x1 x2 x3, spline(spline dspline) scale(h) q(q)}
+
+
+{title:Auxiliary ado-files}
+
+{pstd}
+frac_spl, frac_s3b, mlsurvlf, stpm_p.
+
+
+{title:Author}
+
+{pstd}
+Patrick Royston, MRC Clinical Trials Unit, London.
+patrick.royston@ctu.mrc.ac.uk
+
+
+{title:References}
+
+{pstd}
+P. Royston. 2001. Flexible alternatives to the Cox model, and more.
+The Stata Journal 1:1-28.
+
+{pstd}
+P. Royston and M. K. B. Parmar. 2002. Flexible proportional-hazards and
+proportional-odds models for censored survival data, with application
+to prognostic modelling and estimation of treatment effects.
+Statistics in Medicine 21: 2175-2197.
+
+
+{title:Also see}
+
+{psee}
+Online:  help for {help stpmhaz}, {help stsctest}, {help predict}.

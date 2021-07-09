@@ -1,0 +1,46 @@
+{smcl}
+{* 30sept2005}{...}
+{hline}
+help for {hi:genscore}{right:Jean-benoit Hardouin}
+{hline}
+
+{title:Module to generate a score}
+
+{p 8 14 2}{cmd:genscore} {it:varlist} [{cmd:if} {it:exp}] [{cmd:in} {it:range}] [{cmd:,} {cmdab:sc:ore}({it:newvarname}) {cmdab:me:an} {cmdab:mi:ssing}(string) {cmdab:rep:lace}]
+
+{title:Description}
+
+{p 4 8 2}{cmd:genscore} allows creating a new variable containing the score computed as
+the sum (or the mean) of the responses to the variables defined in {it:varlist}. The new 
+variable will contain a missing value for each individual with at least one missing values 
+among the variables of {it:varlist}.
+
+{title:Options}
+
+{p 4 8 2}{cmd:score} defines the name of the new variable ({it:score} by default).
+
+{p 4 8 2}{cmd:mean} allows obtaining a mean score (the sum of the responses is divided by the number of variables).
+
+{p 4 8 2}{cmd:missing} defines a specific modality of the variables which can be considered as a missing value.
+
+{p 4 8 2}{cmd:replace} allows replacing the variable defined in the {cmd:score} option if it already exists.
+
+{title:Examples}
+
+{p 4 8 2}{cmd:. genscore turn trunk mpg}
+
+{p 4 8 2}{cmd:. genscore item1-item20, score(totscore) mean missing(9)}
+
+{p 4 8 2}{cmd:. genscore var*, score(scorevar) replace}
+
+{title:Author}
+
+{p 4 8 2}Jean-Benoit Hardouin, Regional Health Observatory (ORS) - 1, rue Porte
+Madeleine - BP 2439 - 45032 Orleans Cedex 1 - France. You can contact the author at
+{browse "mailto:jean-benoit.hardouin@orscentre.org":jean-benoit.hardouin@orscentre.org}
+and visit the websites {browse "http://anaqol.free.fr":AnaQol} and 
+{browse "http://freeirt.free.fr":FreeIRT}
+
+{title:Also see}
+
+{p 4 8 2}Online:   help for {help egen}, {help generate} and {help mvdecode}{p_end}

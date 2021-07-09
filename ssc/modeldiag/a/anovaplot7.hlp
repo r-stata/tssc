@@ -1,0 +1,134 @@
+{smcl}
+{* 10sep2001}{...}
+{hline}
+help for {hi:anovaplot7}
+{hline}
+
+{title:Plots of ANOVA fit, including interaction plots} 
+
+{p 8 16}{cmd:anovaplot7} [{cmd:,} {it:graph_options} ]   
+
+{p 8 16}{cmd:anovaplot7} {it:varlist} [{cmd:,} {it:graph_options} ]    
+
+{title:Description}
+
+{p}{cmd:anovaplot7} plots fitted or predicted values from an immediately
+previous one-, two- or three-way {cmd:anova}. By default the data for the
+response are also plotted. In particular, {cmd:anovaplot7} can show interaction
+plots. 
+
+{p}{cmd:anovaplot7} is for Stata 7 only and has been superseded for 
+later versions by {cmd:anovaplot}. 
+
+{title:Remarks} 
+
+{p}With the first syntax, no varlist is specified. {cmd:anovaplot7} shows the
+response and predicted values on the y axis; the covariate named first in the
+{cmd:anova} command on the x axis; any covariate named second in the
+{cmd:anova} command by separate groups within a two-way or scatter plot; and
+any covariate named third in the {cmd:anova} command by separate images using
+{cmd:graph, by()}. Thus with this syntax the appearance of the plot, although
+not the values shown, is sensitive to the order in which covariates are
+specified in the {cmd:anova} command. 
+
+{p}With the second syntax, a varlist is supplied, which must be a permutation 
+of the covariates previously used. The order of the covariates in the varlist 
+is used to determine the form of the graph, as above. This permits changing
+graphs without reissuing the {cmd:anova} command. 
+
+{p}Note especially that the graph format produced by {cmd:anovaplot7} is
+appropriate for models with at most one continuous covariate, which should
+always be the covariate named first. With that caveat, {cmd:anovaplot7} offers a
+way of showing parallel and diverging regression lines for models with one
+continuous covariate.
+
+
+{title:Options}
+
+{p 0 4} 
+{it:graph_options} are options of {cmd:graph, twoway}.
+
+{p 4 4} 
+To suppress plotting of response data, specify {cmd:i} as the first 
+{cmd:symbol} to be shown.
+
+{p 4 4} 
+To suppress connection of groups of the second 
+covariate, specify {cmd:c(.)}
+
+{p 4 4}
+To separate tied values of response, specify {cmd:j(1)}. 
+
+
+{title:Examples}
+
+{p 4 8}{inp:. use systolic} 
+
+{p} 
+One-way anova: {cmd:systolic} as response on y axis, {cmd:drug} as factor
+on x axis:
+
+{p 4 8}{inp:. anova systolic drug}
+
+{p 4 8}{inp:. anovaplot7}
+
+{p}
+Two-way anova, no interaction term: {cmd:systolic} as response on y axis, 
+{cmd:disease} and {cmd:drug} as factors, with {cmd:disease} on x axis, 
+and levels of {cmd:drug} defining separate profiles: 
+
+{p 4 8}{inp:. anova systolic disease drug}
+
+{p 4 8}{inp:. anovaplot7}
+
+{p}Better to reverse order of covariates: 
+
+{p 4 8}{inp:. anovaplot7 drug disease}
+
+{p}
+Example of interaction term: 
+
+{p 4 8}{inp:. anova systolic drug disease drug * disease}
+
+{p 4 8}{inp:. anovaplot7}
+
+{p}
+As above, but no plotting of data. 
+
+{p 4 8}{inp:. anovaplot7, sy(iOdp)}
+
+{p}Examples with one continuous covariate: 
+
+{p 4 8}{inp:. use auto} 
+
+{p}The continuous covariate is named just after the response: 
+
+{p 4 8}{inp:. anova price weight foreign, cont(weight)} 
+
+{p}(N.B. parallel regression lines) 
+
+{p 4 8}{inp:. anovaplot7, tr(1)}
+
+{p 4 8}{inp:. anova price weight foreign weight*foreign, cont(weight)}
+
+{p}(N.B. diverging regression lines) 
+
+{p 4 8}{inp:. anovaplot7, tr(1)}
+
+
+{title:Author}
+
+    Nicholas J. Cox, University of Durham, U.K.
+    n.j.cox@durham.ac.uk
+
+
+{title:Acknowledgements} 
+
+    Ken Higbee provided very helpful comments. 
+
+
+{title:Also see}
+
+{p 0 19}On-line:  help for {help anova}, {help graph}, {help dotplot}, 
+{help regdiag}, {help cmeans} (if installed), {help sparl} (if installed)  
+{p_end}

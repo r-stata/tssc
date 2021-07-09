@@ -1,0 +1,143 @@
+.-
+help for ^diagt^, ^diagti^                         (STB-56: sbe36; STB-59: sbe36.1)
+.-
+
+Report summary statistics for diagnostic tests compared to true disease status
+------------------------------------------------------------------------------
+
+
+	^diagt^ diagvar testvar [weight] [^if^ exp] [^in^ range] [^,^ ^prev(^#^)^ ^level(^#^)^ 
+		^sf^ ^sf0^ ^notable^ ^woolf^ ^tb^ ^bamber^ ^hanley^ odds tabulate_options]
+
+	^diagti^ #a #b #c #d [^,^ ^prev(^#^)^ ^level(^#^)^ 
+		^sf^ ^sf0^ ^notable^ ^woolf^ ^tb^ ^bamber^ ^hanley^ odds tabulate_options]
+
+^fweight^s are allowed with ^diagt^; see help @weights@.
+
+
+Description 
+-----------
+
+^diagt^ displays various summary statistics for a diagnostic test,
+compared to patients' true disease status, sensitivity, specificity, 
+and predictive values, from a 2x2 table. ^diagti^ is the immediate 
+version. #a #b #c #d are, respectively, the numbers of true positives 
+(diseased subjects with correct positive test results), false negatives 
+(disease, but negative test), false positives (no disease, but positive 
+test) and true negatives (no disease, negative test).
+
+Sensitivity (sens.) is the proportion of diseased patients correctly identified 
+= a/(a+b).  Specificity (spec.) is the proportion of healthy patients correctly
+identified = d/(c+d).  The ROC (Receiver Operating Characteristic curve) area
+is (for a simple test) the average of sensitivity and specificity.
+
+The likelihood ratio of a positive test (LR+) is the ratio of the probability 
+(likelihood) of a positive test result in an abnormal patient and in a 
+normal patient = Sensitivity/(1- specificity).  Multiplying the 
+prior odds of disease by LR+ gives the odds of disease following a positive test.
+The lilkelihood ratio of a negative test (LR-) works in the same way.
+
+The odds ratio (OR), defined as A/B/(C/D) in the usual way, is also equal 
+to LR+/LR-.
+
+The positive and negative predictive values (PPV & NPV) show the probability of 
+the patient having the disease following a + or a - test. 
+If no prevalence is given, the sample is assumed to be a cohort 
+and PPV & NPV are respectively the proportions of test positives and 
+test negatives that are correct = a/(a+c) and d/(b+d).
+Otherwise, they are calculated using the likelihood ratios, and assuming 
+the given prevalence is correct.
+
+diagvar is the variable which contains the real status of the patient, and
+testvar is the variable which identifies the result of the diagnostic test.
+testvar and diagvar can have only two nonmissing values. The higher value
+must identify the positive result of the test or the diseased status of the
+patient.
+
+All confidence intervals are based on standard Stata commands: 
+For Sensitivity, Specificity, PPV & NPV (except with the prevalence option), 
+exact binomial confidence intervals are given, (command @ci@).  
+ROC area uses @roctab@.  LR+ & LR- (based on risk ratio) 
+and odds ratio all use command @cs@.
+
+
+Options
+-------
+
+^prev(^#^)^ specifies the estimated prevalence of the disease, either as a decimal 
+    or as a percentage with % sign.  This is used in estimating the positive and 
+    negative predicted values, based on Bayes' theorem.  If the ^prev^ option 
+    is used, confidence intervals for PPV and NPV are found as below.
+
+  Prior odds = Prev/(1-Prev.)
+
+  Odds following +ve test = Prior odds * LR+
+
+  PPV = Odds following +ve test/(1 - Odds following +ve test)
+
+  Odds following -ve test = Prior odds * LR-
+
+  NPV = Odds following -ve test/(1 - Odds following -ve test)
+
+  Confidence intervals are found using the upper & lower bounds of LR+ & LR-
+  Posterior odds and are converted to probabilties as 
+ 
+  Probability = Odds/((1 + odds)
+
+^sf^ and ^sf0^ do essentially the same thing: 
+Likelihood ratios are cacluated using the substitution formula instead of 
+by the standard method.  0.5 is added to all cell frequencies before 
+calculation.  Conidence intervals for risk ratios and odds ratios are 
+based on the delta method.  With ^sf0^ the substitution formula is used only 
+when there is a zero in one or more cell.  ^sf^ overrides ^tb^ and ^woolf^.
+
+^odds^ asks for the likelihood of a positive results to be represented as odds, 
+with their confidence intervals.  Please note: these are the odds corresponding to 
+the prevalence, the PPV and (100%-NPV).
+
+^level(^#^)^ specifies the confidence level, in percent, for calculation of
+  confidence intervals of the sensitivity, specificity, predictive values,
+  and prevalence.  The default is ^level(95)^ or as set by ^set level^.
+
+^noTable^ suppresses the contingency table, but shows the other results.
+ 
+^tb^ produces test-based confidence intervals for the likelihood ratios 
+and odds ratio.
+
+^woolf^ uses the Woolf formula for the odds ratio, overriding ^tb^.
+
+^bamber^ and ^hanley^ use the Bamber and Hanley options for calculating the ROC areas.
+
+
+Examples
+--------
+
+	. ^diagt truediag test [fw=n]^
+	. ^diagt truediag test, [fw=n] prev(25)^
+	. ^diagt truediag test, [fw=n] level(99) chi^
+
+	. ^diagti 80 17 11 44^, or
+
+
+Author
+------
+
+	Paul T Seed       (Paul.Seed@@kcl.ac.uk)     
+	Maternal & Fetal Research Unit, GKT School of Medicine, KCL
+	North Wing, St Thomas' Hospital, Lambeth Palace Road, 
+	London SE1 7EH
+
+	Developed from ^diagtest^ by Aurelio Tobias (STB-56: sbe36)
+	Aurelio Tobias	
+	Hospital de la Santa Creu i Sant Pau, 
+	Barcelona, Spain.
+	Email: atobias@@cocrane.es
+
+	Additional material from Tom Steichen 
+
+
+Also see
+--------
+
+ Manual:  ^[R] tabulate, [R] lstat, [R] lsens, [R] roc, [R] ci^
+On-line:  help for @tabulate@, @weights@, @ci@, @cs@, @roc@.

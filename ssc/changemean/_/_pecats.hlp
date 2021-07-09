@@ -1,0 +1,61 @@
+.-
+help for ^_pecats^ - 1.6.6 - 3/4/00
+.-
+
+Utility to determine names and values of categories of dependent variable
+-------------------------------------------------------------------------
+
+    ^_pecats^ [varname] [^if^ exp] [^in^ range]
+
+Description
+-----------
+
+^_pecats^ returns the names and values of the categories for models with
+ordinal, nominal, or binary outcomes. For ^mlogit^ it indicates the value
+of the reference category.
+
+NOTE: If no variable name is specified, _pecats will use the dependent
+variable retrieved from `e(depvar)' and will restrict the sample according
+to e(sample)
+
+Returns
+-------
+
+r(numcats): scalar value containing number of categories of depvar.
+
+r(refval):  scalar value of the reference category for ^mlogit^.
+
+r(refnm):   local macro with name of the reference category for ^mlogit^.
+
+r(catnms):  local macro with names of categories of the dependent variable.
+            For ^mlogit^ the reference category is given last.
+
+r(catnms):  local macro with names of categories of the dependent variable.
+            For ^mlogit^ the reference category is given last.
+
+r(catnms8): local macro with names of categories of the dependent variable.
+            Value labels longer than 8 characters are truncated to 8
+            characters so they can be used as matrix row/column names. For
+            ^mlogit^ the reference category is given last.
+
+r(catvals): local macro with values of categories of the dependent variable.
+            For ^mlogit^ the reference value is given last.
+
+Examples within a program
+-------------------------
+
+    ...
+    * `if' is the curret if condition
+    _peife `if'
+    * the new condition includes "& e(sample)
+    local eif "`r(if)'"
+    _pecats `e(depvar)' `eif' `in'
+    local cnames r(catnms)
+    local cvals r(catvals)
+    local refval r(refval)
+
+.-
+Authors: J. Scott Long and Jeremy Freese
+         www.indiana.edu/~jslsoc/spost.htm
+         spostsup@@indiana.edu
+         

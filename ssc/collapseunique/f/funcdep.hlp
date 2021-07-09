@@ -1,0 +1,197 @@
+{smcl}
+{* 19jun2008; prior: 20oct2006}
+{hline}
+help for {hi:funcdep}
+{hline}
+
+
+{title:Test whether a set of variables is functionally dependent on a specified set of basis variables}
+
+{p 8 17 2}
+{cmd:funcdep}
+[{it:varlist}]
+[{cmd:if} {it:exp}]
+[{cmd:in} {it:range}]
+[, {cmd:basis(}{it:basisvars}{cmd:)} {cmd:assert key testsep}
+{cmd:gen(}{it:genvars}{cmd:)} {cmd:sortpreserve}]
+
+
+{title:Description}
+
+{p 4 4 2}
+{cmd:funcdep} will test whether {it:varlist} is functionally dependent on
+{it:basisvars}, which means that observations with equal values of
+{it:basisvars} also have equal values of {it:varlist}.
+If we use the term "basis groups" to mean the sets of observations having
+the same values in {it:basisvars}, then functional dependency is the property
+that {it:varlist} has constant values within basis groups.
+See more on this subject under {ul:{bf:Additional Remarks}}, below.
+
+{p 4 4 2}
+{cmd:funcdep} first tests whether {it:basisvars} is a key for the dataset {c -} whether
+every observation has a unique value (or tuple of values) in {it:basisvars}.
+If this condition is satisfied, then no further testing is performed,
+as this condition implies functional dependency, regardless of what
+{it:varlist} is composed of.  If {it:basisvars} is not a key,
+then a functional dependency test is performed on {it:varlist} with respect to
+{it:basisvars}.
+
+{p 4 4 2}
+The following r() values will be returned:{p_end}
+{col 9}r(funcdep)
+{col 9}r(key)
+{p 4 4 2}
+These are numeric 0/1 indicators of, respectively, whether functional
+dependency holds and whether {it:basisvars} is a key.  (If the functional
+dependency test is skipped due to {it:basisvars} being a key,
+then r(funcdep) is still set appropriately, to 1).
+These return values are
+provided to enable you write programs or do-files whose actions depend on
+the results of a functional dependency test.
+But if your intent is to proceed only if the test is successful, it
+may be more convenient to just use the {cmd:assert} option.
+
+
+{title:Options}
+
+{p 4 8 2}
+{cmd:basis(}{it:basisvars}{cmd:)} specifies the set of basis variables on
+which you are testing for functional dependency.  This can be absent, in which
+case {cmd:funcdep} tests whether {it:varlist} is constant within the entire
+dataset.
+
+{p 4 8 2}
+{cmd:assert} {help assert}s that the functional dependency condition holds.
+That is, it invokes an error condition if the test fails.
+
+{p 4 8 2}
+{cmd:key} additionally asserts that {it:basisvars} is a key; it only takes
+effect if {cmd:assert} is also specified.
+
+{p 4 8 2}
+{cmd:testsep} causes the functional dependency test to be done
+separately for each variable in {it:varlist}.  The default is to test the
+whole of {it:varlist} all at once.  The utility of this option is that, if
+the test fails, and if {it:varlist} is composed of several variables, then
+you will be able to tell which of the variables is causing the failure.
+(Note that {it:varlist} is functionally dependent on {it:basisvars} if and only
+if each variable in {it:varlist} is, separately, functionally dependent on {it:basisvars}.)
+
+{p 4 8 2}
+{cmd:gen(}{it:genvars}{cmd:)} specifies one or more new variables to be generated
+that indicate where functional dependency fails; they are constant within
+basis groups. This may be useful for finding cases
+where functional dependency fails, or for just determining whether a variable
+varies within basis groups.
+
+{p 8 8 2}
+If {cmd:testsep} is specified along with {cmd:gen(}{it:genvars}{cmd:)}, then
+there must be as many names in
+{it:genvars} as in {it:varlist}, and the names in {it:genvars} will correspond
+to those in {it:varlist} in the order given. If {cmd:testsep} is not specified,
+then there must be just one name in {it:genvars}, and it will represent all
+variables in {it:varlist} collectively.
+
+{p 8 8 2}
+If the functional dependency test is skipped due to {it:basisvars} being a key,
+and {cmd:gen(}{it:genvars}{cmd:)} is specified, then {it:genvars} are set to 0.
+
+{p 4 8 2}
+{cmd:sortpreserve} turns on the sortpreserve feature; the sort order of the
+dataset will not be affected.
+By default, the data will be sorted by {it:basisvars}.
+
+
+{title:Remarks}
+
+{p 4 4 2}
+Both {it:varlist} and {cmd:basis(}{it:basisvars}{cmd:)} are optional.  If
+{it:varlist} is absent then functional dependency is necesarily true.  That is,
+an empty {it:varlist} is functionally dependent on any {it:basisvars}.  If
+{cmd:basis(}{it:basisvars}{cmd:)} is absent, then {cmd:funcdep} tests
+whether {it:varlist} is constant over the entire dataset.  (Note that an empty
+{it:basisvars} is a key only if there are <=1 observations.)
+
+{p 4 4 2}
+The {cmd:if} and {cmd:in} qualifiers would presumably
+be rarely used.  Usually you would want to test functional
+dependency on an entire dataset, but there may be occasions where it
+fails on the entire set, but you would want to see if it passes on a
+specific subset.
+
+
+{title:Examples}
+
+{p 6 6 2}{cmd:. funcdep state county, basis(family year)}{p_end}
+
+{p 6 6 2}{cmd:. funcdep msa if ~newengland, basis(state county) assert}{p_end}
+
+{p 6 6 2}{cmd:. funcdep name yearborn, basis(id) assert}{p_end}
+
+{p 6 6 2}{cmd:. funcdep name, basis(id) gen(k1)}{p_end}
+{p 6 6 2}{cmd:. list id name if k1, sepby(id)}{p_end}
+{p 8 8 2}/* shows id values that have multiple names */{p_end}
+
+{p 6 6 2}{cmd:. funcdep jobcode, basis(id) gen(k2)}{p_end}
+{p 8 8 2}/* k2 indicates that the person had more than one jobcode */{p_end}
+
+
+{title:Additional Remarks}
+
+{p 4 4 2}
+To say that {it:varlist} is functionally dependent on {it:basisvars} means that
+values in {it:varlist} are uniquely determined by those of {it:basisvars}.
+Equivalently, within basis groups, the values of {it:varlist} are constant.
+Yet another charaterization is that the relationship of
+{it:basisvars} values to {it:varlist} values is either one-to-one or
+many-to-one.  An example may help to illustrate:
+
+{com}. list, noobs
+{txt}
+  {c TLC}{hline 3}{c -}{hline 3}{c -}{hline 3}{c TRC}
+  {c |} {res}a   b   c {txt}{c |}
+  {c LT}{hline 3}{c -}{hline 3}{c -}{hline 3}{c RT}
+  {c |} {res}6   4   7 {txt}{c |}
+  {c |} {res}9   4   7 {txt}{c |}
+  {c |} {res}1   6   5 {txt}{c |}
+  {c |} {res}2   6   5 {txt}{c |}
+  {c |} {res}4   6   5 {txt}{c |}
+  {c |} {res}2   8   5 {txt}{c |}
+  {c BLC}{hline 3}{c -}{hline 3}{c -}{hline 3}{c BRC}
+
+{p 4 4 2}
+In this example, c is functionally dependent on b, but not vice-versa.
+
+{p 4 4 2}
+Functional dependency is a condition that is usually considered as an intrinsic
+property of the construction of a dataset.
+That is, there is a logical reason why one variable must
+be functionally dependent on another.  One should be careful however, as
+there are situations where functional dependency arises as an accident
+of the content of the data (usually in a small sample),
+rather than the logic behind the construction of the dataset.
+The same can be said of whether a set of variables forms a key.
+
+{p 4 4 2}
+It is generally accepted wisdom that tables that serve as primamry storage
+of information should not have functional dependency between non-key
+variables.  This is the idea behind {it:database normalization}; see
+{help collapseunique} for more on this subject.  (You can use {cmd:collapseunique}
+to "factor out" such internal functional dependencies.)
+However, it is often acceptable and convenient to allow functional dependency
+between non-key variables in datasets for analysis.  One use of {cmd:funcdep}
+is to test whether these expected functional dependencies do indeed hold.
+
+
+{title:Author}
+
+{p 4 4 2}
+David Kantor.  Email {browse "mailto:kantor.d@att.net":kantor.d@att.net} if you observe any
+problems.
+
+
+{title:Also see}
+
+{p 4 4 2} {help varlist}, {help isid}, {help duplicates};
+
+{p 4 4 2} {help collapseunique}, {help assertky}, (by the same author).

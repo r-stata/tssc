@@ -1,0 +1,105 @@
+{smcl}
+{* version 1.0.3 20may2012}{...}
+{cmd:help labcpy}
+{hline}
+
+{title:Title}
+
+{p 5}
+{cmd:labcpy} {hline 2} Modify copy of value label
+
+
+{title:Syntax}
+
+{p 8}
+{cmd:labcpy} {it:oldlblname} {it:newlblname} [ {it:modifications} ]
+[{cmd:, replace} {opt val:ues}{cmd:({it:{help varlist}}{cmd:)}}]
+
+
+{p 5}
+where the form of {it:modifications} is one of
+
+{p 8}
+{it:#} {bf:"}{it:label}{bf:"} [{it:#} {bf:"}{it:label}{bf:"} {it:...}] 
+
+{p 8}
+{cmd:(}{it:{help numlist}} {cmd:=} {it:{help numlist}}{cmd:)} 
+[{it:...}]
+
+
+{title:Description}
+
+{pstd}
+{cmd:labcpy} defines {it:newlblname} as a (modified) copy of 
+{it:oldlblname}. If no {it:modifications} are specified, 
+{it:oldlblname} is copied as is. 
+
+
+{title:Options}
+
+{phang}
+{opt replace} redefines the copied value label. This option might be 
+useful to delete multiple values from {it:newlblname}. The option is 
+not allowed if {it:modifications} are specified as {it:rules}. Note 
+that {it:newlblname} must not exist, regradless of whether 
+{opt replace} is specified or not.  
+
+{phang}
+{opt values(varlist)} attaches {it:newlblname} to {it:{help varlist}}.
+
+
+{title:Remarks}
+
+{pstd}
+Modifications may either be specified as integer-to-text mappings or 
+as {it:rules}. Integer-to-text mappings are specified the same way as 
+with {help label define}. Modification {it:rules} are similar to those 
+used with {help recode}, with few exceptions. Recoding into a 
+{it:numlist} is allowed. Instead of
+
+{phang2}{cmd:(1 = 4)(2 = 3)(3 = 2)(4 = 1)}{p_end}
+
+{pstd}
+you may code
+
+{phang2}{cmd:(1/4 = 4/1)}{p_end}
+
+{pstd}
+Note, however, that {it:numlists} must define one-to-one mappings. You 
+may delete values from copied value labels by mapping them to 
+{hi:sysmiss} ({hi:.}). It is not allowed to specify labels in 
+{it:rules}.
+
+
+{title:Examples}
+
+{phang2}{cmd:. sysuse auto}{p_end}
+{phang2}{cmd:. labcpy origin org 1 "German" 2 "Other"}{p_end}
+
+{phang2}{cmd:. sysuse nlsw88}{p_end}
+{phang2}{cmd:. generate byte race2 = race * 10}{p_end}
+{phang2}{cmd:. labcpy racelbl race2 (1/3 = 10(10)30) ,values(race2)}
+{p_end}
+
+
+{title:Acknowledgments}
+
+{pstd}
+Modifying value labels by specifying {it:rules} is inspired by 
+{stata findit labvalch:labvalch} (Nick Cox).
+
+
+{title:Author}
+
+{pstd}Daniel Klein, University of Bamberg, klein.daniel.81@gmail.com
+
+
+{title:Also see}
+
+{psee}
+Online: {help label}
+{p_end}
+
+{psee}
+if installed: {help labvalclone}, {help labvalch}, {help labutil2}
+{p_end}

@@ -1,0 +1,111 @@
+{smcl}
+{* version 1.1 - Jan., 20, 2007}{...}
+
+{cmd:help grubbs} 
+{hline}
+
+{title:Title}
+
+{p2colset 5 16 21 2}{...}
+{p2col:{hi: grubbs} {hline 2}} Performs Grubbs' test for outliers
+
+{p2colreset}{...}
+
+
+{title:Syntax}
+
+{p 8 15 2}
+{cmd:grubbs}
+{varlist}
+{ifin}
+[, {it:options}]
+
+{synoptset 22 tabbed}{...}
+{synopthdr}
+{synoptline}
+{syntab:Procedure}
+{synopt:{opt it:er(#)}} perform maximum of # iterations; default is {opt it:er(16000)}{p_end}
+{synopt:{opt le:vel(#)}} set confidence level; default is {opt le:vel(95)} {p_end}
+
+{syntab:Output}
+{synopt:{opt dr:op}}  drop out of the sample observations that are outliers {p_end}
+{synopt:{opt gen:erate(newvar1 ...)}} Variable(s) to be created, containing 1 if the observation is an outlier{p_end}
+
+{syntab:Reporting}
+{synopt:{opt lo:g}} display an iteration log; default is no log.  {p_end}
+{synoptline}
+{p2colreset}{...}
+{p 4 6 2}
+
+{title:Description}
+
+{p 4 4 2}{cmd:grubbs} test (Grubbs, 1969 and Stefansky, 1972) can be used to detect outliers in a data set, either 
+creating a new variable (equal to 1 if the observation is an outlier and 0 otherwise) or dropping outliers out 
+of the data set. The Grubbs test is also known as the maximum normed residual test. The Grubbs test detects one 
+outlier at each iteration. The outlier is expunged from the data set and the test is iterated until no outliers 
+remain.
+
+{title:Options}
+
+{dlgtab:Procedure}
+
+{phang}
+{opt it:er(#)} set maximum number of iterations; default is {opt it:er(16000)}.
+
+{phang}
+{opt le:vel(#)} set confidence level; default is {opt le:vel(95)}.
+
+
+{dlgtab:Output}
+
+{phang}
+{opt dr:op} drop out of the sample the observations that are outliers in the Grubbs sense (not to be used in conjunction with {opt gen:erate}). 
+
+{phang}
+{opt gen:erate(newvar1 newvar2 ...)} create new Variables {opt (newvar1 newvar2 ...)}, 
+        containing 1 if the observation is an outlier in the Grubbs sense and 0 otherwise. If no 
+        {opt gen:erate} option is specified or if the number of new variable names does not match, default variable names will be used. 
+
+{dlgtab:Reporting}
+
+{phang}
+{opt lo:g} display an iteration log; default is no log.
+
+{phang}
+
+
+{title:Examples}
+
+{phang}{cmd:. sysuse auto.dta}{p_end}
+
+{phang}{cmd:. grubbs price mpg}{p_end}
+
+{phang}{cmd:. grubbs price mpg, gen(gr_pr gr_mpg) log drop iter(1000) level(90)}{p_end}
+
+{phang}{cmd:. grubbs price mpg, log gen(gru_pr gru_mpg)}{p_end}
+{phang}{cmd:. list if gru_pr}{p_end}
+{phang}{cmd:. reg  price mpg if ~gru_pr & ~gru_mpg}{p_end}
+
+
+{title:Author} 
+
+        Nicolas Couderc, 
+	Reims Management School and Université Paris 1 (Panthéon - Sorbonne),
+        couderc@univ-paris1.fr
+
+        Questions, comments and bug reports are welcome.
+
+
+{title:References} 
+
+Grubbs F. (1969), Procedures for Detecting Outlying Observations in Samples, {it:Technometrics}, 11(1), 1-21.
+Stefansky W. (1972), Rejecting Outliers in Factorial Designs, {it:Technometrics}, 14, 469-479.
+
+{title:Acknowledgements} 
+
+{p 4 4 2}This program owes a debt to Anne-Célia Disdier and Keith Head for the original Grubbs procedure implementation in Stata (available at http://strategy.sauder.ubc.ca/head/grubbs.ado) and to {cmd:hadimvo}.
+
+{title:Also see}
+
+{p 4 13 2}On-line:  help for {help hadimvo}.
+

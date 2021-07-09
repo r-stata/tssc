@@ -1,0 +1,93 @@
+{smcl}
+{* 23jan2004/2dec2005/13aug2006/31jan2007/16feb2007}{...}
+{hline}
+help for {hi:tabstatmat}
+{hline}
+
+{title:Save matrices saved by tabstat to single named matrix}
+
+{p 8 17 2}
+{cmd:tabstatmat}
+{it:matname}
+[
+{cmd:,} 
+{cmdab:not:otal} 
+{cmdab:s:afe} 
+]
+
+
+{title:Description}
+
+{p 4 4 2}
+{cmd:tabstatmat} picks up matrices saved after {help tabstat}. 
+These matrices will have names 
+{cmd:r(Stat1)}, etc.,
+together with their rownames saved as {cmd:r(name1)}, etc.,
+and/or
+{cmd:r(StatTot)} or {cmd:r(StatTotal)}. 
+These matrices are combined and put them in the single named matrix
+{it:matname}.  If {it:matname} already exists, it will be overwritten
+unless option {cmd:safe} is specified; 
+in this case, an error message will be issued.
+
+
+{title:Remarks} 
+
+{p 4 4 2}
+Note that not all requests to {cmd:tabstat} produce output in suitable form. In
+particular, a call that requests multiple statistics for multiple groups and
+multiple variables is not suitable. {cmd:tabstatmat} cannot be smart about
+detecting such calls and labelling rows or columns correctly. {cmd:tabstat}
+does not save all the necessary information in row and column names and
+composite row or column names such as "Foreign N" would be illegal in any case. 
+ 
+
+{title:Options} 
+
+{p 4 8 2}{cmd:nototal} suppresses the picking up of marginal totals. 
+
+
+{title:Examples}
+
+{p 4 8 2}{cmd:. sysuse auto, clear}{p_end}
+{p 4 8 2}{cmd:. tabstat mpg, by(rep78) s(n mean sd) save}{p_end}
+{p 4 8 2}{cmd:. tabstatmat mpgstat}{p_end}
+{p 4 8 2}{cmd:. tabstatmat mpgstat, nototal}
+
+
+{title:Author}
+
+{p 4 4 2}
+Austin Nichols{break}
+austinnichols@gmail.com
+
+
+{title:Acknowledgements}
+
+{p 4 4 2}
+The first seven versions of {cmd: tabstatmat} were written by 
+Nicholas J. Cox, Durham University.
+The problem was suggested by Friedrich Huebler, who also 
+advised of problems arising when only {cmd:r(StatTot)} 
+is {cmd:save}d by {cmd:tabstat}. Lucy Chung advised that
+a previous version had been broken by a change to {cmd:tabstat}
+in Stata 9. Fredrik Wilhelmsson indicated a bug when totals 
+are not saved and how to fix it. He also suggested the {cmd:nototal} 
+option. Zurab Sajaia advised of a bug when matrices with many 
+rows are requested and suggested how to fix it and made other 
+useful suggestions. 
+
+
+{title:Also see:} 
+
+{p 4 13 2}
+Online:  help for 
+{help tabstat}, 
+{help matrix}, 
+{help statsmat} (if installed), 
+{help tabexport} (if installed),
+{help tabout} (if installed),
+{help outmat} (if installed),
+{help outsum} (if installed),
+{help outtable} (if installed),
+{help outtex} (if installed)

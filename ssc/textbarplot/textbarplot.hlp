@@ -1,0 +1,167 @@
+{smcl}
+{* 7mar2006/19mar2006}{...}
+{hline}
+help for {hi:textbarplot}
+{hline}
+
+{title:Horizontal text and bar plot} 
+
+{p 8 17 2} 
+{cmd:textbarplot} 
+{it:textvar} {it:barvar} 
+[{cmd:if} {it:exp}] 
+[{cmd:in} {it:range}]
+[ 
+{cmd:,}
+{cmd:y(}{it:integervar}{cmd:)}
+{cmdab:sc:atter(}{it:scatter_options}{cmd:)} 
+{cmdab:addplot(}{help addplot_option:plot}{cmd:)} 
+{cmdab:plot(}{help plot_option:plot}{cmd:)} 
+{it:bar_options}
+]
+
+
+{title:Description}
+
+{p 4 4 2}
+{cmd:textbarplot} produces a horizontal bar plot with text shown to the
+left of the bars. It is designed to give a quick-and-easy display.
+{it:textvar} specifies the text and {it:barvar}, which must be a numeric
+variable, specifies the magnitude of the bars. 
+
+{p 4 4 2}
+By default 
+
+{p 8 8 2} 
+1. If {it:textvar} is a string variable, then observation numbers are
+used to determine row positions for the bars, which are {it:y} axis values on
+a reversed scale, and its values are used as text. 
+
+{p 8 8 2}
+2. If {it:textvar} is a numeric variable with labels, then its numeric
+values are used to determine row positions, and its labels are used as
+text. 
+
+{p 8 8 2}
+3. If {it:textvar} is an integer-valued numeric variable, then its
+numeric values are used to determine row positions and are also shown as
+text. 
+
+{p 4 4 2}
+These defaults can be over-ridden by specifying an integer-valued {it:y}
+variable with the {cmd:y()} option. In that case there are no constraints
+on what {it:textvar} is. 
+
+{p 4 4 2}
+{cmd:textbarplot} is a wrapper for {help twoway bar} and {help twoway scatter}.
+Other kinds of graph can be obtained by using a {cmd:recast()}
+option. The most useful alternatives are {cmd:recast(dot)},
+{cmd:recast(dropline)} and {cmd:recast(spike)}. 
+
+
+{title:Remarks} 
+
+{p 4 4 2}
+The easiest way of drawing horizontal bar plots for various categories
+is {help graph hbar}. However, it can be difficult to produce some
+designs with {cmd:graph hbar} that include many gaps between clusters of
+bars or repeated category names.  {cmd:textbarplot} is implemented in
+terms of {help twoway} to provide a simpler alternative for some kinds
+of plots. 
+
+
+{title:Options} 
+
+{p 4 8 2}{cmd:y(}{it:integervar}{cmd:)} specifies an integer-valued numeric
+variable indicating row positions for the bars. This overrides any
+default set of row positions. 
+
+{p 4 8 2}{cmd:scatter(}{it:scatter_options}{cmd:)} indicates options of
+{help twoway scatter}. Know that the default is {cmd:scatter}
+{it:y_variable} {it:barvar} {cmd:ytitle("") ms(none)}. Thus there is
+scope for (e.g.) adding marker labels. 
+
+{p 4 8 2}{cmd:addplot(}{help addplot_option:plot}{cmd:)} specifies
+instructions for other plots to add to the graph. (Stata 9 up.) 
+
+{p 4 8 2}{cmd:plot(}{help plot_option:plot}{cmd:)} specifies
+instructions for other plots to add to the graph. (Stata 8.) 
+
+{p 4 8 2}{it:bar_options} refers to options of {help twoway bar}. Know
+that the default is {cmd:twoway bar} {it:barvar y_variable}
+{cmd:, yla(}{it:row_positions}{cmd:, base(0) valuelabel nogrid noticks ang(h))}
+{cmd:horizontal ysc(reverse) ytitle("") barw(0.6) legend(off)}. 
+Note that possible options include {cmd:vertical}. 
+Those who like their bars to touch the associated axis should specify 
+{cmd:plotregion(margin(l=0))} or {cmd:plotregion(margin(b=0))}.
+
+
+{title:Examples}
+
+{p 4 8 2}{inp:. sysuse auto}{p_end}
+{p 4 8 2}{inp:. textbarplot make mpg if foreign}{p_end}
+{p 4 8 2}{inp:. gsort foreign - mpg}{p_end}
+{p 4 8 2}{inp:. textbarplot make mpg if foreign}{p_end}
+{p 4 8 2}{inp:. textbarplot make mpg if foreign, recast(dot)}{p_end}
+{p 4 8 2}{inp:. textbarplot make mpg if foreign, scatter(mla(mpg)) xsc(r(. 43)) bcolor(red)}
+
+{p 4 4 2}The following data come from Statistiska centralbyr{c 229}n. 2003. 
+{it:Sweden in figures/Sverige i siffror 2004.} p.52: 
+
+				home access to internet 2002 (%) 
+				{hline 32}
+	Men			66.7
+	Women			60.3
+		
+	16-24			75.5
+	25-34			75.0
+	35-44			80.0
+	45-54			75.4
+	55-64			59.9
+	65-74			29.8
+	75-84			10.3
+		
+	Labourers		49.9
+	Lower white collar	60.8
+	Managers and officials	83.5
+	Entrepreneurs		66.3
+	Farmers			26.8
+	Old-age pensioners	22.1
+
+{p 4 4 2}To use {cmd:textbarplot}, enter as two variables, say {cmd:text} 
+and {cmd:access}, with blank strings and missing numerics in observations 
+3 and 11 to indicate blank lines. Then 
+
+{p 4 8 2}{cmd:. label var access "home access to internet (%)"}{p_end}
+{p 4 8 2}{cmd:. textbarplot text access} 
+
+{p 4 4 2}A corresponding set of commands is, given {cmd:text} and 
+{cmd:access} as variables, 
+
+{p 4 8 2}{cmd:. gen axis = _n}{p_end}
+{p 4 8 2}{cmd:. labmask axis, values(text)}{p_end}
+{p 4 8 2}{cmd:. graph hbar (asis) access, over(axis, relabel(3  "{c -(}c 32{c )-}" 11 "{c -(}c 32{c )-}"))}
+
+{p 4 4 2}Alternatively, set up a variable directly with integer values and the 
+text here as value labels. 
+
+
+{title:Acknowledgements}
+
+{p 4 4 2}
+Hiroshi Maeda posted a stimulating example on Statalist. 
+Austin Nichols contributed to discussion of {cmd:graph hbar}. 
+Friedrich Huebler, Ron{c a'}n Conroy and Vince Wiggins made 
+helpful suggestions. 
+
+
+{title:Author}
+
+{p 4 4 2}Nicholas J. Cox, Durham University{break} 
+         n.j.cox@durham.ac.uk
+
+	 
+{title:Also see}
+
+{p 4 13 2}On-line: help for {help twoway bar}, {help graph bar}, 
+{help graph dot}, {help catplot} (if installed), {help labmask} (if installed)

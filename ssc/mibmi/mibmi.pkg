@@ -1,0 +1,36 @@
+d 'MIBMI': module for cleaning and multiple imputation algorithm for body mass index (BMI) in longitudinal datasets
+d
+d  mibmi is a multiple imputation and cleaning command for body
+"d mass index (BMI), compatible with {cmd:mi} commands. Cleaning"
+d includes standard cleaning that limits values to a logical range
+d and regression based cleaning for each subject. If weight and
+d height have been provided the algorithm with these and BMI
+d observations at each time point to correct BMI and/or
+d height/weight values. The command will also impute BMI
+d measurements for patients with at least 2 BMI observations over
+d the time period. Residuals are used to quantify interpolation
+"d prediction errors, for all possible time-window lengths, and"
+d these are used to introduce uncertainty in the interpolation
+"d estimates, in a multiple imputations setting. Imputed values are"
+"d drawn from normal distributions, the means for which are provided"
+d by the ipolate command and the standard deviations are the
+d standard errors for the predictions for the respective
+"d time-window length. A similar process is used for extrapolations,"
+d if requested. Finally missing not at random assumptions are
+"d allowed for BMI values, for interpolated or extrapolated cases."
+"d The command can take a long time to run, especially when both"
+d interpolations and extrapolations are requested.
+d
+d KW: multiple imputation
+d KW: body mass index
+d KW: BMI
+d
+d Requires: Stata version 12.1
+d
+d Distribution-Date: 20161030
+d
+"d Author: Evangelos Kontopantelis, University of Manchester"
+d Support: email e.kontopantelis@@manchester.ac.uk
+d
+f mibmi.ado
+f mibmi.sthlp

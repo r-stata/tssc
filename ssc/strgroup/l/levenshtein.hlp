@@ -1,0 +1,89 @@
+{smcl}
+help {hi:levenshtein}
+{hline}
+{title:Title}
+
+{p 4 4 2}{cmd:levenshtein} {hline 2} Calculate the Levenshtein edit distance between two strings.
+
+{title:Syntax}
+
+{p 4 4 2}Calculate the Levenshtein edit distance between two strings
+
+{p 8 14 2}{cmd:levenshtein} {it:string1 string2}
+
+{p 4 4 2}Calculate the Levenshtein edit distances between two string vectors
+
+{p 8 14 2}{cmd:levenshtein} {it:varname1 varname2} [if] [in], {cmdab:gen:erate(}{it:newvarname}{cmd:)}
+
+
+{title:Description}
+
+{p 4 4 2}{cmd:levenshtein} calculate the Levenshtein edit distance(s) between two strings or two
+vectors of strings. The Levenshtein edit distance is defined as the minimum number of insertions,
+deletions, or substitutions necessary to change one string into the other. For example, the
+Levenshtein edit distance between "mitten" and "fitting" is 3, since the following three edits 
+change one into the other, and it is impossible to do it with fewer than three edits:
+
+{p 8 14 2} 1. {hi:m}itten -> {hi:f}itten (substitution of 'f' for 'm')
+
+{p 8 14 2} 2. fitt{hi:e}n -> fitt{hi:i}n (substitution of 'i' for 'e')
+
+{p 8 14 2} 3. fittin -> fittin{hi:g} (insert 'g' at the end)
+
+
+{title:Examples}
+
+{p 4 4 2}1. Calculate the Levenshtein edit distance between "mitten" and "fitting":
+
+{col 8}{cmd:. {stata levenshtein mitten fitting}}
+
+
+{p 4 4 2}2. Calculate the Levenshtein edit distance between two string vectors:
+
+{col 8}{cmd:. {stata sysuse auto, clear}}
+
+{col 8}{cmd:. {stata decode foreign, gen(foreign_string)}}
+
+{col 8}{cmd:. {stata levenshtein make foreign_string, gen(edit_dist)}}
+
+
+{title:Notes}
+
+{p 4 4 2}
+{cmd:levenshtein} is implemented as a {help plugin:plugin} in order to minimize memory requirements and to maximize speed. 
+Unfortunately, plugins are specific to the hardware architecture and software framework of your computer, i.e., plugins are not cross-platform.
+Define a platform by two characteristics: machine type and operating system. 
+Stata stores these characteristics in {cmd:c(machine_type)} and {cmd:c(os)}, respectively. {cmd:levenshtein} supports the following platforms at this time:
+
+{col 10}{hi:Machine type}{col 40} {hi:Operating system}
+{col 10}PC{col 40} Windows
+{col 10}PC (64-bit x86-64){col 40} Unix
+{col 10}Macintosh{col 40} MacOSX
+{col 10}Macintosh (Intel 64-bit){col 40} MacOSX
+
+
+{title:Saved results}
+
+{p 4 4 2}{cmd:r(distance)} The Levenshtein edit distance
+
+
+{title:Acknowledgements}
+
+{p 4 4 2} The algorithm used to calculate the Levenshtein edit distance is based on a Python extension written by David Necas (Yeti).
+His code is publicly available at {browse "http://code.google.com/p/pylevenshtein/source/browse/trunk/Levenshtein.c":http://code.google.com/p/pylevenshtein/source/browse/trunk/Levenshtein.c}.
+
+{p 4 4 2}Thanks to James Beard for helpful suggestions and feedback.
+
+
+{title:Author}
+
+{p 4 4 2}Julian Reif, University of Chicago
+
+{p 4 4 2}jreif@uchicago.edu
+
+
+{title:Also see}
+
+{p 4 4 2}
+{help strgroup:strgroup}
+

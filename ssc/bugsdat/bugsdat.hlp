@@ -1,0 +1,109 @@
+{smcl}
+{* 11July2006}{...}
+{cmd:help bugsdat}
+{hline}
+
+{title:Title}
+
+      {hi:WinBUGS Splus dataset creation}
+
+{title:Syntax}
+
+{p 8 17 2}
+{cmdab:bugsdat} {varlist} [if]  
+[{cmd:,} {it:options}]
+
+{synoptset 20 tabbed}{...}
+{synopthdr}
+{synoptline}
+{syntab:Main}
+{synopt:{opt d:im}({it:string})} specifies the additional option that each column of data can be split into an array.{p_end}
+{synopt:{opt data}({it:string})} specifies text to be added at the start of the Splus dataset.{p_end}
+{synopt:{opt f:ile}({it:newfilename})} specifies that the Splus dataset is saved into a specific dataset.{p_end}
+{synopt:{opt n:ame}({it:newvarlist})} specifies that the Splus dataset uses an alternative set of variable names in
+the output dataset. {p_end}
+{synoptline}
+{p2colreset}{...}
+
+{title:Description}
+
+{pstd}
+{hi:bugsdat} will convert selected variables from the loaded STATA dataset into a text file that can be 
+read into the WinBUGS software package. The text file is created using a log file so will automatically
+close open log files. The resulting file will be an ASCII file that can be easily cut and pasted into
+WinBUGS. Note if you run this command {hi:quietly} the log file will therefore be empty.
+
+{pstd}
+Note that as the text file is created by a log file the number of characters on a line is dictated by
+the system limits on the linesize. 
+
+{pstd}
+All missing values will be converted to {hi:NA}
+
+{title:Latest Version}
+
+{pstd}
+The latest version is always kept on the SSC website. To install the latest version click
+on the following link 
+
+{phang}
+{stata ssc install bugsdat, replace}.
+
+{title:Options}
+
+{phang}
+{opt d:im}({it:string}) specifies the additional option that each column of data can be split into an array.
+The {it:string} part of the option specifies the dimensions to be placed in the Splus {hi:.Dim=c(string)} statement.
+
+{phang}
+{opt f:ile}({it:newfilename}) specifies that the Splus dataset is saved into a specific dataset. The default
+dataset is {hi:bugsdat.dat}.
+
+{phang}
+{opt n:ame}({it:newvarlist}) specifies that the Splus dataset uses an alternative set of variable names in
+the output dataset.
+
+{phang}
+{opt data}({it:string}) specifies text to be added at the start of the Splus dataset. This is useful for additing
+a single value to a large dataset.
+
+{title:Examples}
+
+{pstd}
+The examples use the system dataset auto.dta. Click on the links below to see the command working.
+
+{stata sysuse auto}
+
+{pstd}
+Create the basic Splus dataset
+
+{stata bugsdat mpg make}
+
+{pstd}
+Specify that each column forms an 37 by 2 array
+
+{stata bugsdat mpg make, d(37,2)}
+
+{pstd}
+Then save the file to auto.dat. Note that in your directory there should be two files {hi:bugsdat.dat} and {hi:auto.dat}.
+
+{stata bugsdat mpg make, d(37,2) f(auto.dat)}
+
+{pstd}
+Additionally new variable names can be specified using the {hi:name} option. This can allow any string values and hence
+can specify names that STATA does not accept like new.mpg.
+
+{stata bugsdat mpg make, d(37,2) f(auto.dat) name(new.mpg new.make)}
+
+{stata bugsdat mpg make, d(37,2) f(auto.dat) name(new.mpg new.make) data(N=37,)}
+
+
+{title:Author}
+
+{pstd}
+Adrian Mander, MRC Human Nutrition Research, Cambridge, UK.
+
+{pstd}
+Email: {browse "mailto:adrian.mander@mrc-hnr.cam.ac.uk":adrian.mander@mrc-hnr.cam.ac.uk}
+
+

@@ -1,0 +1,42 @@
+d 'SIMON2STAGE': module to to compute the design parameters for a Simon two-stage design
+d
+d  The Simon two stage design is a single arm study with an interim
+d analysis. The main purpose of this design is to investigate
+d whether an intervention works or not and to stop the study early
+d for futility. Under the null hypothesis the probability of a
+"d success is p0, this is usually taken as the probability of"
+d success for the current standard treatment. The probability of a
+"d success in this study, p, is tested using the null hypothesis"
+d H0:p=p0 versus the alternative hypothesis H1:p>=p1. The
+d probability of success for the alternative hypothesis is fixed to
+"d be a pre-specified value p1, where p1>p0. The Simon two stage"
+d design consists of studying n1 participants in a first stage and
+d the study stops if there are r1 or fewer responders to the
+d intervention. If there are more than r1 responders in the first
+d stage then the study continues until n participants in total are
+d studied. Then the null hypothesis is not rejected if there are r
+d or fewer responders. Each design must satisfy the type 1 (alpha)
+d and type 2 (beta) errors. The probability of not rejecting H0 can
+d be calculated conditional on any p and let this function be R(p).
+d The design must therefore satisfy the constraints R(p0)>=1-alpha
+d and R(p1)<=beta. The minimax design is one that satisfies these
+d constraints with the smallest total sample size n and the
+d smallest expected sample size under H0. The alternative is to
+"d find the ""optimal"" design which is the design with the smallest"
+d expected sample size conditional on the true proportion being
+d specified by the optp() option. The default is optimising the
+d design under the null proportion p0 and this is the classical
+"d Simon two stage design, however this command allows greater"
+d flexibility.
+d
+d KW: Simon's two stage design; optimal design; minimax; single-arm trial
+d
+d Requires: Stata version 11
+d
+d Distribution-Date: 20120117
+d
+d Author: Adrian Mander
+d Support: email adrian.mander@@mrc-bsu.cam.ac.uk
+d
+f simon2stage.ado
+f simon2stage.sthlp

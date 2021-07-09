@@ -1,0 +1,102 @@
+{smcl}
+{* 12nov2002/26mar2003}{...}
+{hline}
+help for {hi:rvfplot27}{right:(manual:  {hi:[R] regression diagnostics})}
+{hline}
+
+{title:Graph residual-versus-fitted plot after regression-type command}
+
+{p 8 16}{cmd:rvfplot27} [{cmd:,} {it:residualtype} {cmdab:sc:ale(}{it:exp}{cmd:)}
+{cmdab:fsc:ale(}{it:exp}{cmd:)}
+{cmd:ksm(}{it:ksm_options}{cmd:)} {it:graph_options}]
+
+
+{p}{cmd:rvfplot27} is for use after {cmd:regress} and similar commands; see help
+on the command of interest. 
+
+
+{title:Description}
+
+{p}{cmd:rvfplot27} graphs a residual-versus-fitted plot, a graph of the
+residuals versus the fitted values. The residuals are, by default, those 
+calculated by {cmd:predict, residuals} or (if the previous estimation 
+command was {cmd:glm}) by {cmd: predict, response}. The fitted 
+values are those produced by {cmd:predict} by default after each estimation 
+command.
+
+{p}{cmd:rvfplot27} is offered as a generalisation of {cmd:rvfplot} in 
+official Stata. It is a clone of {cmd:rvfplot2} 1.2.0 for users of Stata 7. 
+Users of Stata 8 should use {cmd:rvfplot2} 2.0.0 or later. 
+
+
+{title:Options}
+
+{p 0 4}{it:residualtype} specifies a type of residual other than the default.
+The following types are currently supported: {cmdab:a:nscombe},
+{cmdab:d:eviance}, {cmdab:l:ikelihood}, {cmdab:p:earson}, {cmdab:r:esiduals},
+{cmdab:resp:onse}, {cmdab:rsta:ndard}, {cmdab:rstu:dent}, {cmdab:s:core},
+{cmdab:w:orking}. 
+
+{p 0 4}{cmd:scale(}{it:exp}{cmd:)} specifies a transformed scale on which to
+show the residuals using Stata syntax and {cmd:X} as a placeholder for the
+residual variable name. Thus {cmd:scale(X^2)} specifies squaring, to show relative
+contribution to residual variance; {cmd:scale(abs(X))} specifies absolute
+value, to set aside sign; {cmd:scale(sqrt(abs(X)))} specifies root of absolute
+value, a useful scale on which to check for heteroscedasticity.
+
+{p 0 4}{cmd:fscale(}{it:exp}{cmd:)} specifies a transformed scale on which to
+show the fitted values using Stata syntax and {cmd:X} as a placeholder for the
+fitted variable name. Thus for example {cmd:fscale(2 * ln(X))} specifies twice 
+the natural logarithm, which is the constant information scale for a 
+generalised linear model with gamma error. Similarly, arguments 
+of {cmd:2 * sqrt(X)}, {cmd:2 * asin(sqrt(X))}, and {cmd:-2 / sqrt(X)} 
+specify the constant information scale for Poisson, binomial 
+and inverse Gaussian errors respectively. See McCullagh and Nelder (1989, 
+p.398) for background. 
+
+{p 0 4}{cmd:ksm(}{it:ksm_options}{cmd:)} specifies that the residuals will be 
+smoothed as a function of the fitted using {cmd:ksm} with the options named. 
+
+{p 0 4}{it:graph_options} are any of the options allowed with
+{cmd:graph, twoway}; see help {help grtwoway}.
+
+
+{title:Examples}
+
+{p 8 12}{inp:. gen forxmpg = foreign * mpg}
+
+{p 8 12}{inp:. regress price weight mpg forxmpg foreign}{p_end}
+	{inp:. rvfplot27}
+
+{p 8 12}{inp:. anova price rep foreign rep*foreign weight, cont(weight)}{p_end}
+	{inp:. rvfplot27, scale(sqrt(abs(X)))}
+
+{p 8 12}{inp:. glm price weight, link(log)}{p_end}
+	{inp:. rvfplot27, anscombe yli(0)}
+
+{p 8 12}{inp:. glm price weight, link(log)}{p_end}
+	{inp:. rvfplot27, anscombe yli(0) ksm(lowess)}
+
+
+{title:Author}
+
+    Nicholas J. Cox, University of Durham, U.K.
+    n.j.cox@durham.ac.uk
+
+
+{title:Acknowledgements} 
+
+    Phil Ender provided very helpful comments. 
+
+
+{title:References}     
+
+{p}McCullagh, P. and Nelder, J.A. 1989. {it:Generalized linear models.}
+London: Chapman and Hall. 
+
+
+{title:Also see}
+
+{p 1 10}Manual:  {hi:[R] regression diagnostics}{p_end}
+{p 0 19}On-line:  help for {help graph}, {help regdiag}; {help predict}
+{p_end}

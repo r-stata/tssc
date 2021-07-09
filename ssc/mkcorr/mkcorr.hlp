@@ -1,0 +1,98 @@
+{smcl}
+{* 2.0.1 Glenn Hoetker 08Mar2014}{...}
+{.-}
+help for {cmd:mkcorr}
+{.-}
+
+{title:Generate correlation table formatted for easy inclusion in articles}
+
+{p 8 17 2}
+{cmd:mkcorr} 
+{it:varlist} 
+[{cmd:if} {it:exp}] 
+[{cmd:in} {it:range}]
+{cmd:,}
+{cmdab:l:og}{cmd:(}{it:filename}{cmd:)}
+[{cmdab:r:eplace}
+{cmdab:m:eans}
+{cmdab:noc:orr}
+{cmdab:s:ig}
+{cmdab:l:ab}
+{cmdab:n:um}	
+{cmdab:cd:ec}{cmd:(}{it:#}{cmd:)}
+{cmdab:md:ec}{cmd:(}{it:#}{cmd:)}
+{cmdab:case:wise}]
+
+{title:Description}
+
+{p 4 4 2}{cmd:mkcorr} produces a correlation table in a format that is easy to 
+import into a spreadsheet or word processing document.  In this, it is inspired 
+by the indispensable {cmd:mktab} and {cmd:outreg} commands.  By writing the output
+directly to a logfile, it avoids two problems with taking correlation tables from
+the results window.  First, it allows an effectively unlimited number of variables
+without wrapping around.  Second, it requires less post-processing in a spreadsheet
+or word-processor, particularly for more involved tables.  It also offers a number
+of small advantages such as allowing the use of labels, controlling the number of 
+decimal places used, and other formatting options.
+
+{title:Options}
+
+{p 4 8 2}{cmd:log}{cmd:(}{it:filename}{cmd:)} specifies the name of the file in which the 
+output is to be stored.  The output file, {it:filename}.log, can be opened with any spreadsheet or
+word-processing program. If the user specifies a file name that includes an extension, that
+extension will be used rather than {it:.log}. Thus, {cmd:log(foo.out)} yields the logfile {it:foo.out}.
+The {it:filename} specification may include the path of a directory other than the current working directory.
+
+{p 4 8 2}{cmd:replace} must be specified for the log file to replace an existing file of the
+same name.
+
+{p 4 8 2}{cmd:means} requests that summary statistics (mean, s.d., min, max) be included.
+
+{p 4 8 2}{cmd:nocorr} suppresses the output of the correlation table.  It is only sensible in combination
+with {cmd:means} as a way to output descriptive statistics.
+
+{p 4 8 2}{cmd:lab} uses variable labels rather than variable names. 
+
+{p 4 8 2}{cmd:num} is a formatting option that labels each variable with a number in the first column and
+uses the same numbers as the column headers for the correlation table.  This is especially useful when you 
+have either a large number of variables or variables with long names.
+
+{p 4 8 2}{cmd:sig} requests that the significance of each correlation be printed under it.
+
+{p 4 8 2}{cmd:cdec}{cmd:(}{it:#}{cmd:)} set the number of decimal places displayed in the correlation table.
+
+{p 4 8 2}{cmd:mdec}{cmd:(}{it:#}{cmd:)} set the number of decimal places displayed in the summary statistics
+portion of the table.
+
+{p 4 8 2}{cmd:casewise} cause the table to reflect casewise deletion. In other words, results will reflect only
+those observations for which no listed variables are missing. This command will yield results identical to using 
+{cmd:corrrelate}.  The default is to engage in pairwise deletion, yielding results identical to using {cmd:pwcorr}.
+
+{title:Examples}
+
+{p 4 8 2}{inp:.mkcorr price mpg, log(auto) replace}
+
+{p 4 8 2}{inp:.mkcorr price mpg, log(auto) replace num label}
+
+{p 4 8 2}{inp:.mkcorr price mpg, log(auto) replace label means mdec(2) cdec(3)}
+
+{title:Remarks} 
+
+{p 4 4 2}This is version 2.0.1 of this software. The only change from 2.0.0 is updated contact information for 
+the author.  It should be preferred to any version 1.x. Please inform the author of any bugs you find.
+
+{title:Author} 
+
+        Glenn Hoetker, W.P. Carey School of Business, Arizona State University
+        Glenn.Hoetker@asu.edu
+
+{title:Acknowledgement} 
+
+{p 4 4 2}This program owes a debt of inspiration to {cmd:mktab}, {cmd:outreg} and {cmd:corrtab}.  The helpful 
+feedback of Nick Cox, Jonathan Gardner and Stephen Jenkins contributed to substantial improvements from version
+1.0 to version 1.3.  Comments from Herve Stolowy contributed to significant improvement from version 1.3 to 2.0. The 
+
+{title:Also see}
+
+{p 4 13 2}On-line:  help for {help correlate} and {help pwcorr}.
+

@@ -1,0 +1,113 @@
+{smcl}
+{* 27sep2004}{...}
+{hline}
+help for {hi:kapssi}{right:(Author:  David Harrison)}
+{hline}
+
+{title:Sample size calculations for kappa}
+
+{p 4 4 2}
+Two unique raters, two ratings:
+
+{p 8 15 2}{cmd:kapssi} {it:kappa}{cmd:,} {c -(} {cmdab:s:e(}{it:#}{cmd:)} |
+{cmdab:d:iff(}{it:#}{cmd:)} [{cmdab:l:evel(}{it:#}{cmd:)}] | {cmd:n(}{it:#}{cmd:)}
+{c )-} {cmdab:p:1(}{it:#}{cmd:)}
+[ {cmd:p2(}{it:#}{cmd:)} {cmd:round} ]
+
+{p 4 4 2}
+Two or more (non-unique) raters, two ratings:
+
+{p 8 15 2}{cmd:kapssi} {it:kappa}{cmd:,} {c -(} {cmdab:s:e(}{it:#}{cmd:)} |
+{cmdab:d:iff(}{it:#}{cmd:)} [{cmdab:l:evel(}{it:#}{cmd:)}] | {cmd:n(}{it:#}{cmd:)}
+{c )-} {cmd:p(}{it:#}{cmd:)}
+[ {cmd:m(}{it:#}{cmd:)} {cmd:round} ]
+
+
+{title:Description}
+
+{p 4 4 2}
+{cmd:kapssi} estimates required sample size for estimating the kappa-statistic of
+inter-rater reliability for a binary outcome (having postulated value {it:kappa}) with
+given standard error, or the standard error for a given sample size.  If {cmd:n()} is
+specified, {cmd:kapssi} computes standard error; otherwise it computes sample
+size.  {cmd:kapssi} is an immediate command; all of its arguments are numbers (see
+help {help immed}).
+
+{p 4 4 2}
+For two raters, the results are the same as produced by {help sskdlg} or {help sskapp} (except
+for rounding; see {cmd:round} option below), based on the asymptotic variance presented by
+Fleiss, Cohen and Everitt (1969).  Results for more than two raters are based on the
+asymptotic variance for the Fleiss-Cuzick estimator of kappa presented by Zou & Donner (2004) in
+the case of equal numbers of ratings for each subject.
+
+
+{title:Options}
+
+{p 4 8 2}{cmd:se(}{it:#}{cmd:)} specifies the standard error of kappa.
+
+{p 4 8 2}{cmd:diff(}{it:#}{cmd:)} specifies the half width of the confidence interval for kappa
+as an alternative to the standard error.
+
+{p 4 8 2}{cmd:level(}{it:#}{cmd:)} specifies the significance level for the confidence interval;
+the default is obtained from {cmd:set level} (see help {help level}), usually
+{cmd:level(95)}.
+
+{p 4 8 2}{cmd:n(}{it:#}{cmd:)} specifies the sample size for which to calculate standard error.
+
+{p 4 8 2}{cmd:p1(}{it:#}{cmd:)} specifies the proportion of positive results reported by rater 1
+(of two raters).
+
+{p 4 8 2}{cmd:p2(}{it:#}{cmd:)} specifies the proportion of positive results reported by rater 2
+(of two raters); if {cmd:p2} is not specified it is assumed to be equal to {cmd:p1}.
+
+{p 4 8 2}{cmd:p(}{it:#}{cmd:)} specifies the overall proportion of positive results (multiple raters).
+
+{p 4 8 2}{cmd:m(}{it:#}{cmd:)} specifies the number of raters; the default is {cmd:m(2)}.
+
+{p 4 8 2}{cmd:round} specifies that the sample size is to be rounded to the {it:nearest} integer;
+the default is to round {it:up} using the function {help ceil()}. This allows reproducability of
+results for two raters produced by {help sskdlg} or {help sskapp} which both have this behaviour.
+
+
+{title:Examples}
+
+{p 4 4 2}Two raters.  Compute sample size given standard error:
+
+{p 8 12 2}{cmd:. kapssi .8, se(.1) p(.1)}
+
+{p 4 4 2}Compute sample size given half width of confidence interval:
+
+{p 8 12 2}{cmd:. kapssi .6, diff(.2) p1(.15) p2(.12) round}
+
+{p 4 4 2}This is equivalent to:
+
+{p 8 12 2}{cmd:. sskapp, p1(.15) p2(.12) diff(.2) kapp(.6)}
+
+{p 4 4 2}More than two raters.  Compute sample size:
+
+{p 8 12 2}{cmd:. kapssi .75, se(.12) p(.05) m(3)}
+
+{p 4 4 2}Compute standard error for given sample size:
+
+{p 8 12 2}{cmd:. kapssi .8, n(100) p(.12) m(4)}
+
+
+{title:References}
+
+{p 4 4 2}Fleiss, J. L., Cohen, J. and Everitt, B.S. 1969. Large sample standard errors
+of kappa and weighted kappa. {it:Psychological Bulletin} 72: 323-327.
+
+{p 4 4 2}Zou, G. and Donner, A. 2004. Confidence interval estimation of the
+intraclass correlation coefficient for binary outcome data. {it:Biometrics} 60: 807-811.
+
+
+{title:Maintainer}
+
+    David A. Harrison
+    Intensive Care National Audit & Research Centre
+    david@icnarc.org
+
+
+{title:Also see}
+
+    Online:  help for {help kappa}, {help sskdlg}, {help sskapp}, {help immed}

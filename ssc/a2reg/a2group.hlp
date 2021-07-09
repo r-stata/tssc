@@ -1,0 +1,70 @@
+{smcl}
+{hline}
+help for {hi:a2group}
+{hline}
+
+{title:Creates mobility groups for the identification of two-way fixed effects}
+
+{p 8 27}
+{cmdab:a2group} ,
+[
+{cmdab:individual}{cmd:(}{it:varname}{cmd:)}
+{cmdab:unit}{cmd:(}{it:varname}{cmd:)}
+{cmdab:groupvar}{cmd:(}{it:varname}{cmd:)}
+]
+
+{p}
+
+{title:Description}
+
+{p 0 0}
+{hi:a2group} creates a new variable {it:groupvar} containing the mobility group 
+which the individual and the unit belong to. Within these mobility groups, two-way
+fixed effects can be estimated, with {it:individual} indexing the first fixed effect,
+and {it:unit} indexing the second fixed effect. 
+
+{title:Options}
+
+{cmdab:individual}{cmd:(}{it:varname}{cmd:)} is the identifier for the first fixed effect.
+Typically, {it:varname} will be an person's ID, such as an employee ID. 
+
+{cmdab:unit}{cmd:(}{it:varname}{cmd:)} is the identifier for the second fixed effect.
+Typically, {it:varname} will be a unit ID, such as a firm ID. 
+
+{cmdab:groupvar}{cmd:(}{it:groupvar}{cmd:)} is the name of the new variable containing
+the identifier of the mobility group.
+
+
+{title:Examples}
+
+a2group, individual(personid) unit(firmid)
+
+{title:Author}
+
+{p}
+Amine Ouazad, PhD Candidate of the Paris School of Economics,
+and Research Associate, London School of Economics.
+
+Webpage {browse "http://personal.lse.ac.uk/ouazad/"}
+
+Email {browse "mailto:a.ouazad@lse.ac.uk":a.ouazad@lse.ac.uk}
+
+{title:Acknowledgement}
+
+{p}
+This command started as a port of the FORTRAN cg program that was written 
+by {bf: Robert Creecy} for Unix platforms. It has now improved it in many ways,
+providing Fisher tests, interfacing with STATA and commands such as bootstrap.
+
+Please put the following reference in your paper.
+
+Amine Ouazad, Program for the Estimation of Two-Way Fixed Effects, available at 
+http://personal.lse.ac.uk/ouazad/, 2007.
+
+{title:Also see}
+
+{help a2reg} (if installed)
+
+
+
+

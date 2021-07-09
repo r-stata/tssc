@@ -1,0 +1,100 @@
+{smcl}
+{* *! version 1.0.1  12jun2006}{...}
+{cmd:help tomata}{right:({help ssc:SSC}; user written)}
+{hline}
+
+{title:Title}
+
+{pstd}
+{hi:tomata} -- Make view matrices of Stata variables
+
+
+{title:Syntax}
+
+{p 8 12 2}
+{cmd:tomata}
+[{it:{help varlist}}]
+{ifin}
+[{cmd:,}
+{it:options}
+]
+
+
+{col 12}{it:options}{col 25}description
+{col 12}{hline 49}
+{col 12}{cmdab:nom:issing}{col 25}casewise exclusion of missing values
+{col 12}{hline 49}
+
+
+{title:Description}
+
+{pstd}
+{cmd:tomata} 
+creates separate view matrices for each variable specified or, 
+if no variables are specified, all variables in the Stata dataset.
+
+
+{title:Options}
+
+{phang}
+{cmd:nomissing}
+    specifies that observations that contain missing in any of the variables 
+    are to be excluded from all view matrices created.
+
+
+{title:Remarks}
+
+{pstd}
+Use {cmd:tomata} from Stata's dot prompt, not from Mata's colon prompt.
+
+{pstd}
+{cmd:tomata} is intended for use when you are using Mata 
+interactively; see {bf:{help mf_st_view:[M-5] st_view()}}
+to create view matrices within programs.
+
+{pstd}
+For example, interactively, for teaching purposes, you wish to run 
+a regression:
+
+	. {cmd:sysuse auto, clear}
+
+	. {cmd:tomata mpg weight foreign, nomiss}
+
+	. {cmd:mata:}
+
+	: {cmd:y = mpg}
+
+	: {cmd:X = (weight, foreign, J(rows(weight), 1, 1))}
+
+	: {cmd:b = invsym(X'X)*X'y}
+
+	: {cmd:b}
+
+	: {cmd:end}
+
+
+{title:Diagnostics}
+
+{pstd}
+None.
+
+
+{title:Source code}
+
+{pstd}
+{view tomata.ado, adopath asis:tomata.ado}.
+
+
+{title:Author}
+
+{pstd}
+William Gould, StataCorp.
+
+
+{title:Also see}
+
+{p 4 13 2}
+Online:  help for
+{bf:{help mf_st_view:[M-5] st_view()}}
+{p_end}
+

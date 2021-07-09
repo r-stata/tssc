@@ -1,0 +1,212 @@
+.-
+help for ^ellip6^                                             (SSC: 20030116)
+.-
+
+Confidence ellipses
+-------------------
+
+    ^ellip6^ ^yvar^ [^xvar^] [^if^ exp] [^in^ range] [^,^ ^l^evel^(^#^)^
+        {^means^ | ^coefs^ [^p^ool^(^#^)^]} ^c^onstant^(^string [#]^)^ 
+	^g^enerate^(^newyvar newxvar^)^ ^a^dd^(^oldyvar oldxvar^)^ ^yf^orm[(%fmt)]
+        ^xf^orm[(%fmt)] ^np^oints^(^#^)^ ^evr(^#^)^ ^replace^ graph_options]
+
+
+Description
+-----------
+
+^ellip6^ is an update in Stata 6 of ^ellip^ (Alexandersson 1998), which was for
+Stata 5. The original program has been renamed ^ellip5^ to ensure backward 
+compatibility and less name confusion. But ellip6 has more features and has
+been more tested than ellip5. ellip6 graphs confidence ellipses for
+approximately normally distributed data.
+
+There are two options of centering the confidence ellipse. The default and the
+means option graph a confidence ellipse centered around the means of two 
+variables, yvar and xvar. With this syntax, ellip6 is used as a stand-alone 
+command. The coefs option graphs a confidence ellipse centered around the 
+regression coefficients of yvar and xvar from an immediately preceding 
+^regress^. With this syntax, ellip6 remains a post-estimation command. If you
+restricted regress to a portion of the data using if or in, then you will 
+generally want to use the same conditions with ellip..., coefs.
+
+The size of the confidence ellipse is determined by the boundary constant c.
+In the overall default and in the the means option default, c is 4. In the
+coefs option default, c is 2 * F with (p, n-p) degrees of freedom.
+
+
+Options
+------- 
+
+^l^evel^(^#^)^ specifies the confidence level, in percent, for calculation of
+    the confidence ellipse; the default is 95. level() cannot be used with 
+    c(sd [#]).
+
+^means^ | ^coefs^ specifies how to center the confidence ellipse. The default
+    is the means option. If coefs is specified without xvar, then the _cons 
+    in regress is used for xvar.
+
+^p^ool^(^#^)^ displays a "locus curve" of # weighted regressions for the two 
+    overlaid confidence ellipses due to gen() and add(). pool() also displays a
+    separate table of the locus curve dots. The weights are fractional 
+    importance weights on the data not specified by if/in. The option must be 
+    used together with if/in, coefs, gen() and add(). See Alexandersson 
+    (1998) for the background of this option. 
+
+^g^enerate^(^newyvar newxvar^)^ generates two new variables, newyvar and
+    newxvar, which define the confidence ellipse. If the current dataset 
+    contains fewer observations than the number of points in ^np^oints^(^#^)^
+    then the length of the dataset will be expanded accordingly with missing 
+    values, and a warning message is displayed. 
+
+^a^dd^(^oldyvar oldxvar^)^ adds an old confidence ellipse to the new 
+    confidence ellipse. The result is two overlaid confidence ellipses in the
+    same graph. add() may be used with gen() but does not require gen(). 
+
+^yf^orm and ^yf^orm[(%fmt)] specify the display format of the y-axis. The 
+    default is to use a %9.0g format. yf specifies that the y-axis uses the
+    yvar display format. ^yf^[(%fmt)] specifies that the y-axis uses the 
+    %fmt display format. See [R] format.
+
+^xf^orm and ^xf^orm[(%fmt)] specifies the display format of the x-axis; see 
+   the ^fy^ and ^fy^[(%fmt)] option above.
+
+^np^oints^(^#^)^ specifies the number of points to be calculated for the 
+    confidence ellipse. The default is 400. You seldom have to use this option,
+    but users with Small Stata may want to lower the number and if the output 
+    looks jagged try increasing the number.
+
+^evr^(^#^)^ specifies the error variance ratio, where # is a floating point
+    number between 0 and 10^36. The default is 1. evr(0) corresponds to 
+    regression of x on y, evr(1) to orthogonal regression, and a larger number,
+    say evr(999) corresponds to regression of y on x. For a discussion of
+    evr-regression, see McCartin (n.d.) 
+
+^replace^ will replace any existing variables in gen(newyvar newxvar).    
+
+graph_options are any options allowed with -graph, twoway- except by(). 
+    The by() bug has been fixed in ellip7. Defaults are:
+    c(l) s(.) t1(" ") t2(" ") l1(yvar) b2(xvar) [or c(ll) s(..) if add() is 
+    specified, and l1(Estimated yvar) and  b2(Estimated xvar) if coefs is 
+    specified]. 
+
+^c^onstant^(^string [#]^)^ specifies the boundary constant c. The default is 
+    equivalent to c(sd 4) for means and to c(f 2) for coefs. The 8 allowed
+    strings are:
+
+^sd^ [#] displays a standard deviation (a.k.a covariance, concentration, 
+    inertia, or error) ellipse, where c = #^2. The confidence level, in 
+    percent, is (1 - exp^(-#/2)) * 100. The default is sd 4, which has the same
+    mean and variance as the bivariate normal distribution. In this sense, it
+    is the ellipse which is the most representative of the data points without
+    any a priori statistical assumptions concerning their origin. The default 
+    corresponds to 95% INDIVIDUAL confidence intervals, or 86% JOINT confidence
+    intervals. sd cannot be used with level(). Distances from the center to the
+    ellipse boundary do NOT describe the standard deviation along directions
+    other than along the principal axes; if you need to work with geographical
+    units, see Gong (2002). 
+    
+^tsq^ [#] or ^hotel^ [#] displays a Hotelling T-square confidence ellipse with
+    # parameters, where c = # * (n-1) / (n-#) * F = T2. The default is tsq 2 or
+    hotel 2. Use this option when mu is known but V is unknown. 
+
+^tsqn^ [#] or ^hoteln^ [#] displays a Hotelling T-square confidence ellipse 
+    with # parameters, where c = T2 / n. The default is tsq 2 or hotel 2. Use 
+    this option when mu and V are unknown. 
+    
+^ptsqn^ [#] or ^photeln^ [#] displays a Hotelling T-square confidence ellipse
+    for prediction with # parameters, where c = T2 * (n+1) / n. The default 
+    is ptsq 2 or photel 2. This confidence ellipse predicts the next 
+    observationin the population at a given confidence (aka prediction ellipse)
+    and approximates a region containing a specified percentage of the 
+    population (aka tolerance ellipse). Use this option when mu and V are 
+    unknown. Other confidence ellipses for prediction are conceivable but 
+    little known and not implemented. 
+
+^chisq^ [#] displays a "true" Chi-square confidence ellipse, where c = chisq
+    with # d.f. The default is chisq 2. Use this option when mu and V are 
+    known.
+
+^chisqn^ [#] or ^pchisq^ [#] displays a Chi-square confidence ellipse, where
+    c = chisq/n with # d.f. The default is chisq 2. Use this option when V 
+    is known but mu is unknown. It is more common to instead use chisq or f.
+    
+^f^ [#] displays a confidence ellipse based on F(#,n-#). The default is f 2,
+    also known as Douglas confidence ellipse.
+    
+^fadj^ [#] displays an "F-adjusted" confidence ellipse, where c = F(2,n-#). 
+    The default is fadj 2, also known as Douglas confidence ellipse. 
+  
+  
+
+Remarks
+-------
+
+This version 1.2 of ^ellip^ is the latest version for Stata 6 and is now named
+^ellip6^. The new ellip6 improve the formatting options, and introduce the
+replace and evr(#) options and the ptsqn, chisqn and fadj arguments to
+constant(). ^ellip6^ saves in r().
+
+ellip6 is a graphics command, but the option gen() may lengthen the dataset. 
+There is no option for overlaid confidence ellipses. To create multiple
+overlaid confidence ellipses I recommend use a series of ellip ..., gen()
+followed by Nick Cox's ^muxyplot^ yvarlist xvarlist. The complementary command
+muxyplot with helpfile can be downloaded separately from SSC.
+
+Stata 8 is now shipping, which has a new graphics programming language, and
+many new graphics features, including a new ||-separator and ()-binding
+notation for overlaid graphs. 
+
+^ellip7^ for Stata 7 is posted at the same time as this ellip6. Any new
+development by the author will be in Stata 8 or later.
+
+
+Examples
+--------
+
+    . ellip y x
+    graphs a standard ellipse around the means of y and x, where c = 4.
+
+    . ellip y x, g(sdy sdx)
+    graphs a standard ellipse around the means of y and x, and generates the
+    ellipse variables sdy and sdx with 400 obs.
+    
+    . ellip y x, c(hoteln) a(sdy sdx)
+    graphs a 95% Hotelling confidence ellipse around the means of y and x,
+    where c = T2 / n, and also graphs the previously generated standard 
+    ellipse. The result is an overlaid graph with two confidence ellipses.
+
+    . reg dv iv
+    . ellip iv, coefs c(chisq)
+    graphs a 95% Chi-square confidence ellipse around the regression coeffient
+    for iv and around _cons in the preceding regression
+
+
+Author
+------
+
+   Anders Alexandersson
+   Mississippi State University, MS, USA
+   Email: aalex@@its.msstate.edu
+
+
+References
+----------
+
+Alexandersson, A. 1998. gr32: Confidence ellipses. Stata Technical
+    Bulletin 46: 10-13. 
+Batschelet, E. 1981. Circular Statistics in Biology. London and New
+    York: Academic Press.
+Gong, J. 2002. Clarifying the Standard Deviational Ellipse. Geographical
+    Analysis 34(2): 155-167.
+Johnson, R., and D. Wichern. 2002. 5th ed. Applied Multivariate
+    Statistical Analysis. Upper Saddle River, NJ: Prentice Hall.
+McCartin, B. n.d. A Geometric Characterization of Linear Regression.
+    Statistics: A Journal of Theoretical and Applied Statistics.
+
+
+Also see
+--------
+
+Manual: [R] graph, [R] gph
+STB:    STB-46 gr32, STB-34 gr20 
+Online: @graph@, @regress@, @gphdt@, @level@, @muxyplot@ (if installed)   

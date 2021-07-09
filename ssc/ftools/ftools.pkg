@@ -1,0 +1,71 @@
+d 'FTOOLS': module to provide alternatives to common Stata commands optimized for large datasets
+d
+d  ftools consists of a Mata file and several Stata commands: The
+d Mata file creates identifiers (factors) from variables by using
+"d hash functions instead of sorting the data, so it runs in time"
+d O(N) and not in O(N log N). The Stata commands exploit this to
+"d avoid sort operations,  at the cost of being slower for small"
+d datasets (mainly because of the cost involved in moving data from
+"d Stata to Mata). Implemented commands are fcollapse, fegen group,"
+d and fsort. Note that most of the capabilities of levels and
+d contract are already supported by these commands. Possible
+d commands include more egen functions and merge and reshape
+d alternatives.
+d
+d KW: levels
+d KW: collapse
+d KW: contract
+d KW: egen
+d KW: sort
+d KW: factor variables
+d KW: Mata
+d
+d Requires: Stata version 11.2
+d
+d Distribution-Date: 20191118
+d
+"d Author: Sergio Correia, Board of Governors of the Federal Reserve System"
+d Support: email sergio.correia@@gmail.com
+d
+f ftools.ado
+f ftools.mata
+f ftools.sthlp
+f fcollapse.ado
+f fcollapse.sthlp
+f fegen.ado
+f fegen_group.ado
+f fegen.sthlp
+f fisid.ado
+f fisid.sthlp
+f flevelsof.ado
+f flevelsof.sthlp
+f fmerge.ado
+f fmerge.sthlp
+f freshape.ado
+f fsort.ado
+f fsort.sthlp
+f ftab.ado
+f ./j/join.ado
+f ./j/join.sthlp
+f ./l/local_inlist.ado
+f ./l/local_inlist.sthlp
+f fcollapse_functions.mata
+f fcollapse_main.mata
+f ftools_type_aliases.mata
+f ftools.mata
+f ftools_common.mata
+f ftools_hash1.mata
+f ftools_main.mata
+f ftools_experimental.mata
+f ftools_plugin.mata
+f ftools_type_aliases.mata
+f ./m/ms_compile_mata.ado
+f ./m/ms_expand_varlist.ado
+f ./m/ms_fvstrip.ado
+f ./m/ms_fvstrip.sthlp
+f ./m/ms_fvunab.ado
+f ./m/ms_get_version.ado
+f ./m/ms_parse_absvars.ado
+f ./m/ms_parse_varlist.ado
+f ./m/ms_parse_vce.ado
+f ./m/ms_add_comma.ado

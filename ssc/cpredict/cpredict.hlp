@@ -1,0 +1,122 @@
+{smcl}
+{hline}
+help for {hi:cpredict}: module to compute the conditional expectation after a regression {right:{browse "http://www.econ.chavezjuarez.com/vcheck.php?i=cpredict&v=1.1":[Version 1.1]}}
+{hline}
+
+
+{ul:Content}
+{help cpredict##syntax:1. Syntax}
+{help cpredict##description:2. Description of the routine}
+{help cpredict##options:3. Options}
+{help cpredict##examples:4. Examples}
+{help cpredict##feedback:5. Feedback}
+{help cpredict##authors:6. Authors}
+
+{dlgtab 0 0:Syntax}{marker syntax}
+
+{cmd:cpredict} is an extension to the built-in command {help predict:predict} and uses essentially the same syntax:
+
+{p 4 8 2}{cmd:cpredict}
+{varlist} [,{cmdab:m:anip(}{it:{varlist}}{cmd:)} {cmdab:k:eep(}{it:{varlist}}{cmd:)} {cmdab:s:tat(}{it:str}{cmd:)} 
+{cmdab:popt:(}{it:str}{cmd:)} {cmdab:gro:pt(}{it:str}{cmd:)} {cmdab:gr:aph(}{it:{varlist}}{cmd:)}]
+
+{p 0 4 2}Most options are specific to the additional features of cpredict. All options for the command {help predict:predict} can be passed through using the option 'popt'. 
+
+{p 0 4 2}{help weights} are not allowed (as they don't make sense here). 
+
+{p 0 4 1}Factor variables (see {help fvvarlist}) are not supported.
+
+
+{dlgtab 0 0:Description}{marker description}
+
+{p 0 0 2} This routine provides a small extension to the built-in command predict 
+by setting some explanatory variables to their sample mean. Hence, we can compute 
+the conditional expectation given that some control variables are at their sample means. 
+ This can be very useful when analysing non-linear models and being interested in 
+ the relationship between one particular explanatory variable and the dependent variable.
+
+
+{dlgtab 0 0:Options}{marker options}
+The user has to choose one among the first two options.
+{p 4 8 2}{cmdab:m:anip(}{it:{varlist}}{cmd:)} Use this option to indicate which variables
+you would like to set to the mean (or another statistic defined in option {cmdab:s:tat(}{it:str}{cmd:)}
+
+{p 4 8 2}{cmdab:k:eep(}{it:{varlist}}{cmd:)} Use this option if you want to set most of 
+the variables to the mean (or another statistic defined in option {cmdab:s:tat(}{it:str}{cmd:)} ). 
+Simply indicate which variables should NOT be set to the sample statistic. 
+
+The remaining options are truly optional: 
+
+{p 4 8 2}{cmdab:s:tat(}{it:str}{cmd:)} (default: mean) If you want another statistic than the
+mean, you can specify it here. Possible (and plausible) values include: p1, p5,..., p25,...,p99,median,mean. 
+
+{p 4 8 2}{cmdab:popt:(}{it:str}{cmd:)} Use this option to pass on options for {help predict:predict}. 
+This text is simply passed to the 'predict' command used in this routine. 
+
+{p 4 8 2}{cmdab:gr:aph(}{it:{varlist}}{cmd:)} This option allows you to create a graph of the created variable in function 
+of the variable indicated in the option.
+
+{p 4 8 2}{cmdab:gro:pt(}{it:str}{cmd:)} Use this option to pass on options to the 'twoway' command
+used to create the graph. For instance, you can define the legend or the graph titles. 
+
+{p 4 8 2}{cmdab:grt:ype(}{it:str}{cmd:)} The {it:default} graph type is the scatter plot. If you wish to use another 
+graph type (e.g. connected, line), use this option. 
+
+{dlgtab 0 0:Examples}{marker examples}
+
+
+{ul:Probit}
+{stata sysuse nlsw88, clear}  
+{stata probit union age grade c_city wage tenure}
+{stata cpredict p_union, manip(age grade c_city tenure) graph(wage)}
+
+Or equivalently in this case: 
+{stata cpredict p_union2 , keep(wage) graph(wage)}
+
+{p 4 4 2}This very simple example produced the predicted probabilities of being member of 
+a union as a function of the wage, holding all other control variables constant at their
+sample means. Note that this example also illustrates that both the 'keep' and the 
+'manip' option can yield the same results. 
+
+{ul:Tobit}
+{stata sysuse auto,clear}  
+{stata tobit mpg weight length foreign, ll(17)}
+{stata cpredict mpg_hat, keep(weight) graph(weight) popt(ystar(17,.))}
+
+{p 4 4 2} In this example we illustrate the use of option 'popt' as we want to use the conditional
+outcome rather than the default predicted value of the tobit model. 
+
+
+{ul:OLS with non-linear effects}
+{p 4 4 2}We can also use cpredict for linear models with non-linear effects. For instance, 
+to visualise the the effects of education on wages using a polynomial term of degree 2: 
+
+{stata sysuse nlsw88, clear}
+{stata gen gradesq=grade^2}
+{stata gen uniongrade=union*grade}
+{stata gen uniongradesq=union*gradesq}
+{stata reg wage union uniongrade uniongradesq grade gradesq tenure hours}
+{stata sort grade}
+{stata cpredict wage_p , manip(tenure hours) graph(grade) gropt(by(union)) grtype(connected)}
+
+{p 4 4 2} The option gropt allows us to split the graph into two parts according to the variable
+union. This allows to compare the earning functions between union members and non-members
+holding both tenure and the number of hours constant. 
+
+
+{dlgtab 0 0:Feedback}{marker feedback}
+
+{p 4 4 2}The primary goal of this command is to provide a handy Stata routine for researchers and 
+willing to illustrate and visualise some effects of essentially non-linear models. I am 
+eager to hear from users about their needs and I am very much looking forwards to 
+incoporating wishes expressed by users in future versions of this routine. So please 
+feel free to contact me and share your experience using 'cpredict'. 
+
+
+{dlgtab 0 0:Author}{marker authors}
+
+Florian Ch{c a'}vez-Ju{c a'}rez, CIDE Mexico City ({browse "mailto:florian@chavezjuarez.com?subject=Stata routine iop:":florian@chavezjuarez.com})
+
+
+Check version history: {stata which cpredict} (will be displayed in the main window of Stata)
+

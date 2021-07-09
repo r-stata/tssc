@@ -1,0 +1,215 @@
+VERSION 10.0
+
+INCLUDE _std_medium
+
+POSITION . . 430 280
+
+COPY copy1
+OK ok1, label("OK")
+CANCEL can1, label("Cancel")
+SUBMIT sub1, label("Submit")
+
+INCLUDE levels_list
+
+HELP hlp1, view("help kappa2")
+RESET res1
+
+DEFINE exin    +70
+DEFINE exina   +80
+DEFINE exwd     50
+DEFINE exwda   195
+
+SCRIPT PREINIT
+BEGIN
+	create STRING bu_kapwgtResults
+    create STRING child_ed_value	
+END
+
+DIALOG main, label("kappa2 - Weighted kappa for incomplete designs") tabtitle("Main")
+BEGIN
+  TEXT     tx_var     _lft      _top      330      .,		/*
+		*/ label("Variables containing frequency for ratings:")
+  VARLIST  vl_var        @      _ss       330      .,		/*
+		*/ label("Variables containing frequency for ratings")
+		
+  TEXT     tx_examples      @      _ms        @        .,		/*
+		*/ label("Examples:")
+  TEXT     tx_examp1     exin        @     exwd        ., right		/*
+		*/ label("yr*")
+  DEFINE   holdx @x
+  TEXT     tx_examp1a   exina        @    exwda        .,		/*
+		*/ label(`"all variables starting with "yr""')
+  TEXT     tx_examp2    holdx      _ss     exwd        ., right		/*
+		*/ label("xyz-abc")
+  TEXT     tx_examp2a   exina        @    exwda        .,		/*
+		*/ label("all variables between xyz and abc")
+
+  GROUPBOX gb_out	 _lft       +35       160      150,		/*
+  		*/ label("Options")
+  CHECKBOX ck_tab     _indent   _ss       _inwd         ., 		/*
+		*/ option("tab") /* default option */ 			/*
+		*/ label("tab") 				/*
+		*/ tooltip("display table of assessments (available for two raters only)")
+  CHECKBOX ck_jackknife  @         _ss       @             ., 		/*
+		*/ option("jackknife")					/*
+  		*/ label("jackknife")		/*
+		*/ tooltip("compute jackknifed standard errors and display additional statistics")
+  CHECKBOX ck_majority    @         _ss       @             ., 		/*
+		*/ option("majority")					/*
+  		*/ label("majority")		/*
+		*/ onclickon("script majority_on")	/*
+		*/ onclickoff("script majority_off")	/*
+		*/ tooltip("the agreement is defined as majority or consensus")
+  EDIT     ed_majority     +60      @         20   ., /*
+        */ label("majority number of observers") numonly
+
+  GROUPBOX gb_out2	 +100       -60       160         150,		/*
+  		*/ label("Weights")	
+
+  RADIO ck_u  _indent   _ss       @             ., 		/*
+        */ first /*
+  		*/ label("none") /*
+		*/ onclickon("script u_on")				/*		
+		*/ option("u") 								
+  RADIO ck_w  @   _ss       @             ., 		/*
+        */ middle /*    
+  		*/ label("w") /*
+		*/ onclickon("script w_on")				/*
+		*/ option("w") 						
+  RADIO ck_w2  @   _ss       @             ., 		/*
+        */ middle /*    
+  		*/ label("w2") /*
+		*/ onclickon("script w2_on") /*
+		*/ option("w2")					
+  RADIO ck_user_defined  @   _ss       @             ., 		/*
+        */ last /*  
+  		*/ label("user-defined") /*
+		*/ onclickon("script user_defined_on")		/*
+        */ onclickoff("script user_defined_off")	/*	
+		*/ option("user_defined")							
+  BUTTON bu_kapwgt  @	 _ss	  100	       .,			///
+	onpush("program bu_kapwgt_getOpts")				///
+	label("Define weights ")		
+  CHECKBOX ck_absolute  @   _ss       @             ., 		/*
+		*/ option("absolute")					/*
+  		*/ label("absolute") /*
+  		*/ tooltip("treat rating categories as absolute")  
+END
+
+PROGRAM bu_kapwgt_getOpts
+BEGIN
+    call create CHILD kapwgt AS bu_kapwgt
+	call bu_kapwgt.setExitString bu_kapwgtResults
+	call bu_kapwgt.setExitAction "program bu_kapwgt_ckResults"
+END
+
+PROGRAM bu_kapwgt_ckResults
+BEGIN
+	if bu_kapwgtResults {
+		call main.bu_kapwgt.setlabel "Define weights *"
+	}
+	else {
+		call main.bu_kapwgt.setlabel "Define weights "
+	}
+END
+
+SCRIPT majority_on
+BEGIN
+	main.ck_w.disable	
+	main.ck_w2.disable
+	main.ck_user_defined.disable
+	main.ck_absolute.disable
+END
+
+SCRIPT majority_off
+BEGIN
+	main.ck_w.enable
+	main.ck_w2.enable
+	main.ck_user_defined.enable
+	main.ck_absolute.enable
+END
+
+SCRIPT u_on
+BEGIN
+	main.ck_absolute.disable
+END 
+
+SCRIPT w_on
+BEGIN
+	//main.ck_w2.disable
+	//main.ck_user_defined.disable
+	main.ck_absolute.enable	
+END
+
+SCRIPT w2_on
+BEGIN
+	//main.ck_w.disable
+	//main.ck_user_defined.disable
+	main.ck_absolute.enable	
+END
+
+SCRIPT user_defined_on
+BEGIN
+	//main.ck_w.disable
+	//main.ck_w2.disable	
+	main.bu_kapwgt.enable
+	main.ck_absolute.enable
+END
+
+SCRIPT user_defined_off
+BEGIN
+	//main.ck_w.enable
+	//main.ck_w2.enable
+	main.bu_kapwgt.disable
+END
+
+INCLUDE ifin
+
+PROGRAM command
+BEGIN
+    if main.ck_user_defined {
+  	 put bu_kapwgtResults
+	 stata
+	 clear
+	}
+	
+	put "kappa2 "
+	varlist [main.vl_var]
+	INCLUDE _ifin_pr
+	
+	beginoptions
+		
+		if main.ck_w | main.ck_w2 | main.ck_user_defined {
+		 option main.ck_absolute		
+	     put "wgt("
+		}
+ 
+        if main.ck_w {
+		 option main.ck_w
+		}
+
+        if main.ck_w2 {
+		 option main.ck_w2
+		}
+		
+		if main.ck_user_defined {
+		 put bu_kapwgtResults
+		}		
+		 
+		if main.ck_w | main.ck_w2 | main.ck_user_defined {
+		 put ")"
+		}
+		
+		if main.ck_majority {
+		 option main.ck_majority
+	     put "("
+		 require main.ed_majority
+		 put main.ed_majority
+		 put ")"
+		}
+		
+		option main.ck_jackknife
+	    option main.ck_tab 
+		put " "
+	endoptions	
+END

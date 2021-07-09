@@ -1,0 +1,151 @@
+{smcl}
+{* 03Feb2009}{...}
+{hline}
+{cmd:help clogithet}
+{hline}
+
+
+{title:Title}
+
+{p2colset 5 18 20 2}{...}
+{p2col :{hi:    clogithet} {hline 2}}Heteroscedastic conditional logit model.{p_end}
+{p2colreset}{...}
+
+
+{title:Syntax}
+
+{p 8 15 2}
+{opt clogithet}
+{depvar}
+[{indepvars}]
+{ifin} 
+{weight}
+{cmd:,}
+{cmdab:gr:oup:(}{varname}{cmd:)} {cmdab:het:(}{varlist}{cmd:)} [{it:options}]
+
+{synoptset 26 tabbed}{...}
+{synopthdr}
+{synoptline}
+{syntab:Model}
+{p2coldent:* {opth gr:oup(varname)}}matched group variable{p_end}
+{p2coldent:* {opth het(varlist)}}independent variables to model the variance{p_end}
+
+{syntab:SE/Robust}
+{synopt :{opt r:obust}}robust standard errors{p_end}
+{synopt :{opth cl:uster(varname)}}adjust standard errors for intragroup
+correlation{p_end}
+{synopt :{opt opg}}standard errors based on the outer product of gradient matrix{p_end}
+
+{syntab:Reporting}
+{synopt :{opt lm}}report Lagrange multiplier test for heteroscedasticity{p_end}
+{synopt :{opt clogit}}report (homoscedastic) conditional logit estimates{p_end}
+
+{synoptline}
+{p2colreset}{...}
+{p 4 6 2}
+* {opt group(varname)} and {opt het(varlist)} are required.{p_end}
+{p 4 6 2}
+{opt fweight}s, {opt iweight}s, and {opt pweight}s are allowed (see {help weight}),
+but they are interpreted to apply to groups as a whole, not to individual observations.{p_end}
+
+
+{title:Description}
+
+{pstd}
+{cmd:clogithet} fits a heteroscedastic version of McFadden's conditional logit model. This model
+is also referred to as the parametrised heteroscedastic multinomial logit model
+(Hensher et al., 1999) and the heteroscedastic logit model (DeShazo and Fermo, 2002; Hole, 2006).
+
+{pstd}
+Like {cmd:hetprob}, {cmd:clogithet} models the relationship between the error variance and a
+list of user-specified variables. Note that in the case of {cmd:clogithet} it is the
+{it:scale parameter} which is a function of exp(Z*gamma), rather than the variance itself.
+The scale parameter is inversely related to the variance (see Hole, 2006, for details). The
+variables in Z must be constant within groups, i.e. they must be characteristics of the
+decision-maker rather than alternative attributes.
+
+{pstd}
+The data setup is the same as for {cmd:clogit}.
+
+{pstd}
+See {help logistic estimation commands} for a list of related estimation
+commands.
+
+
+{title:Options}
+
+{dlgtab:Model}
+
+{phang}
+{opth group(varname)} is required; it specifies a numeric identifier variable for the
+matched groups.
+
+{phang}
+{opth het(varlist)} is required; it specifies the independent variables in the variance
+function.
+
+{dlgtab:SE/Robust}
+
+{phang}
+{opt robust}, {opth cluster(varname)}; see {help estimation options}.
+
+{phang}
+{opt opg}; standard errors based on the outer product of gradient estimate of
+the covariance matrix.
+
+{dlgtab:Reporting}
+
+{phang}
+{opt lm}; report Lagrange multiplier test for heteroscedasticity (H0: gamma =0).
+
+{phang}
+{opt clogit}; report (homoscedastic) conditional logit estimates.
+
+{dlgtab:Max options}
+ 
+{phang}
+{it:maximize_options}; {opt tech:nique(algorithm_spec)}, 
+{opt iter:ate(#)}, {opt tr:ace}, {opt grad:ient}, 
+{opt showstep}, {opt hess:ian}, {opt tol:erance(#)}, 
+{opt ltol:erance(#)} {opt gtol:erance(#)}, {opt nrtol:erance(#)}, 
+{opt from(init_specs)}, {opt dif:ficult}; see {help maximize}.
+Note that {opt technique(bhhh)} is not allowed.
+
+
+{title:Examples}
+
+{phang}{cmd:. webuse travel}{p_end}
+{phang}{cmd:. gen aasc = (mode == 1)}{p_end}
+{phang}{cmd:. gen tasc = (mode == 2)}{p_end}
+{phang}{cmd:. gen basc = (mode == 3)}{p_end}
+{phang}{cmd:. clogithet choice aasc tasc basc termtime travelcost, group(id) het(partysize)}{p_end}
+{phang}{cmd:. clogithet choice aasc tasc basc termtime travelcost, group(id) het(partysize) robust lm}{p_end}
+
+
+{title:References}
+
+{phang}DeShazo, J.R., Fermo, G., 2002. Designing choice sets for stated preference
+methods: the effects of complexity on choice consistency. Journal of Environmental
+Economics and Management 44, 123-143.
+
+{phang}Hensher, D., Louviere, J., Swait, J., 1999. Combining sources of preference data.
+Journal of Econometrics 89, 197-221.
+
+{phang}Hole, A.R., 2006. Small-sample properties of tests for heteroscedasticity in the
+conditional logit model. Economics Bulletin 3, 1-14. Available at
+{browse "http://economicsbulletin.vanderbilt.edu/2006/volume3/EB-06C20063A.pdf"}{p_end}
+
+
+{title:Author}
+
+{phang}This command was written by Arne Risa Hole (a.r.hole@sheffield.ac.uk),
+Department of Economics, University of Sheffield. Comments and suggestions are welcome. {p_end}
+
+
+{title:Also see}
+
+{psee}
+Manual:  {bf:[R] clogit}
+
+{psee}
+Online:  {helpb clogit}{p_end}

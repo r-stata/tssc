@@ -1,0 +1,134 @@
+{smcl}
+{* 6apr2004}{...}
+{hline}
+help for {hi:circrao}
+{hline}
+
+{title:Rao spacing test for circular data} 
+
+{p 8 17 2}{cmd:circrao} {it:varlist} [{cmd:if} {it:exp}] [{cmd:in} {it:range}] 
+
+
+{title:Description}
+
+{p 4 4 2}{cmd:circrao} carries out a uniformity test for circular variables 
+{it:varlist} with
+scales between 0 and 360 degrees due to Rao (1969, 1976). Sort the {it:n}
+observed directions and calculate the spacings as differences between
+successive ordered values: the last spacing is calculated from the last value
+to the first. Then calculate 
+
+{p 8 8 2}{it:U} = (1/2) SUM ({c |} spacing - 360 / {it:n} {c |}). 
+
+{p 4 4 2}{it:U} has the following interpretation: Place {it:n} arcs of fixed length
+360 / {it:n} degrees on the circumference, starting with each of the sample
+points. The circumference would be completely covered by these arcs only if the
+sample points were uniformly (equally) spaced. {it:U} is the total uncovered
+portion of the circumference, or equivalently the extent to which the arcs
+overlap each other. Large values of {it:U} indicate clustering of the sample
+points or evidence for rejecting the null hypothesis of uniformity. One 
+merit of this test compared with some others is that it works well for 
+data which are not unimodal. 
+
+{p 4 4 2}Critical values for this statistic are tabulated by Rao (1976, p.333),
+Batschelet (1981, p.339), Upton and Fingleton (1989, pp.248, 392, for {it:G} =
+2{it:U}), Mardia and Jupp (2000, p.368) and most extensively by Russell and
+Levitin (1995). The following are extracted from the last reference, p.885: 
+
+        {it:  n  P} = 0.05 {it:P} = 0.01
+        {hline 23}
+	  4   186.45   221.14   
+	  5   183.44   211.93 
+	  6   180.65   206.79
+	  7   177.83   202.55
+	  8   175.68   198.46
+	  9   173.68   195.27
+	 10   171.98   192.37
+	 11   170.45   189.88
+	 12   169.09   187.66 
+	 13   167.87   185.68
+	 14   166.76   183.90
+	 15   165.75   182.28
+	 16   164.83   180.81 
+	 17   163.98   179.46
+	 18   163.20   178.22 
+	 19   162.47   177.08 
+	 20   161.79   176.01 
+	 21   161.16   175.02 
+	 22   160.56   174.10 
+	 23   160.01   173.23
+	 24   159.48   172.41 
+	 25   158.99   171.64 
+	 26   158.52   170.92 
+	 27   158.07   170.23
+	 28   157.65   169.58 
+	 29   157.25   168.96 
+	 30   156.87   168.38
+	 35   155.19   165.81 
+	 40   153.82   163.73 
+	 45   152.68   162.00 
+	 50   151.70   160.53 
+	 75   148.34   155.49 
+	100   146.29   152.46 
+	150   143.83   148.84 
+	200   142.35   146.67  
+	300   140.57   144.09 
+	400   139.50   142.54 
+	500   138.77   141.48 
+	600   138.23   140.70
+	700   137.80   140.09
+	800   137.46   139.60 
+	900   137.18   139.19 
+       1000   136.94   138.84 
+
+{p 4 4 2}For large {it:n}, it follows from the work of Sherman (1950) that the
+sampling distribution of {it:U} under the null hypothesis of uniformity is
+approximately Normal with mean 360 / exp(1) = 132.4366 and standard deviation
+360 * sqrt(2 exp(-1) - 5 exp(-2)) / sqrt({it:n}) = 87.504786 / sqrt({it:n}).
+The corresponding {it:P}-value is shown, irrespective of {it:n}: users 
+should decide whether to trust it. 
+
+
+{title:Examples}
+
+{p 4 8 2}{inp:. circrao axisasp}
+
+
+{title:Author}
+
+    Nicholas J. Cox, University of Durham, U.K.
+    n.j.cox@durham.ac.uk
+
+
+{title:References} 
+
+{p 4 8 2}Batschelet, E. 1981. {it:Circular statistics in biology.} London: Academic
+Press. 
+
+{p 4 8 2}Mardia, K.V. and Jupp, P.E. 2000. {it:Directional statistics.} Chichester:
+John Wiley. 
+
+{p 4 8 2}Rao, J.S. 1969. Some contributions to the analysis of circular data.  Ph.D.
+thesis, Indian Statistical Institute, Calcutta. 
+
+{p 4 8 2}Rao, J.S. 1976. Some tests based on arc-lengths for the circle.
+{it:Sankhya} 38B, 339-348. 
+
+{p 4 8 2}Russell, G.S. and Levitin, D.J. 1995. An expanded table of probability
+values for Rao's spacing test. 
+{it:Communications in Statistics, Simulation and Computation} 
+24, 879-888. 
+
+{p 4 8 2}Sherman, B. 1950. A random variable related to the spacing of sample values.
+{it:Annals of Mathematical Statistics} 21, 339-361. 
+
+{p 4 8 2}Upton, G.J.G. and Fingleton, B. 1989. 
+{it:Spatial data analysis by example. Volume 2: Categorical and directional data.} 
+Chichester: John Wiley. 
+
+
+{title:Also see}
+
+{p 4 13 2} 
+On-line: {help circsummarize}
+

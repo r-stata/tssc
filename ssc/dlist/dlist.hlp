@@ -1,0 +1,109 @@
+{smcl}
+{* 2 August 2006/4 September 2006/16may2011}{...}
+{hline}
+help for {hi:dlist}, {hi:duplist} 
+{hline}
+
+{title:List with variable labels}
+
+{p 8 17 2}{cmd:dlist}
+[{it:varlist}]
+[{cmd:if} {it:exp}]
+[{cmd:in} {it:range}]
+[
+{cmd:,}  
+{cmdab:nol:abel}
+{cmdab:noo:bs} 
+{cmdab:n:ame(}{it:#}{cmd:)}
+{cmdab:v:arlabel(}{it:#}{cmd:)}
+{cmdab:s:paces(}{it:#}{cmd:)} 
+{cmdab:notr:im} 
+]  
+
+{p 8 17 2}{cmd:duplist}
+[{it:varlist}]
+[{cmd:if} {it:exp}]
+[{cmd:in} {it:range}]
+[
+{cmd:,}  
+{cmdab:nol:abel}
+{cmdab:n:ame(}{it:#}{cmd:)}
+{cmdab:v:arlabel(}{it:#}{cmd:)}
+{cmdab:s:paces(}{it:#}{cmd:)} 
+{cmdab:notr:im} 
+]  
+
+
+{p 4 4 2}{cmd:by} {it: varlist}{cmd::} may be used with {cmd:dlist}
+or {cmd:duplist}; see help {help by}.
+
+
+{title:Description}
+
+{p 4 4 2}
+{cmd:dlist} hybridises {cmd:describe} and {cmd:list} insofar as it lists
+data and can show variable labels too. {cmd:dlist} is best for occasions
+when you want lists of a small number of observations and a reminder of
+variable labels; otherwise it may appear slow and repetitive. 
+
+{p 4 4 2} 
+{cmd:duplist} is a variant which lists any duplicates on the 
+variables specified (or by default on all variables) just once. 
+All the observation numbers of any duplicate class are given. The 
+order used is the {cmd:sort} order on the variables in question. 
+
+
+{title:Options} 
+
+{p 4 8 2}{cmd:nolabel} specifies that numeric values are to be shown   
+rather than any value labels. 
+
+{p 4 8 2}{cmd:noobs} specifies that display of observation numbers should be 
+suppressed.
+
+{p 4 8 2}{cmd:name(}{it:#}{cmd:)} specifies that variable names should be 
+abbreviated to at most {it:#} characters. As a special case,
+{cmd:name(0)} suppresses the display of variable names. 
+
+{p 4 8 2}{cmd:varlabel(}{it:#}{cmd:)} specifies that variable labels should be 
+abbreviated to at most {it:#} characters. As a special case,
+{cmd:varlabel(0)} suppresses the display of variable labels. 
+
+{p 4 8 2}{cmd:spaces(}{it:#}{cmd:)} specifies the number of spaces
+between columns of output. The default is 3. 
+
+{p 4 8 2}{cmd:notrim} specifies that string values should not be trimmed of
+leading and trailing spaces. The default is to show values without such spaces. 
+
+
+{title:Examples}
+
+{p 4 8 2}{inp:. dlist in 1} 
+
+{p 4 8 2}{inp:. dlist in 1, n(0)}
+
+{p 4 8 2}{inp:. duplist foreign rep78} 
+
+{p 4 8 2}{inp:. by foreign: duplist rep78, n(0)} 
+
+
+{title:Author}
+
+{p 4 4 2}Nicholas J. Cox, Durham University, UK{break} 
+        n.j.cox@durham.ac.uk
+
+
+{title:Acknowledgments}
+
+{p 4 4 2}
+{cmd:dlist} grew out of a question from Miguel Ampudia Fraile. 
+Martyn Sherriff alerted me to a problem with some variables whose 
+names began with underscores. 
+{cmd:duplist} grew out of a question from Holly Wright. 
+Robert Wells found a bug. 
+
+
+{title:Also see}
+
+{p 4 13 2}On line: help for {help describe}, {help list}, {help duplicates}
+

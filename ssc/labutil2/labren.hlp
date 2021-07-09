@@ -1,0 +1,276 @@
+{smcl}
+{* version 1.0.4 23aug2012}{...}
+{cmd:help labren}
+{hline}
+
+{title:Title}
+
+{p 5}
+{cmd:labren} {hline 2} Rename value labels
+
+
+{title:Syntax}
+
+{p 5}
+Change single value label name
+
+{p 8}
+{cmd:labren} {it:oldlblname} {it:newlblname}
+
+
+{p 5}
+Change groups of value label names
+
+{p 8}
+{cmd:labren} {cmd:(}{it:oldlblname-list}{cmd:)} 
+{cmd:(}{it:newlblname-list}{cmd:)} [{cmd:,} {it:options}]
+
+
+{p 5}
+Predefined changes
+
+{p 8}
+{cmd:labren} [{it:oldlblname-list}] 
+{cmd:,} {it:transformation-options} [{opt d:ryrun}]
+
+
+{synoptset 21 tabbed}{...}
+{synopthdr}
+{synoptline}
+{syntab :{it:options}}
+{synopt:{opt csis(spec)}}create lblname-lists. See 
+{help labren##spec:Remarks}{p_end}
+{synopt:{opt d:ryrun}}display {it:oldlblname} to {it:newlblname} 
+mappings. Do not change any value label names{p_end}
+
+{syntab :{it:transformation-options}}
+{synopt:{opt u:pper}}change value label names to uppercased characters
+{p_end}
+{synopt:{opt l:ower}}change value label names to lowercased characters
+{p_end}
+{synopt:{opt pre:fix(stub)}}prefix value label names with {it:stub}
+{p_end}
+{synopt:{opt suff:ix(stub)}}suffix value label names with {it:stub}
+{p_end}
+{synopt:{opt sub:st(this that)}}in value label names change {it:this} 
+to {it:that}{p_end}
+{synopt:{opt bef:ore(before)}}remove {it:before} and any text following
+{p_end}
+{synopt:{opt aft:er(after)}}remove {it:after} and any text preceding
+{p_end}
+{synopt:{opt noexc:lude}}do not remove {it:before} or {it:after}{p_end}
+{synopt:{opt strfcn(strfcn(args))}}apply 
+{help string_functions:string function} 
+{it:strfcn}{cmd:(}{it:args}{cmd:)} to value label names{p_end}
+{synopt:{opt sy:mbol(char)}}use {it:char} as placeholder in 
+{it:args}
+{p_end}
+{synoptline}
+
+
+{title:Description}
+
+{pstd}
+{cmd:labren} changes value label names. New value labels are attached 
+to variables currently using old value labels. Old value labels are 
+dropped from memory.
+
+{pstd}
+If more than one transformation option is specified, {cmd:labren} 
+applies options in the following order. 
+
+{phang2}1. {it:before} or {it:after} select text {p_end}
+{phang2}2. all occurrences of {it:this} are changed to {it:that}{p_end}
+{phang2}3. value labels are changed to upper- or lowercased characters
+{p_end}
+{phang2}4. {help string_functions:string function} 
+{it:strfcn}{cmd:(}{it:args}{cmd:)} is applied{p_end}
+{phang2}5. prefix and/or suffix is added{p_end}
+
+
+{title:Options}
+
+{dlgtab:Options}
+
+{phang}
+{opt csis(spec)} uses cyclic substitution in strings to create 
+lblname-lists. The synonym {opt x()} may be used. See 
+{help labren##spec:Remarks}.
+
+{phang}
+{opt dryrun} displays {it:oldlblname} to {it:newlblname} mappings and 
+does not change any value label names. This option is especially 
+useful with {opt csis()}.
+
+{dlgtab:Transformation options}
+
+{phang}
+{opt upper} changes value label names to uppercased characters. May not 
+be specified with {opt lower}.
+
+{phang}
+{opt lower} changes value label names to lowercased characters. May not 
+be specified with {opt upper}.
+
+{phang}
+{opt prefix(stub)} prefixes value label names with {it:stub}. May be 
+combined with {opt suffix()}.
+
+{phang}
+{opt suffix(stub)} suffixes value label names with {it:stub}. May be 
+combined with {opt prefix()}.
+
+{phang}
+{opt subst(this that)} substitutes all occurrences of {it:this} in 
+value label names with {it:that}. Value label names in which {it:this} 
+is not found are left unchanged. Specifying {it:that} as ({hi:""}) 
+removes {it:this} from value label names.
+
+{phang}
+{opt before(before)} removes {it:before} and any text following from 
+value label names. Thus, value label names will be changed to contain 
+any text preceding {it:before}. Value label names in which {it:before} 
+is not found are left unchanged. May not be specified with {opt after}.
+
+{phang}
+{opt after(after)} removes {it:after} and any text preceding from value 
+label names. Thus, value label names will be changed to contain any 
+text following {it:after}. Value label names in which {it:after} is not 
+found are left unchanged. May not be specified with {opt before}.
+
+{phang}
+{opt noexclude} prevents {cmd:labren} from removing {it:before} or 
+{it:after} from value label names. Specifying {cmd:before(g) noexclude} 
+will change value label name {hi:origin} to {hi:orig}. Specifying 
+{cmd:before(g)} will change value label name {hi:origin} to {hi:ori}.
+
+{phang}
+{opt strfcn(strfcn(args))} applies any 
+{help string_functions:string function} to value label names. In 
+{it:args} use placeholder {hi:@} to refer to value label names. The 
+general from of this option is 
+{cmd:strfcn(}{help string_functions:{it:strfcn}}{cmd:("@"}
+[{cmd:,} {it:args}]{cmd:))}. 
+
+{phang}
+{opt symbol(char)} uses {it:char} as placeholder for value labels in 
+{it:args}. Default placeholder is {hi:@}. May only be specified with 
+{opt strfcn}.
+
+{marker spec}
+{title:Remarks}
+
+{pstd}
+In {opt csis(spec)}
+
+{p 5}
+{it:spec} is
+
+{p 8}
+{it:symbol} {it:list} [{bf:\} {it:symbol} {it:list ...} ]
+
+{p 5}
+{it:symbol} is one character (e.g. @, #, ...) and {it:list} is 
+a ({help numlist:num})list. 
+
+{pstd}
+In
+
+	{cmd:. labren (oldlbl1 oldlbl2) (@new) ,csis(@ a b)}
+	
+{pstd}
+{bf:@new} will be changed to {bf:anew bnew}. Thus, {bf:oldlbl1} will 
+be renamed {bf:anew} and {bf:oldlbl2} will be renamed {bf:bnew}. 
+
+{pstd}
+More than one {it:symbol} may be used. The above line can be 
+rewritten as
+
+	{cmd:. labren (oldlbl#) (@new) ,csis(@ a b \ # 1/2)}
+
+{pstd}
+You may also use more than one {it:symbol} within one name. The 
+line
+
+	{cmd:. labren (oldlbl1 oldlbl2 oldlbl3 oldlbl4) (@new#) ,csis(@ a b \ # 1/2)}
+
+{pstd}
+will rename {bf:oldlbl1} {bf:anew1}, {bf:oldlbl2} {bf:anew2}, 
+{bf:oldlbl3} {bf:bnew1} and {bf:oldlbl4} {bf:bnew2}. Note the 
+difference between
+	
+	[...] {cmd:(@new#) ,csis(@ a b \ # 1/2)}
+
+{pstd}
+and	
+	
+	[...] {cmd:(@new#) ,csis(# 1/2 \ @ a b)}
+
+{pstd}
+where the former will change {bf:@new#} to {bf:anew1 anew2 bnew1 bnew2}, 
+and the latter will change it to {bf:anew1 bnew1 anew2 bnew2}
+
+{pstd}
+There is one special case in which option {opt csis} is not needed. In
+
+	{cmd:. labren (old1 old2 old3) (new#)}
+	
+{pstd}
+{bf:new{it:#}} will be changed to {bf:new1 new2 new3}. Here {it:#} must 
+be used as {it:symbol} and it may only be used in {it:newlblname}. The 
+numbers will always start at 1. There will be as many numbers as there 
+are old names.
+
+{pstd}
+Wildcards ({bf:*}, {bf:?}, {bf:~}) are treated as any other character 
+when used as {it:symbol}. If you want to abbreviate a list of existing 
+value labels, see {help labunab} (if installed).
+
+	
+{title:Example}
+
+{phang2}{cmd:. sysuse nlsw88}{p_end}
+
+{phang2}Change {hi:racelbl} to {hi:newlbl}{p_end}
+{phang2}{cmd:. labren racelbl newlbl}{p_end}
+
+{phang2}Remove {hi:lbl} from all value label names{p_end}
+{phang2}{cmd:. labren ,before(lbl)}{p_end}
+
+{phang2}Rename value labels {hi:occ} and {hi:ind} to {hi:new1} 
+and {hi:new2}{p_end}
+{phang2}{cmd:. labren (occ ind) (new#)}{p_end}
+
+{phang2}Rename {hi:new}, {hi:new1} and {hi:new2} 
+{hi:Anew}, {hi:Bnew} and {hi:Cnew}{p_end}
+{phang2}{cmd:. labren (new new#)(@new) ,csis(# 1 2 \ @ A B C)}{p_end}
+
+
+{title:Acknowledgments}
+
+{pstd}
+The program, and especially support for multilingual datasets, is 
+inspired by Jeroen Weesie's {stata findit labelrename:labelrename}. 
+
+{pstd}
+Nick Cox originated the {it:transformation_options}. 
+
+{pstd}
+The syntax is inspired by official Stata's {help rename group} 
+(release 12).
+
+
+{title:Author}
+
+{pstd}Daniel Klein, University of Kassel, klein.daniel.81@gmail.com
+
+
+{title:Also see}
+
+{psee}
+Online: {help label}
+{p_end}
+
+{psee}
+if installed: {help labelrename}, {help labvalclone}, {help labutil2}
+{p_end}

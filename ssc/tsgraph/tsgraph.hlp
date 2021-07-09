@@ -1,0 +1,96 @@
+{smcl}
+{* 26july2002}{...}
+{hline}
+help for {hi:tsgraph}
+{hline}
+
+{title:Time-series graph} 
+
+{p 8 16}{cmd:tsgraph} {it:yvarlist} [{cmd:if} {it:exp}] [{cmd:in} {it:range}] 
+[ {cmd:,} {it:graph_options} {cmdab:nla:bel(}{it:#}{cmd:)} ]
+
+{title:Description}
+
+{p}
+{cmd:tsgraph} plots one or more {it:y} variables against whatever {help tsset}
+knows as the time variable. It is a convenience graph with options built-in 
+to plot time series as connected lines. Data must have been {cmd:tsset} 
+previously. 
+
+{p}{cmd:tsgraph} looks for a panel variable and identifies distinct panels 
+whenever there are no more than 4.
+
+
+{title:Remarks} 
+
+{p}Whenever 
+
+{p 4 4}the time variable has a {cmd:%t} or {cmd:%d} format, and 
+
+{p 4 4}neither {cmd:xlabel} nor {cmd:xlabel()} is specified, and 
+
+{p 4 4}values span more than one year
+
+{p}{cmd:tsgraph} attempts to select for the time ({it:x}) axis nice labels
+based on the years included in the time series.  For daily, weekly, monthly,
+quarterly or half-yearly data, it attempts to show the first time period within
+each of various years which are nice numbers. For yearly data, it attempts to
+show years which are nice numbers. Nice numbers here are preferably multiples
+of 10, 5 or 2. The main algorithm used is based on code by Hardin (1995).
+
+
+{title:Options}
+
+{p 0 4} 
+{it:graph_options} are options allowed with {cmd:graph, twoway}. Defaults are  
+
+{p 4 4}{cmd:connect(L)}, {cmd:connect(LL[_])}, {cmd:connect(LL[_]L[-])}, 
+{cmd:connect(LL[_]L[-]L[.])} for 1, 2, 3, 4 {it:y} variables 
+	
+{p 4 4}{cmd:symbol} is {cmd:i} for each {it:y} variable 
+
+{p 4 4}{cmd:xlabel ylabel gap(4)} 
+
+{p 4 4}{cmd:l2title("(log scale)")} if {cmd:ylog} 
+
+{p 4 4}{cmd:l1title} shows variable label or variable name of single {it:y}
+variable.
+
+{p 0 4}{cmd:nlabel(}{it:#}{cmd:)} suggests the number of nice labels 
+to be shown on the time axis. The suggestion may or may not be taken 
+literally. This option is independent of {cmd:xlabel} or {cmd:xlabel()}. 
+
+ 
+{title:Examples}
+
+{p 4 8}{inp:. tsset year} 
+
+{p 4 8}{inp:. tsgraph GDP*} 
+
+
+{title:Authors}
+
+	Nicholas J. Cox, University of Durham, U.K.  
+	n.j.cox@durham.ac.uk
+	
+	Christopher F. Baum, Boston College 
+	baum@bc.edu
+
+
+{title:Acknowledgements} 
+
+	Alan Riley made a very helpful suggestion.
+
+	
+{title:References} 
+
+{p}Hardin, J.W. 1995. Calculate nice numbers for labeling or drawing grid
+lines. {it:Stata Technical Bulletin} 25, 2-3. (Also in {it:STB Reprints}
+Volume 5, 19-20.)
+ 
+ 
+{title:Also see}
+
+{p 0 19}On-line:  help for {help graph}, {help tsset}, {help dfmt}, {help tfmt} 
+{p_end}
+

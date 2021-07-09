@@ -1,0 +1,108 @@
+{smcl}
+{* 03Apr2004}{...}
+{hline}
+help for {hi:unitab} 
+{hline}
+
+{title:Univariate table}
+
+{p 8 24}{cmd:unitab} {it:depvar} [{it:varlist1}] [{cmd:if} {it:exp}] [{cmd:in} {it:range}]] [{cmd:,} {cmdab:l:evel(}{it:#}{cmd:)} {cmdab:f:ormat(}{it:%fmt}{cmd:)} {cmdab:c:ategorical(}{it:varlist2}{cmd:)} {cmdab:ex:act}]
+        
+{title:Description}
+
+{p 0 7}{cmd:unitab} displays a univariate table with the maximum-likelihood estimates of odds ratio and confidence intervals using {help logit} 
+   command and some useful information using {help tabulate} command.
+
+{it:depvar}  binary dependent variable that must be coded as
+		
+		   {it:depvar} = 0    or
+		   {it:depvar} = #    with # > 0 
+
+{it:varlist1}  covariates treated as continuous.
+{it:varlist2}  covariates treated as categorical. 
+
+{p 0 7}You can specify the same variable as continuous and/or categorical. First results are displayed for continuous variables 
+and then for categorical variables.
+
+{title:Explanation of the table}
+
+{p 0 4} Continuous variable
+
+{p 8 0} {text:1 column :} {help summarize} {it:depvar} if {it:continuous_variable} == #  	
+
+{p 8 0} 2 column     : total observations  
+
+{p 8 0} 3 column     : point estimate of odds ratio using maximum likelihood estimators {help logit}
+
+{p 8 0} 4-5 columns : lower and upper bound for odds ratio at a certain {cmd:level(}{it:#}{cmd:)} 
+
+{p 8 0} 6 column     : statistical significance of the odds ratio using a Wald test 
+
+{p 0 4} Categorical variable
+
+{p 8 0} 1 column     : {help tabulate} {it:depvar}  {it: categorical_variable}  (display only for {it:depvar} = # )	
+
+{p 8 0} 2 column     : total observations for each category  
+
+{p 8 0} 3 column     : point estimate of odds ratio using maximum likelihood estimators 
+
+{p 8 0} 4-5 columns : lower and upper bound for odds ratio at a certain {cmd:level(}{it:#}{cmd:)} 
+
+{p 8 19} 6 column     : statistical significance of the Pearson's chi-squared test for the hypothesis that the rows and columns in a two-way table are independent
+
+{title:Options}
+
+    {cmd:level(}{it:#}{cmd:)} specifies the confidence level, in percent, for calculation of confidence intervals 
+                              of the odds ratios; see help {help level}
+                              
+    {cmd:format(%}{it:fmt}{cmd:)} specifies the display format for odds ratio and confidence intervals in the univariate table.  
+                    {cmd:format(%4.3f)} is the default; {cmd:format(%6.5f)} is a popular alternative.
+    
+    {cmd:categorical(}{it:varlist2}{cmd:)} specifies the variables that you want treat as categorical.
+    
+    {cmd:exact} displays the significance calculated by Fisher's exact. 
+        We recommend specifying {cmd:exact} whenever samples are small.
+
+{title:Examples}
+
+ 	{cmd:. webuse lbw, clear}
+	{cmd:. tab low}
+	{cmd:. su age}
+	{cmd:. su age if low == 1}
+	{cmd:. logistic low age}
+	{cmd:. unitab low age}
+	{cmd:. xtile ageq = age, nq(4)}
+	{cmd:. tab ageq low, row nokey chi2}
+	{cmd:. tab ageq low, row nokey exact}
+	{cmd:. xi: logistic low i.ageq}
+	{cmd:. unitab low, c(ageq) }
+	{cmd:. unitab low, c(ageq) exact}
+	{cmd:. unitab low age, c(ageq)}
+	{cmd:. tab race low, row nokey}
+	{cmd:. xi:logistic low i.race}
+	{cmd:. unitab low , c(race)}
+	{cmd:. unitab low age ht ui, c(race smoke ageq) }
+	{cmd:. unitab low age ht ui, c(race smoke ageq) l(90) f(%6.5f)}
+	
+{title:Authors}
+
+{p 4 4 2} Nicola Orsini,
+Institute of Environmental Medicine, Karolinska Institutet, Stockholm, Sweden 
+and Institute of Information Science and Technology, National Research Council of Italy, Pisa, Italy. {p_end}
+
+{p 4 4 2}Matteo Bottai, Arnold School of Public Health,
+ University of South Carolina, Columbia, USA and Institute of Information Science and Technology, 
+ National Research Council of Italy, Pisa, Italy. {p_end}
+
+{title:Support}
+
+{p 8 12}Nicola Orsini, {browse "http://nicolaorsini.altervista.org"}, Karolinska Institutet, Sweden{p_end}
+{p 8 12}{browse "mailto:nicola.orsini@imm.ki.se?subject=unitab":nicola.orsini@imm.ki.se}
+
+{title:Also see}
+
+{p 10 14}{hi:[R] logistic}{p_end}
+{p 10 14}{hi:[R] tabulate}{p_end}
+
+{p 0 19}On-line:  help for {help logit}, {help logistic}, {help table}, {help tabulate},
+{help tabstat}, {help tabodds}, {help epitab}{p_end}

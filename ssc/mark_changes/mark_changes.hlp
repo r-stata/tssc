@@ -1,0 +1,95 @@
+{smcl}
+{* 16apr2009}
+{hline}
+help for {hi:mark_changes}
+{hline}
+
+{title:Generate a variable indicating where one or more variables changes value.}
+
+{p 8 17 2}
+{cmd:mark_changes} {it:varlist}, {cmd:gen(}{it:newvar}{cmd:)}
+
+{title:Description}
+
+{p 4 4 2}
+{cmd:mark_changes} generates a variable that indicates the occurrence of
+a change in value in any of the variables in {it:varlist}. A change is
+deemed to occur where there is a difference in value between one observation
+and the prior observation.
+{it:newvar} will be 1 where a change occurs, and 0 otherwise.
+Additionally, {it:newvar} will be 1 for the first observation.
+
+{p 4 4 2}
+{cmd:mark_changes} can be combined with {cmd:by}, in which case, {it:newvar}
+will be 1 for the first observation in each by-group. See {help by}.
+
+{title:Remarks}
+
+{p 4 4 2}
+{cmd:mark_changes} is useful for detecting changes in values of {it:varlist},
+which is equivalent to detecting the starts of spells of the same
+values of {it:varlist}. Typically one might subsequently keep only these starting
+observations, as the others (the non-changing) may be deemed as irrelevant.
+Alternatively, one might summ up {it:newvar}, thus generating a spell identifier (though {help spell}
+by Nicholas Cox and Richard Goldstein, available from ssc, is another way to achieve
+that result).
+
+{p 4 4 2}
+The order of observations is critical. You should be sure that the observations
+are in an order that makes sense with respect to the changes you want to
+detect; typically, there is a time-based variable involved. See {help sort}.
+
+{p 4 4 2}
+When using this with {cmd:by}, you would typically use the two-varlist form
+of the {cmd:by} specification, as in
+
+{p 8 8 2}
+{cmd:. by personid (date): mark_changes} ...
+
+{p 4 4 2}
+The reason is that you want to be sensitive to the primary divisions, marking the
+first observation in each group (the first observation for each person,
+in this example),
+but you would also want a specific order within these groups (sorting by
+date, in this example).
+
+{p 4 4 2}
+Furthermore, in such a situation, it is important that the {cmd:by}
+variables uniquely identify the observations. That is, you want to {cmd:sort}
+on these variables, and have the resulting order of observations be unique.
+{help assertky} from ssc can be helpful in assuring this condition. Thus
+the prior example would be preceded by
+
+{p 8 8 2}
+{cmd:. assertky personid date}
+
+
+{title:Examples}
+
+{p 8 8 2}
+{cmd:. mark_changes weight, gen(weight_change)}
+
+{p 8 8 2}
+{cmd:. by personid (date): mark_changes locationcode jobcode salary, gen(ch)}
+
+{p 4 4 2}
+The previous example might be followed by
+
+{p 8 8 2}{cmd:. keep if ch}{p_end}
+{p 8 8 2}{cmd:. keep personid date locationcode jobcode salary}{p_end}
+
+{p 4 4 2}
+the idea being that the data may have many more variables, with
+many observations that report changes in these variable, but you want to
+notice only changes in a few selected variables. After the {cmd: keep if ch}
+it is usually appropriate to keep only the variables mentioned in the
+{cmd:mark_changes} command,
+as other variables may have values that are unrelated to the change. Thus,
+you are reducing variables and potentially reducing observations.
+
+
+{title:Author}
+{p 4 4 2}
+David Kantor.
+Email {browse "mailto:kantor.d@att.net":kantor.d@att.net} if you observe any
+problems.

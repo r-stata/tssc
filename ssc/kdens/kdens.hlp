@@ -1,0 +1,604 @@
+{smcl}
+{* 19feb2008}{...}
+{cmd:help kdens}
+{hline}
+
+{title:Title}
+
+{pstd}{hi:kdens} {hline 2} Univariate kernel density estimation
+
+
+{title:Syntax}
+
+{p 8 17 2}
+{cmd:kdens} {varname} {ifin} {weight} [{cmd:,}
+{help kdens##1:{it:kdens_options}}
+{help kdens##2:{it:graph_options}} ]
+
+{p 8 17 2}
+{cmd:_kdens} {varname} {ifin} {weight} {cmd:,} {opt g:enerate(d [x])} [
+{help kdens##1:{it:kdens_options}} ]
+
+{p 8 17 2}
+{cmdab:tw:oway} {cmd:kdens} {varname} {ifin} {weight}
+ [{cmd:,}  {help kdens##3:{it:twoway_kdens_options}} ]
+
+
+{synoptset 25 tabbed}{...}
+{marker 1}{synopthdr:kdens_options}
+{synoptline}
+{syntab :Main}
+{synopt :{opt k:ernel(kernel)}}type of kernel function, where {it:kernel} is
+  {opt e:panechnikov},
+  {opt epan2} (the default),
+  {opt b:iweight},
+  {opt triw:eight},
+  {opt c:osine},
+  {opt g:aussian},
+  {opt p:arzen},
+  {opt r:ectangle}
+  or {opt t:riangle}.
+  {p_end}
+{synopt :{opt exact}}use the exact estimator
+ {p_end}
+{synopt :{opt n(#)}}estimate density using {it:#} points; default
+  is {cmd:n(512)}
+  {p_end}
+{synopt :{opt n2(#)}}interpolate density estimate to {it:#} points
+  {p_end}
+{p2coldent :* {opt g:enerate(d [x])}}store the density estimate in
+ {it:{help newvar}} {it:d} and the estimation points in
+ {it:{help newvar}} {it:x}
+ {p_end}
+{synopt :{opt at(var_x)}}estimate density at the values in {it:var_x}
+  {p_end}
+{synopt :{opt ra:nge(# #)}}range of estimation points, minimum and maximum
+  {p_end}
+{synopt :{opt r:eplace}}overwrite existing variables
+ {p_end}
+
+{syntab :Bandwidth}
+{synopt :{opt bw(#|type)}}set bandwidth to {it:#}, {it:#} > 0, or
+  specify automatic bandwidth selector
+  where {it:type} is {cmdab:s:ilverman} (the default),
+  {cmdab:n:ormalscale}, {cmdab:o:versmoothed}, {opt sj:pi}, or
+  {cmdab:d:pi}[{cmd:(}{it:#}{cmd:)}]
+  {p_end}
+{synopt :{opt adj:ust(#)}}scale bandwidth by {it:#}, {it:#} > 0
+  {p_end}
+{synopt :{cmdab:a:daptive}[{cmd:(}{it:#}{cmd:)}]}use the adaptive
+   kernel density estimator
+   {p_end}
+
+{syntab :Boundary correction}
+{synopt :{opt ll(#)}}value of lower boundary{p_end}
+{synopt :{opt ul(#)}}value of upper boundary{p_end}
+{synopt :{opt refl:ection} | {opt lc}}use the reflection method or the
+linear combination method for boundary correction; only one of {opt reflection}
+and {opt lc} is allowed; the default method is renormalization{p_end}
+
+{syntab :Confidence intervals}
+{synopt :{cmd:ci}[{cmd:(}{it:stub}|{it:lo up}{cmd:)}]}draw (or
+  store) pointwise confidence intervals
+  {p_end}
+{synopt :{cmd:vce(}{it:{help kdens##vce:vcetype}}{cmd:)}}{it:vcetype} may
+ be {opt boot:strap} or {opt jack:knife} plus options; see
+ {helpb kdens##vce:vce()} below for details{p_end}
+{synopt :{cmdab:us:mooth}[{cmd:(}{it:#}{cmd:)}]}apply
+  undersmoothing for confidence interval estimation
+  {p_end}
+{synopt :{opt var:iance(V)}}store variance estimate in {it:{help newvar}}
+{it:V}{p_end}
+{synopt :{opt l:evel(#)}}set confidence level; default is {cmd:level(95)}{p_end}
+{synoptline}
+{p 4 6 2}* {opt generate()} is required for {cmd:_kdens}{p_end}
+
+
+{synoptset 25 tabbed}{...}
+{marker 2}{synopthdr:graph_options}
+{synoptline}
+{syntab :Main}
+{synopt :{opt nogr:aph}}suppress graph{p_end}
+
+{syntab :Kernel plot}
+{synopt :{it:{help cline_options}}}affect rendition of the plotted kernel density estimate{p_end}
+{synopt :{opth ciopts(area_options)}}affect rendition of the plotted confidence interval{p_end}
+
+{syntab :Density plots}
+{synopt :{cmdab:hist:ogram}[{cmd:(}{it:#}{cmd:)}]}add a histogram to the graph; {it:#} specifies the number of bars{p_end}
+{synopt :{opth histopts(twoway_hist)}}affect rendition of the histogram{p_end}
+{synopt :{opt nor:mal}}add normal density to the graph{p_end}
+{synopt :{opth normopts(cline_options)}}affect rendition of normal density{p_end}
+{synopt :{opt stu:dent(#)}}add Student's t density with {it:#} degrees of freedom to the graph{p_end}
+{synopt :{opth stopts(cline_options)}}affect rendition of the Student's t density{p_end}
+
+{syntab :Add plot}
+{synopt :{opth "addplot(addplot_option:plot)"}}add other plots to the generated graph{p_end}
+
+{syntab :Y-Axis, X-Axis, Title, Caption, Legend, Overall}
+{synopt :{it:{help twoway_options}}}any options other than {opt by()} documented in {bind:{bf:[G] {it:twoway_options}}}{p_end}
+{synoptline}
+
+
+{synoptset 25 tabbed}{...}
+{marker 3}{synopthdr:twoway_kdens_options}
+{synoptline}
+{synopt :{opt k:ernel(kernel)}}type of kernel function, as specified above
+  {p_end}
+{synopt :{opt exact}}use the exact estimator
+ {p_end}
+{synopt :{opt n(#)}}estimate density using {it:#} points; default
+  is {cmd:n(512)}
+  {p_end}
+{synopt :{opt n2(#)}}interpolate density estimate to {it:#} points
+  {p_end}
+{synopt :{opt at(var_x)}}estimate density at the values in {it:var_x}
+  {p_end}
+{synopt :{opt ra:nge(# #)}}range of estimation points, minimum and maximum
+  {p_end}
+{synopt :{opt bw(#|type)}}set bandwidth to {it:#} or
+  specify automatic bandwidth selector
+  where {it:type} is {cmdab:s:ilverman} (the default),
+  {cmdab:n:ormalscale}, {cmdab:o:versmoothed}, {opt sj:pi}, or
+  {cmdab:d:pi}[{cmd:(}{it:#}{cmd:)}]
+  {p_end}
+{synopt :{opt adj:ust(#)}}scale bandwidth by {it:#}, {it:#} > 0
+  {p_end}
+{synopt :{cmdab:a:daptive}[{cmd:(}{it:#}{cmd:)}]}use the adaptive
+   kernel density estimator
+   {p_end}
+
+{synopt :{opt ll(#)}}value of lower boundary{p_end}
+{synopt :{opt ul(#)}}value of upper boundary{p_end}
+{synopt :{opt refl:ection} | {opt lc}}use the reflection method or the
+linear combination method for boundary correction; the default method is
+renormalization{p_end}
+
+{synopt :{opt hor:izontal}}graph horizontally
+{p_end}
+
+{synopt :{it:{help cline_options}}}change the look of the line
+
+{synopt :{it:{help axis_choice_options}}}associate plot with alternative axis
+
+{synopt :{it:{help twoway_options}}}any options documented
+in {bind:{bf:[G] {it:twoway_options}}}{p_end}
+{synoptline}
+
+{pstd}
+{cmd:fweight}s, {cmd:aweight}s, and {cmd:pweight}s are allowed; see {help weight}.
+
+
+{title:Description}
+
+{pstd} {cmd:kdens} produces univariate kernel density estimates and
+graphs the result. {cmd:kdens} supplements official Stata's
+{helpb kdensity} and also incorporates and extends some of the
+capabilities of various
+previous user add-ons such as
+ {cmd:adgakern} (STB-16 {net "stb 16 snp6":snp6}),
+ {cmd:bandw} (STB-27 {net "stb 27 snp6_2":snp6_2}), and
+ {cmd:varwiker} (SJ 3-2 {net "sj 3-2 st0036":st0036}) by Salgado-Ugarte et al.,
+ {cmd:akdensity} by Van Kerm (SJ 3-2 {net "sj 3-2 st0037":st0037}), and
+ {cmd:asciker}/{cmd:bsciker} by Fiorio (SJ 4-2 {net "sj 4-2 st0064":st0064}).
+
+{pstd}Main
+features are:
+
+{phang2}{space 1}o{space 2}{cmd:kdens} is fast. It
+employs an approximation algorithm based on linearly binned data over
+a regular grid of estimation points. The algorithm produces very
+accurate results as long as the grid size is not too small (see the
+{opt n()} option). Alternatively,
+specify the {cmd:exact} option to use the slow exact estimator.
+
+{phang2}{space 1}o{space 2}Several automatic bandwidth
+selectors including the Sheather-Jones plug-in estimate
+are available. See the {cmd:bw()} option. In addition,
+adaptive (variable bandwidth) kernel density estimation
+is supported (see the {cmd:adaptive} option).
+
+{phang2}{space 1}o{space 2}Optionally, {cmd:kdens} computes pointwise
+confidence intervals (see the {cmd:ci} and {cmd:usmooth} options),
+either using asymptotic formulas or replication techniques (see the
+{cmd:vce()} option).
+
+{phang2}{space 1}o{space 2}Boundary correction for variables
+with bounded domain is supported. See the {cmd:ll()} and {cmd:ul()}
+options.
+
+{pstd}{cmd:_kdens} is the engine used by {cmd:kdens}. The
+heavy lifting is done in Mata. See {helpb mf_kdens:mata kdens()}.
+
+
+{title:Dependencies}
+
+{pstd}
+{cmd:kdens} requires the {cmd:moremata}
+package. Type
+
+        {com}. {net "describe moremata, from(http://fmwww.bc.edu/repec/bocode/m/)":ssc describe moremata}{txt}
+
+
+{title:Options (density estimation)}
+
+{dlgtab:Main}
+
+{phang}
+{opt kernel(kernel)} specifies the kernel function. {it:kernel} may
+be {opt epanechnikov} (Epanechnikov kernel function),
+{opt epan2} (alternative Epanechnikov kernel function; the default),
+{opt biweight} (biweight kernel function),
+{opt triweight} (triweight kernel function),
+{opt cosine} (cosine trace),
+{opt gaussian} (Gaussian kernel function),
+{opt parzen} (Parzen kernel function),
+{opt rectangle} (rectangle kernel function)
+or {opt triangle} (triangle kernel function). Note that usually
+the different kernel functions produce very similar results.
+By default, {opt epan2},
+specifying the Epanechnikov kernel, is used.
+
+{phang}{cmd:exact} causes the exact kernel density estimator to be used instead
+of the binned approximation estimator. The exact estimator can be slow in large
+datasets.
+
+{phang} {opt n(#)}, where {it:#} > 2, specifies the "evaluation grid
+size", i.e. the number of (equally spaced) points at which the
+density estimate be evaluated. The default is grid size 512. This
+should be enough for the binned approximation estimator to be accurate in
+most situations (see Hall and Wand 1996). Note
+that {opt n()} also sets the number of estimation points for the
+{cmd:sjpi} and {cmd:dpi} bandwidth selectors (see the {cmd:bw()}
+option below).
+
+{phang} {opt n2(#)}, where {it:#} must be equal to the value of
+{cmd:n()} or smaller, specifies the "output grid size". If
+{opt n2()} is equal to {opt n()} (the default), then the "evaluation" grid and
+the "output" grid coincide and the density estimate is returned as is.
+However, if {opt n2()} is smaller than
+{opt n()}, the density estimate will be linearly interpolated from the
+"evaluation" grid to the "output" grid. Note that {opt n2()} will be
+reset to {helpb _N}, the number of observations in the dataset,
+if {helpb _N} is smaller than {opt n2()}. {opt n2()} has no
+effect if {opt at()} is specified.
+
+{phang} {opt generate(d [x])} stores the results of the
+estimation. {it:{help newvar}} {it:d} will contain the
+density estimate. {it:{help newvar}} {it:x} will contain the points at which
+the density is evaluated. The results are written to the to the first
+{opt n()} observations in the data set in ascending order of evaluation
+points. Alternatively, if {opt at(var_x)} is specified, the density estimate is
+written to the observations identified by {it:var_x}. {it:x} must be
+omitted in this case.
+
+{phang} {opt at(var_x)} specifies a variable that contains the values
+at which the density be estimated. This option allows you
+more easily to obtain density estimates for different variables or
+different subsamples of a variable and then overlay the estimated
+densities for comparison. With the binned approximation estimator, the density is
+first estimated using an equally-spaced grid of evaluation points (see
+the {opt n()} option) and is then linearly interpolated
+to the values of {it:var_x}. With the exact estimator, the
+density is directly estimated at the values of {it:var_x} (unless the
+{cmd:adaptive} option is specified).
+
+{phang}{opt range(# #)} specifies the range of values (minimum and maximum) at
+which the density be estimated. The default range of the evaluation grid is defined as
+[min(x)-h*tau, max(x)+h*tau], where h is the bandwidth and
+tau is the halfwidth of the kernel support (in the case of the
+gaussian kernel, tau is set to 3). This allows the
+density estimate to become (approximately) zero on both sides of the
+observed data. Specifying {opt ll(#)}, {opt ul(#)},
+or {opt at(var_x)} may also change the evaluation range.
+
+{pmore}As with the {cmd:at()} option, {cmd:range()} only affects the
+"output grid". Internally, the density will be estimated over the full data
+range. An exception is again the exact estimator (unless the
+{cmd:adaptive} option is specified).
+
+{phang}
+{opt replace} permits {cmd:kdens} to overwrite
+existing variables.
+
+
+{dlgtab:Bandwidth}
+
+{phang} {opt bw(#|type)}
+may be used to determine the bandwidth of the kernel, the
+halfwidth of the density window around each evaluation point.
+{opt bw(#)}, where # > 0, sets the
+bandwidth to #. Alternatively, specify {opt bw(type)}
+to choose the automatic bandwidth selector
+determining the "optimal" bandwidth. Choices are {opt silverman}
+(optimal of Silverman), {opt normalscale} (normal scale rule),
+{opt oversmoothed} (oversmoothed rule), {opt sjpi}
+(Sheather-Jones plug-in estimate) and {cmd:dpi}[{cmd:(}{it:#}{cmd:)}]
+(a variant of the Sheather-Jones plug-in estimate called the direct
+plug-in bandwidth estimate). The {it:#} in {opt dpi()} specifies the
+desired number of stages of functional estimation and should be a
+nonnegative integer (the default is 2; {cmd:dpi(0)} is equivalent to
+{opt normalscale}). {cmd:bw(silverman)} is the default.
+
+{pmore}Note that automatic bandwidth estimates are rescaled
+depending on the canonical bandwidth of the
+kernel function. A consequence of this is that density estimates
+from the different
+kernel functions are directly comparable. For example, identical results
+are computed for {cmd:epanechnikov} and {cmd:epan2}
+(apart from round-off error), because the two kernel functions are
+just scaled versions of one another. No bandwidth
+rescaling is applied if a specific bandwidth value, i.e. {opt bw(#)}, is specified.
+
+{pmore}Furthermore, note that {cmd:kdens} imposes a minimum bandwidth. Let d denote
+the distance between two consecutive points on the evaluation grid. The
+minimum bandwidth then is h_min = d/2 * cb_k / cb_r, where cb_k is
+the canonical bandwidth of the applied kernel and cb_r
+is the canonical bandwidth of the rectangular kernel. If the
+bandwidth is smaller than h_min, it is reset to h_min.
+
+{phang} {opt adjust(#)}, where {it:#} > 0, causes the bandwidth to be
+multiplied by #. Default is {cmd:adjust(1)}.
+
+{phang}
+{opt adaptive}[{cmd:(}{it:#}{cmd:)}] specifies that the adaptive
+kernel density estimator be applied. The adaptive
+estimator has less bias than the ordinary estimator. {it:#} is the desired
+number of iterations used to determine the local bandwidth
+factors. The default is 1 (additional iterations usually do not
+significantly change the density estimate).
+
+
+{dlgtab:Boundary correction}
+
+{phang} {opt ll(#)} and {opt ul(#)} specify the lower and upper
+boundary of the domain of the variable. Note that {opt ll(#)} must be
+lower than or equal to the minimum observed value and {opt ul(#)}
+must be larger than or equal to the maximum observed value. The default
+method used by {cmd:kdens} for density estimation near the boundaries
+is the renormalization method.
+
+{phang} {opt reflection} causes the reflection technique to be used
+for boundary correction instead of the renormalization method.
+
+{phang} {opt lc} causes the linear combination technique to be used
+for boundary correction instead of the renormalization method.
+
+{pmore}
+Only one of {opt reflection} and {opt lc} is allowed. The renormalization method
+and the reflection method have comparable properties with respect to bias
+and variance. However, note that the reflection method implies the
+slope of the density to be zero at the boundary. The linear
+combination technique is better than the other methods in terms of
+bias, but has larger variance (and the density estimate may get negative
+in some situations).
+
+
+{dlgtab:Confidence intervals}
+
+{phang}{cmd:ci}[{cmd:(}{it:stub}|{it:lo up}{cmd:)}] plots pointwise
+confidence intervals. If {opt ci(stub)} is specified, the
+results are stored in {it:{help newvar}} {it:stub}{cmd:_lo} and
+{it:{help newvar}} {it:stub}{cmd:_up}. Alternatively, specify
+{opt ci(lo up)} to save the results in {it:{help newvar}} {it:lo} and
+{it:{help newvar}} {it:up}. If {opt ci} is specified without
+arguments, but {opt generate(d [x])} is specified, the confidence
+intervals are stored in  {it:{help newvar}} {it:d}{cmd:_lo} and
+{it:{help newvar}} {it:d}{cmd:_up}.
+
+{marker vce}{phang}{cmd:vce(}{it:vcetype} [{cmd:,} {it:vceopts}]{cmd:)} indicates that
+the confidence intervals be estimated using replication techniques.
+If {cmd:vce()} is omitted, analytic formulas are used to compute
+the confidence intervals. {it:vcetype} may be {cmd:bootstrap} or
+{cmd:jackknife}. {cmd:fweight}s and
+{cmd:aweight}s are not allowed if {cmd:vce()} is specified.
+
+{pmore}Common {it:vceopts}:
+
+{phang2}
+{opth str:ata(varname)} specifies a variable that
+identifies strata. If this option is specified, bootstrap samples
+are taken independently within each stratum /
+stratified jackknife estimates are produced.
+
+{phang2}
+{opth cl:uster(varname)} specifies a variable that identifies
+sample clusters. If this option is specified, the sample
+drawn during each bootstrap replication is a sample of clusters /
+clusters are left out for jackknife estimation.
+
+{phang2}
+{opt nod:ots} suppresses display of the replication dots. By default,
+a single dot character is displayed for each successful replication.
+A single red 'x' is displayed, if a replication is not successful.
+
+{phang2}
+{opt mse} indicates that the variances be computed using
+deviations of the replicates from the density estimate based on
+the entire dataset. By default,
+variances are computed using deviations from
+the average of the replicates.
+
+{pmore}Additional {it:vceopts} for {cmd:vce(jackknife)}:
+
+{phang2}
+{opth sub:pop(varname)} specifies that estimates be computed for the single
+subpopulation for which {varname}!=0.
+
+{phang2}
+{opth fpc(varname)} requests a finite population correction for the variance
+estimates. The values in {it:varname} are
+interpreted as stratum sampling rates. The values must be in [0,1]
+and are assumed to be constant within each stratum.
+
+{pmore}Additional {it:vceopts} for {cmd:vce(bootstrap)}:
+
+{phang2}
+{opt r:eps(#)} specifies the number of bootstrap replications to be performed.
+ The default is 50. More replications are usually required to get
+reliable results.
+
+{phang2}
+{opt n:ormal} computes normal approximation confidence intervals.
+
+{phang2}
+{opt p:ercentile} computes percentile confidence intervals.
+
+{phang2}
+{opt bc} computes bias-corrected confidence intervals.
+
+{phang2}
+{opt bca} computes bias-corrected and accelerated confidence intervals.
+
+{phang2}
+{opt t} computes percentile-t confidence intervals. The default analytic
+formulas are used for standard error estimation within the bootstrap
+replicates.
+
+{pmore}Only one of {cmd:normal}, {cmd:percentile}, {cmd:bc}, {cmd:bca},
+and {cmd:t} is allowed. See {bf:[R] bootstrap} for methodical
+details. For the percentile-t method see help for
+{helpb mf_mm_bs##r3:mm_bs()}.
+
+{phang} {opt usmooth(#)} specifies that confidence intervals be based
+on an undersmoothed density estimate in order to reduce the bias. {it:#}
+specifies the degree of undersmoothing and should be within .2
+and 1. The default value is 1/4 = .25. Higher values result in
+stronger undersmoothing. A value of 1/5 = .2 results in no
+undersmoothing. (See Fiorio 2004.)
+
+{phang}
+{opt variance(V)} specifies that the pointwise variance be
+stored in {it:{help newvar}} {it:V}.
+
+{phang}
+{opt level(#)} specifies the confidence level, as a percentage, for confidence
+intervals. The default is {cmd:level(95)} or as set by {helpb level:set level}.
+
+
+{title:Options (graph)}
+
+{dlgtab:Main}
+
+{phang}
+{opt nograph} suppresses the graph. Instead of specifying
+{opt nograph} you might as well use {cmd:_kdens} directly.
+
+{dlgtab:Kernel plot}
+
+{phang}
+{it:cline_options} affect the rendition of the plotted kernel density
+estimate. See {it:{help connect_options}}.
+
+{phang}
+{opth ciopts(area_options)} specifies details about the rendition
+of the plotted confidence interval. See
+{it:{help area_options}}.
+
+{dlgtab:Density plots}
+
+{phang}
+{cmd:histogram}[{cmd:(}{it:#}{cmd:)}] requests that a histogram of the data
+be added to graph. The histogram will be placed in the background, behind the
+density estimate. {it:#} specifies the number of bins to be used.
+
+{phang}
+{opt histopts(options)} specifies details about the rendition
+of the histogram, such as the look of the bars. See
+{helpb twoway histogram}.
+
+{phang}
+{opt normal} requests that a normal density be overlaid on the density
+estimate for comparison.
+
+{phang}
+{opt normopts(cline_options)} specifies details about the rendition
+of the normal curve, such as the color and style of line used. See
+{it:{help connect_options}}.
+
+{phang}
+{opt student(#)} specifies that a Student's t density with {it:#} degrees
+of freedom be overlaid on the density estimate for comparison.
+
+{phang}
+{opt stopts(cline_options)} affect the rendition of the Student's t density.
+See {it:{help connect_options}}.
+
+{dlgtab:Add plot}
+
+{phang}
+{opt addplot(plot)} provides a way to add other plots to the generated graph.
+See {it:{help addplot_option}}.
+
+{dlgtab:Y-Axis, X-Axis, Title, Caption, Legend, Overall}
+
+{phang}
+{it:twoway_options} are any of the options documented in
+{it:{help twoway_options}}, excluding {opt by()}.  These include options for
+titling the graph (see {it:{help title_options}}) and options for saving the
+graph to disk (see {it:{help saving_option}}).
+
+
+{title:Examples}
+
+        {com}. {stata "use http://www.stata-press.com/data/r7/trocolen.dta"}
+
+        . {stata "kdens length"}
+
+        . {stata "kdens length, bw(sjpi)"}
+
+        . {stata "kdens length, adaptive"}
+
+        . {stata "kdens length, ci usmooth"}
+
+        . {stata "kdens length, ci vce(jackknife)"}
+
+        . {stata "kdens length, ci vce(bootstrap, reps(200))"}
+
+        . {stata "_kdens length, kernel(parzen) gen(parzen x) replace"}
+        . {stata "_kdens length, kernel(cosine) gen(cosine) at(x)"}
+        . {stata "line parzen cosine x"}
+
+        . {stata "gen length2 = abs(length-417)"}
+        . {stata "kdens length2, ll(0) ci"}
+
+        . {stata "kdens length, histogram ciopts(recast(rline) pstyle(p2) lp(dash))"}
+
+        . {stata "generate byte g = uniform()<.5"}
+        . {stata "twoway kdens length if g==1 ||  kdens length if g==0"}{txt}
+
+
+{title:Methods and Formulas}
+
+{pstd} See {browse "http://fmwww.bc.edu/RePEc/bocode/k/kdens.pdf"}.
+
+
+{title:References}
+
+{phang}
+Fiorio, C. V. 2004. Confidence intervals for kernel density
+ estimation. The Stata Journal 4: 168-179.
+
+{phang}
+Hall, P. and M. P. Wand. 1996. On the Accuracy of Binned Kernel
+ Density Estimators. Journal of Multivariate Analysis 56: 165-184.
+
+
+{title:Author}
+
+{pstd} Ben Jann, ETH Zurich, jann@soz.gess.ethz.ch
+
+{pstd}Thanks for citing this software as follows:
+
+{pmore}
+Jann, B. (2005). kdens: Stata module for univariate kernel
+density estimation. Available from
+http://ideas.repec.org/c/boc/bocode/s456410.html.
+
+
+{title:Also see}
+
+{psee}
+Online:  {helpb mf_kdens:mata kdens()}, {helpb kdensity},
+{helpb graph}, {helpb histogram}, {helpb lowess}
+{p_end}

@@ -1,0 +1,95 @@
+{smcl}
+{* 01Aug2012/11Feb2010/30dec2006/06sep2006/03aug2006}{...}
+{hline}
+help for {cmd:zoib postestimation}
+{hline}
+
+{title:Title}
+
+{p2colset 5 28 30 2}{...}
+{p2col :{hi:zoib postestimation} {hline 2}}Postestimation tools for
+zoib{p_end}
+{p2colreset}{...}
+
+
+{title:Description}
+
+The following standard postestimation commands are available:
+
+{synoptset 14 tabbed}{...}
+{p2coldent :command}description{p_end}
+{synoptline}
+INCLUDE help post_estat
+INCLUDE help post_estimates
+INCLUDE help post_lincom
+INCLUDE help post_lrtest
+{synopt :{helpb margins}}marginal means, predictive margins, marginal effects, 
+and average marginal effects{p_end}
+INCLUDE help post_mfx
+INCLUDE help post_nlcom
+{synopt :{helpb zoib postestimation##predict:predict}}predictions{p_end}
+INCLUDE help post_predictnl
+INCLUDE help post_suest
+INCLUDE help post_test
+INCLUDE help post_testnl
+{synoptline}
+{p2colreset}{...}
+
+
+{marker predict}{...}
+{title:Syntax for predict}
+
+{p 8 16 2}
+{cmd:predict} {dtype} {newvar} {ifin} 
+[ {cmd:,} {it:statistic} {cmdab:eq:uation(}{it:eqno}{cmd:)} ]
+
+{synoptset 14 tabbed}{...}
+{synopthdr :statistic}
+{synoptline}
+{synopt :{opt p:roportion}}proportion (the default){p_end}
+{synopt :{cmd:prcond}}proportion conditional on 0 < {it:depvar} < 1{p_end}
+{synopt :{cmd:pr0}}probability {it:depvar} = 0{p_end}
+{synopt :{cmd:pr1}}probability {it:depvar} = 1{p_end}
+{synopt :{cmd:xb}}xb, fitted values{p_end}
+{synopt :{cmd:stdp}}standard error of the prediction{p_end}
+{synopt :{opt sc:ore}}first derivative of the log likelihood with respect to the linear 
+predictor. {p_end}
+{synoptline}
+{p2colreset}{...}
+INCLUDE help unstarred
+
+
+{title:Options for predict}
+
+{phang}
+{opt proportion} the default, calculates the proportions.
+
+{phang}
+{cmd:prcond} proportion conditional on 0 < {it:depvar} < 1
+
+{phang}
+{cmd:pr0} probability {it:depvar} = 0
+
+{phang} {cmd:pr1} probability {it:depvar} = 1
+
+{phang}
+{opt score} calculates the first derivative of the log likelihood with respect
+to the linear predictions. This is only available for Stata version 9.2 and higher.
+
+{phang}
+{opt xb} calculates the linear prediction.
+
+{phang}
+{opt stdp} calculates the standard error of the linear prediction.
+
+{phang}
+{cmdab:eq:uation(}{it:eqno}{cmd:)} specify equation, see {help predict}.
+
+{title:Also see}
+
+{p 4 13 2}
+Online: help for {helpb zoib}, {helpb estimates}, {helpb lincom}, 
+{helpb lrtest}, {helpb mfx}, {helpb nlcom}, {helpb predict}, {helpb predictnl},
+{helpb suest}, {helpb test}, {helpb testnl}
+{p_end}
+

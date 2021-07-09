@@ -1,0 +1,74 @@
+{smcl}
+{* 3may2004}{...}
+{hline}
+help for {hi:circqvm}
+{hline}
+
+{title:Quantile-quantile plot for von Mises distribution fitted to circular data}
+
+{p 8 17 2}
+{cmd:circqvm} 
+{it:varname} 
+[{cmd:if} {it:exp}] 
+[{cmd:in} {it:range}]
+[{cmd:, show(}{it:numlist}{cmd:)}
+{cmd:plot(}{it:plot}{cmd:)}
+{it:scatter_options}] 
+
+
+{title:Description}
+
+{p 4 4 2}
+{cmd:circqvm} gives a quantile-quantile plot for the fit of a 
+von Mises (a.k.a. circular normal) distribution to a circular variable 
+on a scale between 0 and 360 degrees. {help circvm} is used 
+to fit the distribution, estimating the two parameters vector mean mu 
+and concentration parameter kappa. Both observed and expected quantiles 
+are rotated so that each set is centred on the observed vector mean. 
+Each is nevertheless labelled in terms of {it:varname}. 
+
+{p 4 4 2}This plot was suggested by Fisher (1993). However, he  
+uses a sine((angle - centre) / 2) scale, which has the merit of 
+pulling in the tails and stretching the region near the centre
+of the distribution, but the disadvantage, as with any 
+transformation, of being one step further away from the data. 
+
+
+{title:Options}
+
+{p 4 8 2} 
+{cmd:show()} specifies a numlist of axis labels to be shown, overriding the 
+default.
+
+{p 4 8 2}
+{cmd:plot(}{it:plot}{cmd:)} provides a way to add other plots to the generated
+graph; see help {help plot_option}.
+
+{p 4 8 2} 
+{it:scatter_options} are any options allowed with {help scatter}.  
+
+
+{title:Examples}
+
+{p 4 4 2}{cmd:. circqvm wallasp}{p_end} 
+{p 4 4 2}{cmd:. circqvm wallasp, show(0(45)315)}
+
+
+{title:References}
+
+{p 4 8 2}
+Fisher, N.I. 1993. {it:Statistical analysis of circular data.}
+Cambridge: Cambridge University Press.
+
+
+{title:Author}
+
+{p 4 4 2}Nicholas J. Cox, University of Durham, U.K.{break} 
+         n.j.cox@durham.ac.uk
+
+
+{title:Also see}
+
+{p 4 13 2}
+On-line: help for {help circvm}, {help circpvm} 
+

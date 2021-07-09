@@ -1,0 +1,57 @@
+{smcl}
+{* 19aug2002}{...}
+{hline}
+help for {hi:alphawgt}
+{hline}
+
+{title:Cronbach's alpha for weighted data}
+
+{p 8 14}{cmd:alphawgt} {it:varlist} [{it:weight}] [{cmd:if} {it:exp}] [{cmd:in} {it:range}]
+[{cmd:,} {cmdab:a:sis} {cmdab:c:asewise} {cmdab:d:etail}
+{cmdab:g:enerate}{cmd:(}{it:newvar}{cmd:)} {cmdab:i:tem} {cmdab:l:abel}
+{cmdab:m:in}{cmd:(}{it:#}{cmd:)} {cmdab:r:everse}{cmd:(}{it:varlist}{cmd:)}
+{cmdab:s:td} ]
+
+{p}{cmd:by} {it:...} {cmd::} may be used with {cmd:alphawgt}; see help {help by}.
+
+{p}{cmd:fweight}s and {cmd:aweight}s may be used with {cmd:alphawgt}; see help {help weights}
+
+
+{title:Description}
+
+{p}{cmd:alphawgt} does the same than the official {cmd:alpha} (version 4.5.2, 
+09apr2002) except that {cmd:fweight}s and {cmd:aweight}s may be used. If 
+{cmd:fweight}s are used, the sum of weights is displayed in place of the number of 
+observations (if options {cmd:detail} and/or {cmd:item} are specified). If 
+{cmd:aweight}s are used, the sum of weights is displayed in addition to the number of 
+observations (if option {cmd:detail} is specified).
+
+{p}See help {help alpha} for details on options.
+
+
+{title:Examples}
+
+	{inp:. alpha q1-q10 [fweight=pop]}
+
+{p 8 12}{inp:. alpha bg2cost1-bg2cost6 dotest1-dotest6 [aweigth=cellpop], std}
+
+
+{title:Methods and Formulas}
+
+{p} See {browse "http://fmwww.bc.edu/RePEc/bocode/a/alphawgt.pdf"}.
+
+
+{title:Author}
+
+{p}Ben Jann, ETH Zurich, jann@soz.gess.ethz.ch
+
+{p}Note: {cmd:alphawgt} is essentially a copy of {cmd:alpha} (version 4.5.2, 
+09apr2002) developed by Stata Corporation. I only added some minor modifications. If 
+{cmd:alphawgt} produces erroneous results due to these modifications, I am to blame 
+for it.
+
+
+{title:Also see}
+
+ Manual:  {hi:[R] alpha}
+{p 0 19}On-line:  help for {help alpha}{p_end}

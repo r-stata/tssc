@@ -1,0 +1,707 @@
+{smcl}
+{* 03aug2007}{...}
+{cmd:help mata kdens()}
+{hline}
+
+{title:Title}
+
+{pstd}
+{bf:kdens() -- Univariate kernel density estimation}
+
+
+{title:Contents}
+
+{pstd}Information on functions (syntax, description, remarks,
+conformability, diagnostics) can be found below under the following
+headings:
+
+{phang2}{it:{help mf_kdens##s1:Wrappers}}{p_end}
+
+{phang2}{it:{help mf_kdens##s2:Elementary functions}}{p_end}
+
+
+{title:Dependencies}
+
+{pstd}
+{cmd:moremata} is required. Type
+
+        {com}. {net "describe moremata, from(http://fmwww.bc.edu/repec/bocode/m/)":ssc describe moremata}{txt}
+
+
+{title:Methods and Formulas}
+
+{pstd}
+See {browse "http://fmwww.bc.edu/RePEc/bocode/k/kdens.pdf"}.
+
+
+{title:Source code}
+
+{pstd}
+{view kdens.mata, adopath asis:kdens.mata}
+
+
+{title:Author}
+
+{pstd} Ben Jann, ETH Zurich, jann@soz.gess.ethz.ch
+
+
+{title:Aknowledgements}
+
+{pstd}
+Some of the code is loosely based on R code from the
+"KernSmooth" package (R port by Brian Ripley, S
+original by Matt Wand) and the "sm" package (R port by Brian Ripley,
+S original by Adrian W. Bowman and Adelchi Azzalini).
+
+
+{title:Also see}
+
+{p 4 13 2}
+Online:  help for
+{bf:{help kdens}}, {bf:{help moremata}}
+{p_end}
+
+
+{marker s1}{hline}
+{bf:Wrappers}
+{hline}
+
+{title:Syntax}
+
+{p 8 23 2}{bind: }{it:d =}
+{cmd:kdens(}{it:x}{cmd:,} {it:w}{cmd:,} {it:g} [{cmd:,}
+{it:bw}{cmd:,} {it:k}{cmd:,} {it:a}{cmd:,} {it:lb}{cmd:,}
+{it:ub}{cmd:,} {it:btype}{cmd:,} {it:lbwf}]{cmd:)}
+
+{p 8 23 2}{bind: }{it:d =}
+{cmd:_kdens(}{it:x}{cmd:,} {it:w}{cmd:,} {it:g} [{cmd:,}
+{it:bw}{cmd:,} {it:k}{cmd:,} {it:a}{cmd:,} {it:ll}{cmd:,}
+{it:ul}{cmd:,} {it:btype}{cmd:,} {it:lbwf}]{cmd:)}
+
+{p 8 23 2}{bind: }{it:v =}
+{cmd:kdens_var(}{it:d}{cmd:,} {it:x}{cmd:,} {it:w}{cmd:,}
+{it:g} [{cmd:,} {it:bw}{cmd:,} {it:k}{cmd:,} {it:pw}{cmd:,}
+{it:lb}{cmd:,} {it:ub}{cmd:,} {it:btype}{cmd:,} {it:lbwf}]{cmd:)}
+
+{p 8 23 2}{bind: }{it:v =}
+{cmd:_kdens_var(}{it:d}{cmd:,} {it:x}{cmd:,} {it:w}{cmd:,}
+{it:g} [{cmd:,} {it:bw}{cmd:,} {it:k}{cmd:,} {it:pw}{cmd:,}
+{it:ll}{cmd:,} {it:ul}{cmd:,} {it:btype}{cmd:,} {it:lbwf}]{cmd:)}
+
+{p 8 23 2}{it:bw =}
+{cmd:kdens_bw(}{it:x} [{cmd:,} {it:w}{cmd:,} {it:method}{cmd:,}
+{it:k}{cmd:,} {it:m}{cmd:,} {it:ll}{cmd:,}
+{it:ul}{cmd:,} {it:ldpi}]{cmd:)}
+
+{p 8 23 2}{bind: }{it:g =}
+{cmd:kdens_grid(}{it:x} [{cmd:,} {it:w}{cmd:,}
+{it:bw}{cmd:,} {it:k}{cmd:,} {it:m}{cmd:,} {it:min}{cmd:,}
+{it:max}]{cmd:)}
+
+
+{pstd}
+where
+
+{p 12 18 2}
+  {it:d}:  {it:real colvector} containing density estimate
+  {p_end}
+
+{p 12 18 2}
+  {it:v}:  {it:real colvector} containing variance estimate
+  {p_end}
+
+{p 11 18 2}
+  {it:bw}:  {it:real scalar} containing bandwidth; {cmd:kdens()} and
+  {cmd:kdens_grid()} may replace {it:bw} if it is too small
+  {p_end}
+
+{p 12 18 2}
+  {it:g}:  {it:real colvector} containing equally-spaced grid points at
+  which to estimate the density
+  {p_end}
+
+{p 12 18 2}
+  {it:x}:  {it:real colvector} containing data points
+  {p_end}
+
+{p 12 18 2}
+  {it:w}:  {it:real colvector} containing weights
+  {p_end}
+
+{p 7 18 2}
+  {it:method}:  {it:string scalar} containing {cmd:"silverman"} (default),
+  {cmd:"normalscale"}, {cmd:"oversmoothed"},
+  {cmd:"sjpi"}, or {cmd:"dpi"}
+  {p_end}
+
+{p 12 18 2}
+  {it:k}:  {it:string scalar} containing {cmd:"epanechnikov"},
+  {cmd:"epan2"} (default), {cmd:"biweight"}, {cmd:"triweight"},
+  {cmd:"cosine"}, {cmd:"gaussian"}, {cmd:"parzen"},
+  {cmd:"rectangle"} or {cmd:"triangle"}
+  {p_end}
+
+{p 12 18 2}
+  {it:a}:  {it:real scalar} specifying number of iterations
+  for the adaptive kernel density estimator (default 0)
+  {p_end}
+
+{p 11 18 2}
+  {it:pw}:  {it:real scalar} indicating that the weights are
+  {cmd:pweight}s (normalized to the number of observations)
+  {p_end}
+
+{p 12 18 2}
+  {it:m}:  {it:real scalar} containing size of evaluation grid
+  (number of evaluation points) (default is 512)
+  {p_end}
+
+{p 11 18 2}
+  {it:lb}:  {it:real scalar} indicating that the support of {it:x} is
+  lower bounded at {it:g}[1]
+  {p_end}
+
+{p 11 18 2}
+  {it:ub}:  {it:real scalar} indicating that the support of {it:x} is
+  upper bounded at {it:g}[rows({it:g})]
+  {p_end}
+
+{p 8 18 2}
+  {it:btype}:  {it:real scalar} specifying the method to be used
+  for boundary correction; {it:btype}==0: renormalization,
+  {it:btype}==1: reflection, {it:btype}==2: linear combination
+  {p_end}
+
+{p 11 18 2}
+  {it:ll}:  {it:real scalar} containing lower limit of support of
+  {it:x}
+  {p_end}
+
+{p 11 18 2}
+  {it:ul}:  {it:real scalar} containing upper limit of support of
+  {it:x}
+  {p_end}
+
+{p 9 18 2}
+  {it:ldpi}:  {it:real scalar}  specifying the number of stages of functional
+  estimation for the {cmd:dpi} method (default is 2)
+  {p_end}
+
+{p 10 18 2}
+  {it:min}:  {it:real scalar} specifying minimum value of evaluation
+  grid; will be ignored if {it:min} is missing or larger than {cmd:min(x)}
+  {p_end}
+
+{p 10 18 2}
+  {it:max}:  {it:real scalar} specifying maximum value of evaluation
+  grid; will be ignored if {it:max} is missing or smaller than {cmd:max(x)}
+  {p_end}
+
+{p 9 18 2}
+  {it:lwbf}:  will be replaced by the
+  local bandwidth factors in [{cmd:_}]{cmd:kdens()}; {it:real colvector}
+  containing local bandwidth factors in [{cmd:_}]{cmd:kdens_var()}
+  {p_end}
+
+
+{title:Description}
+
+{pstd}
+{cmd:kdens()} returns the binned approximation kernel density
+estimate of {it:x} using evaluation grid {it:g}. {it:g} must be a regular grid of
+equidistant points covering the whole range of {it:x}. Use
+{cmd:kdens_grid()} to produce {it:g}. The default kernel
+used by {cmd:kdens()} is the gaussian kernel function. Specify {it:k}
+as indicated above to use another kernel function. {it:bw} is the
+bandwidth. If {it:bw} is omitted, the optimal of
+Silverman is used. Note that {cmd:kdens()} imposes a
+minimum bandwidth (see help {helpb kdens} for details). If
+{it:bw} is smaller than the minimum bandwidth, it is reset to this
+minimum. Specify {it:a} as an integer larger than zero
+to obtain the adaptive bandwidth kernel density, where {it:a}
+indicates the number of iterations applied to determine the local
+bandwidth factors. {cmd:kdens()} supports density estimation for
+bounded variables. Specify
+{it:lb}!=0 and {it:ub}!=0 to indicate that the support of
+{it:x} is bounded. The default method
+for estimation at the boundaries is the normalization method. Alternatively,
+{it:btype}==1 causes the reflection method to be used and {it:btype}==2 causes the
+linear combination method to be used. If
+specified, {it:lwbf} will be replaced by the local bandwidth factors
+(or set to 1 if {it:a}=0).
+
+{pstd}
+{cmd:_kdens()} returns the exact kernel density estimate. {it:ll} and {it:ul}
+specify the lower and upper limits of the data support.
+
+{pstd}
+{cmd:kdens_var()} returns asymptotic point-wise variance estimates
+for the binned approximation density estimate. Use 
+{cmd:kdens_var()} after {cmd:kdens()}, but not after 
+{cmd:_kdens()}. {it:pw}!=1 specifies that the weights
+{it:w} are (normalized) sampling weights. If {it:d} has been derived by the
+adaptive kernel density method ({it:a}>=1 in {cmd:kdens()}),
+the local bandwidth factors, {it:lwbf}, should be provided to
+{cmd:kdens_var()}.
+
+{pstd}
+{cmd:kdens_var()} returns asymptotic point-wise variance estimates
+for the exact density estimate. Use 
+{cmd:_kdens_var()} after {cmd:_kdens()}, but not after 
+{cmd:kdens()}.
+
+{pstd}
+{cmd:kdens_bw()} returns an estimate of the "optimal"
+bandwidth given the data and kernel function. Available {it:method}s
+are {cmd:"silverman"}
+(optimal of Silverman; the default), {cmd:"normalscale"} (the normal scale rule),
+{cmd:"oversmoothed"} (the oversmoothed rule), {cmd:"sjpi"} (the
+Sheather-Jones plug-in estimate) and {cmd:"dpi"}
+(a variant of the Sheather-Jones plug-in estimate called the direct
+plug-in bandwidth estimate). If the {it:method} is {cmd:"sjpi"}
+or {cmd:"dpi"} you might want to set {it:m}, the number of evaluation
+points used to estimate the density functionals, and for bounded
+variables the lower and upper limits, {it:ll} and {it:ul}.
+Furthermore, with the {cmd:"dpi"} method you may specify the
+the number of stages of functional estimation, {it:ldpi} (default is
+2).
+
+{pstd}
+{cmd:kdens_grid()} returns a grid of {it:m} equally-spaced points over the
+range of {it:x}. The default grid size is {it:m}=512. The
+default range of the grid is
+[min({it:x})-{it:bw}*tau, max({it:x})+{it:bw}*tau], where {it:bw} is the bandwidth and
+tau is the halfwidth of the support of kernel {it:k} (in the case of the
+gaussian kernel, tau is set to 3). Alternatively, if
+{it:min}<=min({it:x}) is specified, the lower limit of the grid is set to
+{it:min}. If .>{it:max}>=max({it:x}) is specified, the upper limit of the grid
+is set to {it:max}. Note that, similar to {cmd:kdens()}, {cmd:kdens_grid()}
+imposes a minimum bandwidth and resets {it:bw} if it is too small (see above).
+
+
+{title:Remarks}
+
+{pstd}Suppose, {cmd:x} is a data vector. To estimate the density of
+{it:x} using a gaussian kernel you could type, for example:
+
+        {com}: bw = kdens_bw(x, 1, "sjpi")
+        : g  = kdens_grid(x, 1, bw)
+        : d  = kdens(x, 1, g, bw)
+        : v  = kdens_var(d, x, 1, g, bw){txt}
+
+{pstd}{cmd:g} and {cmd:d} could then be used, e.g., to plot the
+density function. {cmd:v} could be used to construct point-wise confidence
+intervals.
+
+{pstd}If the adaptive estimator is used and the variance be
+estimated, the local bandwidth factors have to be passed to
+{cmd:kdens_var()}. Example:
+
+        {com}: bw = kdens_bw(x, 1, "sjpi")
+        : g  = kdens_grid(x, 1, bw)
+        : d  = kdens(x, 1, g, bw, "", 1, 0, 0, 0, l=.)
+        : v  = kdens_var(d, x, 1, g, bw, "", 0, 0, 0, 0, l){txt}
+
+
+{title:Conformability}
+
+    {cmd:kdens(}{it:x}{cmd:,} {it:w}{cmd:,} {it:g}{cmd:,} {it:bw}{cmd:,} {it:k}{cmd:,} {it:a}{cmd:,} {it:lb}{cmd:,} {it:ub}{cmd:,} {it:btype}{cmd:,} {it:lbwf}{cmd:)},
+    {cmd:_kdens(}{it:x}{cmd:,} {it:w}{cmd:,} {it:g}{cmd:,} {it:bw}{cmd:,} {it:k}{cmd:,} {it:a}{cmd:,} {it:ll}{cmd:,} {it:ul}{cmd:,} {it:btype}{cmd:,} {it:lbwf}{cmd:)},
+    {cmd:kdens_var(}{it:d}{cmd:,} {it:x}{cmd:,} {it:w}{cmd:,} {it:g}{cmd:,} {it:bw}{cmd:,} {it:k}{cmd:,} {it:pw}{cmd:,} {it:lb}{cmd:,} {it:ub}{cmd:,} {it:btype}{cmd:,} {it:lbwf}{cmd:)},
+    {cmd:_kdens_var(}{it:d}{cmd:,} {it:x}{cmd:,} {it:w}{cmd:,} {it:g}{cmd:,} {it:bw}{cmd:,} {it:k}{cmd:,} {it:pw}{cmd:,} {it:ll}{cmd:,} {it:ul}{cmd:,} {it:btype}{cmd:,} {it:lbwf}{cmd:)},
+    {cmd:kdens_grid(}{it:x}{cmd:,} {it:w}{cmd:,} {it:bw}{cmd:,} {it:k}{cmd:,} {it:m}{cmd:,} {it:min}{cmd:,} {it:max}{cmd:)}:
+        {it:result}:  {it:m x} 1
+
+    {cmd:kdens_bw(}{it:x}{cmd:,} {it:w}{cmd:,} {it:method}{cmd:,} {it:k}{cmd:,} {it:m}{cmd:,} {it:ll}{cmd:,} {it:ul}{cmd:,} {it:ldpi}{cmd:)}:
+        {it:result}:  1 {it:x} 1
+
+{pstd}where
+
+             {it:x}:  {it:n x} 1
+             {it:w}:  {it:n x} 1 or 1 {it:x} 1
+             {it:g}:  {it:m x} 1
+             {it:d}:  {it:m x} 1
+            {it:bw}:  1 {it:x} 1
+        {it:method}:  1 {it:x} 1
+             {it:k}:  1 {it:x} 1
+             {it:a}:  1 {it:x} 1
+            {it:pw}:  1 {it:x} 1
+             {it:m}:  1 {it:x} 1
+            {it:lb}:  1 {it:x} 1
+            {it:ub}:  1 {it:x} 1
+         {it:btype}:  1 {it:x} 1
+            {it:ll}:  1 {it:x} 1
+            {it:ul}:  1 {it:x} 1
+          {it:ldpi}:  1 {it:x} 1
+           {it:min}:  1 {it:x} 1
+           {it:max}:  1 {it:x} 1
+          {it:lwbf}:  {it:n x} 1
+
+
+{title:Diagnostics}
+
+{pstd}
+{cmd:kdens()} and {cmd:kdens_var()} return invalid results if the grid
+{it:g} is not equally-spaced.
+
+{pstd}
+{cmd:kdens_bw()} aborts with error if {it:ll}>min({it:x}) or
+{it:ul}<max({it:x}) and {it:method} is {cmd:"sjpi"} or {cmd:"dpi"}.
+{cmd:_kdens()} and {cmd:_kdens_var()} abort with error if 
+{it:ll}>min({it:x}) or {it:ul}<max({it:x}).
+
+{pstd}
+The functions return invalid results if the data contain
+missing values.
+
+{pstd}
+Weights are assumed to be normalized to the number of observations
+(i.e. sum of weights = number of observations).
+
+
+{marker s2}{hline}
+{bf:Elementary functions}
+{hline}
+
+{title:Syntax}
+
+
+{p 8 23 2}
+{it:real colvector}
+{cmd:kdens_gen(}{it:x}{cmd:,} {it:w}{cmd:,} {it:g}{cmd:,}
+{it:h} [{cmd:,} {it:k}{cmd:,} {it:ll}{cmd:,}
+{it:ul}{cmd:,} {it:btype}]{cmd:)}
+
+{p 8 23 2}
+{it:real colvector}
+{cmd:kdens_bin(}{it:g}{cmd:,} {it:gc}{cmd:,}
+{it:h} [{cmd:,} {it:k}{cmd:,} {it:lb}{cmd:,}
+{it:ub}{cmd:,} {it:btype}]{cmd:)}
+
+{p 8 23 2}
+{it:real colvector}
+{cmd:kdens_dd(}{it:g}{cmd:,} {it:gc}{cmd:,}
+{it:h}{cmd:,} {it:drv} [{cmd:,} {it:lb}{cmd:,}
+{it:ub}]{cmd:)}
+
+{p 8 23 2}
+{it:real colvector}
+{cmd:kdens_df(}{it:g}{cmd:,} {it:gc}{cmd:,}
+{it:h}{cmd:,} {it:drv} [{cmd:,} {it:lb}{cmd:,}
+{it:ub}]{cmd:)}
+
+{p 8 23 2}
+{it:real colvector}
+{cmd:kdens_avar(}{it:x}{cmd:,} {it:w}{cmd:,} {it:g}{cmd:,}
+{it:h}{cmd:,} {it:d} [{cmd:,} {it:k}{cmd:,} {it:pw}{cmd:,}
+{it:ll}{cmd:,} {it:ul}]{cmd:)}
+
+{p 8 23 2}
+{it:real colvector}
+{cmd:kdens_evar(}{it:x}{cmd:,} {it:w}{cmd:,} {it:g}{cmd:,}
+{it:h}{cmd:,} {it:d} [{cmd:,} {it:k}{cmd:,} {it:pw}{cmd:,}
+{it:ll}{cmd:,} {it:ul}{cmd:,} {it:btype}]{cmd:)}
+
+{p 8 23 2}
+{it:real scalar}{space 3}
+{cmd:kdens_bw_simple(}{it:x}{cmd:,} {it:w}
+[{cmd:,} {it:rule}{cmd:,}
+{it:scale}]{cmd:)}
+
+{p 8 23 2}
+{it:real scalar}{space 3}
+{cmd:kdens_bw_sjpi(}{it:x}{cmd:,} {it:w}
+[{cmd:,} {it:m}{cmd:,}
+{it:scale}{cmd:,} {it:ll}{cmd:,}
+{it:ul}]{cmd:)}
+
+{p 8 23 2}
+{it:real scalar}{space 3}
+{cmd:kdens_bw_dpi(}{it:x}{cmd:,} {it:w}
+[{cmd:,} {it:m}{cmd:,}
+{it:scale}{cmd:,} {it:ll}{cmd:,}
+{it:ul}{cmd:,} {it:ldpi}]{cmd:)}
+
+{p 8 23 2}
+{it:real scalar}{space 3}
+{cmd:kdens_lbwf(}{it:x}{cmd:,} {it:w}{cmd:,}
+{it:g}{cmd:,} {it:d}{cmd:)}
+
+
+{pstd}
+where
+
+{p 12 18 2}
+  {it:x}:  {it:real colvector} containing data points
+  {p_end}
+
+{p 12 18 2}
+  {it:w}:  {it:real colvector} containing weights
+  {p_end}
+
+{p 12 18 2}
+  {it:g}:  {it:real colvector} containing grid points at
+  which to estimate the density
+  {p_end}
+
+{p 11 18 2}
+  {it:gc}:  {it:real colvector} containing grid counts
+  {p_end}
+
+{p 12 18 2}
+  {it:h}:  {it:real colvector} containing (local) bandwidth
+  {p_end}
+
+{p 12 18 2}
+  {it:d}:  {it:real colvector} containing preliminary density
+  estimate
+  {p_end}
+
+{p 12 18 2}
+  {it:k}:  {it:string scalar} containing {cmd:"epanechnikov"},
+  {cmd:"epan2"} (default), {cmd:"biweight"}, {cmd:"triweight"},
+  {cmd:"cosine"}, {cmd:"gaussian"}, {cmd:"parzen"},
+  {cmd:"rectangle"} or {cmd:"triangle"}
+  {p_end}
+
+{p 10 18 2}
+  {it:drv}:  {it:real scalar} specifying the order of derivative
+  {p_end}
+
+{p 11 18 2}
+  {it:pw}:  {it:real scalar} indicating that the weights are
+  {cmd:pweight}s
+  {p_end}
+
+{p 12 18 2}
+  {it:m}:  {it:real scalar} specifying the number of equally spaced grid
+  points (default: 401)
+  {p_end}
+
+{p 9 18 2}
+  {it:rule}:  {it:string scalar} containing {cmd:"silverman"} (default),
+  {cmd:"normalscale"}, or {cmd:"oversmoothed"}
+  {p_end}
+
+{p 8 18 2}
+  {it:scale}:  {it:string scalar} containing {cmd:"minim"} (default),
+  {cmd:"stddev"}, {cmd:"iqr"}
+  {p_end}
+
+{p 11 18 2}
+  {it:lb}:  {it:real scalar} indicating that the support of {it:x} is
+  lower bounded at {it:g}[1]
+  {p_end}
+
+{p 11 18 2}
+  {it:ub}:  {it:real scalar} indicating that the support of {it:x} is
+  upper bounded at {it:g}[rows({it:g})]
+  {p_end}
+
+{p 8 18 2}
+  {it:btype}:  {it:real scalar} specifying the method to be used
+  for boundary correction; {it:btype}==0: renormalization,
+  {it:btype}==1: reflection, {it:btype}==2: linear combination
+  {p_end}
+
+{p 11 18 2}
+  {it:ll}:  {it:real scalar} containing lower boundary of support of
+  {it:x}
+  {p_end}
+
+{p 11 18 2}
+  {it:ul}:  {it:real scalar} containing upper boundary of support of
+  {it:x}
+  {p_end}
+
+{p 9 18 2}
+  {it:ldpi}:  {it:real scalar} specifying the number of stages of
+  functional estimation (default is 2)
+  {p_end}
+
+
+{title:Description}
+
+{pstd}
+{cmd:kdens_gen()} returns the density estimate of {it:x} at the points
+{it:g} using bandwidth {it:h}. If {it:h} is a scalar, {cmd:kdens_gen()}
+returns a fixed bandwidth kernel density estimate. If {it:h} is
+vector, {cmd:kdens_gen()} returns an adaptive kernel density
+estimate. Furthermore, specify {it:ll}<. and {it:ul}<. if the support
+of {it:x} is bounded. The default method
+for estimation at the boundaries is the normalization method. Alternatively,
+{it:btype}==1 causes the reflection method to be used and {it:btype}==2 causes the
+linear combination method to be used.
+
+{pstd}
+{cmd:kdens_bin()} returns a density estimate
+based on binned data. {it:g} contains a grid of
+equidistant evaluation points and {it:gc}
+contains the grid counts. Use {bf:{help mf_mm_makegrid:mm_makegrid()}} and
+{bf:{help mf_mm_linbin:mm_fastlinbin()}} from the {bf:{help moremata}} package
+to produce {it:g} and {it:gc}. If possible, {cmd:kdens_bin()}
+computes the estimate as the convolution of fast Fourier
+transforms.
+
+{pstd}
+{cmd:kdens_dd()} returns the {it:drv}th density derivative
+estimate based on binned data using the gaussian kernel function.
+{cmd:kdens_dd()} is used by {cmd:kdens_df()}. {it:drv} should be
+a nonnegative integer. {cmd:kdens_dd()} supports bounded variables using the
+reflection method.
+
+{pstd}
+{cmd:kdens_df()} returns a density functional estimate based on
+binned data using the gaussian kernel. {cmd:kdens_df()}
+is used by {cmd:kdens_bw_sjpi()} and {cmd:kdens_bw_dpi()}.
+{it:drv} specifies the derivative in the functional
+and should be a nonnegative integer. {cmd:kdens_df()} supports bounded
+variables using the reflection method.
+
+{pstd}
+{cmd:kdens_avar()} returns approximate
+point-wise variance estimates for the density estimate in {it:d}.
+
+{pstd}
+{cmd:kdens_evar()} returns exact
+point-wise variance estimates for the density estimate in {it:d}.
+
+{pstd}
+{cmd:kdens_bw_simple()} returns a quick and
+simple bandwidth estimate (standardized, see below). The available estimators are the
+optimal of Silverman (default), the normal scale rule, and
+the oversmoothed rule. The default estimator conforms to
+the automatic bandwidth selection in official Stata's
+{bf:{help kdensity}}. Use {it:scale} to
+determine the scale estimate that is used in bandwidth
+estimation. The default is to use the minimum of the
+standard deviation and the inter-quartile
+range/1.349.
+
+{pstd}
+{cmd:kdens_bw_sjpi()} returns the Sheather-Jones plug-in
+bandwidth estimate (standardized, see below). {cmd:kdens_bw_sjpi()}
+supports bounded variables using the reflection method. If the
+Sheather-Jones plug-in estimate is larger than the oversmoothed
+bandwidth estimate (see above), the latter is returned
+(this may rarely happen with bounded variables). Missing is
+returned if the algorithm does not converge (for example, because the
+estimate is getting to small given the size of the evaluation grid).
+
+{pstd}
+{cmd:kdens_bw_dpi()} returns a variant of the Sheather-Jones
+plug-in estimate called the direct plug-in bandwidth
+estimate (standardized, see below). {it:ldpi} in {0,1,...} specifies
+the number of stages of functional estimation. {it:level}=2 is the
+default. {cmd:kdens_bw_dpi()} supports bounded variables using the
+reflection method.
+
+{pstd}
+Note that the bandwidth estimates returned by
+{cmd:kdens_bw_simple()}, {cmd:kdens_bw_sjpi()}, or
+{cmd:kdens_bw_dpi()} are standardized estimates. They should be
+multiplied by the kernel's canonical bandwidth before being used for
+density estimation. For example,
+{opt kdens_bw_sjpi(...)}{cmd:*mm_kdel0_epan2()} returns the
+Sheather-Jones plug-in bandwidth scaled for use with the {cmd:epan2} kernel.
+
+{pstd}
+{cmd:kdens_lbwf()} returns the local bandwidth
+factors to be used for adaptive kernel density estimation
+based on a preliminary density estimate.
+
+
+{title:Remarks}
+
+{pstd}
+Suppose, {cmd:x} is the data vector (or the variable in the
+dataset) for which the density be estimated. The commands
+
+        {com}: h = kdens_bw_simple(x, 1) * mm_kdel0_gaussian()
+        : g = mm_makegrid(x, 50, h)
+        : d = kdens_gen(x, 1, g, h, "epanechnikov"){txt}
+
+{pstd}
+produce a density estimate equivalent
+to
+
+        {com}. kdensity x{txt}
+
+{pstd}
+Adaptive kernel density estimation can be implemented
+as
+
+        {com}: h = kdens_bw_simple(x, 1) * mm_kdel0_epan2()
+        : g = mm_makegrid(x, 50, h)
+        : d = kdens_gen(x, 1, g, h)
+        : l = kdens_lbwf(x, 1, g, d)
+        : d = kdens_gen(x, 1, g, h*l){txt}
+
+{pstd}
+The binned approximation estimator is
+
+        {com}: h = kdens_bw_simple(x, 1) * mm_kdel0_epan2()
+        : g = mm_makegrid(x, 512, h)
+        : gc = mm_fastlinbin(x, 1, g)
+        : d = kdens_bin(g, gc, h){txt}
+
+
+{title:Conformability}
+
+    {cmd:kdens_gen(}{it:x}{cmd:,} {it:w}{cmd:,} {it:g}{cmd:,} {it:h}{cmd:,} {it:k}{cmd:,} {it:ll}{cmd:,} {it:ul}{cmd:,} {it:btype}{cmd:)},
+    {cmd:kdens_avar(}{it:x}{cmd:,} {it:w}{cmd:,} {it:g}{cmd:,} {it:h}{cmd:,} {it:d}{cmd:,} {it:k}{cmd:,} {it:pw}{cmd:,} {it:ll}{cmd:,} {it:ul}{cmd:)},
+    {cmd:kdens_evar(}{it:x}{cmd:,} {it:w}{cmd:,} {it:g}{cmd:,} {it:h}{cmd:,} {it:d}{cmd:,} {it:k}{cmd:,} {it:pw}{cmd:,} {it:ll}{cmd:,} {it:ul}{cmd:,} {it:btype}{cmd:)}:
+             {it:h}:  {it:n x} 1 or 1 {it:x} 1
+        {it:result}:  {it:m x} 1
+
+    {cmd:kdens_bin(}{it:g}{cmd:,} {it:gc}{cmd:,} {it:h}{cmd:,} {it:k}{cmd:,} {it:lb}{cmd:,} {it:ub}{cmd:,} {it:btype}{cmd:)}:
+             {it:h}:  {it:m x} 1 or 1 {it:x} 1
+        {it:result}:  {it:m x} 1
+
+    {cmd:kdens_dd(}{it:g}{cmd:,} {it:gc}{cmd:,} {it:h}{cmd:,} {it:drv}{cmd:,} {it:lb}{cmd:,} {it:ub}{cmd:)}:
+             {it:h}:  1 {it:x} 1
+        {it:result}:  m {it:x} 1
+
+    {cmd:kdens_df(}{it:g}{cmd:,} {it:gc}{cmd:,} {it:h}{cmd:,} {it:drv}{cmd:,} {it:lb}{cmd:,} {it:ub}{cmd:)}:
+             {it:h}:  1 {it:x} 1
+        {it:result}:  1 {it:x} 1
+
+    {cmd:kdens_bw_simple(}{it:x}{cmd:,} {it:w}{cmd:,} {it:rule}{cmd:,} {it:scale}{cmd:)},
+    {cmd:kdens_bw_sjpi(}{it:x}{cmd:,} {it:w}{cmd:,} {it:m}{cmd:,} {it:scale}{cmd:,} {it:ll}{cmd:,} {it:ul}{cmd:)},
+    {cmd:kdens_bw_dpi(}{it:x}{cmd:,} {it:w}{cmd:,} {it:m}{cmd:,} {it:scale}{cmd:,} {it:ll}{cmd:,} {it:ul}{cmd:,} {it:level}{cmd:)}:
+        {it:result}:  1 {it:x} 1
+
+    {cmd:kdens_lbwf(}{it:x}{cmd:,} {it:w}{cmd:,} {it:g}{cmd:,} {it:d}{cmd:)}:
+        {it:result}:  {it:n x} 1
+
+{pstd}
+where
+
+             {it:x}:  {it:n x} 1
+             {it:w}:  {it:n x} 1 or 1 {it:x} 1
+             {it:g}:  {it:m x} 1
+            {it:gc}:  {it:m x} 1
+             {it:d}:  {it:m x} 1
+             {it:k}:  1 {it:x} 1
+           {it:drv}:  1 {it:x} 1
+            {it:pw}:  1 {it:x} 1
+             {it:m}:  1 {it:x} 1
+          {it:rule}:  1 {it:x} 1
+         {it:scale}:  1 {it:x} 1
+            {it:lb}:  1 {it:x} 1
+            {it:ub}:  1 {it:x} 1
+         {it:btype}:  1 {it:x} 1
+            {it:ll}:  1 {it:x} 1
+            {it:ul}:  1 {it:x} 1
+          {it:ldpi}:  1 {it:x} 1
+
+
+{title:Diagnostics}
+
+{pstd}
+The functions return invalid results if the data contain
+missing values.
+
+{pstd}
+Weights are assumed to be normalized to the number of observations
+(i.e. sum of weights = number of observations).

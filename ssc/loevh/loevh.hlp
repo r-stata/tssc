@@ -1,0 +1,103 @@
+{smcl}
+{* 8december2010}{...}
+{hline}
+help for {hi:loevh}{right:Jean-Benoit Hardouin}
+{hline}
+
+{title:Loevinger's H coefficients and non parametric Item Responses Models}
+
+{p 8 14 2}{cmd:loevh} {it:varlist} [{cmd:,} {cmdab:pairw:ise} {cmdab:pair} {cmdab:ppp} {cmdab:pmm} {cmdab:noadj:ust} {cmdab:gener:ror}({it:newvar}) {cmdab:rep:lace} {cmdab:gr:aph} {cmdab:mono:tonicity}({it:string}) {cmdab:nip:matrix}({it:string})]
+
+{p 8 14 2}{it:varlist} is a list of two or more existing dichotomous ou polytomous variables.
+
+{title:Description}
+
+{p 4 8 2}{cmd:loevh} allows verifying the fit of data to the Monotonely Homogeneous Mokken Model or to the Doubly Monotone Mokken Model.
+It computes the Loevinger H scalability coefficients, and several indexes in the field of the Non parametric Item Response Theory.
+
+{title:Options}
+
+{p 4 8 2}{cmd:pairwise}. By default, all the individuals with one or more missing values are omitted. {cmd:pairwise} allows to use the complete information by pair of items.
+
+{p 4 8 2}{cmd:pair} displays statistics and the value of the Loevinger H coefficient for each pair of items.
+
+{p 4 8 2}{cmd:ppp} displays the P++ matrix.
+
+{p 4 8 2}{cmd:pmm} displays the P-- matrix.
+
+{p 4 8 2}{cmd:noadjust} approximates the tests statistics like the MSP software (Molenaar et al. (2000)).
+
+{p 4 8 2}{cmd:generror} creates a new variable containing the number of Guttman errors produced by each individual.
+
+{p 4 8 2}{cmd:replace} allows replacing the variable defined by the {cmd:generror} option.
+
+{p 4 8 2}{cmd:graph} displays graphs (only with the {cmd:ppp}, {cmd:pmm} and {cmd:generror} options).
+
+{p 4 8 2}{cmd:monotonicity} displays indexes in order to check the monotonicity of the data (Monotone Homogeneity Mokken Model). This option produces outputs similar to the MSP software.
+The string contains several suboptions: {cmd:minvi}, {cmd:minsize}, {cmd:siglevel} and {cmd:details}. If you want use all the default values, type *.{p_end}
+{p 10 12 10}{cmd:minvi} defines the minimal size of a violation of monotonicity (0.03 by default){p_end}
+{p 10 12 10}{cmd:minsize} defines the minimum size of groups of patients to check the monotonicity (by default, the number of individuals divided by 10 with more than 500 individuals, the same number divided by 5 with more than 250 individuals, and the same number divided by 3 for a smaller number, with a minimum of 50){p_end}
+{p 10 12 10}{cmd:siglevel} defines the significance level for the tests (0.05 by default){p_end}
+{p 10 12 10}{cmd:details} displays more details with polytomous items
+
+{p 4 8 2}{cmd:nipmatrix} display indexes in order to check the non-intersection (Doubly Monotone Mokken Model). This option produces outputs similar to the MSP software. 
+The string contains several suboptions: {cmd:minvi} and {cmd:siglevel}. If you want use all the default values, type *.{p_end}
+{p 10 12 10}{cmd:minvi} defines the minimal size of a violation of non-intersection (0.03 by default){p_end}
+{p 10 12 10}{cmd:siglevel} defines the significance level for the tests (0.05 by default){p_end}
+
+
+{title:Remarks}
+
+{p 4 8 2}For detailed informations on the Loevinger's H coefficients, see Loevinger (1948) or Hemker and al. (1995). For details about the analysis of non parametric Mokken models, see for example the MSP 5.0 manual.
+
+
+{title:Example}
+
+	{p 8 8}{inp:. loevh itemA1-itemA7}
+
+	{p 8 8}{inp:. loevh itemA*, pair monotonicity(*) ppp pmm nipmatrix(minvi(0.05) siglevel(0.01))}
+
+	{p 8 8}{inp:. loevh item*, pairwise generror(error) graph}
+
+{title:Results}
+
+{p 4 8 2}The Loevinger's H coefficients between all the pairs of items, for each item with respect of all the others items and for the set of items are respectively saved in the matrices {it:r(loevHjk)}, {it:r(loevHj)}
+and in the scalar {it:r(loevh)}.
+
+{p 4 8 2}The empirical Guttman errors between all the pairs of items, associated to each item and relied to the scale are respectively saved in the matrices {it:r(eGuttjk)}, {it:r(eGuttj)} and in the scalar {it:e(Gutt)}.
+
+{p 4 8 2}The theorical Guttman errors between all the pairs of items, associated to each item and relied to the scale are respectively saved in the matrices {it:r(eGuttjk0)}, {it:r(eGuttj0)} and in the scalar {it:e(Gutt0)}.
+
+{p 4 8 2}The values of the Z statistics and the corresponding p-values associated to the Loevinger H coefficients are respectively saved in the matrices {it:r(zHjk)}, {it:r(pvalHjk)}, {it:r(zHj)}, {it:r(pvalHj)}
+and in the scalars {it:e(zH)} and {it:r(pvalH)}.
+
+{p 4 8 2}The P++ and P-- matrices are saved in {it:r(ppp)} and {it:r(pmm)}.
+
+{p 4 8 2}The used number of individuals per items pair is saved in {it:r(Obs)}.
+
+
+{title:References}
+
+{p 4 8 2}Hemker B. T., Sijtsma K. and Molenaar I. W., Selection of unidimensional scales from a multidimensional item bank in the polytomous Mokken IRT
+model, {it: Applied Psychological Measurement}, vol.19(4), 1995, pp. 337-352.
+
+{p 4 8 2}Loevinger J., The technique of homogeneous tests compared with some aspects of "scale analysis" and factor analysis. {it:Psychological bulletin},
+vol. 45, 1948, pp. 507-530.
+
+{p 4 8 2}Molenaar I. W., Sijtsma K. and Boer P. {it:MSP5 for Windows - User's Manual}, 2000, 105 pages.
+
+{title:Author}
+
+{p 4 8 2}Jean-Benoit Hardouin, PhD, assistant professor{p_end}
+{p 4 8 2}EA 4275 "Team of Biostatistics, Clinical Research and Subjective Measures in Health Sciences"{p_end}
+{p 4 8 2}University of Nantes - Faculty of Pharmaceutical Sciences{p_end}
+{p 4 8 2}1, rue Gaston Veil - BP 53508{p_end}
+{p 4 8 2}44035 Nantes Cedex 1 - FRANCE{p_end}
+{p 4 8 2}Email:
+{browse "mailto:jean-benoit.hardouin@univ-nantes.fr":jean-benoit.hardouin@univ-nantes.fr}{p_end}
+{p 4 8 2}Websites {browse "http://www.anaqol.org":AnaQol}
+and {browse "http://www.freeirt.org":FreeIRT}
+
+{title:Also see}
+
+{p 4 13 2}Online: help for {help traces}, {help msp}, {help gengroup}, {help mokken} if installed.{p_end}

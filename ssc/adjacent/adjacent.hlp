@@ -1,0 +1,62 @@
+{smcl}
+{* 16 May 2004}{...}
+{hline}
+help for {hi:adjacent}
+{hline}
+
+{title:List adjacent values of variables}
+
+{p 8 17 2}
+{cmd:adjacent} 
+{it:varlist} 
+[{it:weight}]
+[{cmd:if} {it:exp}] 
+[{cmd:in} {it:range}] 
+[
+{cmd:,}
+{cmd:by(}{it:varlist}{cmd:)}
+{cmdab:miss:ing}
+]  
+
+{p 4 4 2}
+{cmd:fweight}s and {cmd:aweight}s are allowed; see help {help weights}.
+
+
+{title:Description}
+
+{p 4 4 2}{cmd:adjacent} lists adjacent values for a set of numeric
+variables in {it:varlist}. Calculate the upper and lower quartiles, p75 and
+p25, and thus the interquartile range iqr = p75 - p25. Then the adjacent 
+values are the highest value not greater than p75 + 3/2 iqr and the lowest
+value not less than p25 - 3/2 iqr. The adjacent values are marked graphically 
+on a box plot as drawn by {help graph_box:graph box} or 
+{help graph_box:graph hbox} by the ends of the whiskers drawn out from 
+each central box. 
+ 
+
+{title:Options}
+
+{p 4 8 2}{cmd:by()} defines one or more grouping variables. (When using  
+{help graph_box:graph box} or {help graph_box:graph hbox}, these variables
+would be specified in {cmd:by()} or {cmd:over()} options.) 
+
+{p 4 8 2}{cmd:missing}, applicable only with {cmd:by()}, specifies that results
+for observations with missing values of variables specified in {cmd:by()} 
+should be included in the tabulation. The default is to exclude them. 
+
+
+{title:Examples}
+
+{p 4 8 2}{inp:. adjacent mpg, by(foreign rep78)}
+
+
+{title:Author} 
+
+{p 4 4 2}Nicholas J. Cox, University of Durham, U.K.{break} 
+         n.j.cox@durham.ac.uk
+
+
+{title:Also see}
+
+{p 4 13 2}On-line:  help for {help graph_box:graph box}, {help extremes} (if installed) 
+

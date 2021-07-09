@@ -1,0 +1,70 @@
+{smcl}
+{* 12/13/2004}
+{hline}
+help for {hi: xtfisher}{right:(Author:  Scott Merryman)}
+{hline}
+
+{title:Fisher type unit root test for panel data}
+
+{p 8 15}{cmd:xtfisher} {it:varname} 
+[{cmd:if} {it:exp}] [{cmd:in} {it:range}] 
+[,{cmd: trend, drift lags(numlist) pp display}]
+
+{p}{cmd:xtfisher} is for use with panel data.  You must {cmd:tsset} your
+data before using {cmd:xtfisher}, using the panel form of {cmd:tsset}; see help {help tsset}.
+
+{p} {it:varname} may contain time-series operators; see help {help varlist}.
+
+
+{title:Description}
+
+ {p}{cmd:xtfisher} combines the p-values from {it: N} independent unit root tests, as developed by Maddala
+  and Wu (1999).  Based on the p-values of individual unit root tests, Fisher's test assumes that all series 
+  are non-stationary under the null hypothesis against the alternative that at least one series in the panel is stationary.
+ 
+ {p} Unlike the Im-Pesaran-Shin (1997) test (see {help ipshin}), Fisher's test does not require a balanced panel.
+  
+{title:Options}
+
+{p 0 4}{cmd:lags}  specifies the number of lagged difference terms to include in the covariate list.
+
+{p 0 4}{cmd:trend} specifies that a trend term be included in the associated regression.  This option may
+        not be used with the drift option.
+
+{p 0 4}{cmd:drift} indicates that the process under the null hypothesis is a random walk with nonzero
+        drift.  This option may not be used with {cmd:pp} or {cmd:trend}.
+
+{p 0 4}{cmd:pp} indicates that the Phillips-Perron test {help pperron} is used rather than the Augmented Dickey Fuller {help dfuller}.
+
+{p 0 4}{cmd:display} presents the individual unit root tests.
+
+{title: Examples}
+
+{p 8 12}{inp:.} {stata "webuse grunfeld,clear":webuse grunfeld, clear}
+
+{p 8 12}{inp:. xtfisher invest, trend lag(1) }
+
+{p 8 12}{inp:. xtfisher mvalue, lag(2) pp}
+
+{title:References}
+
+Kyung So Im, M. Hashem Pesaran, Yongcheol Shin. (2003). 'Testing for Unit Roots in Heterogeneous
+Panels', {it: Journal of Econometrics}, 115, 53-74. Earlier version available as 
+unpublished Working Paper, Dept. of Applied Economics, University of Cambridge, 
+Dec. 1997 (http://www.econ.cam.ac.uk/faculty/pesaran/lm.pdf)
+
+Maddala, G.S. and Wu, Shaowen. (1999). 'A Comparative Study of Unit Root Tests With Panel 
+Data and A New Simple Test', {it: Oxford Bulletin of Economics and Statistics} 61, 631-652.
+
+{title:Acknowledgements}
+
+This was developed from Luca Nunziata's -xtfptest- and -xtdftest- 
+( http://www.nuff.ox.ac.uk/users/nunziata/software.htm )
+
+{title:Author}
+
+Scott Merryman.  Risk Management Agency, USDA.  smerryman@kc.rr.com
+
+{title:Also see}
+
+{p 0 19}On-line:  help for {help dfuller},  {help pperron}, {help madfuller} (if installed), {help levinlin}  (if installed),  {help  ipshin}  (if installed)  {p_end}

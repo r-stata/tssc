@@ -1,0 +1,262 @@
+/*
+ almon1
+*! VERSION 1.0 07/06/2015
+*/
+VERSION 11.0
+INCLUDE _std_large
+DEFINE _dlght 400
+INCLUDE header
+HELP hlp1, view("help almon1")
+RESET res1
+
+
+SCRIPT main_PREINIT
+BEGIN
+	script _constraints_main_setOptionalOn
+END
+
+SCRIPT main_POSTINIT
+BEGIN
+	script max_enableGTolerance
+END
+
+DIALOG main, label("almon1 - Shirley Almon Polynomial Distributed Lag Model") ///
+	tabtitle("Main")
+
+BEGIN
+ DEFINE _x _xsetbu
+ DEFINE _y _top
+ INCLUDE _bu_tsset
+
+  TEXT tx_yvar 		_lft	+17    140  	.,	///
+	label("Dependent Variable")
+  TEXT tx_xvar		160 	@     330 	.,	///
+	label("Independent Variables")
+  VARNAME vn_yvar		_lft 	_ss  	140	.,	///
+	ts						///
+	label("Dependent Variable")
+  VARLIST vl_xvar		160	@  	330	.,	///
+	fv ts						///
+	label("Independent Variables")
+  CHECKBOX ck_nocons @   _ms   _cwd1  .,	/*
+		*/ label("No Constant")	/*
+		*/ option("noconstant")		/*
+		*/
+  GROUPBOX gb_estimator	_lft	_ss	_ibwd	_ht7 ,	///
+	label("Model")
+  RADIO rb_m1	_ilft	_ss	_inwd	.,	///
+	first					///
+	option(model(ols))			///
+	label("Ordinary Least Squares (OLS)")
+
+  RADIO rb_m2	_ilft	_ss	_inwd	.,	///
+	option(model(als))			///
+	label("Autoregressive Least Squares (ALS)")
+
+  RADIO rb_m3	_ilft	_ss	_inwd	.,	///
+	option(model(gls))			///
+	label("Generalized Least Squares (GLS)")
+
+  RADIO rb_m4	_ilft	_ss	_iwd	.,	///
+	last					///
+	option(model(arch))			///
+	label("Autoregressive Conditional Heteroskedasticity (ARCH)")
+*/
+  SPINNER  sp_lag    _ilft     _ls    _spwd   .,	/*
+	*/ label("Lag Length Order")	/*
+	*/ min(2) max(c(N)) default(3)	/*
+	*/ option("lag")
+  TEXT tx_lag  +70    @  _rbsprb    .,	/*
+	*/ label("Lag Length Order") 
+
+  SPINNER  sp_pdl +100   @    _spwd   .,	/*
+	*/ label("PDL: Polynomial Degree Order")	/*
+	*/ min(1) max(c(N)) default(1)		/*
+	*/ option("pdl")
+  TEXT tx_pdl +70    @  _rbsprb    .,	/*
+	*/ label("PDL: Polynomial Degree Order")
+*/
+
+  GROUPBOX gb_endpr	_lft	_ls	_ibwd	_ht7 ,	///
+	label("Endpoint Restriction")
+
+  RADIO rb_end0	_ilft   _ss     _iwd	.,	///
+	option("endpr(0)")			///
+	first			 ///
+	label("0 - No Endpoint Polynomial Restrictions")
+
+  RADIO rb_end1	_ilft   _ss     _iwd	.,	///
+	option("endpr(1)")			///
+	label("1 - Left Side Endpoint Polynomial Restrictions")
+
+  RADIO rb_end2   _ilft  _ss	300	., ///
+	label("2 - Right Side Endpoint Polynomial Restrictions") ///
+	option("endpr(2)")
+
+  RADIO rb_end3	_ilft	_ss	300 .,	///
+	label("3 - Left and Right Side Endpoint Polynomial Restrictions") ///
+	last				 ///
+	option("endpr(3)")
+
+ CHECKBOX ck_mfx  _lft    _ls   _ibwd    _ht2 , 	///
+	groupbox					///
+	onclickon(script ck_mfx_on)			///
+	onclickoff(script ck_mfx_off)		///
+label("Marginal Effects and Elasticities:")
+ 
+ RADIO rb_lin	_ilft  _ss  120  ., /*
+	*/ label("Linear")	 /*
+	*/ first			/*
+	*/ option("mfx(lin)")		/*
+*/
+DEFINE y @y
+ RADIO rb_log	130   y  120 .,	/*
+	*/ label("Log-Log") /*
+	*/ last				/*
+	*/ option("mfx(log)")		/*
+
+*/
+  CHECKBOX ck_tolog    250   y 250 ., option("tolog") /*
+*/ label("Log Transform Varlist") /*
+*/
+
+END
+
+SCRIPT ck_mfx_on
+BEGIN
+ main.rb_lin.enable
+ main.rb_log.enable
+ main.ck_tolog.enable
+END
+
+SCRIPT ck_mfx_off
+BEGIN
+ main.rb_lin.disable
+ main.rb_log.disable
+ main.ck_tolog.disable
+END
+
+DIALOG est1, tabtitle("Options")
+BEGIN
+	
+  CHECKBOX ck_model2  _lft    _top   _ibwd    _ht30 , ///
+	groupbox				 ///
+	onclickon(script ck_model2_on)		 ///
+	onclickoff(script ck_model2_off)	 ///
+	label("Options:")
+ CHECKBOX ck_diag   _ilft  _ss   300  ., option("diag") /*
+*/ label("diag: Model Selection Diagnostic Criteria") 
+
+ CHECKBOX ck_dn  _ilft   _ss   300  ., option("dn") /*
+*/ label("dn: Divisor (N) instead of (N-K) for DF in (diag)") 
+
+ CHECKBOX ck_ominv  _ilft   _ss   300  ., option("ominv") /*
+*/ label("ominv: Use Omega Inverse instead of Omega in (GLS) model") 
+
+ CHECKBOX ck_test _ilft  _ss   300  ., option("test") /*
+*/ label("test: Autocorrelation, Heteroscedasticity, Non Normality Tests") 
+
+ CHECKBOX ck_nolag _ilft  _ss   300  ., option("nolag") /*
+*/ label("nolag: Use Independent Variables in current period X(t) instead of lag X(t-1)") 
+
+  SPINNER  sp_ord    _ilft     _ls    _spwd   .,	/*
+	*/ label("ALS and ARCH Model Order")	/*
+	*/ min(1) max(c(N)) default(1)	/*
+	*/ option("order")
+  TEXT tx_ord  +70    @  _rbsprb    .,	/*
+	*/ label("ALS and ARCH Model Order") 
+
+  TEXT tx_wvar 	   _ilft   _ls    155 	., ///
+	label("(GLS) Weighted Variable (X)")
+  VARNAME vn_wvar  _ilft   _ss    155	., ///
+	label("(GLS) Weighted Variable (X)")	 ///
+	option("wvar")
+
+ TEXT tx_predict _ilft _ms  155 .,	///
+	label("Predicted Variable")
+ VARNAME vn_predict _ilft _ss   155  .,	///
+	label("predict") 		///
+	option(predict)
+
+ TEXT tx_resid   _ilft _ms     155 .,	///
+	label("Residuals Variable")
+ VARNAME vn_resid   _ilft _ss    155  ., ///
+	label("resid") 			///
+	option(resid)
+
+ DEFINE _x _ilft
+ DEFINE _cx _spr
+ DEFINE _y _ls
+ INCLUDE _sp_level
+END
+
+SCRIPT PREINIT
+BEGIN
+	script se_createAsML
+END
+
+SCRIPT POSTINIT
+BEGIN
+	script max_setDefaultOPG
+	script se_setCluster_off
+END
+
+SCRIPT ck_model2_on
+BEGIN
+ est1.ck_diag.enable
+ est1.ck_dn.enable
+ est1.ck_ominv.enable
+ est1.ck_test.enable
+ est1.ck_nolag.enable
+ est1.vn_predict.enable
+ est1.vn_resid.enable
+ est1.vn_wvar.enable
+ est1.sp_ord.enable
+END
+
+SCRIPT ck_model2_off
+BEGIN
+ est1.ck_diag.disable
+ est1.ck_dn.disable
+ est1.ck_ominv.disable
+ est1.ck_test.disable
+ est1.ck_nolag.disable
+ est1.vn_predict.disable
+ est1.vn_resid.disable
+ est1.vn_wvar.disable
+ est1.sp_ord.disable
+END
+
+INCLUDE byifin
+INCLUDE se
+INCLUDE max_ml
+
+PROGRAM command
+BEGIN
+ put /program by_output
+ put "almon1 "
+ varlist main.vn_yvar main.vl_xvar
+ put " " /program ifin_output
+ beginoptions
+ option radio(main rb_m1 rb_m2 rb_m3 rb_m4)
+ option main.ck_nocons
+ optionarg main.sp_lag
+ optionarg main.sp_pdl
+ option radio(main rb_end0 rb_end1 rb_end2 rb_end3)
+ option radio(main rb_lin rb_log)
+ option main.ck_tolog 
+ option est1.ck_diag
+ option est1.ck_dn
+ option est1.ck_ominv
+ option est1.ck_test
+ option est1.ck_nolag
+ optionarg est1.vn_predict
+ optionarg est1.vn_resid
+ optionarg est1.vn_wvar
+ optionarg est1.sp_ord 
+ optionarg /hidedefault est1.sp_level
+ put " " /program se_output
+ put " " /program max_output
+ endoptions
+ END
+

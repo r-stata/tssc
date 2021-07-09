@@ -1,0 +1,96 @@
+{smcl}
+{* April 2004}{...}
+{hline}
+help for {hi:lognpred}{right:Stephen P. Jenkins (updated June 2013)}
+{hline}
+
+{title:Prediction following fitting of a lognormal distribution}
+
+{p 8 17 2}{cmd:lognpred} [{cmd:if} {it:exp}] [{cmd:in} {it:range}] [ {cmd:,}
+	{cmdab:m:val(}{it:value list1}{cmd:)} {cmdab:v:val(}{it:value list2}{cmd:)} 
+	{cmdab:mandv:val(}{it:value list}{cmd:)} {cmdab:poor:frac(}{it:#}{cmd:)} 
+	{cmdab:cdf(}{it:cdfname}{cmd:)} {cmdab:pdf(}{it:pdfname}{cmd:)} ]
+	
+{title:Description}
+
+{p 4 4 2}
+{cmd:lognpred} calculates statistics summarizing a 2 parameter 
+lognormal distribution which has been fitted using {cmd:lognfit}
+to a distribution of sample observations on variable {it:var}. 
+{cmd:lognpred} is usually used when the model parameters have been specified as functions of 
+covariates using {cmd:lognfit}. Users specify particular covariate values here, which implies
+values of the model parameters, and thence statistics can be calculated, 
+together with the fitted c.d.f. and p.d.f. The statistics produced by 
+default are selected quantiles, cumulative shares of total income at 
+quantiles (i.e. the Lorenz curve ordinates), the mode, mean, standard 
+deviation, variance, half the coefficient of variation squared, 
+Gini coefficient, and quantile ratios p90/p10, p75/p25. The command can
+be repeated using a different set of covariate values.
+
+{title:Options}
+
+{p 4 8 2}{cmd:mval(}{it:value list1}{cmd:)} and {cmd:vval(}{it:value list2}{cmd:)} 
+	are required if the original model was estimated with covariates. 
+	In this case, the user must specify 
+	a value for each covariate included in the original model, and in the same 
+	order. The last element in each equation must always be 1 (corresponding 
+	to the intercept term). Where there is more than one element per equation,
+	they must be separated by commas. 
+
+{p 4 8 2}{cmd:mandvval(}{it:value list}{cmd:)} can be used instead of the previous option 
+	if the same covariates appeared in each parameter equation.
+
+{p 4 8 2}{cmd:poorfrac(}{it:#}{cmd:)} displays the estimated proportion with values of {it:var} 
+	less than the cut-off specified by {it:#}.
+
+{p 4 8 2}{cmd:cdf(}{it:cdfname}{cmd:)} creates a new variable {it:cdfname} containing the
+	estimated lognormal c.d.f. value F(x) for each x.
+
+{p 4 8 2}{cmd:pdf(}{it:pdfname}{cmd:)} creates a new variable {it:pdfname} containing the
+	estimated lognormal p.d.f. value f(x) for each x.
+
+{p 8 8 2}Options {cmd:if} and {cmd:in} have an effect only if options {cmd:cdf} or {cmd:pdf} are specified.
+
+
+{title:Saved results}
+
+{p 4 4 2}The following are saved, some contingent on the relevant options being specified:
+
+{p 4 4 2}{cmd:e(bbm)} and {cmd:e(bbv)} are the estimated lognormal parameters. 
+(If the original model included no covariates, these contain the parameters
+originally estimated. If covariates were included, these contain the parameters 
+evaluated at the values of the covariates specified here.)
+
+{p 4 4 2}{cmd:e(cdfvar)} and {cmd:e(pdfvar)} are the variable names specified for the
+c.d.f. and the p.d.f.
+
+{p 4 4 2}
+{cmd:e(mode)}, {cmd:e(mean)}, {cmd:e(var)}, {cmd:e(sd)}, {cmd:e(i2)}, and {cmd:e(gini)} 
+are the estimated mode, mean, variance, standard deviation, half coefficient of 
+variation squared, Gini coefficient. {cmd:e(pX)}, and {cmd:e(LpX)} are the
+quantiles, and Lorenz ordinates, where X = {1, 5, 10, 20, 25, 30, 40, 50, 
+60, 70, 75, 80, 90, 95, 99}. 
+
+
+{title:Examples}
+
+{p 4 8 2}{inp:. lognfit x }
+
+{p 4 8 2}{inp:. lognpred }
+
+{p 4 8 2}{inp:. lognfit x, m(age sex) v(age sex) }
+
+{p 4 8 2}{inp:. lognpred, m(40,2,1) v(40,2,1) }
+
+{p 4 8 2}{inp:. lognpred, mandv(50,2,1) poorfrac(100) }
+
+
+{title:Author}
+
+{p 4 4 2}Stephen P. Jenkins <s.jenkins@lse.ac.uk>, London School of Economics, London WC2A 2AE, U.K.
+
+
+{title:Also see}
+
+{help lognfit}
+

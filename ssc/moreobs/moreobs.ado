@@ -1,0 +1,1 @@
+program def moreobs*! 1.0.1 NJC 9 August 1999 * 1.0.0 NJC 22 January 1998    version 5.0 	    if "`2'" != "" {        di in r "invalid syntax"        exit 198    }    if "`1'" == "" { local newN = _N + 1 }    else {        confirm integer number `1'        local newN = _N + `1'    }    set obs `newN'end

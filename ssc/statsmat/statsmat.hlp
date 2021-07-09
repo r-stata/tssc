@@ -1,0 +1,136 @@
+{smcl}
+{* 4oct2001/12dec2004/7nov2005}{...}
+{hline}
+help for {hi:statsmat}
+{hline}
+
+{title:Produce matrix of descriptive statistics}
+
+{p 8 17 2}{cmd:statsmat}
+{it:varlist} 
+[{cmd:if} {it:exp}] 
+[{cmd:in} {it:range}] 
+[{it:weight}] 
+{bind:[ {cmd:,} {cmdab:s:tat(}{it:list_of_statistics}{cmd:)}}
+{cmdab:m:atrix(}{it:matname}{cmd:)} 
+{cmd:by(}{it:byvar}{cmd:)}
+{cmdab:miss:ing} 
+{cmdab:xp:ose} 
+{cmd:listwise} 
+{cmd:magic(}{it:#}{cmd:)} 
+{it:matlist_options}
+]
+
+{title:Description}
+
+{p 4 4 2}{cmd:statsmat} computes descriptive statistics for {it:varlist} and places
+them in any specified matrix {it:matname}. By default, the statistics are
+minimum, quartiles, maximum, mean and standard deviation: these and/or other
+statistics returned by {cmd:summarize}, or easily computable from what it
+returns, may be specified. The statistics are by default computed for those
+observations which are non-missing across the {it:varlist}. aweights 
+and fweights may be specified. 
+
+
+{title:Options}
+
+{p 4 8 2}{cmd:stat(}{it:list_of_statistics}{cmd:)} specifies the statistics
+desired, from the following list:
+
+    one of           statistic
+    {hline 6}           {hline 9}
+    n N count        number of non-missing observations
+    sum              sum 
+    sum_w            sum of weight
+    mean             mean
+    sd SD            standard deviation
+    Var var          variance
+    se SE semean     standard error of the mean
+    skew skewness    skewness
+    kurt kurtosis    kurtosis
+    min              minimum
+    max              maximum
+    p                percentiles 1, 5, 10, 25, 50, 75, 90, 95, 99 
+    q                percentiles 25, 50, 75 (quartiles)
+    p1               1st percentile 
+    p5               5th percentile
+    p10              10th percentile
+    p25              25th percentile
+    p50 med median   50th percentile (median)
+    p75              75th percentile
+    p90              90th percentile
+    p95              95th percentile
+    p99              99th percentile 
+    iqr IQR          interquartile range (p75 - p25) 
+    range            range (max - min) 
+    zero 0           0 (filler if desired for later editing) 
+    extra .          . (filler if desired for later editing) (Stata 8 up)
+
+{p 4 8 2}{cmd:matrix(}{it:matname}{cmd:)} specifies the name of a matrix in
+which statistics are to be placed. This option is not required, but  
+saving results in a matrix is the main rationale for {cmd:statsmat}.
+
+{p 4 8 2}{cmd:by(}{it:byvar}{cmd:)} is allowed only with a single {it:varname}
+in {it:varlist}. Results are given separately for the groups of observations
+defined by distinct values of {it:byvar}, which is usually a categorical 
+variable. 
+
+{p 4 8 2}{cmd:missing} specifies that results should also be produced for those 
+observations for which {it:byvar} is missing. The default is to omit them.
+
+{p 4 8 2}{it:matlist_options} are those allowed with {cmd:matrix list}. See 
+{help matrix}.
+
+{p 4 8 2}{cmd:xpose} specifies transposing the matrix from the default, with 
+statistics as columns, to statistics as rows. 
+
+{p 4 8 2}{cmd:listwise} specifies that statistics are to be shown for all
+non-missing values in each variable. 
+
+{p 4 8 2}{cmd:magic(}{it:#}{cmd:)} specifies a number to be used to denote
+statistics that are missing. In Stata 7, matrices may not contain missing 
+numbers: in {cmd:statsmat}, as in {cmd:tabstat}, the number {cmd:1e+300} is, 
+by default, used instead. In Stata 8 and 9, missing values are shown by 
+default, but {cmd:magic()} may be used to over-ride that if desired. 
+Other numbers may be specified: for example, if all 
+results shown will be zero or positive, {cmd:magic(-999)} might be convenient.  
+The strong presumption is that at some point downstream users will edit such
+numbers to denote missing explicitly. 
+
+
+{title:Examples}
+
+{p 4 8 2}{cmd:. use auto}
+
+{p 4 8 2}{cmd:. statsmat price mpg rep78, mat(out1)}
+
+{p 4 8 2}{cmd:. statsmat price mpg rep78, mat(out2) s(mean sd p50)}
+
+{p 4 8 2}{cmd:. statsmat price mpg rep78 if foreign, mat(out3) }
+
+{p 4 8 2}{cmd:. statsmat price mpg rep78, mat(out4) s(mean sd skew kurt) f(%3.2f)}
+
+{p 4 8 2}{cmd:. statsmat price, by(rep78) f(%9.0f) s(n min q max)} 
+
+{p 4 8 2}{cmd:. outtable using myout4, mat(out4) replace}
+
+
+{title:Authors}
+
+    Nicholas J. Cox, Durham University, U.K.
+    n.j.cox@durham.ac.uk
+
+    Christopher F Baum, Boston College, USA
+    baum@bc.edu
+
+
+{title:Acknowledgements}     
+
+    Petia Petrova inspired this program.
+
+
+{title:Also see}
+
+{p 4 17 2}On-line: {help summarize}, {help matrix}, {help tabstat}, 
+{help outtable} (if installed), {help univar} (if installed)
+

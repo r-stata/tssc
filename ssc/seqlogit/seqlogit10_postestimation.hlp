@@ -1,0 +1,406 @@
+{smcl}
+{* MLB 22Mar2012}{...}
+{* MLB 10Apr2010}{...}
+{* 23May2007}{...}
+{hline}
+help for {cmd:seqlogit10 postestimation, for Stata versions 9 and 10}
+{hline}
+
+{title:Title}
+
+{p2colset 5 34 37 2}{...}
+{p2col :{hi:seqlogit10 postestimation} {hline 2}}Postestimation tools for
+seqlogit10 {p_end}
+{p2colreset}{...}
+
+{title:Description}
+
+post estimation tools specifically for {help seqlogit10}:
+
+{p 4 4 2}{helpb seqlogit10 postestimation##seqlogitdecomp:seqlogitdecomp10} Makes a graph showing
+a decomposition of the effect of a variable on the highest achieved level of the dependent 
+variable into effects of that variable on passing each transition and the importance of that
+transition as described in (Buis 2010).
+
+{p 4 4 2}{helpb seqlogit10 postestimation##uhdesc:uhdesc10} creates a table of describtive statistics
+of the unobserved variable at each transition. This is only available when the {cmd:sd()} option 
+was used for {help seqlogit10}.
+
+{p 4 4 2}{helpb seqlogit10_sensitivity} is strictly speaking not a tool, but a helpfile showing 
+how to run a sensitivity analysis with {cmd:seqlogit10}.
+
+
+The following standard postestimation commands are also available:
+
+{synoptset 14 tabbed}{...}
+{p2coldent :command}description{p_end}
+{synoptline}
+INCLUDE help post_estat
+INCLUDE help post_estimates
+INCLUDE help post_lincom
+INCLUDE help post_lrtest
+INCLUDE help post_mfx
+INCLUDE help post_nlcom
+{synopt :{helpb seqlogit10 postestimation##predict:predict}}predictions{p_end}
+INCLUDE help post_predictnl
+INCLUDE help post_suest
+INCLUDE help post_test
+INCLUDE help post_testnl
+{synoptline}
+{p2colreset}{...}
+
+
+
+{marker seqlogitdecomp}{...}
+{hline}
+help for {cmd:seqlogitdecomp10}
+{hline}
+
+{title:Syntax for seqlogitdecomp10}
+
+{p 8 17 2}
+{cmd:seqlogitdecomp10} 
+{cmd:,} 
+{opt overat(overatlist)}
+{cmd:[}
+{opt at(atlist)}
+{opt l:evels(levellist)}
+{opt subt:itle(titlelist)}
+{opt eql:abel(labellist)}
+{opt eqlegend}
+{opt xl:ine(linearg)}
+{opt yl:ine(linearg)}
+{opt ti:tle(title)}
+{opt na:me(name, replace)}
+{opt ysc:ale(axis_suboptions)}
+{opt xsc:ale(axis_suboptions)}
+{opt ysiz:e(#)}
+{opt xsiz:e(#)}
+]
+
+{title:Description}
+
+{p 4 4 2} 
+{cmd:seqlogitdecomp10} displays a graph showing a decomposition of 
+difference in the effect of a variable on the expected value of the 
+dependent variable into effects of the variable on passing transitions and 
+the importance if each transition (the weight) as described in (Buis 2010a).
+The variable whose effect will be decomposed is specified in the 
+{opt ofinterest()} option in {helpb seqlogit10}. For example, the dependent 
+variable is the highest achieved level of education and the variable of
+interest is parental status, then {cmd:seqlogitdecomp} will 
+decompose the effect of parental status on the highest achieved level of
+education into effects on passing each transition between levels of 
+education and weights that represent the importance of that transition. 
+
+{p 4 4 2}
+The effect on the expected value can differ between groups in the 
+population. {cmd:seqlogitdecomp10} shows how these differences are due to
+differences in effects on the transitions across groups and differences in 
+the importance of each transition across groups. To continue the example:
+the effect of parental status can change over cohorts, and {seqlogitdecomp}
+will tell the extend to which this is due to changes in the effects on the
+transitions between levels of education or changes in the importance of each
+transition.
+
+{title:Options}
+
+{dlgtab 4 2:Specifying the groups to be compared}
+
+{phang}
+{opt overat(overlist)} Specifies the values of the explanatory variables 
+of the groups that are to be compared. It overrides any value specified 
+in the {opt at} option. Each comparison is seperated by a comma. The 
+syntax for {it:overlist} is:
+
+{p 8 8 2}
+{it:varname_1} # [{it:varname_2} # [...]], {it:varname_1} # [{it:varname_2} # [...]], [...] 
+
+{phang}
+{opt at(atlist)} specifies the values at which the equations are evaluated.
+The syntax for {it:atlist} is: {it:varname} # [{it:varname} # ...]. The 
+equations will be evaluated at the mean values of any of the variables not 
+specified in {opt at}.
+
+{p 8 8 2}
+Say the dependent variable is highest achieved level of education, which is 
+influenced by child's Socio Economic Status (ses) and cohort (coh) and
+the interaction between ses and coh (_ses_X_coh). We want to compare the 
+decomposition of the effect of ses over different cohorts for mean value of 
+ses. Say that coh has only three values: 1, 2, and 3 and the mean value of 
+ses is .5. Than the {opt overat} and {otp at} options would read:
+
+{p 8 8 2}overat( coh 1, coh 2, coh 3 )  at( ses .5 ){p_end}
+
+{p 8 8 2}
+Notice that the values for the interaction term need not be specified in the
+{opt overat()} option, as long as it was created using the {opt over()} 
+option in {help seqlogit10}.
+
+
+{dlgtab 4 2:Other options}
+
+{phang}
+{opt l:evels(levellist)} specifies the values attached to each level of the
+dependent variable. If it is not specified the values of the dependent 
+variabel will be used. The syntax for {it:levels} is: # = # [, # = #, ...] 
+
+{phang}
+{opt subt:itel(titlelist)} specifies the titles above each group, cohort in
+the example above. The syntax of {it: titlelist} is "string" "string" [...].
+The number of titles must equal the number of groups.
+
+{phang}
+{opt eql:abel(labellist)} specifies labels for each transition.  The syntax 
+of {it: labellist} is "string" "string" [...]. The number of labels must
+equal the number of transitions. If one wants to let the label span more than
+one line, one can use `" "string1" "string2" "'.
+
+{phang}
+{opt eqlegend} specifies that a legend is used to identify the different 
+transitions. By default the transitions are identified using titles on the 
+right of the graph.
+
+{phang}
+{opt xl:ine(numlist)} see: {help added line options}
+
+{phang}
+{opt yl:ine(numlist)} see: {help added line options}
+
+{phang}
+{opt ti:tle(title)} see: {help title_options}
+
+{phang}
+{opt na:me(name, replace)} see: {help name_option}
+
+{phang}
+{opt [y|x]sc:ale(axis sub options)} see: {help axis_scale_options}
+
+{phang}
+{opt [y|x]lab:le(rule_or_values)} see: {help axis_options}
+
+{phang}
+{opt [y|x]siz:e(#)} see: {help region_options}
+
+
+{title:Example}
+{cmd}
+    sysuse nlsw88, clear
+    gen ed = cond(grade< 12, 1, ///
+             cond(grade==12, 2, ///
+             cond(grade<16,3,4))) if grade < .
+    gen byr = (1988-age-1950)/10
+    gen white = race == 1 if race < .
+
+    seqlogit10 ed byr south,                 ///   
+             ofinterest(white) over(byr)     ///
+             tree(1 : 2 3 4, 2 : 3 4, 3 : 4) ///
+             levels(1=6, 2=12, 3=14, 4= 16)  ///
+             or
+
+    seqlogitdecomp10,                                   ///
+             overat(byr -.5, byr 0, byr .4)             ///
+             subtitle("1945" "1950" "1954")             ///
+             eqlabel(`""finish" "high school""'         ///
+                     `""high school v" "some college""' ///
+                     `""some college v" "college""')    ///
+             xline(0) yline(0)  
+{txt}
+
+
+
+{marker uhdesc}{...}
+{hline}
+help for {cmd:uhdesc10}
+{hline}
+
+{title:Syntax for uhdesc10}
+
+{p 8 17 2}
+{cmd:uhdesc10} 
+{cmd:,} 
+{cmd:[}
+{opt at(atlist)}
+{opt overat(overatlist)}
+{opt l:evels(levellist)}
+{opt overlab(stringlist)}
+{opt draws(#)}
+]
+
+{title:Description}
+
+{p 4 4 2} 
+{cmd:uhdesc10}  creates a table of describtive statistics of the unobserved variable at each 
+transition. This is only available when the {cmd:sd()} option was used for {help seqlogit10}.
+When the {cmd:sd()} option is specified one is estimating the parameters that would occur
+if there is an unobserved variable, which is normally distributed, wich at the first 
+transition has a mean of zero, a standard deviation as specified in the {cmd:sd()} option, 
+and is uncorrelated witht the observed covariates, and one correctly controlled for this
+unobserved variable. The consequences of such an unobserved variable and the way to estimate
+the parameters in such a scenario are discussed in (Buis 2011). The aim of {cmd:uhdesc10} is
+to show what happens to this unobserved variable at the different transitions, and thus
+get an insight into why the estimates in the scenario are different (or not) from a regular
+sequential logit.
+
+
+{title:Options}
+
+{phang}
+{opt overat(overlist)} Specifies the values of the explanatory variables 
+of the groups that are to be compared. It overrides any value specified 
+in the {opt at} option. Each comparison is seperated by a comma. The 
+syntax for {it:overlist} is:
+
+{p 8 8 2}
+{it:varname_1} # [{it:varname_2} # [...]], {it:varname_1} # [{it:varname_2} # [...]], [...] 
+
+{phang}
+{opt at(atlist)} specifies the values at which the equations are evaluated.
+The syntax for {it:atlist} is: {it:varname} # [{it:varname} # ...]. The 
+equations will be evaluated at the mean values of any of the variables not 
+specified in {opt at}.
+
+{p 8 8 2}
+Say the dependent variable is highest achieved level of education, which is 
+influenced by child's Socio Economic Status (ses) and cohort (coh) and
+the interaction between ses and coh (_ses_X_coh). We want to compare the 
+decomposition of the effect of ses over different cohorts for mean value of 
+ses. Say that coh has only three values: 1, 2, and 3 and the mean value of 
+ses is .5. Than the {opt overat} and {otp at} options would read:
+
+{p 8 8 2}overat( coh 1, coh 2, coh 3 )  at( ses .5 ){p_end}
+
+{p 8 8 2}
+Notice that the values for the interaction term need not be specified in the
+{opt overat()} option, as long as it was created using the {opt over()} 
+option in {help seqlogit10}.
+
+{phang}
+{opt overlab(stringlist)} specifies the label that is to be attached to 
+each group specified in the {cmd:overatlist()} option. Spaces are not allowed
+but an _ will be displayed as an space. The number of labels has to be the
+same as the number of groups specified in the {cmd:overatlist()} option.
+
+{p 8 8 2}
+To continue the example above: Say that a value of 1 on the variable coh 
+corresponds to the cohort born in 1950, a value 2 corresponds to the cohort 
+born in 1970, the value 3 corresponds to the cohort born in 1990, then the 
+{cmd overlab()} option would read:
+
+{p 8 8 2}overlab(1950 1970 1990)
+
+{phang}
+{opt l:evels(levellist)} specifies the values attached to each level of the
+dependent variable. If it is not specified the values of the dependent 
+variabel will be used. The syntax for {it:levels} is: # = # [, # = #, ...] 
+
+{title:Example}
+{cmd}
+    sysuse nlsw88, clear
+    gen ed = cond(grade< 12, 1, ///
+             cond(grade==12, 2, ///
+             cond(grade<16,3,4))) if grade < .
+    gen byr = (1988-age-1950)/10
+    gen white = race == 1 if race < .
+
+    seqlogit10 ed byr south,                 ///   
+             ofinterest(white) over(byr)     ///
+             tree(1 : 2 3 4, 2 : 3 4, 3 : 4) ///
+             or sd(1)
+    
+    uhdesc10
+{txt}
+
+
+{marker predict}{...}
+{hline}
+help for {cmd:predict}
+{hline}
+
+{title:Syntax for predict}
+
+{p 8 16 2}
+{cmd:predict} {dtype} {newvar} {ifin} 
+[{cmd:,} {it:statistic} 
+{opt o:utcome(#)}
+{opt trans:ition(#)}
+{opt c:hoice(#)}
+{opt eq:uation(#)}
+{opt levels(levellist)}
+]
+
+{synoptset 14 tabbed}{...}
+{synopthdr :statistic}
+{synoptline}
+{synopt :{cmd:xb}}xb, fitted values{p_end}
+{synopt :{cmd:stdp}}standard error of the prediction{p_end}
+{synopt :{cmdab:trp:r}}probability of passing transition{p_end}
+{synopt :{cmdab:tra:trisk}}proportion of respondents at risk of passing 
+transition{p_end}
+{synopt :{cmdab:trv:ar}}variance of the indicator variable indicating 
+whether or not the respondent passed the transition{p_end}
+{synopt :{cmdab:trg:ain}}difference in expected highest achieved level 
+between those that pass the transition and those that do not{p_end}
+{synopt :{cmdab:trw:eight}}weight assigned to transition{p_end}
+{synopt :{cmdab:p:r}}probability that an outcome is the highest achieved 
+outcome.{p_end}
+{synopt :{cmd:y}}expected highest achieved level{p_end}
+{synopt :{cmdab:eff:ect}}Effect of variable of interest on expected 
+highest achieved level. This variable is specified in the {cmd:ofinterest()}
+option in {cmd:seqlogit}. Interactions with the variables specified in the 
+{cmd:over()} option  of {cmd:seqlogit} are automatically taken into account.
+{p_end}
+{synopt :{cmdab:resid:uals}}difference between highest achieved level and
+expected highest achieved level.{p_end}
+{synopt :{opt sc:ore}}first derivative of the log likelihood with respect 
+to the linear predictor. {p_end}
+{synoptline}
+{p2colreset}{...}
+
+
+{title:Options for predict}
+
+{phang}
+{opt trans:ition(#)} specifies the transition, 1 is the first transition 
+specified in the {opt tree} option in {cmd:seqlogit}, 2 the second, etc.
+
+{phang}
+{opt choice(#)} specifies the choice within the transition, 0 is the choice 
+(the reference category), 1 the second, etc.
+
+{phang}
+{opt eq:uation(#)} specifies the equation, #1 is the first equation, #2 the 
+second, etc.
+
+{phang}
+{opt l:evels(levellist)} specifies the values attached to each level of the
+dependent variable. If it is not specified the values of the dependent 
+variabel will be used. The syntax for {it:levels} is: # = # [, # = #, ...] 
+
+
+{title:References}
+
+{p 4 4 2}
+Buis, Maarten L. 2010
+``Chapter 6, Not all transitions are equal: The relationship between inequality of 
+educational opportunities and inequality of educational outcomes'', In:
+Buis, Maarten L. ``Inequality of Educational Outcome and Inequality of 
+Educational Opportunity in the Netherlands during the 20th Century''.
+PhD thesis.
+{browse "http://www.maartenbuis.nl/dissertation/chap_6.pdf"}
+
+{p 4 4 2}
+Buis, maarten L. 2011 
+``The Consequences of Unobserved Heterogeneity in a Sequential Logit Model'', 
+Research in Social Stratification and Mobility, 29(3), pp. 247-262.
+{browse "http://dx.doi.org/10.1016/j.rssm.2010.12.006"}
+
+
+{title:Also see}
+
+{p 4 13 2}
+Online: help for {helpb seqlogit}, {helpb estimates}, {helpb lincom}, 
+{helpb lrtest}, {helpb mfx}, {helpb nlcom}, {helpb predictnl},
+{helpb suest}, {helpb test}, {helpb testnl}
+{p_end}
+

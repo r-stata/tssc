@@ -1,0 +1,59 @@
+{smcl}
+{* 30 Jan 2002}{...}
+{hline}
+help for {hi:xtpattern}
+{hline}
+
+
+{title:Generate code showing pattern of xt data}
+
+{p 8 12}{cmd:xtpattern} 
+[{cmd:if} {it:exp}] 
+{cmd:,} 
+{cmdab:g:enerate}{cmd:(}{it:newvar}{cmd:)}
+
+
+{title:Description} 
+
+{p}Given a panel data set which has been {cmd:tsset} as such, {cmd:xtpattern} 
+generates a string variable coding panels according to presence or 
+absence of observation at different times. This variable contains 
+information tabulated by {cmd:xtdes}. The same code will be assigned 
+to each observation in a panel. Thus, if there were six times of observation, 
+and a panel was observed at times 1, 2, 3, 4 and 6, all five observations
+for that panel would be coded {cmd:"1111.1"}. 
+
+{p}The number of observations in each panel must not exceed 80 (or under
+Stata/SE, 244). 
+
+
+{title:Options}
+
+{p 0 4}{cmd:generate(}{it:newvar}{cmd:)} specifies the name of a new 
+variable to hold the code. It is a required option. 
+
+
+{title:Examples}
+
+{p 4 8}{inp:. tsset id time} 
+
+{p 4 8}{inp:. xtdes}
+
+{p 4 8}{inp:. xtpattern, gen(pattern)}  
+
+{p 4 8}{inp:. egen tag = tag(id)}
+
+{p 4 8}{inp:. tab pattern if tag}
+
+
+{title:Author} 
+
+         Nicholas J. Cox, University of Durham, U.K.
+         n.j.cox@durham.ac.uk
+
+
+{title:Also see}
+
+On-line: help for {help xtdes} 
+ Manual: {hi:[R] xtdes}
+

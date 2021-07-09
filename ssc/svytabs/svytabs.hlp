@@ -1,0 +1,229 @@
+.-
+help for ^svytabs^					       
+.-
+
+Create Tables for export Combining Multiple Survey Tabulations
+--------------------------------------------------------------
+
+^svytabs^ varlist [if] [, ^by^(varname) ^sub^pops^(^varlist^)^ 
+			^vc^ol2(varlist) ^mu^lti ^st^ars 
+			^row(^int^)^ ^ci^ ^se^ ^lev^el^(^int^)^ ^deff^
+			^nr^aw ^np^op ^chk^val ^ifchi(^str^)^ ^fl^agerr^(^int^)^
+			^sc^reen ^ct^itle^(^str^)^ ^text(^str^)^ no^ti^tle
+			^sav^ing(filename) ^app^end ^rep^lace ^det^ail ]
+
+
+Description
+-----------
+
+^svytabs^ generates a variety of tables using calls to Stata's ^svytab^ command.  
+It's advantages over svytab are in convenience and formatting.  A single 
+svytabs command can generate a table that would require many ^svytab^ commands 
+and tedious assembly of results.  By default, tables of percentages are 
+created in a comma delimited format that can be saved to a text file for 
+importing to other documents.  Statistically significant differences can 
+be flagged with asterisks.  Standard errors, confidence intervals, design 
+effects, and population counts can also be produced. Detailed output can 
+be logged while tables are saved in separate files.
+
+Essentially, svytabs issues a separate svytab command for each variable 
+in varlist tabulated against the single variable specified in the by 
+option.  The subpops option allows specifying mutliple subpopulations 
+that are sequentially passed to svytab, creating multiple columns of 
+output.  The output is arranged so that each variable in varlist 
+is a row, each category of byvar is a column and each variable in 
+subpops is a supercolumn (containing a column for each level of byvar).
+
+      [-----subpopvar1----] [----subpopvar2----]..[----subpopvarn----]
+      byvarcat1..byvarcatn  byvarcat1..byvarcatn  byvarcat1..byvarcatn
+var1  
+var2
+...
+varn
+
+By default, svytabs expects dichotomous variables in varlist 
+and extracts from each svytab command the proportions in the second 
+row of output (corresponding to the higher category, typically meaning 
+yes or true).  If results for a multi-category variable are desired, 
+then the varlist can contain only one variable and the ^multi^ option 
+must be specified.  
+
+Additional options are provided to: format the results for readability on 
+the screen; add rows for standard errors, confidence intervals, and design 
+effects; add titles; set options for saving the table; specify a special 
+condition for tests of statistical significance; check the value of the 
+variable being tabulated; flag results with confidence intervals wider 
+than a set percentage; and include a second varlist that parallels 
+the first varlist in the output.
+
+Options
+-------
+
+^by(^varname^)^ specifies the second (column) variable to be 
+     used in all svytab commands.  If no variable is specified, 
+     then svytabs creates a dummy variable (=1) in order to make 
+     the svytab command work, but no statistics are calculated. 
+
+^subpops(^varlist^)^ is used to specify one or more subpopulations
+    of interest.  
+
+^vcol2(^varlist^)^ allows specification of a second varlist that 
+     parallels the main varlist (and must have the same number of 
+     variables) creating an additional set of columns.  For example, 
+     variables representing current and lifetime drug use can be 
+     combined into one table with the lifetime variables listed 
+     as the varlist and the corresponding current variables listed 
+     in the same order under ^vcol2^.  
+
+^multi^ specifies that the main varlist contains one variable but 
+     has multiple categories of interest.  This option changes
+     the output so that each category is a row. 
+
+^stars^ specifies that asterisks should be displayed next to results
+     that are statistically significant -- defined by the p value 
+     of the Pearson Chi-Squared test performed by svytab.  One 
+     asterisk indicates significance at p<.05 and two asterisks 
+     indicates p<.01.  The asterisks are placed next to the last
+     column within each byvar.
+
+^ifchi(^string^)^ specifies an additional condition to use only for
+     testing statistical significance.  For example, if one wanted a
+     table displaying 3 years of survey results, but only wanted to 
+     test the past 2 years for statistical differences, then 
+     ^ifchi(year!=1)^ would accomplish this goal.  The ^ifchi^ 
+     condition is displayed in a note at the bottom of the table.
+
+^row(^rownumber^)^ specifies the row of output from the svytab command
+     to extract.  The default is row number 2.  The user must be careful 
+     that the default or specified row number is the result of interest
+     (see ^chkval^ option).
+
+^chkval^ adds a column to the output that shows, for each variable in
+     the primary varlist, the value of that variable that has been used
+     from the ^svytab^ results.  This option allows one to check whether 
+     the desired result is being extracted from ^svytab^.  
+
+^ci^,^se^, ^deff^, ^level(^conf.level^)^ specify that confidence intervals, 
+     standard errors, and/or design effects are to be displayed in  
+     rows directly beneath each row of output.  The ^level^ option 
+     sets the confidence level and defaults to the current Stata default
+     (95% unless otherwise set with set level).
+
+^flagerr(^#^)^ specifies that a tilde (~) be used to flag any result that
+     has a confidence interval wider than # percentage points.  It can be
+     used as a complement to ^stars^ to indicate results with particularly
+     large uncertainty.
+     
+^nraw^ calculates the number of observations used in each result.  The 
+     minimum and maximum of these counts across the variables in 
+     varlist are reported in the final row of the table as a range.
+
+^npop^ calculates the number of observations in each by group of each
+     subpop.  It ignores the varlist, providing a single population count
+     for each column, added to the top of the table.
+
+^ctitle(^columntitle^)^ allows the user to specify a title for the 
+     first column of output (i.e., the column listing the variables).
+
+^saving(^filename^)^ saves the resulting table in filename.log.  The 
+    filename is also used to create a title row.  The table also includes
+    supercolumn (subpop) and column (byvar) headings and the results 
+    in a comma-separated format suitable for bringing into a word 
+    processor or spreadsheet that can parse on commas and create a table.
+
+^append^,^replace^ are options for saving, allowing the user to 
+    append to an existing file or replace an existing file.
+
+^text(^titletext^)^ lets the user add descriptive text to the table 
+    title, in addition to the default file name.  
+
+^notitle^ specifies that the saving file name should not be used to 
+    create a title for the table.
+
+^screen^ tells svytabs to format the output for the screen instead of the 
+    usual, nearly unreadable, comma delimited output.  The resulting output
+    will usually be readable, but be imperfect for the ci and nraw options.
+
+^detail^ specifies that all of the svytab commands generated should 
+     be displayed along with their results.  This option can create 
+     lots of output and so a log file must be open.
+    
+
+Other Options/Features
+----------------------
+
+^svytabs^ also has two optional features that may prove useful.
+
+^global macros^: Many svytab options can be set with global macros 
+    so that large do files of svytabs commands can be run with or 
+    without these options without needing to edit each command.  
+
+    Global macro ^tabdir^ sets the path where all tables will be saved 
+    Example: ^global tabdir "c:/mydata/tables/"^.  Note, forward
+    slashes should be used in the path, regardless of OS.
+
+    Global macros ^tabnpop^, ^tabnraw^, ^tabse^, ^tabci^, ^tabdeff^, ^tabdet^, 
+    and ^tabchkv^ set the options npop, nraw, se, ci, deff, detail, and
+    chkval "on" if they equal 1.  global ^tabflag^ sets flagerr to its value.
+
+^characteristics^ if the characteristic ^tablab^ is set for any variable 
+    in the main varlist, it will be used instead of the variable name
+    to label the row.  This approach essentially uses an alternative 
+    variable label, which may be preferred if variable labels are 
+    needed for other purposes and don't serve well for the output.
+    Example: char mari[tablab] "Marijuana"
+
+Notes
+-----
+
+subpops vs. by
+
+    The subpops option is sometimes needed as an alternative to 
+    byvar with multiple categories when a straight cross-tab won't 
+    provide exactly what you want.  For example, if you wanted a 
+    breakout by grade and gender you could just create a variable 
+    with categories for each combination of grade and gender and 
+    use the by option.  But if you also wanted columns for groups 
+    of grades or overall by gender, then you could leave byvar 
+    blank and specify the subpops option with dummy variables 
+    for each grade/gender and for any other desired columns.  
+
+
+Example
+-------
+
+(one line command broken for display purposes)
+
+.. ^svytabs marilife inhalife psyclife narclife cokeblif amphlife^
+     ^trnqlife sterlife methlife mdmalife, ifchi(year!=1993) ^
+     ^subpops(grade78 grade912) by(year) stars saving(Table2) ^
+     ^text(Lifetime Drug Use) ctitle(Substance) npop replace^
+
+(output shown on screen and saved in table1.log, replacing existing file:)
+
+Table 2. Lifetime Drug Use
+ ,grade78,grade78,grade78,grade912,grade912,grade912
+Substance,1993,1996,1999,1993,1996,1999
+ ,(n=1954),(n=2047),(n=2354),(n=3367),(n=3637),(n=3472)
+Marijuana/Hashish,14.5,19.4,14.6*,38.2,51.7,50.2
+Inhalants,24.7,23.8,17.3**,21.9,20.4,15.6**
+Psychedelics,3.3,3.0,4.2,8.4,15.4,17.1
+Narcotics,3.1,3.0,2.8,5.5,8.4,9.6
+Coke/Crack,4.9,3.5,3.9,5.4,5.9,8.2**
+Amphetamines,4.6,4.2,4.7,7.3,11.8,11.6
+Tranquilizers,12.9,13.5,9.9*,17.0,24.1,19.6**
+Steroids,3.2,2.5,3.1,2.1,2.3,3.8*
+Methamphetamine,--,1.6,2.0,--,3.5,4.5
+MDMA,--,1.7,3.1,--,6.5,14.7**
+statistically signficant differences by year (year!=1993) flagged: *=(p<.05) **=(p<.01)
+
+
+(example note: tablab characteristic was set for all variables in 
+varlist, making output more directly useful)
+
+Author
+------
+        Michael Blasnik
+	Blasnik & Associates
+	mblasnik@@110.net
+

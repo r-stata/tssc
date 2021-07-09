@@ -1,0 +1,104 @@
+.-
+help for ^mstdizem^
+.-
+
+Marginal standardization of two-way tables (matrix version)
+-----------------------------------------------------------
+
+    ^mstdizem^ matrix_input row_total_vector column_total_vector
+    matrix_output [ ^, tol^erance^(^#^) f^ormat^(^%fmt^)^ ]
+
+Description
+-----------
+
+^mstdizem^ takes matrix_input and produces matrix_output, which is
+matrix_input scaled such that the row totals are given by
+row_total_vector and the column totals given by column_total_vector.
+
+
+Remarks
+-------
+
+The algorithm is
+
+0. Initialise
+         guess = matrix_input
+
+1. Loop until max (| guess - previous guess |) <= tolerance
+         previous guess = guess
+         guess = diag(target row total / guess row total) * guess
+         guess = guess * diag(target col total / guess col total)
+   where * is matrix multiplication.
+
+The total over rows of the column totals should equal the total over
+columns of the row totals. That is, the two should lead to the same
+grand total.
+
+This procedure is known by many different names in several different
+disciplines, including statistics, economics and engineering. Some are
+
+    biproportional matrices
+    iterative proportional fitting
+    raking
+    RAS technique
+
+The data matrix may be entered directly into Stata or it may be produced
+by a previous command, such as ^tabulate^.
+
+
+Options
+-------
+
+^tolerance(^#^)^ is a technical option indicating the criterion for
+    convergence. This is the largest acceptable absolute difference
+    between each guess and the previous guess (and also between the two
+    totals of totals). Default 0.001.
+
+^format(^%fmt^)^ controls the format with which matrix_output is
+    printed. Default format ^%9.2f^.
+
+
+Examples
+--------
+
+    Data used by Smith (1976), quoted by Agresti (1990, p.197):
+    . ^mat freq = (209,101,237\151,126,426\16,21,138)^
+    . ^mat r = (100\100\100)^
+    . ^mat c = (100,100,100)^
+    . ^mstdizem freq r c Freq^
+
+    Data used by Friedlander (1961), quoted by Bishop et al. (1975,
+    p.98):
+    . ^mat freq = (1306,83,0\619,765,3\263,1194,9\173,1372,28\^
+        ^171,1393,51\159,1372,81\208,1350,108\1116,4100,2329)^
+    . ^mat rt = (1412\1402\1450\1541\1681\1532\1662\7644)^
+    . ^mat ct = (3988,11702,2634)^
+    . ^mstdize freq rt ct Freq^
+
+References
+----------
+
+Agresti, A. 1990. Categorical data analysis. New York: John Wiley.
+
+Bishop, Y.M.M., Fienberg, S.E. and Holland, P.W. 1975. Discrete
+multivariate analysis. Cambridge, MA: MIT Press.
+
+Friedlander, D. 1961. A technique for estimating a contingency table
+given the marginal totals and some supplementary data. Journal of the
+Royal Statistical Society Series A 124: 412-420.
+
+Smith, K.W. 1976. Table standardization and table shrinking: aids in the
+traditional analysis of contingency tables. Social Forces 54, 669-693.
+
+
+Author
+------
+
+         Nicholas J. Cox, University of Durham, U.K.
+         n.j.cox@@durham.ac.uk
+
+Also see
+--------
+
+On-line:  help for @mstdize@ (if installed)
+

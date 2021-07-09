@@ -1,0 +1,92 @@
+{smcl}
+{* 9aug2004}{...}
+{hline}
+help for {hi:circwwmardia}
+{hline}
+
+{title:Wheeler-Watson-Mardia test for circular data}
+
+{p 8 17 2} 
+{cmd:circwwmardia} 
+{it:varlist} 
+[{cmd:if} {it:exp}] 
+[{cmd:in} {it:range}]
+{cmd:, by(}{it:byvar}{cmd:)} 
+
+
+{title:Description} 
+
+{p 4 4 2} 
+{cmd:circwwmardia} carries out a homogeneity test due to Wheeler and Watson
+(1964) and Mardia (1972) for circular variables in {it:varlist} with scales
+between 0 and 360 degrees. The values of each {it:varname} are grouped
+according to the {it:r} (2 or more) distinct values of {it:byvar}. The
+hypothesis under test is that the distributions so defined are identical. The
+test statistic is based on the circular ranks of the data, 2 * pi * rank /
+{it:n}, where rank varies from 1 to the number of values {it:n}.
+
+{p 4 4 2} 
+The W_r statistic can be compared with a chi-square distribution with
+2{it:r} - 2 degrees of freedom so long as there are 10 or more values in each
+group. Randomisation is recommended otherwise to get an estimate of the
+{it:P}-value. However, {cmd:circwwmardia} carries out the chi-square 
+calculation regardless and the onus is on the user to identify examples with 
+small group sizes and take appropriate action. A tabulation of group
+frequencies should help here.
+
+{p 4 4 2} 
+Note that allowing a {it:varlist} is a convenience to allow many tests from a
+single command: the tests are separate and users searching for significant
+results are urged to consider carefully what they are doing. 
+
+
+{title:Remarks} 
+
+{p 4 4 2}This test is called the Mardia-Watson-Wheeler test by Batschelet 
+(1981) and Kanji (1999). 
+
+
+{title:Options}
+
+{p 4 8 2} 
+{cmd:by()} indicating grouping is a required option.
+
+
+{title:Example} 
+
+{p 4 4 2}{cmd:. circwwmardia wallasp, by(grade)} 
+
+
+{title:Reference} 
+
+{p 4 8 2}Batschelet, E. 1981. {it:Circular statistics in biology.} 
+London: Academic Press. 
+
+{p 4 8 2}Fisher, N.I. 1993. {it:Statistical analysis of circular data.} 
+Cambridge: Cambridge University Press.
+
+{p 4 8 2}Kanji, G.K. 1999. {it:100 statistical tests.} London: Sage. 
+
+{p 4 8 2}Mardia, K.V. 1972. A multi-sample uniform scores test on a circle
+and its parametric competitor. 
+{it:Journal, Royal Statistical Society Series B} 34: 102-113. 
+
+{p 4 8 2}Wheeler, S. and Watson, G.S. 1964. A distribution-free two-sample 
+test on a circle. {it:Biometrika} 51: 256-257.
+
+
+{title:Author}
+
+{p 4 4 2}Nicholas J. Cox, University of Durham, U.K.{break} 
+         n.j.cox@durham.ac.uk
+
+
+{title:Acknowledgments}
+
+{p 4 4 2}Leora Vegosen found a bug. 
+
+
+{title:Also see} 
+
+{p 4 13 2}
+On-line:  help for {help circtwosample} 

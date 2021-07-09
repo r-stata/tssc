@@ -1,0 +1,75 @@
+.-
+help for ^neigh5^
+.-
+
+Generating string variable(s) specifying neighbours
+---------------------------------------------------
+
+    ^neigh5^ locivar locjvar [weightvar], ^gen(^newvar^)^ 
+    [ ^wgen(^newweightvar^)^ ] 
+  
+
+Description
+-----------
+
+^neigh5^ converts spatial neighbourhood information of the form 
+
+    locivar  locjvar      (optionally) weightvar 
+    -------  -------      ----------------------
+       1         2              0.123
+       1         3              0.456
+       1         4              0.678 
+
+into the form 
+
+   locivar  newvar       (optionally) newweightvar 
+   -------  ------       -------------------------
+     1     "2 3 4"          "0.123 0.456 0.678" 
+
+That is, locations 2, 3 and 4 are neighbours of location 1. (The degree
+of neighbourliness -- perhaps determined by distance and/or length of
+common boundary -- is indicated by the weights specified.) 
+
+
+Remarks
+-------
+
+^neigh5^ is a utility for users of ^spautoc5^. 
+
+It is envisaged that a data set of neighbourhood information given by 
+two variables containing numeric identifiers will be converted to a data
+set containing one numeric identifier and one single string variable, 
+for merging with a normal data file. Optionally, a numeric weight 
+variable will also be packed into a new string variable.
+
+
+Options
+-------
+
+^gen(^newvar^)^ specifies a new variable to contain information. 
+    It is a required option. 
+
+^wgen(^newweightvar^)^ specifies a new variable to contain weight
+    information. 
+
+
+Examples
+--------
+
+    . ^neigh5 i j, gen(nabors)^
+    . ^neigh5 i j w, gen(nabors) wgen(W)^ 
+
+
+Author
+------
+
+         Nicholas J. Cox, University of Durham, U.K.
+         n.j.cox@@durham.ac.uk
+
+
+Also see
+---------
+
+On-line: help for @spautoc5@, @dupneigh5@, @numids5@  
+
+

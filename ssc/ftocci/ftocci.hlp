@@ -1,0 +1,70 @@
+{smcl}
+{* 2nov09}{...}
+{hline}
+help for {hi:ftocci}
+{hline}
+
+{title:From floated to conventional confidence intervals}
+
+{p 4 14 10}{cmd:ftocci}  {it:rrf}  {{it:lbf} {it:ubf} | {it:sef}}  
+ [{cmd:,} {cmd:ref({it:#})}  {cmdab:f:ormat(%}{it:fmt}{cmd:)} {cmdab:l:evel(}{it:#}{cmd:)}  {cmdab:gen:erate(}{it:newvar1}   {it:newvar2}   {it:newvar3}{cmd:)} ]{p_end}
+
+{p 4 14 10} where the {p_end}
+
+{p 4 14 10}{it:rrf} point estimate of the relative risk {p_end}
+
+{p 4 14 10} is followed by  {p_end}
+
+{p 4 14 10}{it:lbf} lower bound of the floated confidence interval {p_end}
+{p 4 14 10}{it:ubf} upper bound of the floated confidence interval {p_end}
+
+{p 4 14 10} or by {p_end}
+
+{p 4 14 10}{it:sef} floated standard error of the log relative risk {p_end}
+
+{title:Description}
+
+{p 4 10 10}{cmd:ftocci} back calculates the conventional confidence intervals from the floated confidence intervals or from the floated standard errors 
+of a set of relative risks.{p_end}
+
+{title:Options}
+
+{p 4 8 2}{cmd:ref({it:#})} specifies the reference exposure category. Default is the first line.{p_end}
+
+{p 4 8 2}{cmdab:f:ormat(%}{it:fmt}{cmd:)} specifies the display format for presenting numbers.
+{cmd:format(%3.2f)} is the default; see help {help format}.{p_end}
+
+{p 4 8 2}{cmdab:l:evel(}{it:#}{cmd:)} specifies the width of the published floated confidence interval; see help {help level}. The default level is 95%.{p_end}
+
+{p 4 8 2} {cmdab:gen:erate(}{it:newvar1}   {it:newvar2}   {it:newvar3}{cmd:)}  specifies that the displayed results (conventional
+relative risk and confidence limits) to be saved in {it:newvar1}, {it:newvar2} and  {it:newvar3} respectively.{p_end}
+
+{title:Examples}
+
+	clear
+	input 	 rrf 	sef 
+		1   	   .0544927  
+		1.202145   .0509047  
+		1.521979   .0477249  
+		2.111223    .039682  
+		3.284124    .035919  
+	end
+	 
+	ftocci rrf sef 
+
+	ftocci rrf sef  , ref(2) format(%9.0g)  
+
+	ftocci rrf sef  , ref(3)   gen(rrc lbc ubc)
+
+{title:Reference}
+
+	Orsini N. From floated to conventional confidence intervals for the relative risks based on published dose-response data.
+			Computer Methods and Programs in Biomedicine, in press.
+
+{title:Author}
+
+{p 4 12}{browse "mailto:nicola.orsini@ki.se?subject=info ftocci":nicola.orsini@ki.se}, Karolinska Institutet{p_end}
+{p 4 12}{browse "http://nicolaorsini.altervista.org"}{p_end}
+
+
+

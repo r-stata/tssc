@@ -1,0 +1,213 @@
+{smcl}
+{* *! version 1.0.0  29jun2017}{...}
+{findalias asfradohelp}{...}
+{vieweralsosee "" "--"}{...}
+{vieweralsosee "[R] help" "help help"}{...}
+{viewerjumpto "Syntax" "msdeco##syntax"}{...}
+{viewerjumpto "Description" "msdeco##description"}{...}
+{viewerjumpto "Technical details" "msdeco##techdetails"}{...}
+{viewerjumpto "Options" "msdeco##options"}{...}
+{viewerjumpto "Saved Results" "msdeco##saved"}{...}
+{viewerjumpto "Examples" "msdeco##examples"}{...}
+{viewerjumpto "Author" "msdeco##author"}{...}
+{viewerjumpto "References" "msdeco##references"}{...}
+{viewerjumpto "See also" "msdeco##seealso"}{...}
+
+{hline}
+help for {hi:msdeco}{right:Andrew Silva (June 2017)}
+{hline}
+
+
+{title:Title}
+
+{phang}
+{bf:msdeco} {hline 2} Calculates the Mookherjee & Shorrocks (1982) over-time inequality decomposition by subgroup
+
+
+{marker syntax}{...}
+{title:Syntax}
+
+{p 8 17 2}
+{cmd:msdeco}
+{varname}
+{ifin}
+{weight}
+{cmd:,} {cmdab:group:var(}{it:varname}{cmd:}} {cmdab:year:var(}{it:varname}{cmd:}}
+{cmdab:start:year(}{it:integer}{cmd:}} {cmdab:end:year(}{it:integer}{cmd:}} [{cmdab:p:reserve}]
+
+{synoptset 20 tabbed}{...}
+{synopthdr}
+{synoptline}
+{syntab:Main}
+{synopt:{opt group:var(varname)}}variable indicating group ID{p_end}
+{synopt:{opt year:var(varname)}}variable indicating year{p_end}
+{synopt:{opt start:year(#)}}starting year{p_end}
+{synopt:{opt end:year(#)}}ending year{p_end}
+{synopt:{opt p:reserve}}preserve data state before processing; greatly reduces computation time{p_end}
+{synoptline}
+{p2colreset}{...}
+{p 4 6 2}
+{cmd:fweight}s and {cmd:aweight}s are allowed; see {help weight}.
+
+
+{marker description}{...}
+{title:Description}
+
+{pstd}
+{cmd:msdeco} calculates the Mookherjee & Shorrocks over-time decomposition for the specified
+{it:varname} with respect to groups in {cmdab:group:var}, from {cmdab:star:tyear} to {cmdab:end:year}.
+The decomposition is based on the {it:GE(0)} (Generalized Entropy of class 0) inequality measure,
+also known as the mean logarithmic deviation. As such, values of the primary input variable are restricted
+to positive numbers. {cmd:msdeco} depends upon {cmd:ineqdeco}, an excellent user-written routine by Jenkins (2015),
+which computes a panel of inequality indices and associated statistics that provide the building blocks of the
+Mookherjee & Shorrocks decomposition.
+
+
+{marker techdetails}{...}
+{title:Technical details}
+
+{p 4 4 2}
+The Mookherjee & Shorrocks (1982) decomposition is an approximate decomposition of the GE(0)
+(mean logarithmic deviation) measure of inequality. In a weighted sample with sample  weights w_i,
+income y_i, mean income m, and f_i = w_i / SUM (w_i), GE(0) (I_0 in the author's notation) is defined as:
+
+{p 4 4 2}GE(0) = I_0 = SUM f_i log(m / y_i).
+
+{p 4 4 2}
+See Jenkins (1999) for more coverage of the GE indices and their computation in discrete data.
+
+{p 4 4 2}
+{cmd:msdeco} reports the cecomposition results in four components, labeled A, B, C, and D, 
+which correspond to equations (14a), (14b), (14c), and (14d) in the original paper, respectively.
+This is a slight approximation of the exact decomposition, but offers a more practical interpretation
+that the exact decomposition. Using the author's original notation, the components are:
+
+{p 8 8 2} A: SUM { m(v_k) D(I_k) }
+{break}(Effect due to changes in within subgroup inequality)
+
+{p 8 8 2} B: SUM { m(I_k) D(v_k) }
+{break}(Effect due to changes in population shares of within component)
+
+{p 8 8 2} C: SUM { [ m(lambda_k) - m(log lambda_k) ] D(v_k) }
+{break}(Effect due to changes in population shares of between component)
+
+{p 8 8 2} D: SUM { [m(theta_k) - m(v_k)] D(log mu_k) }
+{break}(Effect due to relative changes in subgroup means)
+
+{p 4 4 2}
+where SUM is the summation operator, summing over index k, m() is the mean-over-time operator
+and D() is the "delta" difference-over-time operator. v_k = n_k/n, or the proportion of the
+population in group k; I_k is the GE(0) of group k; lambda_k = mu_k/mu,
+the relative mean income of group k to the mean of the entire population; and
+theta_k = v_k * u_k, the income share of group k.
+
+{p 4 4 2}
+{cmd:msdeco} also computes the exact decomposition, provided in equation (12) of the original paper.
+This form unfortunately does not provide the same neatly-identified conceptual components, yet is
+easily presented in four distinct terms, written as:
+
+{p 8 8 2} A: SUM { m(v_k) D(I_k) } (same as approximate decomposition above)
+
+{p 8 8 2} B: SUM { m(I_k) D(v_k) } (same as approximate decomposition above)
+
+{p 8 8 2} C: -SUM { m(log lambda_k) D(v_k) }
+
+{p 8 8 2} D: -SUM {m(v_k) D(log lambda_k) }
+
+{p 4 4 2}
+Note the leading "-" sign on the C and D terms, implying that if the reported C or D term is negative,
+the summation term (with out the "-" sign) is positive.
+
+
+{marker options}{...}
+{title:Options}
+
+{dlgtab:Main}
+
+{phang}
+{opt group:var(varname)} specifies the variable indicating the group ID (mandatory).
+Group IDs values must be non-negative integers, and must have the same levels in both
+{cmd:startyear} and {cmd:endyear} among {it:positive} values of the primary variable
+to be decomposed.
+
+{phang}
+{opt year:var(varname)} specifies the variable indicating the year (mandatory).
+The year variable should be of type numeric.
+
+{phang}
+{opt start:year(#)} specifies the starting year for the decompostion (mandatory),
+the value of which will be looked up in variable specified by {cmdab:year:var()}.
+
+{phang}
+{opt end:year(#)} specifies the ending year for the decompostion (mandatory),
+the value of which will be looked up in variable specified by {cmdab:year:var()}.
+
+{phang}
+{opt p:reserve} uses the {cmd:preserve} and {cmd:restore} system commands to restore the original data state
+after the command has completed. This allows the routine to avoid passing {cmd:if} and {cmd:in} qualifiers 
+to subroutines, and instead drops unused observations, which greatly reduces computation time. If the
+{cmdab:p:reserve} option is used, {cmd:msdeco} may not be used within an existing preserve-restore block, as
+Stata does not permit nesting of preserved data states.
+
+
+{marker saved}{...}
+{title:Saved results}
+
+     Scalars
+	r(A)			effect of changes in within subgroup inequality
+	r(B)			effect of changes in population shares of within component
+	r(C)			effect of changes in population shares of between component
+	r(D)			effect of relative changes in subgroup means
+	r(I0_dif_approx)	sum of A, B, C, and D components (from approximate decomposition)
+	r(Aexact)		effect of changes in within subgroup inequality; same as r(A)
+	r(Bexact)		effect of changes in population shares of within component; same as r(B)
+	r(Cexact)		-SUM [ m(log lambda_k) D(v_k) ] (from exact decomposition)
+	r(Dexact)		-SUM [m(v_k) D(log lambda_k) ] (from exact decomposition)
+	r(I0_dif_exact_sum)	sum of Aexact, Bexact, Cexact, and Dexact (from exact decomposition)
+	r(I0_dif_exact)		difference between GE(0) at endyear and GE(0) at startyear
+	r(I0_t1)		GE(0) in startyear
+	r(I0_t2)		GE(0) in endyear
+	r(N_t1)			observations in startyear
+	r(N_t2)			observations in endyear
+	
+
+{marker examples}{...}
+{title:Examples}
+
+{phang}{cmd:. msdeco marketIncome, groupvar(sector) yearvar(year) startyear(1975) endyear(2015)}{p_end}
+
+{phang}{cmd:. msdeco marketIncome [w=hwtsupp], groupvar(sector) yearvar(year) startyear(1975) endyear(2015) preserve}{p_end}
+
+
+{marker author}{...}
+{title:Author}
+
+{pstd}
+Andrew Silva <andrew.silva@graduateinstitute.ch>{break}
+The Graduate Institute of International and Development Studies
+
+
+{marker references}{...}
+{title:References}
+
+{pstd}
+Jenkins, Stephen P. 1999.
+"Analysis of income distributions."
+{it:Stata Technical Bulletin} 8.48.
+
+{pstd}
+Jenkins, Stephen P. 2015.
+"INEQDECO: Stata module to calculate inequality indices with decomposition by subgroup." 
+Statistical Software Components.
+
+{pstd}
+Mookherjee, Dilip. and Shorrocks, Anthony. 1982.
+"A decomposition analysis of the trend in UK inequality."
+{it:Economic Journal} 92: 886{c -}992.
+
+
+{marker seealso}{...}
+{title:See also}
+
+{pstd}
+{help ineqdeco} if installed.

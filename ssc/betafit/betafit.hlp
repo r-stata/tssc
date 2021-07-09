@@ -1,0 +1,302 @@
+{smcl}
+{* 07Apr2011/06Apr2011/05Jan2008/30dec2006/06sep2006/03aug2006}{...}
+{hline}
+help for {hi:betafit}
+{hline}
+
+{title:Fitting a two-parameter beta distribution by maximum likelihood}
+
+{p 8 17 2}
+{cmd:betafit} 
+{it:depvar} 
+{weight} 
+{ifin}
+[{cmd:,} 
+{c -(}
+{cmdab:alpha:var(}{it:varlist_a}{cmd:)}
+{cmdab:beta:var(}{it:varlist_b}{cmd:)} 
+{c )-}
+{c |} 
+{c -(}
+{cmdab:mu:var(}{it:varlist_m} [{cmd:,} {cmdab:nocons:tant} ]{cmd:)} 
+{cmdab:phi:var(}{it:varlist_p} [{cmd:,} {cmdab:nocons:tant} {cmdab:eform} ]{cmd:)} 
+{cmdab:alt:ernative}
+{c )-} 
+{cmd:rpr}
+{cmdab:r:obust}
+{cmdab:cl:uster(}{it:clustervar}{cmd:)}  
+{cmdab:l:evel(}{it:#}{cmd:)} 
+{it:maximize_options} 
+]
+
+{p 4 4 2}{cmd:by} {it:...} {cmd::} may be used with {cmd:betafit}; see help
+{help by}. 
+
+{p 4 4 2}{cmd:fweight}s and {cmd:aweight}s are allowed; see help {help weights}.
+
+{p 4 4 2}When using Stata version 11 or higher, {cmd:alphavar}, {cmd:betavar},
+{cmd:muvar}, and {cmd:phivar} may contain factor variables; see {help fvvarlist}.
+
+
+{title:Description}
+
+{p 4 4 2}{cmd:betafit} fits by maximum likelihood a two-parameter beta
+distribution to a distribution of a variable {it:depvar}. {it:depvar}
+ranges between 0 and 1: for example, it may be a proportion.  
+
+{p 4 4 2}Note that cases will be ignored if the dependent variable has a 
+value less than or equal to zero or more than or equal to one. 
+{cmd:betafit} can still be used to fit a variable with a range beyond 
+(0, 1) by rescaling this variable. Several examples are shown in
+Smithson and Verkuilen (2006).
+
+{p 4 4 2}{cmd:betafit} uses one of two parameterizations:
+
+{p 8 8 2}A conventional parameterization with shape parameters
+{it:alpha} > 0 and {it:beta} > 0 (e.g. Forbes et al. 2011 or Johnson et
+al. 1995) will be used if only {it:depvar} is specified or if one or
+both of {cmd:alphavar()} and {cmd:betavar()} is specified. The
+conventional parameterization is especially useful when no covariates are
+present. 
+
+{p 8 8 2}An alternative parameterization with location parameter {it:mu}
+and scale parameter {it:phi} (e.g. Ferrari and Cribari-Neto 2004, 
+Paolino 2001, or Smithson and Verkuilen 2006) will be used if one or both
+{cmd:muvar()} and {cmd:phivar()} is specified or if the {cmd:alternative}
+option is specified.  The alternative parameterization is especially 
+useful when covariates are present. {it:mu} is reported on the logit scale
+so that it stays between 0 and 1, i.e. logit {it:mu} = {it:muvar} * e(b_mu).
+In order to help interpretation, various types of marginal effects can be 
+calculated with {help betafit postestimation##dbetafit:dbetafit}. {it:phi} 
+is reported on the logarithmic scale to ensure that it remains positive, 
+i.e.  ln {it:phi} = {it:phivar} * e(b_phi).
+
+
+{title:Options}
+
+{p 4 8 2}{cmd:alphavar()} and {cmd:betavar()} allow the user to specify
+each parameter in the conventional parameterization as a function of the
+covariates specified in the respective variable list. A constant term is
+always included in each equation.
+
+{p 4 8 2}{cmd:muvar()} and {cmd:phivar()} allow the user to specify each
+parameter in the alternative parameterization as a function of the
+covariates specified in the respective variable list. A constant term can
+be suppressed in each equation by specifying the {cmd:noconstant} 
+suboption. To display exponentiated coefficients for the {cmd:phi}
+equation, specify the {cmd:eform} suboption.
+
+{p 4 8 2}As implied above, just one parameterization should be chosen. 
+
+{p 4 8 2}{cmd:alternative} ensures that the alternative parameterization
+is used instead of the conventional parameterization if only {it:depvar}
+is specified.  This option cannot be used with {cmd:alphavar()} or
+{cmd:betavar()}.
+
+{p 4 8 2}{cmd:rpr} reports the estimated coefficients transformed to 
+relative proportion ratios, i.e., exp(b) rather than b.  Standard errors 
+and confidence intervals are similarly transformed.  This option affects 
+how results are displayed, not how they are estimated.  The interpretation
+of these relative proportion ratios is discussed in detail in the examples
+below.
+
+{p 8 8 2}Relative proportion ratios can be useful when the model contains interaction
+terms, as in that case marginal effects as computed by {cmd:dbetafit} will no longer
+be appropriate. Relative proportion ratios for the interaction terms can still be 
+interpreted as the factor by which the relative proportion ratio changes, as is 
+discussed in Buis (2010).
+
+{p 4 8 2}{cmd:robust} specifies that the Huber/White/sandwich estimator
+of variance is to be used in place of the traditional calculation; see
+{hi:[U] 23.14 Obtaining robust variance estimates}.  {cmd:robust}
+combined with {cmd:cluster()} allows observations which are not
+independent within cluster (although they must be independent between
+clusters). 
+
+{p 4 8 2}{cmd:cluster(}{it:clustervar}{cmd:)} specifies that the observations
+are independent across groups (clusters) but not necessarily within groups.
+{it:clustervar} specifies to which group each observation belongs, for example, 
+{cmd:cluster(personid)} in data with repeated observations on individuals.  See
+{hi:[U] 23.14 Obtaining robust variance estimates}.  Specifying {cmd:cluster()}
+implies {cmd:robust}.
+
+{p 4 8 2}{cmd:level(}{it:#}{cmd:)} specifies the confidence level, in percent,
+for the confidence intervals of the coefficients; see help {help level}.
+
+{p 4 8 2}{cmd:nolog} suppresses the iteration log.
+
+{p 4 8 2}{it:maximize_options} control the maximization process; see 
+help {help maximize}. If you are seeing many "(not concave)" messages in the 
+log, using the {cmd:difficult} option may help convergence.
+
+
+{title:Saved results}
+
+{p 4 4 2}In addition to the usual results saved after {cmd:ml},
+{cmd:betafit} also saves the following as appropriate if no covariates
+have been specified: 
+
+{p 8 8 2}{cmd:e(alpha)} and {cmd:e(beta)} are the estimated parameters
+in the conventional parameterization.
+
+{p 8 8 2}{cmd:e(mu)} and {cmd:e(phi)} are the estimated parameters in
+the alternative parameterization.
+
+{p 4 4 2}The following results are saved regardless of whether
+covariates have been specified, as appropriate: 
+
+{p 8 8 2}{cmd:e(b_alpha)} and {cmd:e(b_beta)} are row vectors containing the 
+parameter estimates from each equation in the conventional parameterization.
+
+{p 8 8 2}{cmd:e(b_mu)} and {cmd:e(b_phi)} are row vectors containing the 
+parameter estimates from each equation in the alternative parameterization.
+
+{p 8 8 2}{cmd:e(length_b_alpha)} and {cmd:e(length_b_beta)} or
+{cmd:e(length_b_mu)} and {cmd:e(length_b_phi)} contain the lengths of
+these vectors. If no covariates are specified in an equation, the
+corresponding vector has length equal to 1 (the constant term);
+otherwise, the length is one plus the number of covariates.
+        
+        
+{title:Examples and interpretation of results}
+
+{p 4 4 2}{it:Marginal effects}
+
+{p 4 4 2}To help with the interpretation of the results, use 
+{help betafit postestimation##dbetafit:dbetafit} to compute a set of marginal 
+effects. Alternatively. it is also possible to use {help mfx} or {help margins}
+(for Stata versions 11 and higher). 
+
+{p 4 4 2}These marginal effects depend on the values of the explanatory/independent/x
+variables. So each observation will have its own marginal effects. Those displayed
+by {cmd:dbetafit} are for a (fictional) observation whose explanatory variables are 
+fixed at the mean or at values specified in the {cmd:at()} option. So in the example 
+below the marginal effects refer to a city governed by a leftwing government (the left
+is not a minority and not absent from the city government, so it must be the majority)
+and the house value and population density are average.
+
+{p 4 4 2}For this fictional city the proportion spent on governing is 9.5% [E(governing|x)].
+If that city is governed by a minority left government, that proportion will decrease 0.8 percentage 
+points; and if it is governed by only parties on the right of the political spectrum, the 
+proportion will increase by 0.9 percentage points (First table, column  Min --> Max). 
+
+{p 4 4 2}A 100,000 euro increase in average house value will lead to 2.5 percentage points
+increase in the proportion and an extra 1000 persons per square kilometre will lead to an 
+1.1 percentage points decrease in the proportion (Second table, column MFX at x). 
+
+{cmd}
+    use http://fmwww.bc.edu/repec/bocode/c/citybudget.dta, clear
+
+    betafit governing, mu(minorityleft noleft houseval popdens)
+
+    dbetafit, at(minorityleft 0 noleft 0)
+{txt}
+{p 4 4 2}({stata "betafit_ex":click to run}){p_end}
+
+
+{p 4 4 2}{it:Relative proportion ratios}
+
+{p 4 4 2}Alternatively, {cmd:betafit} also allows the display of relative proportion ratios. This
+can be useful when the dependent variable is a proportion.  Consider the example 
+below. This models the proportion of a city-budget spent on each city's own 
+organization.  In that case the relative proportion is the proportion spent on
+governing divided by 1 - the proportion spent on governing. That is, in other words, 
+the proportion spent on governing divided by the proportion spent on useful stuff.
+As the total budget size drops out of this ratio, we can also say that this is
+the number of euros spent on governing per euro spent on productive stuff. 
+
+{p 4 4 2}It is useful to see the baseline relative proportion, that is, the 
+relative proportion when all covariates are equal to zero. This is the exponentiated 
+constant. Since Stata by default supresses the display of the exponentiated constant, 
+we need to use a trick. We first create a variable baseline that contains all 1s, 
+and add that to our list of variables in the {cmd:muvar()} option, and at the same
+time add the {cmd:noconstant} sub-option. The coefficient of baseline is now the
+baseline relative proportion. 
+
+{p 4 4 2}In the example below, a city with a city government 
+consisting of majority left-leaning members, an average population and house value
+can expect to spent 10 cents on governing per euro spent on productive stuff. This
+ratio decreases by 10% (i.e. [1-.90]*100% = -10%) if it is governed by a minority left 
+government, and it increases by 11% when no left parties are represented in the city 
+government. A 100,000 euro increase in average house value will lead to an 35% 
+increase in the relative proportion and an extra 1000 persons per square kilometre 
+will lead to an 11% decrease in the relative proportion.
+
+{cmd}
+    use http://fmwww.bc.edu/repec/bocode/c/citybudget.dta, clear
+    gen byte baseline = 1
+	
+    sum popdens if !missing(minorityleft, noleft, houseval, popdens), meanonly
+    gen cpopdens = popdens - r(mean)
+    
+    sum houseval if !missing(minorityleft, noleft, houseval, popdens), meanonly
+    gen chouseval = houseval - r(mean)
+    
+    betafit governing, ///
+        mu(minorityleft noleft chouseval cpopdens baseline, nocons) rpr
+{txt}
+{p 4 4 2}({stata "betafit_ex 1":click to run}){p_end}	
+
+
+{p 4 4 2}{it:Note}
+
+{p 4 4 2}Notice the difference between percentage point changes (in the section on marginal effects)
+and percentage changes (in the section on relative proportion ratios). If we start with a 
+baseline value of 1% and change by 1 percentage point, then the result will be 1 + 1 = 2%. 
+If we change the baseline value by 1%, the result will be 1 * 1.01 = 1.01%.
+
+	
+{title:Authors}
+
+{p 4 4 2}Maarten L. Buis, Universitaet Tuebingen{break}maarten.buis@uni-tuebingen.de
+
+{p 4 4 2}Nicholas J. Cox, Durham University{break}n.j.cox@durham.ac.uk
+
+{p 4 4 2}Stephen P. Jenkins, The London School of Economics and Political Science{break}S.Jenkins@lse.ac.uk
+
+
+{title:References}
+
+{p 4 4 2}
+Buis, M.L. 2010.
+Stata tip 87: Interpretation of interactions in non-linear models.
+{it:The Stata Journal} 10(2): 305{c -}308.
+
+{p 4 4 2}
+Forbes, C., Evans, M., Hastings, N. and Peacock, B. 2011. {it:Statistical distributions.}
+Hoboken, NJ: John Wiley.
+
+{p 4 4 2}
+Ferrari, S.L.P. and Cribari-Neto, F. 2004.
+Beta regression for modelling rates and proportions. 
+{it:Journal of Applied Statistics} 31(7): 799{c -}815.
+
+{p 4 4 2}
+Johnson, N.L., Kotz, S. and Balakrishnan, N. 1995.
+{it:Continuous univariate distributions: Volume 2.} New York: John Wiley.
+
+{p 4 4 2}
+MacKay, D.J.C. 2003. 
+{it:Information theory, inference, and learning algorithms.} 
+Cambridge: Cambridge University Press (see p.316). 
+{browse "http://www.inference.phy.cam.ac.uk/itprnn/book.pdf":http://www.inference.phy.cam.ac.uk/itprnn/book.pdf}
+
+{p 4 4 2}
+Paolino, P. 2001.
+Maximum likelihood estimation of models with
+beta-distributed dependent variables. {it:Political Analysis} 9(4): 325{c -}346.
+{browse "http://polmeth.wustl.edu/polanalysis/vol/9/WV008-Paolino.pdf":http://polmeth.wustl.edu/polanalysis/vol/9/WV008-Paolino.pdf}
+
+{p 4 4 2}
+Smithson, M. and Verkuilen, J. 2006.
+A better lemon squeezer? Maximum likelihood regression with beta-distributed dependent variables.
+{it:Psychological Methods} 11(1): 54{c -}71.
+
+
+{title:Also see}
+
+{p 4 13 2}
+Online: help for {help betafit postestimation}, 
+
+{p 4 13 2}
+If installed: {help pbeta}, {help qbeta}, {help hangroot}, {help dirifit}, {help fmlogit}

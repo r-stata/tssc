@@ -1,0 +1,23 @@
+d 'FULLTAB': module to generate 'full tables' which can be stacked into matrices
+d
+"d Suppose you want to tabulate a set of variables, say v1 to v15,"
+d each of which can take on the same possible values (e.g.
+"d 1,2,3,4,5) and stack the resulting  frequencies into a matrix"
+d using the matcell option of @tabulate@. A problem appears when
+"d one value, say ""5"", has count 0 (i.e. never appears in a specific"
+"d variable, say v12. Then the resulting matrix produced by matcell"
+"d has only 4 elements, while the other vectors have 5. And trying"
+d to append a row of the wrong length to a matrix will cause an
+d error. fulltab obviates this problem by temporarily adding
+"d observations to your data set, one for each possible value in"
+"d your list, thus generating full tables. The counts are all off by"
+d one and are corrected before exit. And added observations are
+d dropped.
+d
+"d Author: Guy D. van Melle , University of Lausanne"
+d Support: email  guy.van-melle@@inst.hospvd.ch
+d
+d Distribution-Date: 19981021
+
+f fulltab.ado
+f fulltab.hlp

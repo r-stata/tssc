@@ -1,0 +1,151 @@
+.-
+help for ^ncf^
+.-
+
+Non-central F programs
+----------------------
+
+   ^ncfprob^ F' lambda v1 v2     /* yields p
+
+   ^ncfinv^  p lambda v1 v2      /* yields F'
+
+   ^ncfncp^  F' p v1 v2          /* yields lambda
+
+   ^ncfn^    F' lambda p v1      /* yields v2
+
+where
+
+   ^F'^     is the observed F-value (^F'^ > 0)
+   ^lambda^ is the noncentrality parameter (^lambda^ > 0)
+   ^v1^     is the numerator degrees of freedom (^v1^ > 0)
+   ^v2^     is the denominator degrees of freedom (^v2^ > 0)
+   ^p^      is the probability (0 < ^p^ < 1)
+
+Generally, ^v1^ and ^v2^ are integers, but any positive real value can be
+entered for these parameters.
+
+For each program, entering the program name with no parameters displays 
+the command syntax.
+
+
+Description
+-----------
+
+Let Z_1,...,Z_n be n independent random variables, where  
+    
+   Z_j ~ N(delta_j, 1), j=1,...,n
+
+and X = (Z_1)^^2 + ... + (Z_n)^^2,
+
+and where W ~ N(a,b) means W is distributed Normal with mean a and variance b.
+
+Then X is said to have a noncentral chi-square distribution with 
+n degrees of freedom and noncentrality 
+
+   lambda = sum[(delta_j)^^2]/2.
+
+That is, X ~ ChiSq(n,lambda).  
+
+When delta_j = 0 for all j, then X is said to have a central 
+chi-square distribution, i.e., X ~ ChiSq(n).
+
+Now, let X1 and X2 be independent random variables where 
+
+   X1 ~ ChiSq(v1, lambda) and 
+   X2 ~ ChiSq(v2). 
+
+           X1/v1
+Then  X = ------- ~ F(v1, v2, lambda)
+           X2/v2
+
+That is X is said to have a noncentral F distribution with v1 and v2 
+degrees of freedom and noncentrality lambda. 
+
+
+^ncf^xxxx is a family of immediate programs, all related to the noncentral F 
+distribution.  Each program computes a missing parameter, given the other 
+parameters, such that P( F <= ^F'^ | ^lambda^, ^v1^, ^v2^ ) = ^p^.  
+
+   for | use
+-------+-----------------------------------------------------------
+     ^p^ | ^ncfprob^ -- Cumulative non-central F probabilities
+    ^F'^ | ^ncfinv^  -- Inverse cumulative non-central F values
+^lambda^ | ^ncfncp^  -- Noncentrality parameter of the non-central F
+    ^v2^ | ^ncfn^    -- Denominator df for the cumulative non-central F
+ 
+The core program, ^ncfprob^, computes cumulative probability from zero to ^F'^
+of the non-central F distribution for noncentrality parameter, ^lambda^, and 
+positive degrees of freedom ^v1^ in the numerator and ^v2^ in the denominator.
+That is, ^ncfprob^ computes ^p^ such that P( F <= ^F'^ | ^lambda^, ^v1^, ^v2^ ) = p.
+
+Each program prints its computed value and returns it in global ^S_1^ and in
+a result ^r()^.  The value computed and the name of the returned parameter
+for each program are:
+
+^ncfprob^ -- ^r(p)^      -- the probability p
+^ncfinv^  -- ^r(F)^      -- the critical F' 
+^ncfncp^  -- ^r(lambda)^ -- the noncentrality parameter lambda
+^ncfn^    -- ^r(v2)^     -- the denominator degrees of freedom v2
+
+Warning: For ^ncfn^, there are many combinations of input parameters that are
+not admissable (i.e, do not lead to a solution for ^v2^.)  In particular, ^v2^
+can go to infinity when ^F'^ is even moderately close to ^lambda^ and/or ^p^ 
+or ^1 - p^ even moderately approaches zero.  The user is cautioned to carefully
+consider the reasonableness of the combination requested.  Regardless, ^ncfn^ 
+stops with an error message when the calculated ^v2^ exceeds 10,000.
+
+As an example, consider the following hypothetical combination:
+
+ . ^ncfn 6 4 .8 1^ 
+
+The above requests denominator degrees of freedom, ^v2^, such that
+
+   P(F<=^6^ | lambda=^4^, v1=^1^, ^v2^) = ^.8^ 
+
+Since ^ncfprob^ calculates the ^p^-value given the other parameters, a quick 
+check for reasonableness can be performed by running ^ncfprob^ with selected 
+values of ^v2^ while holding the other parameters fixed at F'=^6^, lambda=^4^ 
+and v1=^1^. This gives the following:
+
+      ^v2     p^
+-----------------------
+       1    .28460415
+      10    .34823550
+     100    .35216989
+    1000    .35235044
+   10000    .35236548
+  100000    .35236695
+ 1000000    .35236710
+10000000    .35236712
+
+For these parameters, it is apparent that the only admissable values for ^p^
+are in the range of about .28 to .36, regardless of the value of ^v2^.  
+Clearly, there is no value for ^v2^ that will allow ^p^ to be ^.8^, thus this 
+is an inadmissable combination for ^ncfn^.  
+
+
+Note
+----
+
+Some of these programs require installation of programs ^ridder^ 
+(see STB-24, insert ssi5.4 for ^ridder^).
+
+
+Author
+------
+
+Thomas J. Steichen <steicht@@rjrt.com>
+
+
+Examples
+--------
+
+ . ^ncfprob 3.6 3.0 4 43^ > gives p for F' <= 3.6, lambda = 3.0, v1 = 4, v2 = 43 
+
+ . ^ncfinv .95 3.0 4 43^  > gives F' for p = .95, lambda = 3.0, v1 = 4, v2 = 43 
+
+ . ^ncfncp 3.6 .95 4 43^  > gives lambda for F' = 3.6, p = .95, v1 = 4, v2 = 43 
+
+ . ^ncfn 3.6 1 .95 4^     > gives v2 for F' = 3.6, lambda = 1, p = .95, v1 = 4 
+
+ . ^ncfprob^              > displays the command syntax

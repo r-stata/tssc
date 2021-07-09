@@ -1,0 +1,525 @@
+*                                    mrc.scheme
+
+* The MRC scheme family has a white background (white plotregions and
+* background) and coloured foreground (lines, symbols, text, etc).
+
+*!  version 2.0   24jun2020    Tim P. Morris, MRC Clinical Trials Unit at UCL
+*   Updated to inherit s2color as 'based'. This avoids missing entries
+*   when a new Stata version appears
+
+#include s2color
+
+sequence 1210
+label "MRC Scheme"
+
+system   naturally_white  1
+
+
+graphsize             5
+graphsize x           5
+graphsize y           4
+
+gsize                 medium
+gsize gap             vsmall
+gsize text            medium
+gsize body            medsmall
+gsize small_body      small
+gsize heading         large
+gsize subheading      medium
+gsize axis_title      medsmall
+gsize matrix_label    medlarge
+gsize label           medsmall     
+gsize small_label     small     
+gsize matrix_marklbl  small     
+gsize key_label       medsmall     
+gsize note            small
+gsize star            medsmall
+gsize text_option     medsmall     
+gsize dot_rectangle   third_tiny
+gsize axis_space      half_tiny
+gsize axis_title_gap  vsmall
+gsize tick            zero
+gsize minortick       half_tiny
+* gsize minortick       .55
+gsize tickgap         half_tiny
+gsize notickgap       tiny
+gsize tick_label      medsmall
+gsize tick_biglabel   medium
+gsize minortick_label vsmall
+gsize filled_text     medsmall
+gsize reverse_big     large
+gsize alternate_gap   zero
+gsize title_gap       vsmall
+gsize key_gap         vsmall
+gsize key_linespace   vsmall
+gsize star_gap        minuscule
+gsize legend_colgap   medium
+gsize label_gap       half_tiny
+gsize matrix_mlblgap  half_tiny
+gsize barlabel_gap    tiny
+
+
+color             black
+color background  white
+color foreground  black
+
+color symbol         black
+color backsymbol     mrcgrey
+
+color text             black
+color body             black
+color small_body       black
+color heading          black
+color subheading       black
+color axis_title       black
+color matrix_label     black
+color label            black
+color key_label        black
+color tick_label       black
+color tick_biglabel    black
+color matrix_marklbl   black
+color sts_risk_label   black
+color sts_risk_title   black
+
+color box              none
+color textbox          none
+color mat_label_box    none
+
+color text_option      black
+color text_option_line black
+color text_option_fill mrcgrey
+
+color filled_text        black
+color filled             gs12
+color bylabel_outline    none
+
+color reverse_big        mrcgrey
+color reverse_big_line   mrcgrey
+color reverse_big_text   white
+
+color grid         gs12
+color major_grid   gs12
+color minor_grid   gs14
+
+color axisline     gs12
+color tick         gs12
+color minortick    gs14
+
+color ci_line        gs8
+color ci_arealine    gs12
+color ci_area        gs12
+color ci_symbol      gs8
+color ci2_line       gs10
+color ci2_arealine   gs14
+color ci2_area       gs14
+color ci2_symbol     gs10
+
+color fpbody         black
+color fpcoltitle     black
+color fpgraph        white
+color fp             navy
+color fp_line        navy
+color fp_symbol      navy 
+color fpgrp          mrcred
+color fpgrp_arealine mrcred
+color fpgrp_area     mrcred
+color fpgrp_line     mrcred
+color fpgrp_symbol   mrcred
+color fpall          black
+color fpall_arealine black
+color fpall_area     black
+color fpall_line     black
+color fpall_symbol   black
+color fphrule        black
+color fptextbox      white
+color fpspacer       none
+color fpesrefline    mrcpurple
+color fpnullrefline  gs8
+color fpnulllefttext  black
+color fpnullrighttext black
+color fpesinside_symbol mrcorange 
+color fpesinside_line mrcorange 
+
+color pieline        none
+
+color matrix         mrcblue
+color matrixmarkline mrcblue    
+color refmarker      mrcpurple
+color refmarkline    black
+color histogram      gs10
+color histback       gs4
+color histogram_line white
+color dot_line       gs8
+color dot_arealine   gs8
+color dot_area       gs4
+color dotmarkline    black
+
+color xyline         mrcred
+color refline        mrcgreen
+color cvcvline       mrcred
+color cvlsline       black
+color cvseline       mrcblue
+color dots           black
+
+color plotregion         white
+color plotregion_line    none
+color matrix_plotregion  white
+color matplotregion_line black
+color legend             white
+color legend_line        none
+color clegend            none
+color clegend_outer      none
+color clegend_inner      none
+color clegend_line       none
+
+color contour_begin      mrcblue
+color contour_end        mrcred
+color zyx2               black
+
+color sunflower      mrcblue
+color sunflowerlb    sunflowerlime
+color sunflowerlf    chocolate
+color sunflowerdb    orange
+color sunflowerdf    black
+
+color p       mrcblue
+color p1      mrcblue
+color p2	  mrcpurple
+color p3      mrcred
+color p4      mrcorange
+color p5      mrcyellow
+color p6      mrcgreen
+color p7      mrcgrey
+color p8      emidblue
+color p9      purple
+color p10     red
+color p11     orange
+color p12     yellow
+color p13     emerald
+color p14     gold
+color p15     bluishgray
+
+color pboxlabelfill  gs10
+color plabelfill     gs10
+
+color pmarkback      white
+color pmarkbkfill    white
+
+color funnel_contour gs10
+
+
+symbol             circle_hollow
+symbol sunflower   circle_hollow
+
+symbol none        none
+symbol histogram   circle_hollow
+symbol histback    none
+symbol dots        circle_hollow
+symbol ci          circle
+symbol ci2         circle
+symbol ilabel      none
+symbol matrix      circle_hollow
+symbol refmarker   circle
+
+symbol fpgrp       circle_hollow
+symbol fpall       circle_hollow
+symbol fp          square
+symbol fpci        none
+symbol fpgrpci     none
+symbol fpallci     none
+symbol fpesinside  circle_hollow
+
+symbol p         circle_hollow
+symbol pback     none
+symbol pbarback  none
+symbol pdotback  none
+
+
+markerstyle            p1
+markerstyle dots       dots
+markerstyle star       star
+markerstyle histogram  histogram
+markerstyle ci         ci
+markerstyle ci2        ci2
+markerstyle ilabel     ilabel
+markerstyle matrix     matrix
+markerstyle box_marker refmarker
+markerstyle editor     editor
+markerstyle editor_arrow  ed_arrow
+markerstyle sunflower     sunflower
+
+
+margin                   zero
+margin graph             medsmall
+margin twoway            medsmall
+margin bygraph           zero
+margin combinegraph      medsmall
+margin combine_region    zero
+margin matrixgraph       zero
+margin piegraph          small
+margin piegraph_region   medsmall
+margin matrix_plotreg    small
+margin matrix_label      zero
+margin mat_label_box     zero
+margin by_indiv          small
+margin text              vsmall
+margin textbox           zero
+margin body              vsmall
+margin small_body        vsmall
+margin heading           vsmall
+* margin heading           ".6 .6 .6 .6"
+margin subheading        vsmall
+margin axis_title        zero
+margin label             zero
+margin key_label         zero
+margin text_option       zero
+margin plotregion        medsmall
+margin star              tiny
+margin bargraph          bargraph
+margin boxgraph          bargraph
+margin dotgraph          bargraph
+margin hbargraph         bargraph
+margin hboxgraph         bargraph
+margin hdotgraph         bargraph
+margin legend            small
+margin legend_key_region tiny
+margin legend_boxmargin  small
+margin clegend           medium
+margin cleg_title        medsmall
+margin clegend_boxmargin small
+margin key_label         zero
+margin filled_textbox    small
+margin filled_box        zero
+margin editor            zero
+
+
+linewidth thin         thin  
+linewidth medium       medium
+linewidth p            medium
+linewidth foreground   thin
+linewidth background   thin
+linewidth grid         vthin
+linewidth major_grid   vthin
+linewidth minor_grid   vvthin
+linewidth axisline     vthin
+linewidth tick         vthin
+linewidth minortick    vvthin
+linewidth ci           medium
+linewidth ci_area      medium
+linewidth ci2          medium
+linewidth ci2_area     medium
+linewidth histogram    thin
+linewidth dendrogram   medium
+linewidth xyline       medium
+linewidth refline      medium
+linewidth refmarker    medium
+linewidth matrixmark   medium
+linewidth dots         vvthin
+linewidth dot_line     medthick
+linewidth dot_area     medium
+linewidth dotmark      thin
+linewidth plotregion   thin
+linewidth legend       thin
+linewidth clegend      thin
+linewidth pie          medium
+linewidth reverse_big  thin
+linewidth sunflower    medium
+linewidth matrix_plotregion  thin
+linewidth text_option  thin
+linewidth zyx2         medium
+
+linewidth pbar vvvthin
+
+
+connectstyle      direct
+connectstyle p    direct
+* connectstyle p#   direct
+
+
+alignstroke          outside
+* alignstroke default  inside
+alignstroke inside   inside
+alignstroke outside  outside
+alignstroke center   center
+
+alignstroke axisline           inside
+alignstroke background         inside
+alignstroke ci_area            outside
+alignstroke ci                 outside
+alignstroke clegend            inside
+alignstroke dendrogram         inside
+alignstroke dot_area           inside
+alignstroke dot                outside
+alignstroke dotmark            inside
+alignstroke dots               inside
+alignstroke foreground         inside
+alignstroke grid               inside
+alignstroke histogram          inside
+alignstroke legend             inside
+alignstroke major_grid         inside
+alignstroke map                center
+alignstroke matrixmark         inside
+alignstroke matrix_plotregion  center
+alignstroke mat_label_box      center
+alignstroke minor_grid         inside
+alignstroke minortick          inside
+alignstroke pie                inside
+alignstroke p                  inside
+alignstroke plotregion         inside
+alignstroke refline            inside
+alignstroke cvcvline           inside
+alignstroke cvlsline           inside
+alignstroke cvseline           inside
+alignstroke refmarker          inside
+alignstroke reverse_big        inside
+alignstroke sunflower          inside
+alignstroke text_option        inside
+alignstroke tick               inside
+alignstroke xyline             inside
+alignstroke zyx2               inside
+alignstroke hrule              inside
+
+alignstroke fp                 inside
+alignstroke fpgrp              inside
+alignstroke fpall              inside
+alignstroke fphrule            inside
+alignstroke fpspacer           inside
+
+alignstroke p1    inside
+alignstroke p2    inside
+alignstroke p3    inside
+alignstroke p4    inside
+alignstroke p5    inside
+alignstroke p6    inside
+alignstroke p7    inside
+alignstroke p8    inside
+alignstroke p9    inside
+alignstroke p10   inside
+alignstroke p11   inside
+alignstroke p12   inside
+alignstroke p13   inside
+alignstroke p14   inside
+alignstroke p15   inside
+
+axisstyle                    horizontal_default
+axisstyle horizontal_default horizontal_noline
+axisstyle vertical_default   vertical_default
+axisstyle horizontal_nogrid  horizontal_nogrid
+axisstyle vertical_nogrid    vertical_nogrid
+axisstyle bar_super          horizontal_nolinetick
+axisstyle dot_super          horizontal_nolinetick
+axisstyle bar_group          horizontal_notick
+axisstyle dot_group          horizontal_notick
+axisstyle bar_var            horizontal_notick
+axisstyle dot_var            horizontal_notick
+axisstyle bar_scale_horiz    horizontal_withgrid
+axisstyle bar_scale_vert     vertical_withgrid
+axisstyle dot_scale_horiz    horizontal_nogrid
+axisstyle dot_scale_vert     vertical_nogrid
+axisstyle box_scale_horiz    horizontal_withgrid
+axisstyle box_scale_vert     vertical_withgrid
+axisstyle matrix_horiz       horizontal_nogrid
+axisstyle matrix_vert        vertical_nogrid
+axisstyle sts_risktable      sts_risktable
+axisstyle clegend            clegend
+
+
+gridlinestyle          default
+gridlinestyle default  default
+
+
+clockdir                    12
+clockdir title_position     11
+clockdir subtitle_position  11
+clockdir caption_position    7
+clockdir note_position       7
+clockdir legend_position     6
+clockdir zyx2legend_position 3
+clockdir by_legend_position  6
+clockdir ilabel              3
+clockdir matrix_marklbl     12
+
+relative_posn zyx2legend_pos  right
+relative_posn clegend_pos     right
+relative_posn clegend_axispos right
+
+
+anglestyle                 horizontal
+anglestyle horizontal_tick horizontal
+anglestyle vertical_tick   horizontal
+anglestyle clegend         horizontal
+anglestyle symbol          zero
+anglestyle psymbol         zero
+anglestyle p               stdarrow
+anglestyle parrow          stdarrow
+anglestyle parrowbarb      0
+* anglestyle p#mark
+* anglestyle p#backmark
+* anglestyle p#arrow
+* anglestyle p#arrowbarb
+
+
+
+yesno extend_axes_low        no
+yesno extend_axes_high       no
+yesno extend_axes_full_low   no
+yesno extend_axes_full_high  no
+
+yesno draw_major_grid        no
+yesno draw_minor_grid        no
+yesno draw_majornl_grid      no
+yesno draw_minornl_grid      no
+yesno draw_major_hgrid       no
+yesno draw_minor_hgrid       no
+yesno draw_majornl_hgrid     no
+yesno draw_minornl_hgrid     no
+yesno draw_major_vgrid       yes
+yesno draw_minor_vgrid       no
+yesno draw_majornl_vgrid     no
+yesno draw_minornl_vgrid     no
+yesno draw_major_nl_vgrid    no
+yesno draw_minor_nl_vgrid    no
+yesno draw_majornl_nl_vgrid  no
+yesno draw_minornl_nl_vgrid  no
+yesno draw_major_nl_hgrid    no
+yesno draw_minor_nl_hgrid    no
+yesno draw_majornl_nl_hgrid  no
+yesno draw_minornl_nl_hgrid  no
+yesno draw_major_nt_vgrid    no
+yesno draw_minor_nt_vgrid    no
+yesno draw_majornl_nt_vgrid  no
+yesno draw_minornl_nt_vgrid  no
+yesno draw_major_nt_hgrid    no
+yesno draw_minor_nt_hgrid    no
+yesno draw_majornl_nt_hgrid  no
+yesno draw_minornl_nt_hgrid  no
+yesno draw_major_nlt_vgrid   no
+yesno draw_minor_nlt_vgrid   no
+yesno draw_majornl_nlt_vgrid no
+yesno draw_minornl_nlt_vgrid no
+yesno draw_major_nlt_hgrid   no
+yesno draw_minor_nlt_hgrid   no
+yesno draw_majornl_nlt_hgrid no
+yesno draw_minornl_nlt_hgrid no
+yesno draw_major__nl_hgrid   no
+yesno draw_minor__nl_hgrid   no
+yesno draw_majornl__nl_hgrid no
+yesno draw_minornl__nl_hgrid no
+yesno draw_fp_major_hgrid    no
+yesno draw_fp_minor_hgrid    no
+yesno draw_fp_majornl_hgrid  no
+yesno draw_fp_minornl_hgrid  no
+yesno extend_grid_low        no
+yesno extend_grid_high       no
+yesno extend_minorgrid_low   yes
+yesno extend_minorgrid_high  yes
+yesno extend_majorgrid_low   no
+yesno extend_majorgrid_high  no
+yesno grid_draw_min          yes
+yesno grid_draw_max          yes
+yesno grid_force_nomin       no
+yesno grid_force_nomax       no
+
+yesno use_labels_on_ticks    yes
+
+* end: mrc.scheme

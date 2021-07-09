@@ -1,0 +1,210 @@
+.-
+help for ^latab^                                                
+.-
+
+Produce LaTeX output from tabulate
+----------------------------------
+
+    ^latab^ varlist [weight] [^if^ exp] [^in^ range]
+    [, ^tf(^filename^)^ ^replace^ ^app^end ^row^ ^col^ 
+    ^ncom^ ^dec(^#^)^ ^tx(^#^)^]
+
+^fweights^, ^aweights^, and ^iweights^ are allowed by ^latab^.
+
+
+Description
+-----------
+
+^latab^ tabulates the varlist (max of 2 variables) and
+produces a display with LaTeX code embedded in the output.
+The user may then copy from this display (or copy from a
+log file) and paste into a LaTeX document. In addition, the 
+user may also send the output to a file which can be read into
+a LaTeX document when it is compiled. 
+
+^latab^ is a companion program to ^latabstat^ which produces LaTeX 
+output from ^tabstat^.
+
+Options
+-------
+
+^tf^(filename) indicates the text file to which the output should
+be sent. Path names can be included, but do not include the ".tex"
+file extension. The usual Stata options (replace or append) must be
+used or an error message will result if the file already exists.
+The ^append^ option adds the code to an already existing file while
+the ^replace^ option overwrites any already existing file which has
+the same name.
+
+Frequencies (default), row (^row^) and column (^col^) percentages
+are all possible, though only one of these is allowed in any
+single table. 
+
+The default display shows frequencies, with commas and no
+decimal places. Options for formatting include no comma
+- ^ncom^ - and a specified number of decimal places
+- ^dec(^#^)^. These options may be combined (eg. ncom dec(2)).
+
+The default output produces code for the LaTeX command ^tabular^.
+However, this can be changed with the ^tx^ option to produce
+commands suitable for the extension package ^tabularx^.
+When the ^tx(^#^)^ option is used the width of the table is set to
+the number (in centimetres) specified. If you wish the table
+to be set to the ^{\linewidth}^ command, enter the number 0.
+The user must remember to include a ^\usepackage^
+^{tabularx}^ command in the preamble of the document.
+
+
+Warnings
+--------
+
+Any variables used by ^latab^ must have value labels
+attached. Failure to do so results in an error message.
+
+The filename is read and included in the output. If the file
+is located in a different directory to the current directory,
+the pathname will also appear in the code. This may mean further
+editing of the the LaTeX code is required in your text editor to
+remove offending path separators (\) which also signal 
+LaTeX commands. Similarly, if you use underscore characters
+in your filenames, these will also need to be removed. 
+
+For example: 
+
+\footnotesize{\emph{Source:} d:\mymain\mydirectory\my_data.dta}
+
+would need to be edited to become:
+
+\footnotesize{\emph{Source:} mydata.dta}
+
+
+
+Examples
+--------
+
+. ^latab sex race, ncom dec(2) row^
+. ^latab birthplace sex, dec(1) col^
+. ^latab birthplace race if sex==1^ 
+  ^latab birthplace race, tf(birthrace) replace^ 
+
+Examples with output
+--------------------
+
+. ^latab foreign, dec(1)^
+
+\begin{table}[htbp]\caption{\label{freq_foreign}
+\textbf{Car type}}
+\begin{tabular} {l r r} \\ \hline
+& Number & Per cent \\
+\hline
+Domestic&     52.0&     70.3\\
+Foreign&     22.0&     29.7\\
+Total&     74.0&    100.0\\
+\hline
+\footnotesize{\emph{Source:} auto.dta}
+\end{tabular}
+\end{table}
+
+
+
+. ^latab birthplace sex^
+
+\begin{table}[htbp]\caption{\label{birthplace_by_sex}
+\textbf{Birthplace of respondent by sex}}
+\begin{tabular} {l r  r r} \\ \hline
+& \multicolumn{3}{c}{\textbf{95 sex}} \\
+\textbf{Birthplace of respondent} & male &female
+&Total \\  \hline
+Aust&    6,039&    6,169&   12,208\\
+Eng speaking country&      247&      253&      500\\
+North or East Europe&       47&       58&      105\\
+Southern Europe&       33&       35&       68\\
+Middle East&       41&       40&       81\\
+Asia&      249&      271&      520\\
+Other&       61&       70&      131\\
+Total&    6,717&    6,896&   13,613\\\hline 
+\footnotesize{\emph{Source:} combined.dta}
+\end{tabular}
+\end{table}
+
+This table can be cross-referenced in the body
+of your text with the name: birthplace_by_sex
+
+
+. ^latab birthplace collar_f, row dec(1) tx(0)^
+
+\begin{table}[htbp]\centering
+\newcolumntype{Y}{>{\raggedleft\arraybackslash}X}
+\parbox{\linewidth} {
+\caption{\label{birthplace_by_collar_f} 
+\textbf{Birthplace of respondent by occupation of father~(\%)}}}
+\begin{tabularx} {\linewidth} {l Y  Y  Y  Y Y} \\ \hline
+& \multicolumn{5}{c}{\textbf{Occupation of father}} \\
+\textbf{Birthplace of respondent} & 
+Professional &White collar &Blue collar &NILF &Total \\  \hline
+Aust&     16.8&     37.2&     42.9&      3.0&    100.0\\
+Eng speaking country&     25.8&     31.5&     40.9&      1.8&    100.0\\
+North or East Europe&     23.0&     31.0&     43.7&      2.3&    100.0\\
+Southern Europe&     24.5&     11.3&     64.2&      0.0&    100.0\\
+Middle East&     26.6&     28.1&     42.2&      3.1&    100.0\\
+Asia&     22.7&     37.1&     33.0&      7.2&    100.0\\
+Other&     22.2&     33.3&     38.4&      6.1&    100.0\\
+Total&     17.6&     36.8&     42.5&      3.1&    100.0\\\hline 
+\footnotesize{\emph{Source:} combined.dta}
+\end{tabularx}
+\end{table}
+
+This table can be cross-referenced in the body of your text
+with the name: birthplace_by_collar_f
+
+
+Note on LaTeX
+-------------
+
+The syntax code produced by ^latab^ contains a caption label
+(based on the variable names) which can be used in the body
+of your text to cross reference the table.
+
+The source of the table is given as the State data file
+name, though a search and replace in your text editor can
+easily change this to a more meaningful name.
+
+The display produced by ^latab^ is in two colours (green and
+yellow) for ease of copying. If you require all the code to 
+produce a table from scratch, copy the lot. If you only require 
+the data itself (you may have already set up your table code 
+in your LaTeX document), copy just the yellow output.
+
+If you are using the file output option, ^tf^, you can include the
+table in your LaTeX document using the \input{filename} command. 
+The \include{filename} command always places the table on a new
+page.
+
+Finally, the code produced by ^latab^ may not be
+optimal LaTeX code for tables. Further tweaking of the code
+inside your text editor may be necessary. Any suggestions for 
+improving the LaTeX code would be most welcome.
+
+
+See also
+--------
+
+^latabstat^ (by Ian Watson), which produces LaTeX output 
+from ^tabstat^.
+^sutex^ (by Antoine Terracol), which produces LaTeX output 
+for summary statistics.
+^outtex^ (by Antoine Terracol), which produces LaTeX output
+for results tables after an estimation command.
+
+
+Author
+------
+
+   Ian Watson          
+   ACIRRT
+   University of Sydney
+   Australia
+   iangwatson@pnc.com.au
+   
+Date: 20 January 2002
+

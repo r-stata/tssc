@@ -1,0 +1,65 @@
+v 3
+d 'RUNMIXREGLS': Run the MIXREGLS software from within Stata
+d
+d This module runs the MIXREGLS mixed-effects location scale software
+d (Hedeker and Nordgren 2013) from within Stata. The mixed-effects location
+d scale model extends the standard two-level random-intercept mixed-effects
+"d model for continuous responses (xtreg, mle) in three ways. First, the (log"
+d of the) within- and between-group variances are further modeled as
+"d functions of the covariates. Second, a new random effect, referred to as"
+"d the random-scale effect, is then entered into the within-group variance"
+d function to account for any unexplained group differences in the residual
+d variance. The existing random-intercept effect is now referred to as the
+"d random-location effect. Third, a group-level association between the"
+d location and the scale may be allowed for by entering the random-location
+d effect into the within-group variance function using either a linear or
+d quadratic functional form. The regression coefficients of these linear and
+d quadratic terms are then estimated. The distributions of the random-
+d location and random-scale effects are assumed to be Gaussian.
+d
+d KW: mixed-effects local scale model
+d KW: mixed-effects model
+d KW: mixed model
+d KW: multilevel model
+d KW: hierarchical linear model
+d KW: random effects model
+d KW: random-intercept model
+d KW: random effects model
+d KW: error components model
+d KW: variance function
+d KW: heteroskedasticity
+d KW: heterogeneity of variance
+d KW: runmixregls
+d KW: MIXREGLS
+d KW: xtreg
+d KW: xtmixed
+d KW: mixed
+d KW: me
+d KW: runmlwin
+d KW: gllamm
+d
+d Requires: Stata version 12.0 or higher
+d
+d Distribution-Date: 20180512
+d
+"d Author: George Leckie, Centre for Multilevel Modelling, University of Bristol"
+d Support: email g.leckie@bristol.ac.uk
+d
+"d Author: Chris Charlton, Centre for Multilevel Modelling, University of Bristol"
+d
+f runmixregls.ado
+f runmixregls.sthlp
+g WIN32 ./m/mixregls_plugin.win32   mixregls.plugin
+G WIN32 ./m/mixregls_lib.win32      mixregls.dll
+g WIN64 ./m/mixregls_plugin.win64   mixregls.plugin
+G WIN64 ./m/mixregls_lib.win64      mixregls.dll
+g LINUX ./m/mixregls_plugin.lin32   mixregls.plugin
+G LINUX ./m/mixregls_lib.lin32      mixregls.so.1
+g LINUX64 ./m/mixregls_plugin.lin64 mixregls.plugin
+G LINUX64 ./m/mixregls_lib.lin64    mixregls.so.1
+g MACINTEL64 ./m/mixregls_plugin.mac mixregls.plugin
+G MACINTEL64 ./m/mixregls_lib.mac    mixregls.dylib
+g OSX.X8664 ./m/mixregls_plugin.mac  mixregls.plugin
+G OSX.X8664 ./m/mixregls_lib.mac     mixregls.dylib
+h mixregls.plugin 
+

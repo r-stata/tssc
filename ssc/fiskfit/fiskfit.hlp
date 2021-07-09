@@ -1,0 +1,287 @@
+{smcl}
+{* 29 Dec 2007}{...}
+{hline}
+help for {hi:fiskfit}{right:Maarten L. Buis and}
+{right:Stephen P. Jenkins (December 2007)}
+{hline}
+
+{title:Fitting a Fisk distribution by ML to unit record data}
+
+{p 8 17 2}{cmd:fiskfit} {varname} {weight} {ifin} [{cmd:,}
+        {opt a:var(varlist1)} {opt b:var(varlist2)} 
+        {opt ab(varlist)}
+        {cmdab:st:ats} {opt f:rom(string)} {opt poor:frac(#)} 
+        {opt cdf(cdfname)} {opt pdf(pdfname)}
+        {cmdab:r:obust} {opt cl:uster(varname)} {cmd:svy} 
+        {opt l:evel(#)} {it:maximize_options} {it:svy_options} ]
+
+{pstd}{cmd:by} {it:...} {cmd::} may be used with {cmd:fiskfit}; see help
+{help by}. 
+
+{pstd}{cmd:pweight}s, {cmd:aweight}s, {cmd:fweight}s, and {cmd:iweight}s 
+are allowed; see help {help weights}. To use {cmd:pweight}s, you must first 
+{cmd:svyset} your data and then use the {cmd:svy} option.
+
+
+{title:Description}
+
+{pstd}
+{cmd:fiskfit} fits by ML the 2 parameter Fisk (1961) or log-logistic distribution 
+to sample observations on a random variable {it:var}. Unit record data are 
+assumed (rather than grouped data). It is closely related to the 
+Singh-Maddala (Burr Type 12) distribution (Singh and Maddala, 1976) and the
+Dagum (Dagum, 1977,1980) distribution. All are special cases of the Generalized Beta
+of the Second Kind distribution (see {help gb2fit}). For a comprehensive 
+review of these and other related distributions, see Kleiber and Kotz (2003). 
+
+
+{title:Options}
+
+{phang}
+{opt avar(varlist1)}, and {opt bvar(varlist2)}, allow the user to specify each
+        parameter as a function of the covariates specified in the respective
+        variable list. A constant term is always included in each equation. 
+
+{phang}
+{opt ab(varlist)} can be used instead of the previous option if the same 
+covariates are to appear in each parameter equation.
+
+{phang}
+{opt from(string)} specifies initial values for the Fisk parameters, and is likely 
+        to be used only rarely. You can specify the initial values in one of three 
+        ways: the name of a vector containing the initial values (e.g., from(b0) 
+        where b0 is a properly labeled vector); by specifying coefficient names 
+        with the values   (e.g., from(a:_cons=1 b:_cons=5 p:_cons = 0); or by 
+        specifying an ordered list of values (e.g., from(1 5 0 .16, copy)). Poor 
+        values in from() may lead to convergence problems. For more details, 
+        including the use of copy and skip, see {help:maximize}.
+
+{phang}
+        If covariates are specified, the next four options are not available. 
+
+{phang}
+{cmd:stats} displays selected distributional statistics implied by the
+        Fisk parameter estimates:  quantiles, cumulative 
+        shares of total {it:var} at quantiles (i.e. the Lorenz curve 
+        ordinates), the mode, mean, standard deviation, variance, half the 
+        coefficient of variation squared, Gini coefficient, and 
+        quantile ratios p90/p10, p75/p25. 
+
+{phang}
+{opt poor:frac(#)} displays the estimated proportion with values of {it:var} 
+        less than the cut-off specified by {it:#}. This option may be specified when replaying
+        results.
+
+{phang}
+{opt cdf(cdfname)} creates a new variable {it:cdfname} containing the
+        estimated Fisk c.d.f. value F(x) for each x.
+
+{phang}
+{opt pdf(pdfname)} creates a new variable {it:pdfname} containing the
+        estimated Fisk p.d.f. value f(x) for each x.
+
+{phang} 
+{cmd:robust} specifies that the Huber/White/sandwich estimator of
+	variance is to be used in place of the traditional calculation; see
+	{hi:[U] 23.14 Obtaining robust variance estimates}.  {cmd:robust} combined
+	with {cmd:cluster()} allows observations which are not independent within
+	cluster (although they must be independent between clusters).  If you 
+	specify {help pweight}s, {cmd:robust} is implied.
+
+{phang}
+{cmd:cluster(}{it:varname}{cmd:)} specifies that the observations are
+	independent across groups (clusters) but not necessarily within groups.
+	{it:varname} specifies to which group each observation belongs; e.g.,
+	{cmd:cluster(personid)} in data with repeated observations on individuals. 
+	See {hi:[U] 23.14 Obtaining robust variance estimates}. {cmd:cluster()} can be
+	used with {help pweight}s to produce estimates for unstratified
+	cluster-sampled data.  Specifying {cmd:cluster()} implies {cmd:robust}.
+
+{phang}
+{cmd:svy} indicates that {cmd:ml} is to pick up the {cmd:svy} settings 
+	set by {cmd:svyset} and use the robust variance estimator. Thus, this option 
+	requires the data to be {cmd:svyset}; see help {help svyset}. {cmd:svy} may not be 
+	combined with weights or the {cmd:strata()}, {cmd:psu()}, {cmd:fpc()}, or 
+	{cmd:cluster()} options.
+
+{phang}
+{cmd:level(}{it:#}{cmd:)} specifies the confidence level, in percent,
+	for the confidence intervals of the coefficients; see help {help level}.
+
+{phang}
+{cmd:nolog} suppresses the iteration log.
+
+{phang}
+{it:maximize_options} control the maximization process. The options
+	available are those shown by {help maximize}, with the exception of {cmd:from()}. 
+	If you are seeing many "(not concave)" messages in the iteration 
+	log, using the {cmd:difficult} or {cmd:technique} options may help convergence.
+
+{phang}
+{it:svy_options} specify the options used together with the {cmd:svy} option.
+
+
+{title:Saved results}
+
+{p 4 4 2}In addition to the usual results saved after {cmd:ml}, {cmd:fiskfit} also
+saves the following, if no covariates have been specified and the relevant options used:
+
+{p 4 4 2}{cmd:e(ba)}, and {cmd:e(bb)} are the estimated Fisk parameters.
+
+{p 4 4 2}{cmd:e(cdfvar)} and {cmd:e(pdfvar)} are the variable names specified for the
+c.d.f. and the p.d.f.
+
+{p 4 4 2}
+{cmd:e(mode)}, {cmd:e(mean)}, {cmd:e(var)}, {cmd:e(sd)}, {cmd:e(i2)}, and {cmd:e(gini)} 
+are the estimated mode, mean, variance, standard deviation, half coefficient of 
+variation squared, Gini coefficient. {cmd:e(pX)}, and {cmd:e(LpX)} are the
+quantiles, and Lorenz ordinates, where X = {1, 5, 10, 20, 25, 30, 40, 50, 
+60, 70, 75, 80, 90, 95, 99}. 
+
+{p 4 4 2}The following results are saved regardless of whether covariates have been 
+specified or not.
+
+{p 4 4 2}{cmd:e(b_a)}, and {cmd:e(b_b)} are row vectors containing the 
+parameter estimates from each equation. 
+
+{p 4 4 2}{cmd:e(length_b_a)},and  {cmd:e(length_b_b)} contain
+the lengths of these vectors. If no covariates have been specified in an equation, 
+the corresponding vector has length equal to 1 (the constant term); 
+otherwise, the length is one plus the number of covariates.
+
+
+{title:Formulae}
+
+{p 4 4 2}
+The Fisk distribution has distribution function (c.d.f.)
+
+{p 8 8 2}
+        F(x) =  1/[ 1 + (b/x)^a ]
+
+{p 4 4 2}
+where a, b, are parameters, each positive, for random variable x > 0. 
+Parameters a is the key distributional 'shape' parameters; b is a scale parameter.
+
+{p 4 4 2}
+Letting z = 1 + (b/x)^a, then F(x) =  1/z, and the probability
+density function (p.d.f.) is
+
+{p 8 8 2}
+        f(x) = a(b/x)^a*(1/x)/z^2
+
+{p 4 4 2}
+The likelihood function for a sample of observations on {it:var} is specified 
+as the product of the densities for each observation (weighted where relevant), and
+is maximized using {cmd:ml model lf}. 
+
+{p 4 4 2}
+The formulae used to derive the distributional summary statistics 
+presented (optionally) are as follows. The r-th moment about the origin
+is given by
+
+{p 8 8 2}
+        b^r*B(1+r/a,1-r/a) 
+
+{p 4 4 2}
+where B(u,v) is the Beta function = G(u).G(v)/G(u+v) and G(.) is the 
+gamma function [exp({cmd:lngamma}(.)], which by substitution and using G(1) = 1, 
+implies the moments can be written
+
+{p 8 8 2}
+        b^r*G(1-r/a)*G(1+r/a)
+
+{p 4 4 2}
+and hence
+
+{p 8 8 2} 
+        mean = b*G(1-1/a)*G(1+1/a)
+
+{p 8 8 2}
+        variance = (b^2)*G(1-2/a)*G(1+2/a) - mean^2 
+
+{p 4 4 2}
+from which the standard deviation and half the squared coefficient of 
+variation can be derived. The mode is
+
+{p 4 4 2}
+        mode = b*((a-1)/(a+1))^(1/a) if a > 1, and 0 otherwise.
+
+{p 4 4 2}
+The quantiles are derived by inverting the distribution function: 
+
+{p 8 8 2}
+        x_s = b*( 1/s - 1)^(1/a) for each s = F(x_s).
+
+{p 4 4 2}
+The Gini coefficient of inequality is given by
+
+{p 8 8 2}
+        Gini = -1 + G(2 + 1/a) / { G(1+1/a)*G(2) }.
+
+{p 4 4 2}
+The Lorenz curve ordinates at each s = F(x_s) use the incomplete Beta function:
+
+{p 8 8 2}
+        L(s) = {cmd:ibeta}(1+1/a, 1-1/a, s ).
+
+        
+{title:Examples}
+
+{p 4 8 2}{inp:. fiskfit x [w=wgt] }
+
+{p 4 8 2}{inp:. fiskfit }
+
+{p 4 8 2}{inp:. fiskfitfit, stats poorfrac(100) }
+
+{p 4 8 2}{inp:. fiskfitmfit x, a(age sex) b(age sex) }
+
+{p 4 8 2}{inp:. fiskfit x, ab(age sex) }
+
+{p 4 8 2}{inp:. predict double a_i,  eq(a) xb }
+
+{p 4 8 2}{inp:. predict double b_i,  eq(b) xb }
+
+{p 4 8 2}{inp:. predict double p_i,  eq(p) xb }
+
+
+{title:Authors}
+
+{p 4 4 2}Maarten L. Buis <m.buis@fsw.vu.nl>, Department of Social Research Methodology, 
+Vrije Universiteit Amsterdam, Boelelaan 1081, 1081 HV Amsterdam, The Netherlands.
+
+{p 4 4 2}Stephen P. Jenkins <stephenj@essex.ac.uk>, Institute for Social
+and Economic Research, University of Essex, Colchester CO4 3SQ, U.K.
+
+
+{title:References}
+
+{p 4 8 2}Dagum, C. (1977). A new model of personal income distribution:
+        specification and estimation. {it:Economie Appliqu{c e'}e} 30: 413-437.
+
+{p 4 8 2}Dagum, C. (1980). The generation and distribution of income, the
+        Lorenz curve and the Gini ratio. {it:Economie Appliqu{c e'}e} 33: 327-367.
+        
+{p 4 8 2}Fisk, P.R. (1961). The Graduation of Income Distributions. 
+         {it:Econometrica} 29: 171-185.
+
+{p 4 8 2}Jenkins, S.P. (2004). Fitting functional forms to distributions, using {cmd:ml}. Presentation
+        at Second German Stata Users Group Meeting, Berlin. {browse "http://www.stata.com/meeting/2german/Jenkins.pdf"}
+
+{p 4 8 2}Kleiber, C. (1996). Dagum vs. Singh-Maddala income distributions.
+        {it: Economics Letters} 53: 265-268.
+
+{p 4 8 2}Kleiber, C. and Kotz, S. (2003). {it:Statistical Size Distributions in Economics and Actuarial Sciences}. 
+        Hoboken, NJ: John Wiley.
+
+{p 4 8 2}McDonald, J.B. (1984). Some generalized functions for the size
+        distribution of income. {it:Econometrica} 52: 647-663.
+
+{p 4 8 2}Singh, S.K. and G.S. Maddala (1976). A function for the size
+        distribution of income. {it:Econometrica} 44: 963-970.
+
+{title:Also see}
+
+{p 4 13 2}
+Online: help for {help hangroot} {help dagumfit}, {help smfit}, 
+{help gb2fit}, {help lognfit}, if installed. 
+

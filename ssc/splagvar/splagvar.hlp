@@ -1,0 +1,238 @@
+{smcl}
+{* December 2008}{...}
+{* Updated, January 2010}
+{hline}
+{cmd:help for splagvar} 
+{hline}
+
+{title:Title}
+
+{p 2 8 2}
+{bf:splagvar --- Generates spatially lagged variables, constructs the Moran scatter plot, and calculates global Moran's I statistics.}
+
+{marker contents}{dlgtab: Table of Contents}
+{p 2 16 2}
+
+{p 2}{help splagvar##syntax:Syntax}{p_end}
+{p 2}{help splagvar##description:General description}{p_end}
+{p 2}{help splagvar##options:Description of the options}{p_end}
+{p 2}{help splagvar##examples:Examples}{p_end}
+{p 2}{help splagvar##refs:References}{p_end}
+{p 2}{help splagvar##author:Author information}{p_end}
+{p 2}{help splagvar##citation:Citation}{p_end}
+
+{hline}
+
+{marker syntax}{title:Syntax}
+
+{phang}
+{cmd: splagvar} [{varlist:1}] [{help if}] [{help in}]{cmd:,} [{opt wn:ame(weights_name)} {opt wf:rom(Stata|Mata)} {cmd:ind(}{it:{varlist:2}}{cmd:)} {it:Other_options}] 
+
+{synoptset 25 tabbed}
+{synopthdr}
+{synoptline}
+{syntab:Options} 
+
+{synopt :{opt wn:ame(weights_name)}}indicate the name of the spatial weights matrix to be used{p_end}
+
+{synopt :{opt wf:rom(Stata|Mata)}}indicate source of the spatial weights matrix{p_end}
+  
+{synopt :{cmd:ind(}{it:{varlist:2}}{cmd:)}}request spatially lagged explanatory variables{p_end}
+
+{synopt :{opt order(#)}}indicate the lag order for the spatially lagged explanatory variables to be created{p_end}
+
+{synopt :{cmd:plot(}{varname}{cmd:)}}construct the Moran scatter plot{p_end}
+
+{synopt :{opt title(title_info)}}indicate a title for the Moran scatter plot{p_end}
+
+{synopt :{help prefix_saving_option:{bf:saving(}{it:filename}{bf:, ...)}}}save the graph to {it:filename}{p_end}
+
+{synopt :{opt note(note_info)}}provide notes about the graph{p_end}
+
+{synopt :{opt reps(#)}}set the number of random permutations{p_end}
+
+{synopt :{opt seed(#)}}specify a seed number{p_end}
+
+{synopt :{cmd:moran(}{varname}{cmd:)}}request Moran's I statistics{p_end}
+
+{synopt :{cmd:qvar(}{varlist:3}{cmd:)}}generate quasi-instrumental variables{p_end}
+
+{synopt :{cmd:qname(}{help newvarlist}{cmd:)}}provide names for the quasi-instrumental variables{p_end}
+
+{synopt :{opt replace}}overwrite existing spatially lagged variables{p_end}
+
+{synopt :{opt favor(speed|space)}}favor speed or space when calculating the spatially lagged variables and the Moran's I statistics{p_end}
+
+{synoptline}
+{p2colreset}{...}
+
+{marker description}{dlgtab:Description}
+
+{pstd}{cmd:splagvar} generates spatially lagged variables, constructs the Moran scatter plot, and calculates global 
+Moran's I statistics to test for the presence of spatial dependence. The Moran's I p-value displayed on the Moran scatter plot is 
+calculated using a random permutation procedure. Optionally, quasi-instruments can be generated. Unless quasi-instruments are requested, 
+{cmd:splagvar} requires a spatial weights matrix which must have been created using {cmd:spwmatrix} or any other commands that generate 
+spatial weights. The purpose of {cmd:splagvar} is to facilitate estimation by spatial two-stage least squares and generalized method of 
+moments of spatial econometrics models in Stata (see the {help splagvar##examples:example} section).{p_end} 
+
+{pstd}While generated spatially lagged dependent variables are prefixed with wy_, generated first, second, and third order spatially 
+lagged explanatory variables are prefixed with wx_, w2x_, and w3x_ respectively. The names of the supplied variables make up the 
+remaining portions.{p_end}
+
+
+{marker options}{dlgtab:Options}
+
+{phang}
+{opt wname(weights_name)} specifies the name of the spatial weights matrix to be used.
+
+{phang}{opt wfrom}{cmd:(}{help matrix:Stata} | {help mf_fopen##remarks5:Mata}{cmd:)} indicates whether the spatial 
+weights matrix is a Stata matrix loaded in memory or a Mata file located in the working directory. If the spatial weights matrix had 
+been created using {help spwmatrix} it should exist as a Stata matrix or as a Mata file.{p_end}
+
+{pmore}{opt wname()} and {opt wfrom()} are required, unless {opt qvar()} and {opt qname()} are specified.
+
+{phang}
+{cmd:ind(}{it:{varlist:2}}{cmd:)} specifies a list of explanatory variables whose spatial lags need to be calculated. Variables deemed dependent 
+or endogenous must be supplied in {varlist:1}.
+
+{phang}
+{opt order(#)} specifies the spatial lag order (up to 3) for the spatially lagged explanatory variables to be created. 
+By default, first order spatial lags are calculated. For dependent or endogenous variables, only first order spatial lags may be generated.
+
+{phang}{cmd:plot(}{varname}{cmd:)} constructs the Moran scatter plot for the dependent variable {varname} listed in {varlist:1}. 
+On the plot are reported Moran's I statistics and the associated p-value based on a random permutation procedure.{p_end} 
+
+{phang}
+{opt title(title_info)} specifies a title for the Moran scatter plot.
+
+{phang}
+{opt note(note_info)} provides notes associated with the graph.
+
+{phang}
+{opt saving(filename, ...)} saves the graph to {it:filename}. Specifying the suboption {opt replace} with the option {opt saving()} will replace 
+the graph if it already exists.
+
+{phang}
+{opt seed(#)} sets the random-number seed, which is defaulted to {opt seed(042009)}. This option is useful to ensure replicability of the results.
+
+{phang}
+{opt reps(#)} specifies the number of random permutations to be performed. The default is {opt reps(999)}. 
+
+{phang}
+{cmd:moran(}{varname}{cmd:)} requests that global Moran's I statistics calculated under the assumptions of normal approximation and randomization 
+be displayed. Again, {varname} must be from {varlist:1}.
+
+{pmore}
+N.B.: If {varlist:1} is not specified, none of the options {opt plot()}, {opt saving()}, {opt title()}, {opt moran()}, {opt note()}, {opt reps()}, 
+and {opt seed()} may be specified.
+
+{phang}
+{cmd:qvar(}{varlist:3}{cmd:)} specifies the variables to be used in generating quasi-instrumental variables.
+
+{phang}{cmd:qname(}{help newvarlist}{cmd:)} specifies a list of variable names for the generated quasi-intrumental variables coded 1, 0, and -1 
+depending on whether or not the values of the corresponding variables specified with {opt qvar()} are in the upper, middle or lower third of values 
+when placed in rank order (see Fingle and Le Gallo, 2008).
+
+{phang}
+{opt replace} overwrites existing spatially lagged variables.
+
+{phang}
+{opt favor(speed|space)} instructs {cmd:splagvar} to favor speed or space when calculating the spatially lagged variables or the Moran's I statistics.
+{opt favor(speed)} is the default. This option provides a tradeoff between speed and memory use. See {help mata_set:[M-3] mata set}.
+
+{marker examples}{dlgtab:Examples}
+
+{phang}
+1) Create a spatial lag for the dependent variable, construct the Moran scatter plot, and request Moran's I statistics
+
+{pmore}{cmd:. splagvar povrate, wname(C:\data/spweight) wfrom(Mata) plot(povrate) moran(povrate)}{p_end}
+
+
+{phang}
+2) Create a spatially lagged dependent variable and request Moran's I statistics and p-value under both normal approximation and randomization
+
+{pmore}{cmd:. splagvar crimerate, wname(spweight) wfrom(Stata) moran(crimerate)}{p_end}
+
+
+{phang} 
+3) Create a spatially lagged dependent variable and first and second order spatially lagged independent variables
+
+{pmore}{cmd:. splagvar houseval, wname(spweight1) wfrom(Mata) ind(income population education) order(2)}
+
+
+{pstd}Now estimating a spatial lag model by {hi:spatial 2SLS} and {hi:GMM} using {hi:WX} and {hi:(W^2)X} 
+as instruments has never been easier.{p_end}
+
+{pmore}{cmd:. ivregress 2sls houseval (wy_houseval=wx_* w2x_*) income population education, vce(robust)}
+
+{pmore}{cmd:. ivregress gmm houseval (wy_houseval=wx_* w2x_*) income population education} 
+
+
+{pstd}Other endogenous variables can be added to the model provided instruments are available.{p_end}
+
+{pmore}{cmd:. ivregress gmm houseval (wy_houseval endogvar=wx_* w2x_* endogvar_instr) income population education}
+
+
+{pstd}Education can be considered endogenous if you can find a good instrument.{p_end}
+
+{pmore}{cmd:. ivregress gmm houseval (wy_houseval education=wx_* w2x_* education_instr) income population}
+
+
+{pstd}Iterative GMM can be more efficient than two-step GMM.{p_end}
+
+{pmore}{cmd:. ivregress gmm houseval (wy_houseval education=wx_* w2x_* education_instr) income population, igmm}
+
+{pstd}Note: If you want to use the lags of an instrumental variable as instruments, then you need to include it in {varlist:2}
+
+
+{phang}
+4) Create a quasi-instrumental variable to be used as an instrument for education
+
+{pmore}{cmd:. splagvar, qvar(education) qname(educ_qinst)}
+
+{synoptline}
+
+
+{marker refs}{title:References}
+
+{bf:Anselin, L.} 2005. {it:Exploring Spatial Data with GeoDaTM : A Workbook.} Available at:
+{browse "http://www.csiss.org/clearinghouse/GeoDa/geodaworkbook.pdf":http://www.csiss.org/clearinghouse/GeoDa/geodaworkbook.pdf}
+
+{bf:Anselin, L.} 2007. "Spatial Econometrics". In T. C. Mills and K. Patterson (Eds). {it:Palgrave Handbook of Econometrics}. Vol 1, 
+Econometric Theory. New York: Palgrave MacMillan, pp. 901-969.
+
+{bf:de Smith, M.J., M.F. Goodchild, and P.A. Longley}. 2007. {it:Geospatial Analysis: A comprehensive Guide to Principles, Techniques, and Software Tools}. 
+Matador: Leicester, UK
+{browse "http://www.spatialanalysisonline.com":http://www.spatialanalysisonline.com}
+
+{bf:Fingleton. B. and J. Le Gallo}. 2008. "Estimating Spatial Models with Endogenous Variables, a Spatial Lag and Spatially
+Dependent Disturbances: Finite Sample Properties ", {it:Papers in Regional Science} 87(3): 319-339. 
+
+{bf:Gould, W.} 2006. "Mata Matters: Creating New Variables—Sounds Boring, Isn't". {it:The Stata Journal} 6: 112-123. 
+Available from {browse "http://www.stata-journal.com/article.html?article=pr0021":http://www.stata-journal.com/article.html?article=pr0021}
+
+{bf:Klotz, S.} 2004. {it:Cross-sectional Dependence in Spatial Econometrics Models: with an Application to German Start-up Activity Data.} 
+Transaction Publishers, Piscataway, NJ.
+
+
+{marker author}{title:Author}
+
+{p 4 4 2}{hi: P. Wilner Jeanty}, Dept. of Agricultural, Environmental, and Development Economics,{break} 
+    	   The Ohio State University{break}
+	   
+{p 4 4 2}Email to {browse "mailto:jeanty.1@osu.edu":jeanty.1@osu.edu} for any comments or suggestions.
+
+
+{marker citation}{title:Citation}
+
+Thanks for citing {cmd:splagvar} as follows:
+
+{bf:Jeanty, P.W.}, 2010. {bf:splagvar}: {it:Stata module to generate spatially lagged variables, construct the Moran scatter plot, and calculate global Moran's I statistics}
+Available from http://ideas.repec.org/c/boc/bocode/s457112.html.
+
+
+{title:Also see}
+
+{p 4 13 2}Online: {helpb spwmatrix}, {helpb spatgsa}, {helpb spatcorr} (if installed) 
+
+

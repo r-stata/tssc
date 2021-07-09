@@ -1,0 +1,76 @@
+.-
+help for ^fndmtch^
+.-
+
+Find matching values
+--------------------
+
+    ^fndmtch^ varname [ ^if^ exp ] [ ^in^ range ] ^, s^earch^(^searchvarlist^)^ 
+    [ ^l^ist ^g^enerate^(^newvar^)^ ] 
+
+Description
+-----------
+
+^fndmtch^ finds observations in which the value of varname matches (equals)
+the value(s) of one or more variables in searchvarlist.
+
+
+Remarks
+-------
+
+Missing values are not excluded from comparisons by default. 
+
+
+Options
+-------
+
+^search(^searchvarlist^)^ specifies variables to be searched for 
+    matching values. If varname is numeric (string), searchvarlist 
+    should all be numeric (string): however, inappropriate variables
+    are trapped with a warning. This is a required option. 
+
+    ^search(_all)^ is a brute force way of searching all variables 
+    for matches. ^fndmtch^ automatically ignores the match between 
+    varname and itself as one of ^_all^.      
+
+^list^ specifies that matching observations and variables should be 
+    listed.
+
+^generate(^newvar^)^ specifies a new variable to hold the number of 
+    matches. This new variable contains only integers in the range from 0
+    to the number of variables in searchvarlist. After ^generate(^newvar^)^ 
+    Stata_command ^if^ newvar selects observations with matching values. 
+
+
+Saved results
+-------------
+
+^r(where)^   names of variables with matching values
+
+
+Examples
+--------
+
+    . ^fndmtch year, s(a b c)^ 
+    
+    . ^fndmtch year, s(_all) gen(nmatch)^ 
+    . ^list year `r(where)' if nmatch^ 
+
+
+Authors
+-------
+
+         Nicholas J. Cox, University of Durham, U.K.
+         n.j.cox@@durham.ac.uk
+
+         Desmond E. Williams, NIDDK/NIH, Phoenix, Arizona, U.S.A.
+         demw@@mail.nih.gov
+
+
+See also
+--------
+
+ On-line: @dups@ (if installed) 
+ 
+
+

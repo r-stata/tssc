@@ -1,0 +1,48 @@
+{smcl}
+{* *! version 1.01  2008-02-07}{...}
+{cmd:help armaroots}
+{hline}
+
+{title:Roots of AR- and MA-polynomials}
+
+
+{title:Syntax}
+
+{p 8 25 2}
+{cmd:armaroots}
+[{cmd:,} 
+{opt nog:raph}]
+
+{title:Description}
+
+{p}{cmd:armaroots} is for use after {cmd:arima}.
+It calculates the roots of the characteristic polynomials (which should
+be less than 1 in modulus for stationarity and invertibility). For complex
+roots the period of the corresponding cycle is also calculated.
+The roots are plotted on the unit circle for easy visual checking for roots
+that cancel in the AR- and MA-polynomials.
+
+{title:Options}
+
+{synoptset 15}{...}
+{synopthdr:option}
+{synoptline}
+
+{synopt:{opt nog:raph}}Do not plot the roots.
+
+{synoptline}
+
+{title:Examples}
+
+{pstd}Setup{p_end}
+{phang2}{cmd:. webuse air2}{p_end}
+{phang2}{cmd:. gen lnair = ln(air)}{p_end}
+
+{pstd}Fit "airline model" and check roots{p_end}
+{phang2}{cmd:. arima lnair, arima(0,1,1) sarima(0,1,1,12)}{p_end}
+{phang2}{cmd:. armaroots}{p_end}
+
+{title:Author}
+
+{pstd}Sune Karlsson, Örebro University, Sweden{p_end}
+{pstd}sune.karlsson@oru.se{p_end}

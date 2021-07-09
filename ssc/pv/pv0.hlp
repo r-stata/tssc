@@ -1,0 +1,216 @@
+{smcl}
+{* 31jul2008}{...}
+{cmd:help pv} {right:also see:  {help pvtest}}
+{hline}
+
+{title:Title}
+
+{p2colset 5 11 19 2}{...}
+{p2col :{hi:pv} {hline 2}}Estimation with plausible values{p_end}
+{p2colreset}{...}
+
+{title:Syntax}
+
+{p 8 21 2}{cmdab:pv}
+[{indepvars}]
+{ifin}
+{weight}
+{cmd:,} {cmdab:pv}{cmd:(}{varlist}{cmd:)} [{it:options}]
+
+
+{synoptset 22 tabbed}{...}
+{synopthdr}
+{synoptline}
+{syntab :Main}
+{synopt :{cmdab:pv}{cmd:(}{it:varlist}{cmd:)}}plausible value estimates of the dependent variable{p_end}
+{synopt :{cmdab:cmd}{cmd:("}{it:command}{cmd:")}}estimation command to estimate the statistic, default is regress{p_end}
+{synopt :{cmdab:cmdops}{cmd:("}{it:options}{cmd:")}}options for the estimation command{p_end}
+
+{syntab :VCE BRR (PISA)}
+{synopt :{cmdab:brr}}specifies Balanced Repeated Replication (BRR) be used for VCE{p_end}
+{synopt :{cmdab:rw}{cmd:(}{it:varlist}{cmd:)}}BRR replicate weights to be used{p_end}
+{synopt :{cmdab:fays}{cmd:(}{it:real}{cmd:)}}Fay's adjustment{p_end}
+
+{syntab :VCE JRR (TIMSS PIRLS)}
+{synopt :{cmdab:jrr}}specifies Jackknifed Repeated Replication (JRR) be used for VCE{p_end}
+{synopt :{cmdab:jkzone}{cmd:(}{it:varname}{cmd:)}}Sampling zone variable{p_end}
+{synopt :{cmdab:jkrep}{cmd:(}{it:varname}{cmd:)}}Zone replicate weight variable{p_end}
+
+{syntab :VCE Bootstrap}
+{synopt :{cmdab:bs}}specifies that Stata's bootstrap command be used for VCE{p_end}
+{synopt :{cmdab:bsops}{cmd:("}{it:options}{cmd:")}}options for Stata's bootstrap command{p_end}
+
+{syntab :VCE Aggregation}
+{synopt :{cmdab:pisa}}specifies PISA's formula for aggregating VCE be used{p_end}
+{synopt :{cmdab:timss}}specifies TIMSS formula for aggregating VCE be used{p_end}
+{synopt :{cmdab:pirls}}specifies PIRLS formula for aggregating VCE be used{p_end}
+{synoptline}
+
+{p2colreset}{...}
+{p 4 6 2}
+{opt fweight}s, {opt iweight}s, {opt aweight}s, or {opt pweight}s are required;
+see {help weight}.{p_end}
+{p 4 6 2}
+See {help pvtest} for post estimation hypothesis testing.{p_end}
+{p 4 6 2}
+The default VCE utilizes the VCE reported by the command for each plausible value.{p_end}
+
+
+{title:Description}
+
+{pstd}
+{opt pv} estimates statistics when there are multiple estimates of the dependent variable
+(which are sometimes referred to as plausible values) by calculating the statistics
+for each estimate of the dependent variable and then calculating their average.
+This program can be used with any statistics estimation commands that accepts weights including
+{helpb regress}, {helpb qreg}, {helpb logit}, {helpb mean}, etc. It is specially (but not exclusively) designed
+to be used with the PISA, TIMSS and PIRLS student achievement datasets.
+{p_end}
+
+{pstd}
+The VCE can be calculated in one of four ways. The default is to use an aggregation of
+the VCEs for each plausible value which is reported by the specified stata command. Alternatively,
+Balanced Repeated Replication (used with PISA), Jackknifed Repeated Replication (used with
+TIMSS and PIRLS), or bootstrapping can be used.
+{p_end}
+
+{pstd}
+See the Formulas section below.
+{p_end}
+
+{title:Options}
+
+{dlgtab:Main}
+
+{phang}
+{cmdab:pv}{cmd:(}{it:varlist}{cmd:)} the variable list of plausible values or estimates of the dependent variable.
+
+{phang}
+{cmdab:cmd}{cmd:("}{it:command}{cmd:")} specifies the name of estimation command to be used. Estimation commands
+must allow weights, and they must output their estimates to e(b).
+
+{phang}
+{cmdab:cmdops}{cmd:("}{it:options}{cmd:")} options to be specified for the estimation command.
+
+
+{dlgtab:VCE BRR}
+
+{phang}
+{cmdab:brr} specifies that Balanced Repeated Replication be used for estimating the sampling variance.
+
+{phang}
+{cmdab:rw}{cmd:(}{it:varlist}{cmd:)} specifies the variable list of replicate weights to be used. In PISA 2000,
+2003, and 2006 these variables are w_fstr1 - w_fstr80.
+
+{phang}
+{cmdab:fays}{cmd:(}{it:real}{cmd:)} is the Fay's adjustment. In PISA 2000, 2003, and 2006 this is 0.5.
+
+{dlgtab:VCE JRR}
+
+{phang}
+{cmdab:jrr} specifies that Jackknifed Repeated Replication be used for estimating the sampling variance.
+
+{phang}
+{cmdab:jkzone}{cmd:(}{it:varname}{cmd:)} is a categorical variable that specifies the sampling zone; for TIMSS and PIRLS
+this variable is jkzone.
+
+{phang}
+{cmdab:jkrep}{cmd:(}{it:varname}{cmd:)} is a binary variable that specifies the observation's weighting within its zone; for
+TIMSS and PIRLS, this variable is jkrep.
+
+{dlgtab:VCE Bootstrap}
+
+{phang}
+{cmdab:bs} specifies that bootstrapping should be used to calculate the sampling variance. The expression list is assumed
+to be e(b); as a result, the user can only control the options.
+
+{phang}
+{cmdab:bsops}{cmd:("}{it:options}{cmd:")} specifies any bootstrapping options; see {helpb bootstrap}.
+
+{dlgtab:VCE Aggregation}
+
+{phang}
+{cmdab:pisa} tells the program to aggregate the VCE according to the formula on page 79 of OECD (2005a); this
+is the default.
+
+{phang}
+{cmdab:timss} tells the program to aggregate the VCE according to the formula on 2-52 of IEA (2005).
+
+{phang}
+{cmdab:pirls} tells the program to aggregate the VCE according to the formula on 2-52 of IEA (2005); see
+the description of formulas below.
+
+{title:Examples}
+
+{pstd}
+Estimating statistics with PISA
+
+{phang2}{cmd:. pv stratio propqual [aw=w_fstuwt], pv(pv*math) cmd("reg") brr rw(w_fstr*) fays(0.5)}{p_end}
+
+{phang2}{cmd:. pvtest stratio=propqual}{p_end}
+
+{phang2}{cmd:. pv stratio [aw=w_fstuwt], pv(pv*math) cmd("qreg") brr rw(w_fstr*) fays(0.5)}{p_end}
+
+{phang2}{cmd:. pv stratio [aw=w_fstuwt], pv(pv*math) cmd("mean") brr rw(w_fstr*) fays(0.5)}{p_end}
+
+{phang2}{cmd:. pv stratio [aw=w_fstuwt], pv(pv*math) bs bsops("reps(80) str(stratum) cl(schoolid)")}{p_end}
+
+{pstd}
+Estimating statistics with TIMSS and PIRLS
+
+{phang2}{cmd:. pv [aw=tchwgt], cmd("mean") pv(asrrea*) jkzone(jkzone) jkrep(jkrep) jrr timss}{p_end}
+
+{phang2}{cmd:. pv asbgsex [aw=tchwgt], pv(asrrea*) jkzone(jkzone) jkrep(jkrep) jrr timss}{p_end}
+
+{pstd}
+Estimating statistics with BRR VCE with a regular dependent variable
+
+{phang2}{cmd:. pv stratio [aw=w_fstuwt], pv(propqual) cmd("reg") brr rw(w_fstr*) fays(0.5)}{p_end}
+
+{title:Formulas}
+
+{pstd}To calculate statistics that are functions of plausible value estimates of a variable, the 
+statistic is calculated for each plausible value and then averaged. See OECD (2005a), page 79 for
+the formula used in this program.{p_end}
+
+{pstd}To calculate the standard error of statistics that are functions of plausible value estimates
+of a variable average sampling variance of the statistic for each plausible value combined with
+the variation among the estimated statistics for each plausible value.{p_end}
+
+{pstd}By specifying the {opt pisa} option, the formula used to calculate the standard error can be found on page 79 of
+OECD (2005a). By specifying the {opt timss} or {opt pirls} option, the formula can be found on page 2-52 of IEA (2005).{p_end}
+
+{pstd}The formula for calculating the VCE for statistics using BRR is taken from page 51 of OECD (2005a) while the formula
+used for calculating the VCE for JRR is from page 2-50 in IEA (2005).{p_end}
+
+{pstd}The formula for calculating the parameter for the t-distribution of the ratio of a statistic and its standard
+error is on page 131 of OECD (2005b).
+
+{title:References}
+
+{pstd}Lauzon D. (2004), "Variance estimation with plausible value achievement data: Two STATA programs for use with YITS/PISA data",
+{it:Information and Technical Bulletin}, Statistics Canada, Ottawa{p_end}
+
+{phang}OECD (2005a), {it:PISA 2003 Data Analysis Manual}, OECD, Paris{p_end}
+
+{phang}OECD (2005b), {it:PISA 2003 Technical Report}, OECD, Paris{p_end}
+
+{phang}IEA (2005), {it:TIMSS 2003 User Guide for the International Database}, IEA, Chestnut Hill, MA {p_end}
+
+{title:Author}
+
+{pstd}Kevin Macdonald is a consultant with the Education Team in the World Bank's Human Development Network and has
+a master's degree in economics from the University of British Columbia in Vancouver, Canada. Please send questions,
+comments or complaints to kadmacdonald@gmail.com.{p_end}
+
+{pstd}The command syntax and display for this program was inspired by Lauzon (2004).{p_end}
+
+{title:Also see}
+
+{psee}
+{helpb pvtest}
+
+{title:Version}
+
+{pstd}Last updated 2008-09-05{p_end}
+

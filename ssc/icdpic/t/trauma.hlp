@@ -1,0 +1,411 @@
+{smcl}
+{* October 25, 2010}
+{* Version 3.0}
+help for {hi:trauma}
+{hline}
+
+{title:Title}
+
+{p 4 8 2}
+{cmd:db trauma} -- ICD-9-CM Trauma
+
+
+{title:Version}
+
+{p 4 4 2}
+Version 3.0.
+
+{p 4 4 2}
+ICDPIC Version 3.0 requires STATA 8.0 or higher.  ICDPIC Version 3.0 has been tested in STATA 10 and STATA 11, but the authors believe it
+should also work without incident in STATA 8 and STATA 9.  If you have any problems using ICDPIC Version 3.0 in STATA 8 or STATA 9, please
+inform the authors.
+
+{p 4 4 2}
+ICDPIC Version 3.0 may be installed from within STATA using the {bf:ssc} command.  If you installed a previous version of ICDPIC from the SSC
+archives website using the {bf:ssc} command, we suggest that you first delete it by typing {bf:ssc uninstall icdpic} followed by
+{bf:ssc install icdpic}.  Alternatively, you may use {bf:ssc install icdpic, replace}.  See help for {help ssc}.
+
+{p 4 4 2}
+If you installed any previous ICDPIC files obtained directly from the authors, please delete them {bf:ALL} (.ado, .hlp and .dta files) to avoid
+any conflicts with ICDPIC 3.0 files.
+
+{p 4 4 2}
+Please enter complete variable names in the ICDPIC Version 3.0 dialog boxes.  Do not use abbreviations.
+
+{p 4 4 2}
+New to Version 3.0 is the addition of a dialog box (.dlg) file associated with each individual ICDPIC Version 3.0 program (.ado) file.  To access
+the ICDPIC dialog box, and all the ICDPIC programs, type: {cmd:db icdpic}.  Typing {cmd:icdpic}, as in earlier versions, will still work, but
+{bf:ONLY} with {bf:icdpic}.  For example, to access the ICD-9-CM Trauma program directly, type: {bf:db trauma}.  Typing {bf:trauma}, as in previous
+versions, will produce an error.
+
+{p 4 4 2}
+Fixed in ICDPIC Version 3.0 is the ability to use path\file names containing spaces.
+
+{p 4 4 2}
+Fixed in ICDPIC Version 3.0 is the ability to run in STATA 11.0.
+
+{p 4 4 2}
+Fixed in ICDPIC Version 3.0 is a bug that caused the {bf:triss} program to crash if the {it:rts} variable was named anything other than "rts".
+
+{p 4 4 2}
+New in ICDPIC Version 3.0 ({bf:trauma} program only) is the ability to choose whether an AIS value of 6 automatically forces an ISS of
+75 or to automatically have all AIS values of 6 changed to an AIS value of 5 and then have the ISS calculated normally.
+
+{p 4 4 2}
+All dialog boxes in ICDPIC Version 3.0 have memory.  Each time a dialog box is opened within the same STATA session, it will remember the values
+last entered.
+
+{p 4 4 2}
+All dialog boxes in ICDPIC Version 3.0 have the following buttons:
+
+{p 6 9 2}
+{it:OK} executes the program and removes the dialog box from the screen.
+
+{p 6 13 2}
+{it:SUBMIT} executes the program and leaves the dialog box on the screen.  Note that if an error message is generated the dialog box may
+be minimized.
+
+{p 6 13 2}
+{it:CANCEL} removes the dialog box from the screen and does nothing.  Clicking on the close icon of the dialog box does the same thing.
+
+{p 6 11 2}
+{it:HELP} leaves the dialog box on the screen and presents the program help file.  The {it:HELP} button has a question mark on it.
+
+{p 6 11 2}
+{it:COPY} leaves the dialog box on the screen and copies the program command to the clipboard.
+
+{p 6 12 2}
+{it:RESET} resets the values of the controls in the dialog box to their initial state, just as if the dialog box were invoked
+for the first time.  Each time a user invokes a dialog box, its controls will be filled in with the values the user last entered.
+{it:RESET} restores the control values to their defaults.  The {it:RESET} button has an R on it.
+
+
+{title:Syntax}
+
+{p 8 17 2}
+{cmd:db trauma}
+
+{p 4 4 2}
+The {it:ICD-9-CM Trauma} dialog box will open.  Follow the instructions.  
+
+{center:{bf:{it:OR}}}
+
+{p 8 17 2}
+{cmd:db icdpic}
+
+{p 4 4 2}
+The {it:ICDPIC} dialog box will open.  Choose {it:ICD-9-CM Trauma} and click {it:OK} or {it:Submit}.  The {it:ICD-9-CM Trauma} dialog
+box will open.  Follow the instructions.  
+
+
+{title:Description}
+
+{p 4 4 2}
+{cmd:trauma} provides various classifications and characterizations of trauma based on ICD-9-CM diagnosis codes,
+specifically codes for Nature of Injury (N-Codes) and External Cause of Injury (E-Codes).
+
+{p 4 4 2}
+For each observation, for each valid N-Code, variables for data from the list below will be added to the user's
+data.  Note: variables for diagnosis codes that are not valid N-Codes will have missing values. 
+
+
+{p 8 12 2}
+Abbreviated Injury Scale (AIS) value {p_end}
+{p 8 12 2}
+ISS body region {p_end}
+{p 8 12 2}
+Barell body region by nature of injury diagnosis matrix category {p_end}
+{p 8 12 2}
+Anatomic profile component category {p_end}
+
+
+{p 4 4 2}
+Variables for 4 E-Codes will be added to the user's data for each observation.  Up to 4 valid E-Codes, excluding E-Code
+places (E849.X), will be taken from the diagnosis codes and placed in these variables.  Variables for data from the
+list below will be added to the user's data for each of the 4 E-Code variables.  Note: E-Code, and associated, variables
+for which there is not an E-Code will have missing values. 
+ 
+
+{p 8 12 2}
+CDC Classifications for E-Codes (Mechanism, both major and minor, and Intent) {p_end}
+
+
+{p 4 4 2}
+For each observation, variables for data from the list below will be added to the user's data.
+
+
+{p 8 12 2}
+Maximum AIS severity for each ISS body region {p_end}
+{p 8 12 2}
+Maximum AIS severity overall {p_end}
+{p 8 12 2}
+Injury Severity Score (ISS) {p_end}
+{p 8 12 2}
+New Injury Severity Score (NISS) {p_end}
+{p 8 12 2}
+Lowest CDC classification of external cause of injury mechanism for all E-Codes captured {p_end}
+{p 8 12 2}
+Trauma type (Blunt or Penetrating) {p_end}
+
+
+{p 4 4 2}
+See also the {bf:Options} and {bf:Remarks} sections for {bf:IMPORTANT} information on, and requirements for, {cmd:trauma}.
+
+
+{title:Options}
+
+{p 4 4 2}
+ICD-9-CM diagnosis codes in the user's data may, or may not, contain a decimal point.  Simply choose the option that
+applies to your data in the {it:ICD-9-CM Trauma} dialog box. 
+
+
+{title:Remarks}
+
+{p 4 4 2}
+The user's data must contain ICD-9-CM diagnosis codes.  Diagnosis codes in the user's data must be of type string.  A
+decimal point in the diagnosis codes is optional.  Diagnosis codes should have a width of 5 (6 if a decimal point is
+present).  The diagnosis code prefix must be the same for all diagnosis codes and numbered sequentially starting with 1, 
+for example, dx1...dxN.  External Cause of Injury codes (E-Codes) should be included in this set and must begin with a
+capital 'E'.
+
+{p 4 4 2}
+{cmd:trauma} adds the following variables, where appropriate, to a new copy of the user's data stored on disk:
+
+
+{p 8 12 2}
+{it:sev_1-sev_n}: AIS severity for diagnosis codes 1..n {p_end}
+{p 8 12 2}
+{it:issbr_1-issbr_n}: ISS body region for diagnosis codes 1..n {p_end}
+{p 8 12 2}
+{it:brl_1-brl_n}: Barell matrix category for diagnosis codes 1..n {p_end}
+{p 8 12 2}
+{it:apc_1-apc_n}: anatomic profile component category for diagnosis codes 1..n {p_end}
+{p 8 12 2}
+{it:mxaisbr1-mxaisbr6}: maximum AIS severity for each ISS body region {p_end}
+{p 8 12 2}
+{it:maxais}: maximum AIS severity over all ISS body regions {p_end}
+{p 8 12 2}
+{it:xiss}: computed injury severity score {p_end}
+{p 8 12 2}
+{it:niss}: computed new injury severity score {p_end}
+{p 8 12 2}
+{it:ecode_1-ecode_4}: up to 4 E-Codes are captured excluding E-Code places (E849.X){p_end}
+{p 8 12 2}
+{it:mechmaj1-mechmaj4}: CDC external cause of injury major mechanism for each E-Code captured {p_end}
+{p 8 12 2}
+{it:mechmin1-mechmin4}: CDC external cause of injury minor mechanism for each E-Code captured {p_end}
+{p 8 12 2}
+{it:intent1-intent4}: intent for each E-Code captured {p_end}
+{p 8 12 2}
+{it:lowmech}: lowest CDC external cause of injury major mechanism for all E-Codes captured {p_end}
+{p 8 12 2}
+{it:bluntpen}: type of trauma, blunt or penetrating, based on value of variable {it:mechmaj1} {p_end}
+
+
+{p 4 4 2}
+If a diagnosis code is not an N-Code, then its associated {it:sev}, {it:issbr}, {it:brl} and {it:apc} variables will contain
+missing values.
+
+{p 4 4 2}
+{it:mxaisbr1-mxaisbr6} variables are defined as 0 if there are no valid N-Codes for that body region and 9 if there are no
+valid N-Codes with a known severity for that body region.
+
+{p 4 4 2}
+The {it:maxais} variable is defined as 0 if there are no valid N-Codes and 9 if there are no valid N-Codes with a
+known severity.
+
+{p 4 4 2}
+The {it:xiss} and {it:niss} variables are defined as 75 if {it:maxais} is 6.  If there are no valid N-Codes, then they
+are defined as 0.  If there are no valid N-Codes with both a known severity and a known body region, then they are
+defined as 99.
+
+{p 4 4 2}
+If an E-Code variable ({it:ecode_1-e_code4}) does not contain an E-Code then it, and its associated variables,
+({it:mechmaj, mechmin and intent}) will contain missing values.
+
+{p 4 4 2}
+The {it:bluntpen} variable is defined as follows:  P for penetrating trauma if the {it:mechmaj1} variable is 0 or 4 and;
+B for blunt trauma if the {it:mechmaj1} variable is 2, 5, 6, 7, 8, 9 or 13.
+
+{p 4 4 2}
+Nature of Injury Codes (N-Codes) included in both {bf:ntab_s1.dta} and {bf:ntab_s2.dta}:
+
+
+{p 8 12 2}
+800 - 904.9 {p_end}
+{p 8 12 2}
+910 - 929.9 {p_end}
+{p 8 12 2}
+940 - 957.9 (Note: burns, 940 - 949.5, are assigned AIS severity code 9 (Unknown)) {p_end}
+{p 8 12 2}
+959 - 959.9 {p_end} 
+
+{p 4 4 2}
+{cmd:trauma} requires the use of lookup tables {bf:ntab_s1.dta}, {bf:ntab_s2.dta}, {bf:etab_s1.dta} and {bf:etab_s2.dta}.
+These data tables are supplied.  _s1 tables are for use with data without the decimal point in ICD-9-CM codes and _s2
+tables are for data that include the decimal point.  See help for {help icdpic}, specifically the LOOKUP TABLES part of
+the {bf:Remarks} section.
+
+
+{p 4}
+{bf:{ul:NOTES ON METHODOLOGY}}
+
+{p 4 4 2}
+{cmd:trauma} does not attempt to assign a specific AIS code for each N-Code, but only to classify injuries into a
+general severity and body region in order to allow for approximate severity scoring.  Meredith and colleagues have pointed
+out that any mapping method will be less accurate than direct AIS coding by trained registrars, but a program like ICDPIC
+(or ICDMAP-90) may be useful when the latter is impractical or impossible.  For calculation of severity scores, only the
+original version of the Abbreviated Injury Score (AIS) was used, as developed and published by the American Medical
+Association.  Later versions of the AIS, with more body regions and updated definitions, have been developed by the American
+Association for Automotive Medicine, and are available from that organization.  ICDPIC does not calculate these newer
+versions of the AIS.
+
+{p 4 4 2}
+Injury Severity Score (variable {it:xiss} in the output data) is calculated according to the classic description of Baker
+and colleagues, but only over codes that have both a known severity and body region.
+
+
+{p 4}
+{bf:{ul:NOTES ON VALIDATION}}
+
+{p 4 4 2}
+To a large extent, the ICD to AIS mapping is "self-validating", since it reflects the consensus of a large number of
+registrars with actual specific injuries.   An interesting review of this general approach to decision making is given in
+Surowiecki's recent book on the "Wisdom of Crowds".
+
+{p 4 4 2}
+ISS calculated by ICDPIC (XISS in Table 1 below) was compared to that calculated by ICDMAP-90 (ISS90 in Table 1 below) for
+300,176 cases in the 2002 NIS with a primary diagnosis of injury as defined above, excluding cases with a primary burn
+diagnosis.  In 4,458 of these (1.5%), ICDMAP-90 was unable to assign an AIS score for any diagnosis.
+ 
+{p 4 4 2} 
+For 248,825 of the remaining 295,718 cases in the 2002 NIS (84.1%), XISS was exactly the same as the ISS90 assigned by
+ICDMAP-90.  When ISS was categorized as recommended by Copes and colleagues, 274,709 cases (92.9%) were assigned to the
+same category, and 294,358 (99.5%) to the same or an adjacent category (Table 1).
+
+    {hline 79}
+    {c |} Table 1 {c |}                               XISS                                {c |}
+    {hline 79}
+    {c |}         {c |}       {c |}   1-8   {c |}   9-15  {c |}  16-24  {c |}  25-40  {c |}  41-49  {c |}  50-75  {c |}
+               {hline 68}
+    {c |}         {c |} 1-8   {c |} 147,610 {c |}   5,072 {c |}     149 {c |}      40 {c |}       0 {c |}       3 {c |}
+               {hline 68}
+    {c |}         {c |} 9-15  {c |}   8,734 {c |} 106,646 {c |}   1,651 {c |}     170 {c |}       1 {c |}       2 {c |}   
+               {hline 68}
+    {c |}         {c |} 16-24 {c |}      74 {c |}   1,795 {c |}  15,854 {c |}     557 {c |}       5 {c |}       4 {c |}
+               {hline 68}
+    {c |}  ISS90  {c |} 25-40 {c |}      22 {c |}     718 {c |}   1,441 {c |}   4,132 {c |}      81 {c |}      14 {c |}
+               {hline 68}
+    {c |}         {c |} 41-49 {c |}       0 {c |}       0 {c |}      41 {c |}     255 {c |}     175 {c |}      27 {c |}
+               {hline 68}
+    {c |}         {c |} 50-75 {c |}       0 {c |}      48 {c |}      12 {c |}      57 {c |}      36 {c |}     292 {c |}
+               {hline 68}
+    {c |}         {c |}   *   {c |}   4,145 {c |}     285 {c |}      15 {c |}      10 {c |}       0 {c |}       3 {c |}
+    {hline 79}
+
+
+{p 4 4 2}
+* Unobtainable
+
+
+{p 4 4 2}
+Evaluating the most obvious discrepancies in Table 1, we discovered that the 60 cases given ISS90 of 50-75 by ICDMAP-90, but
+only XISS of 9-24 by ICDPIC, were entirely due to the ICD-9-CM diagnosis code 862.9 (open chest injury, not otherwise
+specified).  Conversely, the 40 cases given ISS90 of 1-8 by ICDMAP-90, but XISS of 25-40 by ICDPIC, were mostly those where
+an injury region was ambiguous between head and face (and therefore not coded by ICDMAP-90), but had been assigned an AIS of
+5 by contributors to NTDB (and therefore by ICDPIC). 
+
+
+{title:Examples}
+
+{p 4 8 2}
+None
+
+
+{title:Authors}
+
+{p 4}
+David E. Clark, M.D.
+
+{p 8 12 2}
+Maine Medical Center, Portland, Maine, USA {p_end}
+{p 8 12 2}
+University of Vermont College of Medicine, Burlington, Vermont, USA {p_end}
+{p 8 12 2}
+Harvard Injury Control Research Center, Harvard School of Public Health, Boston, Massachusetts, USA {p_end}
+
+{p 8}
+Correspondence to Dr. Clark, {p_end}
+{p 8}
+887 Congress Street, Portland ME 04102 {p_end}
+{p 8} 
+Email:  clarkd@mmc.org {p_end}
+
+{p 4}
+Turner M. Osler, M.D.
+
+{p 8 12 2}
+University of Vermont College of Medicine, Burlington, Vermont, USA {p_end}
+
+{p 4}
+David R. Hahn
+
+{p 8 12 2}
+Maine Medical Center, Portland, Maine, USA {p_end}
+
+
+{title:References}
+
+{p 4 8 2}
+Baker SP, O'Neill B, Haddon WJ, Long WB. The injury severity score: A method for describing patients with multiple injuries
+and evaluating emergency care. {it:J Trauma} 1974;14:187-196.
+
+{p 4 8 2}
+Barell V, Aharonson-Daniel L, Fingerhut LA, et al. An introduction to the Barell body region by nature of injury diagnosis
+matrix. {it:Inj Prev} 2002;8:91-96.
+
+{p 4 8 2}
+Copes WS, Champion HR, Sacco WJ, et al. Progress in characterizing anatomic injury. {it:J Trauma} 1990;30:1200-1207.
+
+{p 4 8 2}
+Copes WS, Champion HR, Sacco WJ, Lawnick MM, Keast SL, Bain LW. The Injury Severity Score revisited.  {it:J Trauma}
+1988;28:69-77.
+
+{p 4 8 2}
+Meredith JW, Evans G, Kilgo PD, et al. A comparison of the abilities of nine scoring algorithms in predicting mortality.
+{it:J Trauma} 2002;53:621-629.
+
+{p 4 8 2}
+Osler T, Baker SP, Long W. A modification of the injury severity score that both improves accuracy and simplifies scoring.
+{it:J Trauma} 1997;43:922-925.
+
+{p 4 8 2}
+Rating the severity of tissue damage. I. The abbreviated scale. {it:JAMA} 1971;215:277-280.
+
+{p 4 8 2}
+Recommended framework for presenting injury mortality data.  {it:MMWR Morb Mortal Wkly Rep} 1997;46:1-30.
+
+{p 4 8 2}
+Surowiecki J.  {it:The Wisdom of Crowds}.  Boston: Little,Brown; 2004.
+
+
+{title:Also see}
+
+{p 4}
+help for {help aps}
+
+{p 4}
+help for {help triss}
+
+{p 4}
+help for {help ascot}
+
+{p 4}
+help for {help icdpic}
+
+{p 4}
+help for {help trauma}
+
+
+
+

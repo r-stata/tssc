@@ -1,0 +1,257 @@
+{smcl}
+{* version 2.0.5 28aug2012}{...}
+{cmd:help rev}
+{hline}
+
+{title:Title}
+
+{p 5}
+{cmd:rev} {hline 2} Reverse values of variables
+
+
+{title:Syntax}
+
+{p 8}
+{cmd:rev} {varlist} {ifin} [{cmd:,} {it:options}]
+
+
+{synoptset 21 tabbed}{...}
+{synopthdr}
+{synoptline}
+{syntab:{it:names}}
+{synopt:{opt pre:fix(str)}}use {it:str} as prefix for new variables
+{p_end}
+{synopt:{opt g:enerate}{cmd:(}{it:{help newvarlist}}{cmd:)}}create new 
+variables {it:name{hi:1}}, {it:name{hi:2}}, {it:...}{p_end}
+{synopt:{opt suff:ix(str)}}use {it:str} as suffix for new variables
+{p_end}
+{synopt:{opt replace}}replace variables with reversed version{p_end}
+
+{syntab:{it:labels}}
+{synopt:{opt l:abel(namelist)}}specify names for value labels{p_end}
+{synopt:{opt nol:abel}}do not define a value label for new variables
+{p_end}
+{synopt:{opt modify}}modify exisiting value labels{p_end}
+{synopt:{opt m:ask(str)}}handle numeric prefix in value labels{p_end}
+
+{syntab:{it:functionality}}
+{synopt:{opt r:everse(numlist)}}reverse values specified in 
+{it:{help numlist}}{p_end}
+{synopt:{opt s:wap(numlist)}}swap values specified in 
+{it:{help numlist}}{p_end}
+{synopt:{opt copy:rest}}copy values excluded by the {hi:if} and/or 
+{hi:in} qualifier{p_end}
+{synoptline}
+
+
+{title:Description}
+
+{pstd}
+{cmd:rev} reverses the value order of each variable specified in 
+{it:varlist}. The created variable {it:{hi:rv_}varname} contains the 
+(distinct) values of the original variable in reversed order. A new 
+value label is defined accordingly.
+
+{pstd}
+{bf:Remarks:} Variables are assumed to have integer values incremented 
+by one. If variables have integer values not incremented by one, 
+specify the values to be reversed in option {opt reverse}. {cmd:rev} 
+also handles variables that contain non-integer values.
+
+
+{title:Options}
+
+{phang}
+{opt prefix(str)} uses {it:str} as prefix for the new variables' 
+names. May be combined with {opt generate} and/or {opt suffix}. The 
+default prefix is {hi:rv_} and is set if none of {opt prefix}, 
+{opt generate}, {opt suffix} or {opt replace} is specified.
+
+{phang}
+{opt generate(namelist)} creates new variables {it:name{hi:1}}, 
+{it:name{hi:2}}, {it:...}. May be combined with {opt prefix} and/or 
+{opt suffix}.
+
+{phang}
+{opt suffix(str)} uses {it:str} as suffix for the new variables' 
+names. May be combined with {opt generate} and/or {opt prefix}.
+
+{phang}
+{opt replace} replaces variables in {it:varlist} with their reversed 
+version. If variables have value labels attached these labels are 
+modified accordingly. Thus, {opt replace} implies {opt modify}. 
+Alternatively a new label, specified in {opt label}, may be defined. 
+May not be combined with {opt prefix}, {opt generate} or {opt suffix}.
+
+{phang}
+{opt label(namelist)} uses names as value label names for the created 
+variables. Either one name or as many names as new variables may be 
+specified. If only one name is specified the value label defined for 
+the first variable in {it:varlist} is attached to all successive 
+variables. Default is to use new variables' names as value label 
+names. 
+
+{phang}
+{opt nolabel} specifies that no value labels will be defined for the 
+new variables. If specified with {opt replace} any value label attached 
+to variables is detached but not dropped from memory. Value labels are 
+left unmodified.
+
+{phang}
+{opt modify} allows exisitng value labels to be overwritten.
+
+{phang}
+{opt mask(str)} indicates that value labels have a numeric prefix 
+assigned using {help numlabel} with {opt mask} option. If  
+{cmd:numlabel ,mask(}{it:mask}{cmd:)} has been used previously, value 
+labels defined by {cmd:rev} will not be appropriate unless the same 
+{opt mask} is specified. Note that {cmd:rev} handles a {cmd:numlabel} 
+command without {opt mask} option automatically.
+
+{phang}
+{opt reverse(numlist)} reverses values specified in {it:numlist}. In 
+{cmd:reverse(1 2 3 4)} values {hi:1} and {hi:4}, and values {hi:2} and 
+{hi:3} are swapped. {opt v:alid} is a synonym for {opt reverse}. Up to 
+249 values may be specified. See {help rev##valid:example}.
+
+{phang}
+{opt swap(numlist)} swaps values specified in {it:numlist} pairwise. 
+Thus, in {cmd:swap(1 2 3 4)} values {hi:1} and {hi:2}, and values 
+{hi:3} and {hi:4} are swapped.  Up to 249 values may be specified.
+
+{phang}
+{opt copyrest} copies values excluded by the {hi:if} and/or {hi:in} 
+qualifier from the original variable.
+
+
+{title:Examples}
+
+{pstd}
+In a fictional dataset we want to reverse the value order of three 
+variables. We can do so using {help recode}.
+
+{phang2}{cmd:. recode var1 (5 = 1)(4 = 2)(2 = 4)(1 = 5)}
+{cmd: ,prefix(rec_)}{p_end}
+{phang2}{cmd:. recode var2 (7 = 1)(6 = 2)(5 = 3)(3 = 5)(2 = 6)(1 = 7)}
+{cmd: ,prefix(rec_)}{p_end}
+{phang2}{cmd:. recode var3 (4 = 1)(3 = 2)(2 = 3)(1 = 4) ,prefix(rec_)} 
+{p_end}
+
+{pstd}
+Using {cmd:rev} we get the same result (and the appropriate value 
+labels) typing only one line of code.
+
+{phang2}{cmd:. rev var1 var2 var3 ,prefix(rec_)}{p_end}
+
+{marker valid}
+{pstd}
+{ul:The {opt reverse} option}
+
+{phang2}{cmd:. tabulate var1}{p_end}
+
+	             var1 |      Freq.     Percent        Cum.
+	------------------+-----------------------------------
+	            agree |          2       14.29       14.29
+	        undecided |          3       21.43       35.71
+	         disagree |          4       28.57       64.29
+	strongly disagree |          5       35.71      100.00
+	------------------+-----------------------------------
+	            Total |         14      100.00
+
+{phang2}{cmd:. label list var1}{p_end}
+	var1:
+	           1 strongly agree
+	           2 agree
+	           3 undecided
+	           4 disagree
+	           5 strongly disagree
+	           9 missing
+
+{pstd}
+Note that the minimum valid value in the data (which is 2) is not the 
+theoretical minimum value in the underlying Likert-item (which is 1). 
+Without specifying {opt reverse} we get:
+
+{phang2}{cmd:. rev var1}{p_end}
+
+{phang2}{cmd:. tabulate rv_var1}{p_end}
+
+	          rv_var1 |      Freq.     Percent        Cum.
+	------------------+-----------------------------------
+	strongly disagree |          5       35.71       35.71
+	         disagree |          4       28.57       64.29
+	        undecided |          3       21.43       85.71
+	            agree |          2       14.29      100.00
+	------------------+-----------------------------------
+	            Total |         14      100.00
+
+{phang2}{cmd:. label list rv_var1}{p_end}	
+	rv_var1:
+        	  1 strongly agree
+	          2 strongly disagree
+	          3 disagree
+	          4 undecided
+	          5 agree
+	          9 missing
+
+{pstd}
+Note that 'strongly disagree' is coded '2', whereas we want it to be 
+coded '1'. Specifying the {opt reverse} option yields the appropriate 
+result.
+
+{phang2}{cmd:. rev var1 ,reverse(1/5)}{p_end}
+
+{phang2}{cmd:. tabulate rv_var1}{p_end}
+
+	         rv_var1  |      Freq.     Percent        Cum.
+	------------------+-----------------------------------
+	strongly disagree |          5       35.71       35.71
+	         disagree |          4       28.57       64.29
+	        undecided |          3       21.43       85.71
+	            agree |          2       14.29      100.00
+	------------------+-----------------------------------
+	            Total |         14      100.00
+
+{phang2}{cmd:. label list rv_var1}{p_end}
+	rv_var1:
+	          1 strongly disagree
+	          2 disagree
+	          3 undecided
+	          4 agree
+	          5 strongly agree
+	          9 missing
+
+			  
+{title:Acknowledgments}
+
+{pstd}
+There are several programs that serve the same purpose as {cmd:rev}. 
+The {stata findit omscore:omscore} command written by Marc Jacobs in 
+1992, {stata findit revrs:revrs} by Kyle C. Longest and 
+{stata findit vreverse:vreverse} command by Nick Cox, to name a view. 
+Implemented in official Stata there is the {cmd:gsort} command which 
+can (in some cases) be used to reverse the value order of variables. 
+Looking at these programs was very helpful writing {cmd:rev}.
+
+{pstd}
+The name {cmd:rev} is borrowed from the same-named 
+{stata findit egenodd:egen} function by Nick Cox who also recommended 
+to change the name from {cmd:revv}.
+
+{pstd}
+Marc Kaulisch suggested option {opt suffix}.
+
+
+{title:Author}
+
+{pstd}Daniel Klein, University of Bamberg, klein.daniel.81@gmail.com
+
+
+{title:Also see}
+
+{psee}
+Online: {help gsort}, {help recode}, {help label}{p_end}
+
+{psee}
+if installed: {help omscore}, {help revrs}, {help vreverse}
+{p_end}

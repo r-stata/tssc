@@ -1,0 +1,231 @@
+{smcl}
+{* 19june2002/5july2004}{...}
+{hline}
+help for {hi:dpplot}
+{hline}
+
+{title:Density probability plots} 
+
+{p 8 17 2}{cmd:dpplot} 
+{it:varname} 
+[{cmd:if} {it:exp}]  
+[{cmd:in} {it:range}] 
+[ {cmd:,}
+{cmd:a(}{it:#}{cmd:)}  
+{cmd:dist(}{it:name}{cmd:)} 
+{cmd:param(}{it:numlist}{cmd:)} 
+{cmdab:gen:erate(}{it:newvar1 newvar2}{cmd:)} 
+{cmd:line(}{it:line_options}{cmd:)} 
+{it:graph_options} 
+{cmd:plot(}{it:plot}{cmd:)} 
+] 
+
+
+{title:Description}
+
+{p 4 4 2}{cmd:dpplot} plots density probability plots for {it:varname} 
+given a reference distribution, by default normal (Gaussian). 
+
+
+{title:Remarks}
+
+{p 4 4 2}
+To establish notation, and to fix ideas with a concrete example: consider an
+observed variable {it:Y}, whose distribution we wish to compare with a normally
+distributed variable {it:X}. That variable has density function {it:f}({it:X}),
+distribution function {it:P = F}({it:X}) and quantile function 
+{it:X = Q}({it:P}).  (The distribution function and the quantile function are inverses
+of each other.) Clearly, this notation is fairly general and also covers other
+distributions, at least for continuous variables.
+ 
+{p 4 4 2}
+The particular density function {it:f}({it:X} | parameters) most pertinent to
+comparison with data for {it:Y} can be computed given values for its
+parameters, either estimates from data on {it:Y}, or parameter values chosen
+for some other good reason. In the case of a normal distribution, these
+parameters would usually be the mean and the standard deviation. Such density
+functions are often superimposed on histograms or other graphical displays.  In
+Stata, {help histogram} has a {cmd:normal} option which adds the normal density
+curve corresponding to the mean and standard deviation of the data shown. 
+
+{p 4 4 2} 
+The density function can also be computed indirectly via the quantile function
+as {it:f}({it:Q}({it:P})). For example, if {it:P} were 0.5, then
+{it:f}({it:Q}(0.5)) would be the density at the median. In practice {it:P} is
+calculated as so-called plotting positions {it:p_i} attached to values
+{it:y_}({it:i}) of a sample of {it:Y} of size {it:n} which have rank {it:i}:
+that is, the {it:y_}({it:i}) are the order statistics {it:y_}(1) <= ... <=
+{it:y_}({it:n}). One simple rule uses {it:p}_{it:i} = ({it:i} - 0.5) / {it:n}.
+Most other rules follow one of a family ({it:i} - {it:a}) / ({it:n} - 2{it:a} +
+1) indexed by {it:a}. 
+
+{p 4 4 2} 
+Plotting both {it:f}({it:X} | parameters) and {it:f}({it:Q}({it:P} =
+{it:p_i})), calculated using plotting positions, versus observed {it:Y} gives
+two curves. In our example, the first is normal by construction and the second
+would be a good estimate of a normal density if {it:Y} were truly normal with
+the same parameters. In terms of Stata functions, the two curves are based on
+{cmd:normden(}({it:X} - mean) / SD){cmd:)} and
+{cmd:normden(invnorm(}{it:p_i}{cmd:))}. The match or mismatch between the
+curves allows graphical assessment of goodness or badness of fit. What is more,
+we can use experience from comparing frequency distributions, as shown on
+histograms, dot plots or other similar displays, in comparing or identifying
+location and scale differences, skewness, tail weight, tied values, gaps,
+outliers and so forth. 
+
+{p 4 4 2}
+Such {it:density probability plots} were suggested by Jones and Daly (1995).
+See also Jones (2004). 
+They are best seen as special-purpose plots, like normal quantile plots and
+their kin, rather than general-purpose plots, like histograms or dot plots.
+
+{p 4 4 2}
+Extending the discussion in Jones and Daly (1995), the advantages (+) and
+limitations (-) of these plots include 
+
+{p 8 8 2}+1. No choices of binning or origin (cf. histograms, dot plots, etc.) 
+or of kernel or of degree of smoothing (cf. density estimation) are required. 
+
+{p 8 8 2}+2. Some people find them easier to interpret than quantile-quantile 
+plots. 
+
+{p 8 8 2}+3. They work well for a wide range of sample sizes. At the same 
+time, as with any other method, a sample of at least moderate size is 
+preferable (one rule of thumb is >= 25). 
+
+{p 8 8 2}+4. If {it:X} has bounded support in one or both directions, then this 
+should be clear on the plot. 
+
+{p 8 8 2}-1. Results may be difficult to decipher if observed and reference
+distributions differ in modality. For example, if the reference distribution is
+unimodal but the observed data hint at bimodality, nevertheless 
+{it:f}({it:Q}({it:P})) must be
+unimodal even though {it:f}({it:Y}) may not be. Similarly, when the reference
+distribution is exponential, then {it:f}({it:Q}({it:P})) must be monotone 
+decreasing whatever the shape of {it:f}({it:Y}). 
+
+{p 8 8 2}-2. It may be difficult to discern subtle differences in one or both 
+tails of the observed and reference distributions. 
+
+{p 8 8 2}-3. Comparison is of a curve with a curve: some people argue
+that graphical references should where possible be linear (and ideally 
+horizontal). (A linear reference is a clear advantage of quantile plots.) 
+
+{p 8 8 2}-4. There is no simple extension to comparison of two samples 
+with each other. 
+
+{p 4 4 2}
+Programmers may wish to inspect the code and add code for other distributions.
+If parameters are not estimated, then naturally their values must be supplied:
+the order of parameters should seem natural or at least conventional. 
+
+
+{title:Options}
+
+{p 4 8 2}{cmd:a()} specifies a family of plotting positions, as explained
+above. The default is 0.5. Choice of {cmd:a} is rarely material unless the
+sample size is very small, and then the exercise is moot whatever is done. 
+
+{p 4 8 2}{cmd:dist()} specifies a distribution to act as a reference. 
+The distributions implemented include {cmd:beta}, {cmd:exponential}, 
+{cmd:gamma}, {cmd:Gumbel}, {cmd:lognormal}, {cmd:Weibull} and {cmd:normal}, 
+the last being the default. {cmd:Gaussian} is a synonym for {cmd:normal}.  
+
+{p 4 8 2}{cmd:param()} specifies parameter values which give a reference
+distribution.  
+ 
+{p 8 8 2}With {cmd:dist(normal)} two parameters may be specified. The
+first is the mean and the second is the standard deviation. 
+
+{p 8 8 2}With {cmd:dist(Weibull)} two parameters may be specified. The
+first is a scale parameter {it:b} and the second a shape parameter {it:c}. 
+(The density function for a variable {it:x} is thus ({it:c}/{it:b}) 
+({it:x}/{it:b})^({it:c} - 1) exp(-({it:x}/{it:b})^{it:c}).) 
+
+{p 8 8 2}With {cmd:dist(lognormal)} two parameters may be specified. The
+first is the mean of logged values and the second is the standard deviation
+of logged values. 
+
+{p 8 8 2}With {cmd:dist(gumbel)} two parameters must be specified. The
+first is a scale parameter alpha and the second is a location parameter mu. 
+(The density function for a variable {it:x} is thus 
+(1 / alpha) * exp[-({it:x} - mu) / alpha] * exp[-exp(-({it:x} - mu) / alpha)].) 
+{stata ssc desc gumbelfit:gumbelfit} is one program to estimate parameters. 
+
+{p 8 8 2}With {cmd:dist(gamma)} two parameters must be specified. The
+first is a shape parameter alpha and the second is a scale parameter beta. 
+(The density function for a variable {it:x} is thus 
+[1 / (beta^alpha * Gamma(alpha))] {it:x}^(alpha - 1) exp(-{it:x} / beta), 
+where Gamma() is the gamma function.) 
+{stata ssc desc gammafit:gammafit} is one program to estimate parameters. 
+
+{p 8 8 2}With {cmd:dist(exponential)} one parameter may be specified, namely
+the mean. 
+
+{p 8 8 2}With {cmd:dist(beta)} two parameters must be specified, 
+shape parameters alpha and beta. 
+(The density function for a variable {it:x} is thus 
+[1 / Beta(alpha, beta)] {it:x}^(alpha - 1) (1 -{it:x})^(beta - 1), 
+where Beta() is the beta function.) 
+{stata ssc desc betafit:betafit} is one program to estimate parameters. 
+
+{p 4 8 2} 
+{cmd:generate()} specifies two new variable names to hold 
+the results of densities estimated from the data directly (as {it:f}() given 
+parameters) and indirectly (as {it:f}({it:Q}({it:P})) given parameters). 
+
+{p 4 8 2}{cmd:line(}{it:line_options}{cmd:)} are options of 
+{help twoway_mspline:twoway mspline} and {help twoway_line:twoway line}, 
+which may be used to control the rendition of the density function curve.
+
+{p 4 8 2}{it:graph_options} are options of {help twoway}. 
+
+{p 4 8 2}{cmd:plot(}{it:plot}{cmd:)} provides a way to add other plots to the 
+generated graph; see help {help plot_option}.
+
+
+{title:Examples}
+
+{p 4 8 2}{inp:. dpplot mpg} 
+
+{p 4 8 2}{inp:. set obs 1000}{p_end}
+{p 4 8 2}{inp:. gen rnd = invnorm(uniform())}{p_end}
+{p 4 8 2}{inp:. dpplot rnd, param(0 1)}{p_end}
+{p 4 8 2}{inp:. dpplot rnd, param(0 1) plot(histogram rnd, bcolor(none) width(0.2))}
+
+{p 4 8 2}{inp:. dpplot length, dist(lognormal) gen(density1 density2)} 
+
+{p 4 8 2}{inp:. gammafit length}{p_end}
+{p 4 8 2}{inp:. dpplot length, dist(gamma) param(`e(alpha)' `e(beta)')}
+
+
+{title:Author}
+
+{p 4 4 2}Nicholas J. Cox, University of Durham, U.K.{break} 
+	 n.j.cox@durham.ac.uk
+
+
+{title:Acknowledgements} 
+
+{p 4 4 2}Tim Sofer found a bug. 
+
+
+{title:References} 
+
+{p 4 8 2}Jones, M.C. 2004. Hazelton, M.L. (2003), "A graphical tool
+for assessing normality," {it:The American Statistician} 
+57: 285-288: Comment. {it:The American Statistician} 58: 176-177. 
+
+{p 4 8 2}Jones, M.C. and F. Daly. 1995. Density probability plots. 
+{it:Communications in Statistics, Simulation and Computation} 
+24: 911-927. 
+
+
+{title:Also see}
+
+{p 4 13 2}On-line:  help for {help twoway}, {help diagplots}, 
+{help gumbelfit} (if installed), 
+{help gammafit} (if installed), 
+{help betafit} (if installed)  
+{p_end}
+  

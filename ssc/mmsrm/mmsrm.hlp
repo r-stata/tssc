@@ -1,0 +1,72 @@
+{smcl}
+{* 5may2013}{...}
+{hline}
+help for {hi:mmsrm}
+{hline}
+
+{title:Estimation of the parameters of a Multidimensional Marginally Sufficient Rasch Model (MMSRM)}
+
+{p 8 14 2}{cmd:mmsrm} {it:varlist} {cmd:id}({it:varname}) [{cmd:,} {cmdab:part:ition}({it:numlist}) {cmdab:nodet:ails} {cmdab:trac:e} {cmdab:it:erate}({it:#}) {cmdab:ad:apt} {cmdab:meth:od}({it:mml/gee})]
+
+{p 8 14 2}{it:varlist} is a list of two existing binary variables or more.
+
+{title:Description}
+
+{p 4 8 2}{cmd:mmsrm} estimates by marginal maximum likelihood (MML) or
+generalized estimating equations (GEE) the parameters of the Multidimensional
+Marginally Sufficient Rasch Model (MMSRM) defined by Hardouin and Mesbah (2004).
+This model is an Item Response Model (IRM) with one or several latent traits.
+This is a particular multidimensionnal extension of the Rasch model. In this
+model, the items are separated in Q groups and each group of items is linked to
+one and only one latent trait. Each group fits a Rasch model relatively to the
+corresponding latent trait, so the score computed in each group of item is a
+sufficient statistics of this latent trait (to a specific value of this score
+is associated only one value for the latent trait). The program allows
+computing the parameter of a MMSRM with less than 4 latent traits.
+To improve the time of computing, the difficulty parameters are estimated in
+each unidimensional Rasch model and used as an offset variable to estimate the
+parameters of the distribution of the multidimensional latent trait. This model 
+allows estimating the correlations between different latent traits measured by
+Rasch models.
+
+{title:Options}
+
+{p 4 8 2}{cmd:id} defines an identifiant variable of the individuals.
+
+{p 4 8 2}{cmd:partition} allows defining the number of items relied to each
+latent trait. The sum of the numbers indicated in the {it:numlist} must be
+equal to the total number of items. The number of elements indicates the number of
+latent traits. The items are taken in the same order than this one of {it:varlist}.
+By default, only one latent trait is assumed (Rasch model). The number of elements of 
+{cmd:partition} must be inferior or equal to 3.
+
+{p 4 8 2}{cmd:method} defines the estimation method between the marginal maximum 
+likelihood ({it:mml} - by default) and the generalized estimating equations ({it:gee}). 
+You cannot estimate the parameters of a MMSRM with 3 dimensions with the GEE method.
+
+{p 4 8 2}{cmd:nodetails} deletes the details about the procedure.
+
+{p 4 8 2}{cmd:trace} displays details about the estimation algorithm.
+
+{p 4 8 2}{cmd:iterate} defines the maximal number of iterations of the estimation algorithm
+ (30 by default).
+
+{p 4 8 2}{cmd:adapt} allows using the adaptive quadrature if you use the MML method of estimation. This option
+is useless if you use GEE.
+
+{title:Example}
+
+{p 16 22 2}	{inp:. mmsrm item1-item9 , part(4 5) trace method(gee)}
+
+{p 16 22 2}	{inp:. mmsrm item1 item2 item3 item4 /*Rasch model*/}
+
+{p 16 22 2}	{inp:. mmsrm c1-c9 , part(3 3 3) nodetails adapt iterate(10)}
+
+{title:References}
+
+{p 4 8 2}Hardouin J.-B. and Mesbah M. Clustering binary variables in subscales using an extended Rasch model and Akaike Information Criterion. {it:Communications in Statistics - Theory and Methods}, {cmd:33}(6), pp. 1277-1294, (2004).
+
+{title:Author}
+
+{p 4 8 2}Jean-Benoit Hardouin, Regional Health Observatory (ORS) - 1, rue Porte Madeleine - BP 2439 - 45032 Orleans Cedex 1 - France.
+You can contact the author at {browse "mailto:jean-benoit.hardouin@neuf.fr":jean-benoit.hardouin@neuf.fr} and visit the websites {browse "http://anaqol.free.fr":AnaQol} and {browse "http://freeirt.free.fr":FreeIRT}

@@ -1,0 +1,68 @@
+{smcl}
+{* December2005}{...}
+{hline}
+help for {hi:clorenz}{right:({hi:Araar Abdelkrim}, 2005, CIRPEE: Laval University)}
+{hline}
+
+{title:Lorenz and concentration curves}
+
+{p 8 12}{cmd:clorenz}  {it:varlist}{cmd:,} [ {cmd:HWeight(}{it:varname}{cmd:)} {cmd:HSize(}{it:varname}{cmd:)} {cmd:HGroup(}{it:varname}{cmd:)} {cmd:RANK(}{it:varname}{cmd:)} {cmd:GENERalised(}{it:string}{cmd:)} {cmd:CTItle(}{it:string}{cmd:)} {cmd:DIF(}{it:string}{cmd:)} {cmd:LRES(}{it:string}{cmd:)} {cmd:SRES(}{it:string}{cmd:)} {cmd:DGRaph(}{it:string}{cmd:)}]
+ 
+{p}where {cmd:varlist} is a list of variables. {p_end}
+
+{title:Version} 8.0 and higher.
+
+{title:Description}
+ 
+ {p}{cmd:clorenz} can produces the following distributional curves for a given list of variables:{p_end}
+ 
+{p 4 8}{inp:. Lorenz curves}{p_end}
+{p 4 8}{inp:. Generalised Lorenz curves}{p_end}
+{p 4 8}{inp:. Concentration curves}{p_end}
+{p 4 8}{inp:. Generalised concentartion curves}{p_end}
+{p 4 8}{inp:. Deficit share curves}{p_end}
+
+{p}Linear interpolation is used to estimate  these distributional curves for a given percentile. {p_end}
+ 
+{title:Options}
+ 
+{p 0 4} {cmdab:hweight} variable that indicates the sampling weight at household level. {p_end}
+
+{p 0 4} {cmdab:hsize}   variable that indicates the household size. For example, if the variable of interest is income per capita, one should weight observations by the household size.{p_end}
+  
+{p 0 4} {cmdab:hgroup}   variable which indicates the household group. For example, this variable equals to 1 for households that live in rural area and 2 for those that live in urban area. When this option is used, varlist should contain only one variable. If values of the variable {it:hgroup} are labelled, the produced graphs contain automatically these labels. {p_end}
+ 
+{p 0 4} {cmdab:rank}    option to indicate the ranking variable. If this variable is selected, the concentration curves are estimated instead of the Lorenz curves. {p_end}
+ 
+{p 0 4} {cmdab:generalised}    If option yes is selected, the generalised Lorenz (concentration) curves are displayed instead of the Lorenz (concentration) curves. {p_end}
+ 
+{p 0 4} {cmdab:ctitle}  To indicate the title of the produced graph.  {p_end}
+ 
+{p 0 4} {cmdab:dif}     If option yes is is selected, the difference between percentiles and the lorenz (concentration) curves are displayed. {p_end}
+ 
+{p 0 4} {cmdab:lres}    If option yes is selected, coordinates of curves are listed. {p_end}
+
+{p 0 4} {cmdab:sres}    To save coordinates of curves in a Stata file, indicate the name of this file with this option. {p_end}
+
+{p 0 4} {cmdab:dgraph}   If option no is selected, the graph is not displayed. By default, the graph is displayed. {p_end}
+
+
+{title:Examples}
+ 
+{p 4 8}{inp:. clorenz pccons pcy}{p_end}
+{p 4 8}{inp:. clorenz pccons pcy, hsize(hhsize) hweight(popw)}{p_end}
+{p 4 8}{inp:. clorenz pccons pcy, hsize(hhsize) hweight(popw) dif(yes)}{p_end}
+{p 4 8}{inp:. clorenz food nfood, hsize(hhsize) hweight(popw) rank(pcy)}{p_end}
+{p 4 8}{inp:. clorenz pccons pcy, hsize(hhsize) hweight(popw) generalised(yes)}{p_end}
+{p 4 8}{inp:. clorenz pccons pcy, hsize(hhsize) hweight(popw) lres(yes) sres(coodinates)}{p_end}
+
+
+{title:More examples}
+
+{p 4 8}{inp:. {browse "http://132.203.59.36/DASP/examples/examples.htm"}}{p_end}
+
+{title:Author}
+{p 4 4 2} Araar Abdelkrim. If you observe any problems {browse "mailto:aabd@ecn.ulaval.ca"}{p_end}
+
+
+

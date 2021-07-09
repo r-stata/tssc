@@ -1,0 +1,120 @@
+{smcl}
+{* 24 April 2006}{...}
+{hline}
+help for {hi:tabexport}
+{hline}
+
+{title:Export tables of summary statistics to text files}
+
+{p 8 17 2}
+{cmd:tabexport} 
+{it:varlist} 
+[{cmd:if} {it:exp}] 
+[{cmd:in} {it:range}] 
+[{it:weight}] 
+{cmd:using} {it:filename}
+{cmd:,}
+{cmdab:s:tatistics(}{it:statistics_list}{cmd:)} 
+[
+{cmdab:l:ist(}{it:list_options}{cmd:)} 
+{cmdab:f:ormat(}{it:format(s)}{cmd:)} 
+{cmd:by(}{it:varlist}{cmd:)}
+{cmd:cw} 
+{cmd:total} 
+{cmd:noreshape}
+{cmdab:var:iableorder}
+{cmd:outfile}
+{it:out_options}
+]  
+
+{p 4 4 2}
+Any weights are allowed, except as indicated by help on {help collapse}.
+
+
+{title:Description}
+
+{p 4 4 2}
+{cmd:tabexport} exports as tables to text files various arrays of summary
+statistics which could be created by using {help collapse}. By default 
+{help outsheet} is used, but optionally {help outfile} may be specified. 
+The results are also {cmd:list}ed to provide a check on what is produced. 
+
+
+{title:Options} 
+
+{p 4 8 2}{cmd:statistics()} is a required option. One or more 
+statistic names as specified in the help for {help collapse} should be used. 
+Note that each statistic will be calculated for each variable: 
+{cmd:collapse} itself is not so restrictive. 
+
+{p 4 8 2}{cmd:format()} specifies one or more numeric formats controlling
+the detail of each statistic produced. The sequence of formats is
+that of the sequence of statistics. Thus with 
+{cmd:s(count mean) f(%9.0f %9.1f)} 
+counts will be shown with format %9.0f and means with format %9.1f. If fewer
+formats are specified than there are statistics, the last-specified format
+will be repeated for all remaining statistics. Thus with 
+{cmd:s(count mean sd) f(%9.0f %9.1f)} 
+counts will be shown with format %9.0f and means and sds with format %9.1f. 
+See help on {help format}. 
+
+{p 4 8 2} 
+{cmd:list()} specifies options of {help list} to tune the output listing. 
+
+{p 4 8 2}
+{cmd:by(}{it:byvarlist}{cmd:)} and {cmd:cw} are the 
+corresponding options of {help collapse}.
+
+{p 4 8 2}
+{cmd:total} applies whenever {cmd:by()} is also specified and specifies that
+results should be appended for all of the observations specified. Such results
+will be listed separately, as a reflection of the production process, but
+they will be combined in the resulting file. 
+
+{p 4 8 2}
+{cmd:noreshape} specifies that files produced should have a wide data
+structure, with many columns (variables).  The default is that they should be
+{cmd:reshape}d to have a long data structure, with fewer columns.  
+
+{p 4 8 2}
+{cmd:variableorder} may be specified with {cmd:noreshape}. The default
+of {cmd:noreshape} is that of {help collapse}: the variable order is by 
+statistic, then by original variable. {cmd:variableorder} reverses
+this: the variable order is by original variable, then by statistic. 
+
+{p 4 8 2} 
+{cmd:outfile} specifies that {help outfile} should be used to 
+export files. The default is to use {help outsheet}. 
+ 
+{p 4 8 2}{it:out_options} are options of {cmd:outsheet} 
+or (if the {cmd:outfile} option is specified) of {cmd:outfile}. 
+By default, {cmd:noquote} is specified. 
+
+
+{title:Examples}
+
+{p 4 8 2}{cmd:. sysuse auto, clear}{p_end}
+{p 4 8 2}{cmd:. tabexport turn trunk length using results.txt, s(mean sd) by(foreign)}{p_end}
+{p 4 8 2}{cmd:. tabexport turn trunk length using results.txt, s(mean sd) by(foreign) total replace}{p_end}
+{p 4 8 2}{cmd:. tabexport turn trunk length using results.txt, s(mean sd) by(foreign) total replace format(%9.1f)}{p_end}
+{p 4 8 2}{cmd:. type results.txt}
+
+
+{title:Author} 
+
+{p 4 4 2}Nicholas J. Cox, Durham University, U.K.{break} 
+         n.j.cox@durham.ac.uk
+
+
+{title:Acknowledgements} 
+
+{p 4 4 2}Raymond Guiteras suggested this problem. Kit Baum provided some 
+helpful field testing, identified an ordering problem and suggested the 
+{cmd:format()} option. Fred Wolfe suggested adding a handle for {cmd:list} 
+and identified another ordering problem. 
+
+
+{title:Also see}
+
+{p 4 13 2}On-line: help for {help tabstat}  
+

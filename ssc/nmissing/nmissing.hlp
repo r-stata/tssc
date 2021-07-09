@@ -1,0 +1,119 @@
+{smcl}
+{* 25sep2003/20sep2005}{...}
+{hline}
+help for {hi:nmissing, npresent}{right:{hi:(SJ3-4:dm67_2; SJ5-4:dm67_3 in press)}}
+{hline}
+
+{title:Numbers of missing (present) values}
+
+{p 8 17 2}
+{cmdab:nmissing}
+[{it:varlist}]
+[{cmd:if} {it:exp}]
+[{cmd:in} {it:range}]
+[{cmd:,}
+    {cmdab:m:in(}{it:#}{cmd:)} 
+    {cmdab:o:bs}
+    {cmdab:p:iasm}
+    {cmdab:t:rim}
+]
+
+{p 8 17 2}
+{cmdab:npresent}
+[{it:varlist}]
+[{cmd:if} {it:exp}]
+[{cmd:in} {it:range}]
+[{cmd:,}
+    {cmdab:m:in(}{it:#}{cmd:)} 
+    {cmdab:o:bs}
+    {cmdab:p:iasm}
+    {cmdab:t:rim}
+]
+
+{p 4 4 2}
+{cmd:by} {it:...}{cmd::} may be used with {cmd:nmissing} and {cmd:npresent}; 
+see help {help by}.
+
+
+{title:Description}
+
+{p 4 4 2}
+{cmd:nmissing} lists the number of missing values in each variable in
+{it:varlist} (or optionally in each observation). Missing means numeric missing
+(that is, sysmiss {cmd:.} or one of the extended missing values {cmd:.a} to
+{cmd:.z}) for numeric variables and empty or {cmd:""} for string variables. 
+See help on {help missing} for further information. 
+
+{p 4 4 2} 
+{cmd:npresent} lists the number of present (non-missing) values in each 
+variable in {it:varlist} (or optionally in each observation). 
+
+
+{title:Options}
+
+{p 4 8 2}
+{cmd:min(}{it:#}{cmd:)} specifies that only numbers at least {it:#} should be listed.
+Default 1. The argument may be zero or any positive integer or any expression
+evaluating to zero or a positive integer. As a special case, {cmd:_all} or 
+{cmd:*} means the number of variables in {it:varlist} or, with {cmd:obs}, 
+all the observations specified. 
+
+{p 4 8 2}
+{cmd:obs} specifies that counting is for observations, not variables.     
+
+{p 4 8 2}
+{cmd:piasm} specifies that {cmd:p}eriod {cmd:i}s {cmd:a}lso {cmd:s}tring
+{cmd:m}issing: that is, {cmd:"."} counts as missing. Some Stata users use
+{cmd:"."} to indicate missing. 
+
+{p 4 8 2} 
+{cmd:trim} specifies that whether string values are missing is to be determined 
+after trimming leading and trailing spaces. For example, with {cmd:trim} 
+{cmd:" "} (a single blank) would count as missing. 
+
+{p 4 8 2} 
+{cmd:trim piasm} would specify that e.g. {cmd:" . "} counts as missing. 
+
+
+{title:Saved results} 
+
+{p 4 8 2}If the {cmd:obs} option is not used, {cmd:r(varlist)} holds the list 
+of variables containing more than {cmd:min()} missing values. If the {cmd:obs} 
+option is used, {cmd:r(varlist)} just echoes {it:varlist}. 
+
+
+{title:Examples}
+
+{p 4 8 2}{cmd:. nmissing}
+
+{p 4 8 2}{cmd:. nmissing rep78}
+
+{p 4 4 2}To see which observations have all missing values: 
+
+{p 4 8 2}{cmd:. nmissing, min(*) obs} 
+
+{p 4 4 2}To get details on variables with 10 or more missing values: 
+
+{p 4 8 2}{cmd:. nmissing, min(10)}{p_end}
+{p 4 8 2}{cmd:. d `r(varlist)'} 
+
+{p 4 8 2}{cmd:. npresent} 
+
+
+{title:Author}
+
+{p 4 4 2}Nicholas J. Cox, Durham University, U.K.{break} 
+         n.j.cox@durham.ac.uk
+
+
+{title:Acknowledgements} 
+
+{p 4 4 2}A question by Eric Uslaner led to the addition of {cmd:r(varlist)}
+as a saved result. 
+
+
+{title:Also see}
+
+{p 4 13 2}
+Online:  help for {help missing}; {help dropmiss} (if installed) 
+

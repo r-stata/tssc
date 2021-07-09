@@ -1,0 +1,262 @@
+{smcl}
+{* 20 August 2009}{...}
+
+help for {hi:margeff}  {right:Version 2.2.0  (20 August 2009)}
+{hline}
+
+{title:Obtain partial effects after estimation}
+
+{p 4 12 2}
+{cmd:margeff} [{cmdab:c:ompute}]
+[{cmd:if} {it:exp}]
+[{cmd:in} {it:range}]
+[{cmd:,}
+{p_end}
+{p 16 16 2}
+	{cmd:at(}{it:atlist}{cmd:)} 
+    {cmdab:cons:tant}
+    {cmdab:d:ummies(}{it:varlist_1} [{cmd:\} {it:varlist_2} ..]{cmd:)}
+{p_end}
+{p 16 16 2}	 	   
+	{cmdab:l:ink(}{it:log}|{it:loglog}|{it:logc}|{it:nbinomial}|{it:power #}|{it:opower #}{cmd:)} 
+    {cmdab:m:odel(}{it:stata_cmd}{cmd:)}
+    {cmdab:nooff:set}
+	{cmdab:now:ght}
+	{cmdab:out:come(}{it:#}{cmd:)}
+    {cmdab:p:ercent}
+    {cmdab:r:eplace} ]
+{p_end}
+
+{p 4 12 2}{cmd:margeff} {cmdab:r:eplay}	[{cmd:,} {cmdab:l:evel(}{it:#}{cmd:)}	]
+
+{p 4 4 2} where {it:stata_cmd} is one of
+
+{col 9}[group 1:] {col 20}{help probit},  {help logit},  {help logistic}, {help cloglog}, {help heckprob} 
+{col 9}[group 2:] {col 20}{help oprobit}, {help ologit}, {help mlogit},   {help biprobit} 
+{col 9}[group 3:] {col 20}{help poisson}, {help nbreg},  {help zip}, {help zinb}
+{col 9}[group 4:] {col 20}{help truncreg}, {help cnreg},  {help tobit}, {help heckman}
+
+{p 4 4 2} and {it:atlist} is  {p_end}
+{p 8 8 2}{c -(} {cmd:mean} | {cmd:median} | {cmd:zero} [ {it:varname}
+{cmd:=} {it:#} [{cmd:,} {it:varname} {cmd:=} {it:#}] [{it:...}]] {c )-}{p_end}
+{p 8 8 2}{c -(} [{cmd:mean}] |[{cmd:median}] | [{cmd:zero}]  {it:varname}
+{cmd:=} {it:#} [{cmd:,} {it:varname} {cmd:=} {it:#}] [{it:...}]  {c )-}	{p_end}
+
+{p 4 4 2} and {it:varlist_1} [{cmd:\} {it:varlist_2} ... ] are lists of dummy variables, where all dummies of a list indicate
+  different categories of the same underlying categorical variable.
+
+{title:Description}
+
+{p 4 4 2}
+{cmd:margeff compute} analytically estimates partial effects after estimation. 
+Standard errors of partial effects are also estimated using the delta method.
+Partial effects can be obtained not only after the above listed models, but also after
+
+{p 8 8 2}
+1. generalized linear models (see help for {help glm}),
+{break}
+2. the panel-data ({cmd:xt}) version of the supported models inlcuding {cmd:xtgee},
+{break}
+3. generalized ordered models (see help for {help gologit2} if installed).
+{p_end}
+
+{p 4 4 2}
+The default behavior of {cmd:margeff} and main alternatives to the defaults can be summarized as follows:
+{p_end}
+
+{p 4 8 2}{cmd:1.}
+By default, {cmd:margeff} calculates average partial effects. 
+Estimation of partial effects evaluated at sample means or at any other evaluation points is also possible with the help of the {cmd:at(}{it:atlist}{cmd:)} option.
+In either case, calculations are restricted to the estimation sample.
+{p_end}
+
+{p 4 8 2}{cmd:2. }
+Partial effects are discrete partial changes in the quantities of interest as the variable under study increases
+by the unit of measurement.
+For dummy variables (variables coded 0/1) and count variables, unit of measurement is 1.
+For other variables, units of measurement are detected using an algorithm implemented in the official ado file {cmd:codebook}.
+This partial change approach eases computations, and approximates very well the partial changes calculated using the classic
+marginal effects approach. 
+{p_end}
+
+{p 4 8 2}{cmd:3.}
+Quantities of interest are defined as follows:
+
+{p 8 19 4}[group 1:] probability of positive outcome {p_end}
+{p 8 19 4}[group 2:] probabilities of all possible outcomes defined by the dependent variable(s){p_end}
+{p 8 19 4}[group 3:] expected number of counts or the incidence rate {p_end}
+{p 8 19 4}[group 4:] expected value of dependent variable conditional on the dependent variable being observed{p_end}
+
+{p 4 8 2}{cmd:4.}
+The calculations automatically adjust for {cmd:fweight}s, {cmd:iweight}s, or {cmd:pweight}s  used during estimation.
+If you wish to apply (different) weights, however, you can specify your own {cmd:fweight}s, {cmd:iweight}s, or {cmd:pweight}s; see help {help weights}.
+
+{p 4 8 2}{cmd:5.}
+{cmd:margeff} behaves as a post-estimation command (see help {help postest}).
+However, option {cmd:replace} forces {cmd:margeff} to behave as an estimation command
+(see help {help est}).
+This enables the use of post-estimation commands like {cmd:lincom} or {cmd:test} after {cmd:margeff}.
+
+{p 4 4 2}
+Typed without arguments, {cmd:margeff} replays the results of the previous {cmd:margeff}
+computations, provided the last use of {cmd:margeff} was combined with the {cmd:replace}
+option.{p_end}
+
+{p 4 4 2}
+{cmd:margeff replay} replays the results of the previous {cmd:margeff} computation.
+
+{title:Options}
+
+{p 4 8 2}
+{cmd:at(}{it:atlist}{cmd:)} forces {cmd:margeff} to estimate partial effects at points specified in
+{it:atlist}, instead of estimating  average partial effects.
+{p_end}
+
+{p 8 8 2}
+	{cmd:at(} {cmd:mean} | {cmd:median} | {cmd:zero} [ {it:varname} {cmd:=} {it:#} [{cmd:,} {it:varname} {cmd:=} {it:#} [{it:...}]] {cmd:)}
+    specifies that the partial effects be evaluated at means, at medians of the independent variables, or at zeros.
+	It also allows users to specify particular values for one or more independent
+	variables, assuming that the rest are means, medians, or zeros.
+{p_end}
+
+{p 8 8 2}
+	{cmd:at(} [{cmd:mean}] |[{cmd:median}] | [{cmd:zero}]  {it:varname} {cmd:=} {it:#} [{cmd:,} {it:varname} {cmd:=} {it:#}] [{it:...}]  {cmd:)}
+	specifies that the partial effects be evaluated at particular values for one or more independent
+	variables, assuming that the rest are means.
+{p_end}
+
+{p 4 8 2}
+{cmd:constant} has the effect that quantities of interests computed at zero values of the independent variables are also displayed.
+Thus the constant term shows the baseline prediction.
+{p_end}
+
+{p 4 8 2}
+{cmd:dummies(}{it:varlist_1} [{cmd:\} {it:varlist_2} ... ]{cmd:)}
+modifies the calculation of partial effects if sets of indicator or dummy variables were included in the model.
+The modification is the following: if the dummy variable {it:Dvar1} appears only in {it:varlist_1} then all variables appearing
+in {it:varlist_1} are set to zero, but variables appearing in {it:varlist_2} [{cmd:\} {it:varlist_3} ... ] are not affected. 
+This option should be specified so that each {it:varlist_k} ({it:k) = 1,2,...) consists of indicator or dummy variables referring to different categories of a single underlying variable.
+{p_end}
+
+{p 4 8 2} {cmd:level(}{it:#}{cmd:)} specifies the confidence level in percent for the confidence intervals of the coefficients; see help 
+{help level}.
+
+{p 4 8 2}
+{cmd:link(}{it:log}|{it:loglog}|{it:logc}|{it:nbinomial}|{it:power #}|{it:opower #}{cmd:)} forces {cmd:margeff} to define the
+quantity of interest as {it:F(xb)}, where {it:xb} is the linear prediction and {it:F} is the inverse of the link function.
+For example, the option {cmd:link(}{it:log}{cmd:)} defines the quantity of interest as {it:exp(xb)}.
+{p_end}
+
+{p 4 8 2}
+{cmd:model(}{it:stata_cmd}{cmd:)} forces {cmd:margeff} to estimate partial effects as if the preceeding estimation command were {it:stata_cmd}.
+{it:stata_cmd} must be one of the supported commands that are listed above. 
+This option is likely to be helpful if you wish to obtain partial effects
+after an estimation command having the same link function as {it:stata_cmd}.
+It is the user's responsibility to ensure that the link functions are the same.
+{p_end}
+
+{p 4 8 2}
+{cmd:nooffset} causes {cmd:margeff} to ignore the offset variable during the calculations.
+{p_end}
+
+{p 4 8 2}
+{cmd:nowght} causes {cmd:margeff} to ignore weights used during previous estimation.
+{p_end}
+
+{p 4 8 2}
+{cmd:outcome(}{it:#}{cmd:)} causes {cmd:margeff} to display only one outcome.
+This option is useful after estimation commands listed as [group 2] models.
+The number specified is interpreted as follows:
+{p_end}
+{p 8 12 2}
+{cmd:1.} After {cmd:biprobit}, numbers 1 2 3 and 4 refer to outcomes p00 p01 p10 p11.
+{p_end}
+{p 8 12 2}
+{cmd:2.} After {cmd:ologit}, {cmd:oprobit}, {cmd:gologit2} and {cmd:mlogit}, number # refers to the #th category of the dependent variable.
+Thus, number 1 always indicates the lowest category. And if the dependent variable has, say, 5 categories, then
+number 5 indicates the highest category.
+{p_end}
+
+{p 4 8 2}
+{cmd:percent} causes {cmd:margeff} to display the results in a percentage form.
+{p_end}
+
+{p 4 8 2}
+{cmd:replace} causes {cmd:margeff} to overwrite the estimation results left behind.
+This option is useful if
+{p_end}
+
+{p 8 12 2} {cmd:1.}  you wish to include partial effects in publication-quality tables using either the official {help estimates table} command or
+the user-written commands {help outreg} or {help estout}; or
+{p_end}
+{p 8 12 2} {cmd:2.}  your model contains a variable (such as age-squared) which is a mathematical transformation of another independent variable,
+and you wish to obtain the total effect of that variable (age) using the {help lincom} or the {help nlcom} command.
+{p_end}
+
+{title:Remarks}
+
+{p 4 4 2}
+{cmd:margeff} is a work-in-progress; comments, suggestions, bug reports are welcome!
+Please direct correspondence to the adress described at the end of the help file. {p_end}
+{p 4 4 2}
+To keep {cmd:margeff} up-to-date, visit the website{p_end}
+{p 8 4 2}{browse "http://www.uni-corvinus.hu/bartus"} {p_end}
+{p 4 4 2}or type{p_end}
+{p 8 4 2}		{cmd: net from "http://web.uni-corvinus.hu/bartus/stata"} {p_end}
+{p 8 4 2}		{cmd: net install margeff , replace }{p_end}
+
+ 
+{title:Examples}
+
+{p 4 4 2}{cmd:Illustrating the importance of the dummies( varlist_1 \ ... ) option }
+
+{p 4 4 2}Type the following commands:{p_end}
+
+{p 4 8 2}{cmd:. [save mydata, replace]}{p_end}
+{p 4 8 2}{cmd:.	tabi 60 30 10 \ 20 60 20 \ 10 10 80 , replace }{p_end}
+{p 4 8 2}{cmd:.	xi: mlogit col i.row [fw=pop] }{p_end}
+{p 4 8 2}{cmd:.	margeff }{p_end}
+{p 4 8 2}{cmd:.	margeff , at(mean)  }{p_end}
+{p 4 8 2}{cmd:.	margeff , at(mean) dummies(_I*) }{p_end}
+
+{p 4 4 2}You can see that the first and the last {margeff} commands produced the expected results.
+{p_end}
+ 
+{p 4 8 2}{cmd:Easy calculation of the total effect of age	}
+
+{p 4 4 2} Suppose you wish to model employment status as a function of the usual human capital variables: gender, years of education, experience,
+and the square of experience. Assume further that the sample average of experience is 20. The total effect of experience on employment probabilities can be estimated as follows:
+
+{p 4 8 2}{cmd:. logit employed gender edu exp exp2	}{p_end}
+{p 4 8 2}{cmd:.	margeff, at(mean) replace }	{p_end}
+{p 4 8 2}{cmd:.	lincom exp+40*exp2 }{p_end}
+
+
+{title:Acknowledgements}
+
+{p 4 4 2}
+Some parts of the code are taken from the official ado-files codebook.
+Earlier versions of margeff relied on margfx (version 30 Jul 1999 for Stata 5)
+written by Jonah B. Gelbach, Dept of Economics, Univ of MD at College Park.
+Helpful suggestions were received from Richard Gates at StataCorp.
+
+{title:Also see}
+
+{p 4 13 2}
+Online:  help for {help est}, {help postest}; {help mfx}
+
+
+{title:Author}
+
+{p 4 8 2} {browse "http://www.uni-corvinus.hu/bartus":Tamas Bartus}	{p_end}
+{p 4 8 2} Institute of Sociology and Social Policy,{p_end}
+{p 4 8 2} Corvinus University, Budapest, Hungary{p_end}
+{p 4 8 2} URL: {browse "http://www.uni-corvinus.hu/bartus":http://www.uni-corvinus.hu/bartus}{p_end}
+{p 4 8 2} Email: {browse "mailto:tamas.bartus@uni-corvinus.hu":tamas.bartus@uni-corvinus.hu}{p_end}
+
+
+
+
+
+
+

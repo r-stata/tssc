@@ -1,0 +1,121 @@
+{smcl}
+{* *! version 1.0.0 20may2010}{...}
+{cmd:help vlgen}
+{hline}
+
+{title:Title}
+
+{phang}
+{bf:vlgen} {hline 2} Generate or replace variable labels automatically while generating or replacing the variable.
+
+
+{title:Syntax}
+{p 12 17 2}
+{cmdab:vlgen}
+{varname}
+{=exp}
+{ifin}
+[{cmd:,}
+{it:options}]
+
+{pstd}
+{cmd:vlgen} ({bf:v}ariable and {bf:l}abel {bf:gen}erate) acts much like {cmd:labgen}, but uses labels one from one 
+	level deeper {hline 2} see examples below.
+
+{synoptset 20 tabbed}{...}
+{synopthdr}
+{synoptline}
+{synopt:{opt replace}}replace an existing variable and label{p_end}
+{synopt:{opt nop:romote}}same as nopromote option with {cmd:replace}, see {help replace}{p_end}
+{synopt:{opt noc:onditionals}}keeps "if" and "in" statements out of the label{p_end}
+{synoptline}
+{p2colreset}{...}
+
+
+{title:Examples}
+
+{pstd}{bf:Comparing {cmd:labgen} and {cmd:vlgen}}{p_end}
+    {hline 30}
+
+{pstd}
+	Suppose your data set contains the following variables.
+	
+{col 12}Name    Label
+{col 12}{hline 14}
+{col 12} x1     blah
+{col 12} x2
+{col 12} x3     etc
+
+{pstd}After{p_end}
+
+{phang}{cmd:. labgen x4 = x1+x3}
+
+{pstd}you would have{p_end}
+
+{col 12}Name    Label
+{col 12}{hline 14}
+{col 12} x1     blah
+{col 12} x2
+{col 12} x3     etc
+{col 12} x4     x1+x3
+
+{pstd}If instead you used{p_end}
+
+{phang}{cmd:. vlgen x4 = x1+x3}
+
+{pstd}you would have{p_end}
+
+{col 12}Name    Label
+{col 12}{hline 14}
+{col 12} x1     blah
+{col 12} x2
+{col 12} x3     etc
+{col 12} x4     blah + etc
+
+{pstd}If a variable has no label, the variable name is used, as in {cmd:labgen}.{p_end}
+
+{phang}{cmd:. vlgen x5 = x1 + x2}
+
+{pstd}would give you{p_end}
+
+{col 12}Name    Label
+{col 12}{hline 14}
+{col 12} x1     blah
+{col 12} x2
+{col 12} x3     etc
+{col 12} x4     blah + etc   
+{col 12} x5     blah + x2
+
+
+
+{pstd}{bf:Using the replace option}{p_end}
+    {hline 30}
+
+{pstd}
+	Starting with the data set
+	
+{col 12}Name    Label
+{col 12}{hline 14}
+{col 12} x1     blah
+{col 12} x2
+{col 12} x3     etc
+{col 12} x4     blah + etc
+
+{phang}{cmd:. vlgen x4 = abs(x1) + x2, replace}
+
+{pstd}would give you{p_end}
+
+{col 12}Name    Label
+{col 12}{hline 14}
+{col 12} x1     blah
+{col 12} x2
+{col 12} x3     etc
+{col 12} x4     abs( blah ) + etc
+
+{pstd}replacing both variable values and label.{p_end}
+
+{title:Author}
+
+{pstd}
+James Fiedler, Universities Space Research Association{break}
+Email: {browse "mailto:james.fiedler-1@nasa.gov":james.fiedler-1@nasa.gov}

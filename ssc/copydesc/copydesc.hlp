@@ -1,0 +1,72 @@
+.-
+help for ^copydesc^
+.-
+
+Copy description of variable
+----------------------------
+
+    ^copydesc^ fromvar tovar [ ^, w^arn ^r^estrain ]  
+    
+
+Description
+-----------
+
+^copydesc^ copies the format of fromvar, any variable label of fromvar, 
+any value labels of fromvar, and any characteristics of fromvar, so that 
+they also pertain to tovar.
+
+Any attempt to copy a numeric format to a string variable, or vice versa, 
+or to attach value labels to a string variable is by default captured 
+gracefully. 
+
+If fromvar has no variable label, the name of fromvar becomes the 
+variable label of tovar. 
+
+
+Remarks
+-------
+
+^copydesc^ is primarily for use by programmers. For example, it may be 
+desirable that a temporary variable appear to the user as if it were 
+one of the variables specified.
+
+However, interactive uses also occur. For example, tovar might be a 
+slightly modified copy of fromvar: an outlier might be placed in 
+a separate variable and all values but the outlier in tovar. 
+
+Some of the code of ^copydesc^ is stolen from the official but 
+undocumented command ^_crcslbl^, but the position of the arguments 
+is reversed. 
+
+
+Options
+-------
+
+^warn^ specifies that a warning message is to be issued if one 
+variable specified is numeric and the other is string.
+
+^restrain^ specifies that no action is to be taken if one 
+variable specified is numeric and the other is string. 
+
+
+Examples
+--------
+    
+    . ^tempvar plotvar^  
+    . ^copydesc myvar `plotvar'^
+    
+    
+Author
+------
+
+         Nicholas J. Cox, University of Durham, U.K.
+         n.j.cox@@durham.ac.uk
+
+
+Acknowledgments
+---------------
+
+         Michael Blasnik and Ken Higbee made very helpful comments.
+
+
+

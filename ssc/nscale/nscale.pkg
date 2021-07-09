@@ -1,0 +1,29 @@
+d 'NSCALE': module to scale data
+d
+d   nscale provides a convenient way to recode variables to lie
+d between 0 and 1 via dividing var-min(var) by max(var)-min(var).
+d nscale can recode many variables at once and has options gen()
+d and pre() which work in the similar manner as Stata’s default
+d command recode does. It is also possible to store transformed
+d values in existing variables with option nopost. nscale can set
+"d specific value or interval to missing (.) as well. For example,"
+d if a survey question q1 coded DK as 98 and miscellaneous as 99
+"d and you want to exclude those values from analysis, just type:"
+"d nscale q1 , m(98) up. Then nscale sets all observations whose"
+d value is greater than or equal to 98 to missing (.). The option
+"d down combined with option m(#) works similarly. Moreover, nscale"
+d does reverse coding with option r and tabulates new variables
+d with option t.
+d
+d KW: data management
+d KW: scaling
+d
+d Requires: Stata version 10.1
+d
+d Distribution-Date: 20190822
+d
+"d Author: JeongHoon Min , Sogang University"
+d Support: email  plus1@@sogang.ac.kr
+d
+f nscale.ado
+f nscale.sthlp

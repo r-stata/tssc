@@ -1,0 +1,65 @@
+.-
+help for ^rowranks^
+.-
+
+Row ranks of a set of variables
+-------------------------------
+
+    ^rowranks^ varlist, ^g^enerate^(^newvarlist^)^ [ ^l^owrank ^h^ighrank ^f^ield ]
+
+Description
+-----------
+
+^rowranks^ creates new variables rank_1, ... , rank_p corresponding to 
+var_1, ... , var_p in varlist such that each new variable, say rank_j, 
+contains the ranks of the corresponding variable var_j within var_1, 
+... , var_p. varlist should contain all numeric variables.   
+
+By default, lowest values rank lowest and the rank created is the 
+average rank, such that the sum of the ranks is preserved under ties.
+
+For example, given 
+
+         ^x1^ ^x2^ ^x3^ ^x4^ ^x5^ 
+         --------------
+	  2  3  5  7  9 
+	  2  3  3  3  9 
+	  
+the ranks created are 
+
+          1  2  3  4  5 
+	  1  3  3  3  5 
+
+
+Options
+-------
+
+^generate(^newvarlist^)^ specifies new variable names for the 
+    variables to be generated, one for each variable in varlist. 
+    newvarlist may be specified in hyphenated form, as in ^y1-y5^. 
+    This option is required. 
+
+^lowrank^ specifies the use of "low ranks", 1 + (# < this value).
+
+^highrank^ specifies the use of "high ranks", (# <= this value). 
+
+^field^ specifies that highest values rank lowest. The default is 
+    the "track" convention, lowest values rank lowest. With ^field^ 
+    the inequalities for ^lowrank^ and ^highrank^ are > and >= 
+    respectively. 
+
+
+Examples
+--------
+
+        . ^rowranks x1-x5, gen(y1-y5)^
+        . ^rowranks x1-x5, gen(y1-y5) lowrank^
+        . ^rowranks x1-x5, gen(y1-y5) highrank^
+
+
+Author
+------
+
+         Nicholas J. Cox, University of Durham, U.K.
+         n.j.cox@@durham.ac.uk
+

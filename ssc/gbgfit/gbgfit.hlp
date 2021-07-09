@@ -1,0 +1,268 @@
+{smcl}
+{* June 2009}{...}
+{hline}
+help for {hi:gbgfit}{right:Austin Nichols (June 2009)}
+{hline}
+
+{title:Program to fit a Generalized Beta (Type 2) distribution to grouped data via ML}
+
+{p 8 17 2}{cmd:gbgfit} {it:nvar} [{cmd:if} {it:exp}]
+	[{cmd:in} {it:range}] [{cmd:,} 
+	{cmd:z1(}{it:z1var}{cmd:)}
+	{cmd:z2(}{it:z2var}{cmd:)}
+    {cmdab:f:rom(}{it:string}{cmd:)} 
+	{cmdab:a:var(}{it:var}{cmd:)} {cmdab:b:var(}{it:var}{cmd:)} 
+	{cmdab:p:var(}{it:var}{cmd:)} {cmdab:q:var(}{it:var}{cmd:)}
+	{cmd:sva(}{it:var}{cmd:)} {cmd:svb(}{it:var}{cmd:)} 
+	{cmd:svp(}{it:var}{cmd:)} {cmd:svq(}{it:var}{cmd:)}
+	{cmd:replace} {cmd:double}
+	{cmdab:l:evel(}{it:#}{cmd:)} {it:maximize_options} ]
+
+{p 4 4 2}{cmd:by} {it:...} {cmd::} may be used with {cmd:gbgfit}; see help
+{help by}. 
+
+{title:Description}
+
+{p 4 4 2}
+{cmd:gbgfit} fits by ML the 3 parameter Generalized Beta (Type 2), or GB2,
+distribution to a sample of counts or frequencies in {it:nvar} by income
+category. (For an estimator designed for 
+unit record data, see {stata "ssc desc gb2fit":gb2fit}). Optionally specified variables
+{it:z1var} and {it:z2var} encode the lower and upper limits of each interval; if they
+are not specified, variables serving that role and called z1 and z2 are assumed to exist.
+
+{p 4 4 2}
+The GB2
+distribution seems to provide a good fit to empirical income 
+data relative to other parametric functional forms; see e.g. McDonald (1984). 
+It includes the 3-parameter Singh-Maddala (Burr Type 12) and Dagum (Burr Type 3) distributions 
+as special cases; see Singh-Maddala (1976) and Dagum (1977,1980).
+The Singh-Maddala distribution is the 
+special case when parameter p = 1, and the Dagum distribution is 
+the special case when parameter q = 1.
+See also help for {stata "ssc desc dagfit":dagfit} or {stata "ssc desc smgfit":smgfit} if installed
+(or see {stata "ssc desc dagumfit":dagumfit} and {stata "ssc desc smfit":smfit}
+for estimators designed for 
+unit record data).  
+The GB2 distribution
+is also known as the Generalized F distribution (differently parameterized) or
+the Feller-Pareto distribution (with a nonzero minimum).
+For a comprehensive 
+review of these and other related distributions, see Kleiber and Kotz (2003). 
+The GB2 distribution 
+may be useful for describing any skewed positive variable.
+
+{p 4 4 2}
+To test whether a given distribution assumed to be well-modeled as a GB2
+distribution can also be usefully modeled as a Singh-Maddala or Dagum distribution,
+one might want to test the p and q parameters for equality to one, as shown in the example.
+Since q = 1 approximately (and we cannot reject the null that q = 1) in the estimates shown,
+it seems reasonable to model the distribution as Dagum. 
+Looking at graphs, we can see how closely the Dagum and GB2 estimates of the p.d.f. correspond in the example.
+
+
+{title:Example from McDonald (1984)}
+
+clear all
+input z1 f70 f75 f80
+    0    66  35  21
+    2.5  125 85  41
+    5    152 106 62
+    7.5  166 106 65
+    10   158 114 73
+    12.5 110 109 69
+    15   131 188 140
+    20   46  116 137
+    25   30  95  198
+    35   11  32  128
+    50   05  14  67
+end
+g z2=z1[_n+1]
+g mid=(z1+z2)/2
+replace mid=100 if mid==.  
+set obs 200
+g x=_n/2
+la var x "Income"
+gbgfit f70, difficult
+test [p]_b[_cons]=1
+test [q]_b[_cons]=1
+g g=(e(ba)*x^(e(ba)*e(bp)-1))/e(bb)^(e(ba)*e(bp))/(1+(x/e(bb))^e(ba))^(e(bp)+e(bq))*exp(lngamma(e(bp)+e(bq))-lngamma(e(bp))-lngamma(e(bq)))
+la var g "PDF for grouped GB2 MLE 1970"
+gb2fit mid [fw=f70], from(4 20 .3 .6, copy) difficult
+g g2=(e(ba)*x^(e(ba)*e(bp)-1))/e(bb)^(e(ba)*e(bp))/(1+(x/e(bb))^e(ba))^(e(bp)+e(bq))*exp(lngamma(e(bp)+e(bq))-lngamma(e(bp))-lngamma(e(bq)))
+la var g2 "PDF for indiv. GB2 MLE applied to group data from 1970"
+dagfit f70 
+g dg=e(ba)*e(bp)*(e(bb)/x)^e(ba)/x*(1+(e(bb)/x)^e(ba))^(-e(bp)-1)
+la var dg "PDF for grouped Dagum MLE 1970"
+smgfit f70
+g sg=(e(ba)*e(bq)/e(bb))*((1+(x/e(bb))^e(ba))^-(e(bq)+1))*((x/e(bb))^(e(ba)-1))
+la var sg "PDF for grouped Singh-Maddala MLE 1970"
+tw hist mid [fw=f70]||line g x, name(hist)
+line g x||line g2 x||line dg x||line sg x, leg(col(1))
+g dd=g-dg
+g ds=g-sg
+la var dd "Diff. betw. GB2 and Dagum PDF"
+la var ds "Diff. betw. GB2 and S-M PDF"
+line dd ds x, leg(col(1)) name(dpdf)
+
+{title:Options}
+
+{p 4 8 2}{cmd:z1(}{it:z1var}{cmd:)}, {cmd:z2(}{it:z2var}{cmd:)} are the lower and upper limits of each interval; if they
+  are not specified, variables serving that role and called z1 and z2 are assumed to exist. It should always be true
+  that the upper bound of one category is the same as the lower bound of the next highest category. 
+
+{p 4 8 2}{cmd:?var(}{it:var}{cmd:)} options specify {help varlist}s that are assumed to have a 
+linear effect on the parameter specified.   By default, each varlist contains only a constant, so only the parameter itself is estimated.
+
+{p 4 8 2}{cmd:sv?(}{it:var}{cmd:)} options specify {help newvar}s in which to store the estimated parameters.  If 
+{cmd:?var(}{it:var}{cmd:)} options have been specified, the prediction assumes all explanatory variables are zero, 
+i.e. the prediction is only for the constant.
+
+{p 4 8 2}{cmd:replace} allows {cmd:sv?(}{it:var}{cmd:)} options to specify existing variables, whose values are replaced in the estimation sample.
+
+{p 4 8 2}{cmd:double} requests that {cmd:sv?(}{it:var}{cmd:)} create {help double}s.
+
+{p 4 8 2}{cmd:from(}{it:string}{cmd:)} specifies initial values for the 
+	parameters, and it may be useful to try different starting parameters to assess 
+    the dependence of estimates on starting values (the generalized beta is more sensitive to initial 
+    parameter vectors than the Dagum or Singh-Maddala), or to aid convergence speed. You can specify the initial 
+	values in one of three ways: the name of a vector containing the initial values 
+	(e.g., from(b0) where b0 is a properly labeled vector); by specifying coefficient 
+	names with the values 	(e.g., from(a:_cons=1 b:_cons=5 p:_cons = 1 q:_cons = 1);
+	or by specifying an ordered list of values (e.g., from(1 5 1 1, copy)).  
+	Poor values in from() may lead to convergence problems. For more details, 
+	including the use of copy and skip, see {help:maximize}.
+
+{p 4 8 2}{cmd:level(}{it:#}{cmd:)} specifies the confidence level, in percent,
+for the confidence intervals of the coefficients; see help {help level}.
+
+{p 4 8 2}{cmd:nolog} suppresses the iteration log.
+
+{p 4 8 2}{it:maximize_options} control the maximization process. The options
+available are those shown by {help maximize}, with the exception of {cmd:from()}. 
+If you are seeing many "(not concave)" messages in the iteration 
+log, using the {cmd:difficult} or {cmd:technique} options may help convergence.
+
+{title:Saved results}
+
+{p 4 4 2}In addition to the usual results saved after {cmd:ml}, {cmd:dagfit} also
+saves the following:
+
+{p 4 4 2}{cmd:e(a)}, {cmd:e(b)}, {cmd:e(p)}, and {cmd:e(q)} are the estimated GB2 
+parameters. If covariates are specified, these are the parameters when all covariates are zero; i.e.
+these are the constant terms in each equation.  These parameters are used to calculate 
+{cmd:e(mode)}, {cmd:e(mean)}, {cmd:e(var)}, {cmd:e(sd)}, {cmd:e(i2)}, and {cmd:e(gini)}, which
+are the estimated mode, mean, variance, standard deviation, half coefficient of 
+variation squared, and Gini coefficient, respectively. {cmd:e(pX)}, and {cmd:e(LpX)} are the
+quantiles, and Lorenz ordinates, where X ranges from 1 to 99. 
+
+{title:Formulae}
+
+{p 4 4 2}
+The GB2 distribution has distribution function (c.d.f.)
+
+{p 8 8 2}
+	F(x) = {cmd:ibeta}(p, q, (x/b)^a/(1+(x/b)^a) )
+
+{p 4 4 2}
+where a, b, p, q, are parameters, each positive, for random variable x > 0. 
+Parameters a, p, and q are the key distributional 'shape' parameters; b is a scale parameter.
+
+{p 4 4 2}
+The GB2 distribution has density
+
+{p 8 8 2}		         
+	f(x) = ax^(ap-1)*{(b^(a*p))*B(p,q)*[1 + (x/b)^a ]^(p+q)}^-1.
+
+{p 4 4 2}
+The likelihood function for a sample of observations on {it:nvar} is specified 
+as the product of the density integrated from z1 to z2 and raised to the power {it:nvar}, the count of observations in the category, and
+is maximized using {cmd:ml model lf}.   
+
+{p 4 4 2}
+The formulae used to derive the distributional summary statistics 
+presented (optionally) are as follows. The r-th moment about the origin
+is given by
+
+{p 8 8 2}
+	b^r*B(p+r/a,q-r/a)/B(p,q)
+
+{p 4 4 2}
+where B(u,v) is the Beta function = G(u)*G(v)/G(u+v) and G(.)=exp(lngamma(.))
+is the gamma function. The moments exist for 
+-ap < r < aq. By substitution and using G(1) = 1, the moments 
+can be written
+
+{p 8 8 2}
+	b^r*G(p+r/a)*G(q-r/a)/[G(p)G(q)]
+
+{p 4 4 2}
+and hence
+
+{p 8 8 2} 
+      	mean = b*G(p+1/a)*G(q-1/a)/[G(p)G(q)]
+
+{p 8 8 2}
+      	variance = b*b*G(p+2/a)*G(q-2/a)/[G(p)G(q)] - (mean^2) 
+
+{p 4 4 2}
+from which the standard deviation and half the squared coefficient of 
+variation can be derived. The mode is
+
+{p 8 8 2}
+        mode = b*((ap-1)/(aq+1))^(1/a) if ap > 1, and 0 otherwise.
+
+{p 4 4 2} 
+The quantiles are derived by inverting the distribution function, and
+calculation of the Lorenz ordinates exploits the fact that they follow 
+a GB2 distribution; see Kleiber and Kotz, 2003, eqn (6.23). The Gini coefficient 
+is not calculated as this requires evaluation of the generalized hypergeometric 3{it:F}2, and this function is not currently available in Stata. 
+Online evaluators are available, at 
+e.g. {browse "http://functions.wolfram.com/webMathematica/FunctionEvaluation.jsp?name=Hypergeometric3F2":wolfram.com}, 
+where you can plug in specific parameter values to calculate the generalized hypergeometric 3{it:F}2, then use the formula
+given by McDonald (1984) to 
+calculate the Gini.
+
+
+{title:Author}
+
+{p 4 4 2}Austin Nichols <austinnichols@gmail.com> 
+
+{title:Acknowledgements}
+
+{p 4 4 2}Stephen P. Jenkins has made available commands 
+for fitting various distributions (including the GB2) to individual record data;
+see Jenkins (2004).
+This package draws liberally from that work; note in particular the similarity
+of verbiage under headings Formulae and Description.
+
+{title:References}
+
+{p 4 8 2}Dagum, C. (1977). A new model of personal income distribution:
+	specification and estimation. {it:Economie Appliqu{c e'}e} 30: 413-437.
+
+{p 4 8 2}Dagum, C. (1980). The generation and distribution of income, the
+	Lorenz curve and the Gini ratio. {it:Economie Appliqu{c e'}e} 33: 327-367.
+
+{p 4 8 2}Jenkins, S.P. (2004). Fitting functional forms to distributions, using {cmd:ml}. Presentation
+	at Second German Stata Users Group Meeting, Berlin. {browse "http://www.stata.com/meeting/2german/Jenkins.pdf"}
+
+{p 4 8 2}Kleiber, C. (1996). Dagum vs. Singh-Maddala income distributions.
+	{it: Economics Letters} 53: 265-268. {browse "http://dx.doi.org/10.1016/S0165-1765(96)00937-8"}
+
+{p 4 8 2}Kleiber, C. and Kotz, S. (2003). {it:Statistical Size Distributions in Economics and Actuarial Sciences}. 
+	Hoboken, NJ: John Wiley.
+
+{p 4 8 2}McDonald, J.B. (1984). Some generalized functions for the size
+	distribution of income. {it:Econometrica} 52: 647-663. {browse "http://www.jstor.org/stable/1913469"}
+
+{p 4 8 2}Singh, S.K. and G.S. Maddala (1976). A function for the size
+	distribution of income. {it:Econometrica} 44: 963-970. 
+
+{title:Also see}
+
+{p 4 13 2}
+Online: help for {help dagfit}, {help smgfit}, 
+{help dagumfit}, {help smfit}, 
+{help gb2fit}, {help lognfit}, if installed, or acquire them from {help ssc}. 
+

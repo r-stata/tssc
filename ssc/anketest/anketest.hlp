@@ -1,0 +1,146 @@
+{smcl}
+{* December 2008}{...}
+{hline}
+{cmd:help for anketest} 
+{hline}
+
+{title:Title}
+
+{p 2 8 2}
+{bf:anketest} ---Performs diagnostic tests for spatial autocorrelation in the residuals from OLS, SAR, IV, and IV-SAR models
+
+{marker contents}{dlgtab: Table of Contents}
+{p 2 16 2}
+
+{p 2}{help anketest##syntax:Syntax}{p_end}
+{p 2}{help anketest##description:General description}{p_end}
+{p 2}{help anketest##options:Description of the options}{p_end}
+{p 2}{help anketest##remark:Important remarks}{p_end}
+{p 2}{help anketest##examples:Examples}{p_end}
+{p 2}{help anketest##refs:References}{p_end}
+{p 2}{help anketest##cita:Citation}{p_end}
+{p 2}{help anketest##author:Author information}{p_end}
+{hline}
+
+{marker syntax}{title:Syntax}
+
+{phang}
+{cmd: anketest,} {opt w:name(wght_name)} {opt wf:rom(Stata|Mata)} {opt model(ols|sar|iv|iv-sar)} [{opt favor(speed|space)}]
+
+{synoptset 33 tabbed}
+{synopthdr}
+{synoptline}
+{syntab:Options}   
+     
+{synopt :{opt w:name(wght_name)}}indicate the name of the spatial weights matrix to be used{p_end}
+
+{synopt :{opt wf:rom(Stata|Mata)}}indicate the source of the spatial weights matrix{p_end}
+
+{synopt :{opt model(ols|sar|iv|iv-sar)}}indicate the estimated model{p_end}
+
+{synopt :{opt favor(speed|space)}}favor speed or space{p_end}
+
+
+{synoptline}
+{p2colreset}{...}
+
+{marker description}{dlgtab:Description}
+
+{pstd}{cmd:anketest} carries out diagnostic tests for spatial autocorrelation in the residuals from Ordinary Least Squares (OLS), 
+spatial autoregressive (SAR), and instrumental variable regressions with or without a spatially lagged dependent variable (IV-SAR or IV). 
+A spatial weights matrix, which may exist as a Stata matrix loaded in memory or as a Mata file located in the working directory, 
+is required.{p_end} 
+
+{pmore}{cmd:anketest} requires Stata 9.2 or higher. 
+
+
+{marker options}{dlgtab:Options}
+
+{phang}
+{opt wname(wght_name)} specifies the name of the spatial weights matrix to be used.
+
+{phang} 
+{opt wfrom}{cmd:(}{help matrix:Stata} | {help mf_fopen##remarks5:Mata}{cmd:)} indicates whether the spatial weights matrix is a Stata matrix 
+loaded in memory or a Mata file located in the working directory. If the spatial weights had been created using {help spwmatrix}, it should 
+exist as a Stata matrix or as a Mata file.
+
+{phang}
+{opt model(ols|sar|iv|iv-sar)} indicates the model for which the residuals need to be tested. Specifying {opt model(ols)} implies a model 
+estimated using the {help regress} command. {opt model(sar)} implies a model containing a spatially lagged dependent variable estimated by 
+spatial two-stage least squares (2SLS) using the Stata's official command {help ivregress}  or the user-written command {help ivreg29}. 
+The {it:SAR} model may have also been estimated by maximum likelihood using the user-written command {help spmlreg}. {opt model(iv)} 
+suggests a model estimated with (non-spatial) endogenous regressors, but without a spatially lagged dependent variable. {opt model(iv-sar)} 
+indicates a model containing both (non-spatial) endogenous variables and a spatially lagged dependent variable. The command {help ivregress}, 
+or {help ivreg29} must have been used to estimate the {it:iv} model by 2SLS and the {it:iv-sar} model by spatial 2SLS. For model estimation 
+by spatial 2SLS in {cmd:Stata} see {help splagvar}. 
+
+{phang}
+{opt favor(speed|space)} instructs {cmd:anketest} to favor speed or space when calculating the test statistics.
+{opt favor(speed)} is the default. This option provides a tradeoff between speed and memory use. See {help mata_set:[M-3] mata set}.
+
+{marker remark}{dlgtab:Important remarks}
+
+{phang}
+When testing the residuals from a spatial lag model estimated by maximum likelihood (ML), two spatial weights, 
+which may be the same or different, are required, one for each spatial dependence structure (lag and error). If the name of the spatial weights 
+matrix supplied to {help spmlreg} with {opt weights()} for the estimation of the spatial lag model is the same as that of the spatial weights 
+matrix specified with {opt wname()}, then that spatial weights matrix will be used for both structures. Otherwise, {cmd:anketest} will use the 
+spatial weights matrix supplied to {help spmlreg} with {opt weights()} for the lag structure and the spatial weights matrix specified with 
+{opt wname()} for the error structure.
+
+
+
+{marker examples}{dlgtab:Examples}
+
+{phang}
+1) Test for spatial autocorrelation in the residuals from an OLS model 
+
+{pmore}{cmd:. anketest, wname(mywght) wfrom(Mata) model(ols)}
+
+{synoptline}
+
+{phang}
+2) Test for spatial autocorrelation in the residuals from an IV model
+
+{pmore}{cmd:. anketest, wname(mywght) wfrom(Mata) model(iv)}
+
+{synoptline}
+
+{phang}
+3) Test for spatial autocorrelation in the residuals from a model containing non-spatial endogenous right-handside variables and a spatially lagged dependent variable
+
+{pmore}{cmd:. anketest, wname(mywght) wfrom(Mata) model(iv-sar)}
+
+
+{marker refs}{title:References}
+
+{bf:Anselin, L}., 2007. "Spatial Econometrics." In T. C. Mills and K. Patterson (Eds). {it:Palgrave Handbook of Econometrics. Vol 1, Econometric Theory}. 
+New York: Palgrave MacMillan, pp. 901-969.
+
+{bf:Anselin, L}., 2001. {it:Spatial Econometrics}. In Baltagi, B. (Ed). {it:A Companion to Theoretical Econometrics}. 
+Basil Blackwell: Oxford, UK, 310-330.
+
+{bf:Anselin, L}., 1988. {it:Spatial Econometrics: Methods and Models}. Kluwer Academic Publishers, Dordrecht, The Netherlands.
+
+{bf:Anselin, L., Kelejian, H. H}., 1997. Testing for Spatial Error Autocorrelation in the Presence of Endogenous Regressors. 
+{it:International Regional Science Review} 20, 153-182.
+
+
+{marker cita}{title:Citation}
+
+Users should please cite anktest as:
+
+{bf:Jeanty, P.W.}, 2010. anketest: Stata module to perform diagnostic tests for spatial autocorrelation in the residuals from OLS, SAR, IV, and IV-SAR models. 
+Available from ideas.repec.org/c/boc/bocode/s457113.html. 
+
+
+{marker author}{title:Author}
+
+{p 4 4 2}{hi: P. Wilner Jeanty}, Dept. of Agricultural, Environmental, and Development Economics, The Ohio State University{break}
+	   
+{p 4 4 2}Email to {browse "mailto:jeanty.1@osu.edu":jeanty.1@osu.edu} for any comments or suggestions.
+
+
+{title:Also see}
+
+{p 4 13 2}Online: {helpb spatdiag} (if installed)

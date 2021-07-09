@@ -1,0 +1,807 @@
+{smcl}
+{* *! version 1.5.0  26Okt2011}{...}
+{* *! version 1.4.0  20Nov2009}{...}
+{* *! version 1.2.3  23Feb2008}{...}
+{* *! version 1.2.2  23Dec2007}{...}
+{* *! version 1.2.1  18Dec2007}{...}
+{* *! version 1.2.0  29Nov2007}{...}
+{* *! version 1.1.0  10Nov2007}{...}
+{* *! version 1.0.0  04Nov2007}{...}
+{cmd:help hangroot}
+{hline}
+
+{title:Title}
+
+{p2colset 5 17 19 2}{...}
+{p2col :{hi:hangroot} {hline 2}}Hanging rootogram or suspended rootogram comparing an empirical 
+distribution to a theoretcal distribution{p_end}
+{p2colreset}{...}
+
+
+{title:Syntax}
+
+{phang}
+Stand-alone
+
+{p 8 12 2}
+{cmd:hangroot}
+{it:varname} 
+{ifin} [{help weights:fweight}]
+[{cmd:,}
+{opt dist(name)}
+{it:{help hangroot##options:general_opts}}
+{c -(}{it:{help hangroot##continuous_opts:continuous_opts}} {c |}
+{it:{help hangroot##discrete_opts:discrete_opts}}{c )-} ]
+
+
+{phang}
+post-estimation command
+
+{p 8 12 2}
+{cmd:hangroot}
+[{cmd:,}
+{it:{help hangroot##options:general_opts}}
+{c -(}{it:{help hangroot##continuous_opts:continuous_opts}} {c |}
+{it:{help hangroot##discrete_opts:discrete_opts}}{c )-} ]
+
+{pstd}
+The post-estimation syntax is available after estimating a model
+with or without covariates using one of the commands listed in 
+{help hangroot##coef:this} table.
+      
+{marker options}{...}
+        {it:general_opts}{col 33}description 
+        {hline 67}
+        {opt dist(name)}{...}
+{col 33}specifies theoretical distribution 
+        {opt par(numlist)}{...}
+{col 33}specifies the parameters at which the 
+{col 33}theoretical distribution is to be fixed
+{col 33}These parameters will be estimated if this 
+{col 33}option is not specified
+        {opt susp:ended}{...}
+{col 33}specifies that a suspended rootogram is to 
+{col 33}be drawn rather than a hanging rootogram
+        {opt notheor:etical}{...}
+{col 33}supresses the disply of the theoretical 
+{col 33}distribution
+        {opt ci}{...}
+{col 33}draw confidence intervals
+        {opt l:evel(#)}{...}
+{col 33}sets confidence level to {it:#}
+        {opt sims(varlist)}{...}
+{col 33}overlays the empirical distributions of 
+{col 33}all variables in {it:varlist}
+        {opt sp:ike}{...}
+{col 33}draw the empirical distribution as spikes, 
+{col 33}the default
+        {opt bar}{...}
+{col 33}draw the empirical distribution as bars
+        {opt ninter(#)}{...}
+{col 33}governs the smoothness of the theoretical
+{col 33}distribution if {cmd:hangroot} is used
+{col 33}after an estimation command with covariates
+        {opt maino:pt(graph_options)}{...}
+{col 33}options governing the look of the 
+{col 33}empirical distribution
+        {opt theoro:pt(graph_options)}{...}
+{col 33}options governing the look of the 
+{col 33}theoretical distribution
+        {opt cio:pt(graph_options)}{...}
+{col 33}options governing the look of the 
+{col 33}confidence interval
+        {opt simsopt(graph_options)}{...}
+{col 33}options governing the look of the 
+{col 33}empirical distributions specified in {opt sims()}
+        {opt jitter:sims(integer)}{...}
+{col 33}horizontally jitter the marker positions for the
+{col 33}empircal distribution specified in {opt sims()}
+{col 33}using random noise
+        {opt jitterseed()}{...}
+{col 33}random number seed for {opt jittersims()}
+        {opt plot(plot)}{...}
+{col 33}add other plots to the graph
+        {help hangroot##other:other options} 
+        {hline 67}
+
+{marker continuous_opts}{...}
+	{it:continuous_opts}{col 33}description
+	{hline 67}
+	{opt bin(#)}{...}
+{col 33}set number of bins to {it:#}
+	{opt w:idth(#)}{...}
+{col 33}set width of bins to {it:#} 
+	{opt start(#)}{...}
+{col 33}set lower limit of first bin to {it:#}
+	{hline 67}
+
+{marker discrete_opts}{...}
+	{it:discrete_opts}{col 33}description
+	{hline 67}
+	{opt d:iscrete}{...}
+{col 33}specify that the data are discrete
+	{opt w:idth(#)}{...}
+{col 33}set width of bins to {it:#}
+	{opt start(#)}{...}
+{col 33}set theoretical minimum value to {it:#}
+	{hline 67}
+
+
+{title:Description}
+
+{pstd}
+{cmd:hangroot} draws a hanging rootogram or suspended rootogram (Tukey 1965, 
+1972, 1977) and  (Tukey and Wilk 1965) (Also see: (Wainer 1974) and 
+(Friendly 2000)) comparing the empirical distribution of varname to a theoretical
+distribution, as specified in the {opt dist} option. Both are an alternative for 
+{cmd:histogram} with the theoretical density function plotted on top.  The 
+hanging rootogram differs from a histogram in two ways: 
+
+{pmore}
+1) The spikes or bars "hang" from the theoretical distribution instead of 
+"standing" on the x-axis.  The deviations are now shown as deviations from a 
+horzontal line (y=0) instead of deviations from a curve (the density function). 
+This makes it easier to spot patterns in the deviations.
+
+{pmore}
+2) Instead of showing the freqencies it shows the square root of the frequencies. 
+This way the sampling variation of the length of the spikes or bars is stabelized. 
+These lengths are counts of the number of observations that fall within each bin, 
+and larger counts tend to have larger sampling variation than smaller counts, 
+making it harder to compare the deviations across bins. By taking the square
+root, the sampling variations tends to be approximately equal across bins, 
+facilitating the comparison across bins. Moreover, this tends to make deviations 
+in the tails, where the counts are small, more visible. 
+
+{pstd}
+The aim of the hanging rootogram and the suspended rootogram is to compare an 
+empirical distribution to a theortical distribution. The key part of the graph
+that displays this information are the deviations of the bars or spikes in the 
+hanging rootogram from the line y=0, as these are the residuals of the 
+empirical distribution fromt the theoretical distribution. So, a more direct 
+way of achieving the goal of these graphs is to directly display these residuals 
+rather than the raw number of observations belonging to each bin. This is what 
+the suspended rootogram does. It now makes sense to flip the entire graph upside 
+down, suspending the theoretical distribution from the line y=0, because this 
+way positive residuals represent too many observations in a bin, and negative 
+residuals too few observations in a bin. We can optionally suppress the display 
+of the theoretical distribution, focussing entirly on the residuals.
+
+
+{title:Coefficients of the theoretical distribution}
+
+{pstd}
+The parameters of the theoretical can either be estimated or specified by the 
+user using the {cmd:par()} option. For many distributions there are two ways in
+which {cmd:hangroot} can obtain estimates, either it computes those estimates
+itself, this happens when the stand-alone syntax is used, or it can use the 
+estimates obtained previously, this happens when the post-estimation syntax is
+used. The post-estimation syntax is available if in the table below there is an 
+entry in the {it:estimation command} column, while the stand-alone syntax is 
+available if the entry in the {opt dist(name)} column is not marked with an *.
+
+{pstd}
+In order to use the post-estimation syntax one must first estimate
+the model with or without covariates using one of the estimation commands in the 
+table below. If the previous model contained covariates, then the theoretical 
+distribution will the marginal distribution of the dependent variable implied 
+by the model and distribution of the covariates in the data. All the estimation 
+commands are either part of official Stata or available from {help ssc}. The 
+{cmd:if} and {cmd:in} qualifiers and the weights will be coppied from the last
+estimation command, so they may not be specified in the post-estimation syntax. 
+This also means that this syntax is only availabe if the previous model was
+estimated either without weights or with fweights.
+
+{marker coef}{...}
+        {it:distribution}{col 37}{it:estimation command}{col 58}{opt dist(name)}
+        {hline 67}
+        normal / Gaussian{...}
+{col 37}{cmd:regress}{...}
+{col 58}{it:{ul:norm}al} or {it:{ul:gaus}sian}
+        lognormal{...}
+{col 37}{cmd:lognfit}{...}
+{col 58}{it:{ul:logn}ormal}
+        logistic{...}
+{col 58}{it:{ul:logi}stic} 
+        Weibull{...}
+{col 37}{cmd:weibullfit}{...}
+{col 58}{it:{ul:weib}ull}*
+        Chi square{...}
+{col 58}{it:chi2} 
+        gamma{...}
+{col 37}{cmd:gammafit}{...}
+{col 58}{it:gamma} 
+        Gumbel{...}
+{col 37}{cmd:gumbelfit}{...}
+{col 58}{it:{ul:gumb}el} 
+        inverse gamma{...}
+{col 37}{cmd:invgammafit}{...}
+{col 58}{it:{ul:invg}amma} 
+        Wald / inverse Gaussian{...}
+{col 37}{cmd:invgaussfit}{...}
+{col 58}{it:wald}
+        beta{...}
+{col 37}{cmd:betafit}{...}
+{col 58}{it:beta} 
+        Pareto{...}
+{col 37}{cmd:paretofit}{...}
+{col 58}{it:{ul:pare}to}
+        Fisk / log-logistic{...}
+{col 37}{cmd:fiskfit}{...}
+{col 58}{it:fisk}*
+        Dagum{...}
+{col 37}{cmd:dagumfit}{...}
+{col 58}{it:dagum}*
+        Singh-Maddala{...}
+{col 37}{cmd:smfit}{...}
+{col 58}{it:sm}*
+        Generalized Beta II{...}
+{col 37}{cmd:gb2fit}{...}
+{col 58}{it:gb2}*
+        generalized extreme value{...}
+{col 37}{cmd:gevfit}{...}
+{col 58}{it:gev}*
+        exponential{...}
+{col 58}{it:{ul:expo}nential}
+        Laplace{...}
+{col 58}{it:{ul:lapl}ace}
+        uniform{...}
+{col 58}{it:{ul:unif}orm} 
+        geometric{...}
+{col 58}{it:{ul:geom}etric}
+        Poisson{...}
+{col 37}{cmd:poisson}{...}
+{col 58}{it:{ul:pois}son}
+        zero inflated Poisson{...}
+{col 37}{cmd:zip}{...}
+{col 58}{it:zip}*
+        negative binomial I{...}
+{col 37}{cmd:nbreg}{...}
+{col 58}{it:nb1}* 
+        negative binomial II{...}
+{col 37}{cmd:nbreg} and {cmd:gnbreg}{...}
+{col 58}{it:nb2}*
+        zero inflated negative
+        binomial{...}
+{col 37}{cmd:zinb}{...}
+{col 58}{it:zinb}*
+        {hline 67}
+        * These distributions cannot be used in the stand-alone syntax.
+		
+{pstd}
+If the post-estimation syntax is used and the {cmd:par()} option is not specified, 
+than the best fitting distribution is retrieved from the last estimation command. 
+If the stand-alone syntax is used and the {cmd:par()} option is not specified, 
+than the best fitting distribution is fitted using the method specified in the 
+table below. If the method is not maximum likelihood, the best fitting 
+distribution in the stand-alone syntax may differ from the post-estimation 
+syntax.
+
+        {it:maximum}     {col 26}{it:method of}  
+        {it:likelihood}  {col 26}{it:moments}    
+        {hline 41}
+        Gaussian         {col 26}logistic        
+        log-normal       {col 26}Gumbel          
+        Wald             {col 26}inverse gamma   
+        Pareto           {col 26}beta
+        exponential      {col 26}uniform 
+        Laplace          
+        geometric
+        Poisson
+        gamma(*)
+        {hline 41}
+        (*) approximate
+
+{pstd} Depending on the distribution specified, {cmd:hangroot} will only use 
+observations that meet the following criteria:{p_end}
+
+{col 9}exponential            {col 25}{it:varname} >= 0
+{col 9}lognormal              {col 25}{it:varname} >= 0 
+{col 9}Weibull                {col 25}{it:varname} >= 0
+{col 9}gamma                  {col 25}{it:varname} >= 0
+{col 9}Gumbel                 {col 25}{it:varname} >= 0
+{col 9}inverse gamma          {col 25}{it:varname} > 0
+{col 9}Pareto                 {col 25}{it:varname} > 0
+{col 9}wald                   {col 25}{it:varname} > 0
+{col 9}Fisk                   {col 25}{it:varname} > 0
+{col 9}Dagum                  {col 25}{it:varname} > 0
+{col 9}Singh-Maddala          {col 25}{it:varname} > 0
+{col 9}Generalized Beta II    {col 25}{it:varname} > 0
+{col 9}Poisson                {col 25}{it:varname} >= 0 & {it:varname} = integer 
+{col 9}zero inflated Poisson  {col 25}{it:varname} >= 0 & {it:varname} = integer 
+{col 9}negative binomial      {col 25}{it:varname} >= 0 & {it:varname} = integer 
+{col 9}zero inflated negative 
+{col 9}binomial               {col 25}{it:varname} >= 0 & {it:varname} = integer 
+{col 9}geometric              {col 25}{it:varname} >= 0 & {it:varname} = integer
+{col 9}beta                   {col 25}0 < {it:varname} < 1
+
+{pstd}
+The geometric distribution is parameterized in terms of the number of failures 
+before the first succes, instead of the number of trials needed to get the first 
+succes.
+
+
+{title:General options}
+
+{phang}
+{opt dist(name)} specifies the theoretical distribution with which the empirical 
+distribution is compared. This option will be ignored in the post-estimation syntax.
+The default is Gaussian.
+
+{pmore}
+The option {opt discrete} is implied when specifying the geometric or the 
+poisson distribution. 
+
+{phang}
+{opt par(numlist)} specifies the parameters at which the theoretical distribution
+is to be fixed. If this option is not specified than the estimated parematers will 
+be used. The table below identifies which parameter is represented by which number
+in the {it:numlist}. The variable of interest is represented by y, the first number 
+in numlist is represented by a, the second by b, the third by c, and the fourth by 
+d.
+
+        {hline 68}
+        {it:distribution}{col 37}{it:parameterization}
+        {hline 68}
+        normal / Gaussian{...}
+{col 37}{help normalden}(a, b)
+
+        lognormal{...}
+{col 37}(1 / (y * b * sqrt(2 * pi))) * 
+{col 37}exp(-(log(y) - a)^2 / (2 * b^2))
+
+        logistic{...}
+{col 37}exp(-1*(y - a )/b) /
+{col 37}(b*(1+exp(-1*(y - a )/b))^2)
+
+        Weibull{...}
+{col 37}(a/b)*(y/b)^(a - 1)*exp(-(y/b)^a)
+
+        Chi square{...}
+{col 37}{help gammaden}(a/2,2,0,y)
+
+        gamma{...}
+{col 37}{help gammaden}(a, b, 0, y)
+
+        Gumbel{...}
+{col 37}(1 / b) * exp(-(y - a) / b) * 
+{col 37}exp(-exp(-(y - a) / b))
+
+        inverse gamma{...}
+{col 37}b^a/exp({help lngamma}(a))*y^(-a-1)*exp(-b/y)
+
+        Wald / inverse Gaussian{...}
+{col 37}sqrt(b/(2*pi*y^3)) * 
+{col 37}exp(-b*(y-a)^2 / (2*a^2*y))
+
+        beta{...}
+{col 37}{help betaden}(a,b,y)
+
+        Pareto{...}
+{col 37}b*a^b/y^(b+1)
+
+        Fisk / log-logistic{...}
+{col 37}a*((b/y)^a)*(1/<)/(1 + (b/y)^a)^2
+
+        Dagum{...}
+{col 37}(a*c)*((b/y)^a)*
+{col 37}(1/y)/(1 + (b/y)^a)^(c+1)
+
+        Singh-Maddala{...}
+{col 37}(a*c/b)*((1 + (y/b)^a)^-(c+1))*
+{col 37}((y/b)^(a-1))
+
+        Generalized Beta II{...}
+{col 37}a*y^(a*c-1)*((b^(a*c))* 
+{col 37}exp({help lngamma}(c) + {help lngamma}(d) - 
+{col 41}{help lngamma}(c + d))* 
+{col 37}(1 + (y/b)^a )^(c+d))^-1
+
+        generalized extreme value{...}
+{col 37}1/b*(1+c*((y-a)/b))^(-1-1/c)*
+{col 37}exp(-1*(1+c*((y-a)/b))^(-1/c))
+
+        exponential{...}
+{col 37}a*exp(-a*y)
+
+        Laplace{...}
+{col 37}1/(2*b)*exp(-1*|y-a|/b)
+
+        uniform{...}
+{col 37}1/(b-a)
+
+        geometric{...}
+{col 37}(1-a)^y*a
+
+        Poisson{...}
+{col 37}exp(-a)*a^y/y!
+
+        zip{...}
+{col 37}{help cond}(y==0, b + (1-b)*exp(-a),
+{col 37}(1-b)*( exp(-a)*a^y/y! )
+
+        negative binomial I{...}
+{col 37}exp({help lngamma}(y + a) - {help lngamma}(y+1) - 
+{col 41}{help lngamma}(a)) * b^y / (1 + b)^(y+a)
+
+        negative binomial II{...}
+{col 37}exp({help lngamma}(y + 1/b) - {help lngamma}(y + 1) - 
+{col 41}{help lngamma}(1/b)) * (a/(1/b + a))^y * 
+{col 37}(1/(b*(1/b + a)))^(1/b)
+
+        zero inflated negative {...}
+{col 37}{help cond}(y==0 , c + (1-c)*(1/(1+a*b))^(1/b),
+        binomial{...}
+{col 37}(1-c) *
+{col 37}exp({help lngamma}(1/b+y) - {help lngamma}(y+1) -
+{col 41}{help lngamma}(1/b)) *
+{col 37}(1/(1+a*b))^(1/b) * (1-1/(1+a*b))^y ) 
+        {hline 68}
+
+{phang}
+{opt susp:ended} specifies that a suspended rootogram is drawn rather than a 
+hanging rootogram.
+
+{phang}
+{opt notheor:etical} suppresses the display of the theoretical curve. This 
+option is only allowed in combination with the {opt suspended} option.
+		
+{phang}
+{opt ci} specifies that confidence intervals are drawn around the bottom of the 
+spikes or the bars. These confidence intervals assume that the number of 
+observations in a bin follow a multinomial distribution, and use Goodman's 
+(1965) approximation of the simultaneous confidence interval. These confidence 
+intervals do not take into account that the parameters in the theoretical 
+distribution are also estimated. These confidence intervals also do not take
+into account that nearby bins are likely to be similar, as was suggested by
+Vermeesch (2005). However, I would consider this latter point a feature, as 
+this corresponds with the simple non-parametric logic that is behind the 
+histogram and the (hanging) rootogram.
+
+{phang}
+{opt l:evel(#)} specifies the confidence level, in percent, for the confidence 
+intervals; see {help level}.
+
+{phang}
+{opt sims(varlist)} specifies variables whose empirical distribution will be overlaid
+on top of the graph. The intended use is that these variables are a set of random
+samples from the theoretical distribution, thus providing an informal confidence 
+interval. 
+
+{phang}
+{opt sp:ike} specifies that the empirical distribution is graphed as spikes. This 
+is the default.
+
+{phang}
+{opt bar} specifies that the empirical distribution is graphed as bars.
+
+{phang}
+{opt ninter(#)} specifies the number of points between bin-midpoints for which the 
+theoretical distribution is computed. It governs the smoothness of the curve 
+representing the theoretical distribution. This option is only allowed when {cmd:hangroot}
+is used after an estimation command with covariates. The default is 5, and can be
+any integer between and including 0 and 20.
+
+{phang}
+{opt maino:pt(graph_options)} specifies options govinging the look of the empirical distribution 
+or the residuals are drawn. By default or when the {opt spike} option is specified,
+these options can be the options of {help twoway rspike}. When the {opt bar} option
+is specified, these options can be the options of {help twoway rbar}. In either case
+the the {opt by()}, {opt horizontal}, and {opt vertical} options are not allowed.
+The options that can be specified in {opt} can also be directly added as {help hangroot##other:other_options}.
+
+{phang}
+{opt theoro:pt(graph_options)} specifies options govinging the look of the theoretical 
+distribution. These options can be the options of {help twoway line}. This option is 
+not allowed when the {cmd:notheoretical} option is specified.
+
+{phang}
+{opt cio:pt(graph_options)} specifies options govinging the look of the confidence
+interval. These can be the options of:
+
+{pmore}
+{help twoway rbar} when the {opt suspended} option is not specified and the empirical 
+distribution is represented by spikes, 
+
+{pmore} 
+{help twoway rcap} when the {opt suspended} option is not specified and the emprical
+distribution is represented by bars,
+
+{pmore}
+{help twoway rarea} when the {opt suspended} option is specified.
+
+{phang}
+{opt simsopt(graph_options)} specifies options govinging the look of the simulated 
+distributions. These options can be the options of {help twoway pcspike}. This option is 
+only allowed when the {cmd:sims()} option is specified.
+
+{phang}
+{opt jitter:sims(integer)} adds random noice to the vertical possition of the 
+markers representing the simulations, where {it:integer} represents the size of 
+the noise as a percentage of the distance between the highest and lowest marker 
+position for the simulated variables. 
+
+{phang}
+{opt jitterseed()} random number seed for {opt jittersims()}
+
+{phang}
+{opt plot(plot)} provides a way to add other plots to the generated graph; see:
+{help addplot_option} (Stata 9 and 10) or {help plot_option} (Stata 8).
+
+{phang}
+{marker other}{...}
+{it: Other options} When the option {opt bar} is specified all {help twoway rbar} 
+options are allowed, except {opt by()}, {opt horizontal}, and {opt vertical}. 
+Otherwise all {help twoway rspike} options are allowed, with the same exceptions.
+
+
+{title:Options for use in the continuous case}
+
+{phang}
+{opt bin(#)} and {opt width(#)} are alternatives.  They specify how the data
+are to be aggregated into bins; {opt bin()} by specifying the number of bins
+(from which the width can be derived) and {opt width()} by specifying the bin
+width (from which the number of bins can be derived).
+
+{pmore}
+If neither option is specified, results are the same as if {opt bin(k)} were
+specified, where
+
+{phang3}
+{it:k} = min{c -(}sqrt({it:N}), 10*ln({it:N})/ln(10){c )-}
+
+{pmore}
+    and where {it:N} is the number of observations.
+
+{phang}
+{opt start(#)} specifies the theoretical minimum of varname.  The default
+is {opt start(m)}, where {it:m} is the observed minimum value of {it:varname}.
+
+{pmore}
+Specify {opt start()} when you are concerned about sparse data, for instance,
+if you know that {it:varname} can have a value of 0, but you are concerned
+that 0 may not be observed.
+
+{pmore}
+{opt start(#)}, if specified, must be less than or equal to {it:m}, or else an
+error will be issued.
+
+
+{title:Options for use in the discrete case}
+
+{phang}
+{opt discrete} specifies that varname is discrete and that you want each
+unique value of {it:varname} to have its own bin (bar of histogram).
+
+{phang}
+{opt width(#)} is rarely specified in the discrete case; it specifies the
+width of the bins.  The default is {opt width(d)}, where {it:d} is the
+observed minimum difference between the unique values of {it:varname}.
+
+{pmore} 
+Specify {opt width()} if you are concerned that your data are sparse.
+For example, in theory {it:varname} could take on the values, say, 1, 2, 3,
+..., 9, but because of the sparseness, perhaps only the values 2, 4, 7, and 8
+are observed.  Here the default width calculation would produce
+{cmd:width(2)} and you would want to specify {cmd:width(1)}.
+
+{phang}
+{opt start(#)} is also rarely specified in the discrete case; it specifies the
+theoretical minimum value of varname.  The default is {opt start(m)},
+where {it:m} is the observed minimum value.
+
+{pmore}
+As with {opt width()}, you specify {opt start(#)} if you are concerned that
+your data are sparse.  In the previous example, you might also want to specify
+{cmd:start(1)}.  {opt start()} does nothing more than add white
+space to the left side of the graph.
+
+{pmore}
+The value of {it:#} in {opt start()} must be less than or equal to {it:m}, or
+an error will be issued.
+
+
+{title:Examples}
+
+{pstd}
+The residuals after a linear regression {help regress} should be normally
+distributed, but in this case it appears to follow a bimodal distribution.
+
+{cmd}{...}
+    sysuse nlsw88, clear
+    gen ln_w = ln(wage)
+    reg ln_w grade age ttl_exp tenure
+    predict resid, resid
+    hangroot resid
+{txt}{...}
+{p 4 4 2}({stata "hangroot_ex 1":click to run}){p_end}
+
+{pstd}
+This bimodal distribution appears to be the result of the ommision of the 
+variable union.
+
+{cmd}{...}
+    sysuse nlsw88, clear
+    gen ln_w = ln(wage)
+    reg ln_w grade age ttl_exp tenure union
+    predict resid2, resid
+    hangroot resid2
+{txt}{...}
+{p 4 4 2}({stata "hangroot_ex 2a":click to run}){p_end}
+
+{pstd}
+The part of the graph that tells us how wel the distribution fits to the 
+data is the distance between the bottom of the spikes and the horizontal 
+line y=0. So why not explicitly plot these residuals instead? When we do
+that, it would also make sense to flip the entire graph upside down: In that
+case bins with too many cases will receive positive residuals and bins with 
+too few cases negative residuals. This is done with the {opt susp} option
+
+{cmd}{...}
+    hangroot resid2, ci susp theoropt(lpattern(-))
+{txt}{...}
+{p 4 4 2}({stata "hangroot_ex 2b":click to run}){p_end}
+
+{pstd}
+One can focuss more on the residuals by removing the theoretical distribution.
+
+{cmd}{...}
+    hangroot resid2, ci susp notheor
+{txt}{...}
+{p 4 4 2}({stata "hangroot_ex 2c":click to run}){p_end}
+
+{pstd}
+{cmd:hangroot} can be used as a post-estimation command. In this case a 
+log normal distribution without covariates was fitted using {cmd:lognfit},
+which is available from {help ssc}. 
+
+{cmd}{...}
+    sysuse nlsw88, clear
+    lognfit wage
+    hangroot, ci
+{txt}{...}
+{p 4 4 2}({stata "hangroot_ex 3a":click to run}){p_end}
+
+{pstd}
+A hanging rootogram can also be used to compare the distribution of two 
+a variable across two groups. In the example below the wage distribution of
+those with a college degree is the reference/"theoretical" distribution, and
+the wage distribution of the respondents without a college degree hangs from 
+it.
+
+{cmd}{...}
+    sysuse nlsw88, clear
+    hangroot wage, dist(theoretical collgrad)
+{txt}{...}
+{p 4 4 2}({stata "hangroot_ex 4":click to run}){p_end}
+
+{pstd}
+{cmd:hangroot} can also be used to compare an empirical distribution 
+with the marginal distribution implied by a regression model. In this
+case we create data that is appropriate for linear regression, but the
+distribution of y looks nothing like a normal distribution.
+
+{pstd}
+In Stata >= 10 I would have used {help rnormal}() instead of 
+{cmd:invnormal(uniform())}, but I have not done so here since 
+{cmd:hangroot} is also supposed to work in Stata 9.2.
+
+{cmd}{...}
+    drop _all
+    set obs 1000
+    gen byte x = _n <= 250
+    gen y = -3 + 3*x + invnormal(uniform())
+    hangroot y, dist(normal)
+{txt}{...}
+{p 4 4 2}({stata "hangroot_ex 5a":click to run}){p_end}
+
+{pstd}
+However, the distribution of y fits the marginal distribution implied by
+the regression model. In this case we could also have inspected the residuals,
+which should be normally distributed. However, looking at residuals won't work 
+for models that imply other distribution, e.g. Poisson or beta regression, but 
+in those cases one can still inspect the marginal distribution.
+
+{cmd}{...}
+    reg y x
+    hangroot 
+{txt}{...}
+{p 4 4 2}({stata "hangroot_ex 5b":click to run}){p_end}
+
+{pstd}
+Some deviation from the theoretical distribution is expected, as the data are 
+typically random draws from a larger population. A nice way to see what kind 
+of variability is still consistent with the model is to create a couple 
+variables that are random draws assuming that the model is correct, and 
+overlay the distribution of these random draws on top of the hanging rootogram. 
+
+{pstd}
+In Stata >= 10 I would have used {help rnormal}(mu,sd) instead of 
+{cmd:invnormal(uniform())*sd + mu}, but I have not done so here since 
+{cmd:hangroot} is also supposed to work in Stata 9.2.
+
+
+{cmd}{...}
+    predict double mu , xb
+    scalar sd = e(rmse)
+    forvalues i = 1/20 {
+        gen sim`i' = invnormal(uniform())*sd + mu
+    }
+    hangroot, sims(sim*) jitter(5) xlab(-6(3)3) 
+{txt}{...}
+{p 4 4 2}({stata "hangroot_ex 5c":click to run}){p_end}
+
+
+{title:Author}
+
+{p 4 4}
+Maarten L. Buis{break}
+Universitaet Tuebingen{break}
+Institut fuer Soziologie{break}
+maarten.buis@uni-tuebingen.de
+{p_end}
+
+
+{title:Acknowledgement}
+
+{phang}
+Several programming tricks from {help dpplot} by Nick Cox are incorporated in this program.
+
+
+{title:References}
+
+{phang}
+Friendly, M. 2000.  Visualizing categorical data.  Cary, NC: SAS
+Institute.
+
+{phang}
+Goodman, L.A. 1965, On Simultaneous Confidence Intervals for Multinomial Proportions. 
+{it:Technometrics}, 7(2), pp. 247-254.
+
+{phang}
+Tukey, J.W. 1965. The future of processes of data analysis. Reprinted
+in Jones, L.V. (ed.) 1986. The collected works of John W. Tukey. Volume
+IV: Philosophy and principles of data analysis: 1965-1986. Monterey, CA:
+Wadsworth and Brooks/Cole, 517-547.
+
+{phang}
+Tukey, J.W. and Wilk, M.B. 1965. Data analysis and statistics:
+principles and practice. Reprinted in Cleveland, W.S. (ed.) 1988. The
+collected works of John W. Tukey. Volume V: Graphics: 1965-1985.
+Pacific Grove, CA: Wadsworth and Brooks/Cole, 23-29.
+
+{phang}
+Tukey, J.W. 1972. Some graphic and semigraphic displays. In Bancroft,
+T.A. and Brown, S.A. (eds) Statistical papers in honor of George W.
+Snedecor. Ames, IA: Iowa State University Press, 293-316. 
+
+{phang}
+Tukey, J.W. 1977, {it:Exploratory Data Analysis}, Addison-Wesley.
+
+{phang}
+Vermeesch, P. 2005, Statistical uncertainty associated with histograms in the Earth 
+Sciences, {it:Journal of Geophysical Research - Solid Earth}, Vol 110, B02211.
+
+{phang}
+Wainer, H. 1974, The Suspended Rootogram and Other Visual Displays: 
+An Empirical Validation. {it: The American Statistician}, 28(4), pp. 143-145.
+
+
+{title:Also see:}
+
+Estimation commands:
+{p 4 4}
+If installed: {help lognfit}, {help weibullfit}, {help gammafit}, {help gumbelfit}, 
+{help invgammafit}, {help invgaussfit}, {help betafit}, {help paretofit}, {help fiskfit}, 
+{help dagumfit}, {help smfit}, {help gb2fit} {help gevfit}
+
+
+Alternatives:
+{p 4 4}
+Online: {help spikeplot}, {help histogram}, {help qnorm}, {help pnorm}, {help pchi}, and {help qchi}.
+
+{p 4 4}
+if installed: {help dpplot}, {help pbeta}, {help qbeta}, {help pweibull}, {help qweibull},
+{help plogn}, {help qlogn}, {help pgamma}, {help qgamma}, {help pgumbel}, {help qgumbel},
+{help pinvgauss}, {help qinvgauss}, {help pinvgamma}, {help qinvgamma}, {help pdagum}, 
+{help qdagum}, {help pgb2}, {help qgb2}, {help psm}, {help qsm}

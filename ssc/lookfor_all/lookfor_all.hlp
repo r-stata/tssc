@@ -1,0 +1,192 @@
+{smcl}
+{* 05Feb2007}{...}
+{cmd:help lookfor_all} {right:{hi: Michael Lokshin, Zurab Sajaia, and Dan Blanchette}}
+{hline}
+
+{title:Title}
+
+{p2colset 8 23 2 1}
+{p2col :{hi:lookfor_all} {hline 2}}Searches for variables/patterns in Stata data files (.dta) 
+{p2colreset}{...}
+
+
+{title:Syntax}
+
+{pstd}
+Searching within current directory
+
+{p 8 16 2}
+{cmd:lookfor_all} {it:pattern}[{it:pattern} [...]] [{cmd:,} {it:{help lookfor_all##options:options}}]
+
+{pstd}where {it:pattern} is a word that could be a name (or part of the name) of the variable and/or a word (or part of a word)
+in the variable label or value label name or value label if the {cmd:vlabs} option is specified or a word (or part of a word)
+in a note attached to the dataset or a word (or part of a word) in a note attached to a variable if the {cmd:notes} option is 
+specified.  {cmd:lookfor_all} only does case insensitive searches so searching for "test" may find "Test", "TEST", or "tESt"
+as well as "test".{p_end}
+
+{pstd}
+Searching within current directory and subdirectories
+
+{p 8 16 2}
+{cmd:lookfor_all} {it:pattern}[{it:pattern} [...]] [{cmd:, subdir} {it:{help lookfor_all##options:options}}]
+
+
+{marker options}{...}
+{synoptset 17 tabbed}{...}
+{synopthdr:options}
+{synoptline}
+{syntab:Main}
+
+{synopt:{opt dir:ectory(path)}}an option to specify the root directory where to search{p_end}
+{synopt:{opt sub:dir}}an option for searching subdirectories{p_end}
+{synopt:{opt d:escribe}}an option to format the output{p_end}
+{synopt:{opt code:book}}another option to format the output{p_end}
+{synopt:{opt vl:abs}}also search value label names and value labels{p_end}
+{synopt:{opt not:es}}also search patterns in dataset notes and variable notes{p_end}
+{synopt:{opt dn:otes}}also search patterns in dataset notes{p_end}
+{synopt:{opt vn:otes}}also search patterns in variable notes{p_end}
+
+{syntab:Advanced}
+
+{synopt:{opt maxd:epth(integer > 1)}}an option to specify how far down a directory tree to search{p_end}
+{synopt:{opt maxv:var(integer)}}an option for Stata SE or Stata MP users to allow {cmd:lookfor_all} to open a dataset with up to 32,767 variables{p_end}
+{synopt:{opt dirf:ilter(regular expression)}}an option to specify a 
+{browse "http://www.stata.com/support/faqs/data/regex.html":regular expression} pattern that the subdirectory name has to 
+satisfy in order to search files in that directory.{p_end}
+{synopt:{opt f:ilter(regular expression)}}an option to specify a 
+{browse "http://www.stata.com/support/faqs/data/regex.html":regular expression} pattern that the file name has to satisfy in order 
+to search the file.{p_end}
+
+{title:Description}
+
+{pstd}
+{cmd:lookfor_all} is an extension of the Stata program {helpb lookfor}.  {cmd:lookfor_all} searches through all Stata data files 
+in a current directory and subdirectories for the variable(s) with at least one of the specified patterns.  Each {it:pattern} could 
+be a part/whole variable name and/or a word (part of the word) in the variable label.  {cmd:lookfor_all} outputs the list of data files 
+where the {it:pattern} was found and the list of variables within every data file that match the {it:pattern}.  The files listed are
+clickable.  By clicking on the file, Stata loads that data file into memory.  {cmd:lookfor_all} can also search a directory other than 
+the current directory by specifying the {opt dir:ectory(path)} option for a search.{p_end}
+
+{title:Options}
+
+{dlgtab 4 2 :Main}
+
+{phang}
+{opt dir:ectory(path)} specifies the {it:path} where {cmd:lookfor_all} should start searching.  By default {cmd:lookfor_all} searches files
+in the current directory.{p_end}
+
+{phang}
+{opt sub:dir}
+if specified {cmd:lookfor_all} searches through all Stata data files ({cmd:.dta}) in the current directory and subdirectories or the
+specified directory and its subdirectories.  If this option is not specified {cmd:lookfor_all} searches only within the files in the 
+current directory or the specified directory.{p_end}
+
+{phang}
+{opt d:escribe} controls the way the variables that match the {it:pattern} are outputted.  By default {cmd:lookfor_all} outputs
+the variables following the name of the data file they are in.  Specifying {opt d:escribe} makes Stata run the {helpb describe}
+command on the variables that were found.  You can control the output using the options of the Stata command {helpb describe}.  These options
+are {opt simple short details fullname numbers}.{p_end}
+
+{phang}
+{opt code:book} controls the way the variables that match the {it:pattern} are outputted.  Specifying {opt code:book} makes Stata
+run the {helpb codebook} command on the variables that were found.  The output will be the number of unique observations, mean, 
+minimum, maximum and the label of the matching variables.  You can control the output using the options of the Stata command 
+{helpb codebook}.{p_end}
+
+{phang}
+{opt vl:abs}
+if specified {cmd:lookfor_all} will also search through the value label names and value labels.{p_end}
+
+{opt notes}
+if specified {cmd:lookfor_all} will also search through the notes attached to datasets and variable notes.  Using this option is
+the same as specifying both options: {opt dn:otes} and {opt vn:otes}{p_end}
+
+{opt dn:otes}
+if specified {cmd:lookfor_all} will also search through the notes attached to datasets.{p_end}
+
+{opt vn:otes}
+if specified {cmd:lookfor_all} will also search through the notes attached to variables.{p_end}
+
+{dlgtab 4 2 :Advanced}
+
+{phang}
+{opt maxd:epth(integer > 1)}
+if specified {cmd:lookfor_all} will only search through all Stata data files ({cmd:.dta}) as far down as the positive integer value
+that is specified.  If {cmd:subdir} is not specified and {cmd:maxdepth} is, then it is assumed subdirectories should be searched.{p_end}
+
+{phang}
+{opt maxv:var(integer 4000)}
+if specified and you are using Stata SE or MP, {cmd:lookfor_all} will temporarily set {helpb maxvar} to whatever positive
+integer is specified.  The maximum value is 32767.  This allows {cmd:lookfor_all} to search a dataset that contains more 
+variables than {helpb maxvar} is currently set to be able to open.  Changing the setting of {helpb maxvar} will stop the 
+{cmd: page up} key from being able to access command history.  So if you set {helpb maxvar} to some high value (up to 32767) 
+yourself before running {cmd:lookfor_all}, {cmd:lookfor_all} will not need to set it and you will be able to access your 
+command history with the {cmd: page up} key after running {cmd:lookfor_all}.{p_end}
+
+{phang}
+{opt dirf:ilter(regular expression)}
+if specified {cmd:lookfor_all} will only search through all Stata data files ({cmd:.dta}) in the current directory or specified directory
+and only subdirectories that satisfy the {browse "http://www.stata.com/support/faqs/data/regex.html":regular expression} pattern.{p_end}
+
+{phang}
+{opt f:ilter(regular expression)}
+if specified {cmd:lookfor_all} will only search through Stata data files ({cmd:.dta}) that satisfy the 
+{browse "http://www.stata.com/support/faqs/data/regex.html":regular expression} pattern.{p_end}
+
+
+{title:Examples of searching within the current directory}
+
+{phang}{cmd:. lookfor_all edu}{p_end}
+
+{phang}{cmd:. lookfor_all edu, describe simple}{p_end}
+
+{phang}{cmd:. lookfor_all edu, de short}{p_end}
+
+
+{title:Examples of searching the current directory and sub-directories}
+
+{phang}{cmd:. lookfor_all edu, sub}{p_end}
+
+{phang}{cmd:. lookfor_all edu, maxdepth(3) de fullnames}{p_end}
+
+{phang}{cmd:. lookfor_all edu, sub codebook vlabs}{p_end}
+
+{phang}{cmd:. lookfor_all edu, dirfilter(data) codebook}{p_end}
+
+
+
+{title:Examples of searching the specified directory}
+
+{phang}{cmd:. lookfor_all edu, sub de dir("c:\data\")}{p_end}
+
+{phang}{cmd:. lookfor_all edu, sub de dir("c:\data\") filter(^wave1)}{p_end}
+
+
+{title:Authors} 
+
+{pstd}
+Zurab Sajaia {break}
+The World Bank {break}
+zsajaia@@hotmail.com {p_end}
+
+{pstd}
+Michael Lokshin {break}
+The World Bank {break}
+mlokshin@@worldbank.org {p_end}
+
+{pstd}
+Dan Blanchette {break}
+The Carolina Population Center {break}
+University of North Carolina - Chapel Hill, USA {break}
+dan_blanchette@unc.edu{p_end}
+
+
+{title:Note} 
+Useful suggestions and feedback by Phil Bardsley and Michael Norman Mitchell are gratefully acknowledged.
+
+
+{title:Also see}
+
+{psee}
+Online: {helpb lookfor}, {helpb describe}, and {helpb codebook}{p_end}
+

@@ -1,0 +1,139 @@
+{smcl}
+{* 13oct2009}{...}
+{hline}
+help for {hi:pieplot}
+{hline}
+
+{title:Plot pie charts of categorical frequencies} 
+
+{p 8 17 2} 
+{cmd:pieplot} 
+{it:yvar} 
+[{it:xvar}]
+[{cmd:if} {it:exp}]
+[{cmd:in} {it:range}]
+[{it:weight}]  
+[, 
+{c -(} 
+{cmd:sum}
+{c |}
+{cmdab:per:cent}
+{c )-} 
+{cmd:format(}{help format:%fmt}{cmd:)} 
+{cmd:gap(}{help relativesize}{cmd:)} 
+{cmd:plabelsubopts(}{it:plabel_suboptions}{cmd:)} 
+{it:graph_pie_options}
+] 
+
+{p 4 4 2}{cmd:aweight}s, {cmd:fweight}s, and {cmd:pweight}s are allowed;
+see {help weight}.
+
+
+{title:Description} 
+
+{p 4 4 2} 
+{cmd:pieplot} plots pie charts of categorical frequencies. 
+
+{p 4 4 2}
+{cmd:pieplot} {it:yvar} plots a pie chart showing the relative
+frequencies of the distinct values of {it:yvar}. 
+
+{p 4 4 2} 
+{cmd:pieplot} {it:yvar} {it:xvar} plots a set of pie charts showing the
+relative frequencies of the distinct values of {it:yvar} for each
+distinct value of {it:xvar}. 
+
+{p 4 4 2}
+Typically, but not necessarily, {it:yvar} will be a response or outcome
+or dependent variable, and {it:xvar}, whenever specified, will be an
+explanatory or predictor or independent variable. 
+
+{p 4 4 2} 
+By default pie slices are named according to the categories of
+{it:yvar}. See also the {cmd:sum} and {cmd:percent} options. 
+
+{p 4 4 2}
+As an aid to learning the syntax of the ultimately more flexible command 
+{cmd:graph pie}, the syntax used to call {cmd:graph pie} is echoed to
+the Results window by {cmd:pieplot}. 
+
+
+{title:Remarks} 
+
+{p 4 4 2}
+This command is a convenience command providing an alternative to
+{cmd:graph pie, over()} for pie charts showing categorical frequencies. 
+
+{p 4 4 2}
+{help graph pie} supports three syntaxes. The first two are for
+calculating pie charts from sums of supplied variables and are not of
+concern here. The third is for counting observations in different
+categories. {cmd:pieplot} offers an alternative syntax to this third
+syntax of {cmd:graph pie}. 
+
+{p 4 4 2}
+A disadvantage of this third syntax is that it is unlike any other
+{cmd:graph} syntax in that no variable list is expected. In addition, it
+is unlike other syntax that users may issue with categorical variables.
+Thus users must switch between (say) {cmd:tabulate} {it:yvar} and
+{cmd:graph pie, over(}{it:yvar}{cmd:)} or {cmd:tabulate} {it:yvar xvar}
+and {cmd:graph pie, over(}{it:yvar}{cmd:) by(}{it:xvar}{cmd:)}.
+{cmd:pieplot} is thus offered as a bridge to ease learning of the third
+syntax of {cmd:graph pie}. 
+
+{p 4 4 2}
+A limitation of {cmd:pieplot} is that it does not offer complete control
+of the presentation of {it:individual} pie slice labels. Users desiring such
+control are encouraged to consider use of the Graph Editor or to switch
+to {cmd:graph pie}, as appropriate. 
+
+
+{title:Options} 
+ 
+{p 4 8 2}{cmd:sum} specifies that pie slices show sums, typically the
+number of observations in each category, or more generally the sum of
+weights in each category. The default is to show names of categories on
+each slice. 
+
+{p 4 8 2}{cmd:percent} specifies that pie slices show percents,
+typically the percent of observations in each category, or more
+generally the percent of the total weight in each category. The default
+is to show names of categories on each slice. 
+
+{p 8 8 2}Only one of {cmd:sum} and {cmd:percent} may be specified. 
+
+{p 4 8 2}{cmd:format(}{help format:%fmt}{cmd:)} specifies a numeric
+format controlling the presentation of sums or percents on all slices.  
+
+{p 4 8 2}{cmd:gap(}{help relativesize}{cmd:)} specifies additional
+radial distances affecting all slices. 
+
+{p 4 8 2}{cmd:plabelsubopts()} may be used to specify additional
+suboptions of {cmd:graph pie, plabel()} affecting all slices. 
+
+{p 4 8 2}{it:graph_pie_options} are options of 
+{help graph_pie:graph pie} other than {cmd:plabel()}, {cmd:over()} and
+{cmd:by()}.  
+
+
+{title:Examples}
+
+{p 4 8 2}{cmd:. sysuse auto, clear}{p_end}
+{p 4 8 2}{cmd:. pieplot rep78}{p_end}
+{p 4 8 2}{cmd:. pieplot rep78 foreign}{p_end}
+{p 4 8 2}{cmd:. pieplot rep78 foreign, sum}{p_end}
+{p 4 8 2}{cmd:. pieplot rep78 foreign, sum plabelsubopts(size(*2))}{p_end}
+{p 4 8 2}{cmd:. pieplot rep78 foreign, sum plabelsubopts(size(*2)) pie(1, color(red*2)) pie(2, color(red)) pie(3, color(red*0.7)) pie(4, color(red*0.5)) pie(5, color(red*0.3)) legend(row(1))}
+
+
+{title:Author}
+
+{p 4 4 2}Nicholas J. Cox, Durham University{break} 
+n.j.cox@durham.ac.uk
+
+
+{title:Also see}
+
+{p 4 13 2}On-line:  
+help for {help graph pie} 
+

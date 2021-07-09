@@ -1,0 +1,97 @@
+/*
+sgpvalue dialog version 1.02, 06.04.2020, Sven-Kristjan Bormann
+for sgpvalue version 1.02
+
+To install in the User Statistics menu via Stata commands:
+  
+  . window menu append item "stUserStatistics" "SGPV Value Calculations (&sgpvalue)" "db sgpvalue"
+
+  . window menu refresh
+
+To permanently install, place the commands in your -profile.do- file.
+*/
+VERSION 12.0
+INCLUDE _std_medium
+POSITION . . 400 250
+OK ok1,      label("OK")
+CANCEL can1, label("Cancel")
+SUBMIT sub1, label("Submit") 
+COPY cop1
+HELP hlp1,   view("help sgpvalue")  
+RESET res1
+
+
+DIALOG main, label("Sgpvalue 1.00 - SGPV Value Calculations") tabtitle("Main")
+BEGIN
+	GROUPBOX gb_est	 	_lft  _top  360    110, label("Estimated Interval") 
+	TEXT tx_estlo 		+10   _ss   80      ., label("Lower Bound") 
+	EXP ex_estlo	 	@     _ss   340     ., option(estlo) label("Expression") /// 
+										   	tooltip("Set lower bound of the estimated interval") error(Lower Bound estimated interval)
+										   
+	TEXT tx_esthi	 	20   +20    80      ., label("Upper Bound")
+	EXP ex_esthi	 	@ 	 _ss    340     ., option(esthi) label("Expression") ///
+										   	tooltip("Set upper bound of the estimated interval") error(Upper Bound estimated interval)
+										   
+	GROUPBOX gb_null   _lft  +40    360    110, label("Null-Hypothesis Interval")
+	TEXT tx_nulllo 		+10  _ss    80       ., label("Lower Bound") 
+	EXP ex_nulllo		@    _ss    340      ., label("Expression")  option(nulllo) ///
+										   	tooltip("Set lower bound of the null-hypothesis interval") error(Lower Bound null-hypothesis interval)
+										   
+	TEXT tx_nullhi 		20   +20     80      ., label("Upper Bound")
+	EXP ex_nullhi	 	@	 _ss    340      ., label("Expression") option(nullhi) ///
+										   	tooltip("Set upper bound of the null-hypothesis interval") error(Upper Bound null-hypothesis interval)
+										   
+
+	
+END
+
+DIALOG options, tabtitle("Further options")
+BEGIN
+	GROUPBOX gb_display _lft _top	100		90,label("Display options")
+	CHECKBOX ck_nowarn  15  _ss    80        ., label("No Warnings") option(nowarnings) ///
+										   	tooltip("Do not display no warning messages about problematic interval(s)")
+										   
+	CHECKBOX ck_nodelta @   _ss     @        ., label("No Delta-Gap") option(nodeltagap) tooltip("Do not calculate and display delta-gaps.")
+	CHECKBOX ck_noshow @   _ss      @        ., label("No Show") option(noshow) ///
+										   	tooltip("Do not show the calculated results which can be useful for large amount of calculated SGPVs and delta-gaps.")
+	
+	GROUPBOX gb_mata	+120 _top 120	 80, label("Larger input options")
+	CHECKBOX ck_nomata  +10   _ss     @        ., label("No Mata") option(nomata) ///
+										   	 tooltip("Do not use the Mata routines for large input matrices and instead use variables for the calculations.")																				
+	CHECKBOX ck_replace @   _ss     @        ., label("Replace") option(replace) ///
+										   	tooltip("Replace existings variables if 'No Mata' option is set or variables are used as inputs for the estimated interval bounderies.")
+											
+	EDIT ed_inf        _lft   _xxxls    100 	     ., option(infcorrection) default(1e-5) numonly ///
+										   	tooltip("A small scalar to denote a positive but infinitesimally small SGPV. Default is 1e-5. SGPVs that are infinitesimally close to 1 are assigned 1-infcorrection. This option can only be invoked when one of the intervals has infinite length.")
+	TEXT tx_inf       @     _ss    100      ., label("Infinity correction")
+END
+
+PROGRAM command 
+BEGIN
+	put "sgpvalue "
+	
+	beginoptions
+		require main.ex_estlo
+		optionarg main.ex_estlo
+		
+		require main.ex_esthi
+		optionarg main.ex_esthi
+		
+		require main.ex_nulllo
+		optionarg main.ex_nulllo
+		
+		require main.ex_nullhi
+		optionarg main.ex_nullhi
+		
+		option 	options.ck_nowarn
+		option 	options.ck_nomata
+		option 	options.ck_nodelta
+		option	 options.ck_replace
+		option	 options.ck_noshow
+		optionarg options.ed_inf
+	endoptions	
+	
+END
+
+
+

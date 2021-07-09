@@ -1,0 +1,63 @@
+{smcl}
+{* 18jul2004}{...}
+{hline}
+help for {hi:clemao1, clemio1} 
+{hline}
+
+{title:{cmd:Clemente, Montanes, Reyes unit root tests with one structural break}}
+
+{p 8 14}{cmdab:clemao1} {it:varname} [{cmd:if} {it:exp}]
+[{cmd:in} {it:range}] [ {cmd:,} {cmdab:maxlag(}{it:#}{cmd:)} {cmdab:trim(}{it:#}{cmd:)} {cmdab:graph} ]
+
+{p 8 14}{cmdab:clemio1} {it:varname} [{cmd:if} {it:exp}]
+[{cmd:in} {it:range}] [ {cmd:,} {cmdab:maxlag(}{it:#}{cmd:)} {cmdab:trim(}{it:#}{cmd:)} {cmdab:graph} ]
+
+{p 8 14}{cmdab:clemao1} and {cmdab:clemio1} are for use with time-series data. You must {it:tsset} your data before using these routines. {it:Varname} may contain time-series operators. {cmdab:clemao1} and {cmdab:clemio1} may be 
+applied to a single time series within a panel with the {cmd:if} qualifier or the {cmd:by} prefix.
+
+{title:Description}
+
+{p}{cmd:clemao1} computes the additive outlier unit root test for {it:varname}, allowing for a single structural break. 
+
+{p}{cmd:clemio1} computes the innovational outlier unit root test for {it:varname}, allowing for a single structural break. 
+
+{p 0 4} These tests are modified from those described by Clemente, Montanes and Reyes (1998) as 
+providing a test for stationarity in the presence of a single structural break in the series 
+(rather than the two breaks identified by their routines). The test considers the null hypothesis
+that (rho - 1) is different from zero. A test statistic exceeding the critical value is significant.
+Critical values are taken from Perron and Vogelsang (1992), Table 3 (clemao1) and 
+Table 4 (clemio1) for T=150. 
+
+{title:Options}
+
+{p 0 4}{cmd:maxlag(}{it:#}{cmd:)} specifies the maximum lag. It must be a positive integer. The default value is 12. 
+
+{p 0 4}{cmd:trim(}{it:#}{cmd:)} specifies the fraction of the sample to trim from each end. It has a default value of five percent (0.05).
+
+{p 0 4}{cmd:graph} specifies that a graph of the (differenced) series and the sequences of t-ratios from the breakpoint test should be generated.
+
+{title:Examples}
+
+{p 8 12}{stata "webuse wpi1" :. webuse wpi1} {p_end}
+
+{p 8 12}{stata "clemao1 wpi" :. clemao1 wpi} {p_end}	
+{p 8 12}{stata "clemio1 D.wpi" :. clemio1 D.wpi} {p_end}	
+{p 8 12}{stata "clemao1 wpi, trim(0.10) graph" :. clemao1 wpi, trim(0.10) graph}{p_end}	 
+{p 8 12}{stata "clemio1 wpi, maxlag(6) trim(0.10)" :. clemio1 wpi, maxlag(6) trim(0.10)}{p_end}
+	 
+	
+{title:References}
+
+{p 0 4} Clemente, J., Montanes, A., Reyes, M., 1998. Testing for a unit root in variables with a double change in the mean. Economics Letters 59, 175-182.
+
+{p 0 4} Perron, P., Vogelsang, T., 1992. Nonstationarity and level shifts with an application to purchasing power parity. Journal of Business and Economic Statistics 10, 301-320. 
+
+{title:Authors}
+
+{p 0 4} Christopher F. Baum (baum@bc.edu) Boston College
+
+
+{title:Also see}
+
+{p 1 10}Manual: {hi:[TS] dfuller}{p_end}
+{p 0 19}On-line: {help dfuller}, {help zandrews} (if installed) {p_end}

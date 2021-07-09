@@ -1,0 +1,110 @@
+
+.-
+help for ^icc23^
+.-
+
+^Calculation of ICC Models 2 and 3^
+^---------------------------------^
+
+	.^icc23^ <dv> <classvar> <within_var>, MOdel(#) LEvel(#)
+
+
+^Description^
+^-----------^
+
+^icc23^ computes the intra-class correlation for random effects models based on repeated
+measures ANOVA.  These models are ICC[2,1], ICC[2,k], ICC[3,1], and ICC[3,k], as described
+by Shrout and Fleiss, 1979 (see reference below).  (For the ICC[1,1] and ICC[1,k] models
+based on a one-way ANOVA, see @loneway@).  ^icc23^ runs a repeated measures ANOVA to derive
+the appropriate estimates and degrees of freedom.  In the event there is a significant F-test
+for the ^classvar^ (e.g., a significant differernce among raters), the program will provide
+the p-value from the ANOVA table.
+
+Data must be in the "long" format.  If not, use the @reshape@ command to reconfigure the data.
+
+Four types of ICC models are considered:
+
+	ICC[2,1]:  reflects the case where the same group of subjects is rated by k raters,
+		   interest is in the reliability of individual scores.  In this model, raters
+		   are considered a representative sample of a population of similar raters. This
+		   model is a two-way random effects model.
+
+	ICC[2,k]:  is the same approach as ICC[2,1] above, but interest is in the reliability
+		   of the MEAN score, rather than among single observations.
+
+	ICC[3,1]:  reflects the case where the same group of subjects is rated by k raters,
+		   interest is in the reliability of individual scores.  In this model, the only
+		   raters of interest are those participating in the study (e.g., there is no 
+		   intention of generalizing the raters' scores to a larger population of raters).
+		   This model is considered a "mixed" model (subjects are random, raters are fixed). 
+		  
+	ICC[3,k]:  is the same approach as ICC[3,1] above, but interest is in the reliability
+		   of the MEAN score, rather than among single observations.
+
+Three inputs are required:
+
+            dv     is the dependent variable
+
+         classvar  the class variable refers to factor that is repeated within subjects, e.g., raters,
+                   devices, time points, etc., e.g., the variable which would be entered as the 
+                   repeated() variable in the ANOVA option.
+
+       within_var  refers to the "within subject" variable, e.g., subjects being assessed
+   
+
+^NOTE:  The order of entry of the variables is critical!^  
+
+
+
+^Options^
+^-------^
+       ^MO^del(#)  refers to the type of model to be estimated.  ICC model 2 is the default (
+                 producing ICC[2,1] and ICC[2,k] estimates).
+       
+       ^LE^vel(#)  the degree of precision of the confidence interval, entered as a decimal.
+                 The default is 95%, i.e., level(.95)
+		
+
+Examples
+--------
+
+For ICC[2,1] and ICC[2,k]: Two-way random effects (Subjects and raters are considered to be
+                           sampled from larger populations); 95% CIs are assumed. 
+                
+^.icc23 score rater person_id^
+
+
+
+For ICC[3,1] and ICC[3,k]: Two-way mixed model: Subjects are random, but raters are fixed 
+                           (i.e., the raters are not considered a sample -- they are the 
+                           only raters of interest); 90% CIs are requested.
+                
+^.icc23 score rater person_id, model(3) level(.90)^
+                
+
+References
+----------
+Shrout PE, FLeiss JL. Intraclass correlation: uses in assessing rater reliability. Psychol
+Bull, 1979; 86: 420-428.
+
+Portney LG, Watkins MP. Foundations of Clinical Research: Applications to Practice (2nd ed.).
+Prentice-Hall, Inc: Upper Saddle River, NJ., 2000.
+
+
+Author
+------
+Paul F. Visintainer, PhD
+Baystate Health System
+Springfield, MA 01089
+visint46@gmail.com
+
+Luis C.Orozco, MD, MSc
+Facultad de Salud
+Universidad Industrial de Santander
+Colombia
+lcorovar@gmail.com
+
+
+Also see
+--------
+Manual or on-line help for: @loneway@, @reshape@, @iclassr@, @iclassr2@

@@ -1,0 +1,57 @@
+.-
+help for ^baplot^                                                 (STB-55: sbe33)
+.-
+
+Bland-Altman plots
+------------------
+
+        ^baplot^ varname1 varname2 [^if^ exp] [^in^ range] [^, format(^str^)^ 
+              ^avlab(^str^) difflab(^str^)^ overlap(^str^) graph_options]
+
+
+Description
+-----------
+
+^baplot^ produces Bland-Altman plots, that is, plots of the difference of
+paired variables versus their average.
+
+
+Options
+-------
+
+^format(^str^)^ sets the format for the results given.
+
+^avlab(^str^)^ gives a variable label to the average before plotting the graph.
+
+^difflab(^str^)^  gives a variable label to the difference before plotting the
+    graph.
+
+^overlap(^size^)^ gives larger points for coincident values
+
+^jitter(^#^)^ separates all points by a random amount to prevent overlap.
+This is an alternative to ^overlap(^size^)^.
+
+
+graph_options are any of the options allowed with ^graph, twoway^.
+
+
+Examples
+--------
+
+ . ^use col_icp^
+ . ^baplot icp colorime, avlab("ICPOES vs Colorimetry)^
+
+
+Author
+------
+        Paul Seed
+        GKT School of Medicine
+        King's London, UK
+        email: paul.seed@@kcl.ac.uk
+
+
+Also see
+--------
+
+    STB: STB-55 sbe33
+

@@ -1,0 +1,88 @@
+// Revised 10/24/2010
+// Version 3.0
+
+VERSION 10.0
+POSITION . . 340 280
+
+DIALOG main, label("ICDPIC Version 3.0") tabtitle("Main")
+BEGIN
+   GROUPBOX gb_main_user_choices 10 10  320  250,                       ///
+            label("User Choices")
+   RADIO    rd_trauma            20 30  300  20,                        ///
+            first                                                       ///
+            label("ICD-9-CM Trauma")
+   RADIO    rd_srr               20 50  300  20,                        ///
+            middle                                                      ///
+            label("SRR\SRRi Table")
+   RADIO    rd_iciss             20 70  300  20,                        /// 
+            middle                                                      ///
+            label("ICISS")
+   RADIO    rd_aps               20 90  300  20,                        /// 
+            middle                                                      ///
+            label("Anatomic Profile Score")
+   RADIO    rd_rts               20 110 300  20,                        /// 
+            middle                                                      ///
+            label("Revised Trauma Score")
+   RADIO    rd_triss             20 130 300  20,                        /// 
+            middle                                                      ///
+            label("TRISS")
+   RADIO    rd_ascot             20 150 300  20,                        /// 
+            middle                                                      ///
+            label("ASCOT")
+   RADIO    rd_icd9tmpm          20 170 300  20,                        /// 
+            middle                                                      ///
+            label("ICD-9-CM TMPM")
+   RADIO    rd_ais_tmpm          20 190 300  20,                        /// 
+            middle                                                      ///
+            label("AIS TMPM")
+   RADIO    rd_altcharl          20 210 300  20,                        /// 
+            middle                                                      ///
+            label("Charlson Score\Comorbidities (Alternate Version)")
+   RADIO    rd_elixhaus          20 230 300  20,                        /// 
+            last                                                        ///
+            label("Elixhauser Comorbidities")
+END
+
+OK ok1, label("OK")
+CANCEL can1, label("Cancel")
+SUBMIT sub1, label("Submit")
+HELP hlp1, view("help icdpic")
+RESET res1
+COPY copy1
+
+PROGRAM command
+BEGIN
+   if main.rd_trauma {
+      put "db trauma"
+   }
+   if main.rd_srr {
+      put "db srr"
+   }
+   if main.rd_iciss {
+      put "db iciss"
+   }
+   if main.rd_aps {
+      put "db aps"
+   }
+   if main.rd_rts {
+      put "db rts"
+   }
+   if main.rd_triss {
+      put "db triss"
+   }
+   if main.rd_ascot {
+      put "db ascot"
+   }
+   if main.rd_icd9tmpm {
+      put "db icd9tmpm"
+   }
+   if main.rd_ais_tmpm {
+      put "db ais_tmpm"
+   }
+   if main.rd_altcharl {
+      put "db altcharl"
+   }
+   if main.rd_elixhaus {
+      put "db elixhaus"
+   }
+END

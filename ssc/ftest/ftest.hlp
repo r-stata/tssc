@@ -1,0 +1,116 @@
+{smcl}
+{* 18apr2007}
+help for {hi:ftest}
+{hline}
+
+{title:Title}
+
+{p2colset 5 14 16 2}{...}
+{p2col :{hi: ftest} {hline 2}} compare two nested models using an F-test.{p_end}
+{p2colreset}{...}
+
+{title:Syntax}
+
+{p 8 15 2}
+{cmd:ftest} {it:modelspec1}  [{it:modelspec2}]
+
+{phang}
+where {it:modelspec} is
+
+{phang2}
+{it:name}{c |}{cmd:.}
+
+{phang}
+where {it:name} is the name under which estimation results were saved using
+{helpb estimates store:estimates store}, and "{cmd:.}" refers to the last
+estimation results, whether or not these were already stored.
+
+
+{title:Description}
+
+{pstd}
+{cmd: ftest} compares two nested models estimated using {helpb regress} and  
+performs an F-test for the null hypothesis that the constraint implict in 
+the restricted model holds. For example if a variable is left out of the 
+restricted model, the implict constraint is that the coefficient for that 
+variable equals zero. To conduct the test, both the unrestricted and the 
+restricted models must be fitted using {helpb regress}, and the results 
+of at least one must be stored using 
+{helpb estimates store:estimates store}.
+
+{pstd}
+{it:modelspec1} and {it:modelspec2} specify the restricted and unrestricted
+model in any order.  If {it:modelspec2} is not specified, the last 
+estimation result is used; this is equivalent to specifying {it:modelspec2} 
+as a period ({cmd:.}).
+
+
+{title:Remarks}
+
+{phang}
+{cmd: ftest} is a convenience command; anything that can be done with 
+{cmd: ftest} can be done with {helpb test}, and it will produce exactly the
+same results. The difference is that with test the constraint needs to be 
+explicitly specified, while with ftest the constraint is implicit. However,
+{cmd: test} will work with all {help vce_option:vce types}, while 
+{cmd: ftest} will only work with the default vce type.
+
+
+{phang}
+{cmd: ftest} requires that both models are estimated on exactly the same 
+sample. This can easily be violated when the restricted model leaves a 
+variable out that contains missing values. The solution is to use the 
+{help if} qualifier in {cmd:regress} when estimating the restricted model,
+see the Examples below.
+
+
+{title:Examples}
+
+{phang}{cmd: Various ways specifying the models}
+
+{phang}{stata "sysuse auto, clear"}{p_end}
+{phang}{stata "reg price mpg foreign"}{p_end}
+{phang}{stata "est store a"}{p_end}
+{phang}{stata "reg price mpg"}{p_end}
+{phang}{stata "est store b"}{p_end}
+{phang}{stata "ftest a b"}{p_end}
+{phang}{stata "ftest a ."}{p_end}
+{phang}{stata "ftest a"}{p_end}
+
+{phang}{cmd: This test can also be performed using }{helpb test}
+
+{phang}{stata "est restore a"}{p_end}
+{phang}{stata "test foreign"}{p_end}
+
+{phang}{cmd: this will cause an error because rep78 contains missing values}
+
+{phang}{stata "reg price mpg rep78"}{p_end}
+{phang}{stata "est store a"}{p_end}
+{phang}{stata "reg price mpg"}{p_end}
+{phang}{stata "est store b"}{p_end}
+{phang}{stata "ftest a b"}{p_end}
+
+{phang}{cmd: this is the solution}
+
+{phang}{stata "reg price mpg rep78"}{p_end}
+{phang}{stata "est store a"}{p_end}
+{phang}{stata "reg price mpg if e(sample)"}{p_end}
+{phang}{stata "est store b"}{p_end}
+{phang}{stata "ftest a b"}{p_end}
+
+
+{title:Author}
+
+{p 4 4}
+Maarten L. Buis{break}
+Vrije Universiteit Amsterdam{break}
+Department of Social Research Methodology{break}
+m.buis@fsw.vu.nl 
+{p_end}
+
+
+{title:Also see}
+
+{psee}
+Online: {helpb regress} {helpb estimates} {helpb test} {helpb lrtest}
+{p_end}

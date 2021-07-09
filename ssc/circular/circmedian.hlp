@@ -1,0 +1,90 @@
+{smcl}
+{* 6may2004}{...}
+{hline}
+help for {hi:circmedian}
+{hline}
+
+{title:Median and mean deviation for circular variables}
+
+{p 8 17 2}
+{cmd:circmedian}
+{it:varlist}
+[{cmd:if} {it:exp}]
+[{cmd:in} {it:range}]
+
+{p 8 17 2}
+{cmd:circmedian}
+{it:varname}
+[{cmd:if} {it:exp}]
+[{cmd:in} {it:range}]
+[{cmd:,} {cmd:by(}{it:byvar}{cmd:)}]
+
+
+{title:Description}
+
+{p 4 4 2}{cmd:circmedian} calculates the circular median and mean
+deviation from the median for circular variables with scales between 
+0 and 360 degrees. 
+
+{p 4 4 2}Circular data have no natural origin; whatever origin is used is a
+matter of convention. There is thus no natural ordering of circular data from
+smallest to largest. This is a blow to the idea of a circular median, but by no
+means a fatal one. We could measure the difference between two angles clockwise
+or counterclockwise (anticlockwise); measure both, treating both differences 
+as positive, and record the smaller. Thus the difference between 45 and 55 degrees is
+min(10,350) = 10; the difference between 350 and 10 degrees is min(20, 340) =
+20; or more generally {it:d}({it:theta}, {it:phi}) = min(|{it:theta} - {it:phi}|, 360 -
+|{it:theta} - {it:phi}|). Then define the circular median by the fact that it
+minimises 
+
+{p 8 8 2}SUM {it:d}(value, median)
+
+{p 4 4 2}or, equivalently, 
+
+{p 8 8 2}MEAN {it:d}(value, median), 
+
+{p 4 4 2}the latter being called here the mean deviation (from the median). 
+In the event of ties in these measures the median is defined as the
+vector mean of all angles minimising either. See help on {help circsummarize}.
+
+
+{title:Remarks}
+
+{p 4 4 2}Batschelet (1981, p.242) uses the notation |{it:theta}, {it:phi}| for 
+{it:d}({it:theta}, {it:phi}) and points out that it is also 
+{bind:arccos(cos({it:theta} - {it:phi}))}. Another scale on which to measure 
+difference is thus {bind:1 - cos({it:theta} - {it:phi}).}
+
+
+{title:Options} 
+
+{p 4 8 2}
+{cmd:by()} specifies that results are to be shown for each group
+defined by values of {it:byvar}. This option is only available if a
+single {it:varname} is specified.
+
+
+{title:Examples}
+
+{p 4 8 2}{cmd:. circmedian axisasp wallasp} 
+
+{p 4 8 2}{cmd:. circmedian axisasp, by(geology)} 
+
+
+{title:Author}
+
+{p 4 4 2}Nicholas J. Cox, University of Durham, U.K.{break} 
+n.j.cox@durham.ac.uk
+
+
+{title:References} 
+
+{p 4 8 2}Batschelet, E. 1981. {it:Circular statistics in biology.} 
+London: Academic Press. 
+
+
+{title:Also see}
+
+{p 4 13 2}
+On-line:  help for {help circsummarize}, {help circdiff} 
+

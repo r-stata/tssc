@@ -1,0 +1,26 @@
+// Sergiy Radyakin, December 2007
+
+VERSION 9.0
+
+INCLUDE _std_large
+POSITION . . _dlgwd 100
+
+DIALOG main, title("Open SPSS *.sav file")
+BEGIN
+	TEXT tx_using _lft _top _iwd ., label("Filename:")
+	FILE fi_using   @  _ss @ ., option(using) error("Filename") label("Browse...") ///
+             defext(sav) filter("SPSS File (*.sav)|*.sav|All (*.*)|*.*")
+END
+
+HELP help1, label("Help") view("help usespss")
+OK ok1 ,label("OK")
+CANCEL cancel1, label("Cancel")
+
+
+PROGRAM command
+BEGIN
+	require main.fi_using
+	put "usespss "
+	put `"""' main.fi_using `"""'
+END
+

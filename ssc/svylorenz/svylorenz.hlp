@@ -1,0 +1,198 @@
+{smcl}
+{* 12September2015}{...}
+{hline}
+help for {hi:svylorenz}{right:Stephen P. Jenkins (September 2015)}
+{hline}
+
+
+{title:Quantile group shares, cumulative shares (Lorenz ordinates), generalized Lorenz ordinates, and Gini coefficient}
+
+{p 8 15 2}
+{cmd:svylorenz} {it:varname}  [{cmd:if} {it:exp}]
+ [{cmd:in} {it:range}] [{cmd:,} {cmdab:n:gp:(}{it:#}{cmd:)}
+ {cmdab:qgp:(}{it:newvarname}{cmd:)}  {cmdab:sub:pop:(}{it:varname}{cmd:)}
+ {cmdab:pv:ar:(}{it:newvarname}{cmd:)} {cmdab:lv:ar:(}{it:newvarname}{cmd:)}
+ {cmdab:selv:ar:(}{it:newvarname}{cmd:)} {cmdab:glv:ar:(}{it:newvarname}{cmd:)}
+ {cmdab:seglv:ar:(}{it:newvarname}{cmd:)} {cmdab:l:evel:(}{it:#}{cmd:)}   ]
+
+{p 4 4 2}
+Data must be {cmd:svyset} before using this command; see {help svyset}.
+
+
+{title:Description}
+
+{p 4 4 2}{cmd:svylorenz} computes distribution-free variance estimates
+for quantile group shares of total {it:varname}, cumulative quantile 
+group shares (cumulation is in ascending order of {it:varname}),
+generalized Lorenz ordinates, and the Gini coefficient. The Lorenz curve, 
+{it:L}({it:p}), is the graph of cumulative quantile group shares at each cumulative
+population share {it:p} = {it:F}({it:varname}). The generalized Lorenz curve 
+{it:GL}({it:p}) is the Lorenz curve scaled up at each {it:p} by mean {it:varname}. 
+The Gini coefficient, {it:G}, is twice the area between the Lorenz curve 
+and the line of perfect inequality, and ranges between 0 and 1. Higher values 
+indicate greater inequality. Note that the Gini coefficient is calculated 
+using all valid observations; it is {it:not} derived by approximation 
+from the income shares.
+
+{p 4 4 2}Beach and Davidson (1983) provide formulae for variance estimation
+of shares, cumulative shares and generalized Lorenz ordinates, but for 
+unweighted data with no complex survey design features. Beach and Kaliski (1986) 
+extend these results to the case with sample weights that are fixed
+and non-stochastic. Kovacevic and Binder (1997), using the estimating equations
+approach, provide formulae for variance estimation of cumulative shares
+allowing for probability weights and for complex survey design more generally. 
+They also provide formulae for variance estimation of {it:G}. All these linearization 
+methods rely on asymptotic approximations, and small sample properties are not well-known.
+
+{p 4 4 2}{cmd:svylorenz} derives variance estimates using the methods of 
+Kovacevic and Binder (1997) for cumulative shares and {it:G}, and derives
+estimates for quantile group shares from those for cumulative shares using
+a result of Beach and Kaliski (1986). Variance estimates for generalized Lorenz 
+ordinates are derived by an application of the estimating equations approach of Binder and 
+Kovacevic (1995) and Kovacevic and Binder (1997). For an alternative derivation,
+see Zheng (2002).
+
+{p 4 4 2}The point estimates computed by {cmd:svylorenz} are the same as the 
+estimates that can be calculated using {cmd:sumdist}, {cmd:ineqdeco} and {cmd:ineqdec0}. 
+By default, however, {cmd:svylorenz} uses observations with non-negative values of {it:varname}, 
+{cmd:ineqdeco} uses observations with strictly positive values of {it:varname}, and 
+{cmd:ineqdec0} and {cmd:sumdist} use observations with negative, zero, or positive values of {it:varname}.
+Estimates of shares and their standard errors can also be derived using Ben Jann's program {cmd:pshare}, and 
+{cmd:svylorenz} and {cmd:pshare} yield the same results. Each program has additional features not included in
+the other.
+
+
+{title:Options}
+
+{p 4 8 2}{cmd:ngp(}{it:#}{cmd:)} specifies the number of quantile groups,
+and must be an integer between 1 and 100. The default is 10.
+
+{p 4 8 2}{cmd:qgp(}{it:newvarname}{cmd:)} creates a new variable in the 
+current data set that identifies the quantile group membership of each 
+observation.
+
+{p 4 8 2}{cmd:subpop(}{it:varname}{cmd:)} specifies that estimates be 
+computed for the single subpopulation defined by the observations for 
+which {it:varname}!=0.  Typically, {it:varname}=1 defines the subpopulation and 
+{it:varname}=0 indicates observations not belonging to the subpopulation.  
+For observations whose subpopulation status is uncertain, {it:varname} should 
+be set to missing.
+
+{p 4 8 2}{cmd:level(}{it:#}{cmd:)} specifies the confidence level, as a 
+percentage, for confidence intervals.  The default is level(95) or as 
+set by {help set level}; see [U] 20.6 Specifying the width of confidence 
+intervals.
+
+{p 4 8 2}The following options may be used to graph Lorenz curves and 
+generalized Lorenz curves (see also {cmd:glcurve} which is a more 
+general program for this task):
+
+{p 4 8 2}{cmd:pvar(}{it:newvarname}{cmd:)} creates a new variable in the 
+current data set containing the values of {it:p_j} = {it:F}({it:x_j}) corresponding
+to each {it:j} for each quantile group {it:j} = 1,...,{it:J}, plus 0. 
+
+{p 4 8 2}{cmd:lvar(}{it:newvarname}{cmd:)} creates a new variable in the 
+current data set containing the cumulative shares {it:L}({it:p_j}), 
+plus {it:L}(0) = 0.
+
+{p 4 8 2}{cmd:selvar(}{it:newvarname}{cmd:)} creates a new variable in the 
+current data set containing the estimated standard errors of the cumulative 
+shares. 
+
+{p 4 8 2}{cmd:glvar(}{it:newvarname}{cmd:)} creates a new variable in the 
+current data set containing the generalized Lorenz ordinates {it:GL}({it:p_j}), 
+plus {it:GL}(0) = 0.
+
+{p 4 8 2}{cmd:seglvar(}{it:newvarname}{cmd:)} creates a new variable in the 
+current data set containing the estimated standard errors of the generalized
+Lorenz ordinates. 
+
+
+{title:Examples}
+
+{p 8 12 2}{inp:. svyset psu_name [pw = wgt], strata(strata_name)}
+
+{p 8 12 2}{inp:. svylorenz income}
+
+{p 8 12 2}{inp:. svylorenz cYbhcg, ngp(20) pvar(p) lvar(l) selvar(sel)}
+
+{p 8 12 2}{inp:. twoway (connect p p) (connect l p, sort) }
+
+{p 4 4 2}Further examples are provided in the downloadable materials accompanying the
+presentation by {browse "http://econpapers.repec.org/paper/bocasug06/16.htm":Jenkins (2006)}.
+
+
+{title:Saved Results}
+
+{p 4 17 2}Scalars: {p_end}
+
+{p 4 17 2}{cmd:e(gini)}{space 8}{it:G} {p_end}
+{p 4 17 2}{cmd:e(se_gini)}{space 5}asymptotic SE of {it:G} {p_end}
+{p 4 17 2}{cmd:e(mean)}{space 8}mean of {it:varname} {p_end}
+{p 4 17 2}{cmd:e(se_mean)}{space 5}asymptotic SE of the mean {p_end}
+{p 4 17 2}{cmd:e(total)}{space 7}total of {it:varname} {p_end}
+{p 4 17 2}{cmd:e(ngps)}{space 8}number of quantile groups {p_end}
+{p 4 17 2}{cmd:e(q{it:j})}{space 10}quantile {it:j}, where {it:j} = 1, ..., {it:ngps} {p_end}
+{p 4 17 2}{cmd:e(sh{it:j})}{space 9}share of {it:varname} held by each quantile group {it:j} {p_end}
+{p 4 17 2}{cmd:e(se_sh{it:j})}{space 6}asymptotic SE of each group {it:j}'s share of {it:varname} {p_end}
+{p 4 17 2}{cmd:e(cush{it:j})}{space 7}cumulative share of {it:varname} held by each quantile group {it:j} {p_end}
+{p 4 17 2}{cmd:e(se_cush{it:j})}{space 4}asymptotic SE of each group {it:j}'s cumulative share of {it:varname} {p_end}
+{p 4 17 2}{cmd:e(gl{it:j})}{space 9}generalized Lorenz ordinate of {it:varname} held by each quantile group {it:j} {p_end}
+{p 4 17 2}{cmd:e(se_gl{it:j})}{space 6}asymptotic SE of each group {it:j}'s generalized Lorenz ordinate of {it:varname} {p_end}
+
+{p 4 17 2}Matrices: {p_end}
+
+{p 4 17 2}{cmd:e(quantiles)}{space 3}1 x ({it:ngps}{c -}1) vector of quantiles {p_end}
+{p 4 17 2}{cmd:e(shares)}{space 6}1 x ({it:ngps}) vector of quantile group shares {p_end}
+{p 4 17 2}{cmd:e(V_cush)}{space 6}({it:ngps}{c -}1) x ({it:ngps}{c -}1) variance-covariance 
+matrix of cumulative shares {p_end}
+{p 4 17 2}{cmd:e(V_gl)}{space 8}({it:ngps}) x ({it:ngps}) variance-covariance 
+matrix of generalized Lorenz ordinates {p_end}
+
+
+{title:Acknowledgements}
+
+{p 4 4 2}Philippe Van Kerm provided helpful comments on early drafts of this program. 
+Ben Jann alerted me to a bug in the calculation of standard errors for shares and cumulative
+shares (Lorenz ordinates) and showed me how to fix it. (The SEs in the previous version of the
+program were too large, so inference was too conservative.)
+
+
+{title:References}
+
+{p 4 8 2}Beach, C.M. and R. Davidson. 1983. Distribution-free statistical inference with
+Lorenz curves and income shares. {it:Review of Economic Studies} 50: 723{c -}725.
+
+{p 4 8 2}Beach, C.M. and S.F. Kaliski. 1986. Lorenz curve inference with sample weights: 
+an application to the distribution of unemployment experience. {it:Applied Statistics} 35(1): 38{c -}45.
+
+{p 4 8 2}Binder, D.A. and M.S. Kovacevic. 1995. Estimating some measures of income inequality
+from survey data: an application of the estimating equations approach. 
+{it: Survey Methodology} 21: 137{c -}145.
+
+{p 4 8 2}Jenkins, S.P. 2006. Estimation and interpretation of measures of inequality,
+poverty, and social welfare using Stata. Presentation at North American
+Stata Users' Group Meetings 2006, Boston MA.
+{browse "http://econpapers.repec.org/paper/bocasug06/16.htm"}.
+
+{p 4 8 2}Kovaevic, M.S. and D.A. Binder. 1997. Variance estimation for measures of 
+income inequality and polarization. {it:Journal of Official Statistics} 13(1): 41{c -}58. Full text
+downloadable from {browse "http://www.jos.nu/Articles/abstract.asp?article=13141"}.
+
+{p 4 8 2}Zheng, B. 2002. Testing Lorenz curves with non-simple random samples. 
+{it:Econometrica} 70: 1235{c -}1243.
+
+
+{title:Author}
+
+{p 4 4 2}
+Stephen P. Jenkins, London School of Economics. Email: s.jenkins@lse.ac.uk
+
+
+{title:Also see}
+
+{p 4 13 2}
+{help svy}, {help svyset}, {help xtile} 
+
+{p 4 13 2}
+{cmd:ineqdeco}, {cmd:ineqdec0}, {cmd:sumdist}, {cmd:svygei}, {cmd:svyatk}, {cmd:glcurve}, {cmd:pshare}, if installed.

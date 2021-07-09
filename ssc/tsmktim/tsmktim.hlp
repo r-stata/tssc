@@ -1,0 +1,136 @@
+.-
+help for ^tsmktim^                        (STB-57, dm81; revised for SSC distribution)
+.-
+
+Create a sequential Stata time variable from a starting time
+------------------------------------------------------------
+
+	^tsmktim^ newtimevar , ^s^tart(date_literal) [ ^seq^uence(varname) ^i^(varname)]
+
+
+Description
+-----------
+
+Creates a Stata time variable, newtimevar, with an appropriate format for
+yearly, twice yearly, quarterly, monthly, weekly or daily data, and executes
+^tsset^ to use that variable as the time specifier.  Note that the data
+must be ordered by time before issuing ^tsmktim^.
+
+If ^sequence()^ is not specified, the data are assumed to have no gaps and are
+sequential in the periodicity of ^date_literal^.  That is to say, one quarter
+after another or one month after another with no gaps.
+
+If ^i()^ is specified, the data are assumed to be a panel with that variable as
+the panel indicator (^iis^). The first observation of each panel unit is assumed
+to be dated ^start^ unless a ^sequence^ variable is specified.
+
+
+Options
+-------
+
+^start^(^date_literal^) is required and specifies the starting date for the
+    first observation in the dataset.  ^date_literal^ takes forms such as
+    1964, 1999m1, 1960q1, 12jan1985, etc.  depending on whether the data is
+    monthly, quarterly, daily, etc; see ^help tfcn^ for more on how to
+    specify dates.
+
+^sequence(^varname^)^ specifies that ^varname^ contains an integer variable
+    that specifies the sequence of the observations.  This allows gaps to be
+    specified for the time variable.  If the values of ^varname^ are not
+    sequential, the resulting time variable will have gaps.  
+    
+    Note that the start date specified in ^start()^ is taken to be the date
+    of the value of the ^sequence()^ variable in the first observation.  If
+    that value is missing, then the date from ^start()^ is associated with a
+    value of 1 for the ^sequence()^ variable.
+    
+^i(^varname^)^ specifies that ^varname^ contains a variable indicating units of
+    a panel. ^varname^ must be a valid argument for, e.g., ^iis^. ^tsmktim^ will
+    then create the time variable and ^tsset^ by both the panel variable and time
+    variable.
+
+
+
+Examples
+--------
+
+    Assume the following data
+
+	     x
+	    --
+	    44
+	    21
+	    15
+	    77
+	    .
+	    .
+	    .
+
+    
+    Typing
+
+	^. tsmktim mytime, start(1977q2)^
+
+    will produce
+
+	     x   mytime
+	    --   ------
+	    44   1977q2
+	    21   1977q3
+	    15   1977q4
+	    77   1978q1
+	    .      .
+	    .      .
+	    .      .
+
+    Similarly, 
+
+	^. tsmktim mytime, start(29dec1948)^
+
+    will produce
+
+
+	     x      mytime
+	    --   ---------
+	    44   29dec1948
+	    21   30dec1948
+	    15   31dec1948
+	    77   01jan1949
+	    .      .
+	    .      .
+	    .      .
+
+
+     With a sequence variable, 
+
+	^. tsmktim mytime, start(29dec1948) sequence(myseq)^
+
+     will produce
+
+	     x   myseq      mytime
+	    --   -----   ---------
+	    44      10   29dec1948
+	    21      12   31dec1948
+	    15      13   01jan1949
+	    77      23   11jan1949
+	    .
+	    .
+
+
+Authors
+-------
+
+        Christopher F Baum, Boston College, USA
+        baum@@bc.edu
+
+        Vince Wiggins, Stata Corporation
+        vwiggins@@stata.com
+
+Also see
+--------
+
+ Manual:  ^[U] 15.5.3 Time-series formats^,
+	  ^[U] 27.3 Time-series dates^,
+	  ^[U] 29.12 Models with time-series data^,
+	  ^[R] tsset^
+On-line:  help for @tfcn@, @tdates@, @time@; @tsreport@

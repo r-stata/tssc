@@ -1,0 +1,110 @@
+TITLE
+'PRICE INDICES': module to compute targeted price indices
+
+DESCRIPTION/AUTHOR(S)
+
+KW:  Laspeyres
+KW: Paasche
+KW: Fisher
+KW:  Marshall-Edgeworth
+KW: Walsh
+
+Requires: Stata version 9
+Distribution-Date: 20140320
+
+ Authors: 
+Muhammad Rashid Ansari, INSEAD Business School
+Support: email rashid.ansari@insead.edu
+
+Mussida Chiara, Università Cattolica del Sacro Cuore                    
+Support: email chiara.mussida@unicatt.it
+
+*Version March 2014
+----------------------------
+basic syntax:
+pindex, p(price) q(quantity) base(time) method(name) [, by(varlist) outfile, replace]
+
+Options
+-------
+by(varlist): allows groups defined by `varlist' e.g. (sectors)
+method(name): select price index method
+outfile: export output in .csv table format 
+
+Description: The module calculate number of weighted (Laspeyres and Paasche)and unweighted price indices (Marshall-Edgeworth, Fisher and Walsh). Definitions are provided below for each index. For additional descriptions/details, see ILO (2004) and Balk, B.M. (2005).
+
+Weighted Indices
+Laspeyres Index:
+Laspeyres generates Laspeyres index variable for the time period [0; n]. Laspeyres is a weighted aggregative index showing the ratio of price in the current period to price in the previous (or base) period to purchase the identical market basket of items (of the previous or base period). 
+
+L= Summation(pn*q0)/ Summation(p0*q0)
+where,
+p0: price in base period
+pn: price in current period
+q0: price in base period
+
+
+Paasche Index:
+Paasche generates Paasche index variable for the time period [0; n]. Paasche is a weighted aggregative index showing the ratio of price in the current period  to price in the previous (or base) period to purchase the identical market basket of items (of the current period). 
+ 
+P= Summation(pn*qn)/ Summation(p0*qn)
+where,
+p0: price in base period
+pn: price in current period
+qn: quantity in current period
+
+Unweighted Indices
+Marshall-Edgeworth Index:
+Marshall generates Marshall-Edgeworth index variable for the time period [0; n]. Marshall-Edgeworth is a weighted relative of current period to base period sets of prices. The index uses the arithmetic average of the current base period quantities for weighting.  For details on the index, see IMF (2004).
+
+ME= Summation[(q0+qn)*pn]/ Summation[(q0+qn)*p0]
+where,
+p0: price in base period
+q0: quantity in base period
+pn: price in current period
+qn: quantity in current
+
+Fisher Index:
+Fisher generates Fisher index variable for the time period [0; n]. Fisher’s index is the geometric mean of Laspeyres and Paasche indices.
+
+F= SQRT(L*P)
+where,
+L: Laspeyres index
+P: Paasche index
+
+
+Walsh Index:
+Walsh generates Walsh index variable for the time period [0; n]. Walsh is the weighted sum of the current period prices divided by the weighted sum of the base period prices with the geometric average of both period quantities serving as the weighting mechanism.
+
+W= Summation(pn*SQRT(q0*qn))/ Summation(p0*SQRT(q0*qn))
+where,
+p0: price in base period
+q0: quantity in base period
+pn: price in current period
+qn: quantity in current period
+
+Examples:
+----------
+pindex, p(price) q(quant) base(2005) method(laspeyres) by(sectors)
+pindex, p(price) q(quant) base(2005) method(paasche) by(sectors)
+pindex, p(price) q(quant) base(2005) method(fisher) by(sectors)
+pindex, p(price) q(quant) base(2005) method(marshall) by(sectors)
+pindex, p(price) q(quant) base(2005) method(walsh) by(sectors) outfile  replace
+
+
+Authors:
+Muhammad Rashid Ansari                                          
+INSEAD Business School                                          
+1 Ayer Rajah Avenue, Singapore 138676                                           
+rashid.ansari@insead.edu
+
+Chiara Mussida
+Università Cattolica del Sacro Cuore
+via Emilia Parmense 84
+29122 Piacenza, Italy
+chiara.mussida@unicatt.it
+
+References:
+Balk, B.M. (2005). Price Indexes for Elementary Aggregates: The Sampling Approach. Journal of Official Statistics, 21, pp. 675-699. 
+International Labour Office, ILO (2004) Consumer Price Index (CPI) Manual: Theory and Practice,  available in the International Labour Organization website at http://www.ilo.org/public/english/bureau/stat/guides/cpi/index.htm#manual.
+IMF (2004), Revised PPI Manual,  available in internet at http://www.imf.org/external/np/sta/tegppi/ch15.pdf. 
+

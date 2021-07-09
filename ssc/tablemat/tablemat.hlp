@@ -1,0 +1,101 @@
+{smcl}
+{hline}
+help for {cmd:tablemat} {right:(Amadou Bassirou DIALLO: AFTPM, The World Bank and CERDI, Univ. of Auvergne)}
+{hline}
+
+
+{title:Data Management Utility.}
+{title:Allows to produce and export table of results in a matricial format.}
+
+
+{p 4 4 2}{cmd:tablemat} {it:varlist} [{it:if}] [{it:in}] [{it:weight}] 
+ {cmd:,}
+ {cmdab:st:at}{cmd:(}{it:varname}{cmd:)}
+ [{cmdab:by:group}{cmd:(}{it:varlist}{cmd:)}
+ {cmdab:cl:ean}{cmd:(}{it:string}{cmd:)}
+ {cmdab:f:ormat}{cmd:(}{it:format}{cmd:)}
+ {cmdab:n:ame}{cmd:(}{it:string}{cmd:)}
+ {cmdab:out:put}{cmd:(}{it:file name}{cmd:)}
+ {cmdab:sh:ort}
+ {cmdab:t:rim}{cmd:(}{it:real}{cmd:)}]
+
+
+{p 4 4 2}
+ 
+where :
+
+      {it:stat} is the statistic variable - not optional - (to be calculated by {cmd:tabstat}),
+
+      {it:bygroup} is a list of the by-{it:variables} (more than 2 could be specified), 
+      separated by spaces, 
+
+      {it:clean} is the character to be removed specified by the user,
+
+      {it:format} is the format type,
+
+      {it:name} is the name of the save matrice of results (default is M),
+
+      {it:output} is the option to export results,
+
+      {it:trim} is the length to assign to value labels,
+
+      {it:short} applies the trimming size to all labels.
+
+
+{title:Description}
+
+{p 4 4 2}{cmd:tablemat} is an extension of {help tabstat}.
+
+{p 4 4 2}{cmd:tablemat} produces a matrice of results using {cmd:tabstat}. 
+
+{p 4 4 2}The statistics available are those of {cmd:tabstat} except q.
+The weights options are also those supported by {cmd:tabstat}. The improvement over 
+{cmd:tabstat} is that {cmd:tabstat} allows only one  -by- variable while {cmd:tablemat} allows
+as many by-variables as the user wishes.  Another advantage is the handle of labels. 
+
+
+{p 4 4 2}Version 8.2 or higher is required.
+
+
+{title:Examples}
+
+{p 4 4 2}{cmd:. tablemat has_water has_elec, st(mean)  }{p_end}
+
+{p 4 4 2}{cmd:. tablemat has_water has_elec, st(mean)  cl((&) name(myresults)}{p_end}
+
+{p 4 4 2}{cmd:. mat li myresults}{p_end}
+
+{p 4 4 2}{cmd:. tablemat has_water [aw=weight], st(mean) by(urbrur region quintile educ)}{p_end}
+
+{p 4 4 2}{cmd:. tablemat var1 var2 [aw=weight], st(median) byg(region ) out("C:\N\File.out")}{p_end}
+
+{p 4 4 2}{cmd:. tablemat var1 var2 [aw=weight], st(p25) f(%9.2f) tr(5) sh}{p_end}
+
+
+{title:Author}
+
+{p 4 4 2}
+Amadou Bassirou DIALLO,
+AFTPM, The World Bank
+-and- CERDI, Univ. of Auvergne (France).
+
+{p 4 4 2}Email: {browse "mailto:adiallo5@worldbank.org":adiallo5@worldbank.org}
+
+
+{title:Aknowledgements}
+
+{p 4 4 2}Some parts of this program have been built through my incessant questions to Stata List.
+I would like to thank Nick Cox, Kit Baum and other stata users for their patience and their helpful comments
+on various aspects of this program. Kit Baum earlier found a bug that has been fixed.
+
+
+{title:Also see}
+
+{p 4 4 2} {hi:[R] tabstat} {hi:[R] tabstatmat}  {p_end}
+
+{p 4 4 2} Manual: {hi:[R] summarize}, {hi:[R] tabulate},  {hi:[R] matrix}. {p_end}
+
+{p 4 4 2}Online: help for {help summarize}, {help tabstat}, {help tabstatmat}, {help tabulate}, 
+                             {help statsmat}, {help outtable}, {help outsheet}, {help mat2txt} if installed. {p_end}
+
+{hline}

@@ -1,0 +1,180 @@
+{smcl}
+{* 17 April 2006}{...}
+{hline}
+help for {hi:mstdize}
+{hline}
+
+{title:Marginal standardization of two-way tables}
+
+{p 8 17 2} 
+{cmd:mstdize}
+{it:varname}
+{it:rowtotvar}
+{it:coltotvar}
+[{cmd:if} {it:exp}] 
+[{cmd:in} {it:range}] 
+{cmd:, by(}{it:rowvar colvar}{cmd:)}
+[ 
+{cmdab:g:enerate(}{it:newvar}{cmd:)}
+{cmdab:tol:erance(}{it:#}{cmd:)}
+{it:tabdisp_options}
+]
+
+
+{title:Description}
+
+{p 4 4 2}
+{cmd:mstdize} takes a table of {it:varname}, with rows indexed by 
+{it:rowvar} and columns indexed by {it:colvar}, and produces a new table 
+containing {it:varname}
+scaled such that the row totals are given by {it:rowtotvar} and the column
+totals given by {it:coltotvar}.
+
+
+{title:Remarks}
+
+{p 4 4 2}
+The algorithm is
+
+{p 8 8 2} 
+0. Initialise{p_end}
+{p 12 12 2}guess = varname
+
+{p 8 8 2} 
+1. Loop until max (| guess - previous guess |) <= tolerance{p_end}
+{p 12 12 2}previous guess = guess{break} 
+         guess = guess * target row total / guess row total{break}
+         guess = guess * target col total / guess col total
+
+{p 4 4 2} 
+The total over rows of the column totals should equal the total over
+columns of the row totals. That is, the two should lead to the same
+grand total.
+
+{p 4 4 2}
+This procedure is known by many different names in several different
+disciplines, including statistics, economics and engineering. Some are
+
+{p 8 8 2} 
+    biproportional matrices{break}
+    iterative proportional fitting{break}
+    raking{break}
+    RAS technique{break}
+
+
+{title:Options}
+
+{p 4 8 2} 
+{cmd:by()} indicates {it:rowvar} and {it:colvar} and is required.
+
+{p 4 8 2}
+{cmd:generate()} generates a new variable containing scaled values.
+
+{p 4 8 2}
+{cmd:tolerance()} is a technical option indicating the criterion for
+    convergence. This is the largest acceptable absolute difference
+    between each guess and the previous guess (and also between the two
+    totals of totals). Default 0.001.
+
+{p 4 8 2} 
+{it:tabdisp_options} are options of {help tabdisp}.
+Default {cmd:center format(%9.2f)}.
+
+
+{title:Examples}
+
+{p 4 4 2} 
+Data used by Smith (1976), quoted by Agresti (1990, p.197; 2002, p.345):{break}
+{cmd:. input freq schooling attitude}{break}
+{cmd:. 209 1 1}{break}
+{cmd:. 101 1 2}{break}
+{cmd:. 237 1 3}{break}
+{cmd:. 151 2 1}{break}
+{cmd:. 126 2 2}{break}
+{cmd:. 426 2 3}{break}
+{cmd:.  16 3 1}{break}
+{cmd:.  21 3 2}{break}
+{cmd:. 138 3 3}{break}
+{cmd:. end}{break}
+{cmd:. gen r = 100}{break}
+{cmd:. gen c = 100}{break}
+{cmd:. mstdize freq r c, by(schooling attitude)}
+
+{p 4 4 2} 
+Data used by Friedlander (1961), quoted by Bishop et al. (1975, p.98):{break}
+{cmd:. input freq age status}{break}
+{cmd:. 1306    1        1}{break}
+{cmd:. 83      1        2}{break}
+{cmd:. 0       1        3}{break}
+{cmd:. 619     2        1}{break}
+{cmd:. 765     2        2}{break}
+{cmd:. 3       2        3}{break}
+{cmd:. 263     3        1}{break}
+{cmd:. 1194    3        2}{break}
+{cmd:. 9       3        3}{break}
+{cmd:. 173     4        1}{break}
+{cmd:. 1372    4        2}{break}
+{cmd:. 28      4        3}{break}
+{cmd:. 171     5        1}{break}
+{cmd:. 1393    5        2}{break}
+{cmd:. 51      5        3}{break}
+{cmd:. 159     6        1}{break}
+{cmd:. 1372    6        2}{break}
+{cmd:. 81      6        3}{break}
+{cmd:. 208     7        1}{break}
+{cmd:. 1350    7        2}{break}
+{cmd:. 108     7        3}{break}
+{cmd:. 1116    8        1}{break}
+{cmd:. 4100    8        2}{break}
+{cmd:. 2329    8        3}{break}
+{cmd:. end}{break}
+{cmd:. gen rt = .}{break}
+{cmd:. tokenize 1412 1402 1450 1541 1681 1532 1662 7644}{break}
+{cmd:. qui forval i = 1/8 {c -(}}{break}
+{cmd:. {space 8}replace rt = ``i'' if age == `i'}{break}
+{cmd:. {c )-}}{break}
+{cmd:. gen ct = .}{break}
+{cmd:. tokenize 3988 11702 2634 }{break}
+{cmd:. qui forval j = 1/3 {c -(}}{break}
+{cmd:. {space 8}replace ct = ``j'' if status == `j'}{break}
+{cmd:. {c )-}}{break}
+{cmd:. mstdize freq rt ct , by(age status)}
+
+
+{title:References}
+
+{p 4 8 2}
+Agresti, A. 1990. 
+{it:Categorical data analysis.}
+New York: John Wiley.
+
+{p 4 8 2}
+Agresti, A. 2002. 
+{it:Categorical data analysis.}
+Hoboken, NJ: John Wiley.
+
+{p 4 8 2}
+Bishop, Y.M.M., Fienberg, S.E. and Holland, P.W. 1975. 
+{it:Discrete multivariate analysis.}
+Cambridge, MA: MIT Press.
+
+{p 4 8 2}
+Friedlander, D. 1961. 
+A technique for estimating a contingency table
+given the marginal totals and some supplementary data. 
+{it:Journal of the Royal Statistical Society Series A}
+124: 412{c -}420.
+
+{p 4 8 2} 
+Smith, K.W. 1976. 
+Table standardization and table shrinking: aids in the
+traditional analysis of contingency tables. 
+{it:Social Forces} 54: 669{c -}693.
+
+
+{title:Author}
+
+{p 4 4 2}Nicholas J. Cox, Durham University, U.K.{break}
+         n.j.cox@durham.ac.uk
+
+

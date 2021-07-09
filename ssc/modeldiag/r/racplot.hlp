@@ -1,0 +1,63 @@
+{smcl}
+{* 3nov2004}{...}
+{hline}
+help for {hi:racplot}
+{hline}
+
+{title:Plot residual autocorrelation function} 
+
+{p 8 17 2}{cmd:racplot} 
+[ {cmd:,} {it:residualtype} 
+{cmdab:rsc:ale(}{it:exp}{cmd:)} 
+{it:ac_options}  
+{cmd:plot(}{it:plot}{cmd:)} ] 
+
+
+{title:Description}
+
+{p 4 4 2}{cmd:racplot} plots the autocorrelation function of residuals 
+from the last model. Data must have been {cmd:tsset} previously. 
+
+{p 4 4 2}More precisely, the default is whatever residuals 
+{cmd:predict, residuals} (or, after {cmd:glm}, {cmd:predict, response})
+produces after a model. The plot is restricted to the estimation sample. 
+
+
+{title:Options}
+
+{p 4 8 2}{it:residualtype} specifies a type of residual other than the default.
+The following types are currently supported: {cmdab:a:nscombe},
+{cmdab:d:eviance}, {cmdab:l:ikelihood}, {cmdab:p:earson}, {cmdab:r:esiduals},
+{cmdab:resp:onse}, {cmdab:rsta:ndard}, {cmdab:rstu:dent}, {cmdab:s:core},
+{cmdab:w:orking}. 
+
+{p 4 8 2}{cmd:rscale(}{it:exp}{cmd:)} specifies a transformed scale for the 
+residuals using Stata syntax and {cmd:X} as a placeholder for the
+residual variable name. Thus {cmd:rscale(X^2)} specifies squaring; 
+{cmd:rscale(abs(X))} specifies absolute value, to set aside sign; 
+{cmd:rscale(sqrt(abs(X)))} specifies root of absolute value. This option is 
+not obviously helpful, but is included just in case it may be. 
+
+{p 4 8 2}{it:ac_options} are options of {help ac}. 
+
+{p 4 8 2}{cmd:plot(}{help plot_option:plot}{cmd:)} provides a way to add other
+plots to the generated graph; see {help plot_option}. 
+
+
+{title:Examples}
+
+{p 4 8 2}{cmd:. tsset time}{p_end}
+{p 4 8 2}{cmd:. regress {it:whatever} time}{p_end}
+{p 4 8 2}{cmd:. racplot}
+
+
+{title:Author}
+
+{p 4 4 2}Nicholas J. Cox, University of Durham, U.K.{break} 
+n.j.cox@durham.ac.uk
+
+
+{title:Also see}
+
+{p 4 13 2}On-line:  help for {help ac}, {help predict}, {help tsset}, 
+{help modeldiag}

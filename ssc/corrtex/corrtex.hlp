@@ -1,0 +1,143 @@
+{smcl}
+{* version 1.1 - 8 Nov 2006}{...}
+
+{cmd:help corrtex} 
+{hline}
+
+{title:Title}
+
+{p2colset 5 16 21 2}{...}
+{p2col:{hi: corrtex} {hline 2}} Generates a correlation table in LaTeX
+{p2colreset}{...}
+
+
+{title:Syntax}
+
+{p 8 15 2}
+{cmd:corrtex}
+{varlist}
+{ifin}
+{weight}
+{cmd:,} {cmdab:file}{cmd:(}{it:filename}{cmd:)} [{it:options}]
+
+{synoptset 22 tabbed}{...}
+{synopthdr}
+{synoptline}
+{syntab:File}
+{synopt:{opt file(filename)}} specifies the name of the file in which the 
+output is to be stored {p_end}
+{synopt:{opt a:ppend}} appends the code to the specified file{p_end}
+{synopt:{opt r:eplace}} overwrites any existing file with the same name{p_end}
+
+{syntab:Table format}
+{synopt:{opt dig:its(#)}} defines the number of digits to be displayed {p_end}
+{synopt:{opt land:scape}} generates a landscape format table {p_end}
+{synopt:{opt long:table}} allows to create tables that span over several pages {p_end}
+{synopt:{opt sig}}  displays the significance of each correlation {p_end}
+{synopt:{opt case:wise}} causes the table to reflect casewise deletion {p_end}
+{synopt:{opt nb:obs}} displays the number of observations under each correlation {p_end}
+{synopt:{opt pl:acement(string)}} specifies the placement of the table  {p_end}
+{synopt:{opt tit:le(string)}}  defines the table title  {p_end}
+{synopt:{opt key(string)}}  defines the table label {p_end}
+{synopt:{opt na(string)}} allows to define the content of cells where a numerical value has no sense {p_end}
+
+{syntab:Output}
+{synopt:{opt no:screen}} Don't display the correlation table in the Result window {p_end}
+
+{synoptline}
+{p2colreset}{...}
+{p 4 6 2}
+{cmd:by} is allowed; see {help prefix}.{p_end}
+
+{title:Description}
+
+{p 4 4 2}{cmd:corrtex} produces a correlation table in LaTeX format.  This command is inspired 
+by {cmd:mktab} and {cmd:outreg} commands, and its code heavily borrows from {cmd:mkcorr} and {cmd:sutex} commands.  
+This command offers a number of advantages such as allowing the use of labels, controlling the number of 
+decimal places used, and other LaTeX specific formatting options.
+
+{title:Options}
+
+{dlgtab:File}
+
+{phang}
+{opt file(filename)} specifies the name of the file in which the 
+output is to be stored.  The output file, {it:filename}.tex, can be included directly in a LaTeX document. 
+If the user specifies a file name that includes an extension, that
+extension will be used rather than {it:.tex}. 
+The {it:filename} specification may include the path of a directory other than the current working directory. 
+
+{phang}
+{opt a:ppend} appends the code to the specified file. This option can not be used in conjunction with {opt r:eplace}.
+
+{phang}
+{opt r:eplace} overwrites any existing file with the same name. This option can not be used in conjunction with {opt a:ppend}.
+
+{dlgtab:Table format}
+
+{phang}
+{opt dig:its(#)} defines the number of digits to be displayed (default is 3). 
+
+{phang}
+{opt land:scape} generates a landscape format table. 
+
+{phang}
+{opt long:table} allows to create tables that span over several pages using the "supertabular" package (do not forget to {it:\usepackage{longtable}} in the preamble of your .tex document)
+
+{phang}
+{opt na(string)} allows to define the content of cells where a numerical value has no sense (for example a Std. Dev. for only one observation).
+ ATTENTION : do not use the following characters # $ % & ~ _ ^ \ { } in that option. 
+
+{phang}
+{opt sig} requests that the significance of each correlation be printed under it. 
+
+{phang}
+{opt case:wise} causes the table to reflect casewise deletion. In other words, results will reflect only
+those observations for which no listed variables are missing. This command will yield results identical to using 
+{cmd:corrrelate}.  The default is to engage in pairwise deletion, yielding results identical to using {cmd:pwcorr}. 
+
+{phang}
+{opt nb:obs} displays the number of observations under each correlation. 
+
+{phang}
+{opt pl:acement(string)} specifies the placement of the table in the .tex doc (default is {it:htbp}) 
+
+{phang}
+{opt tit:le(string)} defines the table title ({it:Cross-correlation table} is default). 
+
+{phang}
+{opt key(string)} defines the table label ({it:corrtable} is default). 
+
+{dlgtab:Output}
+
+{phang}
+With the {opt no:screen} option, the correlation table is not displayed in the Result window.
+
+{phang}
+
+{title:Examples}
+
+{phang}{cmd:. webuse auto2yr}{p_end}
+
+{phang}{cmd:. corrtex price mpg, file(auto)}{p_end}
+
+{phang}{cmd:. corrtex price mpg if price>5000, file(auto) replace case sig dig(4) nb}{p_end}
+
+{phang}{cmd:. bysort foreign : corrtex price mpg, file(auto) replace longtable title(Cross-correlations)}{p_end}
+
+{title:Author} 
+
+        Nicolas Couderc, 
+	Reims Management School and Université Paris 1 (Panthéon - Sorbonne),
+        couderc@univ-paris1.fr
+
+        Questions, comments and bug reports are welcome.
+
+{title:Acknowledgements} 
+
+{p 4 4 2}This program owes a debt to {cmd:mktab}, {cmd:outreg}, {cmd:corrtab} and specially {cmd:mkcorr} (by Glenn Hoetker) and {cmd:sutex} (by Antoine Terracol).
+
+{title:Also see}
+
+{p 4 13 2}On-line:  help for {help correlate} and {help pwcorr}.
+

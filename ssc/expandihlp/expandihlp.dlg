@@ -1,0 +1,32 @@
+/*
+expandihlp
+Version 1.0
+*/
+VERSION 14.2
+INCLUDE _std_medium
+INCLUDE header
+
+HELP hlp1, view("help expandihlp")
+RESET res1
+
+DIALOG main, label("expandihlp - Expands .ihlp-files into .sthlp files") tabtitle("Main")
+BEGIN
+	TEXT	tx_exp 	_lft _top _iwd . ,label("Help file to expand:")
+	FILE	fhelp	@ +20 @ ., label("Browse...") option(file) filter("Stata Help Files|*.sthlp|All Files|*.*") dialogtitle("Open help file") error("Help file to expand")
+	TEXT	tx_suffix @ +20 @ ., label("Suffix of new file")
+	EDIT	ed_suffix @ +20 @ ., option(suffix) default("_expanded")
+	CHECKBOX ck_notest @ +30 @ ., label("No Test") tooltip("Disable test for the number of INCLUDE directives") option(notest)
+	CHECKBOX ck_rename @ +30 @ ., label("Rename") tooltip("Rename expanded file to original file") option(rename)
+END
+
+PROGRAM command
+BEGIN
+	put "expandihlp "
+		beginoptions
+			require main.fhelp
+			optionarg main.fhelp
+			optionarg main.ed_suffix
+			option main.ck_notest
+			option main.ck_rename
+		endoptions		
+END

@@ -1,0 +1,212 @@
+{smcl}
+{* 17oct2006}{...}
+{hline}
+help for {hi:mlowess}
+{hline}
+
+{title:Lowess smoothing with multiple predictors}
+
+{p 8 12 2} 
+{cmd:mlowess} 
+{it:yvar xvarlist} 
+{ifin}
+[{cmd:,}
+{cmd:combine(}{it:combine_options}{cmd:)} 
+{cmdab:cyc:les(}{it:#}{cmd:)}
+{cmdab:dr:aw(}{it:numlist}{cmd:)}
+{cmdab:gen:erate(}{it:stub}{cmd:)} 
+{cmd:nograph}
+{cmd:log}
+{cmd:lowess(}{it:lowess_options}{cmd:)} 
+{cmdab:om:it(}{it:numlist}{cmd:)}
+{cmdab:p:redict(}{it:newvar}{cmd:)}
+{cmdab:nopt:s}
+{cmd:replace}
+{cmdab:sc:atter(}{it:scatter_options}{cmd:)} 
+{it:line_options}]
+
+
+{title:Description}
+
+{p 4 4 2} 
+{cmd:mlowess} computes lowess smooths of {it:yvar} on all predictors in
+{it:xvarlist} simultaneously; that is, each smooth is adjusted for the others.
+Fitted values may be saved in new variables with names
+beginning with {it:stub}, as specified in the {cmd:generate()} option. 
+
+{p 4 4 2}By default, for each {it:xvar} in {it:xvarlist} adjusted
+values of {it:yvar} and the lowess smooth for {it:xvar} are plotted against
+{it:xvar}.  See {hi:Remarks} for more details.
+
+{p 4 4 2}If you have just one predictor, use {helpb lowess} directly.          
+
+
+{title:Options} 
+
+{p 4 8 2} {cmd:combine(}{it:combine_options}{cmd:)} specifies any of the
+options allowed by the {helpb graph combine} command.  Useful examples are
+{cmd:combine(ycommon)} and {cmd:combine(saving(}{it:graphname}{cmd:))}.
+
+{p 4 8 2} {cmd:cycles(}{it:#}{cmd:)} sets the number of cycles. The default is
+{cmd:cycles(3)}.
+
+{p 4 8 2} {cmd:draw(}{it:numlist}{cmd:)} specifies that smooths for a subset of
+the variables in {it:xvarlist} be plotted. The elements of {it:numlist} are
+indexes determined by the order of the variables in {it:xvarlist}.  For
+example, {cmd:mlowess y x1 x2 x3, draw(2 3)} would plot smooths only for
+{cmd:x2} and {cmd:x3}. By default results for all variables in
+{it:varlist} are plotted. {cmd:draw()} takes precedence over {cmd:omit()} in
+the sense that results for variables included (by index) in {it:numlist} are
+plotted, even if they are excluded by {cmd:omit()}. See also {cmd:omit()}.
+
+{p 4 8 2} {cmd:generate(}{it:stub}{cmd:)} specifies that fitted values for each
+member of {it:xvarlist} be saved in new variables with names beginning with
+{it:stub}.
+
+{p 4 8 2}{cmd:nograph} suppresses the graph.  
+
+{p 4 8 2}{cmd:log} displays the squared correlation coefficient between the
+overall fitted values and {it:yvar} at each cycle for monitoring convergence.
+This option is provided mainly for pedagogic interest.
+
+{p 4 8 2}{cmd:lowess(}{it:lowess_options}{cmd:)} control the operation 
+of {helpb lowess} in generating smooths. Key are 
+
+{p 8 8 2}{cmdab:m:ean} specifies running-mean smoothing; the default is 
+running-line least-squares smoothing.
+
+{p 8 8 2}{cmdab:now:eight} prevents the use of Cleveland's tricube weighting 
+function; the default is to use the weighting function.
+
+{p 8 8 2}{cmdab:bw:idth(}{it:#}{cmd:)} specifies the bandwidth.  
+Centred subsets of {cmd:bwidth()} * n
+observations are used for calculating smoothed values for each point
+in the data except for end points, where smaller, uncentred subsets
+are used.  The greater the {cmd:bwidth()}, the greater the smoothing.  The
+default is 0.8.
+
+{p 8 8 2}Note that each choice applies to all predictors. There is no
+provision for treating predictors differently. 
+
+{p 4 8 2}{cmd:omit(}{it:numlist}{cmd:)} specifies that smooths for a subset of
+the variables in {it:xvarlist} not be plotted. The elements of {it:numlist} are
+indexes determined by the order of the variables in {it:varlist}. For example,
+{cmd:mlowess y x1 x2 x3, omit(3)} would plot smooths only for {cmd:x1} and
+{cmd:x2}. By default results for no variables in {it:varlist} are omitted.
+{cmd:draw()} takes precedence over {cmd:omit()}.  See also {cmd:draw()}.
+
+{p 4 8 2}{cmd:predict(}{it:newvar}{cmd:)} specifies that the predicted values
+be saved in new variable {it:newvar}. 
+
+{p 4 8 2}{cmd:nopts} suppresses the points in the plots. Only the lines
+representing the smooths are drawn.
+
+{p 4 8 2}{cmd:replace} allows variables specified by any of the
+{cmd:generate()} and {cmd:predict()} options to be replaced if they already
+exist.
+
+{p 4 8 2}{cmd:scatter(}{it:scatter_options}{cmd:)} specifies any of the options
+allowed by the {helpb scatter} command.  These should be specified to control
+the rendering of the data points.  The default includes {cmd:msymbol(oh)}, or
+{cmd:msymbol(p)} with over 299 observations. 
+
+{p 4 8 2}{it:line_options} are any of the options allowed with {helpb line}.
+These should be specified to control the rendering of the smoothed lines or the
+overall graph. 
+
+
+{title:Remarks}
+
+{p 4 4 2}The approach of {cmd:mlowess} is based on methodology for
+generalised additive models (Hastie and Tibshirani 1990). {cmd:mlowess}
+is primarily intended for exploratory graphics, rather than model fitting 
+with inferential apparatus. 
+
+{p 4 4 2}An R-square (squared correlation coefficient) is provided as a
+goodness of fit indicator. However, this R-square can typically be increased simply
+by just smoothing less, which is often likely to be unhelpful. As the resulting
+predictions come closer to interpolating the data, R-square will approach 1,
+but scientific usefulness and the possibility of insight will usually diminish. 
+
+{p 4 4 2} 
+Suppose that there are p >= 1 predictors.  {cmd:mlowess} estimates the
+smooths f_1,...,f_p by using a backfitting algorithm and a lowess  
+smoother S[y|x_j] for each predictor, as follows:
+
+{p 4 8 2} 
+1.  Initialize: alpha = mean({it:yvar}), f_1,...,f_p 
+estimated by multiple linear regression.
+
+{p 4 8 2} 
+2.  Cycle: j = 1,...,p, 1,...,p, ...
+
+{p 8 8 2} 
+f_j = S[y - alpha - sum_{i != j} f_i|x_j]
+
+{p 4 8 2} 
+3.  Continue for {cmd:cycles()} rounds.
+
+{p 4 4 2}
+No convergence criterion is applied. In practice, three cycles are
+usually more than sufficient to get results adequate for exploratory work. 
+
+{p 4 4 2} 
+The smooths are adjusted so that the mean of each equals the mean of {it:yvar}.
+
+{p 4 4 2}
+The points in the plots provided by {cmd:mlowess}
+depict y - sum_{i != j} f_i|x_j, i.e., the partial residuals plus alpha.
+
+
+{title:Examples} 
+
+{p 4 8 2} 
+{cmd:. mlowess mpg weight displ length}
+
+{p 4 8 2}
+{cmd:. mlowess mpg weight displ length, lowess(mean)}
+
+{p 4 8 2}
+{cmd:. mlowess mpg weight displ length, generate(S) nograph}
+
+{p 4 8 2}
+{cmd:. mlowess mpg weight displ length, omit(2) combine(saving(graph1))}
+
+{p 4 4 2}For comparison, bivariate smooths may be compared like this: 
+
+{p 4 8 2}{cmd:. foreach v in weight displ length {c -(}}{p_end}
+{p 4 8 2}{cmd:. {space 8}lowess mpg `v', combine(saving(lwss_`v'))}{p_end}
+{p 4 8 2}{cmd:. {c )-}}{p_end}
+{p 4 8 2}{cmd:. graph combine "lwss_weight" "lwss_displ" "lwss_length"} 
+
+
+{title:Author} 
+
+{p 4 4 2}Nicholas J. Cox{break} 
+         Durham University{break} 
+	 n.j.cox@durham.ac.uk 
+
+
+{title:Acknowledgements} 
+
+{p 4 4 2}The main features of the implementation here depend on the work of 
+Patrick Royston, as reported by Royston and Cox (2005). 
+
+
+{title:References}
+
+{p 4 8 2}
+Hastie, T. and Tibshirani, R. 1990.
+{it:Generalized additive models.} 
+London: Chapman and Hall. 
+
+{p 4 8 2}
+Royston, P. and Cox, N.J. 2005. 
+A multivariable scatterplot smoother. 
+{it:Stata Journal} 5(3): 405{c -}412. 
+
+
+{title:Also see}
+
+{p 4 13 2}Online:  {helpb lowess}{p_end}
+

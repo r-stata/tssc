@@ -1,0 +1,168 @@
+{smcl}
+{* 31january2003/24august2005/5april2006}{...}
+{hline}
+help for {hi:cycleplot}
+{hline}
+
+{title:Cycle plot (month plot or seasonal subseries plot)}
+
+{p 8 17 2} 
+{cmd:cycleplot} 
+{it:responsevars month year}
+[{cmd:if} {it:exp}] 
+[{cmd:in} {it:range}]
+[{cmd:,}
+{cmdab:le:ngth(}{it:#}{cmd:)} 
+{cmdab:st:art(}{it:#}{cmd:)} 
+{cmdab:su:mmary(}{it:egen_function}{cmd:)} 
+{cmdab:myla:bels(}{it:labels_list}{cmd:)} 
+{it:line_options}
+]
+
+
+{title:Description}
+
+{p 4 4 2}
+{cmd:cycleplot} produces a graph of one or more {it:responsevars} 
+by {it:month} and {it:year}. 
+{it:responsevars} may be raw data or the seasonal components of such data.
+The descriptors {it:month} and {it:year} are used for concreteness. 
+For {it:month} and {it:year}, read strictly {it:shorter period} and
+{it:longer period}. That is, the plot may be useful whenever periods (e.g.
+years) are divided into a fixed number of shorter periods (e.g. months,
+quarters). {it:month} should be a variable taking on values
+1,...,{cmd:length}. The graph shows a fixed number of subseries, one for each
+distinct {it:month}. The data are also sorted so that there are no connections 
+between subseries. 
+ 
+{p 4 4 2} 
+Terminology for this plot is not stable. See notes with {cmd:References}.
+
+
+{title:Remarks} 
+
+{p 4 4 2}
+Note that you can get close to this kind of plot with no more than 
+official Stata, as in 
+
+{p 4 8 2}{cmd:. twoway line air year, by(month, row(1))} 
+
+{p 4 4 2}The advantages of {cmd:cycleplot} include more space being used 
+to show data on the plot; the flexibility of different starts to the cycle; 
+and the possibility of comparison with a subseries summary. 
+
+
+{title:Options} 
+
+{p 4 8 2}{cmd:length(}{it:#}{cmd:)} indicates that data are for {it:#}
+shorter periods within each longer period. The default is 12, for months 
+within a year. 
+
+{p 4 8 2}{cmd:start(}{it:#}{cmd:)} indicates the first value of {it:month}
+plotted on the {it:x} axis. Default 1.
+This option may be used whenever there is some better natural start
+to the {it:year} than (say) January. For example, rainfall in climates with 
+a wet season either side of December is best plotted starting in (say) July.  
+
+{p 4 8 2}{cmd:summary(}{it:egen_function}{cmd:)} calculates a summary function
+to be shown for each {it:month}.  The summary function may be any function
+acceptable to {help egen} that has syntax like {cmd:egen} {it:newvar} 
+{cmd:= mean(}{it:response}{cmd:), by(}{it:month}{cmd:)}. {cmd:mean} and {cmd:median}
+are the most obvious possibilities. Know that whenever summaries are plotted 
+the order of variables on the graph is all the response variables followed by
+all the corresponding summary variables. 
+
+{p 4 8 2}{cmd:mylabels(}{it:labels_list}{cmd:)} specifies text labels
+to use on the time axis, instead of default labels such as 1/12. 
+The number of labels specified should be 
+precisely the same as the argument of {cmd:length()}, or by default 12. 
+Labels consisting of two or more words should be bound in {cmd:" "}.
+Labels including {cmd:"} should be bound in {cmd:`" "'}.
+Note that {cmd:mylabels(`c(Mons)')} 
+specifies {cmd:Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec} and that 
+{cmd:mylabels(`c(Months)')} specifies 
+{cmd:January February} ... {cmd:November December}. Do not rotate the list 
+to reflect a {cmd:start()} choice other than 1. This will be done automatically.
+ 
+{p 4 8 2}{it:line_options} refers to options of 
+{help twoway_line:graph twoway line}. {cmd:connect(L ..)} is wired in. 
+Note the possibility of using {help advanced_options:recast()} to 
+get a different twoway type. 
+ 
+ 
+{title:Examples}
+ 
+{p 4 8 2}{cmd:. cycleplot rainfall month year, xla(1/12)}{p_end}
+{p 4 8 2}{cmd:. cycleplot rainfall month year, xla(1/12) start(7)} 
+    
+{p 4 8 2}{cmd:. cycleplot GDP quarter year, length(4)}
+
+{p 4 8 2}{cmd:. webuse air2, clear}{p_end}
+{p 4 8 2}{cmd:. egen month = seq(), to(12)}{p_end}
+{p 4 8 2}{cmd:. gen year = floor(time)}{p_end}
+{p 4 8 2}{cmd:. cycleplot air month year, xla(1/12) start(2) yscale(log) su(median)}{p_end}
+{p 4 8 2}{cmd:. cycleplot air month year, xla(1/12) start(2) yscale(log) su(median) myla(`c(Mons)')}{p_end}
+{p 4 8 2}{cmd:. cycleplot air month year, xla(1/12) start(2) yscale(log) su(median) myla(J F M A M J J A S O N D)}
+
+{p 4 8 2}{cmd:. cycleplot males females month year, start(8) recast(connected) ysc(log) yla(3000 2000 1000 500 300) yla(, ang(h)) legend(col(1) pos(11) ring(0)) mylabels(`c(Mons)')}
+{cmd: subtitle("UK deaths from bronchitis, emphysema and asthma 1974-79") msize(*0.8 ..)}
+ 
+
+{title:Acknowledgements}
+
+{p 4 4 2}A question from Aurelio Tobias led to the {cmd:mylabels()} option. 
+
+
+{title:Author}
+
+{p 4 4 2}Nicholas J. Cox, Durham University{break} 
+         n.j.cox@durham.ac.uk
+
+
+{title:References}
+
+{p 4 4 2}Original references: 
+
+{p 4 4 2}Becker, R.A., Chambers, J.M. and Wilks, A.R. 1988. 
+{it:The new S language: a programming environment for data analysis and graphics.}
+Pacific Grove, CA: Wadsworth & Brooks/Cole, pp.508-509. [month plot]
+
+{p 4 4 2}Cleveland, R.B., Cleveland, W.S., McRae, J.E. and Terpenning, I. 1990.
+STL: a seasonal-trend decomposition procedure based on loess. 
+{it:Journal of Official Statistics} 6: 3-73. [cycle-subseries plot]
+
+{p 4 4 2}Cleveland, W.S. 1993. {it:Visualizing data.} 
+Summit, NJ: Hobart Press, pp.164-165. [cycle plot]
+
+{p 4 4 2}Cleveland, W.S. 1994. {it:The elements of graphing data.} 
+Summit, NJ: Hobart Press, pp.186-187. [cycle plot]
+
+{p 4 4 2}Cleveland, W.S. and Devlin, S.J. 1980. Calendar effects in monthly time
+series: detection by spectrum analysis and graphical methods. 
+{it:Journal, American Statistical Association} 75: 487-496. 
+[seasonal-by-month plot]
+
+{p 4 4 2}Cleveland, W.S., Freeny, A.E. and Graedel, T.E. 1983. The seasonal
+component of atmospheric CO2: information from new approaches to the
+decomposition of seasonal time series. {it:Journal of Geophysical Research}
+88: 10934-10946. [seasonal subseries plot]
+
+{p 4 4 2}Cleveland, W.S. and Terpenning, I.J. 1982. Graphical methods for
+seasonal adjustment. {it:Journal, American Statistical Association} 77:
+52-62. [seasonal subseries plot]
+
+{p 4 4 2}Robbins, N.M. 2005. {it:Creating more effective graphs.} 
+Hoboken, NJ: John Wiley. [month plot, cycle plot]
+
+{p 4 4 2}More on {cmd:c()} lists: 
+
+{p 4 4 2}Cox, N.J. 2004. Following special sequences. {it:Stata Journal} 
+4(2): 223. 
+
+
+{title:Also see}
+
+{p 4 13 2}
+On-line: help for {help twoway_line:graph twoway line}, {help egen}, 
+{help creturn} 
+

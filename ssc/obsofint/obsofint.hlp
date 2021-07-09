@@ -1,0 +1,217 @@
+{smcl}
+{* 14Mar2010}
+{* 26Feb2010}
+help for {hi:obsofint}
+{hline}
+
+
+{title:Title}
+
+{p2colset 5 17 19 2}{...}
+{p2col :{hi: obsofint} {hline 2}}Displays observations of interest.{p_end}
+{p2colreset}{...}
+
+
+{title:Syntax}
+
+{p 8 15 2}
+{cmd:obsofint} [{varlist}] {ifin} {weight} [{cmd:,} {opt zcut:off(#)} {opt whisker:length(#)} 
+{opt z} {opt tuk:ey} {opt asym:tukey} 
+{opt id:list(varlist)} {opt sortid} {opt nosort} 
+{opt loud} {opt sum:marize}[({it:stats}[, {it: verbose}])]  
+{cmd:{ul:gen}erate(}{it:stub} [{cmd:,} {it:replace} {it:all}]{cmd:)} {it:list_options} ]
+
+{phang}
+{cmd:fweights}, {cmd:aweights}, and {cmd:pweights} are allowed.
+
+
+{title:Description}
+
+{pstd}
+{cmd:obsofint} is intended to help scan a large number of variables for unusual observations.
+These unusual observations are unusual in the sense that they either have a much smaller or 
+a much larger value on a given variable than the bulk of the data. Such unusual observations 
+are commonly referred to as outliers. While such observations are commonly referred to as 
+outliers, we feel that this term is increasingly associated with the bad practice of 
+automatically considering such observations as a problematic cases which should automatically 
+be deleted. So instead we will use the term observations of interest. On the one hand, this 
+terminology allows for the possibility that these observations are date entry errors, while
+on the other hand it also allows for the possibility that these observations are legitimate 
+observations. In the former case deletion of that observation is only a measure of last 
+resort, while in the latter case deletion would remove especially informative observations. 
+
+{pstd}
+The observations of interest are identified using a criterium that is an adaptation of the 
+commonly used Tukey bounds. In our experience these Tukey bounds flagged too many values as 
+extreme values if a variable is either skewed or has a spike (a value that is very common). 
+This is not surprising as these bounds were intended for normal/Gaussian-like variables, but 
+it makes these bounds less useful for scanning a large set of variables for unusual
+observations. So, instead {cmd:obsofint} will use the following generalization of the Tukey
+bounds:
+
+{pstd}
+The traditional Tukey bounds are:
+
+{pstd}
+lb = Q_1 - 3*(Q_3 - Q_1),   ub = Q_3 + 3*(Q_3 - Q_1)
+
+{pstd}
+The adjusted Tukey bounds are:
+
+{pstd}
+lb = Q_1 - 6*(Q_2 - Q_1),   ub = Q_3 + 6*(Q_3 - Q_2)
+
+{pstd}
+lb and ub are respectively the lower and the upper bounds. Q_1, Q_2, and Q_3 are the 
+first, second, and third quartile.
+
+{pstd}
+These adjusted Tukey bounds tend to lead to less false positives --- that is, less
+observations that are flagged as of interest that are actually perferctly normal ---
+when the data is skewed. However, these bounds do still lead to too many false
+positives when the variable contains a spike that is large enough to make either
+the first and second quartile, or the second and third quartile, or all three quartiles
+the same. If this happens, {cmd:obsofint} will automatically change the criterium of an
+observation of interest to a deviation of more than 3 standard deviation from the mean.  
+
+
+{title:Options}
+
+{phang}
+{opt whisker:length(#)} specifies the number of inter-quartile ranges one needs to deviate from 
+the 1st or 3rd quartile in order to be classified as an observation of interest, when the 
+traditional Tukey bounds are used. The default is 3. In the adjusted Tukey ranges, that are 
+default in {cmd:obsofint}, it specifies 1/2 of the number of distances between the lower 
+quartile and the median or the higher quartile and the median. Notice that this way the 
+traditional Tukey bounds and the adjusted tukey bounds lead to exactly the same results when the 
+distribution of that variable is symetric. 
+
+{phang}
+{opt zcut:off(#)} specifies the number of standard deviations that an observation needs to deviate
+from the mean in order to be classified as an observation of interest. The default is 3.
+
+{phang}
+{opt z} specifies that only the z-score criterium --- that is, the number of standard deviations
+that an observation deviates from the mean --- is to be used when identifying observations of 
+interest. When this option is specified, one can not specify the {cmd:whiskerlength()} option. 
+
+{phang}
+{opt tuk:ey} specifies that only the traditional Tukey bounds are to be used when identifying 
+observations of interest. When this option is specified, one can not specify the {cmd:zcutoff()}
+option. 
+
+{phang}
+{opt asym:tukey} specifies that only the adjusted Tukey bounds are to be used when identifying 
+observations of interest. When this option is specified, one can not specify the {cmd:zcutoff()}
+option. 
+
+{phang}
+{opt id:list(varlist)} specifies the variables that are to be listed next to the extreme values.
+Typically these will be either identification numbers and/or variables that might explain why
+an observation might be exceptional.
+
+{phang}
+{opt sortid} specifies that observations are sorted by the variables specified in {opt idlist()}.
+The {opt idlist()} option must thus be specified when specifying the {cmd:sortid} options. 
+The default is that the observations are sorted by the variable being listed.
+
+{phang}
+{opt nosort} specifies that the observation are not sorted. The default is that the 
+observations are sorted by the variable being listed. 
+
+{pmore}
+If the {opt nosort} option is specified the observation numbers will be displayed as is normal
+in {help list}. When the {opt nosort} option is specified, the observation number will be displayed
+as an variable with the name {cmd:obs_nr} unless there is already a variable with that name. In 
+that case it will use the name {cmd:obs} unless there is also a variable with that name. In that 
+case the name {cmd:_n} will be used.
+
+{phang}
+{opt loud} specifies that {cmd:obsofint} will display a message for each variable that does not
+have any observations flagged as of interest. By default, {cmd:obsofint} displays nothing for those
+variables.
+
+{phang}
+{opt sum:marize}[({it:stats}[, {it: verbose}])] specifies that for those variables that contain observations of
+interest, the statistics {it:stats} will be displayed in the report. If no statistics have been
+it will display N, mean, sd, min, p25, p50, p75, and max. One or more of the following statistics
+may be specified: N, sum_w, mean, Var, sd, skewness, kurtosis, sum, min, max, p1, p5, p10, p25, 
+p50, p75, p90, p95, p99. The {it: verbose} suboption 
+
+{phang}
+{cmd:{ul:gen}erate(}{it:stub} [{cmd:,} {it:replace} {it:all}]{cmd:)} specifies that indicator variables are
+be created for each variable containg variables of interest, which will be 1 if that observation is
+of interest and 0 otherwise. These indicator variables will be called {it:stub}_variablename. If
+these variables already exist {cmd:obsofint} will exit with an error unless the {cmd:replace} 
+sub-option is specified, in which case the existing indicator variables will be overwritten.
+If the {cmd:all} suboption is specified these indicator variables will be created for all
+variables checked by {cmd:obsofint}, regardless whether observations of interest were found
+or not.
+
+{phang}
+{it:list_options} all options for {helpb list} can also be specified for {cmd:obsofint} and will 
+be used when listing observations of interest.
+
+
+{title:Saved results}
+
+{phang}
+{cmd: r(}{it:result}{cmd:)} Contains a matrix with a row for each variable in {it:varlist}. The 
+first column shows the number of observation classified as of interest, the second and third 
+columns show the lower and upper bound used to classify the observations. These bounds will be
+missing when the variable is a constant. The last three collumns indicate whether the z-score,
+adjusted Tukey bounds, or traditional Tukey bounds criterium was used to identify observations
+of interest. The criterium used is represented by a 1 and the remaining criteria will receive 
+a 0. If a variable is a constant, all criteria will receive a 0. 
+
+
+{title:Example}
+
+{cmd}
+    sysuse auto, clear
+    obsofint, idlist(make)
+{txt}
+{p 4 4 2}({stata "obsofint_ex 1":click to run}){p_end}
+
+{cmd}
+    sysuse auto, clear
+    obsofint price - foreign, loud idlist(make) sum
+{txt}
+{p 4 4 2}({stata "obsofint_ex 2":click to run}){p_end}
+
+{cmd}
+    sysuse auto, clear
+    obsofint price - foreign, idlist(make) tukey
+{txt}
+{p 4 4 2}({stata "obsofint_ex 3":click to run}){p_end}	
+	
+{title:Authors}
+
+{p 4 4}
+Maarten L. Buis{break}
+Universitaet Tuebingen{break}
+Institut fuer Soziologie{break}
+maarten.buis@uni-tuebingen.de 
+{p_end}
+
+{p 4 4}
+Ronnie Babigumira{break}
+Center for International Forestry Network (CIFOR){break}
+The Poverty Environment Network (PEN){break}
+r.babigumira@cgiar.org
+{p_end}
+
+
+{title:Acknowledgement}
+
+{pstd}
+{cmd:obsofint} was written while Maarten Buis was visiting CIFOR as a consultant to work on the  
+{browse "http://www.cifor.cgiar.org/pen":PEN project}. 
+
+
+{title:Also see}
+
+{psee}
+Online:  {helpb lv} {helpb iqr} (if installed) 
+{p_end}
+

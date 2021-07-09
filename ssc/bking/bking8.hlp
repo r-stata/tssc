@@ -1,0 +1,78 @@
+{smcl}
+{* 23oct2004}{...}
+{hline}
+help for {hi:bking8}
+{hline}
+
+{title:Apply Baxter-King band pass filter to time series}
+
+{p 8 17}{cmd:bking8}
+{it:varlist}
+[{cmd:if} {it:exp}]
+[{cmd:in} {it:range}] 
+{cmd:,} {cmdab:plo(}{it:#}{cmd:)}
+{cmdab:phi(}{it:#}{cmd:)}
+{cmdab:stub(}{it:abbrev}{cmd:)}
+[
+{cmdab:k(}{it:#}{cmd:)}
+]
+
+{p 4 4}{cmd:bking8} is for use in Stata 8.2. Users of more recent versions of Stata should use {cmd:bking}, which makes use of Mata.
+
+{p 4 4}You must {cmd:tsset} your data before using {cmd:bking8}; see help {cmd:tsset}. If a 
+panel calendar is in effect, the filter can be applied if a single panel is specified using {cmd:if} or {cmd:in} qualifiers.
+
+{p 4 4}{cmd:varlist} may contain time-series operators; see help {cmd:varlist}.
+
+{p 4 4}{cmd:bking8} filters one or more time series using the Baxter-King symmetric band-pass filter described in Baxter and King (1995).
+If a panel calendar is in effect, the filter can be applied if a single panel is specified using if or in qualifiers. 
+The {cmd:plo()} and {cmd:phi()} arguments specify the minimum period of oscillation and maximum period of oscillation of the desired component of the time series, where 2 < plo < phi < infinity. 
+The "Burns-Mitchell" settings for this filter, applied to quarterly data, are 6 and 32 quarters, with k=12.
+
+{p 4 4} You should {cmd:set matsize 800} before calling this routine. Due to the matrix size limits, a timeseries longer than 800 periods cannot be handled by this routine in Intercooled Stata. 
+
+{title:Options}
+    
+{p 4 8}{cmd:plo(}{it:#}{cmd:)} and {cmd:phi(}{it:#}{cmd:)} specify the minimum and maximum period of oscillation to be retained in the time series, and must be given. For quarterly data, common values are 6 and 32, which preserve the components of the data with period between 1.5 and 8.0 years, with k=12 (which loses three years' data from each end of the filtered series). For monthly data, 
+common values are 18 and 96, which preserves the component of the data
+with period between 1.5 and 8.0 years. For annual data, common values are 
+2 and 8, with k=3.
+
+{p 4 8}{cmd:stub(}{it:abbrev}{cmd:)}, which must be provided, specifies the "stub" from which new variable names will be created. Variables created by {cmd:stub} must be new variables. If the {it:varlist} contains time-series 
+operators, the dots in their names are replaced by underscores so that the resulting new variables' names are legal.
+
+{p 4 8}{cmd:k(}{it:#}{cmd:)} specifies the lead-lag length of the filter. This many observations will be lost at each end of the filtered series. If not specified, {cmd:k} is set to 12 (Baxter and King's recommended value for quarterly data).
+
+{title:Examples}
+
+{p 4 8}{stata "webuse lutkepohl,clear" :. webuse lutkepohl,clear}{p_end}
+
+{p 4 8}{stata "bking8 investment, plo(6) phi(32) stub(F)" :. bking8 investment, plo(6) phi(32) stub(F)}{p_end}
+
+{p 4 8}{stata "bking8 investment income consumption, plo(6) phi(32) k(8) stub(filt)" :. bking8 investment income consumption, plo(6) phi(32) k(8) stub(filt)}{p_end}
+
+{p 4 8}{stata "bking8 D.investment, plo(4) phi(12) stub(fl)" :. bking8 D.investment, plo(4) phi(12) stub(fl)}{p_end}
+
+{title:Author}
+
+{p 4 4}Christopher F. Baum, Boston College, USA{break} 
+       baum@bc.edu
+
+{title:References}
+
+{p}Marianne Baxter and Robert G. King, Measuring Business Cycles: Approximate
+    Band-Pass Filters for Economic Time Series. Review of Economics and Statistics,
+    1999, 81(4), 575-593. {p_end}
+
+{p}Lawrence J. Christiano and Terry J. Fitzgerald, The Band Pass Filter, International
+Economic Review, 2003, 44(2), 435-465.{p_end}
+    
+{title:Acknowledgements} 
+
+{p}This code is based on Eduard Pelz' MATLAB implementation of the Baxter-King 
+filter, available from http://www.clev.frb.org/research/workpaper/1999/bpassm.txt
+and has been validated against that code for selected series. {p_end}
+
+{title:Also see}
+
+{p 4 13}On-line: {help hprescott} (if installed), {help tsset}

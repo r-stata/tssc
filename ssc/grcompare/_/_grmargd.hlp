@@ -1,0 +1,126 @@
+{smcl}
+{* 28Feb2011}{...}
+{hline}
+help for {hi:_grmargd}{right:28Feb2011}
+{hline}
+
+{title:Marginal effects and their differences in binary regressions using the delta method for inference}
+
+{p 8 15 2}{cmd:_grmargd} [{cmd:if} exp] [{cmd:in} range] [{cmd:,}
+{cmd:x(}{it:variables_and_values}{cmd:)}
+{cmdab:r:est(}{it:stat}{cmd:)}
+{cmdab:noba:se}
+{cmd:all}
+{cmdab:l:evel(}{it:#}{cmd:)}
+{cmdab:s:ave}
+{cmdab:d:iff}
+{cmd:dydxmat(}{it:matrix_kxk}{cmd:)}]
+
+{p 4 4 2}
+where {it:variables_and_values} is an alternating list of variables
+and either numeric values or mean, median, min, max, upper, lower,
+previous.
+
+{p 4 4 2}
+{it:stat} is either mean, median, min, max, upper, lower,
+previous, grmean(group mean), mrmedian, grmin, grmax.
+
+
+{title:Description}
+
+{p 4 4 2}
+After estimating a binary regression model, {cmd:_grmargd} computes the
+predicted marginal effects at specific values of the independent variables, 
+or differences in marginal effects at two different x vectors. confidence 
+intervals are available using the {help delta} method with closed form 
+analytic solutions. This low utility program also provides retued matrices (see below).
+
+{title:Options}
+
+{p 4 8 2}
+{cmd:save}  saves current values of independent variables and predictions (marginal effects)
+for computing changes using the diff option.
+
+{p 4 8 2}
+{cmd:diff}  computes difference between current predictions (marginal effects) and those
+that were saved.
+
+{p 4 8 2}
+{cmd:level()} sets the {help level} of the confidence interval for predicted
+values or marginal effects for the commands for which these are provided. The
+default is 95.
+
+{p 4 8 2}
+{cmd:x()} sets the values of independent variables for calculating
+predicted values.  The list must alternate variable names and values.
+The values may be either numeric values or can be mean, median, min,
+max, previous, upper, or lower.  The latter cannot be used if rest()
+specifies a group summary statistic (e.g., grmean).
+
+{p 4 8 2}
+{cmd:rest()} sets the independent variables not specified in x()
+to their {cmd:mean} (default), {cmd:minimum}, {cmd:maximum}, {cmd:median}
+when calculating predicted values. {cmd:grmean} sets these independent
+variables to the mean conditional on the variables and values specified
+in x(); {cmd:grmedian},{cmd:grmax}, and {cmd:grmin} can also be used.
+
+{p 4 8 2}
+{cmd:nobase} suppresses inclusion of the base values of x in the output.
+
+{p 4 8 2}
+{cmd:all} specifies that any calculations of means, medians, etc.,
+should use the entire sample instead of the sample used to estimate
+the model.
+
+{p 4 8 2}
+{cmd:dydxmat(}{it:matrix_kxk}{cmd:)} supplies a matrix by users of dy/dx or 
+dxb/dx, where there is polynomial or interaction terms.
+
+{title:Returned Matrices}
+
+{p 4 8 2}
+r(marg):    saves marginal effects.
+
+{p 4 8 2}
+r(margci):  saves confidence intervals for marginal effects
+
+{p 4 8 2}
+r(margvar): saves variance-covariance matrix for marginal effects
+
+{p 4 8 2}
+r(margse):  saves standard errors for marginal effects
+
+{p 4 8 2}
+r(dmarg):   saves differences in marginal effects when {cmd:diff} option is used
+
+{p 4 8 2}
+r(dmargci): saves confidence intervals for differences in marginal effects when {cmd:diff} option is used.
+
+
+{title:Examples}
+
+{p 4 4 2}
+To compute the predicted marginal effects and confidence intervals using delta method
+for a logit in which all independent variables are held at the mean.
+
+{p 4 8 2}{cmd:.logit vote black educ income}
+
+{p 4 8 2}{cmd:._grmargd, x(black=1 educ=16) save}
+
+{p 4 8 2}{cmd:._grmargd, x(black=0 educ=16) diff}
+
+{p 4 4 2}
+What if there is interaction terms or polynomial terms? Here is an example.
+
+{p 4 8 2}{cmd:.gen age2=age*age}
+
+{p 4 8 2}{cmd:.logit lfp age age2 k5 inc }
+
+{p 4 8 2}{cmd:._grmargd, x(age=20 age2=400) dydxmat(1, 20, 0, 0, 0 \ 0, 1, 0, 0, 0 \ 0, 0, 1, 0, 0 \ 0, 0, 0, 1, 0 \ 0, 0, 0, 0, 1)}
+
+ :::
+
+{hline}
+
+{p 2 4 2}Authors: Jun Xu{p_end}
+

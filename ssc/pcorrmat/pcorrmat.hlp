@@ -1,0 +1,95 @@
+{smcl}
+{* 14dec2006}
+{* Adapted from Stata's pcorr version 2.2.10 29 September 2004 by Maarten L. Buis}{...}
+help for {hi:pcorrmat}
+{hline}
+
+{title:Title}
+
+{p2colset 5 18 20 2}{...}
+{p2col :{hi: pcorrmat} {hline 2}}Matrix of partial correlation 
+coefficients controlled for a fixed set of covariates{p_end}
+{p2colreset}{...}
+
+{title:Syntax}
+
+{p 8 15 2}
+{cmd:pcorrmat} {it:{help varlist:varlist1}} {ifin} {weight} {cmd:,} 
+{cmd:part(}{it:{help varlist:varlist2}}{cmd:)} [{cmd:sig}]
+
+{phang}
+{it:varlist1} must contain at least 2 variables.{p_end}
+{phang}
+{it:varlist1} and {it:varlist2} may contain time-series operators; see 
+{help tsvarlist}.{p_end}
+{phang}
+{opt by} may be used with {cmd:pcorrmat}; see {helpb by}.{p_end}
+{phang}
+{opt aweight}s and {opt fweight}s are allowed; see {help weight}.
+
+{title:Description}
+
+{pstd}
+{cmd:pcorrmat} displays a matrix of partial correlation coefficients of 
+{it:{help varlist:varlist1}} with each other, while holding the
+variable(s) in {it:{help varlist:varlist2}} constant. Only observations
+with non-missing values on {it:all} variables in 
+{it:{help varlist:varlist1}} and {it:{help varlist:varlist2}} are used.
+So each partial correlation in the matrix refers to the same sample.
+
+
+{title:Options}
+
+{phang}
+{opth part(varlist2)} Specifies the variable or variables which will be 
+held constant. 
+
+{phang}
+{opt sig} Specifies that p-values are also displayed.
+
+
+{title:Saved results}
+
+{dlgtab:always returned}
+
+{phang}
+{cmd: r(pcorr)} Matrix of partial correlations. 
+
+{phang}
+{cmd: r(N)} Number of observations with non-missing values on all variables 
+in {it:{help varlist:varlist1}} and {it:{help varlist:varlist2}}. 
+
+{phang}
+{cmd: r(df)} Number of degrees of freedom. 
+
+{dlgtab:if sig specified}
+
+{phang}
+{cmd: r(t)} Matrix of t statistics. 
+
+
+{title:Example}
+
+{phang}{cmd:. pcorrmat price mpg weight, part(foreign)}
+
+{phang}{cmd:. pcorrmat price mpg weight, part(foreign) sig}
+
+
+{title:Author}
+
+{p 4 4}
+Maarten L. Buis{break}
+Vrije Universiteit Amsterdam{break}
+Department of Social Research Methodology{break}
+m.buis@fsw.vu.nl 
+{p_end}
+
+
+{title:Also see}
+
+{psee}
+Manual:  {hi:[R] pcorr}
+
+{psee}
+Online:  {helpb correlate}, {helpb spearman}, {helpb pcorr2} (if installed), {helpb partcorr} (if installed)
+{p_end}

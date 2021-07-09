@@ -1,0 +1,89 @@
+.-
+help for ^quantil2^                                [STB-51: gr42; STB-61: gr42.1]
+.-                                                            revised 21 Feb 2002
+
+Quantile plot
+-------------
+
+    ^quantil2^ varname [^if^ exp] [^in^ range]
+       [^, r^everse ^rank^s graph_options ^a(^#^) by(^byvar^) miss^ing ]
+
+    ^quantil2^ varlist [^if^ exp] [^in^ range] 
+       [^, r^everse ^rank^s graph_options ^a(^#^)^ ]
+
+
+Description
+-----------
+
+^quantil2^ produces a plot of the ordered values of varlist against the
+so-called plotting positions, which are essentially quantiles of a
+uniform distribution on [0,1] for the same number of values, or 
+optionally the so-called unique ranks. 
+
+For n values of a variable x ordered so that
+
+    x[1] <= x[2] <= ... <= x[n-1] <= x[n]
+
+the plotting positions are (i - a) / (n - 2a + 1) for i = 1, ..., n.
+The unique ranks run 1 to n, tied values being allocated different ranks
+so that each integer is assigned to a value. 
+
+For more than one variable in varlist, only observations with all values
+of varlist present are shown.
+
+
+Options
+-------
+
+^reverse^ reverses the sort order, so that values decrease from top left. 
+    Ordered values are plotted against 1 - plotting position or 
+    _N - rank + 1. 
+
+^ranks^ specifies the use of ranks rather than plotting positions.     
+
+graph_options are options allowed with ^graph, twoway^.
+
+    Note that with ^by( )^ each function is treated graphically as if it
+    were a separate variable.
+
+^a(^#^)^ specifies a in the formula for plotting position. The default
+    is a = 0.5, giving (i - 0.5) / n. Other choices include a = 0,
+    giving i / (n + 1), and a = 1/3, giving (i - 1/3) / (n + 1/3).
+
+^by(^byvar^)^ specifies that calculations are to be carried out
+    separately for each class defined by a single variable ^byvar^. Any 
+    graph will, however, show the functions for all classes. ^by(^ ^)^ is 
+    only allowed with a single varname.
+
+^missing^, used only with ^by( )^, permits the use of non-missing values
+    of varname corresponding to missing values for the variable named by
+    ^by( )^. The default is to ignore such values.
+
+
+Remarks
+-------
+
+^quantil2^ uses ^egen ... = pp(...)^  to calculate plotting positions.
+^_gpp.ado^ should be installed in your personal ado directory or folder.
+
+
+Examples
+--------
+
+ . ^quantil2 mpg^
+ . ^quantil2 mpg, by(foreign)^
+ . ^quantil2 mpg trunk hdroom, rescale^
+
+
+Author
+------
+
+         Nicholas J. Cox, University of Durham, U.K.
+         n.j.cox@@durham.ac.uk
+
+
+Also see
+--------
+
+On-line: help for @graph@, @quantile@, @distplot@ (if installed), @egen@
+ Manual: [R] graph

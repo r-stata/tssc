@@ -1,0 +1,140 @@
+{smcl}
+{* 4aug2005}{...}
+{hline}
+help for {hi:mydays}
+{hline}
+
+{title:List of specified days, say for axis labels or ticks}
+
+{p 8 17 2}
+{cmd:mydays}
+{ifin}
+{cmd:,}
+{cmdab:l:ocal(}{it:macname}{cmd:)}
+[
+{cmdab:d:ays(}{it:numlist}{cmd:)}
+{cmd:last}
+{cmdab:m:onths(}{it:numlist}{cmd:)} 
+{cmdab:f:ormat(}{it:date_format}{cmd:)} 
+]
+
+
+{title:Description}
+
+{p 4 4 2}
+{cmd:mydays} displays a formatted list of specified days that lie within the
+range of a {cmd:tsset} daily date variable describing a time series and puts
+the numeric version of that list in a specified local macro. The result may be
+useful for specifying axis label or tick positions on graphs of time series. 
+
+
+{title:Remarks} 
+
+{p 4 4 2}
+To use {cmd:mydays}, you must have a time series dataset defined by a daily
+date variable. If it has not been done previously, you must {help tsset}. For
+example: 
+
+{p 4 8 2}
+{cmd:. sysuse sp500, clear}{p_end}
+{p 4 8 2}{cmd:. tsset date} 
+
+{p 4 4 2} 
+If you ask for a time series graph, Stata by default uses its best guess at
+some "nice" dates as labelled dates on the time axis, in this case 1 January
+2001, 1 April 2001, 1 July 2001, 1 October 2001, 1 January 2002.  
+
+{p 4 8 2}
+{cmd:. tsline high low} 
+
+{p 4 4 2}
+Now suppose you do not like that default. In principle you just need to spell
+out which days you want, but that can be tedious. Differing month lengths and
+the existence of leap years mean that what you want is unlikely to be a
+regularly spaced series of days. {cmd:mydays} offers an alternative. Unless it
+is obvious otherwise, it takes the {cmd:tsset} time variable to be a daily
+date. Suppose you want the last days of each quarter: 
+
+{p 4 8 2}
+{cmd:. mydays, last months(3(3)12) local(last)}{p_end}
+{p 4 8 2}{cmd:. tsline high low, xla(`last', format(%dn_d))} 
+
+{p 4 4 2}
+The process thus entails two steps: define the days you want with {cmd:mydays},
+and then feed the name of the macro containing them to the graph command, here
+{cmd:tsline}. In this case, {cmd:mydays} does not show 31 December 2000, as it
+is not within the range of the data, but that could be added on the fly: 
+
+{p 4 8 2}
+{cmd:. tsline high low, xla(`=mdy(12,31,2000)' `last', format(%dn_d))} 
+
+{p 4 4 2}
+For days other than the last of each month, you need to specify an argument for
+{cmd:days()}. 
+
+
+{title:Options}
+
+{p 4 8 2}
+{cmd:local(}{it:macname}{cmd:)} inserts the numeric list of daily 
+dates in local macro {it:macname} within the calling program's space.  
+Hence that macro will be accessible after {cmd:mydays}, say for 
+{cmd:graph} or other graphics commands. This option is required. 
+
+{p 4 8 2}
+{cmd:days()} specifies the days of each month you want to 
+include. The argument must be a {help numlist} of one or more integers 
+between 1 and 31. Impossible dates implied by this 
+and your choice of {cmd:months()} (e.g. 31 February) will be ignored. 
+
+{p 4 8 2}
+{cmd:last} specifies that the last day of each month specified 
+should be included in the macro. Leap year corrections are 
+automatic. (Note to programmers: calculating in terms of 
+{cmd:mdy(}#{cmd:,1,}#{cmd:) - 1} avoids ringing the changes on 
+28, 29, 30 and 31 days 
+in each month and on ordinary and leap years.) 
+
+{p 4 8 2}
+At least one of {cmd:days()} and {cmd:last} must be specified. 
+
+{p 4 8 2}
+{cmd:months()} specifies the months you want to 
+include. The argument must be a {help numlist} of one or more integers 
+between 1 and 12. The default is all months, i.e. {cmd:1/12}.  
+
+{p 4 8 2}
+{cmd:format()} specifies a format controlling the display of the list.
+By default the format of the {cmd:tsset} time variable will be used. 
+This option has no effect on the contents of the macro and is intended only 
+to help in checking that the list contains what is desired. 
+
+
+{title:Examples}
+
+{p 4 8 2}{cmd:. sysuse sp500, clear}{p_end}
+{p 4 8 2}{cmd:. tsset date}{p_end}
+{p 4 8 2}{cmd:. mydays, day(1) local(ticks)}{p_end}
+{p 4 8 2}{cmd:. mydays, day(15) local(labels)}{p_end}
+{p 4 8 2}{cmd:. tsline high low, xla(`labels', labsize(*0.9) notick format(%dm)) xtic(`=mdy(1,1,2001)' `ticks' `=mdy(1,1,2002)')}
+
+
+{title:Authors}
+
+{p 4 4 2}Nicholas J. Cox, Durham University{break}
+         n.j.cox@durham.ac.uk
+
+{p 4 4 2}Scott Merryman, Risk Management Agency/USDA{break}
+         smerryman@kc.rr.com
+
+
+{title:Acknowledgements} 
+
+{p 4 4 2}This program grew out of a question from Eric Wruck. 
+	
+
+{title:Also see}
+
+{p 4 13 2}
+Online:  help for {help axis label options}
+{p_end}

@@ -1,0 +1,90 @@
+{smcl}
+{* 20 Feb 2009}{...}
+{hline}
+{cmd:help cfvars}
+{hline}
+
+{title:Compare variable name lists in two data sets}
+
+
+{title:Syntax}
+
+{p 8 16 2}
+{cmd:cfvars} 
+{it:filename1} 
+[{it:filename2}] 
+
+
+{title:Description}
+
+{p 4 4 2}
+{cmd:cfvars} compares the lists of variable names in Stata data file
+{it:filename1} and 
+
+{p 8 8 2}either Stata data file {it:filename2}, if specified, 
+
+{p 8 8 2}or the data currently in memory, otherwise. 
+
+{p 4 4 2}
+{cmd:cfvars} prints lists of variable names in both datasets (if any)
+and in each dataset but not the other (again, if any in either case).  
+
+
+{title:Remarks} 
+
+{p 4 4 2}
+Note that filenames must be those of Stata .dta files and must be
+enclosed in double quotes whenever they include spaces.  The .dta
+extension is not required and will be added if absent. 
+
+{p 4 4 2}
+Note also that there is absolutely no checking of variable values. 
+That is the job of {help cf}. 
+
+
+{title:Examples}
+
+{p 4 8 2}{cmd:. sysuse auto}{p_end}
+{p 4 8 2}{cmd:. drop mpg}{p_end}
+{p 4 8 2}{cmd:. cfvars auto.dta}
+
+{p 4 8 2}{cmd:. cfvars frog.dta toad.dta}{p_end}
+{p 4 8 2}{cmd:. cfvars frog toad} 
+
+{p 4 8 2}{cmd:. cfvars "c:\somewhere\older frog.dta" frog.dta} 
+
+
+{title:Saved results} 
+
+{p 4 4 2}{cmd:r(both)}
+{space 5}list of variable names in both{p_end}
+{p 4 4 2}{cmd:r(oneonly)}
+{space 2}list of variable names only in first-named file{p_end}
+{p 4 4 2}{cmd:r(twoonly)} 
+{space 2}list of variable names only in second-named file or data in
+memory{p_end}
+{p 4 4 2}r(same)
+{space 5}1 if datasets have same variable names, 0 otherwise 
+
+{p 4 4 2}Note that {cmd:r(same)} is always returned. The other results are 
+returned only if not empty. Even if not returned, a subsequent test such as 
+{cmd:"`r(both)'" == ""} will return 1 (true) as usual. 
+
+
+{title:Author} 
+
+{p 4 4 2}Nicholas J. Cox, Durham University, UK{break} 
+n.j.cox@durham.ac.uk
+
+
+{title:Acknowledgments} 
+
+{p 4 4 2}This problem was suggested on Statalist by David Kantor on 
+19 February 2009. Several people contributed ideas to the resulting 
+thread. 
+
+
+{title:Also see}
+
+{p 4 13 2}help for {help cf}, {help describe}, {help ds}, {help unab}   
+

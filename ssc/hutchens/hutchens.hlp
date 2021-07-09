@@ -1,0 +1,183 @@
+{smcl}
+{* 17aug2005}{...}
+{hline}
+help for {hi:hutchens}
+{hline}
+
+{title:Hutchens `square root' segregation index, with decompositions by subgroup}
+
+{p 8 15 2}
+{cmd:hutchens} {it:unitvar} {it:segvar} [{it:weight}] [{cmd:if} {it:exp}]
+ [{cmd:in} {it:range}] [{cmd:,} {cmdab:by:group:(}{it:groupvar}{cmd:)}
+ {cmdab:m:issing} {cmdab:f:ormat:(%}{it:fmt}{cmd:)}   ]
+
+{p 4 4 2}
+{cmd:fweight}s and {cmd:aweight}s are allowed; see help {help weights}.
+
+{title:Description}
+
+{p 4 4 2}{cmd:hutchens} computes the `square root' segregation index 
+proposed by Hutchens (2004) from individual-level data. Hutchens shows 
+that this index, call it {it:S}, satisfies seven desirable properties 
+for a good numerical measure of segregation. In particular, {it:S} is 
+additively decomposable by population subgroup: total segregation may be 
+expressed as the sum of within-group segregation (a weighted sum of {it:S} 
+across subgroups) plus between-group segregation. {it:S} lies on the unit
+interval, with zero representing the complete absence of segregation, and
+one representing complete segregation. If two distributions are unambiguously
+ordered according to a pair of (non-intersecting) segregation curves, then
+{it:S} will also order the distributions in the same way.
+
+{p 4 4 2}{it:unitvar} is the categorical variable summarising social units 
+and {it:segvar} is the categorical variable defining the social groups
+who are segregated. For example, in a study of occupational sex segregation, 
+{it:unitvar} would represent occupations and {it:segvar} would represent sex. 
+In a study of the educational segregation by family background, {it:unitvar} 
+would represent schools (say) and {it:segvar} would be a measure of family
+background. Note that {it:segvar} must be a binary (0/1) variable. 
+For decompositions of {it:S} by population subgroup, {it:groupvar} is the 
+categorical variable defining the subgroups.
+
+{p 4 4 2}{it:S} is the sum, over all social units, of each unit's shortfall from
+distributional evenness. For each value of {it:unitvar}, this shortfall is the
+difference between the geometric mean of the shares of individuals with 
+different backgrounds characterized by {it:segvar} were there to be no
+segregation, and the geometric mean of the actual shares. See Jenkins et al. (2006).
+
+
+{title:Options}
+
+{p 4 8 2}{cmd:bygroup(}{it:groupvar}{cmd:)} specifies the decomposition by
+population subgroups defined by {it:groupvar}. If the {cmd:bygroup} option is 
+not specified, calculations are based on the subset of observations with 
+valid values on {it: unitvar} and {it: segvar}.
+
+{p 4 8 2}{cmd:missing} requests that missing values on {it:groupvar}
+be treated like other values. (Cases with missing values form a separate
+subgroup when decompositions are done.) {cmd:missing} may only specified if
+the {cmd:bygroup} option is also specified. If the {cmd:bygroup} option is 
+specified and the {cmd:missing} option is not specified, then all 
+calculations (including aggregate statistics) are based on the subset 
+of observations with valid values on {it: unitvar}, {it: segvar}, 
+and {it: groupvar}.
+
+{p 4 8 2}{cmd:format(%}{it:fmt}{cmd:)} specifies the format to be used to
+display the results. The default is {cmd:format(%10.0g)}.
+
+
+{title:Examples}
+
+{p 4 8 2} Occupational sex segregation:
+
+{p 8 12 2}{inp:. hutchens isco88 sex}
+
+{p 4 8 2} Sex segregation in schools, with a decomposition by school type (e.g. public/private):
+
+{p 8 12 2}{inp:. hutchens schoolid sex, by(stype)}
+
+{p 4 8 2} Sex segregation in schools, with a decomposition by school type and region:
+
+{p 8 12 2}{inp:. egen stypeXregion = group(stype region)}
+
+{p 8 12 2}{inp:. hutchens schoolid sex, by(stypeXregion)}
+
+
+
+{title:Saved Results}
+
+{p 4 17 2}{cmd:r(S)}{space 7}value of {it:S} for total estimation sample
+
+{p 4 17 2}{cmd:r(Ncat)}{space 4}number of distinct categories in {it:unitvar}
+
+{p 4 17 2}{cmd:r(Nobs)}{space 4}total number of raw (unweighted) observations
+
+{p 4 17 2}{cmd:r(pr_1)}{space 4}fraction of sample with {it:segvar} = 1. 
+
+{p 4 4 2} If the {cmd:bygroup} option is specified:
+
+{p 4 17 2}{cmd:r(SW)}{space 6}within-group segregation value
+
+{p 4 17 2}{cmd:r(SWpc)}{space 4}within-group segregation value, expressed as percentage of {it:S}
+
+{p 4 17 2}{cmd:r(SB)}{space 6}between-group segregation value
+
+{p 4 17 2}{cmd:r(SBpc)}{space 4}between-group segregation value, expressed as percentage of {it:S}
+
+
+{title:Methods and Formulae}
+
+{p 4 4 2}
+Let {it:N}({it:A_j}) be the number from social group {it:A} in unit {it:j} (e.g. the number of men who are bankers)
+and {it:N}({it:A_j}) be the number from social group {it:B} in unit {it:j} (e.g. the number of women who are bankers). 
+The square root segregation index {it:S} is defined as
+
+{p 8 12 2}{it:S} = 1 {c -} SUM_{it:j} sqrt[ {it:N}({it:A_j})/{it:N}({it:A})} * {it:N}({it:B_j})/{it:N}({it:B}) ] {space 4} {it:j} = 1,...,{it:J}
+
+{p 4 4 2}
+or, equivalently, 
+
+{p 8 12 2}{it:S} = SUM_{it:j} {it:C_j}
+
+{p 4 4 2} where the `contribution' of each obs 
+{it:C_j} = {it:N}({it:B_j})/{it:N}({it:B}) {c -} sqrt[ {it:N}({it:A_j})/{it:N}({it:A}) * {it:N}({it:B_j})/{it:N}({it:B}) ], 
+and {it:N}({it:A}) and {it:N}({it:B}) are the total number of obs in groups {it:A} and {it:B}.
+The {it:C_j} term for a given social unit is the shortfall from distributional evenness for that unit 
+(see the earlier discussion).
+
+{p 4 4 2}
+For decompositions by population subgroup, suppose that the sample can be exhaustively
+partitioned into {it:G} non-overlapping subgroups. Then,
+
+{p 8 12 2}{it:S} = SUM_{it:g} {it:C_g} {space 4} {it:g} = 1,...,{it:G}
+
+{p 4 4 2}where {it:C_g} is the `sectoral contribution' of group {it:g}, i.e. {it:C_j}
+summed over every obs within group {it:g}. 
+
+{p 4 4 2}For the additive decomposition of {it:S} into within- and between-group segregation components, 
+Hutchens (2004) shows that:
+
+{p 8 12 2}{it:S} = {it:SW} + {it:SB} = [ SUM_{it:g w_g*S_g }] + {it:SB}
+
+{p 4 4 2}where {it:SW} is total within-group segregation, {it:S_g} is the value of {it:S} for
+subgroup {it:g}, and `subgroup weight', {it:w_g}, is defined as:
+
+{p 8 12 2}{it:w_g} = sqrt[ {it:N}({it:A_g})/{it:N}({it:A}) * {it:N}({it:B_g})/{it:N}({it:B}) ] 
+
+{p 4 4 2}where {it:N}({it:A_g}) is the number from group {it:A} in group {it:g} and 
+{it:N}({it:B_g}) is the number from group {it:B} in group {it:g}. 
+
+{p 4 4 2}{it:SB} is total between-group segregation, defined as 
+
+{p 8 12 2}{it:SB} = 1 {c -} SUM_{it:g w_g}. 
+
+{p 4 4 2}Between-group segregation may be interpreted as the amount of segregation that there would be 
+if the observations in social groups (defined by {it:segvar}) were redistributed across social units 
+(defined by {it:unitvar}) such that the within-unit measure were zero (Hutchens, 2004).
+
+{title:Reference}
+
+{p 4 8 2}Hutchens, R. 2004. One measure of segregation. {it:International Economic Review} 45(2): 555{c -}578.
+
+{p 4 8 2}Jenkins, S.P., Micklewright, J. and Schnepf, S.V. 2006. Social segregation in secondary schools:
+how does England compare with other countries? Working Paper 2006-02,
+Institute for Social and Economic Research, University of Essex.
+{browse "http://www.iser.essex.ac.uk/pubs/workpaps/pdf/2006-02.pdf"}
+
+{title:Author}
+
+{p 4 4 2}
+Stephen P. Jenkins, Institute for Social and Economic Research, University of Essex. Email: stephenj@essex.ac.uk
+
+{title:Acknowledgements}
+
+{p 4 4 2}Much of the code for {cmd:hutchens} is based on {cmd:duncan2} written by Ben Jann (ETH Zurich). 
+{cmd:hutchens} was developed as part of a project on `Social Segregation in UK Schools:
+Benchmarking with International Comparisons', undertaken jointly with John Micklewright and Syke Schnepf 
+(University of Southampton), and supported by grant RES-000-22-0995 from the UK Economic 
+and Social Research Council. Jenkins also acknowledges core funding support 
+for ISER from the ESRC and the University of Essex.
+
+{title:Also see}
+
+{p 4 13 2}
+{cmd:duncan}, {cmd:duncan2}, {cmd:seg} if installed.

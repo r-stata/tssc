@@ -1,0 +1,86 @@
+{smcl}
+{* version 1.0.0 22aug2012}{...}
+{cmd:help lab2varn}
+{hline}
+
+{title:Title}
+
+{p 5}
+{cmd:lab2varn} {hline 2} Rename variables to match variable labels
+
+
+{title:Syntax}
+
+{p 8}
+{cmd:lab2varn} {varlist} 
+[{cmd:,} {opt d:ryrun} {opt t:runcate(#)}]
+
+
+{title:Description}
+
+{pstd}
+{cmd:lab2varn} changes names of variables to respective variable 
+labels. In variable labels, (consecutive) invalid characters are 
+changed to one underscore ({hi:_}). Trailing blanks are stripped, 
+while leading blanks are changed to underscore.
+
+
+{title:Options}
+
+{phang}
+{opt dryrun} does not rename variables, but produces a report.
+
+{phang}
+{opt truncate(#)} truncates variable labels after {it:#} characters. 
+Default {it:#} is 32.
+
+
+{title:Remarks}
+
+{pstd}
+The program is best used in combination with 
+{stata findit labvarch:labvarch} (Nick Cox).
+
+
+{title:Examples}
+
+{phang2}{cmd:. sysuse auto}{p_end}
+{phang2}{cmd:. lab2varn foreign}{p_end}
+
+
+{title:Saved results}
+
+{pstd}
+{cmd:lab2varn} saves the following in {cmd:r()}:
+
+{pstd}
+Macros{p_end}
+{synoptset 15 tabbed}{...}
+{synopt:{cmd:r(oldnames)}}old variable names{p_end}
+{synopt:{cmd:r(newnames)}}new variable names{p_end}
+
+
+{title:Acknowledgments}
+
+{pstd}
+A question from Mark Kaulisch inspired this ado.
+
+{pstd}
+Part of the code is borrowed from {stata findit dummieslab:dummieslab} 
+by Nick Cox and Philippe van Kerm.
+
+
+{title:Author}
+
+{pstd}Daniel Klein, University of Kassel, klein.daniel.81@gmail.com
+
+
+{title:Also see}
+
+{psee}
+Online: {help label}, {help rename}
+{p_end}
+
+{psee}
+if installed: {help labvarch}, {help dummieslab}, {help labutil2}
+{p_end}

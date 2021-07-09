@@ -1,0 +1,426 @@
+/*
+  psmatch2
+
+  VERSION 1.0.3  12dec2011
+
+	* fix submit
+	 
+  VERSION 1.0.1  19nov2003
+
+  keyword:  rclass
+
+*/
+
+VERSION 8.0
+
+POSITION . . 490 370
+
+DIALOG main, label("psmatch2: Propensity Score and Mahalanobis Matching")
+BEGIN
+	/* mahalanobis settings */
+	GROUPBOX mahalbox           10   60  230  100, l("Mahalanobis Settings")
+		TEXT mvarsL         20  +25   30    ., l("Vars:") left
+		VARLIST mvars       60    @  170    ., l("Select Control Variables") option(mahal)
+		CHECKBOX matrix     20  +25  100    ., l("Matrix: ") onclickon(main.wmat.enable) onclickoff(main.wmat.disable)
+		EDIT wmat          120    @  110    ., l("Distance matrix")
+
+	/* propensity score settings */
+	GROUPBOX pscorebox          10   60  230  100, l("Propensity Score Settings")
+		RADIO prvps         20  +25  100    ., l("Provide score:") first  onclickon(script est_disable) onclickoff(script est_enable)
+		VARNAME pscore     140    @   80    ., l("Pscore") option(pscore)
+		RADIO estps         20  +25  180    ., l("Estimate score") last default(1)  onclickon(script est_enable) onclickoff(script est_disable)
+		CHECKBOX logodds    20  +25  180    ., l("Match on log-odds ratio")
+
+	/* estimate settings */
+	GROUPBOX estpsbox           10  170  470   80, l("Propensity Score Estimation Settings")
+		TEXT cvarsL         20  +25  120    ., l("Variable list:") left
+		VARLIST cvars      100    @  360    ., l("Select Control Variables")
+		CHECKBOX logit      20  +25  120    ., l("Logit estimation")
+		CHECKBOX index     150    @  180    ., l("Match on index x'b")
+
+	/* neighbor settings */
+	GROUPBOX neighborbox       250   60  230  100, l("Neighbor Settings")
+		TEXT neighborL     +10  +25   70    ., l("# neigbors") left
+		SPINNER neighbor   +100   @   70    ., l("") min(1) max(10000) option(neighbor)
+		TEXT aiL           260  +25   70    ., l("# matches SE") left
+		SPINNER ai         +100   @   70    ., l("") min(0) max(10000) option(ai)
+		CHECKBOX descend   260  +25  100    ., l("Descending")
+		CHECKBOX noreplace +100   @  100    ., l("No replacement")
+
+	/* kernel settings */
+	GROUPBOX kernelbox         250   60  230  100, l("Kernel Settings")
+		TEXT kernelL       +10  +25   70    ., l("Kernel type:") left
+		COMBOBOX kernel    +70    @  120    ., dropdownl label("Kernel") content("kernel") val("kval") option(kerneltype)
+		TEXT bwidthL       260  +25   70    ., l("Bandwidth:") left
+		EDIT bwidth        +70    @  100    ., l("Bandwidth") numonly option(bwidth)
+
+	/* llr settings */
+	GROUPBOX llrbox            250   60  230  100, l("Local linear regression Settings")
+
+	/* support & trim settings */
+	GROUPBOX trimbox           250  260  230  100, l("Support & Trim")
+		CHECKBOX support   +10  +25  150    ., l("Common support at tails")
+		CHECKBOX trimL       @  +25  100    ., l("Trim bottom") onclickon(main.trim.enable) onclickoff(main.trim.disable)
+		SPINNER trim       350    @   50    ., l("Trim") min(0) max(100) option(trim)
+		TEXT trimL2        400    @   70    ., l("%") left
+		TEXT caliperL      260  +25   70    ., l("Caliper:") left
+		EDIT caliper       350    @   80    ., l("Bandwidth") numonly option(caliper)
+
+	/* outcome */
+	GROUPBOX outcomebox         10  260  230  100, l("Outcome")
+		TEXT treatmentL     20  +25  120    ., l("Treatment Indicator:")
+		VARNAME treatment  140    @   90    ., l("Select Treatment Indicator")
+		TEXT outcomeL       20  +25  110    ., l("Outcome variable:") left
+		VARLIST outcome    140    @   90    ., l("Outcome variable") option(outcome)
+		CHECKBOX ate        20  +25  180    ., l("Also estimate ATE")
+
+	/* basic method & metric settings */
+	TEXT metriclab              10   10  180    ., l("Matching metric:")
+	TEXT methodlab             250    @  180    ., l("Matching method:")
+	COMBOBOX metricCB           10  +20  230    ., dropdownl l("Metric") content("metric") val("metric_val") onselchangelist(metric_show)
+	COMBOBOX methodCB          250    @  230    ., dropdownl l("Method") content("method") val("method_val") onselchangelist(method_show)
+
+END
+
+
+OK 	    ok1, label("OK")
+CANCEL	can1, label("Cancel")
+SUBMIT	sub1, label("Submit")
+HELP	hlp1, label("Help") view("help psmatch2")
+
+PROGRAM command
+BEGIN
+	if !(main.treatment) {
+		stopbox stop "You must specify a treatment indicator!"
+	}
+	if (main.prvps & !main.pscore) {
+		stopbox stop "You must provide a matching score!"
+	}
+	if (!H(main.mahalbox) & main.matrix & !main.wmat) {
+		stopbox stop "You must provide the name of the weighting matrix!"
+	}
+	if (!H(main.mahalbox) & main.matrix & !main.mvars) {
+		stopbox stop "You must provide matching variable for the mahalanobis matching!"
+	}
+
+	put "psmatch2 "
+
+	put	main.treatment
+
+	if ((!H(main.pscorebox) & main.estps) | !H(main.mahalbox)) {
+		put " "
+		put main.cvars
+	}
+	
+	put ", "
+
+	optionarg main.outcome
+
+	if ((!H(main.pscorebox) & main.estps)) {
+		if (main.index) {
+			put "index "
+		}
+		if (main.logit) {
+			put "logit "
+		}
+	}
+
+	if (!H(main.pscorebox) & main.prvps) {
+		optionarg main.pscore
+	}
+
+	if (!H(main.pscorebox) & main.logodds) {
+		put "odds "
+	}
+
+	if !H(main.mahalbox) {
+		optionarg main.mvars
+	}
+
+	if !H(main.neighborbox) {
+		optionarg main.neighbor
+	}
+
+	if (!H(main.neighborbox) & main.ai) {
+		optionarg main.ai
+	}
+	
+	if !H(main.kernelbox) {
+		put "kernel "
+		optionarg main.kernel
+		optionarg main.bwidth
+	}
+
+	if !H(main.llrbox) {
+		put "llr "
+		optionarg main.kernel
+		optionarg main.bwidth
+	}
+
+	if (main.ate) {
+		put "ate "
+	}
+
+	if (main.descend) {
+		put "descending "
+	}
+
+	if (main.support) {
+		put "common "
+	}
+
+	if (main.noreplace) {
+		put "noreplace "
+	}
+
+	if (main.trimL) {
+		optionarg main.trim
+	}
+
+	if (main.caliper) {
+		optionarg main.caliper
+	}
+END
+
+PROGRAM prvpsIsChecked
+BEGIN
+	if (main.prvps) {
+		call script est_disable
+	}
+	else {
+		call script est_enable
+	}
+END
+
+SCRIPT trim_enable
+	BEGIN
+		gaction main.trimbox.enable
+		gaction main.trim.enable
+		gaction main.trimL.enable
+		gaction main.trimL2.enable
+		gaction main.support.enable
+		gaction main.caliper.enable
+		gaction main.caliperL.enable
+	END
+
+SCRIPT trim_disable
+	BEGIN
+		gaction main.trimbox.disable
+		gaction main.trim.disable
+		gaction main.trimL.disable
+		gaction main.trimL2.disable
+		gaction main.support.disable
+		gaction main.caliper.disable
+		gaction main.caliperL.disable
+	END
+
+SCRIPT est_disable
+	BEGIN
+		gaction main.pscore.enable
+		gaction main.estpsbox.disable
+		gaction main.cvarsL.disable
+		gaction main.cvars.disable
+		gaction main.logit.disable
+		gaction main.index.disable
+	END
+
+SCRIPT est_enable
+	BEGIN
+		gaction main.pscore.disable
+		gaction main.estpsbox.enable
+		gaction main.cvarsL.enable
+		gaction main.cvars.enable
+		gaction main.logit.enable
+		gaction main.index.enable
+	END
+
+SCRIPT est_disable2
+	BEGIN
+		script est_disable
+		script trim_disable
+	END
+
+SCRIPT est_enable2
+	BEGIN
+		script est_enable
+		script trim_enable
+	END
+
+SCRIPT ps_hide
+	BEGIN
+		script est_disable
+		gaction main.pscorebox.hide
+		gaction main.pscore.hide
+		gaction main.estps.hide
+		gaction main.prvps.hide
+		gaction main.logodds.hide
+	END
+
+SCRIPT ps_show
+	BEGIN
+		script est_enable
+		gaction main.pscorebox.show
+		gaction main.pscore.show
+		gaction main.estps.show
+		gaction main.prvps.show
+		gaction main.logodds.show
+	END
+
+SCRIPT neighbor_enable
+	BEGIN
+		gaction main.neighborbox.enable
+		gaction main.neighbor.enable
+		gaction main.neighborL.enable
+		gaction main.descend.enable
+		gaction main.noreplace.enable
+	END
+
+SCRIPT ms_hide
+	BEGIN
+		gaction main.mahalbox.hide
+		gaction main.mvarsL.hide
+		gaction main.mvars.hide
+		gaction main.matrix.hide
+		gaction main.wmat.hide
+		
+		script neighbor_enable
+	END
+
+SCRIPT ms_show
+	BEGIN
+		gaction main.mahalbox.show
+		gaction main.mvarsL.show
+		gaction main.mvars.show
+		gaction main.matrix.show
+		gaction main.wmat.show
+	END
+
+SCRIPT pscore_show
+	BEGIN
+		script ps_show
+		script ms_hide
+		script trim_enable
+		program prvpsIsChecked
+	END
+
+SCRIPT mahalanobis_show
+	BEGIN
+		script ps_hide
+		script ms_show
+		script trim_disable
+	END
+
+SCRIPT neighbor_show
+	BEGIN
+		gaction main.neighborbox.show
+		gaction main.neighbor.show
+		gaction main.neighborL.show
+		gaction main.descend.show
+		gaction main.noreplace.show
+
+		gaction main.llrbox.hide
+
+		gaction main.kernelbox.hide
+		gaction main.kernelL.hide
+		gaction main.kernel.hide
+		gaction main.bwidthL.hide
+		gaction main.bwidth.hide
+
+	END
+
+SCRIPT kernel_show
+	BEGIN
+		gaction main.neighborbox.hide
+		gaction main.neighbor.hide
+		gaction main.neighborL.hide
+		gaction main.descend.hide
+		gaction main.noreplace.hide
+
+		gaction main.llrbox.hide
+
+		gaction main.kernelbox.show
+		gaction main.kernelL.show
+		gaction main.kernel.show
+		gaction main.bwidthL.show
+		gaction main.bwidth.show
+		
+		gaction main.kernel.setvalue "epan"
+
+	END
+
+SCRIPT llr_show
+	BEGIN
+		gaction main.neighborbox.hide
+		gaction main.neighbor.hide
+		gaction main.neighborL.hide
+		gaction main.descend.hide
+		gaction main.noreplace.hide
+
+		gaction main.llrbox.show
+
+		gaction main.kernelbox.hide
+		gaction main.kernelL.show
+		gaction main.kernel.show
+		gaction main.bwidthL.show
+		gaction main.bwidth.show
+		
+		gaction main.kernel.setvalue "tricube"
+
+	END
+
+LIST kernel
+	BEGIN
+		Gaussian
+		Epanechnikov
+		biweight
+		Uniform
+		Tricube
+	END
+
+LIST kval
+	BEGIN
+		normal
+		epan
+		biweight
+		uniform
+		tricube
+	END
+
+LIST metric
+	BEGIN
+		Propensity Score
+		Mahalanobis
+	END
+
+LIST metric_val
+	BEGIN
+		pscore
+		mahalanobis
+	END
+
+LIST metric_show
+	BEGIN
+		script pscore_show
+		script mahalanobis_show
+	END
+
+LIST method
+	BEGIN
+		Nearest Neighbor
+		Kernel
+		Local Linear Regression
+	END
+
+LIST method_val
+	BEGIN
+		neighbor
+		kernel
+		llr
+	END
+
+LIST method_show
+	BEGIN
+		script neighbor_show
+		script kernel_show
+		script llr_show
+	END

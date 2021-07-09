@@ -1,0 +1,79 @@
+.-
+help for ^dashln^					 
+.-
+
+Add dashed lines to graphs
+--------------------------
+
+^dashln^ y0 x0 y1 x1, [, ^DA^sh(dashlength) ^SP^ace(spacelength) ^P^en(pen#) 
+                        ^B^egin ^M^ore ^DR^aw ^SAV^ing^(^fname^)^]
+
+
+Description
+-----------
+
+^dashln^ adds one or more specified dashed straight lines to a Stata 
+graph just drawn.  The lines extend from y0,x0 to y1,x1 where values 
+are given in the scale of the data. The line style can be adjusted 
+by specifying the length of the dashes and relative amount of space 
+between dashes as well as the pen #.   
+
+Options
+-------
+^dash^, ^space^, and ^pen^ values may be specified to adjust the line style.
+    The value for ^dash^ indicates the length of each dash in virtual pixels,
+    default=200. The ^space^ value indicates the amount of blank space 
+    between dashes, as a percent of dash size, default=150. The ^pen^ number 
+    indicates which graph pen to use, default=2. 
+
+^Begin^ should be specified for the first line if several lines are desired
+    on the graph. Global macros are used to store multiple line info and the
+    use of ^begin^ clears these macros and starts recording new line info.  
+
+^More^ should be specified after the first line (begin) and before the last 
+    line of a multi-line graph, informing ^dashln^ that the graph should not
+    yet be drawn. If you want to see the graph updated after each line is 
+    specified, then use ^draw^ instead of ^more^.
+
+^Draw^ should be specified with multi-line graphs when you want the graph 
+    drawn. You can specify ^draw^ multiple times and see how the graph 
+    progresses, it doesn't prevent further additions using ^more^ or ^draw^.
+
+^Saving(^filename^)^ saves the resulting graph in filename.gph. In multi-line
+    graphs, saving must be combined with ^draw^. The user is responsible for 
+    ensuring that the filename is valid and not already existing.
+
+
+Remarks
+-------
+
+The command must be issued after a graph command and is intended for use with
+scatterplots.  The user can attempt to draw lines on other types of plots 
+(e.g., bar graphs), but the results can be unpredictable due to Stata's 
+treatment x axis scaling and the results returned by the graph command.
+
+The line drawn by ^dashln^ will extend beyond the data region of the graph if 
+values outside the scales are specified. 
+
+Examples
+--------
+
+ 	. ^graph  length weight, yla xla^       
+	. ^dashln 155 2000 240 4900^              
+	. ^dashln 155 2000 240 4900, dash(1000) space(50)^
+	a multi-line graph
+	. ^dashln 155 2000 240 4900, begin^
+	. ^dashln 230 2000 160 4900, more^    
+	. ^dashln 175 2500 225 4100, dash(400) space(200) pen(9) draw saving(test1)^
+
+Author
+------
+        Michael Blasnik, Blasnik & Associates,	Boston, MA
+	mblasnik@@110.net
+
+
+Also see
+--------
+
+On-line:  ^help^ for @gph@ 
+

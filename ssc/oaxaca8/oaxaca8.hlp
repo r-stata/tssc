@@ -1,0 +1,500 @@
+{smcl}
+{* 05may2008}{...}
+{hline}
+help for {hi:oaxaca8}
+{hline}
+
+{hline}
+{p 0 0 2}
+A newer version of this software is available from the SSC Archive as
+    {bf:{net "describe http://fmwww.bc.edu/RePEc/bocode/o/oaxaca":oaxaca}}.
+{p_end}
+{hline}
+
+{title:Decomposition of outcome differentials}
+
+{p 8 14 2}{cmd:oaxaca8} {it:est1} {it:est2}  [{cmd:,}
+ {it:{help oaxaca8##com0:common_options}}
+ {it:{help oaxaca8##oax0:oaxaca8_options}} ]
+
+{p 8 14 2}{cmd:oaxaca2} {it:varlist} [{it:weight}]
+ [{cmd:if} {it:exp}] [{cmd:in} {it:range}] ,
+ {cmd:by(}{it:groupvar}{cmd:)}
+ [ {it:{help oaxaca8##com0:common_options}}
+   {it:{help oaxaca8##oax20:oaxaca2_options}}  ]
+
+{marker com0}
+    {it:{help oaxaca8##com:common_options}}{col 31}Description
+    {hline 70}
+    {cmdab:w:eight:(}{it:wgt} [{it:wgt ...}]{cmd:)}{col 31}{...}
+specify weights for the two-fold
+{col 35}decomposition; {it:wgt} is {it:#} or {cmdab:o:mega}
+    {cmdab:d:etail}[{cmd:(}{it:dlist}{cmd:)}]{col 31}{...}
+display detailed results for the regressors
+    {cmdab:a:djust}{cmd:(}{it:varlist}{cmd:)}{col 31}{...}
+adjustment for selection variables
+    {cmdab:fix:ed}[{cmd:(}{it:varlist}{cmd:)}]{col 31}{...}
+assume fixed regressors
+    {cmdab:l:evel:(}{it:#}{cmd:)}{col 31}{...}
+set the confidence level
+    {cmd:eform}{col 31}{...}
+display results in exponentiated form
+    {cmd:tf}{col 31}{...}
+display three-fold decomposition
+    {cmd:nose}{col 31}{...}
+suppress computation of standard errors
+    {cmdab:es:ave}{col 31}{...}
+save results in {cmd:e()}
+    {hline 70}
+    where {it:dlist} is{col 31}{...}
+{it:name} {cmd:=} {it:varlist} [{cmd:,} {it:name} {cmd:=} {it:varlist} {it:...}]
+
+{marker oax0}
+    {it:{help oaxaca8##oax:oaxaca8_options}}{col 31}Description
+    {hline 70}
+    {cmdab:r:eference:(}{it:ref} [{it:ref ...}]{cmd:)}{col 31}{...}
+specify reference estimates
+    {cmd:asis}{col 31}{...}
+do not change the order of the models
+    {hline 70}
+
+{marker oax20}
+    {it:{help oaxaca8##oax2:oaxaca2_options}}{col 31}Description
+    {hline 70}
+    {cmd:by(}{it:groupvar}{cmd:)}{col 31}{...}
+specifies the groups; {cmd:by()} is not optional
+    {cmdab:p:ooled}{col 31}{...}
+request decomposition based on pooled model
+    {cmdab:i:ncludeby}{col 31}{...}
+include {it:groupvar} in the pooled model
+    {cmdab:noi:sily}{col 31}{...}
+display model estimates
+    {cmd:cmd(}{it:cmd} [{it:cmd} ...]{cmd:)}{col 31}{...}
+set the estimation command, default: {cmd:regress}
+    {cmdab:cmdo:pts(}{it:opts} [{it:opts} ...]{cmd:)}{col 31}{...}
+options for model estimation
+    {cmdab:addv:ars(}{it:vars} [{it:vars} ...]{cmd:)}{col 31}{...}
+additional regressors for individual models
+    {hline 70}
+{p 4 4 2}
+{cmd:aweight}s, {cmd:fweight}s, {cmd:iweight}s, and {cmd:pweight}s are
+allowed with {cmd:oaxaca2}
+(depending on the used estimation command); see help {help weight}.
+
+
+
+{title:Description}
+
+{p 4 4 2} Given the results from two models previously estimated and stored
+by {bf:{help estimates store}}, {cmd:oaxaca8} computes the so called
+Blinder-Oaxaca decomposition of the mean outcome differential. An example
+is the decomposition of the gender wage gap into an "explained" portion due
+to differences in endowments and an "unexplained" portion due to
+differences in coefficients. {it:est1} refers to the name of the stored
+estimates for the first group (e.g. males), {it:est2} is the name of the
+stored estimates for the second group (e.g. females).
+
+{p 4 4 2} {cmd:oaxaca8} can display different variants of the decomposition
+and also provides standard errors. See the methods and
+formulas section for details.
+
+{p 4 4 2} {cmd:oaxaca2} is a wrapper for {cmd:oaxaca8}. It first
+estimates the group models and then performs the decomposition.
+{cmd:oaxaca2} is suitable for use with {bf:{help bootstrap}} (also
+see the {cmd:esave} option).
+
+{p 4 4 2} {cmd:oaxaca8} requires Stata 8.2 or higher. A Stata 7
+decomposition package is available from the SSC
+Archive as
+    {bf:{net "describe http://fmwww.bc.edu/RePEc/bocode/d/decompose":decompose}}.
+Also see
+    {bf:{net "describe http://fmwww.bc.edu/RePEc/bocode/d/decomp":decomp}}
+by Ian Watson. Packages to compute decompositions of changes in outcome
+differentials are
+    {bf:{net "describe http://fmwww.bc.edu/repec/bocode/s/smithwelch":smithwelch}}
+and {bf:{net "describe http://fmwww.bc.edu/repec/bocode/j/jmpierce":jmpierce}}.
+
+
+{title:Options}
+{marker com}
+{it:{dlgtab:common_options}}
+
+{p 4 8 2} {cmd:weight(}{it:wgt} [{it:wgt ...}]{cmd:)}, where {it:wgt} is
+either {it:#} or {cmd:omega}, specifies the weight
+given to the parameters of the high-outcome group
+for the two-fold decomposition. A separate
+decomposition is computed for each specified {it:wgt}. For example,
+{cmd:weight(0 1)} displays a decomposition with the low-outcome group coefficients
+as reference and a decomposition with the high group parameters as a
+reference. Specifying {cmd:weight(omega)} causes {cmd:oaxaca8} to compute the
+reference parameters from the data as explained in the methods and formulas
+section. The {cmd:weight(omega)} option makes sense only in the context of OLS
+regression. Furthermore, note that the interpretation of the detailed results
+for the "unexplained" part (see the {cmd:detail} option) is problematic
+with this decomposition.
+
+{p 4 8 2}{cmd:detail}[{cmd:(}{it:dlist}{cmd:)}] requests that the detailed
+decomposition results for the individual regressors be reported. Use
+{it:dlist} to subsume the results for specific groups of regressors
+(variables not appearing in {it:dlist} are listed individually). The
+usual shorthand conventions apply to the {it:varlist}s specified in
+{it:dlist} (see help {help varlist}). For example, specify
+{cmd:detail(exp=exp*)} if the models contain {cmd:exp} (experience) and
+{cmd:exp2} (experience squared).
+
+{p 8 8 2}A cautionary note: For the "unexplained" part of the differential,
+the subdivision into separate contributions is sensitive to locational
+transformations of the regressors (see, e.g., Oaxaca and Ransom 1999). The
+results are thus arbitrary unless the regressors have natural zero points.
+A related problem is that the results for categorical variables depend on
+the choice of the reference category. A solution to the reference category
+problem is provided by the
+    {bf:{net "describe http://fmwww.bc.edu/RePEc/bocode/d/devcon":devcon}}
+package from the SSC Archive.
+
+{p 4 8 2} {cmd:adjust(}{it:varlist}{cmd:)} may be used to adjust the outcome
+differential for the effects of certain variables (e.g. selection variables)
+before computing the decomposition.
+
+{p 4 8 2} {cmd:fixed}[{cmd:(}{it:varlist}{cmd:)}] indicates that certain
+regressors are fixed. The default is to treat all regressors as stochastic.
+If {cmd:fixed} is specified without arguments, all regressors are assumed
+to be fixed. Using this option has implications for the computation of the standard
+errors of the decomposition components.
+
+{p 4 8 2}{cmd:level(}{it:#}{cmd:)} specifies the confidence level, in
+percent terms, for the confidence intervals of the computed statistics;
+see help {help level}.
+
+{p 4 8 2}{cmd:eform} causes the results to be displayed in exponentiated
+form.
+
+{p 4 8 2}{cmd:tf} specifies that the three-fold decomposition be
+displayed in any case.
+
+{p 4 8 2} {cmd:nose} suppresses the calculation of standard errors.
+
+{p 4 8 2} {cmd:esave} specifies that the results be returnd in
+{cmd:e()}. This is useful, e.g., if you want to use {bf:{help bootstrap}}
+with {cmd:oaxaca8}. Note that the off-diagonal elements in {cmd:e(V)}
+will be set to zero since {cmd:oaxaca8} does not provide the
+covariances among the various decomposition components. Do not apply
+{bf:{help lincom}} or similar techniques to the returned results.
+Also do not use {bf:{help predict}}.{p_end}
+{marker oax}
+{it:{dlgtab:oaxaca8_options}}
+
+{p 4 8 2} {cmd:reference(}{it:ref1} [{it:ref2 ...}]{cmd:)} specifies
+reference estimates to be used with the two-fold decomposition. {it:ref1},
+{it:ref2}, etc. refer to the names of the stored models. A
+separate decomposition is computed for each model specified. Note that no
+standard errors will be computed for the "unexplained" part in these
+decompositions.
+
+{p 4 8 2} {cmd:asis} instructs {cmd:oaxaca8} not to change the order of the
+models. By default, {cmd:oaxaca8} rearranges the models so that the
+mean differential is positive.{p_end}
+{marker oax2}
+{it:{dlgtab:oaxaca2_options}}
+
+{p 4 8 2}{cmd:by(}{it:groupvar}{cmd:)} defines the groups between
+which the decomposition is to be performed. {it:groupvar} is to
+take on two unique values.
+
+{p 4 8 2}{cmd:pooled} displays a decomposition based on a pooled model
+over both groups.
+
+{p 4 8 2}{cmd:includeby} specifies that {it:groupvar} (see the
+{cmd:by()} option) be included as a control variable in the pooled
+model.
+
+{p 4 8 2}{cmd:noisily} causes the estimates of the individual models
+to be displayed.
+
+{p 4 8 2}{cmd:cmd(}{it:cmd} [{it:cmd} ...]{cmd:)} specifies the
+estimation commands for the models (see {help estcom}). The default
+command is {bf:{cmd:regress}}. For example, specify {cmd:cmd(ivreg)}
+to use {bf:{help ivreg}} instead. Specify more than one command, if
+the different commands be used. For example,
+{cmd:cmd(regress ivreg)} would use {cmd:regress} for the
+first group and {cmd:ivreg} for the second.
+
+{p 4 8 2}{cmd:cmdopts(}"{it:opts}" ["{it:opts}" ...]{cmd:)} may be
+used to specify sets of options for the model estimation commands.
+{it:opts} must be enclosed in quotes if it contains spaces. If only
+one set of options is specified, it is added to all models. For
+example, specify {cmd:cmdopts("robust nocons")} to add the options
+{cmd:robust} and {cmd:nocons} to all models. Alternatively,
+{cmd:cmdopts("robust nocons" "hc3")} would add {cmd:robust nocons}
+to the first model and {cmd:hc3} to the second. Finaly,
+{cmd:cmdopts("hc3" "")} would add {cmd:hc3} to the first model and
+nothing to the second.
+
+{p 4 8 2}{cmd:addvars(}"{it:vars}" ["{it:vars}" ...]{cmd:)} specifies
+additional variables to be added to individual models. For example,
+{cmd:addvars("" "lambda")} would add variable {cmd:lambda} to the
+second model.
+
+
+{title:Example}
+
+{p 4 4 2}Step 1: Estimate and store the models
+
+        {com}. regress lnwage educ exp exp2 if female==0
+        . estimates store male
+        . regress lnwage educ exp exp2 if female==1
+        . estimates store female{txt}
+
+{p 4 4 2}Step 2: Compute the decomposition
+
+{p 6 8 2}- three-fold decomposition (endowments, coefficients,
+interaction)
+
+        {com}. oaxaca8 male female{txt}
+
+{p 6 8 2}- various parametrizations of the two-fold decomposition
+(explained, unexplained)
+
+        {com}. oaxaca8 male female, weight(1 0.5 0 omega){txt}
+
+{p 4 4 2}Usage of {cmd:oaxaca2}: steps 1 and 2 in one command
+
+        {com}. oaxaca2 lnwage educ exp exp2, by(female){txt}
+
+{p 4 4 2}Bootstrapping (Stata 8)
+
+        {com}. bs "oaxaca2 lnwage educ exp exp2, by(female) esave nose" _b{txt}
+
+{p 4 4 2}Bootstrapping (Stata 9)
+
+        {com}. bootstrap _b: oaxaca2 lnwage educ exp exp2, by(female) esave nose{txt}
+
+{p 4 4 2}(Note that the {cmd:nose} option in the bootstrap examples is not
+essential. However, {cmd:bootstrap} executes faster if {cmd:nose}
+is specified.)
+
+
+{title:Saved Results}
+
+{p 4 4 2}{cmd:oaxaca8} saves in {cmd:r()}:
+
+{p 4 4 2}Scalars:
+
+{p 4 16 2}{cmd:r(pred1)}{space 4}mean linear prediction from first group{p_end}
+{p 4 16 2}{cmd:r(se_pred1)}{space 1}standard error of
+prediction from first group{p_end}
+{p 4 16 2}{cmd:r(pred2)}{space 4}mean linear prediction from second group{p_end}
+{p 4 16 2}{cmd:r(se_pred2)}{space 1}standard error of
+prediction from second group{p_end}
+{p 4 16 2}{cmd:r(diff)}{space 5}difference between mean predictions{p_end}
+{p 4 16 2}{cmd:r(se_diff)}{space 2}standard error of difference{p_end}
+
+{p 4 4 2}Matrices:
+
+{p 4 16 2}{cmd:r(D)}{space 8}results of the decompositions{p_end}
+{p 4 16 2}{cmd:r(VD)}{space 7}variances of the results in {cmd:r(D)}{p_end}
+{p 4 16 2}{cmd:r(B1)}{space 7}coefficients from the first model{p_end}
+{p 4 16 2}{cmd:r(VB1)}{space 6}variance-covariance matrix from the first model{p_end}
+{p 4 16 2}{cmd:r(B2)}{space 7}coefficients from the second model{p_end}
+{p 4 16 2}{cmd:r(VB2)}{space 6}variance-covariance matrix from the second model{p_end}
+{p 4 16 2}{cmd:r(X1)}{space 7}means of the regressors for the first group{p_end}
+{p 4 16 2}{cmd:r(VX1)}{space 6}variance-covariance matrix of the means of
+the regressors for the first group{p_end}
+{p 4 16 2}{cmd:r(X2)}{space 7}means of the regressors for the second group{p_end}
+{p 4 16 2}{cmd:r(VX2)}{space 6}variance-covariance matrix of the means of
+the regressors for the second group{p_end}
+
+
+{p 4 4 2}If {cmd:esave} is specified, {cmd:oaxaca8} additionally saves in {cmd:e()}:
+
+{p 4 4 2}Scalars:
+
+{p 4 16 2}{cmd:e(N)}{space 8}total number of case{p_end}
+{p 4 16 2}{cmd:e(N1)}{space 7}number of cases in first group{p_end}
+{p 4 16 2}{cmd:e(N2)}{space 7}number of cases in second group{p_end}
+{p 4 16 2}{cmd:e(pred1)}{space 4}mean linear prediction from first group{p_end}
+{p 4 16 2}{cmd:e(se_pred1)}{space 1}standard error of
+prediction from first group{p_end}
+{p 4 16 2}{cmd:e(pred2)}{space 4}mean linear prediction from second group{p_end}
+{p 4 16 2}{cmd:e(se_pred2)}{space 1}standard error of
+prediction from second group{p_end}
+{p 4 16 2}{cmd:e(diff)}{space 5}difference between mean predictions{p_end}
+{p 4 16 2}{cmd:e(se_diff)}{space 2}standard error of difference{p_end}
+
+{p 4 4 2}Macros:
+
+{p 4 16 2}{cmd:e(cmd)}{space 6}containing "{cmd:oaxaca8}"{p_end}
+
+{p 4 4 2}Matrices:
+
+{p 4 12 2}{cmd:e(b)}{space 8}decomposition results{p_end}
+{p 4 12 2}{cmd:e(V)}{space 8}variances of decomposition results (covariances set to 0){p_end}
+
+{p 4 4 2}Functions:
+
+{p 4 12 2}{cmd:e(sample)}{space 3}estimation sample{p_end}
+
+
+{title:Methods and Formulas}
+
+{it:The three-fold decomposition}
+
+{p 4 4 2}
+The following linear models are given:
+
+        {bf:Y}1 = {bf:X}1{bf:b}1 + {bf:e}1
+        {bf:Y}2 = {bf:X}2{bf:b}2 + {bf:e}2
+
+{p 4 4 2} for some outcome variable Y in two groups 1 and 2. As long as
+E({bf:e}1)=E({bf:e}2)=0, the mean outcome difference between the two groups
+can be decomposed as
+
+{p 8 8 2} R = {bf:x}1'{bf:b}1 - {bf:x}2'{bf:b}2 =
+({bf:x}1-{bf:x}2)'{bf:b}2 + {bf:x}2'({bf:b}1-{bf:b}2) +
+({bf:x}1-{bf:x}2)'({bf:b}1-{bf:b}2) = E + C + CE
+
+{p 4 4 2} where {bf:x}1 and {bf:x}2 are the vectors of means of the
+regressors (including the constants) for the two groups (e.g. see
+Winsborough and Dickenson 1971, Jones and Kelley 1984, Daymont and
+Andrisani 1984). In other words, R is decomposed into one part that is due to
+differences in endowments (E), one part that is due to differences in
+coefficients (including the intercept) (C), and a third part that is due to
+interaction between coefficients and endowments (CE).
+
+{it:The two-fold decomposition}
+
+{p 4 4 2} Depending on the model that is assumed to be the "true" model
+(i.e. the "absence-of-discrimination" model), the terms of the three-fold
+decomposition may be used to determine the "explained" (Q) and
+"unexplained" (U; e.g. discrimination) parts of the differential (the question
+is how to allocate the interaction term CE). Oaxaca (1973) proposed
+assuming either the low group model or the high group model as
+the no-discrimination model, which implies that Q=E and U=C+CE and Q=E+CE and U=C,
+respectively. More generally, the coefficients of the "true" model may be
+expressed as
+
+{p 8 8 2} {bf:b}* = {bf:W}{bf:b}1+({bf:I}-{bf:W}){bf:b}2
+
+{p 4 4 2} where {bf:I} is an identity matrix and {bf:W} is a matrix of
+weights. Analogously, the decomposition may be written as
+
+{p 8 8 2} R = ({bf:x}1-{bf:x}2)'[{bf:W}{bf:b}1+({bf:I}-{bf:W}){bf:b}2] +
+[{bf:x}1'({bf:I}-{bf:W})+{bf:x}2'{bf:W}]({bf:b}1-{bf:b}2)
+
+{p 4 4 2}In the two cases proposed by Oaxaca (1973), {bf:W} is a nullmatrix
+or equals {bf:I}, respectively ({bf:W}={bf:I} is also suggested by Blinder
+1973). Furthermore, {bf:W} may be w{bf:I}, where w is a
+scalar reflecting the weight given to the coefficients for the first group
+(Reimers 1983 proposed w=.5, Cotton 1988 proposed using the relative
+group size). Use the {cmd:weigth()} option to specify w.
+
+{p 4 4 2}Alternatively, Neumark (1988) proposed using the coefficients from
+a pooled model for both groups, which implies that
+
+{p 8 8 2} {bf:W} = diag({bf:b}*-{bf:b}2) diag({bf:b}1-{bf:b}2)^-1
+
+{p 4 4 2} or
+
+{p 8 8 2} R = ({bf:x}1-{bf:x}2)'{bf:b}* +
+[{bf:x}1'({bf:b}1-{bf:b}*)+{bf:x}2'({bf:b}*-{bf:b}2)]
+
+{p 4 4 2} where {bf:b}* is the vector of the coefficients from the
+pooled model. However, other coefficients vectors may also make sense. Use the
+{cmd:reference()} option to specify such a reference model.
+
+{p 4 4 2}In the context of OLS regression, the method proposed by
+Neumark is equivalent to using the weighting matrix
+
+{p 8 8 2}{bf:W} = ({bf:X}1'{bf:X}1 + {bf:X}2'{bf:X}2)^-1 ({bf:X}1'{bf:X}1)
+
+{p 4 4 2} where {bf:X}1 and {bf:X}2 are the matrices of observed values for
+the two samples (Oaxaca and Ransom 1994). This approach is implemented via
+the {cmd:weight(omega)} option.
+
+{it:Standard errors}
+
+{p 4 4 2}The variances/standard errors of the components are computed
+according to the method detailed in Jann (2005). For the case of fixed regressors,
+also see Oaxaca and Ransom (1998). The variances and covariances of the coefficients are
+taken from the {cmd:e(V)} matrices of the models. The variance-covariance
+matrices of the means of the regressors in
+the models are estimated according to standard formulas (cross-product matrix
+of deviations divided by N*(N-1)) unless {cmd:pweight}s or clusters are
+applied or a specific survey design is set (see help
+{bf:{help svyset}}). In the latter cases, the variance-covariance
+matrices are estimated
+using the {bf:{help svymean}} command. Note that standard errors cannot be
+computed for the U term if the non-discriminating coefficients are taken
+from a reference model specified via the {cmd:reference()} option. Use
+{bf:{help bootstrap}} to derive the standard errors in
+this case.
+
+{it:Selection models}
+
+{p 4 4 2} Assume that a selection
+variable S appears in the models. If the variable is marked by specifying
+{cmd:adjust(}S{cmd:)}, the differential will be adjusted for
+selection, i.e.
+
+{p 8 8 2}R_s = {bf:x}1'{bf:b}1 - {bf:x}2'{bf:b}2 - (s1bs1 - s2bs2)
+
+{p 4 4 2} where s1 and s2 are the means of S and bs1 and bs2 are the
+coefficients of S, and {cmd:oaxaca8} will decompose R_s instead of R. Note
+that it is not necessary to use the {cmd:adjust} option if the models were
+estimated with {bf:{help heckman}}. See Dolton and Makepeace (1986) or
+Neumann and Oaxaca (2004) for more sophisticated approaches to dealing with
+selection.
+
+{p 4 4 2} If a specific regressor (or a selection variable) appears only in
+one model, the corresponding coefficient and the mean of the regressor will
+be set to zero for the other group.
+
+
+{title:References}
+
+{p 4 8 2}Blinder, A.S. (1973). Wage Discrimination: Reduced Form and Structural
+Estimates. The Journal of Human Resources 8: 436-455.{p_end}
+{p 4 8 2}Cotton, J. (1988). On the Decomposition of Wage Differentials. The Review of
+Economics and Statistics 70: 236-243.{p_end}
+{p 4 8 2}Daymont, T.N., Andrisani, P.J. (1984). Job Preferences, College Major, and the
+Gender Gap in Earnings. The Journal of Human Resources 19: 408-428.{p_end}
+{p 4 8 2}Dolton, P.J., Makepeace, G.H. (1986). Sample Selection and Male-Female Earnings
+Differentials in the Graduate Labour Market. Oxford Economic Papers 38: 317-341.{p_end}
+{p 4 8 2}Jann, B. (2005). Standard Errors for the Blinder–Oaxaca
+Decomposition: {browse "http://repec.org/dsug2005/oaxaca_se_handout.pdf"}.{p_end}
+{p 4 8 2}Jones, F.L., Kelley, J. (1984). Decomposing Differences Between Groups. A Cautionary
+Note on Measuring Discrimination. Sociological Methods and Research 12: 323-343.{p_end}
+{p 4 8 2}Neuman, S., Oaxaca, R.L. (2004). Wage decompositions with selectivity-corrected
+wage equations: A methodological note. Journal of Economic Inequality 2: 3-10.{p_end}
+{p 4 8 2}Neumark, D. (1988). Employers' Discriminatory Behavior and the Estimation of
+Wage Discrimination. The Journal of Human Resources 23: 279-295.{p_end}
+{p 4 8 2}Oaxaca, R. (1973). Male-Female Wage Differentials in Urban Labor Markets.
+International Economic Review 14: 693-709.{p_end}
+{p 4 8 2}Oaxaca, R.L., Ransom, M.R. (1994). On discrimination and the decomposition of wage
+differentials. Journal of Econometrics 61: 5-21.{p_end}
+{p 4 8 2}Oaxaca, R.L., Ransom, M.R. (1998). Calculation of approximate variances for
+wage decomposition differentials. Journal of Economic and Social Measurement 24: 55-61.{p_end}
+{p 4 8 2}Oaxaca, R.L., Ransom, M.R.  (1999). Identification in Detailed Wage Decompositions.
+The Review of Economics and Statistics 81: 154-157.{p_end}
+{p 4 8 2}Reimers, C.W. (1983). Labor Market Discrimination Against Hispanic and Black Men.
+The Review of Economics and Statistics 65: 570-579.{p_end}
+{p 4 8 2}Winsborough, H.H., Dickinson, P. (1971). Components of Negro-White Income
+Differences. Proceedings of the American Statistical
+Association, Social Statistics Section: 6-8.
+
+
+{title:Author}
+
+{p 4 4 2}Ben Jann, ETH Zurich, jannb@ethz.ch
+
+
+{title:Also see}
+
+{p 4 13 2}
+Online:  help for
+{bf:{help regress}},
+{bf:{help estimates}},
+{bf:{help heckman}},
+{bf:{help devcon}} (if installed),
+{bf:{help smithwelch}} (if installed),
+{bf:{help jmpierce}} (if installed)

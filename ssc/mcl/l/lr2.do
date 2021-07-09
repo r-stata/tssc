@@ -1,0 +1,1 @@
+* Logistic Regression (Logan 1983: 333)use loganmclgen occxi: mclest i.occ i.occ|black i.occ|educ

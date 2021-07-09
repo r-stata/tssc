@@ -1,0 +1,244 @@
+{smcl}
+{* 15jan2003}{...}
+{hline}
+help for {hi:mvprobit}{right:Cappellari and Jenkins (15jan2003)}
+{hline}
+
+{title:Multivariate probit models, estimated by Simulated Maximum Likelihood}
+
+{p 4 12}{cmd:mvprobit} {it:equation1} {it:equation2} {it: ...} {it:equationM} 
+	[{it:weight}] [{cmd:if} {it:exp}] [{cmd:in} {it:range}] [{cmd:,}
+	{cmdab:dr:aws(}{it:#}{cmd:)} {cmdab:s:eed(}{it:#}{cmd:)} 
+	{cmdab:b:eta0} {cmdab:a:trho0(}{it:matrix_name}{cmd:)} 
+	{cmdab:r:obust} {cmdab:cl:uster(}{it:varname}{cmd:)}
+	{cmdab:const:raints(}{it:numlist}{cmd:)} 
+	{cmdab:l:evel(}{it:#}{cmd:)} {it:maximize_options} ]
+
+{p}where each equation is specified as
+
+{p 12 12}{cmd:(} [{it:eqname}{cmd::}] {it:depvar} [{cmd:=}] [{it:varlist}]
+		[{cmd:,} {cmdab:nocon:stant}] {cmd:)}
+
+{p}{cmd:by} {it:...} {cmd::} may be used with {cmd:mvprobit}; see help
+{help by}. 
+
+{p}{cmd:pweight}s, {cmd:aweight}s, {cmd:fweight}s, and {cmd:iweight}s 
+are allowed; see help {help weights}.
+
+{p}{cmd:mvprobit} shares the features of all estimation commands; see help
+{help est}.
+
+{p}{cmd:mvprobit} typed without arguments redisplays the last estimates. 
+The level option may be used.
+
+{p}Predictions based on {cmd:mvprobit} estimates, including predicted joint 
+and marginal probabilities, can be derived using {help mvppred}.
+
+
+{title:Description}
+
+{p}{cmd:mvprobit} estimates {it:M}-equation probit models, by the method of 
+simulated maximum likelihood (SML). (Cf. {cmd:probit} and {cmd:biprobit} 
+which estimate 1-equation and 2-equation probit models by maximum likelihood.) 
+The variance-covariance matrix of the cross-equation error terms has values of 
+1 on the leading diagonal, and the off-diagonal elements are correlations 
+to be estimated (rho{it:ji} = rho{it:ij}, and rho{it:ii} = 1, for all 
+{it:i} = 1,...,{it:M}).
+
+{p}{cmd:mvprobit} uses the Geweke-Hajivassiliou-Keane (GHK) simulator 
+to evaluate the {it:M}-dimensional Normal integrals in the likelihood 
+function. For each observation, a likelihood contribution is calculated 
+for each replication, and the simulated likelihood contribution is the 
+average of the values derived from all the replications. The simulated 
+likelihood function for the sample as a whole is then maximized using 
+standard methods ({cmd:ml} in this case). For a brief description of the 
+GHK smooth recursive simulator, see Greene (2000: 183-185), who also 
+provides references to the literature. 
+
+{p}Under standard conditions, the SML estimator is consistent as the number 
+of observations and the number of draws tend to infinity, and is 
+asymptotically equivalent to the true maximum likelihood estimator as the 
+ratio of the square root of the sample size to the number of draws tends 
+to zero. Thus, other things equal, the more draws, the better. In practice, 
+however, it has been observed that a relatively small number of draws may 
+work well for `smooth' likelihoods. An integer number corresponding to 
+the square root of the number of observations is often used for the number 
+of random draws. For small sample sizes, a larger number of draws may be 
+required.
+
+{p}Estimation is numerically intensive, and may be very slow if the data 
+set is large, if the number of draws is large, or (especially) if the 
+number of equations is large. Users may also need to {cmd:set matsize} 
+and {cmd:set memory} to values above the default ones. (See help for 
+{help matsize} and {help memory}.) Use of the {cmd:atrho0} option may
+speed up convergence. 
+
+{p}Models for which the matrix of rhos is close to not being positive 
+definite are likely to be difficult to maximize. (The Cholesky factorization 
+used by SML requires positive definiteness.) This is more likely if 
+|rho{it:ji}| is close to one. In these cases, {cmd:ml} may report 
+difficulties calculating numerical derivatives and a non-concave 
+log-likelihood. In difficult maximization problems, the message 
+"Warning: cannot do Cholesky factorization of rho matrix" may appear 
+between iterations. It may be safely ignored if the maximization proceeds 
+to a satisfactory conclusion. Results may differ depending on the sort order 
+of the data, because the sort order affects which values of the random variable(s) 
+get allocated to which observation. (Be assured, however, that {cmd:mvprobit} 
+does not change the sort order of the data.) This potential problem is reduced, 
+the larger the number of random draws that is used. 
+
+
+{title:Options}
+
+{p 0 4}{cmd:draws(}{it:#}{cmd:)} specifies the number of random variates
+drawn when calculating the simulated likelihood. The default is 5. (See the 
+discussion above concerning the number of draws.)
+
+{p 0 4}{cmd:seed(}{it:#}{cmd:)} specifies the initial value of the 
+(pseudo-)random-number seed used by the {cmd:uniform()} function 
+in the simulation process. The value should be an integer (the 
+default value is 123456789). Warning: if the number of draws is 'small',
+changes in the seed value may lead to surprisingly large changes in 
+estimates.
+
+{p 0 4}{cmd:beta0} specifies that the estimates of the marginal probit
+regressions (used to provide starting values) are reported.
+
+{p 0 4}{cmd:atrho0(}{it:matrix_name}{cmd:)} allows users to specify 
+starting values for the off-diagonal elements of the rho matrix 
+that are different from the default values (which are all zero). 
+More precisely, the matrix {it:matrix_name} contains values of the 
+incidental parameter in each /atrho{it:ji} equation, i.e. 
+atanh(rho{it:ji}) = .5*ln((1+rho{it:ji})/(1-rho{it:ji})). Matrix 
+{it:matrix_name} must have properly named column names. E.g. if 
+a starting value in /atrho{it:21} is being set, one would first use the 
+command {cmd:matrix {it:matrix_name} = ({it:value})}, followed by
+{cmd:matrix colnames {it:matrix_name} = atrho21:_cons}. Between 1 and 
+{it:M}({it:M}-1)/2 /atrho{it:ji} starting values may be specified,
+where {it:j} = 2,...,{it:M}, and {it:i} < {it:j}. One likely source 
+for a non-default starting value for atrho{it:ji} is the /athrho 
+parameter estimate from the {cmd:biprobit} model corresponding to
+equations {it:j} and {it:i} of the full {cmd:mvprobit} model.
+
+{p 0 4}{cmd:robust} specifies that the Huber/White/sandwich estimator of
+variance is to be used in place of the traditional calculation; see
+{hi:[U] 23.11 Obtaining robust variance estimates}.  {cmd:robust} combined
+with {cmd:cluster()} allows observations which are not independent within
+cluster (although they must be independent between clusters).  If you 
+specify {help pweight}s, {cmd:robust} is implied.
+
+{p 0 4}{cmd:cluster(}{it:varname}{cmd:)} specifies that the observations are
+independent across groups (clusters) but not necessarily within groups.
+{it:varname} specifies to which group each observation belongs; e.g.,
+{cmd:cluster(personid)} in data with repeated observations on individuals. 
+See {hi:[U] 23.11 Obtaining robust variance estimates}. {cmd:cluster()} can be
+used with {help pweight}s to produce estimates for unstratified
+cluster-sampled data.  Specifying {cmd:cluster()} implies {cmd:robust}.
+
+{p 0 4}{cmd:noconstant} suppresses the constant term (intercept) in the
+relevant regression.  
+
+{p 0 4}{cmd:constraints(}{it:numlist}{cmd:)} specifies the linear constraints
+to be applied during estimation.  Constraints are defined using the
+{cmd:constraint} command and are numbered; see help {help constraint}. The
+default is to perform unconstrained estimation.
+
+{p 0 4}{cmd:level(}{it:#}{cmd:)} specifies the confidence level, in percent,
+for the confidence intervals of the coefficients; see help {help level}.
+
+{p 0 4}{it:maximize_options} control the maximization process; see help
+{help maximize}.  Use of them is likely to be rare.
+
+
+{title:Saved results}
+
+{p} In addition to the usual results saved after {cmd:ml}, {cmd:mvprobit} also
+saves the following:
+
+{p 0 4}{cmd:e(draws)} is the number of random draws used when simulating 
+probabilities.
+
+{p 0 4}{cmd:e(seed)} is the initial seed value used by the random-number 
+generator. 
+
+{p 0 4}{cmd:e(neqs)} is the number of equations in the {it:M}-equation model.
+
+{p 0 4}{cmd:e(ll0)} is the log-likehood for the comparison model (the sum of 
+the log-likelihoods from the marginal univariate probit models corresponding 
+to each equation).
+
+{p 0 4}{cmd:e(chi2_c)} is chi-square test statistic for the likelihood ratio 
+test of the multivariate probit model against the comparison model.
+
+{p 0 4}{cmd:e(nrho)} is the number of estimated rhos (the degrees of freedom 
+for the likelihood ratio test against the comparison model). 
+
+{p 0 4}{cmd:e(rho{it:ji})} is the estimate of correlation {it:ji} in the 
+variance-covariance matrix of cross-equation error terms. 
+
+{p 0 4}{cmd:e(serho{it:ji})} is the estimated standard error of 
+correlation {it:ji}.
+
+{p 0 4}{cmd:e(rhs{it:i})} is the list of explanatory variables used in 
+equation {it:i}. This list does not include the constant term, regardless 
+of whether there is one is implied by equation {it:i}.
+
+{p 0 4}{cmd:e(nrhs{it:i})} is number of explanatory variables in equation {it:i}.
+This number includes the constant term if there is one implied by equation {it:i}.
+
+
+{title:Examples}
+
+{p 8 12}{inp:. use http://www.stata-press.com/data/r7/school.dta, clear}
+
+{p 8 12}{inp:. biprobit (private = years logptax loginc) (vote=years logptax loginc) }
+
+{p 8 12}{inp:. mvprobit (private = years logptax loginc) (vote = years logptax loginc), dr(15) }
+
+{p 8 12}{inp:. mvprobit (private = years logptax loginc) (vote = years logptax, nocons), nolog }
+
+{p 8 12}{inp:. mvprobit (private years logptax loginc) (vote years logptax, nocons), beta0 }
+
+{p 8 12}{inp:. constraint define 1 [private]loginc = 0.4 }
+
+{p 8 12}{inp:. mvprobit (private = years logptax loginc) (vote = years logptax loginc, nocons), constraint(1) }
+
+{p 8 12}{inp:. mvprobit (private = years logptax loginc) (vote = years logptax loginc) (pub12 = years loginc) }
+
+{p 8 12}{inp:. mvprobit (private = loginc logptax) (vote = loginc logptax)(school = logptax)(pub5 = ), dr(10) }
+
+
+{title:Authors}
+
+{p 4 4}Lorenzo Cappellari, Universita del Piemonte-Orientale, Italy{break}
+<Lorenzo.Cappellari@eco.unipmn.it>
+
+{p 4 4}Stephen P. Jenkins, ISER, University of Essex, U.K.{break}
+<stephenj@essex.ac.uk>
+
+
+{title:Acknowledgements}
+
+{p 4 4}Thanks to Nick Cox and Weihua Guan for comments and suggestions. 
+Much of our code for syntax handling and display of results was inspired 
+by code used in {cmd:biprobit}.
+
+
+{title:References}
+
+{p 4 8} Greene, W.H. (2000), {it:Econometric Analysis, Fourth edition}, 
+Prentice-Hall International, Upper Saddle River NJ.
+
+ 
+{title:Also see}
+
+{p 1 14}Manual:  {hi:[U] 23 Estimation and post-estimation commands},{p_end}
+{p 10 14}{hi:[U] 29 Overview of model estimation in Stata},{p_end}
+	  {hi:[R] biprobit}
+
+{p 0 19}On-line:  help for {help constraint}, {help est}, {help postest},
+{help ml}, {help biprobit}, {help probit}, and (if installed) 
+{help triprobit}.{p_end}
+
+
+

@@ -1,0 +1,145 @@
+{smcl}
+{* 10sep2001/3nov2004}{...}
+{hline}
+help for {hi:anovaplot}
+{hline}
+
+{title:Plots of ANOVA fit, including interaction plots} 
+
+{p 8 17 2}
+{cmd:anovaplot} 
+[{cmd:,} 
+{cmd:scatter(}{it:scatter_options}{cmd:)} 
+{it:connected_options} 
+{cmd:plot(}{it:plot}{cmd:)} ] 
+]   
+
+{p 8 17 2}
+{cmd:anovaplot} 
+{it:varlist} 
+[{cmd:,} 
+{cmd:scatter(}{it:scatter_options}{cmd:)} 
+{it:connected_options} 
+{cmd:plot(}{it:plot}{cmd:)} ] 
+]    
+
+
+{title:Description}
+
+{p 4 4 2}{cmd:anovaplot} plots fitted or predicted values from an immediately
+previous one-, two- or three-way {cmd:anova}. By default the data for the
+response are also plotted. In particular, {cmd:anovaplot} can show interaction
+plots. 
+
+
+{title:Remarks} 
+
+{p 4 4 2}With the first syntax, no {it:varlist} is specified.  {cmd:anovaplot}
+shows the response and predicted values on the {it:y} axis; the predictor named
+first in the {cmd:anova} command on the {it:x} axis; any predictor named second
+in the {cmd:anova} command by separate groups within a twoway plot;
+and any predictor named third in the {cmd:anova} command by separate images
+using a {cmd:by()} option. Thus with this syntax the appearance of the plot,
+although not the values shown, is sensitive to the order in which predictors
+are specified in the {cmd:anova} command. 
+
+{p 4 4 2}With the second syntax, a {it:varlist} is supplied, which must be a
+permutation of the predictors previously used. The order of the predictors in
+the varlist is used to determine the form of the graph, as above. This permits
+changing graphs without reissuing the {cmd:anova} command. 
+
+{p 4 4 2}Note especially that the graph format produced by {cmd:anovaplot} is
+appropriate for models with at most one continuous predictor, which should
+always be the predictor named first. With that caveat, {cmd:anovaplot} offers a
+way of showing parallel and diverging regression lines for models with one
+continuous predictor.
+
+
+{title:Options}
+
+{p 4 8 2}
+{cmd:scatter()} specifies options of {help scatter} which should be
+specified to control plotting of fitted values. 
+
+{p 8 8 2} 
+To suppress plotting of response data, specify {cmd:scatter(ms(i))}.
+
+{p 8 8 2} 
+To separate tied values of response, specify {cmd:scatter(jitter(1))}. 
+
+{p 4 8 2} 
+{it:connected_options} are options of {help twoway connected} which 
+should be specified to control plotting of fitted values. 
+
+{p 4 8 2}{cmd:plot(}{help plot_option:plot}{cmd:)} provides a way to add other
+plots to the generated graph; see {help plot_option}. 
+
+
+{title:Examples}
+
+{p 4 8 2}{cmd:. webuse systolic} 
+
+{p 4 4 2}One-way anova: {cmd:systolic} as response on {it:y} axis, {cmd:drug} as
+factor on {it:x} axis:
+
+{p 4 8 2}{cmd:. anova systolic drug}{p_end}
+{p 4 8 2}{cmd:. anovaplot}
+
+{p 4 4 2}
+Two-way anova, no interaction term: {cmd:systolic} as response on {it:y} axis, 
+{cmd:disease} and {cmd:drug} as factors, with {cmd:disease} on {it:x} axis, 
+and levels of {cmd:drug} defining separate profiles: 
+
+{p 4 8 2}{cmd:. anova systolic disease drug}{p_end}
+{p 4 8 2}{cmd:. anovaplot}
+
+{p 4 4 2}Better to reverse order of predictors: 
+
+{p 4 8 2}{cmd:. anovaplot drug disease}
+
+{p 4 4 2}Example of interaction term: 
+
+{p 4 8 2}{cmd:. anova systolic drug disease drug * disease}{p_end}
+{p 4 8 2}{cmd:. anovaplot}
+
+{p 4 4 2}
+As above, but no plotting of data: 
+
+{p 4 8 2}{cmd:. anovaplot, scatter(ms(i))}
+
+{p 4 4 2}Examples with one continuous predictor: 
+
+{p 4 8 2}{cmd:. sysuse auto}{p_end}
+{p 4 8 2}{cmd:. decode foreign, gen(Foreign)}{p_end}
+{p 4 8 2}{cmd:. gen F = substr(Foreign,1,1)}
+
+{p 4 4 2}The continuous predictor is named just after the response: 
+
+{p 4 8 2}{cmd:. anova price weight foreign, cont(weight)} 
+
+{p 4 4 2}(N.B. parallel regression lines) 
+
+{p 4 8 2}{cmd:. anovaplot, scatter(ms(i) mla(F) mlabpos(0))}
+
+{p 4 8 2}{cmd:. anova price weight foreign weight*foreign, cont(weight)}
+
+{p 4 4 2}(N.B. diverging regression lines) 
+
+{p 4 8 2}{cmd:. anovaplot, scatter(ms(i) mla(F) mlabpos(0))}
+
+
+{title:Author}
+
+{p 4 4 2}Nicholas J. Cox, University of Durham, U.K.{break} 
+n.j.cox@durham.ac.uk
+
+
+{title:Acknowledgements} 
+
+{p 4 4 2}Ken Higbee provided very helpful comments. 
+
+
+{title:Also see}
+
+{p 4 13 2}On-line:  help for 
+{help anova}, {help dotplot}, {help modeldiag}

@@ -1,0 +1,119 @@
+.-
+help for ^tabsplit6^
+.-
+
+Tabulate and generate string variables split into parts
+-------------------------------------------------------
+
+    ^tabsplit6^ strvar [^if^ exp] [^in^ range] [, ^g^enerate^(^stub^)^
+    ^gmax(^#^) h^eader^(^headerstr^) p^unct^(^punctchars^) s^ort ] 
+
+Description
+-----------
+
+^tabsplit6^ tabulates frequencies of occurrence of the parts of a string
+variable.
+
+By default, the parts of a string are separated by spaces. The parts of
+^"1 2 3"^ are thus ^"1"^, ^"2"^ and ^"3"^.
+
+Optionally, alternative punctuation characters may be specified. The
+parts of ^"1,2,3"^ with ^p(,)^ are, again, ^"1"^, ^"2"^ and ^"3"^. The
+parts of ^"1 2 3"^ with ^p(,)^ are just the single part ^"1 2 3"^.
+
+Note: this is a now superseded version of ^tabsplit^, written for Stata 6. 
+Users of Stata 8 up should switch to ^tabsplit^. 
+
+Remarks
+-------
+
+Suppose data are gathered on modes of transport used in the journey 
+to work. In addition to values of ^car^, ^cycle^, ^foot^, and so 
+forth, there may be multiple values such as ^car train tube foot^ for 
+people who use two or more modes. Within the limit of 80 characters such 
+single or multiple values may be stored as string variables. It may then 
+be desired, for example, to count the individual modes used. ^tabsplit6^ is 
+designed for this special problem. (Naturally an alternative data structure 
+would be a set of indicator variables.) 
+
+Leading and trailing spaces are ignored by ^tabsplit6^. Thus, string
+values that equal one or more spaces are treated just as if they were
+missing. Also with ^" 1,  2,   3"^ and ^p(,)^ the parts are ^"1"^, ^"2"^
+and ^"3"^.
+
+The idea of a part generalises Stata's concept of a word:
+
+    ^. local words "Stata for data analysis"^
+    ^. local word4 : word 4 of `words'^
+
+puts the string ^"analysis"^ in local macro ^word4^.
+
+To get just the first part of a string, there is another way,
+exemplified here with space ^" "^ as a separator, but it works with any
+other single separator:
+
+    .^ gen str1 Make = ""^
+    .^ replace Make = substr(make,1,index(make," ")-1)^
+    .^ replace Make = make if Make == ""^
+
+This way allows you to be ignorant about the length of string needed:
+with ^replace^, Stata automatically changes the variable type if needed.
+
+
+Options
+-------
+
+^generate(^stub^)^ generates new string variables stub^1^, stub^2^, etc.
+    containing parts 1, 2, etc. of strvar. The number of new variables
+    created will be (at most) the maximum number of parts present in a
+    string value. With ^g(mystr)^ and strings
+
+    ^"Stata for data analysis"^
+    ^"soap for washing"^
+
+    4 variables will be created: ^mystr1^ to ^mystr4^. ^mystr1[1]^ will
+    be ^"Stata"^ and ^mystr2[4]^ will be empty ^""^.
+
+^gmax(^#^)^ specifies that only stub^1^ to stub# should be generated. A
+    number greater than the maximum number of parts will have no effect.
+
+^header(^headerstr^)^ specifies a heading for the table. Default ^Parts^.
+
+^punct(^punctchars^)^ specifies alternative punctuation characters
+    deemed to separate parts. One or more characters may be specified.
+    If ^punct( )^ is not specified, spaces are used. (Note that
+    attempting to specify just a space will result in a syntax error.)
+
+    If you wish to use the space ^" "^ as well as other non-space
+    characters, specify it within quotation marks: e.g. ^p(" ,")^.
+
+    As a special case, ^punct(no)^ indicates no punctuation characters.
+    Strings will be split into separate characters other than spaces.
+
+^sort^ indicates that ^tabsort^ rather than ^tabulate^ will be used to
+    produce a table with frequencies sorted from highest to lowest. This
+    option may only be used if ^tabsort^ has been installed.
+
+
+Examples
+--------
+
+    . ^tabsplit6 mode, h(Mode of transport)^ 
+    . ^tabsplit6 reasons, p(,) h(Reasons)^
+
+    .^ qui tabsplit6 make, gen(Make) gmax(1)^
+    .^ tab Make1^
+
+
+Author
+------
+
+         Nicholas J. Cox, University of Durham, U.K.
+         n.j.cox@@durham.ac.uk
+
+
+Also see
+--------
+
+On-line: help for @tabsort@ (if installed)
+

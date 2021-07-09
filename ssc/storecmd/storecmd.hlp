@@ -1,0 +1,123 @@
+{smcl}
+{* 7dec2005}
+{hline}
+help for {hi:storecmd}, {hi:stowcmd}, {hi:repcmd}
+{hline}
+
+{title:Store and repeat commands using characteristics}
+
+{p 8 17 2}{cmd:storecmd} {it:charname cmdline}
+
+{p 8 17 2}{cmd:stowcmd} {it:charname cmdline}
+
+{p 8 17 2}{cmd:repcmd} {it:charname} [ {cmd:,} {cmdab:s:howonly} ] 
+
+
+{title:Description}
+
+{p 4 4 2}{it:cmdline} is any Stata command line.
+
+{p 4 4 2}{it:charname} is the name of a Stata characteristic. To avoid
+confusion with characteristics used by Stata itself, include at least one
+capital letter in the name. 
+
+{p 4 4 2}{cmd:storecmd} executes {it:cmdline}. If successful, meaning that there
+were no errors, {it:cmdline} is stored as characteristic {cmd:_dta[}{it:charname}{cmd:]}. 
+
+{p 4 4 2}{cmd:stowcmd} stows away {it:cmdline} as characteristic {cmd:_dta[}{it:charname}{cmd:]}.
+{it:cmdline} therefore need not be a command that would execute properly at the time
+it is stowed. 
+
+{p 4 4 2}{cmd:repcmd} executes the command stored in characteristic
+{cmd:_dta[}{it:charname}{cmd:]}.
+
+
+{title:Options}
+
+{p 4 8 2}{cmd:showonly} shows the command line stored, but does not execute it. 
+
+
+{title:Examples}
+
+{p 4 4 2} 
+Stata command lines are stored temporarily in memory and they may 
+be stored as desired in text files, commonly {cmd:.log} or {cmd:.do} files. 
+
+{p 4 4 2}
+These commands offer a third possibility: command lines may be stored 
+as characteristics. They may be stored within sessions, and so long as 
+the data file is saved so that these characteristics are included, they 
+may be stored between sessions with the same data file. 
+
+{p 4 4 2}
+Here is one pattern: 
+
+{p 4 4 2}
+1. You develop a complicated command line, possibly after several steps. 
+You want to store it. Type, for example, 
+
+{p 4 8 2} 
+{cmd:. storecmd G graph} <complicated details> 
+
+{p 4 4 2}The command line 
+
+{p 4 8 2}{cmd:graph} <complicated details> 
+
+{p 4 4 2}is executed. 
+
+{p 4 4 2}If no error occurs, the command line is stored as characteristic 
+{cmd:_dta[G]}. 
+
+{p 4 4 2}In addition, the command line is placed in the keyboard buffer, 
+so that it can be retrieved for editing. 
+
+{p 4 4 2}{cmd:storecmd G graph} <complicated details> 
+
+{p 4 4 2}is one line above in the buffer. 
+
+{p 4 4 2}2. At any time, to see what commands have been stored, you can type 
+
+{p 4 8 2}{cmd:. char list} 
+
+{p 4 4 2}or 
+
+{p 4 8 2}{cmd:. char list _dta} 
+
+{p 4 4 2}noting that this will list any other characteristics as well. 
+
+{p 4 4 2}3. If you wish to save such characteristics with the data file, 
+use the {cmd:save} command. 
+
+{p 4 4 2}4. Later, you wish to repeat the command. Type 
+
+{p 4 8 2}{cmd:. repcmd G} 
+
+{p 4 4 2}The command line stored as characteristic {cmd:_dta[G]} is executed. 
+
+{p 4 4 2}In addition, that command line is placed in the keyboard buffer, 
+so that it can be retrieved for editing. 
+
+{p 4 4 2}{cmd:repcmd G} 
+
+{p 4 4 2}is one line above in the buffer. 
+
+
+{title:Author}
+
+
+{p 4 4 2}Nicholas J. Cox, Durham University, U.K.{break}
+         n.j.cox@durham.ac.uk
+
+
+{title:Acknowledgements}
+
+{p 4 4 2}Alan Feiveson suggested the original idea. 
+         Jeroen Weesie's {cmd:keyb} program was invaluable. 
+	 Jean Marie Linhart identified a bug and indicated a solution. 
+
+
+{title:Also see}
+
+{p 4 13 2}
+On-line: help for {help char}, {help keyboard}
+

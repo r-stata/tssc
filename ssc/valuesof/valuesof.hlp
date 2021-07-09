@@ -1,0 +1,93 @@
+{smcl}
+{* 20may2008}{...}
+{cmd:help valuesof}
+{hline}
+
+{title:Title}
+
+{p2colset 5 17 19 2}{...}
+{p2col :{hi:valuesof} {hline 2}}Return the contents of a variable in {cmd:r(values)}{p_end}
+{p2colreset}{...}
+
+
+{title:Syntax}
+
+{p 8 17 2}
+{cmd:valuesof}
+{varname}
+{ifin}
+[{cmd:,} {it:options}]
+
+{synoptset 21}{...}
+{synopthdr}
+{synoptline}
+{synopt:{opt miss:ing}}include missing values of {varname}{p_end}
+{synopt:{cmdab:f:ormat(%}{it:{help fmt}}{cmd:)}}specify the format used
+for numeric values; default is {cmd:format(%18.0g)}{p_end}
+{synoptline}
+{p2colreset}{...}
+
+
+{title:Description}
+
+{pstd}
+{cmd:valuesof} displays and returns in {cmd:r(values)} the
+values of {varname} joined together in a single string. The values
+are listed in the current sort order of the dataset and are separated
+by blanks. Values with embedded spaces or embedded quotes
+will be returned in double quotes or compound double quotes, as appropriate.
+
+{pstd}
+{cmd:valuesof} returns {it:all} values of {varname}. If you are
+interested in a list of the distinct values, i.e. the "levels" of {varname},
+see {helpb levelsof}.
+
+{pstd}
+Note that {cmd:valuesof} may hit the limits imposed by your Stata (see
+"# of characters in a macro" in help {help limits}).
+
+
+{title:Dependencies}
+
+{pstd}
+{cmd:valuesof} requires the {cmd:moremata}
+package. Type
+
+        {com}. {net "describe moremata, from(http://fmwww.bc.edu/repec/bocode/m/)":ssc describe moremata}{txt}
+
+
+{title:Options}
+
+{phang}
+{cmd:missing} specifies that missing values of {it:varname}
+should be included in the returned string. The default is
+to exclude them.
+
+{phang}
+{cmd:format(%}{it:{help fmt}}{cmd:)} specifies the format to be used
+for numeric values. The default format is {cmd:%18.0g}.
+
+
+{title:Examples}
+
+        {com}. {stata "sysuse auto, clear"}
+
+        . {stata "valuesof rep78 in 1/10"}
+
+        . {stata "return list"}
+
+        . {stata "valuesof rep78 in 1/10, missing"}
+
+        . {stata "valuesof make in 1/10"}{txt}
+
+
+{title:Author}
+
+{p 4 4 2} Ben Jann, ETH Zurich, jann@soz.gess.ethz.ch
+
+
+{title:Also see}
+
+{psee}
+Online:  {helpb return}, {helpb macro}, {helpb levelsof}, {help limits}
+{p_end}

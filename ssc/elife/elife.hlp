@@ -1,0 +1,112 @@
+{smcl}
+{* 17Jan2010}{* 30Jan2010}{* 1Oct2010}{...}
+{hline}
+help for {hi:elife}{right: version 3.0}
+{right:{stata ssc install elife, replace: get the newest version}}
+{hline}
+
+{title:Annual increments of life expectancy}
+
+
+{title:Description}
+
+
+{p 4 4 2}
+{cmd:elife} models annual increments of life expectancy for a given level of life expectancy. Quinquennial Gains in Life Expectancy
+At Birth are presented in the annex for the ease of use as quinquennial increments (table VI.6).
+
+{p 4 4 2}
+{cmd:Note:} The ANCILLARY FILES elife.dta is very important, 
+which must be put ancillary with elife.ado, for example in directory {cmd:..Stata11\ado\plus\e} . ({stata net get elife.pkg:click here to get})
+
+
+{title:Syntax}
+
+
+{p 4 8 2}{cmd:elife} {it:life1} {it:life2} {it:year1} {it:year2} [{cmd:,} {cmdab:s:ave(}{it:filename}{cmd:)}] {p_end}
+
+
+{pstd} Where {it:life1} is the initinal male life expectancy level, {it:life2} is the initinal female life expectancy level, and they must be in range [40, 92.5). {it:year1} must be smaller than {it:year2}.
+
+{synoptset 20 tabbed}{...}
+{marker options}{...}
+{synopthdr}
+{synoptline}
+{p2coldent :* {cmdab:s:ave(}{it:filename}{cmd:)}}Save the '.dta' format file with the name {it:filename}. {p_end}
+{p2coldent :}No file saved if the {it:options} leaves empty {p_end}
+{synoptline}
+{p2colreset}{...}
+
+
+{title:Examples}
+
+
+{p 4 8 2}. {stata elife 66.28 69.27 1981 1990}{p_end}
+
+{p 4 8 2}. {stata elife 66.28 69.27 1981 1990, save(test1)}{p_end}
+
+{p 4 8 2}. {stata elife 66.84 70.47 1990 2000}{p_end}
+
+{p 4 8 2}. {stata elife 69.63 73.33 2000 2030, s(test2)}{p_end}
+
+
+{title:References}
+
+
+{pstd} Table Vi.6. Models for mortality improvement: Quinquennial gains in Life Expectancy at Birth according to initial level of Life Expectancy (1995. United Nations. World Population Prospects. NewYork: United Nations. 886 p)
+
+{center:{c TLC}{hline 5}{hline 50}{hline 24}{c TRC}}
+{center:{c |}{cmd:Initial      Very fast     Fast          Medium        Slow          Very slow }{c |}}
+{center:{c |}{cmd:Values       M      F      M      F      M      F      M      F      M      F  }{c |}}
+{center:{c TLC}{hline 5}{hline 50}{hline 24}{c TRC}}
+{center:{c |}40.0-42.5    2.5    2.6    2.1    2.3    1.9    2.0    1.3    1.4    1.1    1.1{c |}}
+{center:{c |}42.5-45.0    2.8    3.0    2.4    2.5    2.0    2.1    1.4    1.5    1.1    1.2{c |}}
+{center:{c |}45.0-47.5    3.0    3.1    2.5    2.6    2.1    2.2    1.8    1.9    1.2    1.3{c |}}
+{center:{c |}47.5-50.0    3.0    3.2    2.6    2.7    2.2    2.3    1.8    1.9    1.3    1.4{c |}}
+{center:{c |}50.0-52.5    3.2    3.4    2.7    2.9    2.3    2.4    1.9    2.0    1.4    1.5{c |}}
+{center:{c |}52.5-55.0    3.6    3.7    2.7    3.0    2.4    2.6    2.0    2.0    1.5    1.7{c |}}
+{center:{c |}55.0-57.5    3.7    3.7    2.6    3.0    2.4    2.6    2.0    2.0    1.5    1.8{c |}}
+{center:{c |}57.5-60.0    3.8    4.0    2.6    3.0    2.4    2.6    2.0    2.0    1.5    1.8{c |}}
+{center:{c |}60.0-62.5    3.4    3.8    2.5    3.0    2.2    2.6    1.7    2.0    1.0    1.7{c |}}
+{center:{c |}62.5-65.0    3.2    3.6    2.3    2.8    1.9    2.4    1.5    2.0    0.9    1.5{c |}}
+{center:{c |}65.0-67.5    3.2    3.5    2.0    2.6    1.6    2.3    1.0    1.8    0.7    1.0{c |}}
+{center:{c |}67.5-70.0    2.0    3.3    1.5    2.6    1.2    2.1    1.0    1.5    0.6    1.0{c |}}
+{center:{c |}70.0-72.5    1.5    3.0    1.2    2.0    1.0    1.8    0.8    1.2    0.5    0.8{c |}}
+{center:{c |}72.5-75.0    1.3    2.0    1.0    1.5    0.9    1.2    0.8    0.9    0.5    0.8{c |}}
+{center:{c |}75.0-77.5    1.1    1.8    0.8    1.2    0.6    1.0    0.5    0.8    0.5    0.7{c |}}
+{center:{c |}77.5-80.0    1.0    1.6    0.5    1.0    0.5    0.9    0.4    0.7    0.4    0.5{c |}}
+{center:{c |}80.0-82.5    0.9    1.4    0.5    0.8    0.5    0.6    0.4    0.5    0.4    0.5{c |}}
+{center:{c |}82.5-85.0    0.8    1.3    0.5    0.5    0.5    0.5    0.4    0.4    0.3    0.4{c |}}
+{center:{c |}85.0-87.5    0.7    1.3    0.5    0.5    0.4    0.4    0.3    0.3    0.2    0.2{c |}}
+{center:{c |}87.5-90.0    0.6    1.2    0.5    0.5    0.4    0.4    0.3    0.3    0.2    0.2{c |}}
+{center:{c |}90.0-92.5    0.6    0.8    0.5    0.5    0.4    0.4    0.3    0.3    0.2    0.2{c |}}
+{center:{c BLC}{hline 5}{hline 50}{hline 24}{c BRC}}
+
+{p 5 8 2}{cmd: Notes: M=Male F=Female }
+
+
+{title:For problems and suggestions}
+
+
+{pstd}
+{cmd:Author: Liu wei}, The School of Sociology and Population Studies, Renmin University of China. {cmd:Address: }Zhongguancun Street No. 59, Haidian District, Beijing, China. {cmd:ZIP Code:} 100872. 
+{cmd:E-mail:} {browse "mailto:liuv@ruc.edu.cn":liuv@ruc.edu.cn} {break}
+
+
+{title:Also see}
+
+
+{pstd}
+Other Commands I have written: {p_end}
+
+{synoptset 30 }{...}
+{synopt:{help curvefit} (if installed)} {stata ssc install curvefit} (to install){p_end}
+{synopt:{help deci} (if installed)} {stata ssc install deci} (to install){p_end}
+{synopt:{help fdta} (if installed)} {stata ssc install fdta} (to install){p_end}
+{synopt:{help ftrans} (if installed)} {stata ssc install ftrans} (to install){p_end}
+{synopt:{help freplace} (if installed)} {stata ssc install freplace} (to install){p_end}
+{synopt:{help ftree} (if installed)} {stata ssc install ftree} (to install){p_end}
+{synopt:{help fren} (if installed)} {stata ssc install fren} (to install){p_end}
+{synopt:{help equation} (if installed)} {stata ssc install equation} (to install){p_end}
+{p2colreset}{...}
+

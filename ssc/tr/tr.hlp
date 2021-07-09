@@ -1,0 +1,117 @@
+{smcl}
+{* 25feb2009}{...}
+{hi:help tr}
+{hline}
+
+{title:Title}
+
+{p 4 4 2}{hi:tr} {hline 2} Prefix command to trace program execution
+
+
+{title:Syntax}
+
+{p 8 15 2}
+    {cmd:tr} [{it:#}] [{cmd:,} {it:options}  ] {cmd::} {it:command}
+
+
+    {it:options}{col 26}description
+    {hline 70}
+    [{cmd:{ul:no}}]{cmdab:m:ore}{col 26}{...}
+do not/do pause for {hline 2}more{hline 2} messages
+    [{cmd:{ul:no}}]{cmdab:e:xpand}{col 26}{...}
+do not/do show macro expansion
+    [{cmd:{ul:no}}]{cmdab:s:ep}{col 26}{...}
+do not/do display separator lines for subroutines
+    [{cmd:{ul:no}}]{cmdab:i:ndent}{col 26}{...}
+do not/do indent lines according to nesting level
+    [{cmd:{ul:no}}]{cmdab:n:umber}{col 26}{...}
+do not/do indicate nesting level
+    {cmdab:h:ilite:(}{it:pattern}{cmd:)}{col 26}{...}
+highlight {it:pattern} in the trace output
+    {cmdab:noh:ilite}{col 26}{...}
+turn highlighting off
+    {hline 70}
+
+
+{title:Description}
+
+{p 4 4 2}
+    {cmd:tr} is a prefix command (see {helpb prefix:[U] 11.1.10 Prefix commands})
+    to trace the execution of a program (see {helpb trace:[P] trace}). In essence,
+    {cmd:tr} is a shorthand for typing
+
+        {com}. set trace on
+        . {txt}{it:command}
+        {com}. set trace off{txt}
+
+{p 4 4 2}
+    Specify {it:#} to determine the tracedepth, the number of levels in tracing
+    nested programs. The default is {cmd:32000} or as set by
+    {helpb set tracedepth}.
+
+
+{title:Options}
+
+{p 4 8 2}
+    {cmd:more} causes Stata to wait until you press a key before continuing
+    when a {cmd:{hline 2}more{hline 2}} message is displayed. {cmd:nomore}
+    tells Stata not to pause or display the {cmd:{hline 2}more{hline 2}}
+    message. The default is as set by {helpb set more}.
+
+{p 4 8 2}
+    {cmd:expand} shows the code lines both before and after macro
+    expansion. {cmd:noexpand} suppresses the expanded code lines. The
+    default is to show the expanded lines or as set by {helpb set traceexpand}.
+
+{p 4 8 2}
+    {cmd:sep} displays horizontal separator lines between
+    subroutines. {cmd:nosep} suppresses the separator
+    lines. The default is to display the separator lines or
+    as set by {helpb set tracesep}.
+
+{p 4 8 2}
+    {cmd:indent} indents the code lines according to the
+    nesting level. {cmd:noindent} suppresses indenting the
+    lines. The default is to indent the lines or
+    as set by {helpb set traceindent}.
+
+{p 4 8 2}
+    {cmd:number} displays the nesting level at the beginning
+    of each line. {cmd:nonumber} suppresses displaying the
+    nesting level. The default is not to show the nesting level
+    or as set by {helpb set tracenumber}.
+
+{p 4 8 2}
+    {cmd:hilite(}{it:pattern}{cmd:)}
+    causes the specified pattern to be highlighted in the trace
+    output. {cmd:nohilite} suppresses the highlighting requested by
+    {helpb set tracehilite}.
+
+
+{title:Examples}
+
+        {com}. {stata "tr: sysuse auto"}
+
+        {com}. {stata "tr 1: sysuse auto"}
+
+        {com}. {stata `"tr 1, hilite("local"): sysuse auto"'}
+        {txt}
+
+{title:Author}
+
+{p 4 4 2}
+    Ben Jann, ETH Zurich, jannb@ethz.ch
+
+{p 4 4 2}
+    Thanks for citing this software as follows:
+
+{p 4 8 2}
+    Jann, B. (2009). tr: Stata module providing prefix command to trace program
+    execution. Available from http://ideas.repec.org/c/boc/bocode/s457008.html.
+
+
+{title:Also see}
+
+{psee}
+    Online:  help for
+    {helpb set trace}

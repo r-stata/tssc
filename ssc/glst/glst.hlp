@@ -1,0 +1,171 @@
+{smcl}
+{* 27sep2006}{...}
+{cmd:help glst}
+{hline}
+
+{title:Title}
+
+{p2colset 5 14 19 2}{...}
+{p2col :{hi: glst} {hline 2}}Generalized Least Squares for trend estimation of summarized dose-response data{p_end}
+{p2colreset}{...}
+
+{title:Syntax}
+
+{p 8 16 2}
+{cmd:glst} {depvar} {it:dose} [{indepvars}] {ifin} {cmd:,} {opth s:e(varname)} {opt c:ov(n cases)} [  {it:options} ]
+
+        
+{synoptset 17 tabbed}{...}
+{synopthdr:options}
+{synoptline}
+{syntab:Model}
+{synopt :{opth s:e(varname)}} variable containing estimate of standard error.{p_end}
+{synopt :{opt c:ov(n cases)}} variables containing the information required to fit
+the covariances.{p_end} 
+{synopt :{opt cc}} case-control data. {p_end}
+{synopt :{opt ir}} incidence rate data. {p_end}
+{synopt :{opt ci}} cumulative incidence data. {p_end}
+{synopt :{opt vwls}} variance-weighted least squares estimation.{p_end}
+{synopt :{opt cr:udes}} crude relative risks and correlations.{p_end}
+{synopt :{opt pf:irst(id study)}} pool-first method.{p_end} 
+{synopt :{opt ts:tage({f|r})}} two-stage fixed or random effects meta-analysis.{p_end} 
+{synopt :{opt ss:est}} study-specific linear trend estimates.{p_end} 
+{synopt :{opt r:andom}} random-effects for the {it:dose} coefficient in an aggregate analysis.{p_end}
+
+{syntab:Reporting}
+{synopt :{opt l:evel(#)}}set confidence level; default is {cmd:level(95)}{p_end}
+{synopt :{opt ef:orm}}generic label; {cmd:exp(b)}; the default{p_end}
+
+{synoptline}
+{p2colreset}{...}
+{p 4 6 2} where {depvar} contains log relative risks;
+{it:dose} is the main covariate of interest and contains the exposure levels; {indepvars} may contain other covariates (for instance, polynomial terms of {it:dose} or interaction terms){p_end}  
+
+{title:Description}
+
+{pstd}
+
+{p 4 8 2}{cmd:glst} estimates log-linear dose-response regression model using generalized least
+squares for trend estimation of single or multipe summarized dose-response epidemiological studies, namely case-control, incidence-rate,
+and cumulative incidence data. 
+It differs from variance weighted least squares (help {help vwls}) 
+in that {cmd:glst} estimates a variance-covariance matrix of the beta coefficients, as proposed by Greenland and Longnecker (1992).{p_end}
+
+{title:Options}
+
+{dlgtab:Model}
+
+{phang}
+{opth s:e(varname)} specifies an estimate of the standard error
+of {depvar}, log relative risks.  All values of
+{it:varname} must be > 0.  
+
+{phang}
+{opt c:ov(n cases)} specifies variables containing the information required to fit
+the covariances among the beta coefficients.  At each exposure level, {it:n} is the number of subjects (controls plus cases) for case-control data (cc); 
+or the total person-time for incidence rate data (ir); or the total number of persons (cases plus non-cases) for cumulative incidence data (ci).
+The variable {it:cases} contains the number of cases at each exposure level.{p_end}
+
+{phang}
+{opt cc} specifies case-control data. It's required for trend estimation of a single study unless the option {opt pf:irst(id study)} is specified.{p_end}
+
+{phang}
+{opt ir} specifies incidence rate data. It's required for trend estimation of a single study unless the option {opt pf:irst(id study)} is specified.{p_end}
+
+{phang}
+{opt ci} specifies cumulative incidence data. It's required for trend estimation of a single study unless the option {opt pf:irst(id study)} is specified.{p_end}
+
+{phang}
+{opt vwls} specifies variance-weighted least squares (help {help vwls}) estimation which assume zero covariances among series of log relative risks; the default is generalized least squares. {p_end}
+
+{phang}
+{opt cr:udes} specifies to calculate the vector of crude relative risks, and its variance-covariance and correlation matrix. 
+This option provides also the relative differences (as percentages) between crude and adjusted relative risks and their correlation matrix.{p_end}
+
+{phang}
+{opt r:andom} specifies the iterative generalized least squares method to estimate a random-effect meta-regression model (aggregate analysis).
+        Between-study variability of the {it:dose} coefficient is estimated with the moment estimator. 
+        This option can be specified only if {opt pf:irst(id study)} is specified.{p_end}
+
+{phang}
+{opt pf:irst(id study)} specifies the pool-first method with multiple summarized studies. The variable {it:id} is an indicator variable 
+that assumes the same value across correlated parameters within a study. The variable {it:study} 
+must take value 1 for case-control, 2 for incidence rate, and 3 for cumulative incidence study. Within each group of parameters the first observation is
+assumed to be the referent. This option allows the estimation either fixed or random-effects meta-regression model. {p_end}
+
+{phang}
+{opt ts:tage({f|r})} specifies the two-stage fixed ({it:f}) (inverse variance-weighted least squares) or random ({it:r}) effects meta-analysis 
+of dose-response linear trends (using the method of moments to estimate the between-study variance tau2). 
+This option can be specified only if {opt pf:irst(id study)} is also specified, and if only one covariate, namely the {it:dose} variable, 
+is included in the linear predictor.{p_end} 
+
+{phang}
+{opt ss:est} displays study-specific linear trend estimates. This option can be specified only if {opt pf:irst(id study)} is also specified.{p_end} 
+
+{dlgtab:Reporting}
+
+{phang}
+{opt level(#)} specifies the confidence level, as a percentage, for confidence
+intervals.  The default is {cmd:level(95)} or as set by {helpb set level}.
+
+{phang}
+{opt eform} reports coefficient estimates as exp(b) rather than b.  Standard errors and confidence
+intervals are similarly transformed. 
+
+{title:Example}
+
+* input data from Table 1. page 1302 of Greenland and Longnecker (1992)
+ 
+     	. {stata "use http://nicolaorsini.altervista.org/stata/data/dose.dta, clear"}
+ 
+* to go from 95% CI of OR to 95% CI of log OR 
+
+	. {stata "gen double logor = log(adjor)"} 
+	. {stata "gen double logorlb = log(lb)"}
+	. {stata "gen double logorub = log(ub)"}
+	. {stata "gen double se =  ((logorub - logorlb)/(2*invnorm(.975)))"}
+
+* trend estimation without correction for covariance of odds ratios  
+
+	. {stata "vwls logor dose in 2/4, sd(se) nocons"}
+	. {stata "mat list e(V)"}
+
+* trend estimation with correction for covariance of log odds ratios  
+
+	. {stata "glst logor dose, se(se) cov(N case) cc"}
+
+* check the variance-covariance matrix of log odds ratios 
+
+	. {stata "mat list e(Sigma)"}
+
+{title:Reference}
+
+{p 4 8 2}Orsini N., Bellocco R., Greenland S. 2006. Generalized least squares for trend estimation of summarized 
+dose-response data, {it:Stata Journal}, 6(1): 40-57. {p_end}
+
+{p 4 8 2}Greenland S. and Longnecker M. P. 1992. Methods for trend estimation from summarized dose-reponse data, 
+with applications to meta-analysis, {it:American Journal Epidemiology}, 135(11), pp.1301-1309.  {p_end}
+	 
+{title:Authors}
+
+{p 4 8 2}Nicola Orsini, Division of Nutritional Epidemiology,
+Institute of Environmental Medicine, Karolinska Institutet, Sweden {p_end}
+
+{p 4 8 2}Rino Bellocco, Department of Medical Epidemiology and Biostatistics,
+Karolinska Institutet, Sweden {p_end}
+
+{p 4 8 2}Sander Greenland, Department of Epidemiology, 
+UCLA School of Public Health, USA {p_end}
+
+{title:Support}
+
+{p 4 8 2}{browse "http://nicolaorsini.altervista.org"}{p_end}
+{p 4 8 2}{browse "mailto:nicola.orsini@ki.se?subject=glst":nicola.orsini@ki.se}{p_end}
+
+{title:Also see}
+
+{p 10 14}{hi:[R] vwls}{p_end}
+
+{p 0 19}On-line: help for {help vwls}{p_end}
+
+

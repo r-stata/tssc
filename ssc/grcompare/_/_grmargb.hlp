@@ -1,0 +1,124 @@
+{smcl}
+{* 08AUG2009}{...}
+{hline}
+help for {hi:_grmargb}{right:08AUG2009}
+{hline}
+
+{title:Marginal effects and their differences from binary regressions using bootstrap method for inference}
+
+{p 8 15 2}{cmd:_grmargb} [if] [in] [{cmd:,}
+{cmd:x(}{it:variables_and_values}{cmd:)}
+{cmd:rest(}{it:stat}{cmd:)}
+{cmdab:l:evel(}{it:#}{cmd:)}
+{cmdab:r:eps(}{it:#}{cmd:)}
+{cmdab:si:ze(}{it:#}{cmd:)}
+{cmd:save}
+{cmd:diff}
+{cmdab:noba:se}
+{cmd:all match dots}]
+
+{p 4 4 2}
+where {it:variables_and_values} is an alternating list of variables
+and either numeric values or mean, median, min, max, upper, lower,
+previous and {it:stat} is either mean, median, min, max, upper, lower,
+previous, grmean(group mean), mrmedian, grmin, grmax.
+
+{title: Description}
+
+{p 4 4 2}
+{cmd:_grmargb} is a command that returns marginal effects, differences in
+marginal effects and their confidence intervals using {help bootstrap} method
+with resampling technique. It can calculate boostrapped confidence intervals
+using the normal approximation, percentile, and bias-corrected methods.
+
+{title: Options}
+
+{p 4 8 2}
+{cmd:x(}{it:variables_and_values}{cmd:)} sets the values of independent
+variables for calculating predicted values (marginal effects). The list must alternate variable
+names and either numeric values or types of {cmd:stat}.
+
+{p 4 8 2}
+{cmd:rest(}{it:stat}{cmd:)} sets the independent variables not specified
+in {cmd:x(}{it:variables_and_values}{cmd:)} to one of the types of {cmd:stat}.
+
+{p 4 8 2}
+{cmd:level()} sets the {help level} of the confidence interval for differences in
+group average marginal effects. The default is 95.
+
+{p 4 8 2}
+{cmd:reps(}{it:#}{cmd:)} specifies the number of bootstrap replications
+to be performed.  The default is 1000.
+
+{p 4 8 2}
+{cmd: size(}{it:#}{cmd:)} specifies the size of the samples to be drawn.
+The default is e(N), the same size as the estimation sample.
+
+{p 4 8 2}
+{cmd:save} saves current values of independent variables and predictions
+for computing changes using the diff option.
+
+{p 4 8 2}
+{cmd:diff} computes difference between current predictions and those that
+were saved.
+
+{p 4 8 2}
+{cmd:nobase} suppresses inclusion of the base values of x in the output.
+
+{p 4 8 2}
+{cmd:all} specifies that any calculation of means, medians, etc., should
+use the entire sample instead of the sample used to estimate the model.
+
+{p 4 8 2}
+{cmd:match} requests {cmd:grmargb} to resample from each category group
+of the dependent variable in proportion of the resample size to the original
+sample size.
+
+{p 4 8 2}
+{cmd:dots} requests a dot be placed on the screen at the beginning of each
+replication, thus providing entertainment when a large number of reps() are
+requested. It also prints out the percent replications finished.
+
+{title: Returned Matrices}
+
+{p 4 8 2}
+r(marg):    saves marginal effects.
+
+{p 4 8 2}
+r(margci):  saves confidence intervals for marginal effects. Column 1 - 6 correspond to lower bounds, upper bounds for percentile
+normal approximation, and bias-corrected methods.
+
+{p 4 8 2}
+r(margvar): saves variance-covariance matrix for marginal effects
+
+{p 4 8 2}
+r(margse):  saves standard errors for marginal effects
+
+{p 4 8 2}
+r(dmarg):   saves differences in marginal effects when {cmd:diff} option is used
+
+{p 4 8 2}
+r(dmargci): saves confidence intervals for differences in marginal effects when {cmd:diff} option is used. Column 1 - 6 
+correspond to lower bounds, upper bounds for percentile normal approximation, and bias-corrected methods.
+
+
+
+{title:Examples}
+
+{p 4 4 2}
+To compute the predicted marginal effects, differences in marginal effects, and their confidence intervals using bootstrap method
+for a logit model. All independent variables are held at their means except for black and education specifed in x().
+
+{p 4 8 2}{cmd:.logit vote black educ income}
+
+{p 4 8 2}{cmd:.grmargb, x(black=1 educ=16) save}
+
+{p 4 8 2}{cmd:.grmargb, x(black=0 educ=16) diff}
+
+{p 4 8 2}
+ :::
+
+{hline}
+
+{p 2 4 2}Authors: Jun Xu{p_end}
+

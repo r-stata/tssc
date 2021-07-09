@@ -1,0 +1,114 @@
+{smcl}
+{* 08dec2009 }{...}
+{hline}
+help for {hi:gradip} {right:- v001 08dec2009 jx }
+{hline}
+
+{title: Compute averaged differences in predicted probabilities in binary regressions}
+
+{p 8 15 2}{cmd:gradip} varname [if] [in] {cmd:,}
+[{cmdab:f:rom(}{it:#}{cmd:)}
+{cmdab:t:o(}{it:#}{cmd:)}]
+[{cmd:x(}{it:variables_and_values}{cmd:)}
+{cmdab:r:est(}{it:stat}{cmd:)}
+{cmd:all}
+{cmdab:rep:s(}{it:#}{cmd:)}
+{cmdab:si:ze(}{it:#}{cmd:)}
+{cmdab:g:roup(}{it:varname}{cmd:)}
+{cmdab:do:ts}}]
+
+
+{p 4 4 2}
+where {it:variables_and_values} is an alternating list of variables
+and either numeric values or mean, median, min, max, upper, lower,
+previous.
+
+{p 4 4 2}
+{it:stat} is either mean, median, min, max, upper, lower, previous,
+grmean (group mean), grmedian, grmin, grmax.
+
+{title: Description}
+
+{p 4 4 2}
+{cmd:gradip} computes average differences in predicted probabilities over a range
+of a continuous variable c from v1 to v2 between Group 1 and 0 using the {help bootstrap} method. The formula in logit model is:
+{b_c*(v2-v1)}^(-1){[ln(exp(xb|g=1,c=v2)+1)-ln(exp(xb|g=0,c=v2)+1] - [ln(exp(xb|g=1,c=v1)+1)-ln(exp(xb|g=0,c=v1)+1]}.
+
+{title: Options}
+
+{p 4 8 2}
+{cmd:from()} and {cmd:to()} specify the values over which varname
+should vary when calculating differences in predicted probabilities.  
+
+{p 4 8 2}
+{cmd:x()} sets the values of independent variables for calculating
+predicted probabilities.  The list must alternate variable names and values.
+The values may be either numeric values or can be mean, median, min, max,
+previous, upper, or lower.  The latter cannot be used if rest()
+specifies a group summary statistic (e.g., grmean).
+
+{p 4 8 2}
+{cmd:rest()} sets the independent variables not specified in x() to
+their {cmd:mean} (default), {cmd:minimum}, {cmd:maximum},
+{cmd:median} when calculating predicted values.{cmd:grmean} sets these
+independent variables to the mean conditional on the variables and
+values specified in x(); {cmd:grmedian}, {cmd:grmax}, and {cmd:grmin}
+can also be used. 
+
+{p 4 8 2}
+{cmd:level()} sets the {help level} of the confidence interval for predicted
+values or probabilities for the commands for which these are provided. The default 
+is 95.
+
+{p 4 8 2}
+{cmd:all} specifies that any calculations of means, medians, etc.,
+should use the entire sample instead of the sample used to estimate
+the model.
+
+{p 4 8 2}
+{cmd:reps(}{it:#}{cmd:)} specifies the number of bootstrap replications
+to be performed.  The default is 1000.
+
+{p 4 8 2}
+{cmd: size(}{it:#}{cmd:)} specifies the size of the samples to be drawn.
+The default is e(N), the same size as the estimation sample.
+
+{p 4 8 2}
+{cmd:dots} requests a dot be placed on the screen at the beginning of each
+replication, thus providing entertainment when a large number of reps() are
+requested. It also prints out the percent replications finished.
+
+{p 4 8 2}
+{cmdab:g:roup} identifies a group indicator variable. This variable needs to be in the 
+estimation. One group is coded as 1 and the other group is coded as 0 (G1-G0). 
+To compare two groups when we have multiple groups, we need to be also specify
+0's for other group indicator variables. For example, we have three groups, Asians, Blacks, 
+and Whites. If we want to compare Asians with Whites, and Asian is the omitted category. Then
+in the rest option, we need to set Blacks to be zero, and in this {cmdab:g:roup} option,
+we just need to specify Whites. 
+
+{title: Returned Matrices}
+
+{p 4 8 2}
+r(adipmat):    saves summed differences in predicted probabilities between two groups. Note that to
+get average differences in predicted probabilities, users need to divide the matrix by taking the 
+differences between {cmd:from()} and {cmd:to()}.
+
+{title:Examples}
+
+{p 4 4 2}
+To compute the average difference in predicted probabilities and confidence intervals using bootstrap method
+for a logit model with all other variables set at their means except for black (between black=1 and black=1) 
+and education (from 12 to 20).
+
+{p 4 8 2}{cmd:.logit vote black educ income}
+
+{p 4 8 2}{cmd: gradip educ, group(black) from(12) to(20) reps(1000) dots}
+
+{p 4 8 2}
+ :::
+
+{hline}
+
+{p 2 4 2}Authors: Jun Xu{p_end}
+

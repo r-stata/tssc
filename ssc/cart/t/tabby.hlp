@@ -1,0 +1,131 @@
+.-
+help for ^tabby^              Version 2/10/96
+.-
+
+Tabulation with more control over format
+----------------------------------------
+
+ ^tabby^ varlist  [^if^ exp] [^in^ range] [^,^ ^b^y(var)  ^b^ymis ^m^is 
+
+  ^d^ec^(^integer^)^ ^w^idth^(^#^)^ ^h^ead ^t^otal ^p^erc|^c^ol|^r^ow ]
+
+  no^byt^ot  ^s^tart^(^int 10^)^  no^z^ero ^max(^int 100^)^ ^te^st^(^string^)^
+
+
+Generates a table with frequencies or row or column percentages of the variables
+in ^varlist^. If ^by(var)^ is specified, a table of crosstabulations of
+each variable in the varlist with the by-var is generated.
+
+String variables in the varlist or as byvar are trimmed of any leading or 
+trailing blanks before analysis. Empty strings are considered missing. 
+
+Options
+-------
+ ^by(^var^)^  Optional. If not specified only overall oneway frequencies or
+    column percentages are shown.
+
+ ^dec(^..^)^    Specifies number of decimals for percentages. Default 0.
+    Frequencies are always displayed without decimals.
+    If the length of the statistic would exceed the available 
+    width for the display, the number of decimals is reduced.
+
+ ^width^  Integer number, with default value 10. Specifies the minimum width 
+    for each column. The value 10 corresponds to the width of columns created
+    by tabulate. A specified width is adapted to the minimum number of digits
+    required to display a percentage (3 digits) with decimals, if specified, 
+    and the total number of observations. The width excludes a space between 
+    columns. If the specified width is too small for a column, the width will 
+    be increased for that column.
+    Long column-labels in the header are abbreviated if necessary.
+
+ ^mis^    Specifies that the category with missing values of each
+    variable in the ^varlist^ should be included in the table.
+    Default the missing category is excluded. 
+    For string variables an empty string or a string consisting
+    only of blanks is considered missing.
+
+ ^bymis^  Specifies that the category with missing values of the ^byvar^
+    should be included in the table. Default these are excluded.
+
+ ^head^   Request the display of a heading of the table. Active only if
+     ^by(var)^ is specified.
+ ^total^        Request the display of a row(s) with totals for each variable
+    in the ^varlist^ if ^mis^ is not specified. If ^mis^ is 
+    specified, one Total -row will be displayed at the top of 
+    the Table.
+
+ ^row^    Request row-percentages. Only in case a byvar is specified  
+    with at least two non-empty categories. In the total column 
+    of the Table frequencies will be displayed.
+
+ ^col^    Request column-percentages. In the Total-row(s) of the Table
+    frequencies will be displayed.
+
+ ^perc^   Requests column-percentages in ^addition^ to the frequencies if
+           ^by()^ is not specified. Otherwise equivalent to ^col^. 
+
+ ^head^   Request the display of a heading of the table. Active only if
+     ^by(var)^ is specified.
+
+ ^nobytot^    Suppresses the output of a total-column. Default a total-column 
+    is printed. Option is ignored if row-percentage is requested.
+
+ ^start()^  Specifies the (minimum) position on a line for the start of
+    the data-columns, i.e. the column in which the ^|^ is printed.
+    Default and minimum 12. May be increased by the program if 
+    long string variables are in the varlist.
+
+ ^nozero^ Requests for display of a "." in cells with zero-frequencies.
+
+ ^max()^  Specifies the maximum number of rows per variable, or number
+    of different unique values of a variable from the varlist 
+    that is allowed. Default 100. In case a variable has more 
+    than ^max^ different values, the variable label will be 
+    displayed together with a message. This option is useful to 
+    prevent long tables. 
+    
+ ^test()^ request the calculation of a P-value:
+  test(^chi^square) : Pearson Chisquare test (see note below)
+  test(^kw^allis)   : Kruskal-Wallis by ^by^-variable
+  test(np^tr^end)   : NPtrend test by ^ordinal by^-variable
+  test(^sp^earman)  : Spearman rank test    
+  test(^rh^o)       : Spearman rank test    
+  test(^exac^t)     : Fisher's exact test
+  Note: only non-missing observations on both the row and column variable
+        are included in the calculation of the P-value independent of the
+        specification of ^mis^ or ^bymis^.
+  ^Note on Chisquare test:^ this test will ^not^ be performed if in any column
+  (resp. row) the column- (resp. row-)total divided by the number of rows 
+  (resp. columns) is less than 3.  
+  
+        
+ ^Examples:^
+ ^---------^
+
+. tabby t erpr, by(nn) mis head
+. tabby t erpr, by(nn) mis head  bymis col dec(1) nobytot
+. tabby t erpr, by(nn) mis wi(5) bymis row dec(1) test(chi)
+. tabby t erpr,  mis wi(5)  col dec(1)
+
+^Author:^
+^-------^ 
+  Wim van Putten
+  Erasmus MC - Daniel den Hoed Cancer Center
+  Rotterdam
+  The Netherlands
+  FAX: +31.10.4391028
+  e-mail: w.vanputten@@erasmusmc.nl 
+
+
+
+
+
+
+
+
+
+
+
+
+
+

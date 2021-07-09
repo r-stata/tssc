@@ -1,0 +1,118 @@
+{smcl}
+{* 2010-08-30/2010-09-01}{...}
+{hline}
+help for {hi:dummieslab}
+{hline}
+
+{title:Generating dummy variables from categorical variable using value label names}
+
+{p 8 17 2}{cmd:dummieslab} {it:varname}
+[{cmd:if} {it:exp}]
+[{cmd:in} {it:range}]
+{break}[{cmd:,}
+{cmd:word(}{it:integer}{cmd:)}
+{cmd:from(}{it:string}{cmd:)}
+{cmd:to(}{it:string}{cmd:)}
+{cmd:template(}{it:string}{cmd:)}
+{cmd:truncate(}{it:integer}{cmd:)}
+{cmd:novarlabel}
+]
+
+
+{title:Description}
+
+{p 4 4 2} {cmd:dummieslab} generates a set of dummy variables from a
+categorical variable. One dummy variable is created for each level of the
+original variable. Names for the dummy variables are derived from the value
+labels of the categorical variable. (Raw (unlabelled) values are used if the
+categorical variable has no value labels attached.)
+
+{p 4 4 2}Two different behaviours can be chosen for the variable names:
+(i) use full value labels;
+(ii) use the {it:s}th word of the label. In both cases, all invalid
+characters are stripped from the new variable names.
+
+{p 4 4 2}Any user-defined prefix and/or suffix can be added using the
+{cmd:template} option.
+
+{p 4 4 2}In all cases, no new variable will be generated unless all
+implied new names are valid.
+
+{p 4 4 2}{cmd:dummieslab} applied to variables with no label appends the level
+to the original variable name (very much like what {cmd:tabulate} does).
+
+
+{title:Options}
+
+{p 4 8 2}{cmd:word(}{it:s}{cmd:)}{space 1}requests that the {it:s}th word of
+the label be used as the new variable name. Note the use of {cmd:word(-1)} to
+specify the last word of the label.
+
+{p 4 8 2}{cmd:from(}{it:string}{cmd:)} and {cmd:to(}{it:string}{cmd:)}
+are used together to make replacements to the strings used to create
+the new variables. {cmd:from(}{it:string}{cmd:)} contains a list of
+words to be replaced by the list of words supplied in {cmd:to(}{it:string}{cmd:)},
+i.e. the first item in {cmd:from} is substituted by the first item in {cmd:to},
+the second item in {cmd:from} is substituted by the second item in {cmd:to}, etc.
+By default, all invalid characters are dropped from the value labels to create new
+variable names. This behaviour can be overridden by the use of {cmd:from(}{it:string}{cmd:)}
+and {cmd:to(}{it:string}{cmd:)}. For example, use {bind:{cmd:from(" ")}} and {cmd:to("_")}
+to replace all blanks by underscores.
+
+{p 4 8 2}{cmd:template(}{it:word}{cmd:)}{space 1} specifies a template for the
+new variable name. {cmd:@} is used as a placeholder for inserting the extracted
+label. This option is used to insert a prefix (anything before {cmd:@} in
+{it:word}) and/or a suffix (anything after {cmd:@} in {it:word}).
+
+{p 4 8 2}{cmd:truncate(}{it:n}{cmd:)}{space 1}truncates new variable names
+after {it:n} characters.{p_end}
+
+{p 4 8 2}{cmd:novarlabel}{space 1}prevents automated variable labelling of the generated dummies.{p_end}
+
+
+{title:Saved results}
+
+{p 4 4 2}{bf:local}{p_end}
+{ralign 15:r(names) }{col 17} List of names of created dummies
+{ralign 15:r(from) }{col 17} Name of the original categorical variable
+
+
+{title:Examples}
+
+{p 4 8 2}{cmd:. sysuse auto}{p_end}
+{p 4 8 2}{cmd:. label define newfor 0 "Domestic car" 1 "Foreign (European or Japanese) car"}{p_end}
+{p 4 8 2}{cmd:. label values foreign newfor}{p_end}
+{p 4 8 2}{cmd:. dummieslab foreign}{p_end}
+{p 4 8 2}{cmd:. dummieslab foreign, word(1)}{p_end}
+{p 4 8 2}{cmd:. dummieslab foreign, word(-1)}{p_end}
+{p 4 8 2}{cmd:. dummieslab foreign, from(" ") to("_")}{p_end}
+{p 4 8 2}{cmd:. dummieslab foreign, from(car or Foreign) to("" "_" "")}{p_end}
+{p 4 8 2}{cmd:. dummieslab foreign, from(car Foreign or) to("" "" "_")}{p_end}
+{p 4 8 2}{cmd:. dummieslab foreign, word(1) template("My_@_car")}{p_end}
+
+
+{title:Acknowledgments}
+
+{p 4 4 2}Patrick Joly made helpful suggestions on the first version of {cmd:dummieslab},
+which led to the addition of the {cmd:from} and {cmd:to} options. Daniel Klein suggested
+option {cmd:novarlabel}.
+
+
+{title:Authors}
+
+{p 4 4 2}Philippe Van Kerm, CEPS/INSTEAD, Differdange, G.-D. Luxembourg{break}
+philippe.vankerm@ceps.lu{p_end}
+
+{p 4 4 2}Nicholas J. Cox, Durham University, U.K.{break}
+n.j.cox@durham.ac.uk{p_end}
+
+
+{title:Also see}
+
+{p 4 13 2}On-line:
+{help tabulate}{space 2}
+{p_end}
+{p 4 13 2}On-line (if installed):
+{help dummies}{space 2}
+{p_end}
+

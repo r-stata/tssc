@@ -1,0 +1,47 @@
+/*
+ imvol
+*! VERSION 1.0 07jan2012
+*/
+VERSION 10.0
+INCLUDE _std_large
+DEFINE _dlght 200
+INCLUDE header
+HELP hlp1, view("help imvol")
+RESET res1
+DIALOG main, label("impvol - Implied Volatility Black-Scholes CaLL-Put Option") ///
+	tabtitle("Main")
+BEGIN
+ TEXT     tx_yvar   _lft    _top  150 ., ///
+	label("Stock Price:")
+ TEXT     tx_xvar   180    @	  150 ., ///
+	label("Strike Price:")
+ VARNAME  vn_yvar   _lft    _ss   150 ., ///
+	label("Stock Price")
+ VARNAME  vn_xvar   180    @     150 ., ///
+	label("Strike Price")
+ TEXT tx_ir     _lft   _ms       200   .,	///
+	label("Interest Rate:")
+ VARNAME  vn_ir     @  _ss       200   .,	///
+	label("Interest Rate:")			///
+	option(ir)
+ TEXT tx_time     _lft   _ms    200   .,	///
+	label("Expiration Time:")
+ VARNAME  vn_time     @  _ss    200   .,	///
+	label("Expiration Time:")		///
+	option(time)
+ TEXT tx_opt     _lft   _ms    200   .,	///
+	label("Call/Put Option:")
+ VARNAME  vn_opt     @  _ss    200   .,	///
+	label("Call/Put Option:")		///
+	option(option)
+END
+PROGRAM command
+BEGIN
+ put "imvol "
+ varlist main.vn_yvar main.vn_xvar 
+ beginoptions
+ optionarg main.vn_time
+ optionarg main.vn_ir
+ optionarg main.vn_opt
+ endoptions
+END

@@ -1,0 +1,1362 @@
+{smcl}
+{* October 25, 2010}
+{* Version 3.0}
+help for {hi:icdpic}
+{hline}
+
+{title:Title}
+
+{p 4 8 2}
+{cmd:icdpic} -- International Classification of Diseases Programs for Injury Categorization
+
+
+{title:Version}
+
+{p 4 4 2}
+Version 3.0.  
+
+{p 4 4 2}
+ICDPIC Version 3.0 requires STATA 8.0 or higher.  ICDPIC Version 3.0 has been tested in STATA 10 and STATA 11, but the authors believe it
+should also work without incident in STATA 8 and STATA 9.  If you have any problems using ICDPIC Version 3.0 in STATA 8 or STATA 9, please
+inform the authors.
+
+{p 4 4 2}
+ICDPIC Version 3.0 may be installed from within STATA using the {bf:ssc} command.  If you installed a previous version of ICDPIC from the SSC
+archives website using the {bf:ssc} command, we suggest that you first delete it by typing {bf:ssc uninstall icdpic} followed by
+{bf:ssc install icdpic}.  Alternatively, you may use {bf:ssc install icdpic, replace}.  See help for {help ssc}.
+
+{p 4 4 2}
+If you installed any previous ICDPIC files obtained directly from the authors, please delete them {bf:ALL} (.ado, .hlp and .dta files) to avoid
+any conflicts with ICDPIC 3.0 files.
+
+{p 4 4 2}
+Please enter complete variable names in the ICDPIC Version 3.0 dialog boxes.  Do not use abbreviations.
+
+{p 4 4 2}
+New to Version 3.0 is the addition of a dialog box (.dlg) file associated with each individual ICDPIC Version 3.0 program (.ado) file.  To access
+the ICDPIC dialog box, and all the ICDPIC programs, type: {cmd:db icdpic}.  Typing {cmd:icdpic}, as in earlier versions, will still work, but
+{bf:ONLY} with {cmd:icdpic}.  Forgetting to precede any other individual program name with {bf:db} will produce an error.
+
+{p 4 4 2}
+Fixed in ICDPIC Version 3.0 is the ability to use path\file names containing spaces.
+
+{p 4 4 2}
+Fixed in ICDPIC Version 3.0 is the ability to run in STATA 11.0.
+
+{p 4 4 2}
+Fixed in ICDPIC Version 3.0 is a bug that caused the {bf:triss} program to crash if the {it:rts} variable was named anything other than "rts".
+
+{p 4 4 2}
+New in ICDPIC Version 3.0 ({bf:trauma} program only) is the ability to choose whether an AIS value of 6 automatically forces an ISS of
+75 or to automatically have all AIS values of 6 changed to an AIS value of 5 and then have the ISS calculated normally.
+
+{p 4 4 2}
+All dialog boxes in ICDPIC Version 3.0 have memory.  Each time a dialog box is opened within the same STATA session, it will remember the values
+last entered.
+
+{p 4 4 2}
+All dialog boxes in ICDPIC Version 3.0 have the following buttons:
+
+{p 6 9 2}
+{it:OK} executes the program and removes the dialog box from the screen.
+
+{p 6 13 2}
+{it:SUBMIT} executes the program and leaves the dialog box on the screen.  Note that if an error message is generated the dialog box may
+be minimized.
+
+{p 6 13 2}
+{it:CANCEL} removes the dialog box from the screen and does nothing.  Clicking on the close icon of the dialog box does the same thing.
+
+{p 6 11 2}
+{it:HELP} leaves the dialog box on the screen and presents the program help file.  The {it:HELP} button has a question mark on it.
+
+{p 6 11 2}
+{it:COPY} leaves the dialog box on the screen and copies the program command to the clipboard.
+
+{p 6 12 2}
+{it:RESET} resets the values of the controls in the dialog box to their initial state, just as if the dialog box were invoked
+for the first time.  Each time a user invokes a dialog box, its controls will be filled in with the values the user last entered.
+{it:RESET} restores the control values to their defaults.  The {it:RESET} button has an R on it.
+
+
+{title:Syntax}
+
+{p 8 17 2}
+{cmd:db icdpic}
+
+{p 4 4 2}
+The {it:ICDPIC} dialog box will open.  Click on the radio button next to the desired program and then click {it:OK} or {it:Submit}.  
+
+
+{title:Description}
+
+{p 4 4 2}
+The {cmd:db icdpic} command presents to the user the master dialog box used to access the International Classification of
+Diseases Programs for Injury Categorization (IDCPIC).  ICDPIC programs, and their associated lookup tables, were developed
+using Stata (Version 7, StataCorp, College Station TX) for records containing ICD-9-CM codes.  We intentionally used an
+older version of Stata (currently up to Version 11), so that users with older versions could still have access to the
+programs.  The current version (3.0) requires STATA 8.0 or higher.  The intention of ICDPIC described here is to provide
+inexpensive methods for translating International Classification of Diseases (ICD) diagnosis codes into standard injury
+categories and/or scores.  Initial development of these programs occurred as part of research projects funded by the
+National Center for Injury Prevention and Control through the Harvard Injury Control Research Center (CDC R49/CCR 115279)
+and by the Maine Medical Center Research Strategic Plan.  The authors are grateful for this support and would also
+appreciate suggestions or corrections from any user of the software.  Publications of studies in which these programs or
+tables are used should cite the authors.  We hope ICDPIC will make ICD-9-CM codes easier to use for injury research, and
+facilitate comparison of categorization methods.  Modification of lookup tables could allow easy conversion to ICD-10-CM,
+and empirically-derived scores (like ICISS) can be updated using newer reference databases.
+
+{p 4 4 2}
+A list of programs to which ICDPIC provides access is found below:
+
+
+{p 4 4 2}
+{cmd:trauma} provides various classifications and characterizations of trauma based on ICD-9-CM diagnosis codes,
+specifically codes for Nature of Injury (N-Codes) and External Cause of Injury (E-Codes).
+
+{p 4 4 2}
+{cmd:srr} calculates the survival risk ratio (SRR) and the independent survival risk ratio (SRRi) for all valid
+ICD-9-CM injury codes (N-Codes) in a data set and stores them in a file on disk.
+
+{p 4 4 2}
+{cmd:iciss} calculates ICISS (ICD-9 based Injury Severity Score) using both survival risk ratios (SRR's) and independent
+survival risk ratios (SRRl's).
+
+{p 4 4 2}
+{cmd:aps} calculates the anatomic profile score (APS).
+
+{p 4 4 2}
+{cmd:rts} calculates the revised trauma score (RTS).
+
+{p 4 4 2}
+{cmd:triss}, A Trauma and Injury Severity Score (TRISS), estimates patient survival probability.
+
+{p 4 4 2}
+{cmd:ascot}, A Severity Characterization of Trauma (ASCOT), estimates patient survival probability.
+
+{p 4 4 2}
+{cmd:icd9tmpm}, A Trauma Mortality Prediction Model (ICD-9-CM TMPM), ICD-9-CM version.
+
+{p 4 4 2}
+{cmd:ais_tmpm}, A Trauma Mortality Prediction Model (AIS TMPM), AIS version for those with AIS codes only.
+
+{p 4 4 2}
+{cmd:altcharl} determines which Charlson comorbidities are present, the number of Charlson comorbidities present and the
+Charlson score.
+
+{p 4 4 2}
+{cmd:elixhaus} determines which Elixhauser comorbidities are present and the number of Elixhauser comorbidities present.
+
+
+{p 4 4 2}
+On a general note, observations in the user's data must be in Stata "wide" format, for example:
+
+
+    {bf:ident}    {bf:dx1}     {bf:dx2}     {bf:dx3}
+
+    31416   800.1   959.9   E910.9
+    31417   800.24  410.0
+
+
+{p 4 4 2}
+Use the Stata "wide" command (see help for {help reshape}) to obtain this format if the observations are originally recorded
+in "long" format, for example:
+ 
+
+    {bf:ident}    {bf:diagnosis}
+
+    31416     800.16
+    31416     959.9
+    31416     E910.9
+    31417     800.24
+    31417     410.0
+
+
+{p 4 4 2}
+For a detailed discussion on each of ICDPIC's programs, their requirements, and options available, the user is directed to
+each program's individual help file found in the {bf:Also see} section at the end of this help file.  It is strongly
+suggested that the user read each program's help file before running it.
+
+{p 4 4 2}
+Information on the lookup tables provided for use with {cmd:icdpic} can be found in the {bf:Remarks} section below.
+
+
+{title:Options}
+
+{p 4 4 2}
+See individual help files for each program.
+
+
+{title:Remarks}
+
+{p 4}
+{bf:{ul:BACKGROUND}}
+
+{p 4 4 2}
+Administrative databases and registries often describe specific injuries using the International Classification of Diseases
+(ICD), which has gone from its Eighth Revision through its Tenth Revision over the past few decades.
+
+{p 4 4 2}
+Sacco and colleagues tabulated the observed hospital mortality for patients with each diagnosis code, and assigned each
+patient an Anatomic Index (AI) equal to the maximum of the observed mortality probabilities for that patient's injury
+diagnoses.  Levy and colleagues similarly tabulated the observed hospital survival for patients with each diagnosis code,
+and assigned each patient an Estimated Survival Probability (ESP) equal to the product of the observed survival
+probabilities for that patient's injury diagnoses.  A variation of the latter approach, the ICD-9-based Injury Severity
+Score (ICISS), was popularized years later by Osler and colleagues.
+ 
+{p 4 4 2}	
+The Abbreviated Injury Score (AIS) and Injury Severity Score (ISS) had been previously introduced for clinical studies, and
+have remained the most popular and most familiar way to describe injury severity, although they were not originally defined
+in terms of ICD diagnoses.  Later, Copes and colleagues described an Anatomic Profile, specified in part by ICD codes, and
+Osler and colleagues described a New Injury Severity Score (NISS), but these generally failed to displace the AIS or ISS
+in popular use.
+
+{p 4 4 2}
+More recently, Barell and an international group of colleagues developed a matrix of ICD-9-CM codes to
+classify injury diagnoses by type and anatomic region; these authors did not relate these categories to severity, although
+it is possible to do so.  Another innovation is the Trauma Mortality Prediction Model, which uses a new approach based
+on AIS or ICD-9-CM codes as described by Osler et al.
+ 
+{p 4 4 2} 
+Translating ICD codes into AIS codes (and from there to ISS or NISS if desired) was considered with the Eighth Revision of
+ICD, but only became practical with the increased precision of the ICD Ninth Revision Clinical Modification (ICD-9-CM).  A
+program to make this conversion was further developed with federal grant support at the Johns Hopkins School of Hygiene and
+Public Health, and was subsequently marketed as ICDMAP-90 by the Tri-Analytics Corporation of Bel Air, Maryland.  Since
+2001, Tri-Analytics is no longer responsible for this software, although it is still available through Johns Hopkins
+(according to {browse "http://www.trianalytics.com/pdfs/dataspeak_v8n2.pdf"}).  ICDMAP-90 deserves credit for providing a
+standard method of ICD to AIS conversion for the past two decades.  However, it uses proprietary algorithms that are not
+explicitly stated for the user, and some newer ICD-9-CM codes are not recognized by the program.
+ 
+{p 4 4 2}   
+Anatomic ICD-9-CM diagnosis codes are sometimes called Nature of Injury codes or N-codes.  External Cause of Injury codes
+in ICD-9 (E-codes) refer to the mechanism of injury, such as vehicle crash or gunshot.  The CDC has published a suggested
+categorization of ICD-9 E-codes by mechanism as well as intent.
+
+{p 4 4 2}
+The Revised Trauma Score (RTS) uses physiologic information (not available from ICD-9-CM codes) to predict survival after
+injury.  The Trauma and Injury Severity Score (TRISS) derives a "Probability of Survival" equation from ISS, RTS, and an
+age indicator variable (equal to 0 for age <= 54 and 1 otherwise).  Separate equations have been used for penetrating or
+blunt injuries.  ASCOT is an alternative scale based on the Anatomic Profile, which has generally not been as popular as
+TRISS.
+
+{p 4 4 2}
+ICD-9-CM codes potentially relating to pre-existing medical conditions may be identified according to the inclusion
+criteria of Charlson et al, with the "Dartmouth/Manitoba" modifications described by Romano et al.  The "Charlson Score"
+adds weights of 6 for the presence of AIDS or metastatic solid tumor, 3 for severe liver disease, 2 for any malignancy,
+renal failure, or complications of diabetes, and 1 for other conditions.  A more detailed method has been developed by
+Elixhauser et al but has not been widely used in trauma patients.
+
+
+{p 4}
+{bf:{ul:LOOKUP TABLES}}
+
+{p 4 4 2}
+Lookup tables are provided for use with the {cmd:trauma}, {cmd:icd9tmpm}, {cmd:ais_tmpm}, {cmd:altcharl}, {cmd:elixhaus}
+and {cmd:srr} programs.  If the user wishes to modify these tables, or provide their own, they must be sorted on the diagnosis code
+variable (DRG variable for table {bf:drgtab_h.dta}; predot variable for table {bf:mais_s.dta}).  All lookup tables are current through
+September 30, 2008, except for ntab_s1.dta and ntab_s2.dta, which are current through September 30, 2011, barring any late additions and/or
+corrections.  New tables for etab_s1.dta and etab_s2.dta will be provided when a new recommended framework for presenting injury mortality
+data is issued.
+
+{p 4 4 2}
+The tables for use with the {cmd:trauma} program are:
+
+
+{p 8 12 2}
+{bf:ntab_s1.dta} (Nature of Injury codes (N-Codes) and their associated data, no decimal point) {p_end}
+{p 8 12 2}
+{bf:ntab_s2.dta} (Nature of Injury codes (N-Codes) and their associated data, with decimal point) {p_end}
+{p 8 12 2}
+{bf:etab_s1.dta} (External Cause of Injury codes (E-Codes) and their associated data, no decimal point) {p_end}
+{p 8 12 2}
+{bf:etab_s2.dta} (External Cause of Injury codes (E-Codes) and their associated data, with decimal point) {p_end}
+
+
+{p 4 4 2}
+The following variables appear in both {bf:ntab_s1.dta} and {bf:ntab_s2.dta}:
+
+
+{p 8 12 2}
+{it:dx}: Nature of Injury code (N-Code) {p_end}
+{p 8 12 2}
+{it:barell}: Barell body region by nature of injury diagnosis matrix category {p_end}
+{p 8 12 2}
+{it:severity}: AIS severity {p_end}
+{p 8 12 2}
+{it:issbr}: ISS body region {p_end}
+{p 8 12 2}
+{it:apc}: Anatomic profile component category {p_end}
+
+
+{p 4 4 2}
+Nature of Injury Codes (N-Codes) included in both {bf:ntab_s1.dta} and {bf:ntab_s2.dta}:
+
+
+{p 8 12 2}
+800 - 904.9 {p_end}
+{p 8 12 2}
+910 - 929.9 {p_end}
+{p 8 12 2}
+940 - 957.9 (Note: burns, 940 - 949.5, are assigned AIS severity code 9 (Unknown)) {p_end}
+{p 8 12 2}
+959 - 959.9 {p_end}
+
+
+{p 4 4 2}
+Codes for Barell body region by nature of injury diagnosis matrix category:
+
+
+{p 8 14 2}
+01A = Head and Neck, Traumatic Brain Injury, Type 1, Fracture {p_end}
+{p 8 14 2}  
+01D = Head and Neck, Traumatic Brain Injury, Type 1, Internal {p_end}
+{p 8 14 2} 
+01K = Head and Neck, Traumatic Brain Injury, Type 1, Nerves {p_end}
+{p 8 14 2} 
+02A = Head and Neck, Traumatic Brain Injury, Type 2, Fracture {p_end}
+{p 8 14 2} 
+02D = Head and Neck, Traumatic Brain Injury, Type 2, Internal {p_end}
+{p 8 14 2} 
+03A = Head and Neck, Traumatic Brain Injury, Type 3, Fracture {p_end}
+{p 8 14 2} 
+04E = Head and Neck, Other Head, Face and Neck, Other Head Injury, Open Wound {p_end}
+{p 8 14 2} 
+04J = Head and Neck, Other Head, Face and Neck, Other Head Injury, Burns {p_end}
+{p 8 14 2} 
+04K = Head and Neck, Other Head, Face and Neck, Other Head Injury, Nerves {p_end}
+{p 8 14 2} 
+04L = Head and Neck, Other Head, Face and Neck, Other Head Injury, Unspecified {p_end}
+{p 8 14 2} 
+05A = Head and Neck, Other Head, Face and Neck, Face Injury, Fracture {p_end}
+{p 8 14 2} 
+05B = Head and Neck, Other Head, Face and Neck, Face Injury, Dislocation {p_end}
+{p 8 14 2} 
+05C = Head and Neck, Other Head, Face and Neck, Face Injury, Sprains and Strains {p_end}
+{p 8 14 2} 
+05E = Head and Neck, Other Head, Face and Neck, Face Injury, Open Wound {p_end}
+{p 8 14 2} 
+05J = Head and Neck, Other Head, Face and Neck, Face Injury, Burns {p_end}
+{p 8 14 2} 
+06E = Head and Neck, Other Head, Face and Neck, Eye Injury, Open Wound {p_end}
+{p 8 14 2} 
+06H = Head and Neck, Other Head, Face and Neck, Eye Injury, Contusion/Superficial {p_end}
+{p 8 14 2} 
+06J = Head and Neck, Other Head, Face and Neck, Eye Injury, Burns {p_end}
+{p 8 14 2} 
+06K = Head and Neck, Other Head, Face and Neck, Eye Injury, Nerves {p_end}
+{p 8 14 2} 
+07A = Head and Neck, Other Head, Face and Neck, Neck Injury, Fracture {p_end}
+{p 8 14 2} 
+07C = Head and Neck, Other Head, Face and Neck, Neck Injury, Sprains and Strains {p_end}
+{p 8 14 2} 
+07E = Head and Neck, Other Head, Face and Neck, Neck Injury, Open Wound {p_end}
+{p 8 14 2} 
+07I = Head and Neck, Other Head, Face and Neck, Neck Injury, Crush {p_end}
+{p 8 14 2} 
+07J = Head and Neck, Other Head, Face and Neck, Neck Injury, Burns {p_end}
+{p 8 14 2} 
+07K = Head and Neck, Other Head, Face and Neck, Neck Injury, Nerves {p_end}
+{p 8 14 2} 
+08G = Head and Neck, Other Head, Face and Neck, Head, Face and Neck Unspecified, Blood Vessels {p_end}
+{p 8 14 2} 
+08H = Head and Neck, Other Head, Face and Neck, Head, Face and Neck Unspecified, Contusion/Superficial {p_end}
+{p 8 14 2}
+08I = Head and Neck, Other Head, Face and Neck, Head, Face and Neck Unspecified, Crush {p_end}
+{p 8 14 2} 
+08J = Head and Neck, Other Head, Face and Neck, Head, Face and Neck Unspecified, Burns {p_end}
+{p 8 14 2} 
+08K = Head and Neck, Other Head, Face and Neck, Head, Face and Neck Unspecified, Nerves {p_end}
+{p 8 14 2} 
+08L = Head and Neck, Other Head, Face and Neck, Head, Face and Neck Unspecified, Unspecified {p_end}
+{p 8 14 2} 
+09A = Spine and Back, Spinal Cord Injury, Cervical, Fracture {p_end}
+{p 8 14 2} 
+09D = Spine and Back, Spinal Cord Injury, Cervical, Internal {p_end}
+{p 8 14 2} 
+10A = Spine and Back, Spinal Cord Injury, Thoracic/Dorsal, Fracture {p_end}
+{p 8 14 2} 
+10D = Spine and Back, Spinal Cord Injury, Thoracic/Dorsal, Internal {p_end}
+{p 8 14 2} 
+11A = Spine and Back, Spinal Cord Injury, Lumbar, Fracture {p_end}
+{p 8 14 2} 
+11D = Spine and Back, Spinal Cord Injury, Lumbar, Internal {p_end}
+{p 8 14 2} 
+12A = Spine and Back, Spinal Cord Injury, Sacrum Coccyx, Fracture {p_end}
+{p 8 14 2} 
+12D = Spine and Back, Spinal Cord Injury, Sacrum Coccyx, Internal {p_end}
+{p 8 14 2} 
+13A = Spine and Back, Spinal Cord Injury, Spine + Back Unspecified, Fracture {p_end}
+{p 8 14 2} 
+13D = Spine and Back, Spinal Cord Injury, Spine + Back Unspecified, Internal {p_end}
+{p 8 14 2} 
+14A = Spine and Back, Vertebral Column Injury, Cervical, Fracture {p_end}
+{p 8 14 2} 
+14B = Spine and Back, Vertebral Column Injury, Cervical  Dislocation {p_end}
+{p 8 14 2} 
+14C = Spine and Back, Vertebral Column Injury, Cervical, Sprains and Strains {p_end}
+{p 8 14 2} 
+15A = Spine and Back, Vertebral Column Injury, Thoracic/Dorsal, Fracture {p_end}
+{p 8 14 2} 
+15B = Spine and Back, Vertebral Column Injury, Thoracic/Dorsal, Dislocation {p_end}
+{p 8 14 2} 
+15C = Spine and Back, Vertebral Column Injury, Thoracic/Dorsal, Sprains and Strains {p_end}
+{p 8 14 2} 
+16A = Spine and Back, Vertebral Column Injury, Lumbar, Fracture {p_end}
+{p 8 14 2} 
+16B = Spine and Back, Vertebral Column Injury, Lumbar, Dislocation {p_end}
+{p 8 14 2} 
+16C = Spine and Back, Vertebral Column Injury, Lumbar, Sprains and Strains {p_end}
+{p 8 14 2} 
+17A = Spine and Back, Vertebral Column Injury, Sacrum Coccyx, Fracture {p_end}
+{p 8 14 2} 
+17B = Spine and Back, Vertebral Column Injury, Sacrum Coccyx, Dislocation {p_end}
+{p 8 14 2} 
+17C = Spine and Back, Vertebral Column Injury, Sacrum Coccyx, Sprains and Strains {p_end}
+{p 8 14 2} 
+18A = Spine and Back, Vertebral Column Injury, Spine + Back Unspecified, Fracture {p_end}
+{p 8 14 2} 
+18B = Spine and Back, Vertebral Column Injury, Spine + Back Unspecified, Dislocation {p_end}
+{p 8 14 2} 
+19A = Torso, Chest (Thorax), Fracture {p_end}
+{p 8 14 2} 
+19B = Torso, Chest (Thorax), Dislocation {p_end}
+{p 8 14 2} 
+19C = Torso, Chest (Thorax), Sprains and Strains {p_end}
+{p 8 14 2} 
+19D = Torso, Chest (Thorax), Internal {p_end}
+{p 8 14 2} 
+19E = Torso, Chest (Thorax), Open Wound {p_end}
+{p 8 14 2} 
+19G = Torso, Chest (Thorax), Blood Vessels {p_end}
+{p 8 14 2} 
+19H = Torso, Chest (Thorax), Contusion/Superficial {p_end}
+{p 8 14 2} 
+19I = Torso, Chest (Thorax), Crush {p_end}
+{p 8 14 2} 
+19J = Torso, Chest (Thorax), Burns {p_end}
+{p 8 14 2} 
+19K = Torso, Chest (Thorax), Nerves {p_end}
+{p 8 14 2} 
+19L = Torso, Chest (Thorax), Unspecified {p_end}
+{p 8 14 2} 
+20D = Torso, Abdomen, Internal {p_end}
+{p 8 14 2} 
+20E = Torso, Abdomen, Open Wound {p_end}
+{p 8 14 2} 
+20G = Torso, Abdomen, Blood Vessels {p_end}
+{p 8 14 2} 
+20H = Torso, Abdomen, Contusion/Superficial {p_end}
+{p 8 14 2} 
+20J = Torso, Abdomen, Burns {p_end}
+{p 8 14 2} 
+20K = Torso, Abdomen, Nerves {p_end}
+{p 8 14 2} 
+20L = Torso, Abdomen, Unspecified {p_end}
+{p 8 14 2} 
+21A = Torso, Pelvis and Urogenital, Fracture {p_end}
+{p 8 14 2} 
+21B = Torso, Pelvis and Urogenital, Dislocation {p_end}
+{p 8 14 2} 
+21C = Torso, Pelvis and Urogenital, Sprains and Strains {p_end}
+{p 8 14 2} 
+21D = Torso, Pelvis and Urogenital, Internal {p_end}
+{p 8 14 2} 
+21E = Torso, Pelvis and Urogenital, Open Wound {p_end}
+{p 8 14 2} 
+21G = Torso, Pelvis and Urogenital, Blood Vessels {p_end}
+{p 8 14 2} 
+21H = Torso, Pelvis and Urogenital, Contusion/Superficial {p_end}
+{p 8 14 2} 
+21I = Torso, Pelvis and Urogenital, Crush {p_end}
+{p 8 14 2} 
+21J = Torso, Pelvis and Urogenital, Burns {p_end}
+{p 8 14 2} 
+21K = Torso, Pelvis and Urogenital, Nerves {p_end}
+{p 8 14 2} 
+21L = Torso, Pelvis and Urogenital, Unspecified {p_end}
+{p 8 14 2} 
+22A = Torso, Trunk, Fracture {p_end}
+{p 8 14 2} 
+22E = Torso, Trunk, Open Wound {p_end}
+{p 8 14 2} 
+22H = Torso, Trunk, Contusion/Superficial {p_end}
+{p 8 14 2} 
+22I = Torso, Trunk, Crush {p_end}
+{p 8 14 2} 
+22J = Torso, Trunk, Burns {p_end}
+{p 8 14 2} 
+22K = Torso, Trunk, Nerves {p_end}
+{p 8 14 2} 
+22L = Torso, Trunk, Unspecified {p_end}
+{p 8 14 2} 
+23C = Torso, Back and Buttock, Sprains and Strains {p_end}
+{p 8 14 2} 
+23E = Torso, Back and Buttock, Open Wound {p_end}
+{p 8 14 2} 
+23H = Torso, Back and Buttock, Contusion/Superficial {p_end}
+{p 8 14 2} 
+23I = Torso, Back and Buttock, Crush {p_end}
+{p 8 14 2} 
+23J = Torso, Back and Buttock, Burns {p_end}
+{p 8 14 2} 
+24A = Extremities, Upper, Shoulder and Upper Arm, Fracture {p_end}
+{p 8 14 2}  
+24B = Extremities, Upper, Shoulder and Upper Arm, Dislocation {p_end}
+{p 8 14 2}  
+24C = Extremities, Upper, Shoulder and Upper Arm, Sprains and Strains {p_end}
+{p 8 14 2}  
+24E = Extremities, Upper, Shoulder and Upper Arm, Open Wound {p_end}
+{p 8 14 2}  
+24F = Extremities, Upper, Shoulder and Upper Arm, Amputations {p_end}
+{p 8 14 2}  
+24H = Extremities, Upper, Shoulder and Upper Arm, Contusion/Superficial {p_end}
+{p 8 14 2}  
+24I = Extremities, Upper, Shoulder and Upper Arm, Crush {p_end}
+{p 8 14 2}  
+24J = Extremities, Upper, Shoulder and Upper Arm, Burns {p_end}
+{p 8 14 2}  
+24L = Extremities, Upper, Shoulder and Upper Arm, Unspecified {p_end}
+{p 8 14 2}  
+25A = Extremities, Upper, Forearm and Elbow, Fracture {p_end}
+{p 8 14 2}  
+25B = Extremities, Upper, Forearm and Elbow, Dislocation {p_end}
+{p 8 14 2}  
+25C = Extremities, Upper, Forearm and Elbow, Sprains and Strains {p_end}
+{p 8 14 2}  
+25E = Extremities, Upper, Forearm and Elbow, Open Wound {p_end}
+{p 8 14 2}  
+25F = Extremities, Upper, Forearm and Elbow, Amputations {p_end}
+{p 8 14 2}  
+25H = Extremities, Upper, Forearm and Elbow, Contusion/Superficial {p_end}
+{p 8 14 2}  
+25I = Extremities, Upper, Forearm and Elbow, Crush {p_end}
+{p 8 14 2}  
+25J = Extremities, Upper, Forearm and Elbow, Burns {p_end}
+{p 8 14 2}  
+26A = Extremities, Upper, Wrist, Hand and Fingers, Fracture {p_end}
+{p 8 14 2}  
+26B = Extremities, Upper, Wrist, Hand and Fingers, Dislocation {p_end}
+{p 8 14 2}  
+26C = Extremities, Upper, Wrist, Hand and Fingers, Sprains and Strains {p_end}
+{p 8 14 2}  
+26E = Extremities, Upper, Wrist, Hand and Fingers, Open Wound {p_end}
+{p 8 14 2}  
+26F = Extremities, Upper, Wrist, Hand and Fingers, Amputations {p_end}
+{p 8 14 2}  
+26H = Extremities, Upper, Wrist, Hand and Fingers, Contusion/Superficial {p_end}
+{p 8 14 2}  
+26I = Extremities, Upper, Wrist, Hand and Fingers, Crush {p_end}
+{p 8 14 2}  
+26J = Extremities, Upper, Wrist, Hand and Fingers, Burns {p_end}
+{p 8 14 2}  
+26L = Extremities, Upper, Wrist, Hand and Fingers, Unspecified {p_end}
+{p 8 14 2}  
+27A = Extremities, Upper, Other and Unspecified, Fracture {p_end}
+{p 8 14 2}  
+27E = Extremities, Upper, Other and Unspecified, Open Wound {p_end}
+{p 8 14 2}  
+27F = Extremities, Upper, Other and Unspecified, Amputations {p_end}
+{p 8 14 2}  
+27G = Extremities, Upper, Other and Unspecified, Blood Vessels {p_end}
+{p 8 14 2} 
+27H = Extremities, Upper, Other and Unspecified, Contusion/Superficial {p_end}
+{p 8 14 2}  
+27I = Extremities, Upper, Other and Unspecified, Crush {p_end}
+{p 8 14 2}  
+27J = Extremities, Upper, Other and Unspecified, Burns {p_end}
+{p 8 14 2}  
+27K = Extremities, Upper, Other and Unspecified, Nerves {p_end}
+{p 8 14 2} 
+27L = Extremities, Upper, Other and Unspecified, Unspecified {p_end}
+{p 8 14 2}  
+28A = Extremities, Lower, Hip, Fracture {p_end}
+{p 8 14 2}  
+28B = Extremities, Lower, Hip, Dislocation {p_end}
+{p 8 14 2}  
+28C = Extremities, Lower, Hip, Sprains and Strains {p_end}
+{p 8 14 2} 
+28H = Extremities, Lower, Hip, Contusion/Superficial {p_end}
+{p 8 14 2} 
+28I = Extremities, Lower, Hip, Crush {p_end}
+{p 8 14 2} 
+29A = Extremities, Lower, Upper Leg and Thigh, Fracture {p_end}
+{p 8 14 2}  
+29F = Extremities, Lower, Upper Leg and Thigh, Amputations {p_end}
+{p 8 14 2} 
+29H = Extremities, Lower, Upper Leg and Thigh, Contusion/Superficial {p_end}
+{p 8 14 2} 
+29I = Extremities, Lower, Upper Leg and Thigh, Crush {p_end}
+{p 8 14 2} 
+29J = Extremities, Lower, Upper Leg and Thigh, Burns {p_end}
+{p 8 14 2}  
+30A = Extremities, Lower, Knee, Fracture {p_end}
+{p 8 14 2}  
+30B = Extremities, Lower, Knee, Dislocation {p_end}
+{p 8 14 2}  
+30C = Extremities, Lower, Knee, Sprains and Strains {p_end}
+{p 8 14 2} 
+30H = Extremities, Lower, Knee, Contusion/Superficial {p_end}
+{p 8 14 2} 
+30I = Extremities, Lower, Knee, Crush {p_end}
+{p 8 14 2} 
+30J = Extremities, Lower, Knee, Burns {p_end}
+{p 8 14 2}
+31A = Extremities, Lower, Lower Leg and Ankle, Fracture {p_end}
+{p 8 14 2}
+31B = Extremities, Lower, Lower Leg and Ankle, Dislocation {p_end}
+{p 8 14 2}  
+31C = Extremities, Lower, Lower Leg and Ankle, Sprains and Strains {p_end}
+{p 8 14 2} 
+31F = Extremities, Lower, Lower Leg and Ankle, Amputations {p_end}
+{p 8 14 2} 
+31H = Extremities, Lower, Lower Leg and Ankle, Contusion/Superficial {p_end}
+{p 8 14 2} 
+31I = Extremities, Lower, Lower Leg and Ankle, Crush {p_end}
+{p 8 14 2}
+31J = Extremities, Lower, Lower Leg and Ankle, Burns {p_end}
+{p 8 14 2}  
+32A = Extremities, Lower, Foot and Toes, Fracture {p_end}
+{p 8 14 2}  
+32B = Extremities, Lower, Foot and Toes, Dislocation {p_end}
+{p 8 14 2}  
+32C = Extremities, Lower, Foot and Toes, Sprains and Strains {p_end}
+{p 8 14 2} 
+32E = Extremities, Lower, Foot and Toes, Open Wound {p_end}
+{p 8 14 2} 
+32F = Extremities, Lower, Foot and Toes, Amputations {p_end}
+{p 8 14 2} 
+32H = Extremities, Lower, Foot and Toes, Contusion/Superficial {p_end}
+{p 8 14 2} 
+32I = Extremities, Lower, Foot and Toes, Crush {p_end}
+{p 8 14 2} 
+32J = Extremities, Lower, Foot and Toes, Burns {p_end}
+{p 8 14 2}  
+33A = Extremities, Lower, Other and Unspecified, Fracture {p_end}
+{p 8 14 2}  
+33C = Extremities, Lower, Other and Unspecified, Sprains and Strains {p_end}
+{p 8 14 2} 
+33E = Extremities, Lower, Other and Unspecified, Open Wound {p_end}
+{p 8 14 2} 
+33F = Extremities, Lower, Other and Unspecified, Amputations {p_end}
+{p 8 14 2} 
+33G = Extremities, Lower, Other and Unspecified, Blood Vessels {p_end}
+{p 8 14 2}  
+33H = Extremities, Lower, Other and Unspecified, Contusion/Superficial {p_end}
+{p 8 14 2} 
+33I = Extremities, Lower, Other and Unspecified, Crush {p_end}
+{p 8 14 2} 
+33J = Extremities, Lower, Other and Unspecified, Burns {p_end}
+{p 8 14 2}  
+33L = Extremities, Lower, Other and Unspecified, Unspecified {p_end}
+{p 8 14 2}  
+34A = Unclassifiable by Site, Other and Unspecified, Other/Multiple, Fracture {p_end}
+{p 8 14 2} 
+34G = Unclassifiable by Site, Other and Unspecified, Other/Multiple, Blood Vessels {p_end}
+{p 8 14 2} 
+34J = Unclassifiable by Site, Other and Unspecified, Other/Multiple, Burns {p_end}
+{p 8 14 2} 
+34K = Unclassifiable by Site, Other and Unspecified, Other/Multiple, Nerves {p_end}
+{p 8 14 2} 
+35A = Unclassifiable by Site, Other and Unspecified, Unspecified Site, Fracture {p_end}
+{p 8 14 2} 
+35B = Unclassifiable by Site, Other and Unspecified, Unspecified Site, Dislocation {p_end}
+{p 8 14 2}
+35C = Unclassifiable by Site, Other and Unspecified, Unspecified Site, Sprains and Strains {p_end}
+{p 8 14 2} 
+35D = Unclassifiable by Site, Other and Unspecified, Unspecified Site, Internal {p_end}
+{p 8 14 2} 
+35E = Unclassifiable by Site, Other and Unspecified, Unspecified Site, Open Wound {p_end}
+{p 8 14 2} 
+35G = Unclassifiable by Site, Other and Unspecified, Unspecified Site, Blood Vessels {p_end}
+{p 8 14 2} 
+35H = Unclassifiable by Site, Other and Unspecified, Unspecified Site, Contusion/Superficial {p_end}
+{p 8 14 2} 
+35I = Unclassifiable by Site, Other and Unspecified, Unspecified Site, Crush {p_end}
+{p 8 14 2} 
+35J = Unclassifiable by Site, Other and Unspecified, Unspecified Site, Burns {p_end}
+{p 8 14 2} 
+35K = Unclassifiable by Site, Other and Unspecified, Unspecified Site, Nerves {p_end}
+{p 8 14 2} 
+35L = Unclassifiable by Site, Other and Unspecified, Unspecified Site, Unspecified {p_end}
+
+
+{p 4 4 2}
+Codes for AIS severity:
+
+
+{p 8 12 2}
+1 = Minor {p_end}
+{p 8 12 2}
+2 = Moderate {p_end}
+{p 8 12 2}
+3 = Serious {p_end}
+{p 8 12 2}
+4 = Severe {p_end}
+{p 8 12 2}
+5 = Critical {p_end}
+{p 8 12 2}
+6 = Unsurvivable {p_end}
+{p 8 12 2}
+9 = Unknown
+
+
+{p 4 4 2}
+Codes for ISS body region:
+
+
+{p 8 12 2}
+1 = Head/neck {p_end}
+{p 8 12 2}
+2 = Face {p_end}
+{p 8 12 2}
+3 = Chest {p_end}
+{p 8 12 2}
+4 = Abdomen and pelvic contents {p_end}
+{p 8 12 2}
+5 = Extremities or pelvic girdle {p_end}
+{p 8 12 2}
+6 = External {p_end}
+{p 8 12 2}
+9 = Unknown
+
+
+{p 4 4 2}
+ISS body region and AIS severity codes for lookup tables {bf:ntab_s1.dta} and {bf:ntab_s2.dta} were created by analysis of
+the National Trauma Data Bank (NTDB).  The NTDB contains more than 2 million patient records compiled by the American
+College of Surgeons Committee on Trauma from hundreds of contributing hospitals
+(see {browse "http://www.facs.org/trauma/ntdb.html"} for further information).  ICDPIC does not attempt to assign a specific
+AIS code for each ICD-9-CM diagnosis code, but only to classify injuries (N-Codes) into a general severity and body region
+in order to allow for approximate severity scoring.  For ICDPIC, we associated each N-Code in the NTDB (Version 6.1) with
+the ISS body region and AIS severity for the same injury most frequently selected by trauma registrars submitting data to
+the NTDB.  For the few N-Codes that never appeared in association with an AIS code, the authors assigned a body region and
+AIS score by consensus.  N-Codes relating to burn injuries were not coded for AIS severity.  Instead, an AIS severity value
+of 9 (Unknown) was assigned.
+
+
+{p 4 4 2}
+{bf:ISS Body Regions and AIS Severities not assigned by NTDB usage:}
+
+
+    {bf:N-Code}      {bf:Body Region}    {bf:Severity}
+  
+    803.83           1             3 
+    803.89           1             3 
+    804.49           1             3 
+    804.54           1             3 
+    804.56           1             3 
+    804.59           1             3 
+    804.89           1             3 
+    804.91           1             3 
+    804.92           1             3 
+    804.93           1             3 
+    813.45           5             2
+    813.46           5             2
+    813.47           5             2 
+    819.1            5             2 
+    823.40           5             2 
+    823.41           5             2 
+    823.42           5             2 
+    831.13           5             2
+    832.2            5             1 
+    835.12           5             2 
+    836.63           5             2 
+    839.18           1             2 
+    839.50           5             2 
+    839.51           5             2
+    840.7            5             2 
+    850.11           1             1 
+    850.12           1             1 
+    851.19           1             3 
+    851.69           1             3 
+    851.72           1             3 
+    851.79           1             3 
+    852.59           1             4 
+    910.3            2             1 
+    910.7            2             1 
+    911.3            6             1 
+    913.3            5             1 
+    914.3            5             1 
+    914.4            5             1 
+    915.4            5             1 
+    927.01           5             2
+    959.11           3             1 
+    959.12           4             1 
+    959.13           4             1 
+    959.14           4             1 
+    959.19           6             1 
+
+
+
+{p 4 4 2}
+Codes for anatomic profile component categories:
+
+
+{p 8 12 2}
+A = All severe head, brain and spinal cord injuries (AIS score 3, 4, 5 or 6) {p_end}
+{p 8 12 2}
+B = All severe thorax and neck injuries (AIS score 3, 4, 5 or 6) {p_end}
+{p 8 12 2}
+C = All other severe injuries (AIS score 3, 4, 5 or 6) {p_end}
+{p 8 12 2}
+D = All non-serious injuries (AIS score 1 or 2) {p_end}
+
+
+{p 4 4 2}
+The following variables appear in both {bf:etab_s1.dta} and {bf:etab_s2.dta}:
+
+
+{p 8 12 2}
+{it:dx}: External Cause of Injury code (E-Code) {p_end}
+{p 8 12 2}
+{it:mechmaj}: CDC external cause of injury major mechanism category {p_end}
+{p 8 12 2}
+{it:mechmin}: CDC external cause of injury minor mechanism category {p_end}
+{p 8 12 2}
+{it:intent}: CDC external cause of injury intent category {p_end}
+
+
+{p 4 4 2}
+Codes for CDC external cause of injury major/minor mechanism categories:
+
+
+{p 9 13 2}
+0 = Cut/pierce {p_end}
+{p 9 13 2}
+1 = Drowning/submersion {p_end}
+{p 9 13 2}
+2 = Fall {p_end}
+{p 9 13 2}
+3 = Fire/burn {p_end}
+{p 13 17 2}
+Fire/flame = 0 {p_end}
+{p 13 17 2}
+Hot object/substance = 1 {p_end}
+{p 9 13 2}
+4 = Firearm {p_end}
+{p 9 13 2}
+5 = Machinery {p_end}
+{p 9 13 2}
+6 = Motor vehicle traffic {p_end}
+{p 13 17 2}
+Occupant = 0 {p_end}
+{p 13 17 2}
+Motorcyclist = 1 {p_end}
+{p 13 17 2}
+Pedal cyclist = 2 {p_end}
+{p 13 17 2}
+Pedestrian = 3 {p_end}
+{p 13 17 2}
+Unspecified = 4 {p_end}
+{p 9 13 2}
+7 = Pedal cyclist, other {p_end}
+{p 9 13 2}
+8 = Pedestrian, other {p_end}
+{p 9 13 2}
+9 = Transport, other {p_end}
+{p 8 13 2}
+10 = Natural/environmental {p_end}
+{p 13 17 2}
+Bites and stings = 0 {p_end}
+{p 8 13 2}
+11 = Overexertion {p_end}
+{p 8 13 2}
+12 = Poisoning {p_end}
+{p 8 13 2}
+13 = Struck by, against {p_end}
+{p 8 13 2}
+14 = Suffocation {p_end}
+{p 8 13 2}
+15 = Other specified, classifiable {p_end}
+{p 8 13 2}
+16 = Other specified, not elsewhere classifiable {p_end}
+{p 8 13 2}
+17 = Unspecified {p_end}
+{p 8 13 2}
+18 = Adverse effects {p_end}
+{p 13 17 2}
+Medical care = 0 {p_end}
+{p 13 17 2}
+Drugs = 1 {p_end}
+
+
+{p 4 8 2}
+Codes for CDC external cause of injury intent category:
+
+
+{p 8 12 2}
+0 = Unintentional {p_end}
+{p 8 12 2}
+1 = Self-inflicted {p_end}
+{p 8 12 2}
+2 = Assault {p_end}
+{p 8 12 2}
+3 = Undetermined {p_end}
+{p 8 12 2}
+4 = Other {p_end}
+
+
+{p 4 4 2}
+The tables for use with the {cmd:icd9tmpm} program are:
+
+
+{p 8 12 2}
+{bf:micd9_s1.dta} (Nature of Injury codes (N-Codes) and their associated MARC values and ISS body regions,
+no decimal point) {p_end}
+{p 8 12 2}
+{bf:micd9_s2.dta} (Nature of Injury codes (N-Codes) and their associated MARC values and ISS body regions,
+with decimal point) {p_end}
+
+
+{p 4 4 2}
+The following variables appear in both {bf:micd9_s1.dta} and {bf:micd9_s2.dta}:
+
+
+{p 8 12 2}
+{it:dx}: Nature of Injury code (N-Code) {p_end}
+{p 8 12 2}
+{it:marc}: MARC value for each Nature of Injury code (N-Code) {p_end}
+{p 8 12 2}
+{it:issbr}: ISS body region for each Nature of Injury code (N-Code) {p_end}
+
+
+{p 4 4 2}
+The table for use with the {cmd:ais_tmpm} program is:
+
+
+{p 8 12 2}
+{bf:mais_s.dta} (predot AIS codes and their associated MARC values) {p_end}
+
+
+{p 4 4 2}
+The following variables appear in {bf:mais_s.dta}:
+
+
+{p 8 12 2}
+{it:predot}: Predot AIS code {p_end}
+{p 8 12 2}
+{it:marc}: MARC value for each predot AIS code {p_end}
+
+
+{p 4 4 2}
+The tables for use with the {cmd:altcharl} program are:
+
+
+{p 8 12 2}
+{bf:cdtab_s1.dta} (appropriate diagnosis codes and Charlson categories, no decimal point) {p_end}
+{p 8 12 2}
+{bf:cdtab_s2.dta} (appropriate diagnosis codes and Charlson categories, with decimal point) {p_end}
+{p 8 12 2}
+{bf:cptab_s1.dta} (appropriate procedure codes and Charlson categories, no decimal point) {p_end}
+{p 8 12 2}
+{bf:cptab_s2.dta} (appropriate procedure codes and Charlson categories, with decimal point) {p_end}
+
+
+{p 4 4 2}
+The following variables appear in both {bf:cdtab_s1.dta} and {bf:cdtab_s2.dta}:
+
+
+{p 8 12 2}
+{it:dx}: ICD-9-CM diagnosis code {p_end}
+{p 8 12 2}
+{it:charlson}: Charlson comorbidity category code {p_end}
+
+
+{p 4 4 2}
+The following variables appear in both {bf:cptab_s1.dta} and {bf:cptab_s2.dta}:
+
+
+{p 8 12 2}
+{it:px}: ICD-9-CM procedure code{p_end}
+{p 8 12 2}
+{it:charlson}: Charlson comorbidity category code {p_end}
+
+
+{p 4 8 2}
+Codes for Charlson comorbidities are:
+
+{p 9 13 2}
+1 = Myocardial infarction {p_end}
+{p 9 13 2}
+2 = Peripheral vascular disease {p_end}
+{p 9 13 2}
+3 = Dementia {p_end}
+{p 9 12 2}
+4 = Chronic obstructive pulmonary disease {p_end}
+{p 9 13 2}
+5 = Rheumotologic disease {p_end}
+{p 9 13 2}
+6 = Mild liver disease {p_end}
+{p 9 13 2}
+7 = Moderate to severe liver disease {p_end}
+{p 9 13 2}
+8 = Moderate diabetes mellitus {p_end}
+{p 9 13 2}
+9 = Chronic complications of diabetes mellitus {p_end}
+{p 8 13 2}
+10 = Renal disease {p_end}
+{p 8 13 2}
+11 = Any malignancy {p_end}
+{p 8 13 2}
+12 = Metastatic solid tumor {p_end}
+{p 8 13 2}
+13 = AIDS {p_end}
+
+
+{p 4 4 2}
+The tables for use with the {cmd:elixhaus} program are:
+
+
+{p 8 21 2}
+{bf:drgtab_h.dta} (Diagnosis Related Group (DRG) and DRG screen coded value {p_end}
+{p 8 21 2}
+{bf:xtab_s1h.dta} (appropriate diagnosis codes and Elixhauser categories, no decimal point) {p_end}
+{p 8 21 2}
+{bf:xtab_s2h.dta} (appropriate diagnosis codes and Elixhauser categories, with decimal point) {p_end}
+
+
+{p 4 4 2}
+The following variables appear in {bf:drgtab_h.dta}:
+
+
+{p 8 12 2}
+{it:drgroup}: DRG (diagnosis related group) code, prior to Version 25 {p_end}
+{p 8 12 2}
+{it:drg_cat}: DRG screen codes {p_end}
+
+
+{p 4 8 2}
+DRG screen codes are:
+
+
+{p 9 13 2}
+A = Cardiac {p_end}
+{p 9 13 2}
+B = Chronic obstructive pulmonary disorder (COPD) {p_end}
+{p 9 13 2}
+C = Peripheral vascular {p_end}
+{p 9 13 2}
+D = Hypertension {p_end}
+{p 8 13 2}
+DF = Hypertension and nervous system {p_end}
+{p 9 13 2}
+E = Cerebrovascular {p_end}
+{p 8 13 2}
+EF = Cerebrovascular and nervous system {p_end}
+{p 9 13 2}
+F = Nervous system {p_end}
+{p 8 13 2}
+FQ = Nervous system and cancer {p_end}
+{p 9 13 2}
+G = Asthma {p_end}
+{p 9 13 2}
+H = Diabetes (uncomplicated or complicated) {p_end}
+{p 9 13 2}
+I = Thyroid {p_end}
+{p 9 13 2}
+J = Endocrine {p_end}
+{p 9 13 2}
+K = Kidney transplant {p_end}
+{p 8 13 2}
+KZ = Kidney transplant and renal {p_end}
+{p 9 13 2}
+L = Renal failure/dialysis {p_end}
+{p 8 13 2}
+LZ = Renal failure/dialysis and renal {p_end}
+{p 9 13 2}
+M = Liver {p_end}
+{p 8 13 2}
+MQ = Liver and cancer {p_end}
+{p 9 13 2}
+N = GI hemorrhage or ulcer {p_end}
+{p 9 13 2}
+O = HIV {p_end}
+{p 9 13 2}
+P = Leukemia/lymphoma {p_end}
+{p 8 13 2}
+PQ = Leukemia/lymphoma and cancer {p_end}
+{p 9 13 2}
+Q = Cancer {p_end}
+{p 9 13 2}
+R = Connective tissue {p_end}
+{p 9 13 2}
+S = Coagulation {p_end}
+{p 9 13 2}
+T = Obesity procedure {p_end}
+{p 9 13 2}
+U = Nutrition/metabolic {p_end}
+{p 9 13 2}
+V = Anemia {p_end}
+{p 9 13 2}
+W = Alcohol or drug {p_end}
+{p 9 13 2}
+X = Psychoses {p_end}
+{p 9 13 2}
+Y = Depression {p_end}
+{p 9 13 2}
+Z = Renal {p_end}
+
+
+{p 4 4 2}
+The following variables appear in both {bf:xtab_s1h.dta} and {bf:xtab_s2h.dta}:
+
+
+{p 8 12 2}
+{it:dx}: ICD-9-CM diagnosis code {p_end}
+{p 8 12 2}
+{it:elix}: Elixhauser comorbidity category code {p_end}
+
+
+{p 4 8 2}
+Codes for Elixhauser comorbidities are:
+
+
+{p 10 14 2}
+1 = Congestive heart failure {p_end}
+{p 10 14 2}
+2 = Not used {p_end}
+{p 10 14 2}
+3 = Vavular disease {p_end}
+{p 10 14 2}
+4 = Pulmonary circulation disorders {p_end}
+{p 10 14 2}
+5 = Peripheral vascular disorders {p_end}
+{p 10 14 2}
+6 = Hypertension combined {p_end}
+{p 9 13 2}
+6A = Hypertension, uncomplicated {p_end}
+{p 9 14 2}
+6B = Hypertension, complicated {p_end}
+{p 8 14 2}
+6B0 = Pre-existing hypertension complicating pregnancy {p_end}
+{p 8 13 2}
+6B1 = Hypertensive heart disease without heart failure {p_end}
+{p 8 13 2}
+6B2 = Hypertensive heart disease with heart failure {p_end}
+{p 8 13 2}
+6B3 = Hypertensive renal disease without renal failure {p_end}
+{p 8 13 2}
+6B4 = Hypertensive renal disease with renal failure {p_end}
+{p 8 13 2}
+6B5 = Hypertensive heart and renal disease without heart or renal failure {p_end}
+{p 8 13 2}
+6B6 = Hypertensive heart and renal disease with heart failure {p_end}
+{p 8 13 2}
+6B7 = Hypertensive heart and renal disease with renal failure {p_end}
+{p 8 13 2}
+6B8 = Hypertensive heart and renal disease with heart and renal failure {p_end}
+{p 8 13 2}
+6B9 = Other hypertension in pregnancy {p_end}
+{p 10 14 2}
+7 = Paralysis {p_end}
+{p 10 14 2}
+8 = Other neurological disorders {p_end}
+{p 10 14 2}
+9 = Chronic pulmonary disease {p_end}
+{p 9 14 2}
+10 = Diabetes, uncomplicated {p_end}
+{p 9 14 2}
+11 = Diabetes, complicated {p_end}
+{p 9 14 2}
+12 = Hypothyroidism {p_end}
+{p 9 14 2}
+13 = Renal failure {p_end}
+{p 9 14 2}
+14 = Liver disease {p_end}
+{p 9 14 2}
+15 = Peptic ulcer disease, excluding bleeding {p_end}
+{p 9 14 2}
+16 = AIDS {p_end}
+{p 9 14 2}
+17 = Lymphoma {p_end}
+{p 9 14 2}
+18 = Metastatic cancer {p_end}
+{p 9 14 2}
+19 = Solid tumor {p_end}
+{p 9 14 2}
+20 = Rheumatoid arthritis/collagen vascular disease {p_end}
+{p 9 14 2}
+21 = Coagulopathy {p_end}
+{p 9 14 2}
+22 = Obesity {p_end}
+{p 9 14 2}
+23 = Weight loss {p_end}
+{p 9 14 2}
+24 = Fluid and electrolyte disorders {p_end}
+{p 9 14 2}
+25 = Blood loss anemia {p_end}
+{p 9 14 2}
+26 = Deficiency anemias {p_end}
+{p 9 14 2}
+27 = Alcohol abuse {p_end}
+{p 9 14 2}
+28 = Drug abuse {p_end}
+{p 9 14 2}
+29 = Psychoses {p_end}
+{p 9 14 2}
+30 = Depression {p_end}
+
+
+{title:Examples}
+
+{p 4 8 2}
+None
+
+
+{title:Authors}
+
+{p 4}
+David E. Clark, M.D.
+
+{p 8 12 2}
+Maine Medical Center, Portland, Maine, USA {p_end}
+{p 8 12 2}
+University of Vermont College of Medicine, Burlington, Vermont, USA {p_end}
+{p 8 12 2}
+Harvard Injury Control Research Center, Harvard School of Public Health, Boston, Massachusetts, USA {p_end}
+
+{p 8}
+Correspondence to Dr. Clark, {p_end}
+{p 8}
+887 Congress Street, Portland ME 04102 {p_end}
+{p 8} 
+Email:  clarkd@mmc.org {p_end}
+
+{p 4}
+Turner M. Osler, M.D.
+
+{p 8 12 2}
+University of Vermont College of Medicine, Burlington, Vermont, USA {p_end}
+
+{p 4}
+David R. Hahn
+
+{p 8 12 2}
+Maine Medical Center, Portland, Maine, USA {p_end}
+
+
+{title:References}
+
+
+{p 4 8 2}
+Baker SP, O'Neill B, Haddon WJ, Long WB. The injury severity score: A method for describing patients with multiple injuries
+and evaluating emergency care. {it:J Trauma} 1974;14:187-196.
+
+{p 4 8 2}
+Barell V, Aharonson-Daniel L, Fingerhut LA, et al. An introduction to the Barell body region by nature of injury diagnosis
+matrix. {it:Inj Prev} 2002;8:91-96.
+
+{p 4 8 2}
+Boyd CR, Tolson MA, Copes WS. Evaluating trauma care: The TRISS method. Trauma Score and the Injury Severity Score.
+{it:J Trauma} 1987;27:370-378.
+
+{p 4 8 2}
+Champion HR, Sacco WJ, Lepper RL, Atzinger EM, Copes WS, Prall RH. An anatomic index of injury severity.  {it:J Trauma}
+1980;20:197-202.
+
+{p 4 8 2}
+Champion HR, Sacco WJ, Copes WS, Gann DS, Gennarelli TA, Flanagan ME. A revision of the Trauma Score.
+{it:J Trauma} 1989;29:623-629.
+
+{p 4 8 2}
+Champion HR, Sacco WJ. Trauma risk assessment: Review of severity scales. {it:Emergency Medicine Annual} 1983;2:43-71.
+
+{p 4 8 2}
+Champion HR, Copes WS, Sacco WJ, et al. A new characterization of injury severity.  {it:J Trauma} 1990;30:539-545.
+
+{p 4 8 2}
+Charlson ME, Pompei P, Ales KL, MacKenzie CR. A new method of classifying prognostic comorbidity in longitudinal studies:
+Development and validation.  {it:J Chronic Dis} 1987;40:373-383.
+
+{p 4 8 2}
+Clark DE, Ahmad S. Estimating injury severity using the Barell matrix. {it:Inj Prev} 2006;12:111-116.
+
+{p 4 8 2}
+Copes WS, Champion HR, Sacco WJ, et al. Progress in characterizing anatomic injury. {it:J Trauma} 1990;30:1200-1207.
+
+{p 4 8 2}
+Elixhauser A, Steiner C, Harris DR, Coffey RM. Comorbidity measures for use with administrative data. {it:Med Care}
+1998;36:8-27.
+
+{p 4 8 2}
+Garthe EA. Compatibility of the ICD-9CM with AIS-80. {it:Am Assoc Auto Med QJ} 1982;2:42-46.
+
+{p 4 8 2}
+Glance L, Osler T, Mukamel D, Meredith W, Wagner J, Dick A.  TMPM-ICD9: A Trauma Mortality Prediction Model Based on 
+ICD-9-CM Codes.  {it:Ann Surg} In Press.
+
+{p 4 8 2}
+Levy PS, Mullner R, Goldberg J, Gelfand H. The estimated survival probability index of trauma severity.
+  {it:Health Serv Res} 1978;13:28-35.
+
+{p 4 8 2}
+MacKenzie EJ, Steinwachs DM, Shankar BS, Turney SZ. An ICD-9CM to AIS conversion table: Development and application.
+  {it:Proc AAAM} 1986;30:135-151.
+
+{p 4 8 2}
+MacKenzie EJ, Steinwachs DM, Shankar B. Classifying trauma severity based on hospital discharge diagnoses. Validation of an
+ICD-9CM to AIS-85 conversion table.  {it:Med Care} 1989;27:412-422.
+
+{p 4 8 2}
+Meredith JW, Evans G, Kilgo PD, et al.  A comparison of the abilities of nine scoring algorithms in predicting
+mortality. {it:J Trauma} 2002;53:621-629.
+
+{p 4 8 2}
+Osler T, Baker SP, Long W. A modification of the injury severity score that both improves accuracy and simplifies scoring.
+{it:J Trauma} 1997;43:922-925.
+
+{p 4 8 2}
+Osler T, Rutledge R, Deis J, Bedrick E. ICISS: An International Classification of Disease-9 based injury severity score.
+{it:J Trauma} 1996;41:380-386.
+
+{p 4 8 2}
+Osler T, Glance L, Buzas JS, Mukamel D, Wagner J, Dick A.  A Trauma Mortality Prediction Model Based on the Anatomic Injury
+Scale.  {it:Ann Surg} 2008;247:1041-1048.
+
+{p 4 8 2}
+Rating the severity of tissue damage. I. The abbreviated scale. {it:JAMA} 1971;215:277-280.
+
+{p 4 8 2}
+Recommended framework for presenting injury mortality data.  {it:MMWR Morb Mortal Wkly Rep} 1997;46:1-30.
+
+{p 4 8 2}
+Romano PS, Roos LL, Jollis JG. Adapting a clinical comorbidity index for use with ICD-9-CM administrative data:
+Differing perspectives.  {it:J Clin Epidemiol} 1993;46:1075-1079.
+
+
+{title:Also see}
+
+{p 4}
+help for {help trauma}
+
+{p 4}
+help for {help srr}
+
+{p 4}
+help for {help iciss}
+
+{p 4}
+help for {help aps}
+
+{p 4}
+help for {help rts}
+
+{p 4}
+help for {help triss}
+
+{p 4}
+help for {help ascot}
+
+{p 4}
+help for {help icd9tmpm}
+
+{p 4}
+help for {help ais_tmpm}
+
+{p 4}
+help for {help altcharl}
+
+{p 4}
+help for {help elixhaus}
+
+{p 4}
+help for {help icdpic}
+

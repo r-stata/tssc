@@ -1,0 +1,128 @@
+{smcl}
+{* 24Jun2006}{...}
+{hline}
+help for {hi:apc_cglim}
+{hline}
+
+{title:Generalized linear models with equality constraints on age-period-cohort effects}
+
+{p 4}Syntax
+
+{p 8 14}{cmd:apc_cglim} {it:depvar} [{it:indepvars}]
+[{cmd:if} {it:exp}] [{cmd:in} {it:range}] [{it:weight}]
+{cmd:,}
+{cmd:constraint(}{it:constraintspec}{cmd:)}
+{cmd:agepfx(}{it:string}{cmd:)}
+{cmd:periodpfx(}{it:string}{cmd:)}
+{cmd:cohortpfx(}{it:string}{cmd:)}
+{bind:[{cmd:age(}{it:varname}{cmd:)}}
+{cmd:period(}{it:varname}{cmd:)}
+{cmd:cohort(}{it:varname}{cmd:)}
+{cmdab:gen:erate(}{it:newvarname}{cmd:)}
+{bind:{it:glm_options} ]}
+
+{p 4}Replay syntax
+
+{p 8 14}{cmd:apc_cglim} {bind:[{cmd:,}} {bind:{it:glm_options} ]}
+
+{p 4} {cmd:apc_cglim} allows all {it:varlists} and {it:weights} that are 
+allowed by {cmd:glm}.
+
+
+{title:Description}
+
+{p} {cmd:apc_cglim} estimates age-period-cohort models in which a single 
+equality constraint on the coefficients is used to solve the 
+age-period-cohort identification problem. {cmd:apc_cglim} adds an 
+indicator variable for each unique value of {it:age}, {it:period} and 
+{it:cohort} to the list of independent variables, applies a constraint to 
+these indicator variables, then executes {cmd:glm}.
+
+{p} Note that although CGLIM models can, in general, involve multiple 
+constraints, {cmd:apc_cglim} implements only one constraint. See Yang, Fu 
+and Land (2004) and Mason and Smith (1985) for discussion of CGLIM models.
+
+
+{title:Normalizations and constraints}
+
+{p} The first category in each of {it:age}, {it:period} and {it:cohort} is 
+omitted from the set of indicator variables. The coefficient on one 
+additional indicator variable must be constrained to achieve 
+identification.
+
+{p} {cmd:apc_cglim} allows constraints that set the coefficient on one 
+indicator variable equal to the coefficient on another indicator variable. 
+{it:constraintspec} is a string of the form "{it:r#=s#}" where {it:r} and 
+{it:s} can each be either {it:a}, {it:p} or {it:c} and where {it:#} can be 
+any value of {it:age}, {it:period} or {it:cohort} that appears in the 
+dataset. For example, 
+{cmd:constraint(}{it:"a2=c6"}{cmd:)} sets the coefficient on the indicator 
+variable for {it:age=2} equal to the coefficient on the indicator variable 
+for {it:cohort=6}. 
+
+{p} The value for the first coefficient cannot be the lowest value of the
+category since the lowest indicator variable is already omitted. To 
+constrain a coefficient to be zero, make the second coefficient in the 
+constraint be the lowest value in a category, for example {it:a2=a1} if 
+the lowest value of {it:age} is 1 and you want to constrain the 
+coefficient on the {it:age=2} indicator to be zero.
+
+
+{title:Options}
+
+{p 0 4} {cmd:agepfx(}{it:string}{cmd:)}, 
+{cmd:periodpfx(}{it:string}{cmd:)} and {cmd:cohortpfx(}{it:string}{cmd:)} 
+specify stub names for the generated indicator variables. The names appear 
+in the output, and the indicator variables will in the dataset after use. 
+Variables with these names must not already exist.
+
+{p 0 4} {cmd:age(}{it:varname}{cmd:)}, {cmd:period(}{it:varname}{cmd:)} 
+and {cmd:cohort(}{it:varname}{cmd:)} specify the {it:age}, {it:period} and 
+{it:cohort} variables. At least two of these three must be specified. If 
+all three are specified, they must satisfy {it:age}+{it:cohort}={it:period}.
+If only two are specified, the missing variable is generated according to 
+{it:age}+{it:cohort}={it:period}.
+
+{p 0 4} {cmd:generate(}{it:newvarname}{cmd:)} stores the generated value 
+of {it:age}, {it:period} or {it:cohort} in a new variable.
+
+{p} {it:glm_options} can be any valid options for {cmd:glm}.
+
+
+{title:References}
+
+{p 0 4}Yang, Y., Fu, W., and Land, K. 2004. A Methodological Comparison of
+Age-Period-Cohort Models: The Intrinsic Estimator and Conventional
+Generalized Linear Models. {it:Sociological Methodology} 34(1), 75-110.
+
+{p 0 4}Mason, W.M., and Smith, H.L. 1985. Age-Period-Cohort Analysis and 
+the Study of Deaths from Pulmonary Tuberculosis. Pp. 151-228 in
+{it:Cohort Analysis in Social Research}, edited by W.M. Mason and
+S.E. Fienberg. New York: Springer-Verlag.
+
+
+{title:Authors}
+
+Sam Schulhofer-Wohl
+Department of Economics
+The University of Chicago
+1126 E. 59th St.
+Chicago, IL 60637
+sschulh1@uchicago.edu
+
+Yang Yang, Ph.D.
+Department of Sociology
+Population Research Center and Center on Aging at NORC
+The University of Chicago
+1126 E. 59th St.
+Chicago, IL 60637
+(O) 773-834-1113
+yangy@uchicago.edu
+
+
+{title:Also see}
+
+{p 0 19} Online: help for {help glm}; {help apc_ie} (if installed).{p_end}
+
+
+

@@ -1,0 +1,520 @@
+{smcl}
+{* 02dec2005}{...}
+{cmd:help estout1}
+{hline}
+
+{title:Title}
+
+{p 4 4 2}{hi:estout1} {hline 2} Yet another command to export estimation results
+
+
+{title:Table of contents}
+
+    {help estout1##syn:Syntax}
+    {help estout1##des:Description}
+    {help estout1##opt:Options}
+    {help estout1##rem:Remarks}
+    {help estout1##exa:Examples}
+
+{marker syn}
+{title:Syntax}
+
+{p 8 15 2}
+{cmdab:estout1} [ {it:namelist} ] [ {cmd:using} {it:filename} ] [ {cmd:,}
+  {it:options}
+]
+
+    where {it:namelist}  is    {cmd:_all} | {cmd:*} | {it:name} [ {it:name} ...]
+          {it:name}      is    {it:identifier} | {cmd:.}
+
+
+    {it:options}{col 32}Description
+    {hline 67}
+    {help estout1##coe:Coefficients}
+      {cmd:b}{cmd:(}{it:{help estout1##fmtspec:fmt_spec}}{cmd:)} {col 32}{...}
+set display format for coefficients
+      {cmd:se}[{cmd:(}{it:{help estout1##fmtspec:fmt_spec}}{cmd:)}]{col 32}{...}
+display standard errors
+      {cmd:t}[{cmd:(}{it:{help estout1##fmtspec:fmt_spec}}{cmd:)}]{col 32}{...}
+display t-values
+      {cmd:p}[{cmd:(}{it:{help estout1##fmtspec:fmt_spec}}{cmd:)}]{col 32}{...}
+display p-values
+      {cmd:eform}{col 32}{...}
+report exponentiated coefficients
+      {cmd:abs}{col 32}{...}
+use absolute t-values
+      {cmdab:eq:uations:(}{it:eqmatchlist}{cmd:)}{col 32}{...}
+match the models' equations
+      {cmdab:k:eep:(}{it:keeplist}{cmd:)}{col 32}{...}
+keep individual regressors
+      {cmdab:d:rop:(}{it:droplist}{cmd:)}{col 32}{...}
+drop individual regressors
+      {{cmd:se}|{cmd:t}|{cmd:p}}{cmdab:k:eep:(}{it:keeplist}{cmd:)}{col 32}{...}
+keep certain individual results
+      {{cmd:se}|{cmd:t}|{cmd:p}}{cmdab:d:rop:(}{it:droplist}{cmd:)}{col 32}{...}
+drop certain individual results
+      {cmd:nob}{col 32}{...}
+suppress raw coefficients
+
+    {help estout1##sum:Summary statistics}
+      {cmdab:s:tats:(}{it:scalarlist}{cmd:)}{col 32}{...}
+display summary statistics at the
+{col 32}bottom of the table
+      {cmdab:stf:mt:(}{it:fmtlist}{cmd:)}{col 32}{...}
+set the display formats
+      {cmdab:stl:abels:(}{it:stlabellist}{cmd:)}{col 32}{...}
+label the summary statistics
+
+    {help estout1##sig:Significance stars}
+      {cmd:star}[{cmd:(}{it:thresholds}{cmd:)}]{col 32}{...}
+attach "significance stars" (and
+{col 32}define significance thresholds)
+      {cmd:starsym(}{it:starsymlist}{cmd:)}{col 32}{...}
+define significance symbols
+      {cmd:starpos(b}|{cmd:se}|{cmd:t}|{cmd:p)}{col 32}{...}
+determine position of thestars
+      {cmdab:detach:star}{col 32}{...}
+display the stars in their own column
+      {cmdab:sts:tar:(}{it:scalarlist}{cmd:)}{col 32}{...}
+denote the overall model significance
+
+    {help estout1##lay:Layout}
+      {cmdab:w:ide}{col 32}{...}
+print table in wide format
+      {cmd:style(}{it:style}{cmd:)}{col 32}{...}
+specifie a row style, where {it:style}
+{col 32}is {cmd:tab}, {cmd:tex} or {cmd:html}
+      {cmdab:beg:in:(}{it:str}{cmd:)}{col 32}{...}
+specify the beginning of the rows
+      {cmdab:del:imiter:(}{it:str}{cmd:)}{col 32}{...}
+specify the column delimiter
+      {cmd:end(}{it:str}{cmd:)}{col 32}{...}
+specify the ending of the table rows
+      {cmdab:var:width:(}{it:#}{cmd:)}{col 32}{...}
+set width of the table's left stub
+      {cmdab:model:width:(}{it:#}{cmd:)}{col 32}{...}
+set width of the results columns
+      {cmdab:noh:ead}{col 32}{...}
+suppress the table heading
+
+    {help estout1##lab:Labelling}
+      {cmdab:l:abel}{col 32}{...}
+make use of variable labels
+      {cmdab:cons:lbl:(}{it:str}{cmd:)}{col 32}{...}
+specify a label for the constant
+      {cmdab:preh:ead:(}{it:str_list}{cmd:)}{col 32}{...}
+add text before the table heading
+      {cmdab:posth:ead:(}{it:str_list}{cmd:)}{col 32}{...}
+add text after the table heading
+      {cmdab:pref:oot:(}{it:str_list}{cmd:)}{col 32}{...}
+add text before the table footer
+      {cmdab:postf:oot:(}{it:str_list}{cmd:)}{col 32}{...}
+add text after the table footer
+
+    {help estout1##out:Output}
+      {cmdab:r:eplace}{col 32}{...}
+overwrite an existing file
+      {cmdab:a:ppend}{col 32}{...}
+append the output to an existing file
+      {cmdab:noty:pe}{col 32}{...}
+suppress the table in the results window
+    {hline 67}
+{marker fmtspec}
+    where {it:fmt_spec} is
+
+        {it:%fmt} {cmdab:par:entheses} | {it:%fmt} | {cmdab:par:entheses}
+
+{marker des}
+{title:Description}
+
+{p 4 4 2} {cmd:estout1} assembles a table of coefficients, "significance stars",
+standard errors, t/z-statistics, p-values, and scalar statistics from one or more
+models previously fitted and stored by {help estimates:estimates store} and writes
+the table to a text file specified by {cmd:using} and/or to the Stata log. The last
+estimated results may be referenced as a period ({cmd:.}) even if they have not yet
+been stored. If no model is specified, {cmd:estout1} uses the last fitted model.
+
+{p 4 4 2} In general, {cmd:estout1} works in a manner very similar to that of
+{help est_table:estimates table} (in fact, {cmd:estout1} calls
+{help est_tab:estimates table} internally). That is, {cmd:estout1} "produces a table
+in which the coefficients are matched by the name of equation and coefficient; see
+option {cmd:equations()} to match equations by number. Each model in {it:namelist}
+is presented in a column of the table." And, {cmd:estout1} "displays blanks in the
+table cells for those  coefficients that are not in a particular model." However,
+it includes several additional features.
+
+{p 4 4 2}
+See help {help estimates} for general information about managing estimation
+results.
+
+{p 4 4 2}
+Note that a newer, more capable version of this program is available as
+{help estout} (available from the SSC Archive,
+type
+ {net "describe http://fmwww.bc.edu/repec/bocode/e/estout":{bind:ssc describe estout}}).
+
+{marker opt}
+{title:Options}
+{marker coe}
+{dlgtab:Coefficients}
+
+{p 4 8 2}{cmd:b(}{it:fmt_spec}{cmd:)} specifies the display
+format for the coefficients (e.g. {cmd:b(%9.0g)}). It defaults to {cmd:%9.3f}.
+
+{p 4 8 2}{cmd:se}{txt:[}{cmd:(}{it:fmt_spec}{cmd:)}{txt:]} specifies that the
+standard errors of the coefficients be displayed below the coefficients (or beside
+them, see the {cmd:wide} option). A display format may be specified as an optional
+argument (e.g. {cmd:se(%9.0g)}). By default, the display format of the coefficients
+is used. Furthermore, the standard errors are displayed in parentheses if
+{bind:{cmd:se(}{it:%fmt} {cmd:par)}} is specified (or {cmd:se(}{cmd:par)} if the
+default format is appropriate).
+
+{p 4 8 2}{cmd:t}{txt:[}{cmd:(}{it:fmt_spec}{cmd:)}{txt:]} specifies that the t- or
+z-values (coef/se(coef)) be displayed (see the description of {cmd:se()} above).
+
+{p 4 8 2}{cmd:p}{txt:[}{cmd:(}{it:fmt_spec}{cmd:)}{txt:]} specifies that the
+(two-sided) p-values of the coefficients be displayed (see the description of
+{cmd:se()} above). As is standard in Stata, the reference distribution is the t if
+the estimation command saved the residual degrees of freedom in {cmd:e(df_r)}, and
+the normal distribution otherwise.
+
+{p 4 8 2}{cmd:eform} displays the coefficient table in exponentiated form. exp(b) is
+displayed rather than b (the untransformed coefficient) and standard errors are
+transformed. Unlike {help regress} and {help est_table:estimates table}, {cmd:estout1}
+does not suppress the display of the intercept in eform-mode. To drop the intercept
+in eform-mode specify {cmd:drop(_cons)}.
+
+{p 4 8 2}{cmd:abs} specifies that absolute t-values be used instead of regular
+t-values.
+
+{p 4 8 2}{cmd:equations(}{it:matchlist}{cmd:)} specifies how the equations of the
+models in {it:namelist} are to be matched. See the description in help
+{help est_table:estimates table}.
+
+{p 4 8 2}{cmd:keep(}{it:keeplist}{cmd:)} specifies the coefficients to be included in
+the table. Option {cmd:keep()} may also be used to change the order of coefficients
+and equations. See the description in help {help est_table:estimates table}.
+
+{p 4 8 2}{cmd:drop(}{it:droplist}{cmd:)} specifies the coefficients to be dropped
+from the table. See the description in help {help est_table:estimates table}.
+
+{p 4 8 2}{{cmd:se}|{cmd:t}|{cmd:p}}{cmd:keep(}{it:keeplist}{cmd:)} or
+{{cmd:se}|{cmd:t}|{cmd:p}}{cmd:drop(}{it:droplist}{cmd:)} specifies that certain
+values be kept or dropped individually. For example, in a table of coefficients and
+t-values the specification {cmd:tdrop(_cons)} suppresses the t-values of the
+constants. On the other hand, {cmd:tkeep(_cons)} would display the t-values for the
+constants exclusively. A {it:keeplist} or {it:droplist} comprises one or more
+specifications, separated by white space. A specification is a variable name
+(e.g. {cmd:price}), an equation name (e.g. {cmd:mean:}), or a full name
+(e.g. {cmd:mean:price}).
+
+{p 8 8 2}Use {cmd:keep()} or {cmd:drop()} without a prefix (see above or help
+{help est_tab:estimates table}) if certain coefficients should be kept or dropped
+entirely or the order of coefficients and equations should be changed (e.g. type
+{cmd:drop(_cons)} if no information on the constants whatsoever should be displayed).
+
+{p 4 8 2}{cmd:nob} suppresses the display of the coefficients.
+{p_end}
+{marker sum}
+{dlgtab:Summary statistics}
+
+{p 4 8 2}{cmd:stats(}{it:scalarlist}{cmd:)} specifies one or more scalar statistics
+to be displayed at the foot of the table. See the description given in help
+{help est_table:estimates table}.
+
+{p 4 8 2}{cmd:stfmt(}{it:fmtlist}{cmd:)} specifies the display formats for the scalar
+statistics in {cmd:stats()}. For instance, {bind:{cmd:stfmt(%9.3f %9.0f)}} would be
+good choice for {bind:{cmd:stats(r2_a N)}}. See help {help format}. The first format
+in {it:fmtlist} will be used for the remaining scalars if {it:scalarlist} has more
+elements than {it:fmtlist}. Thus, only one format has to be specified if all scalars
+are supposed to have the same display format. If no format is specified, the default
+format is the display format of the coefficients.
+
+{p 4 8 2}{cmd:stlabels(}{it:stlabellist}{cmd:)} specifies labels for the scalars in
+{cmd:stats()}. If specified,  the labels will be used instead of the scalar
+names. Example: {bind:{cmd:stlabels("Adj. R-Square" "Number of Cases")}} for
+{bind:{cmd:stats(r2_a N)}}.
+{p_end}
+{marker sig}
+{dlgtab:Significance stars}
+
+{p 4 8 2}{cmd:star}{txt:[}{cmd:(}{it:star_spec}{cmd:)}{txt:]} specifies that the
+significance of coefficients be denoted by stars: {bind:*: p<.05}, {bind:**: p<.01},
+{bind:***: p<.001}. The optional {it:star_spec} may override these thresholds. For
+instance, {bind:{cmd:star(0.10 0.05)}} specifies that significance stars are added to
+the coefficients using the following thresholds instead: {bind:*: p<.10} and
+{bind:**: p<.05}. If {it:star_spec} specifies more than three thresholds, an
+appropriate list of symbols must be provided by {cmd:starsym}. For example,
+{bind:{cmd:star(0.10 0.05 0.01 0.001)}} and {bind:{cmd:starsym(+ * ** ***)}} would
+work. Note: The thresholds have to be specified in descending order.
+
+{p 4 8 2}{cmd:starsym(}{it:starsymlist}{cmd:)}
+specifies the symbols to be used to indicate significance levels. See description of
+{cmd:star} above. The default is {bind:{cmd:starsym(* ** ***)}} (and {cmd:starsym(*)}
+or {bind:{cmd:starsym(* **)}} if only one or two threshold levels are
+specified). {cmd:starsym} implies {cmd:star}.
+
+{p 4 8 2}{cmd:starpos(b}|{cmd:se}|{cmd:t}|{cmd:p)} specifies the position of the
+"significance stars". For example, {cmd:starpos(t)} means that the "significance
+stars" are connected to the t-values. Default is {cmd:starpos(b)}, i.e. the stars are
+connected to the coefficients. Specifying {cmd:starpos} implies {cmd:star}.
+
+{p 4 8 2}{cmd:detachstar} specifies that a delimiter be placed between the
+coefficients and the significance stars (i.e. the stars will be displayed in their own
+column).
+
+{p 4 8 2}{cmd:ststar(}{it:scalarlist}{cmd:)} specifies that the overall significance
+of the model be denoted by stars. The stars will be attached to the scalar statistics
+specified in {it:scalarlist}. If {it:scalarlist} is empty, the stars will be attached
+to the first scalar statistic specified by {cmd:stats()}. The rules for the
+determination of the model significance are:
+
+{p 8 11 2}1) P-value provided: If the scalar e(p) is provided by the estimation
+command and if the value of e(p) lies between 0 and 1, e(p) will be interpreted as
+indicating the overall significance the model (p-value of the model).
+
+{p 8 11 2}2) F-Test: If e(p) is not provided, {cmd:estout1} looks for the scalars
+e(df_m), e(df_r), and e(F) and the p-value of the model will be calculated as
+{cmd:Ftail(df_m,df_r,F)}. This corresponds to the standard overall F-test of linear
+regression.
+
+{p 8 11 2}3) Chi2-Test: Otherwise, if neither e(p), nor e(F) is provided,
+{cmd:estout1} looks for e(df_m) and e(chi2) and calculates the p-value as
+{cmd:chi2tail(df_m,chi2)}. This p-value corresponds to the Likelihood-Ratio or Wald
+Chi2-Test.
+
+{p 8 11 2}3) If neither e(p) in [0,1], e(F), or e(chi2) are available, no overall
+significance stars will be reported.
+
+{p 8 8 2}Important note: Although the procedure outlined above is appropriate for
+most models, there might be some models for which it is not.
+
+{p 8 8 2}Hint: It is possible to attach the stars to different scalar statistics in
+one table. For example, specify {cmd:ststar(r2_a r2_p)} when tabulating OLS estimates
+and, say, probit estimates. For the OLS models, the F-test will be carried out and
+the significance stars will be attached to the r2_a; for the probit models the
+Chi2-test will be used and the stars will appear next to the r2_p.
+{p_end}
+{marker lay}
+{dlgtab:Layout}
+
+{p 4 8 2}{cmd:wide} specifies that the table of coefficients be printed in wide
+format instead of long format, that is, that the b-, se-, t- and p-values be placed
+beside one another instead of beneath one another.
+
+{p 4 8 2}{cmd:style(}{it:style}{cmd:)} specifies a row style for the table rows. A
+row style is a named combination of values for the {cmd:begin()}, {cmd:end()}, and
+{cmd:delimiter()} options. The style options currently available are {cmd:tex}
+(begin: "", delimiter: "&", end: "\\"), {cmd:html} (begin: "<tr><td>",
+delimiter: "</td><td>", end: "</td></tr>"), and style {cmd:tab}
+(begin: "", delimiter: tab character, end: "").
+
+{p 4 8 2}{cmd:begin(}{it:str}{cmd:)} specifies a string to be printed at the
+beginning of every table row. The default is an empty string. Consider the remark on
+"Special characters" below.
+
+{p 4 8 2}{cmd:delimiter(}{it:str}{cmd:)} specifies the delimiter used between the
+table columns. The default is an empty string. See the remark on "Special characters"
+below.
+
+{p 4 8 2}{cmd:end(}{it:str}{cmd:)} specifies a string to be printed at the beginning
+of every table row. Default is an empty string. See the remark on "Special
+characters" below.
+
+{p 4 8 2}{cmd:varwidth(}{it:#}{cmd:)} specifies the width
+of the left stub of the table containing the variable
+names. {cmd:varwidth} defaults to 12, unless
+{cmd:style(tab)} is specified, in which case {cmd:varwidth}
+defaults to 0.
+
+{p 4 8 2}{cmd:modelwidth(}{it:#}{cmd:)} specifies width of
+the results columns. If specified, model names are
+abbreviated and short or empty results cells are padded out
+with blanks. {cmd:modelwidth} defaults to 12, unless
+{cmd:style(tab)} is specified, in which case
+{cmd:modelwidth} defaults to 0.
+
+{p 4 8 2}{cmd:nohead} suppresses the printing of the table head containing the model
+names.
+{p_end}
+{marker lab}
+{dlgtab:Labelling}
+
+{p 4 8 2}{cmd:label} specifies that variable labels be displayed instead of variable
+names.
+
+{p 4 8 2}{cmd:conslbl(}{it:str}{cmd:)} may be used to specify a label for the
+constant. If specified, {it:str} will be displayed instead of {cmd:_cons}.
+
+{p 4 8 2}{{cmd:pre}|{cmd:post}}{cmd:head(}{it:str_list}{cmd:)} and
+{{cmd:pre}|{cmd:post}}{cmd:foot(}{it:str_list}{cmd:)} may be used to specify lists of
+lines of text to appear before/after the table head containing the model names and
+the table foot containing the scalar statistics. For example
+{cmd:prehead("$S_DATE $S_TIME" "")} would add a line containing the current date
+and time followed by an empty line before the table.
+{p_end}
+{marker out}
+{dlgtab:Output}
+
+{p 4 8 2}{cmd:replace} permits {cmd:estout1} to overwrite an existing file.
+
+{p 4 8 2}{cmd:append} specifies that output be appended to an existing file. It may
+be used even if the file has not been previously created.
+
+{p 4 8 2}{cmd:notype} prevents {cmd:estout1} from typing the table to the results
+window and the log file.
+{p_end}
+{marker rem}
+{title:Remarks}
+
+{p 4 8 2}{it:Special characters:} The {cmd:\} and {cmd:$} characters as well as
+quotation marks have special meanings in Stata. Thus, consider the following
+instructions if you, for example, intend to specify akward delimiters:
+
+{p 8 10 2}- Strings containing unmatched quotes should be enclosed in compound double
+quotes (thus, {cmd:delimiter(`"""')} results in columns delimited by {cmd:"}, while
+{cmd:delimiter(")} produces an error).
+
+{p 8 10 2}- The backslash character is used to delay macro expansion in
+Stata. Specifying {cmd:\\} just results in {cmd:\}. To get a double backslash
+(the "\newline" command in TeX) type {cmd:\\\} or {cmd:\\\\} instead.
+
+{p 8 10 2}- The dollar sign is used for global macro expansion in Stata. Thus,
+{cmd:$x} would result in the display of the contents of global macro x (or nothing,
+if the macro does not exist). It is always safe to use {cmd:\$} instead of {cmd:$}.
+
+{p 4 8 2} {it:The tab character:} The {cmd:char()} function may also be used to
+specify odd characters (help {help strfun}). In particular, {cmd:"`=char(9)'"}
+results in a tab character. For example, {bind:{cmd:delimiter(" `=char(9)' ")}}
+specifies a tab character with a leading and a trailing blank as delimiter. The
+{cmd:char()} function is also helpful if extra lines be added to the head or foot of
+the table. For example,
+
+          {bind:{cmd:prehead("`=char(9)'Label 1`=char(9)'Label 2`=char(9)' ...")}}
+
+{p 8 8 2}may be used to add an extra row containing model labels. Multiple tabs are
+specified as {cmd:"`=char(9)'`=char(9)' ..."}.
+
+{marker exa}
+{title:Examples}
+
+{p 4 4 2}General usage:
+
+        {cmd:.} {txt}{it:fit some model}
+        {cmd:. est store A}   (store it)
+        {cmd:.} {txt}{it:fit another model}
+        {cmd:. est store B}   (store it)
+        {cmd:.} {txt}{it:fit yet another model}
+        {cmd:. est store C}   (store it)
+
+        {cmd:. estout1 using}{it: filename}
+        (export coefficients from the last model)
+
+        {cmd:. estout1 A B using}{it: filename}
+        (export coefficients from models A and B)
+
+        {cmd:. estout1 A B using}{it: filename}{cmd:, star t(par) abs}
+        (add sign. stars and abs. t-values in parantheses)
+
+        {cmd:. estout1 * using}{it: filename}{cmd:, stats(N ll chi2 df_m aic)}
+        (export all models with some additional statistics)
+
+
+{p 4 4 2}Coefficients, t-values, significance stars, and
+summary statistics:
+
+        {com}. sysuse auto
+        {txt}(1978 Automobile Data)
+
+        {com}. regress price weight
+        {txt}(output omitted)
+
+        {com}. estimates store M1
+        {txt}
+        {com}. regress price weight turn rep78
+        {txt}(output omitted)
+
+        {com}. estimates store M2
+        {txt}
+        {com}. estout1 M1 M2, star t(par) stats(r2_a N)
+        {res}                      M1             M2
+        weight             2.044***       3.670***
+                         (5.424)        (5.300)
+        turn                           -285.666*
+                                       (-2.189)
+        rep78                           560.285
+                                        (1.725)
+        _cons             -6.707       4478.295
+                        (-0.006)        (1.056)
+        r2_a               0.280          0.377
+        N                 74.000         69.000
+        {txt}
+
+{p 4 4 2}T-values for the first variable only:
+
+        {com}. estout1 M1 M2, star t(par) tkeep(weight)
+        {res}                      M1             M2
+        weight             2.044***       3.670***
+                         (5.424)        (5.300)
+        turn                           -285.666*
+        rep78                           560.285
+        _cons             -6.707       4478.295
+        {txt}
+
+{p 4 4 2}Scalar statistics and overall significance only:
+
+        {com}. estout1 M1 M2, nob stats(r2_a N) ststar
+        {res}                      M1             M2
+        r2_a               0.280***       0.377***
+        N                 74.000         69.000
+        {txt}
+
+{p 4 4 2}Wide format:
+
+        {com}. estout1 M2, star t wide
+        {res}                      M2
+                               b              t
+        weight             3.670***       5.300
+        turn            -285.666*        -2.189
+        rep78            560.285          1.725
+        _cons           4478.295          1.056
+        {txt}
+
+{p 4 4 2}LaTeX-Table:
+
+        {com}. estout1 M2, style(tex) p wide label conslbl(Constant)
+         prehead("\begin{c -(}tabular{c )-}{c -(}lrr{c )-}" \hline) posthead(\hline)
+         postfoot(\hline "\end{c -(}tabular{c )-}") varwidth(20)
+        {res}\begin{c -(}tabular{c )-}{c -(}lrr{c )-}
+        \hline
+                            &          M2&            \\
+                            &           b&           p\\
+        \hline
+        Weight (lbs.)       &       3.670&       0.000\\
+        Turn Circle (ft.)   &    -285.666&       0.032\\
+        Repair Record 1978  &     560.285&       0.089\\
+        Constant            &    4478.295&       0.295\\
+        \hline
+        \end{c -(}tabular{c )-}
+        {txt}
+
+{title:Acknowledgements}
+
+{p 4 4 2}Some of the code of {cmd:estout1} and some of the text in this help file has
+been taken from the official est_table.ado and est_table.hlp.
+
+{p 4 4 2}I would like to thank Henriette Engelhardt and  Elisabeth Coutts for helpful
+comments and suggestions.
+
+
+{title:Author}
+
+    Ben Jann, ETH Zurich, jann@soz.gess.ethz.ch
+
+
+{title:Also see}
+
+    Manual:  {hi:[R] estimates}
+
+{p 4 13 2}Online:  help for {help estimates}; {help est_table:estimates table};
+{help format}; {help file} {p_end}

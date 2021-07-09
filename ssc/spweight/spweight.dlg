@@ -1,0 +1,103 @@
+/*
+ spweight
+*! VERSION 2.0 15/01/2013
+*/
+VERSION 10.0
+INCLUDE _std_medium
+DEFINE _dlght 370
+INCLUDE header
+HELP hlp1, view("help spweight")
+RESET res1
+
+DIALOG main, label("spweight - Cross Section and Panel Spatial Weight Matrix") ///
+	tabtitle("Main")
+BEGIN
+ DEFINE wlabel 130
+ DEFINE cmdx 320
+ DEFINE cmdw 170
+ DEFINE _x _xsetbu
+ DEFINE _y _top
+ TEXT tx_yvar	_lft	_topph	150 ., ///
+	label("Variable 1:")
+ TEXT tx_xvar	180 	@	150 ., ///
+	label("Variable 2:")
+ VARNAME vn_yvar  _lft	 _ss	150 ., ///
+	label("Variable 1")
+ VARNAME vn_xvar  180	 @	150 ., ///
+	label("Variable 2")
+
+ TEXT tx_w1     _lft   _ls   150   .,	///
+	label("Weight Matrix:")
+ EDIT mname_w1     _lft   _ss    150    .,	/*
+	*/ label("Weight Matrix")		/*
+	*/ option(matrix)
+  SPINNER sp_panel   _lft     _xls   _spwd  ., /*
+	*/ min(1) max(1000)			/*
+	*/ option("panel")			/*
+	*/ label("Panel")
+  TEXT   tx_panel   _spsep    @      _sprb  .,	/*
+	*/ label("Panel: ID (Number of Cross Section Units)")
+  SPINNER sp_time   _lft     _ls   _spwd  ., /*
+	*/ min(1) max(1000)			/*
+	*/ option("time")			/*
+	*/ label("Time")
+  TEXT     tx_time   _spsep    @      _sprb  .,	/*
+	*/ label("Time: IT (Number of Time Series in each Cross Section)")
+*/
+  CHECKBOX ck_mod1  _lft    _xls   _ibwd    _ht6 , ///
+	groupbox				 ///
+	onclickon(script ck_mod1_on)		 ///
+	onclickoff(script ck_mod1_off)	 ///
+	label("Standardized Weight Matrix Type:")
+  RADIO    rb_ws1  _ilft     _ss     300    ., 	/*
+	*/ label("Standardized Weight Matrix - (W)") /*
+	*/ first			/*
+	*/ option("stand")		/*
+*/
+  RADIO    rb_ws2  _ilft     _ss     300    ., 	/*
+	*/ label("Inverse Standardized Weight Matrix - (1/W)") /*
+	*/ option("stand inv")		/*
+*/
+  RADIO    rb_ws3  _ilft     _ss     300    ., 	/*
+	*/ label("Inverse Squared Standardized Weight Matrix - (1/W^2)") /*
+	*/ last					/*
+	*/ option("stand inv2")			/*
+*/
+ CHECKBOX eigw _ilft  _xls   350  ., option("eigw") /*
+*/ label("eigw: Save Eigenvalues variable in vector matrix") /*
+*/
+ CHECKBOX table _ilft  _ss   350  ., option("table") /*
+*/ label("table: Display Cross Section Spatial Weight Matrix Table") /*
+*/
+ CHECKBOX ptable _ilft  _ss   350  ., option("ptable") /*
+*/ label("ptable: Display Panel Spatial Weight Matrix Table") /*
+*/
+END
+
+SCRIPT ck_mod1_on
+BEGIN
+ main.rb_ws1.enable
+ main.rb_ws2.enable
+ main.rb_ws3.enable
+END
+SCRIPT ck_mod1_off
+BEGIN
+ main.rb_ws1.disable
+ main.rb_ws2.disable
+ main.rb_ws3.disable
+END
+
+PROGRAM command
+BEGIN
+ put "spweight "
+ varlist main.vn_yvar main.vn_xvar
+beginoptions
+ optionarg main.sp_panel
+ optionarg main.sp_time
+ optionarg main.mname_w1
+ option radio(main rb_ws1 rb_ws2 rb_ws3)
+ option main.eigw
+ option main.table
+ option main.ptable
+END
+

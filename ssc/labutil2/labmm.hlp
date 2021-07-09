@@ -1,0 +1,85 @@
+{smcl}
+{* version 1.0.5 20aug2012}{...}
+{cmd:help labmm}
+{hline}
+
+{title:Title}
+
+{p 5}
+{cmd:labmm} {hline 2} Modify multiple value labels
+
+
+{title:Syntax}
+
+{p 8}
+{cmd:labmm} [{it:lblname-list}] {it:#} {cmd:"}{it:label}{cmd:"} 
+[{it:#} {cmd:"}{it:label}{cmd:"} {it:...}]
+
+
+{title:Description}
+
+{pstd}
+{cmd:labmm} modifies (multiple) value labels. All value labels 
+specified in {it:lblname-list} are modified according to definitions. 
+If {it:lblname-list} is not specified it defaults to {hi:_all}, 
+meaning all value labels in memory. Note that value labels must 
+exist.
+
+{pstd}
+{hi:Reminder:} modifiactions affect all variables that have the same 
+value label as one of the value labels (or variables - see 
+{help labmm##r:Remarks}) in {it:lblname-list} attached.
+
+{marker r}
+{title:Remarks}
+
+{pstd}
+Also this is no longer shown in the syntax diagram, {it:lblname-list} 
+is actually {it:namelist} and allows variable names. Thus, the syntax 
+diagram reads
+
+{p 8}
+{cmd:labmm} [{it:lblname-list}|{varlist}] 
+{it:#} {cmd:"}{it:label}{cmd:"} 
+[{it:#} {cmd:"}{it:label}{cmd:"} {it:...}]
+
+{pstd}
+The reason this is no longer shown, is that specifying variable names 
+to refer to value label names violates Stata conventions. If variable 
+{hi:foo} has value label {hi:foobar} attached, specifying {hi:foo} in 
+{it:varlist}, modifies value label {hi:foobar}. The modifications also 
+affect variable {hi:bar}, if {hi:bar} has value label {hi:foobar} 
+attached. I thank Daniel Possenriede for bringing this to may 
+attention again.
+
+
+{title:Examples}
+
+{phang2}{cmd:. sysuse nlsw88}{p_end}
+{phang2}{cmd:. labmm .a "don't know" .b "refused"}{p_end}
+{phang2}{cmd:. labmm marlbl .c "divorced"}{p_end}
+{phang2}{cmd:. label list}{p_end}
+
+
+{title:Acknowledgments}
+
+{pstd}
+Modifying multiple value labels was suggested by Anna Reimondos on 
+{browse "http://www.stata.com/statalist/archive/2010-04/msg00554.html":Statalist}.
+Michael Norman Mitchell's solution led to this ado.
+
+
+{title:Author}
+
+{pstd}Daniel Klein, University of Kassel, klein.daniel.81@gmail.com
+
+
+{title:Also see}
+
+{psee}
+Online: {help label}{p_end}
+
+{psee}
+if installed: {help labvalch}, {help labdel}, 
+{help strrec}, {help labutil2}
+{p_end}

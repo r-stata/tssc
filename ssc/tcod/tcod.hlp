@@ -1,0 +1,71 @@
+{smcl}
+{* 24may2006}{...}
+{cmd:help tcod}
+{hline}
+
+{title:Title}
+
+{p2colset 5 15 17 2}{...}
+{p2col :{hi:tcod} {hline 2}}Displays standard and bootstrap confidence intervals for the coefficient of dispersion (COD) & performs Gloudemans’ COD Tolerance Tests. {p_end}
+{p2colreset}{...}
+    
+
+{title:Syntax}
+
+{p 8 17 2}
+{cmd:tcod}
+{varname}
+{ifin}
+[{cmd:,} {it:options}]
+
+{synoptset 10 tabbed}{...}
+{synopthdr}
+{synoptline}
+{syntab:Options}
+{synopt :{opt l:evel(#)}}sets confidence level (in percent). The default is {cmd:level(95)} or as set by {cmd:set level}; see {helpb level}{p_end}
+{synopt :{opt s:tdr(#)}}sets the values of the required standards. The default is {cmd:stdr (15)}{p_end}
+{synopt :{opt r:eps(#)}}specifies the number of bootstrap replications to be performed;  the default is {cmd:reps (50)}. The bootstrapped confidence 
+interval reported is the BCa confidence interval.{p_end}
+{synoptline}
+{p2colreset}{...}
+{p 4 6 2}
+{opt by} may be used with {opt tcod}; see {helpb by}.
+{p_end}
+
+
+{title:Description}
+
+{pstd}
+{opt tcod} computes the confidence intervals for the COD, the maximum acceptable COD, and tests the hypothesis that the COD meet the performance standards 
+for the uniformity of assessments.
+
+{pstd}
+With the {opt by} option, {opt tcod} allows you to display the output by categories of a grouping variable. 
+
+{pstd}
+{opt tcod} takes, as input, one scale variable. In appraisal ratio studies, this variable could be the appraisal or assessment ratio.  
+
+{title:Examples}
+
+{cmd:. tcod  Ratio  }
+{cmd:. by Strata, sort : tcod  Ratio}
+{cmd:. tcod  Ratio, stdr(15 20 25) reps(5000)}
+
+{title:Author} 
+
+
+{p 4 4 2}Benmamoun, Mamoun, Boeing Institute of International Business, Saint Louis University , Saint Louis, MO, U.S.A. 
+Email {browse "mailto: vmamoun@yahoo.com": vmamoun@yahoo.com} if you observe any problem or if you have any comment or question.
+	
+{title:Remarks} 
+
+{p 4 4 2}For detailed information , see Gloudemans, R. J. 2001. Confidence Intervals for the COD: Limitations and Solutions.  Available online at http://www.agjd.com/COD.pdf.
+
+{title:Acknowledgement} 
+
+{p 4 4 2}This program is based on the distingusihed work of Gloudemans, Robert J.   
+
+{title:Also see}
+
+{psee}
+Online:  {helpb bootstrap}, {helpb sratio}, {helpb codci} {p_end}

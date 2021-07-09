@@ -1,0 +1,122 @@
+{smcl}
+{* *! version 2.3  29 Apr 2020}{...}
+{cmd:help malmq2}
+{hline}
+
+{title:Title}
+
+{phang}
+{bf:malmq2} {hline 2} Malmquist Productivity Index in Stata 
+
+{title:Syntax}
+
+{p 8 21 2}
+{cmd:malmq2} {it:{help varlist:inputvars}} {cmd:=} {it:{help varlist:outputvars}} {ifin} 
+{cmd:,} [{it:options}]
+
+{synoptset 28 tabbed}{...}
+{synopthdr}
+{synoptline}
+{syntab:Main}
+{synopt:{cmdab:dmu(varname)}}specifies names of DMUs. 
+
+{synopt:{cmdab:seq:uential}}specifies sequential production technology.
+{p_end}
+
+{synopt:{cmdab:win:dow(#)}}specifies window production technology with # periods.
+{p_end}
+
+{synopt:{cmdab:bi:ennial}}specifies biennial production technology. 
+{p_end}
+
+{synopt:{opt global}}specifies global production technology.
+{p_end}
+
+{synopt:{opt fgnz}}specifies decomposing TFP change using Färe, Grosskopf, Norris, and Zhang's (1994) method.
+{p_end}
+
+{synopt:{opt rd}}specifies decomposing TFP change using Ray and Desli's (1997) method.
+{p_end}
+
+{synopt:{opt ort(string)}}specifies the oriention. The default is ort(i), 
+meaning the input oriented productivity index. ort(out) means the output oriented productivity index.
+{p_end}
+
+{synopt:{opt sav:ing(filename[,replace])}}specifies that the results be saved in {it:filename}.dta. 
+{p_end}
+
+{synopt:{opt maxiter(#)}}specifies the maximum number of iterations, which must be an integer greater than 0. The default value of maxiter is 16000.
+{p_end}
+
+{synopt:{opt tol(real)}}specifies the convergence-criterion tolerance, which must be greater than 0.  The default value of tol is 1e-8.
+{p_end}
+
+{synoptline}
+{p2colreset}{p 4 6 2}
+A panel variable and a time variable must be specified; use {helpb xtset}.
+
+
+{title:Description}
+
+{pstd}
+{cmd:malmq2} selects the input and output variables in the opened data set and estimate Malmquist Productivity Index using Data Envelopment Analysis(DEA) frontier by options specified. 
+
+
+
+{title:Examples}
+
+{phang}{cmd:. use "https://raw.githubusercontent.com/kerrydu/malmq2/master/exdata.dta"}
+
+{phang}{cmd:. xtset dmu year}
+
+{phang}{cmd:. malmq2 K L= Y,  global}
+
+{phang}{cmd:. malmq2 K L= Y,  seq ort(o) fgnz}
+
+{phang}{cmd:. malmq2 K L= Y,  ort(o) rd sav(tfp_result,replace)}
+
+{title:Saved Results}
+
+{psee}
+Macro:
+
+{psee}
+{cmd: r(file)} the filename stores results of {cmd:malmq2}.
+{p_end}
+
+
+{marker references}{...}
+{title:References}
+ 
+{phang}
+Färe, R., Grosskopf, S., Norris, M., & Zhang, Z. (1994). Productivity Growth, Technical Progress, and Efficiency Change in Industrialized Countries. The American Economic Review, 84(1), 66-83.
+
+{phang}
+Ray, S., & Desli, E. (1997). Productivity Growth, Technical Progress, and Efficiency Change in Industrialized Countries: Comment. The American Economic Review, 87(5), 1033-1039.
+
+{phang}
+Pastor, J., Lovell, C. (2005). A global Malmquist productivity index, Economics Letters, 88(2):266-271.
+
+{phang} 
+Ji, Y., Lee, C. (2010). Data Envelopment Analysis. Stata Journal 10: 267-280.
+
+{phang}
+Lee, K., Lee,B., Lee, C., Lee, C. (2011). Malmquist Productivity Index using DEA frontier in Stata. Working paper.
+
+{phang}
+Jesús T. Pastor, Mette Asmild, C.A. Knox Lovell (2011). The biennial Malmquist productivity change index, Socio-Economic Planning, 45(1):10-15.
+
+{title:Author}
+
+{psee}
+Kerry Du
+
+{psee}
+Xiamen University
+
+{psee}
+Xiamen, China
+
+{psee}
+E-mail: kerrydu@xmu.edu.cn
+{p_end}

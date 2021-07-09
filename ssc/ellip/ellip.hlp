@@ -1,0 +1,268 @@
+{smcl}
+{* 16jul2004}{...}
+{hline}
+help for {cmd:ellip}{right:(SJ4-#: gr32_1)}
+{hline}
+
+{title:Graphing confidence ellipses}
+{title:[An update of {cmd:ellip} for Stata 8]}
+
+{p 8 14 2}{cmd:ellip} {it:yvar} {it:xvar} [{cmd:if}
+{it:exp}] [{cmd:in} {it:range}] [{cmd:,} 
+{cmd:means}
+{it:common_options}
+]
+
+{p 8 14 2}{cmd:ellip} {it:yvar} [{it:xvar}] [{cmd:if}
+{it:exp}] [{cmd:in} {it:range}] {cmd:,} {cmd:coefs} 
+[{cmdab:p:ool}{cmd:(}{it:#}{cmd:)} 
+[{cmd:plopts}{cmd:(}{it:line_options}{cmd:)}
+{cmd:pcopts}{cmd:(}{it:connect_options}{cmd:)}]
+{it:common_options}
+]
+
+where {it:common_options} are:
+
+{p 14 14 2}{cmdab:c:onstant}{cmd:(}{it:statname} [{it:#}] | {it:#}{cmd:)}
+{cmdab:l:evel}{cmd:(}{it:#}{cmd:)}
+{cmd:formula}{cmd:(}{it:acosr} | {it:theta}{cmd:)}
+{cmdab:g:enerate}{cmd:(}{it:ynewvar} {it:xnewvar}{cmd:)}
+{cmdab:nogr:aph}
+{cmd:replace}
+{cmd:evr}{cmd:(}{it:#}{cmd:)}
+{cmdab:f:rom}{cmd:(}{it:#}{cmd:)}
+{cmdab:t:o}{cmd:(}{it:#}{cmd:)}
+{cmdab:np:oints}{cmd:(}{it:#}{cmd:)} 
+{cmd:overlay}
+{cmd:total}
+[{cmdab:tl:abel}{cmd:(}{it:label}{cmd:)}]
+{cmdab:diam:eter}{cmd:(}{it:#}{cmd:)}
+[{cmd:dlopts}{cmd:(}{it:line_options}{cmd:)}]
+{cmd:plot}{cmd:(}{it:plot}{cmd:)}
+{it:connect_options}
+{it:twoway_options}
+
+
+{title:Description}
+
+{p 4 4 2}{cmd:ellip} calculates a confidence ellipse from the elliptically
+distributed variables {it:yvar} and {it:xvar}, and then graphs the confidence
+ellipse using {cmd:graph twoway line}. By default, or if the option
+{cmd:means} is specified, {it:yvar} and {it:xvar} are data variables. If
+the option {cmd:coefs} is specified, {it:yvar} and {it:xvar} are the first two
+independent variables after an immediately preceding {cmd:regress}. If
+{cmd:coefs} is specified without {it:xvar}, then the {it:_cons} in
+{cmd:regress} is used for {it:xvar}.   
+
+
+{title:Options}
+
+{p 4 8 2}{cmd:means} | {cmd:coefs} specifies how to center the 
+confidence ellipse. The default, and the {cmd:means} option uses two variable
+means, whereas {cmd:coefs} uses the first two regression coefficients from an
+immediately preceding {cmd:regress}. Default subtitles are "Means centered"
+and "Coefficient centered", respectively. If you restricted {cmd:regress} to a
+portion of the data using {cmd:if} or {cmd:in}, then you will generally want to
+use the same conditions with {cmd:coefs}. coefs is not allowed with
+{cmd:by}{cmd:(}{cmd:)}, because it would be misleading, since Stata only
+remembers the last set of estimates. 
+
+{p 4 8 2}{cmd:pool}{cmd:(}{it:#}{cmd:)} displays a confidence ellipse labeled
+"pooled ellipse, bp" using all the data, a confidence ellipse labeled
+"best subset ellipse, b" using a theoretically unproblematic subset, and
+a connected curve labeled "fractionally pooled curve" with # connecting
+lines. {cmd:pool}{cmd:(}{cmd:)} must be used with {cmd:if} or {cmd:in}, and with 
+{cmd:coefs}. {cmd:pool}{cmd:(}{cmd:)} is incompatible with 
+{cmd:by}{cmd:(}{cmd:)}, {cmd:diameter}{cmd:(}{cmd:)}, and
+{cmd:evr}{cmd:(}{cmd:)}. {cmd:formula}{cmd:(}{cmd:)} is ignored. See Alexandersson (1998) for examples.
+
+{p 4 8 2}{cmd:plopts}{cmd:(}{it:line_options}{cmd:)}, to be used with 
+{cmd:pool()}, affect the rendition of the pooled line; see {help line_options}.
+
+{p 4 8 2}{cmd:pcopts}{cmd:(}{it:connect_options}{cmd:)}, to be used with 
+{cmd:pool()}, affect the rendition of the connecting points in the pooled line;
+see {help connect_options}. Sort options are ignored.
+
+{p 4 8 2}{cmd:constant}{cmd:(}{it:statname} [{it:#}] | {it:#}{cmd:)} 
+specifies the boundary constant c. The overall and {cmd:means} default is
+{cmd:c}{cmd:(}{it:4}{cmd:)} and
+corresponds to a joint confidence interval of 1 - exp^(-#/2) * 100, or 86%. The
+{cmd:coefs} default is {cmd:c}{cmd:(}{it:f 2}{cmd:)}. Available statnames are:
+
+{p 8 22 2}{it:statname} {space 2} definition of statname; calculation of c{p_end}
+	{hline 61}
+{p 8 22 2}{cmd:sd} {space 8} Standard deviation; c = #^2.{p_end}
+{p 8 22 2}{space 11} Confidence level is 1 - exp^(-(#^2)/2) * 100.{p_end}
+{p 8 22 2}{space 11} sd cannot be used with level().{p_end}
+{p 8 22 2}{cmd:t2} {space 8} Hotelling's  T2 / n; c = #(n-1)/(n-#) * F.{p_end}
+{p 8 22 2}{cmd:pt2} {space 7} prediction T2; c = t2 * (n+1) / n.{p_end}
+{p 8 22 2}{cmd:chi2} {space 6} Chi-squared; c = chi2(#).{p_end}
+{p 8 22 2}{cmd:chi2_n} {space 4} sample-adjusted chi2; c = chi2(#) / n.{p_end}
+{p 8 22 2}{cmd:pchi2_n} {space 3} Prediction chi2_n; c = chi2(#) / n * (n + 1).{p_end}
+{p 8 22 2}{cmd:f} {space 9} Multiplier-fixed F; c = 2 * F(#,n-#).{p_end}
+{p 8 22 2}{cmd:f_scheffe} {space 1} Scheffe-adjusted F; c = # * F(#,n-#).{p_end}
+{p 8 22 2}{cmd:fadj} {space 6} Denominator-adjusted F; c = 2 * F(2,n-#).{p_end}
+
+{p 4 8 2}{cmd:level}{cmd:(}{it:#}{cmd:)} specifies the confidence level, in 
+percent, for calculation of the confidence ellipse; the default {it:#} is
+95. {cmd:level}{cmd:(}{cmd:)} cannot be used with {cmd:constant}{cmd:(}{it:sd}{cmd:)}.
+
+{p 4 8 2}{cmd:formula}{cmd:(}{it:acosr} | {it:theta}{cmd:)} is included only for the
+curious users to show that two seemingly different formulas are
+equivalent. {cmd:formula}{cmd:(}{it:acosr}{cmd:)} is based on the angular distance,
+acos(r), and on the amplitudes. {cmd:formula}{cmd:(}{it:theta}{cmd:)} is based on
+the rotation angle of the major axis against the x-axis, theta, and on the
+semi-major and semi-minor axes, a and b. {cmd:formula}{cmd:(}{it:acosr}{cmd:)} is
+the default. 
+
+{p 4 8 2}{cmd:generate}{cmd:(}{it:ynewvar} {it:xnewvar}{cmd:)} generates two
+new variables, {it:ynewvar} and {it:xnewvar}, which define the confidence
+ellipse. If the current dataset contains fewer observations than in 
+{cmd:npoints}{cmd:(}{cmd:)}, then the length of the dataset will be expanded
+accordingly with missing values, even if ynewvar and xnewvar are temporary
+variables, and a warning message is displayed. {cmd:generate}{cmd:(}{cmd:)}
+cannot be used with {cmd:by}{cmd:(}{cmd:)}.
+
+{p 4 8 2}{cmd:nograph} specifies to not construct a graph. In contrast,
+the built-in nodraw option merely suppresses the display of the graph. {cmd:nograph}
+is often used together with {cmd:generate}{cmd:(}{cmd:)}.
+
+{p 4 8 2}{cmd:replace} replaces any existing variables in 
+{cmd:generate}{cmd:(}{cmd:)}.
+
+{p 4 8 2}{cmd:evr}{cmd:(}{it:#}{cmd:)} specifies the error variance ratio #
+of {it:yvar} to {it:xvar}, where # is a floating point number between 0 and
+99999. The default is 1. The ratio 0 corresponds to regression of x on y, 1 
+corresponds to orthogonal regression and the major axis, and a very large
+number, say 99999, corresponds to regression of y on x. See McCartin (2003).
+
+{p 4 8 2}{cmd:from}{cmd:(}{it:#}{cmd:)} specifies the value from which the
+ellipse parameter runs. The default is 0. You only need to specify this option
+if you do not want to display the beginning of an ellipse.
+
+{p 4 8 2}{cmd:to}{cmd:(}{it:#}{cmd:)} specifies the value to which the
+ellipse parameter runs. The default is 2 pi. You only need to specify this option if
+you do not want to display the end of an ellipse. If {cmd:from}{cmd:(}{cmd:)} is
+smaller than {cmd:to}{cmd:(}{cmd:)}, as by default, the parameter runs
+clockwise. Otherwise, the parameter runs counter-clockwise.
+
+{p 4 8 2}{cmd:overlay}, to be used with {cmd:by}{cmd:(}{cmd:)}, creates an 
+overlaid graph for all by-groups. {cmd:overlay} cannot be used with
+ {cmd:by}{cmd:(}{it:..., total}{cmd:)}. 
+
+{p 4 8 2}{cmd:total}, to be used with {cmd:by}{cmd:(}{cmd:)}, adds an extra
+by-group with a confidence ellipse for the entire dataset. 
+
+{p 4 8 2}{cmd:tlabel}{cmd:(}{it:label}{cmd:)}, to be used with {cmd:total}, adds
+a user-specified label for the by-graph produced by the option total. The default
+label is "Total". 
+
+{p 4 8 2} {cmd:diameter}{cmd:(}{it:#}{cmd:)} adds a diameter of the ellipse with
+slope -99999 <= {it:#} <= 99999. A diameter of the ellipse is any chord through
+the center of the ellipse. The option is incompatible with
+{cmd:pool}{cmd:(}{cmd:)}.
+
+{p 4 8 2}{cmd:rlopts}{cmd:(}{it:line_options}{cmd:)}, to be used with 
+{cmd:refline()}, affect the rendition of the reference line; see
+{help line_options}.
+
+{p 4 8 2}{cmd:plot}{cmd:(}{it:plot}{cmd:)} provides a way to add other plots
+to the generated graph; see help {help plot_option}. By default, when this
+option is specified, the legend appears; see help {help legend_option}. By
+default the descriptive text in the legend is obtained from the y-variables'
+variable labels. Examples of such plots are another confidence ellipse, a
+regression line, inscribing reference lines, a scatter plot of {it:yvar} and
+{it:xvar} and of the midpoint. 
+
+{p 4 8 2}
+{it:connect_options} are any of the options documented in help
+{help connect_options}. The options {cmd:sort}[{cmd:(}{it:varlist}{cmd:)}] and
+{cmd:cmissing(}{c -(}{cmd:y}|{cmd:n}{c )-} ...{cmd:)} are ignored. The
+default is {cmd:cmissing(}{cmd:n} ...{cmd:)}, meaning that ellipses are not
+connected to each other.
+
+{p 4 8 2}
+{it:twoway_options} are any of the options documented in help
+{help twoway_options}. These include options for titling the graph
+(see help {help title_options}), options for saving the graph to disk
+(see help {help saving_option}), and the {cmd:by()} option
+(see help {help by_option}). The {cmd:by()} option is incompatible
+with the option {cmd:pool}{cmd:(}{cmd:)}. 
+{cmd:by}{cmd:(}{it:..., total}{cmd:)} adds an extra by-group for all by-groups
+combined; it may not be used with the option {cmd:overlay}. 
+
+
+{title:Remarks}
+
+{p 4 4 2}This is version 2 of {cmd:ellip}, see Alexandersson (1998). 
+Two of the most notable new features are the feature to graph confidence
+ellipses around variable means, and the feature to add inscribed lines. These
+features allow a geometric characterization of linear regression with unequal
+error variances, as in McCartin (2003). To access the dialogs interactively, 
+type {cmd: db ellip} or see help {help ellip_dlg}. To create menu items
+permanently, copy these lines to {bf:profile.do}:
+
+
+    {cmd: if _caller() > 7 {c -(}}
+    {cmd:     if "`c(console)'"=="" {c -(}}
+    {cmd:         window menu append submenu "stUserGraphics" "Confidence Ellipses"}
+    {cmd:         window menu append item "Confidence Ellipses" ///}
+    {cmd:             "for Means" "db ellip_means"}
+    {cmd:         window menu append item "Confidence Ellipses" ///}
+    {cmd:             "for Regression Coefficients" "db ellip_coefs"}
+    {cmd:     {c )-}}
+    {cmd: {c )-}}
+
+
+    Results are saved in r(); see help {help return list}.
+
+
+{title:Examples}
+
+{p 4 8 2}
+{* how to "click to run" for several commands as in gr_example2.ado?}
+    {cmd:. sysuse auto, clear}
+
+    {cmd:. ellip mpg weight} {space 12} // graph the default ellipse with c(4)
+      {it:({stata "gr_example auto:ellip mpg weight":click to run})}
+	  
+    {cmd:. ellip mpg weight, g(ey ex)} {space 3}// also generate the ellipse variables
+
+    {cmd:. ellip mpg weight, c(t2) plot(line ey ex)}
+          // overlaid graph of 95% T2 and default ellipses
+
+    {cmd:. reg mpg weight}
+    
+    {cmd:. ellip weight, coefs c(chi2)}
+          // 95% Chi-square confidence ellipse around _b[weight] and _b[_cons]
+	  
+{p 4 4 2}
+Many more examples are available in a test script package on SSC. To find out
+details: {stata ssc describe ellip:ssc describe ellip}. To
+download: {stata ssc install ellip:ssc install ellip} and
+{stata net get ellip:net get ellip}.    
+    
+
+{title:Author}    
+
+        Anders Alexandersson, Mississippi State University, USA
+        Email: {browse "mailto:aa1@msstate.edu":aa1@msstate.edu}.  
+   
+   
+{title:References}
+
+{p 4 8 2}Alexandersson, A. 1998. gr32: Confidence 
+ellipses. {it:Stata Technical Bulletin} 46: 10-13. In
+{it:Stata Technical Bulletin Reprints}, vol. 8, 54-57. College Station, TX: Stata
+Press. 
+
+{p 4 8 2}McCartin, B. 2003. A Geometric Characterization of Linear 
+Regression. {it:Statistics: A Journal of Theoretical and Applied Statistics} 
+37(2): 101-117.
+
+
+{title:Also see}
+
+{p 4 13 2}Manual:  {hi:[G] graph twoway}, {hi:[G] graph twoway line} 
+
+{p 4 13 2}Online:  help for {help graph_twoway}, {help line}

@@ -1,0 +1,41 @@
+d 'REMR': module to implement robust error meta-regression method for dose–response meta-analysis
+d
+d  remr performs dose-response meta-analysis using inverse variance
+d weighted least squares (WLS) regression with cluster robust error
+d variances.  This approach is a special case of the one-stage
+d generalised least squares for trend approach where the covariance
+d need not be imputed from the data.  This method allows the model
+d to include a non-zero intercept to absorb any bias that is not
+d accounted for by the terms in the model but notably the intercept
+d now becomes a coefficient rather than a constant given the use of
+"d WLS.  Weights for the reference doses are imputed, these are"
+d equal to the maximum of the within study weights based on the
+d inverse of the variance of the effect sizes in the study.  This
+d minimises the possible deviation of the regression intercept from
+d the origin without having to force the regression model through
+d the origin.  This method does not require knowledge of the
+"d correlation structure of the data within a study, because it"
+d stacks included effects as a cluster by study and uses the
+"d cluster-robust analysis to obtain a robust standard error, thus"
+d treating observations as independent across clusters but
+d correlated within each cluster.
+d
+d KW: dose-response
+d KW: meta-analysis
+d KW: meta-regression
+d
+d Requires: Stata version 14 and xblc from st0215_1
+d
+d Distribution-Date: 20200820
+d
+"d Author: Luis Furuya-Kanamori, Research School of Population Health, Australian National University"
+d Support: email Luis.Furuya-Kanamori@@anu.edu.au
+d
+"d Author:  Chang Xu, College of Medicine, Qatar University"
+d Support: email NA
+d
+"d Author: Suhail AR Doi, College of Medicine, Qatar University"
+d Support: email NA
+d
+f remr.ado
+f remr.sthlp

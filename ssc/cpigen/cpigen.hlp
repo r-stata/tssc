@@ -1,0 +1,107 @@
+{smcl}
+{* 30aug2013}{...}
+{hline}
+help for {hi:cpigen}
+{hline}
+
+{title:Add US price index CPI-U to current data}
+
+{title:Syntax}
+
+{p 6 16 2}
+{cmd:cpigen} [{cmd:,} {cmd:replace}]
+
+{synoptset 20 tabbed}{...}
+{synopthdr}
+{synoptline}
+{synopt:{opt replace}}replace existing variables named {cmd:cpi} and {cmd:cpiu}{p_end}
+{synoptline}
+{p2colreset}{...}
+
+{title:Description}
+
+{p}{cmd:cpigen} uses a numeric variable {cmd:year} on the current data, and
+a numeric variable {cmd:quarter} or a numeric variable {cmd:month} if available, 
+defining calendar time in the usual way, to generate
+two variables {cmd:cpi} and {cmd:cpiu} containing versions of the Consumer Price
+Index commonly used to convert US dollar amounts to "real" dollars.  The first, {cmd:cpi}
+(supported range 1913-2012),
+is the research series (applying more consistent methods over time) CPI-U-RS or CPI-U-X1
+where available, and
+an adjusted version of the CPI-U where no research series is available, as is
+{browse "http://www.census.gov/hhes/www/income/income03/cpiurstxt.html":standard Census practice}.  The
+second, {cmd:cpiu} (supported range 1913-2013),
+is the seasonally adjusted CPI-U, for all goods, for urban consumers, also available
+from {stata "findit freduse":freduse CPIAUCSL}. {p_end}
+
+{p}The research series data for 1978 to 2006 comes from the BLS publication
+{browse "http://www.bls.gov/cpi/cpiurs1978_2006.pdf":http://www.bls.gov/cpi/cpiurs1978_2006.pdf}
+updated at 
+{browse "http://www.bls.gov/cpi/cpiurs1978_2010.pdf":http://www.bls.gov/cpi/cpiursai1978_2010.pdf}. For more discussion of these series, and other indices in the CPI family,
+see {browse "http://www.bls.gov/cpi":http://www.bls.gov/cpi}
+and the article by Kenneth J. Stewart and Stephen B. Reed, "CPI Research Series Using Current Methods, 1978-98," 
+in the Monthly Labor Review, June 1999, downloadable at {browse "http://stats.bls.gov/opub/mlr/1999/06/cpimlr.pdf":http://stats.bls.gov/opub/mlr/1999/06/cpimlr.pdf}.
+A useful basic description is {browse "http://www.irp.wisc.edu/faqs/faq5.htm":http://www.irp.wisc.edu/faqs/faq5.htm}.{p_end}
+
+{p}Earlier data (monthly CPI-U data for 1913 
+through 1920) comes from
+{browse "ftp://ftp.bls.gov/pub/special.requests/cpi/cpiai.txt":ftp://ftp.bls.gov/pub/special.requests/cpi/cpiai.txt}.
+Though undocumented, this source matches the unadjusted CPI-U {stata "findit freduse":freduse} data,
+which shows 174 for December 2000, whereas the seasonally adjusted CPI-U is 174.6; 
+the ratio of December 2006 to December 1977 is 3.250 for unadjusted and 3.255 for seasonally adjusted CPI-U, whereas
+that ratio is 2.96 for the research series (seasonal adjustment matters more for ratios formed from months within a year, i.e.
+short term inflation, but such differences are likely swamped by measurement error in the CPI).
+{p_end}
+
+{p}Note that the indices {cmd:cpi} and {cmd:cpiu} 
+created by {cmd:cpigen} apply to national trends
+in prices of all goods and services purchased
+by the 9/10 of consumers who are 
+classified as urban. Many indices are available 
+for particular categories of goods, e.g. food or clothing or
+medical care (1998 clothing prices were about 1.5 times 1978 prices, while
+1998 medical care prices were about 4 times 1978 prices), or geographic areas, e.g. New York 
+or large northeastern cities or small southern 
+cities (large northeastern cities tend to have 
+prices nearly twice as high as small southern 
+cities). See Stewart and Reed (link above) or 
+{browse "http://www.bls.gov/cpi/cpifaq.htm#Question_16":http://www.bls.gov/cpi/cpifaq.htm#Question_16}
+{browse "http://www.bls.gov/cpi/cpifaq.htm#Question_19":http://www.bls.gov/cpi/cpifaq.htm#Question_19} for more.{p_end}
+
+{p}For indices not in the CPI family, see e.g. {browse "http://www.bea.gov/papers/pdf/cpi_pce.pdf":http://www.bea.gov/papers/pdf/cpi_pce.pdf} and
+{browse "http://www.ssa.gov/OACT/COLA/AWI.html":http://www.ssa.gov/OACT/COLA/AWI.html}.{p_end}
+
+{p}The variables {cmd:cpi} and {cmd:cpiu} created by {cmd:cpigen} are normalized to 2000 dollars in annual data, or December 2000 dollars in monthly data.
+To turn nominal income, say, into real income measured in 2000 dollars, simply divide {cmd:income} by {cmd:cpi}.
+To turn nominal income into real income measured in 2005 dollars, first divide {cmd:income} by {cmd:cpi}, then multiply by the value of {cmd:cpi} in 2005.
+The idea is, what cost a dollar in 2000 cost about 1.13 in 2005, so a dollar of income in 2005 made you about as well off as 88.5 cents of income in 2000.{p_end}
+
+{title:Example}
+
+webuse nlswork, clear
+replace year=year+1900
+cpigen
+g nomwage=exp(ln_w)*cpi
+su cpi if year==1978
+g wage78=nomwage/cpi*r(mean)
+la var wage78 "Real Wage, 1978 dollars"
+g x=exp(_n/20-1) in 1/80
+kdensity wage78 if year==1968, at(x) g(d68) nogr
+kdensity wage78 if year==1978, at(x) g(d78) nogr
+kdensity wage78 if year==1988, at(x) g(d88) nogr
+la var d68 "1968 Wages"
+la var d78 "1978 Wages"
+la var d88 "1988 Wages"
+line d68 d78 d88 x, xsc(log)
+
+{title:Author}
+
+    Austin Nichols
+    Urban Institute
+    Washington, DC, USA
+    austinnichols@gmail.com
+
+{title:Also see}
+
+{p 1 10}On-line: {stata "findit freduse": freduse (on SSC)}{p_end}
+

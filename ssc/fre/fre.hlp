@@ -1,0 +1,452 @@
+{smcl}
+{* 18dec2013}{...}
+{hi:help fre}
+{hline}
+
+{title:Title}
+
+{pstd}{hi:fre} {hline 2} One-way frequency tables
+
+{title:Syntax}
+
+{p 8 15 2}
+{cmd:fre} {varlist} {ifin} {weight} [{cmd:,}
+{help fre##comopt:{it:options}}
+ ]
+
+
+{p 8 15 2}
+{cmd:fre} {varlist} {helpb using} {it:filename} {ifin} {weight} [{cmd:,}
+{help fre##comopt:{it:options}} {help fre##expopt:{it:export_opts}}
+ ]
+
+
+{synoptset 20 tabbed}{...}
+{marker comopt}{synopthdr:options}
+{synoptline}
+{synopt :{opt f:ormat(#)}}decimal places for percentages; default is 2
+  {p_end}
+{synopt :{opth ff:ormat(%fmt)}}display format for frequencies; default is %9.0g
+  {p_end}
+{synopt :{opt t:abulate(#)}}tabulate {it:#} smallest and {it:#} largest
+  values; default is 20
+  {p_end}
+{synopt :{opt r:ows(#)}}tabulate {it:#} rows; equivalent to
+  {cmd:tabulate(}{it:#}/2{cmd:)}
+  {p_end}
+{synopt :{opt all}}tabulate all values; ignore {cmd:tabulate()} and {cmd:rows()}
+  {p_end}
+{synopt :{opt nomis:sing}}omit missing values
+  {p_end}
+{synopt :{opt nol:abel}}omit labels
+  {p_end}
+{synopt :{opt nov:alue}}omit values
+  {p_end}
+{synopt :{opt non:ame}}omit variable name
+  {p_end}
+{synopt :{opt noti:tle}}omit title containing variable name and label
+  {p_end}
+{synopt :{opt now:rap}}do not wrap the labels
+  {p_end}
+{synopt :{opt trunc:ate}}truncate the labels
+  {p_end}
+{synopt :{opt subs:titute(slist)}}substitute text; {it:slist} is {it:from} {it:to} [{it:from} {it:to} ...]
+    {p_end}
+{synopt :{opt w:idth(#)}}maximum width of labels column; default is 50
+  {p_end}
+{synopt :{opt minw:idth(#)}}minimum width of labels column
+  {p_end}
+{synopt :{opt i:ncludelabeled}}include all labeled values
+  {p_end}
+{synopt :{opth i:nclude(numlist)}}include all values in {it:numlist}
+  {p_end}
+{synopt :{opth subpop(varname)}}exclude observations for which {it:varname} = 0
+  {p_end}
+{synopt :{opt as:cending}}display rows in ascending order of frequency
+  {p_end}
+{synopt :{opt de:scending}}display rows in descending order of frequency
+  {p_end}
+{synopt :{opt o:rder}}display tables in alphabetical order of {it:varlist}
+  {p_end}
+{synoptline}
+
+{synoptset 20 tabbed}{...}
+{marker expopt}{synopthdr:export_opts}
+{synoptline}
+{synopt :{opt tab}}export tab-delimited table (default)
+  {p_end}
+{synopt :{opt tex}}export LaTeX-formated table
+  {p_end}
+{synopt :{opt body:only}}export table body only (omit header)
+  {p_end}
+{synopt :{opt com:bine}}place codes and labels in same cell
+  {p_end}
+{synopt :{opt pre(strlist)}}text to be printed before the table
+  {p_end}
+{synopt :{opt post(strlist)}}text to be printed after the table
+  {p_end}
+{synopt :{opt r:eplace}}overwrite existing file
+  {p_end}
+{synopt :{opt a:ppend}}append to existing file
+  {p_end}
+{synoptline}
+
+{p 4 4 2}
+{cmd:by} is allowed; see help {helpb by}.
+{p_end}
+{p 4 4 2}
+{cmd:fweight}s, {cmd:aweight}s, and {cmd:iweight}s are allowed; see help {help weight}.
+
+
+
+{title:Description}
+
+{pstd} {cmd:fre} displays for each specified variable a
+univariate frequency table containing counts, overall percent,
+"valid" percent (i.e. percent based on non-missing observations), and
+cumulative percent. Variables may be string or numeric. Labels,
+in full length, and values are printed. By default, {cmd:fre}
+tabulates only the smallest and largest 20 values (along with all missing
+values), but this can be changed using the {cmd:tabulate()}, {cmd:rows()},
+or {cmd:all} option. Furthermore, you may include values with zero
+observed frequency using the {cmd:includelabeled},
+{cmd:include()}, and {cmd:subpop()} options.
+
+{pstd} The default for {cmd:fre} is to display the frequency tables in the
+results window and the log. Alternatively, if {cmd:using} is specified, the
+tables are written to a file on disk, either tab-delimited (default)
+or LaTeX-formatted (see the {cmd:tex} option).
+
+
+{title:Options}
+
+{marker comoptd}{it:{dlgtab:common_options}}
+
+{phang} {opt format(#)} sets the number of decimal places displayed for
+percentages. The default is {cmd:format(2)}.
+
+{phang} {opth fformat(%fmt)} sets the display format for frequencies; see help
+{helpb format}. The default is {cmd:fformat(%9.0g)}.
+
+{phang} {opt tabulate(#)} causes only the {it:#} smallest and the {it:#} largest values to
+be tabulated. The default is {cmd:tabulate(20)}. All values are tabulated if {it:#} < 1,
+or {it:#} = ., or if the {cmd:all} option is specified.
+
+{phang}{opt rows(#)} causes only the {it:#}/2 smallest and {it:#}/2 largest
+values to be tabulated. {opt rows(#)} is a equivalent to
+{cmd:tabulate(}{it:#}/2{cmd:)}. {opt rows()} has no effect if {opt tabulate()} is specified.
+
+{phang} {opt all} causes all observed values to be tabulated. {opt all} takes precedence
+over {opt tabulate()} and {opt rows()}.
+
+{phang} {opt nomissing} requests that missing values be
+excluded. The "valid" percent column will be suppressed in this case.
+
+{phang} {opt nolabel} requests that the value labels (and the variable label)
+be omitted.
+
+{phang} {opt novalue} requests that only the value labels be printed, but not
+the associated numeric values (unless a specific
+value label is empty). This option has no effect
+if used with sting variables.
+
+{phang} {opt noname} requests that, if a variable label is available, only
+the variable label be printed in the table's caption.
+
+{phang} {opt notitle} requests that the table's caption containing the
+variable name and label be omitted.
+
+{phang} {opt nowrap} requests that long labels not be wrapped. The default is to
+wrap labels that do not fit in the maximum width of the labels column (see the
+{cmd:width()} option). For screen display, {cmd:nowrap} causes long labels to be
+truncated instead of wrapped. For export to file (i.e. if
+{cmd:using} is specified), {cmd:nowrap} causes labels to be printed in full
+length in one line.
+
+{phang} {opt truncate} requests that long labels be truncated to {cmd:width()}. (Note that,
+for screen display, {cmd:truncate} and {cmd:nowrap} have the same effect.)
+
+{phang} {opt substitute(slist)} substitutes text within labels. Use this
+option, for example, to replace special characters when exporting to LaTeX.
+{it:slist} is {it:from} {it:to} [{it:from} {it:to} ...]. For example, type
+{cmd:substitute(_ \_ & \& % \%)} to escape "_", "&", and "%". Enclose
+{it:from} and {it:to} in double quotes if they contain spaces, 
+e.g. {cmd:substitute("old text" "new text")}.
+
+{phang} {opt width(#)} sets the maximum width of the labels column. The default is
+{cmd:width(50)}. For display in the results window, the actual maximum may be less
+than the specified value depending on the current width of the screen
+(see {helpb linesize}).
+
+{phang} {opt minwidth(#)} set the minimum width of labels column. Setting
+{cmd:minwidth()} to the value of {cmd:width()} produces a table with a fixed
+labels column width. {cmd:minwidth()} has no influence if {cmd:using} is specified.
+
+{phang} {opt includelabeled} causes labeled values (i.e. values for which a
+label is defined) to be included in the table even if they do not occur in the dataset
+(i.e. if they have zero observed frequency). (Observed values will always be
+tabulated, whether labeled or not, unless they are excluded using the {cmd:if}
+qualifier).
+
+{phang} {opth include(numlist)} causes all values in {it:numlist} to be
+included in the table even if they do not occur in the dataset
+(i.e. if they have zero observed frequency). Missing values (e.g. {cmd:.},
+{cmd:.a}) are allowed in {it:numlist}. (All other observed values will also be
+tabulated unless excluded using the {cmd:if} qualifier).
+
+{phang} {opth subpop(varname)} excludes observations for which {it:varname}
+= 0 in computing the frequency counts, but includes them in determining the
+table rows. Values that are observed in the {it:varname} = 0
+group but not in the {it:varname} = 1 group will be shown as having 0
+frequency.
+
+{phang}{opt ascending} displays the table rows in ascending order of
+frequency. The order of the missing values is kept as is.
+
+{phang}{opt descending} displays the table rows in descending
+order of frequency (and ascending order of the variable's values within
+equal frequency rows). The order of the missing values is kept as is.
+
+{phang} {opt order} displays the tables in alphabetical
+order of {it:varlist}.
+
+{marker expoptd}{it:{dlgtab:export_opts}}
+
+{phang} {opt tab} uses the tab-character as a column delimiter in the
+stored table. This is the default unless {it:filename} has a ".tex" suffix.
+
+{phang} {opt tex} formats the stored table for use with LaTeX. This is the
+default if {it:filename} has a ".tex" suffix. The "{cmd:_}" character in variable
+names will be replaced by "{cmd:\_}". Use the {cmd:substitute()} option to escape
+special characters within labels (see above).
+
+{phang} {opt bodyonly} requests that only the table body containing the frequency
+distribution be stored.
+
+{phang} {opt combine} requests that values and labels be placed in the same cell. The
+default is to place values and labels in separate cells (i.e. to print a column delimiter
+between values and labels).
+
+{phang} {opt pre(strlist)} and {opt post(strlist)} specify lines of text to
+be printed before and after the table. Use double quotes to separate the
+lines. For example, {bind:{cmd:post("" "some text")}} would insert a blank
+line followed by a line containing {cmd:some text}. Use compound double
+quotes ({cmd:`"}{it:...}{cmd:"'}) for lines containing double quotes.
+
+{phang} {opt replace} permits overwriting an existing file.
+
+{phang} {opt append} causes output to be appended to an existing file.
+
+
+{title:Examples}
+
+        {com}. sysuse auto, clear
+        {txt}(1978 Automobile Data)
+
+        {com}. fre foreign
+        {res}
+        {txt}foreign {hline 2} Car type
+        {txt}{hline 18}{hline 1}{c TT}{hline 44}
+        {txt}        {txt}           {c |}      Freq.    Percent      Valid       Cum.
+        {txt}{hline 18}{hline 1}{c +}{hline 44}
+        {txt}Valid   0 Domestic {c |}{res}         52      70.27      70.27      70.27
+        {txt}        1 Foreign  {c |}{res}         22      29.73      29.73     100.00
+        {txt}        Total      {c |}{res}         74     100.00     100.00
+        {txt}{hline 18}{hline 1}{c BT}{hline 44}
+
+        {com}. fre rep78
+        {res}
+        {txt}rep78 {hline 2} Repair Record 1978
+        {txt}{hline 13}{hline 1}{c TT}{hline 44}
+        {txt}        {txt}      {c |}      Freq.    Percent      Valid       Cum.
+        {txt}{hline 13}{hline 1}{c +}{hline 44}
+        {txt}Valid   1     {c |}{res}          2       2.70       2.90       2.90
+        {txt}        2     {c |}{res}          8      10.81      11.59      14.49
+        {txt}        3     {c |}{res}         30      40.54      43.48      57.97
+        {txt}        4     {c |}{res}         18      24.32      26.09      84.06
+        {txt}        5     {c |}{res}         11      14.86      15.94     100.00
+        {txt}        Total {c |}{res}         69      93.24     100.00
+        {txt}Missing .     {c |}{res}          5       6.76
+        {txt}Total         {c |}{res}         74     100.00
+        {txt}{hline 13}{hline 1}{c BT}{hline 44}
+
+        {com}. fre rep78, subpop(foreign)
+        {res}
+        {txt}rep78 {hline 2} Repair Record 1978
+        {txt}{hline 13}{hline 1}{c TT}{hline 44}
+        {txt}        {txt}      {c |}      Freq.    Percent      Valid       Cum.
+        {txt}{hline 13}{hline 1}{c +}{hline 44}
+        {txt}Valid   1     {c |}{res}          0       0.00       0.00       0.00
+        {txt}        2     {c |}{res}          0       0.00       0.00       0.00
+        {txt}        3     {c |}{res}          3      13.64      14.29      14.29
+        {txt}        4     {c |}{res}          9      40.91      42.86      57.14
+        {txt}        5     {c |}{res}          9      40.91      42.86     100.00
+        {txt}        Total {c |}{res}         21      95.45     100.00
+        {txt}Missing .     {c |}{res}          1       4.55
+        {txt}Total         {c |}{res}         22     100.00
+        {txt}{hline 13}{hline 1}{c BT}{hline 44}
+
+        {com}. label define origin .a "unknown", modify
+        {txt}
+        {com}. fre foreign, includelabeled
+        {res}
+        {txt}foreign {hline 2} Car type
+        {txt}{hline 19}{hline 1}{c TT}{hline 44}
+        {txt}        {txt}            {c |}      Freq.    Percent      Valid       Cum.
+        {txt}{hline 19}{hline 1}{c +}{hline 44}
+        {txt}Valid   0  Domestic {c |}{res}         52      70.27      70.27      70.27
+        {txt}        1  Foreign  {c |}{res}         22      29.73      29.73     100.00
+        {txt}        Total       {c |}{res}         74     100.00     100.00
+        {txt}Missing .a unknown  {c |}{res}          0       0.00
+        {txt}Total               {c |}{res}         74     100.00
+        {txt}{hline 19}{hline 1}{c BT}{hline 44}
+
+        {com}. label define rep 1 "This long label will be wrapped"
+        {txt}
+        {com}. label value rep78 rep
+        {txt}
+        {com}. fre rep78, width(15) include(1/7 .a .b .c)
+        {res}
+        {txt}rep78 {hline 2} Repair Record 1978
+        {txt}{hline 21}{hline 1}{c TT}{hline 44}
+        {txt}        {txt}              {c |}      Freq.    Percent      Valid       Cum.
+        {txt}{hline 21}{hline 1}{c +}{hline 44}
+        {txt}Valid   1  This long  {c |}{res}          2       2.70       2.90       2.90
+        {txt}           label will {c |}{res}
+        {txt}           be wrapped {c |}{res}
+        {txt}        2             {c |}{res}          8      10.81      11.59      14.49
+        {txt}        3             {c |}{res}         30      40.54      43.48      57.97
+        {txt}        4             {c |}{res}         18      24.32      26.09      84.06
+        {txt}        5             {c |}{res}         11      14.86      15.94     100.00
+        {txt}        6             {c |}{res}          0       0.00       0.00     100.00
+        {txt}        7             {c |}{res}          0       0.00       0.00     100.00
+        {txt}        Total         {c |}{res}         69      93.24     100.00
+        {txt}Missing .             {c |}{res}          5       6.76
+        {txt}        .a            {c |}{res}          0       0.00
+        {txt}        .b            {c |}{res}          0       0.00
+        {txt}        .c            {c |}{res}          0       0.00
+        {txt}        Total         {c |}{res}          5       6.76
+        {txt}Total                 {c |}{res}         74     100.00
+        {txt}{hline 21}{hline 1}{c BT}{hline 44}
+
+        {com}. fre price, nomissing
+        {res}
+        {txt}price {hline 2} Price
+        {txt}{hline 7}{hline 1}{c TT}{hline 33}
+        {txt}{txt}        {c |}      Freq.    Percent       Cum.
+        {txt}{hline 7}{hline 1}{c +}{hline 33}
+        {txt} 3,291  {c |}{res}          1       1.35       1.35
+        {txt} 3,299  {c |}{res}          1       1.35       2.70
+        {txt} 3,667  {c |}{res}          1       1.35       4.05
+        {txt} 3,748  {c |}{res}          1       1.35       5.41
+        {txt} 3,798  {c |}{res}          1       1.35       6.76
+        {txt} 3,799  {c |}{res}          1       1.35       8.11
+        {txt} 3,829  {c |}{res}          1       1.35       9.46
+        {txt} 3,895  {c |}{res}          1       1.35      10.81
+        {txt} 3,955  {c |}{res}          1       1.35      12.16
+        {txt} 3,984  {c |}{res}          1       1.35      13.51
+        {txt} 3,995  {c |}{res}          1       1.35      14.86
+        {txt} 4,010  {c |}{res}          1       1.35      16.22
+        {txt} 4,060  {c |}{res}          1       1.35      17.57
+        {txt} 4,082  {c |}{res}          1       1.35      18.92
+        {txt} 4,099  {c |}{res}          1       1.35      20.27
+        {txt} 4,172  {c |}{res}          1       1.35      21.62
+        {txt} 4,181  {c |}{res}          1       1.35      22.97
+        {txt} 4,187  {c |}{res}          1       1.35      24.32
+        {txt} 4,195  {c |}{res}          1       1.35      25.68
+        {txt} 4,296  {c |}{res}          1       1.35      27.03
+        {txt} :      {c |}          :          :          :
+        {txt} 6,303  {c |}{res}          1       1.35      74.32
+        {txt} 6,342  {c |}{res}          1       1.35      75.68
+        {txt} 6,486  {c |}{res}          1       1.35      77.03
+        {txt} 6,850  {c |}{res}          1       1.35      78.38
+        {txt} 7,140  {c |}{res}          1       1.35      79.73
+        {txt} 7,827  {c |}{res}          1       1.35      81.08
+        {txt} 8,129  {c |}{res}          1       1.35      82.43
+        {txt} 8,814  {c |}{res}          1       1.35      83.78
+        {txt} 9,690  {c |}{res}          1       1.35      85.14
+        {txt} 9,735  {c |}{res}          1       1.35      86.49
+        {txt} 10,371 {c |}{res}          1       1.35      87.84
+        {txt} 10,372 {c |}{res}          1       1.35      89.19
+        {txt} 11,385 {c |}{res}          1       1.35      90.54
+        {txt} 11,497 {c |}{res}          1       1.35      91.89
+        {txt} 11,995 {c |}{res}          1       1.35      93.24
+        {txt} 12,990 {c |}{res}          1       1.35      94.59
+        {txt} 13,466 {c |}{res}          1       1.35      95.95
+        {txt} 13,594 {c |}{res}          1       1.35      97.30
+        {txt} 14,500 {c |}{res}          1       1.35      98.65
+        {txt} 15,906 {c |}{res}          1       1.35     100.00
+        {txt} Total  {c |}{res}         74     100.00
+        {txt}{hline 7}{hline 1}{c BT}{hline 33}
+
+        {com}. fre foreign using test.tex
+        {res}{txt}(output written to {res}{browse test.tex}{txt})
+
+        {com}. type test.tex
+
+        {res}foreign --- Car type
+
+        \begin{c -(}tabular{c )-}{c -(}lllrrrr{c )-}\hline
+               &        &          &  Freq. & Percent &  Valid &   Cum. \\
+        \hline
+         Valid &      0 & Domestic &     52 &   70.27 &  70.27 &  70.27 \\
+               &      1 &  Foreign &     22 &   29.73 &  29.73 & 100.00 \\
+               &  Total &          &     74 &  100.00 & 100.00 &        \\
+        \hline\end{c -(}tabular{c )-}
+        {txt}
+        {com}. fre foreign using test.tex, bodyonly replace ///
+        >  pre("\begin{c -(}table{c )-}\caption{c -(}Car Type{c )-}"       ///
+        >      "\begin{c -(}tabular{c )-}{c -(}lllrrrr{c )-}"              ///
+        >      "&&Freq.&Per.&Val. Per.&Cum. Per\\")    ///
+        >  post("\end{c -(}tabular{c )-}\end{c -(}table{c )-}")
+        {res}{txt}(output written to {res}{browse test.tex}{txt})
+
+        {com}. type test.tex
+        {res}\begin{c -(}table{c )-}\caption{c -(}Car Type{c )-}
+        \begin{c -(}tabular{c )-}{c -(}lllrrrr{c )-}
+        &&Freq.&Per.&Val. Per.&Cum. Per\\
+         Valid &      0 & Domestic &     52 &   70.27 &  70.27 &  70.27 \\
+               &      1 &  Foreign &     22 &   29.73 &  29.73 & 100.00 \\
+               &  Total &          &     74 &  100.00 & 100.00 &        \\
+        \end{c -(}tabular{c )-}\end{c -(}table{c )-}
+        {txt}
+
+{title:Returned results}
+
+{pstd} Scalars:
+
+{p2colset 5 20 20 2}{...}
+{p2col : {cmd:r(N)}} number of observations{p_end}
+{p2col : {cmd:r(N_valid)}} number of nonmissing observations{p_end}
+{p2col : {cmd:r(N_missing)}} number of missing observations{p_end}
+{p2col : {cmd:r(r)}} number of rows (values, categories, levels){p_end}
+{p2col : {cmd:r(r_valid)}} number of nonmissing rows{p_end}
+{p2col : {cmd:r(r_missing)}} number of missing rows{p_end}
+
+{pstd} Macros:
+
+{p2col : {cmd:r(depvar)}} name of tabulated variable{p_end}
+{p2col : {cmd:r(label)}} label of tabulated variable{p_end}
+{p2col : {cmd:r(lab_valid)}} row labels of nonmissing values{p_end}
+{p2col : {cmd:r(lab_missing)}} row labels of missing values{p_end}
+
+{pstd} Matrices:
+
+{p2col : {cmd:r(valid)}} frequency counts of nonmissing values{p_end}
+{p2col : {cmd:r(missing)}} frequency counts of missing values{p_end}
+
+
+{title:Author}
+
+{pstd} Ben Jann, University of Bern, jann@soz.unibe.ch
+
+{pstd}Thanks for citing this software as follows:
+
+{pmore}
+Jann, B. (2007). fre: Stata module to display one-way frequency table. Available from
+http://ideas.repec.org/c/boc/bocode/s456835.html.
+
+
+{title:Also see}
+
+{psee} Online:  {helpb tabulate oneway}

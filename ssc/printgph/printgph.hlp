@@ -1,0 +1,64 @@
+.-
+help for ^printgph^
+.-
+
+Prints all Stata graphics files
+specified by file pattern
+----------------------------
+
+    ^printgph^ [filespec] [ ^, more stamp thickness noprint]
+
+Description
+-----------
+
+^printgph^ displays and prints all Stata graphics
+files specified by a file pattern.
+ 
+If no filespec is specified, it uses *.gph
+
+filespec can take one of the following forms:
+
+             (nothing) -- treated as ^*.gph^
+ ^*^                                   ^*.gph^
+ ^*.gph^                               ^*.gph^
+ name                                name^.gph^
+ name.^gph^                            name^.gph^
+ name^*^                               name^*.gph^
+ name^*.gph^                           name^*.gph^
+
+
+Options
+-------
+
+^more^ pauses after each file
+
+
+^stamp^ stamps the printout with the date, file name and directory
+
+^noprint^ skips the printing. Useful for testing
+
+Remarks 
+-------
+Requires forfile, and is simply a shell for it.
+
+
+
+Examples
+--------
+
+    . ^printgph , stamp^
+    . ^printgph lr*.gph , noprint^
+
+
+Authors
+-------
+
+    Jan Brogger, University of Bergen, Norway
+    jan.brogger@@med.uib.no
+
+
+Acknowledgement
+--------------
+    Based on showgph by Nick Cox and Jan Brogger
+
+

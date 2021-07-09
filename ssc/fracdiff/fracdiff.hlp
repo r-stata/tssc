@@ -1,0 +1,73 @@
+.-
+help for ^fracdiff^                
+.-
+
+Generate fractionally-differenced timeseries
+--------------------------------------------
+
+	^fracdiff^  varname  [^if^ exp] [^in^ range] D[real] [, ^GEN^erate(varname)] 
+
+^fracdiff^ is for use with time-series data.  You must ^tsset^ your data before 
+using ^fracdiff^; see help @tsset@.  ^fracdiff^ supports the ^by^ prefix, which may be used to operate on each time
+    series in a panel. Alternatively, the ^if^ qualifier may be used to specify a single time
+    series in a panel.
+
+
+
+Description
+-----------
+
+^fracdiff^ computes a fractionally-differenced timeseries, given a value
+of the fractional integration (long memory) parameter ^d^. If a series
+exhibits long memory, it is neither stationary (I[0]) nor is it a unit 
+root (I{1}) process; it is an I(d) process, with d a real number. 
+An excellent survey of long memory models--which originated in
+hydrology, and have been widely applied in economics and finance--
+is given by Baillie (1996). 
+
+Once one of several available estimators has been used to determine the
+^d^ value for a timeseries, ^fracdiff^ may be used to generate the 
+fractionally integrated transformation of the original series. Since
+this transformation involves applying an infinite-order lag distribution
+to the original series, the first twelve observations of the original 
+series are used to provide starting values. ^fracdiff^ requires that there
+are no gaps, or missing values, within the specified sample. The resulting
+series will be named ^fracdiff^ by default, if that series name is not
+in use. The name of the new series may be specified with the ^generate^
+option.
+
+We illustrate ^fracdiff^ by using the GPH estimator (Geweke and Porter-
+Hudak, 1983) to estimate the fractional differencing parameter for a 
+timeseries. The ^gphudak^ routine saves its point estimate of ^d^ in 
+^r(gph)^, which is then provided to the ^fracdiff^ routine.
+
+Examples
+--------
+	
+	. ^use http://fmwww.bc.edu/ec-p/data/Mills2d/fta.dta^
+	. ^gphudak ftap^
+	. ^fracdiff ftap,d(`r(gph)') gen(lmftap)^
+
+
+References
+----------
+
+Baillie, R., Long Memory Processes and Fractional Integration in 
+      Econometrics, Journal of Econometrics, 73, 1996, 5-59.
+      
+Geweke, J. and Porter-Hudak, S.,  The Estimation and Application
+      of Long Memory Time Series Models, J. of Time Series Analysis,
+      1983, 221-238.
+
+Author
+-------
+
+        Christopher F Baum, Boston College, USA
+        baum@@bc.edu
+
+        
+Also see
+--------
+
+On-line:  help for @tsset@, @gphudak@ (if installed), @modlpr@ (if installed),
+          @roblpr@ (if installed), @lomodrs@ (if installed)

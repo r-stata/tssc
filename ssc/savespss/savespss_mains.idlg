@@ -1,0 +1,17 @@
+
+DIALOG main, tabtitle("main") title("Export data to SPSS system file (*.sav)")
+BEGIN
+
+        TEXT tx_save _lft _top _iwd ., label("Save file as:")
+        FILE fi_save   @  _ss @ ., option(using) error("Filename") label("Browse...") ///
+             defext(sav) filter("SPSS System File (*.sav)|*.sav|All (*.*)|*.*") save
+             
+        GROUPBOX gb_options  @           _ls       @           80,	///
+	label("Options")
+
+
+        CHECKBOX ck_replace  _indent           _ms       _inwd         .,		///
+	label("Overwrite files if they already exist")			///
+	option(replace)
+END
+

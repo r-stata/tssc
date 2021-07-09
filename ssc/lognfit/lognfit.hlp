@@ -1,0 +1,260 @@
+{smcl}
+{* March 2007}{...}
+{hline}
+help for {hi:lognfit}{right:Stephen P. Jenkins (updated June 2013)}
+{hline}
+
+{title:Fitting a lognormal distribution by ML to unit record data}
+
+{p 8 17 2}{cmd:lognfit} {it:var} [{it:weight}] [{cmd:if} {it:exp}]
+	[{cmd:in} {it:range}] [{cmd:,}
+	{cmdab:m:var(}{it:varlist1}{cmd:)} {cmdab:v:var(}{it:varlist2}{cmd:)} 
+	{cmdab:mandv(}{it:varlist}{cmd:)} {cmdab:st:ats} 
+	{cmdab:f:rom(}{it:string}{cmd:)} {cmdab:poor:frac(}{it:#}{cmd:)} 
+	{cmdab:cdf(}{it:cdfname}{cmd:)} {cmdab:pdf(}{it:pdfname}{cmd:)}
+	{cmdab:r:obust} {cmdab:cl:uster(}{it:varname}{cmd:)} {cmdab:svy:} 
+	{cmdab:l:evel(}{it:#}{cmd:)} {it:maximize_options} {it:svy_options} ]
+
+{p 4 4 2}{cmd:by} {it:...} {cmd::} may be used with {cmd:lognfit}; see help
+{help by}. 
+
+{p 4 4 2}{cmd:pweight}s, {cmd:aweight}s, {cmd:fweight}s, and {cmd:iweight}s 
+are allowed; see help {help weights}. To use {cmd:pweight}s, you must first 
+{cmd:svyset} your data and then use the {cmd:svy} option.
+
+{title:Description}
+
+{p 4 4 2}
+{cmd:lognfit} fits by ML the 2 parameter lognormal distribution to 
+sample observations on a random variable {it:var}. Unit record data 
+are assumed (rather than grouped data). For a comprehensive review 
+of the lognormal distribution, see Aitchison and Brown (1954). 
+See also Kleiber and Kotz (2003). 
+
+{p 4 4 2}
+The likelihood function for a sample of observations on {it:var} is specified 
+as the product of the densities for each observation (weighted where relevant), and
+is maximized using {cmd:ml model lf}. 
+
+
+{title:Options}
+
+{p 4 8 2}{cmd:mvar(}{it:varlist1}{cmd:)} and
+	{cmd:vvar(}{it:varlist2}{cmd:)} allow the user to specify each
+	parameter as a function of the covariates specified in the respective
+	variable list. A constant term is always included in each equation. 
+
+{p 4 8 2}{cmd:mandv(}{it:varlist}{cmd:)} can be used instead of the previous option 
+	if the same covariates are to appear in each parameter equation.
+
+{p 4 8 2}{cmd:from(}{it:string}{cmd:)} specifies initial values for the 
+	parameters, and is likely to be used only rarely. You can specify the initial 
+	values in one of three ways: the name of a vector containing the initial values 
+	(e.g., from(b0) where b0 is a properly labeled vector); by specifying coefficient 
+	names with the values 	(e.g., from(m:_cons=1 v:_cons=5);
+	or by specifying an ordered list of values (e.g., from(1 5, copy)).  
+	Poor values in from() may lead to convergence problems. For more details, 
+	including the use of copy and skip, see {help:maximize}.
+
+{p 8 8 2}If covariates are specified, the next four options are not available. 
+	Use {help lognpred} to generate statistics at particular values of the 
+	covariates, or {cmd:nlcom}. {cmd:predict} can be used to generate the 
+	observation-specific parameters corresponding to the covariate values of
+ 	each sample observation: see Examples below.
+
+{p 4 8 2}{cmd:stats} displays selected distributional statistics implied by the
+	lognormal parameter estimates:  quantiles, cumulative 
+	shares of total {it:var} at quantiles (i.e. the Lorenz curve 
+	ordinates), the mode, mean, standard deviation, variance, half the 
+	coefficient of variation squared, Gini coefficient, and 
+	quantile ratios p90/p10, p75/p25. 
+
+{p 4 8 2}{cmd:poorfrac(}{it:#}{cmd:)} displays the estimated proportion with values of {it:var} 
+	less than the cut-off specified by {it:#}. This option may be specified when replaying
+	results.
+
+{p 4 8 2}{cmd:cdf(}{it:cdfname}{cmd:)} creates a new variable {it:cdfname} containing the
+	estimated lognormal c.d.f. value F(x) for each x.
+
+{p 4 8 2}{cmd:pdf(}{it:pdfname}{cmd:)} creates a new variable {it:pdfname} containing the
+	estimated lognormal p.d.f. value f(x) for each x.
+
+
+{p 4 8 2}{cmd:robust} specifies that the Huber/White/sandwich estimator of
+variance is to be used in place of the traditional calculation; see
+{hi:[U] 23.14 Obtaining robust variance estimates}.  {cmd:robust} combined
+with {cmd:cluster()} allows observations which are not independent within
+cluster (although they must be independent between clusters).  If you 
+specify {help pweight}s, {cmd:robust} is implied.
+
+{p 4 8 2}{cmd:cluster(}{it:varname}{cmd:)} specifies that the observations are
+independent across groups (clusters) but not necessarily within groups.
+{it:varname} specifies to which group each observation belongs; e.g.,
+{cmd:cluster(personid)} in data with repeated observations on individuals. 
+See {hi:[U] 23.14 Obtaining robust variance estimates}. {cmd:cluster()} can be
+used with {help pweight}s to produce estimates for unstratified
+cluster-sampled data.  Specifying {cmd:cluster()} implies {cmd:robust}.
+
+{p 4 8 2}{cmd:svy} indicates that {cmd:ml} is to pick up the {cmd:svy} settings 
+set by {cmd:svyset} and use the robust variance estimator. Thus, this option 
+requires the data to be {cmd:svyset}; see help {help svyset}. {cmd:svy} may not be 
+combined with weights or the {cmd:strata()}, {cmd:psu()}, {cmd:fpc()}, or 
+{cmd:cluster()} options.
+
+{p 4 8 2}{cmd:level(}{it:#}{cmd:)} specifies the confidence level, in percent,
+for the confidence intervals of the coefficients; see help {help level}.
+
+{p 4 8 2}{cmd:nolog} suppresses the iteration log.
+
+{p 4 8 2}{it:maximize_options} control the maximization process. The options
+available are those shown by {help maximize}, with the exception of {cmd:from()}.
+If you are seeing many "(not concave)" messages in the iteration 
+log, using the {cmd:difficult} or {cmd:technique} options may help convergence.
+
+{p 4 8 2}{it:svy_options} specify the options used together with the {cmd:svy} option.
+
+
+{title:Saved results}
+
+{p 4 4 2}In addition to the usual results saved after {cmd:ml}, {cmd:lognfit} also
+saves the following, if there are no covariates have been specified and
+the relevant options used:
+
+{p 4 4 2}{cmd:e(bm)} and {cmd:e(bv)} are the estimated lognormal parameters.
+
+{p 4 4 2}{cmd:e(cdfvar)} and {cmd:e(pdfvar)} are the variable names specified for the
+c.d.f. and the p.d.f.
+
+{p 4 4 2}
+{cmd:e(mode)}, {cmd:e(mean)}, {cmd:e(var)}, {cmd:e(sd)}, {cmd:e(i2)}, and {cmd:e(gini)} 
+are the estimated mode, mean, variance, standard deviation, half coefficient of 
+variation squared, Gini coefficient. {cmd:e(pX)}, and {cmd:e(LpX)} are the
+quantiles, and Lorenz ordinates, where X = {1, 5, 10, 20, 25, 30, 40, 50, 
+60, 70, 75, 80, 90, 95, 99}. 
+
+{p 4 4 2}The following results are saved regardless of whether covariates have been 
+specified or not.
+
+{p 4 4 2}{cmd:e(b_m)} and {cmd:e(b_v)} are row vectors containing the 
+parameter estimates from each equation. 
+
+{p 4 4 2}{cmd:e(length_b_m)} and {cmd:e(length_b_v)} contain
+the lengths of these vectors. If no covariates have been specified in an equation, 
+the corresponding vector has length equal to 1 (the constant term); 
+otherwise, the length is one plus the number of covariates.
+
+
+{title:Formulae}
+
+{p 4 4 2}
+The lognormal distribution has distribution function (c.d.f.)
+
+{p 8 8 2}
+	F(x) = 1 - N( (log(x) - m)/v ) 
+
+{p 4 4 2}
+where m and v are parameters, each positive, for random variable x > 0. 
+
+{p 4 4 2}
+the probability density function (p.d.f.) is
+
+{p 8 8 2}
+	f(x) = (x*sqrt(2*_pi)*v)^(-1) *exp( -.5*(v^-2)(log(x) - m)^2 ).
+
+{p 4 4 2}
+The likelihood function for a sample of observations on {it:var} 
+is specified as the product of the densities for each observation 
+(weighted where relevant), and is maximized using {cmd:ml model lf}. 
+
+{p 4 4 2}
+The formulae used to derive the distributional summary statistics 
+presented (optionally) are as follows. The r-th moment about the origin
+is given by
+
+{p 8 8 2}
+	exp( r*m + .5*(r^2)*(v^2) )
+
+{p 4 4 2}
+and hence
+
+{p 8 8 2} 
+      	mean = exp(m + .5*(v^2) )
+
+{p 8 8 2}
+      	variance = q*(q-1)*exp(2*m)  where q = exp(v^2)
+
+{p 4 4 2}
+from which the standard deviation and half the squared coefficient of 
+variation can be derived. The mode is
+
+{p 8 8 2}
+	mode = exp(m - v^2).
+
+{p 4 4 2}
+The quantiles are derived by inverting the distribution function: 
+
+{p 8 8 2}
+	x_s = exp( m + v*{cmd:invnorm}(s) ) for each s = F(x_s).
+
+{p 4 4 2}
+The Gini coefficient of inequality is given by
+
+{p 8 8 2}
+      	Gini = 2*{cmd:norm}(v/sqrt(2)) - 1  .
+
+{p 4 4 2}
+The Lorenz curve ordinates at each s = F(x_s) are
+
+{p 8 8 2}
+      	L(s) = {cmd:norm}({cmd:invnorm}(s) - v).
+
+	
+{title:Examples}
+
+{p 4 8 2}{inp:. lognfit x [w=wgt] }
+
+{p 4 8 2}{inp:. lognfit }
+
+{p 4 8 2}{inp:. lognfit x, stats poorfrac(100) }
+
+{p 4 8 2}{inp:. lognfit, m(age sex) v(age sex) }
+
+{p 4 8 2}{inp:. lognfit x, mandv(age sex) }
+
+{p 4 8 2}{inp:. predict double m_i,  eq(m) xb }
+
+{p 4 8 2}{inp:. predict double v_i,  eq(v) xb }
+
+{p 4 4 2}See also the examples provided in the presentation by 
+{browse "http://www.stata.com/meeting/2german/Jenkins.pdf":Jenkins (2004)}.
+
+{title:Author}
+
+{p 4 4 2}Stephen P. Jenkins <s.jenkins@lse.ac.uk>, London School of Economics, London WC2A 2AE, U.K.
+
+
+{title:Acknowledgements}
+
+{p 4 4 2}N. J. Cox made numerous helpful comments and suggestions, and also wrote
+programs for distributional diagnostic plots ({help qlogn}, {help plogn}). 
+Carsten Schroeder spotted a bug in the post-estimation calculations of L(x).
+
+
+{title:References}
+
+{p 4 8 2}Aitchison, J. and Brown, J.A.C. (1957). 
+	{it:The Lognormal Distribution}. Cambridge: Cambridge University Press.
+
+{p 4 8 2}Jenkins, S.P. (2004). Fitting functional forms to distributions, using {cmd:ml}. Presentation
+	at Second German Stata Users Group Meeting, Berlin. {browse "http://www.stata.com/meeting/2german/Jenkins.pdf"}
+
+{p 4 8 2}Kleiber, C. and Kotz, S. (2003). 
+	{it:Statistical Size Distributions in Economics and Actuarial Sciences}. Hoboken, NJ: John Wiley.
+
+
+{title:Also see}
+
+{p 4 13 2}
+Online: help for {help lognpred}, {help plogn}, {help qlogn}, 
+{help smfit}, {help dagumfit}, {help gb2fit}, if installed. 
+

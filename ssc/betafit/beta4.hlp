@@ -1,0 +1,85 @@
+.-
+help for ^beta4^
+.-
+
+Fitting beta distribution by moments and maximum likelihood
+-----------------------------------------------------------
+
+    ^beta4^ varname [^if^ exp] [^in^ range] [, ^s(^#^)^ ^t^ol^(^#^) sec^ ]
+
+Description
+-----------
+
+^beta4^ works on a single variable. All non-missing values must be
+between 0 and 1. A two-parameter beta distribution is fitted by the
+method of moments (a closed-form calculation) and by the method of
+maximum likelihood (ML) (an iterative calculation, which may
+occasionally be rather slow). The parameters are shape parameters, here
+called alpha and beta.
+
+The algorithm used for ML estimation was proposed by P.W. Mielke (1975).
+Mielke uses a parameterisation in terms of a location parameter
+
+    p = alpha / (alpha + beta)
+
+and a scale parameter
+
+    gamma = alpha + beta
+
+and moments and ML estimates of these are recorded in macros S_6-S_9.
+
+Note: this is the original version of ^beta^, written for Stata 4. 
+Users of Stata 8 up should switch to ^betafit^. 
+
+Options
+-------
+
+^s(^#^)^ controls the number of terms used within ^beta4^ in a series
+    approximation. The default is 25. This is a technical option and
+    should not normally be changed. See Mielke (1975) for enlightenment.
+
+^tol(^#^)^ controls the tolerance used within ^beta4^ to control
+    iteration. The default is 0.0000001. This is a technical option and
+    should not normally be changed. See Mielke (1975) for enlightenment.
+
+^sec^ produces estimates of the standard errors of alpha and beta and
+    the correlation between alpha and beta.
+
+Example
+-------
+
+        . ^beta4 hail^
+
+Saved values
+------------
+
+    S_1      number of values used
+    S_2      ML estimate of alpha
+    S_3      ML estimate of beta
+    S_4      moments estimate of alpha
+    S_5      moments estimate of beta
+    S_6      ML estimate of p
+    S_7      ML estimate of gamma
+    S_8      moments estimate of p
+    S_9      moments estimate of gamma
+    S_10     standard error of alpha (^sec^ option)
+    S_11     standard error of beta (^sec^ option)
+    S_12     correlation between alpha and beta (^sec^ option)
+
+Reference
+---------
+
+Mielke, P.W. 1975. Convenient beta distribution likelihood techniques
+for describing and comparing meteorological data. Journal of Applied
+Meteorology 14, 985-90.
+
+Author
+------
+         Nicholas J. Cox, University of Durham, U.K.
+         n.j.cox@@durham.ac.uk
+
+Also see
+--------
+
+On-line: help for @pbeta4@ (if installed), @qbeta4@ (if installed) 
+

@@ -1,0 +1,343 @@
+/*
+ xtregam
+*! VERSION 2.0 04/04/2013
+*/
+VERSION 10.0
+INCLUDE _std_xlarge
+DEFINE _dlght 400
+INCLUDE header
+HELP hlp1, view("help xtregam")
+RESET res1
+
+SCRIPT PREINIT
+BEGIN
+ program parseMessage
+ script se_createAsGEE
+END
+
+SCRIPT show_xtset
+BEGIN
+ create STRING note
+ note.setvalue `"For a population-averaged model,"'
+ note.append   `" correlation structures other than"'
+ note.append   `" "exchangeable" and "independent""'
+ note.append   `" require that a time variable be specified."'
+ note.withvalue create CHILD xtset, message(`"" " `"@"'"')
+END
+
+SCRIPT svy_is_on
+BEGIN
+ script max_setDefaultNoLog
+END
+SCRIPT svy_is_off
+BEGIN
+ script max_setDefaultLog
+END
+
+DIALOG main, label("xtregam- Amemiya Random-Effects Panel Data: Ridge and Weighted Regression")	///
+	tabtitle("Main")
+BEGIN
+ BUTTON   bu_xtset	_xsetbu	_top	_setbuwd .,	///
+ onpush(script show_xtset)				///
+ label("Panel settings...")
+ BUTTON   bu_mi_xtset  _xsetbu	_top	_setbuwd .,	///
+ onpush("view dialog mi_xtset")			 	///
+ label("Panel settings...")
+
+  TEXT  tx_id   _lft      _top  110 .,	///
+	label("ID Cross Section")
+  TEXT  tx_it 160       @     100 .,	///
+	label("ID Time Series")
+  VARNAME vn_id   _lft      _ss  110 .,	///
+	option("id")			///
+	label("ID Cross Section")
+  VARNAME vn_it  160       @     100 ., 	/*
+	*/ label("ID Time Series")		/*
+	*/ option("it")
+
+ GROUPBOX gb_group1   _lft     _ss    _iwd    _ht6 , 
+  TEXT     tx_yvar     _ilft   _ss    _vnwd     .,	/*
+		*/ label("Dependent Variable:")		/*
+		*/
+  TEXT     tx_xvar     _vlx      @      _cwd2     .,	/*
+		*/ label("Independent Variables:")	/*
+		*/
+  VARNAME  vn_yvar     _ilft     _ss       _vnwd   .,	/*
+		*/ label("Dependent Variable")		/*
+		*/
+  VARLIST  vl_xvar     _vlx       @         380      .,	/*
+		*/ label("Independent Variables")	/*
+		*/
+ CHECKBOX ck_nocons   @   _ms      @  ., option("noconstant") /*
+*/ label("No Constant") 
+*/
+ CHECKBOX ck_mfx  _lft    _ls   _iwd    _ht2 , 	///
+	groupbox				///
+	onclickon(script ck_mfx_on)		///
+	onclickoff(script ck_mfx_off)		///
+label("Marginal Effects - Elasticities:")
+ RADIO rb_lin	_ilft   _ss  80  .,	/*
+	*/ label("Linear")	 	/*
+	*/ first			/*
+	*/ option("mfx(lin)")		/*
+*/
+ RADIO rb_log	100   @  80 .,		/*
+	*/ label("Log-Log") 		/*
+	*/ last				/*
+	*/ option("mfx(log)")		/*
+*/	
+ CHECKBOX ck_tolog 190   @ 200 ., option("tolog") /*
+*/ label("Log Transform Variables") 
+  CHECKBOX ck_model2  _lft  _xls  _ibwd   _ht14 , ///
+	groupbox				 ///
+	onclickon(script ck_model2_on)		 ///
+	onclickoff(script ck_model2_off)	 ///
+	label("Additional Options:")
+ CHECKBOX ck_lmhet _ilft   _ss  400  ., option("lmhet") /*
+*/ label("Heteroscedasticity Tests") 
+ CHECKBOX ck_diag  _ilft  _ss   400  ., option("diag") /*
+*/ label("Model Selection Diagnostic Criteria") 
+ CHECKBOX ck_coll  _ilft   _ss  400 ., option("coll") /*
+*/ label("Keep Collinear Variables")
+ CHECKBOX ck_dn _ilft  _ss   400 ., option("dn") /*
+*/ label("Use (N) divisor instead of (N-K) for DF") 
+
+ TEXT tx_predict _ilft    _ls    200 .,	///
+	label("Predicted Variable")
+ TEXT tx_resid   _ilft2 @     200 .,	///
+	label("Residuals Variable")
+ VARNAME vn_predict _ilft _ss   200  .,	///
+	label("predict") 		///
+	option(predict)
+ VARNAME vn_resid  _ilft2   @   200  .,	///
+	label("resid") 			///
+	option(resid)
+END
+
+DIALOG est3, tabtitle("Ridge/Weight")
+BEGIN
+  CHECKBOX ck_ridgero  _lft    _top   _ibwd    _ht8 , ///
+	groupbox				 ///
+	onclickon(script ck_ridger_on)		 ///
+	onclickoff(script ck_ridger_off)	 ///
+	label("Ridge Regression Panel Data:")
+  RADIO rb_orr	_ilft   _ss     _iwd	.,	///
+	option("ridge(orr)")			///
+	first			 ///
+	label("ORR - Ordinary Ridge Regression")	///
+	onclickon(script kridge_on)
+  EDIT ed_ridge  250   @    70   ., 	/*
+	*/ label("Ridge Value")			/*
+	*/ option("kr")
+  TEXT tx_ridge 330  @  100    .,	/*
+	*/ label("Ridge Value")  	/*
+*/
+  RADIO rb_grr1   _ilft  _ss	300	., /*
+	*/ label("GRR1 - Generalized Ridge Regression") /*
+	*/ onclickon(script kridge_off)	 /*
+	*/ option("ridge(grr1)")		/*
+*/
+  RADIO rb_grr2	_ilft	_ss	300 .,	/*
+	*/ label("GRR2 - Iterative Generalized Ridge Regression") /*
+	*/ onclickon(script kridge_off)	 /*
+	*/ option("ridge(grr2)")		/*
+*/
+  RADIO rb_grr3	_ilft	_ss	300 .,	/*
+	*/ label("GRR3 - Adaptive Generalized Ridge Regression") /*
+	*/ onclickon(script kridge_off)	 /*
+	*/ last				 /*
+	*/ option("ridge(grr3)")		/*
+*/
+  CHECKBOX ck_model3  _lft    _xls   _ibwd    _ht23 , ///
+	groupbox				 ///
+	onclickon(script ck_model3_on)		 ///
+	onclickoff(script ck_model3_off)	 ///
+	label("Weighted Variable Type:")
+  TEXT tx_wv 		_ilft	_ss    140  	., ///
+	label("Weighted Variable (X)")
+  VARNAME vn_wv		_ilft 	_ss  	140	., ///
+	ts					 ///
+	label("Weighted Variable")		 ///
+	option("wvar")
+  RADIO    rb_w1  _ilft     _ls     300    ., 	/*
+  	*/ onclickon(script vn_off)	 /*
+	*/ label("Yh - Predicted Value (Default)") /*
+	*/ first			/*
+	*/ option("weights(yh)")		/*
+*/
+  RADIO    rb_w2  _ilft     _ss     300    ., 	/*
+  	*/ onclickon(script vn_off)	 /*
+	*/ label("Yh^2 - Predicted Value Squared") /*
+	*/ option("weights(yh2)")			/*
+*/
+  RADIO    rb_w3  _ilft     _ss     300    ., 	/*
+  	*/ onclickon(script vn_off)	 /*
+	*/ label("abs(E) - Residual Absolute Value") /*
+	*/ option("weights(abse)")			/*
+*/
+  RADIO    rb_w4  _ilft     _ss     300    ., 	/*
+  	*/ onclickon(script vn_off)	 /*
+	*/ label("E^2 - Residual Squared") /*
+	*/ option("weights(e2)")			/*
+*/
+  RADIO    rb_w5  _ilft     _ss     300    ., 	/*
+  	*/ onclickon(script vn_off)	 /*
+	*/ label("log(E^2) - Log Residual Squared") /*
+	*/ option("weights(le2)")			/*
+*/
+  RADIO    rb_w6  _ilft     _ms     300    ., 	/*
+  	*/ onclickon(script vn_on)	 /*
+	*/ label("(X) Variable") /*
+	*/ option("weights(x)")			/*
+*/
+  RADIO    rb_w7  _ilft     _ss     300    ., 	/*
+  	*/ onclickon(script vn_on)	 /*
+	*/ label("(1/X) Inverse Variable") /*
+	*/ option("weights(xi)")			/*
+*/
+  RADIO    rb_w8  _ilft     _ss     300    ., 	/*
+  	*/ onclickon(script vn_on)	 /*
+	*/ label("(X^2) Squared Variable") /*
+	*/ option("weights(x2)")			/*
+*/
+  RADIO    rb_w9  _ilft     _ss     300    ., 	/*
+  	*/ onclickon(script vn_on)	 /*
+	*/ label("(1/X^2) Inverse Squared Variable") /*
+	*/ last					/*
+	*/ option("weights(xi2)")			/*
+*/
+END
+
+SCRIPT ck_mfx_on
+BEGIN
+ main.rb_lin.enable
+ main.rb_log.enable
+END
+SCRIPT ck_mfx_off
+BEGIN
+ main.rb_lin.disable
+ main.rb_log.disable
+END
+
+SCRIPT ck_model1_on
+BEGIN
+ main.vl_het.enable
+END
+
+SCRIPT ck_model1_off
+BEGIN
+main.vl_het.disable
+END
+
+SCRIPT ck_model2_on
+BEGIN
+ main.ck_lmhet.enable
+ main.ck_diag.enable
+ main.ck_coll.enable
+ main.ck_dn.enable
+ main.vn_predict.enable
+ main.vn_resid.enable
+END
+
+SCRIPT ck_model2_off
+BEGIN
+ main.ck_lmhet.disable
+ main.ck_diag.disable
+ main.ck_coll.disable
+ main.ck_dn.disable
+ main.vn_predict.disable
+ main.vn_resid.disable
+END
+
+SCRIPT ck_model3_on
+BEGIN
+ est3.rb_w1.enable
+ est3.rb_w2.enable
+ est3.rb_w3.enable
+ est3.rb_w4.enable
+ est3.rb_w5.enable
+ est3.rb_w6.enable
+ est3.rb_w7.enable
+ est3.rb_w8.enable
+ est3.rb_w9.enable
+ est3.vn_wv.enable
+END
+SCRIPT ck_model3_off
+BEGIN
+ est3.rb_w1.disable
+ est3.rb_w2.disable
+ est3.rb_w3.disable
+ est3.rb_w4.disable
+ est3.rb_w5.disable
+ est3.rb_w6.disable
+ est3.rb_w7.disable
+ est3.rb_w8.disable
+ est3.rb_w9.disable
+ est3.vn_wv.disable
+END
+
+SCRIPT kridge_on
+BEGIN
+ est3.ed_ridge.enable
+END
+SCRIPT kridge_off
+BEGIN
+ est3.ed_ridge.disable
+END
+
+SCRIPT ck_ridger_on
+BEGIN
+ est3.rb_orr.enable
+ est3.rb_grr1.enable
+ est3.rb_grr2.enable
+ est3.rb_grr3.enable
+END
+SCRIPT ck_ridger_off
+BEGIN
+ est3.rb_orr.disable
+ est3.rb_grr1.disable
+ est3.rb_grr2.disable
+ est3.rb_grr3.disable
+END
+
+SCRIPT vn_on
+BEGIN
+ est3.vn_wv.enable
+END
+SCRIPT vn_off
+BEGIN
+ est3.vn_wv.disable
+END
+
+INCLUDE byifin
+INCLUDE se
+
+PROGRAM command
+BEGIN
+ put /program by_output
+ put "xtregam "
+ varlist main.vn_yvar main.vl_xvar
+ put " " /program ifin_output
+ put /program se_prefix_output
+ require main.vn_id 
+ require main.vn_it 
+beginoptions
+ optionarg main.vn_id
+ optionarg main.vn_it
+ option radio(main rb_lin rb_log)
+ option main.ck_lmhet
+ option main.ck_tolog 
+ option main.ck_diag
+ option main.ck_dn
+ option main.ck_coll
+ option main.ck_nocons
+ optionarg main.vn_predict
+ optionarg main.vn_resid
+ optionarg est3.ed_ridge
+ optionarg est3.vn_wv
+ option radio(est3 rb_w1 rb_w2 rb_w3 rb_w4 rb_w5 rb_w6 rb_w7 rb_w8 rb_w9)
+ option radio(est3 rb_orr rb_grr1 rb_grr2 rb_grr3)
+ put " " /program se_output
+ endoptions
+ END
+

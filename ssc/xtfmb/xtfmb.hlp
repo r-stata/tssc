@@ -1,0 +1,117 @@
+{smcl}
+{* 10sep2011}{...}
+{cmd:help xtfmb}{right:version:  2.0.0}
+{hline}
+
+{title:Title}
+
+{p 4 8}{cmd:xtfmb}  -  Fama and MacBeth (1973) procedure{p_end}
+
+
+{title:Syntax}
+
+{p 4 6 2}
+{cmd:xtfmb}
+{depvar}
+[{indepvars}]
+{ifin}
+{weight}
+[, {opt l:evel(#)}
+{opt verb:ose}
+{opt lag(#)}]
+
+{title:Notes}
+
+{p 4 6 2}
+- You must {helpb tsset} your data before using {opt xtfmb}.{p_end}
+{p 4 6 2}
+- {opt by}, may be used with {opt xtfmb}; see {help by}.{p_end}
+{p 4 6 2}
+- {opt aweight}s are allowed; see {help weight}.{p_end}
+
+
+
+{title:Description}
+
+{p 4 4 2}
+{opt xtfmb} is an implementation of the Fama and MacBeth (1973) two step
+procedure. The procedure is as follows: In the first step, for each single time 
+period a cross-sectional regression is performed. Then, in the second step, 
+the final coefficient estimates are obtained as the average of the first step
+coefficient estimates.{p_end}
+
+{p 4 4 2}
+If {opt xtfmb} is called without option {opt lag(#)}, then it is possible to 
+test for the significance of coefficient combinations. This works because in this 
+case the second step of the Fama-MacBeth procedure is implemented by aid of 
+Zellner's SUR estimation.{p_end}
+
+{p 4 4 2}
+When {opt xtfmb} is called with option {opt lag(#)}, then heteroscedasticity and
+autocorrelation consistent Newey-West (1987) standard error estimates are provided.
+However, in this case the current implementation of {opt xtfmb} does not allow for
+testing the significance of coefficient combinations.{p_end}
+
+{p 4 4 2}
+The "avg. R-squared" which is provided in the header of the {opt xtfmb} program
+is computed as the average value of the R-squares from the cross-sectional 
+regressions in the first step of the Fama-MacBeth procedure. The coefficient 
+estimates and R-squares of the first step regressions can be printed out with 
+option {opt verb:ose}.{p_end}
+
+
+{title:Options}
+
+{phang}
+{opt level(#)}; see {help estimation options##level():estimation options}.{p_end}
+
+{phang}
+{opt verb:ose} lists the coefficient estimates and R-squares of the 
+cross-sectional regressions from the first step of the Fama-MacBeth procedure.{p_end}
+
+{phang}
+{opt lag(#)} computes heteroscedasticity and autocorrelation consistent 
+Newey-West (1987) standard error estimates with a lag length of # periods.{p_end}
+
+
+{title:Example}
+
+{phang}{stata "webuse grunfeld" : . webuse grunfeld}{p_end}
+{phang}{stata "xtfmb invest mvalue kstock, verbose" : . xtfmb invest mvalue kstock, verbose}{p_end}
+{phang}{stata "est store FMB" : . est store FMB}{p_end}
+
+{phang}{stata "xtfmb invest mvalue kstock, lag(2)" : . xtfmb invest mvalue kstock, lag(2)}{p_end}
+{phang}{stata "est store FMB_Newey" : . est store FMB_Newey}{p_end}
+
+{phang}{stata "reg invest mvalue kstock" : . reg invest mvalue kstock}{p_end}
+{phang}{stata "est store OLS" : . est store OLS}{p_end}
+
+{phang}{stata "est table *, b se t" : . est table *, b se t}{p_end}
+
+
+{title:References}
+
+{p 4 6 2}
+ - Fama, E.F., and J.D. MacBeth, 1973, Risk, Return, and Equilibrium:
+ Empirical tests, {it:Journal of Political Economy} 81, 607-636.{p_end}
+
+{p 4 6 2} 
+ - Newey, W.K., and K.D. West, 1987, A simple, positive semi-definite, heteroskedasticityand autocorrelation consistent covariance matrix, {it:Econometrica} 55: 703Ð708.{p_end}
+
+
+{title:Author}
+
+{p 4 4}Daniel Hoechle, University of Basel, daniel.hoechle@unibas.ch{p_end}
+
+
+
+{title:Also see}
+
+{psee}
+Manual:  {bf:[R] regress}
+
+{psee}
+Online:
+{helpb tsset}, {helpb regress}, {helpb newey}, {helpb xtreg}, {helpb _robust}
+{p_end}
+

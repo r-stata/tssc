@@ -1,0 +1,91 @@
+{smcl}
+{hline}
+help for {hi:svrest}
+{hline}
+
+{title:Replication-based estimates of covariances for complex survey data}
+
+{p 4 23}{cmd:svrest}{space 6}{cmd:"}{it:command}{cmd:"} {cmd:"}{it:exp_list}{cmd:"}
+		[{cmd:if} {it:exp}] [{cmd:in} {it:range}] [{cmd:,}
+		[{cmdab:mat:rices(}{it:list}{cmd:)}
+		{cmdab:noi:sily} {cmdab:or} {cmdab:li:ststats}
+		{bind:{cmdab:diparm(}{it:eq type name} [{it:ci}] [ \ ...]{cmd:)}} ]
+
+
+{title:Description}
+
+{p}{cmd:svrest} runs the user-specified {it:command}, and calculates
+covariance estimates for the statistics specified in {it:exp_list},
+using replication methods for complex survey data.  {cmd:svrest} is based
+on {help bs}.
+
+{p}The expressions in {it:exp_list} must be
+separated by spaces and there must be no spaces within each expression.  Note
+that {it:command} and {it:exp_list} must both be enclosed in double quotes.
+
+{p}See {help survwgt} and {help svr} for details on these replication methods.
+
+{p}{cmd:svrest} estimates the statistics jointly, so it calculates both the variances
+of each statistic, and the covariances among them.  The results are stored as
+{help est:estimates}.
+
+{p}See {help svresttest} for testing hypotheses involving the estimated statistics generated
+by this command.
+
+
+{title:Options}
+
+{p 0 4}{cmd:matrices} indicates one entire matrices of results to be included.  This
+allows the easy display of the entire coefficient vector when using {cmd:svrest}
+for an estimation command not supported by {help brrmodel}.  For example, the following
+would compute replication-based standard errors for the full coefficient vector from
+a heckman model:
+
+{p 8 8}{inp:. svrest "heckman income age race weight, select(education)" , mat(e(b))}
+
+{p}{bf:Important note:} It is vital that the estimation in each replicate produce the same coefficient
+vector.  Thus, for example, when running {cmd:mlogit}, be sure to include the {cmd:base()}
+option, so that the same category is omitted from the estimation for every replicate.
+
+{p 0 4}{cmd:dots} requests a dot be placed on the screen at the beginning of
+each replication, thus providing entertainment of a sort when long, slow commands are
+run.
+
+{p 0 4}{cmd:noisily} requests that output from each replication be
+displayed.
+
+{p 0 4}{cmd:or} requests that statistics be displayed as odds ratios.
+
+{p 0 4}{cmd:liststats} requests that a key be displayed, indicating what
+each statistic is.
+
+{p 0 4}{cmd:diparm} requests that single equation statistics be redisplayed
+in the natural metric.  You must indicate the name of the equation containing
+the statistic, the type of transformation, the name for the statistic, and, optionally,
+{cmd:ci} to indicate that the confidence interval should be appropriately transformed.
+When specified, this option simply calls {help _diparm} to redisplay statistics that
+are not estimated in their natural metric.  For example, for {cmd:heckman}, you
+might do the follwowing:
+
+{p 8 8}{inp:. svrest "heckman income age, select(educ)" , mat(e(b)) diparm(athrho exp rho ci \ lnsigma exp sigma di)}
+
+
+{title:Examples}
+
+{p 8 12}{inp:. svrest "reg mpg weight foreign" "_b[weight] _b[foreign]"}
+
+{p 8 12}{inp:. svrest "kappa cat1-cat3" "r(z)"}
+
+
+{title:Acknowledgements}
+
+{p}I would like to thank members of the Stata technical team, whose suggestions led to the
+creation of this command.
+
+
+{title:Author}
+
+	Nick Winter
+	Cornell University
+	nw53@cornell.edu
+

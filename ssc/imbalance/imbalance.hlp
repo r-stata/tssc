@@ -1,0 +1,82 @@
+{smcl}
+{* 15May2009}{...}
+ 
+{hline}
+help for {cmd:imbalance}
+{hline}
+  
+{cmd:Check covariate imbalance before and after matching}
+{cmd:---------------------------------------------------}
+ 
+
+{cmd:Syntax}
+{cmd:------}
+{cmd:imbalance} dataname varname treatname blockname savfile
+
+
+{cmd:Description}
+{cmd:-----------}
+ 
+{cmd:imbalance} calculates absolute standardized difference in 
+covariate means (ASAM) before matching (dx) and after matching
+(dxm), as described by Haviland, Nagin, and Rosenbaum (2007). 
+It allows the analyst to evaluate whether matching balances an 
+observed covariate between treated and control observations.  
+{cmd:dataname} specifies the name of data file containing covariates 
+to be checked. {cmd:varname} is the name of a covariate on which the 
+analyst wants to check its balance between treated and control 
+observations. {cmd:treatname} specifies the name of the dichotomous 
+variable identifying treatment conditions. For {cmd:imbalance} to run 
+properly, {cmd:treatname} must be coded treatname = 1 if the observation
+receives treatment, and treatname = 0 if the observation is a control. 
+{cmd:blockname} specifies the variable name that identifies matched sets.
+ 
+ 
+{cmd:Output and Return Values}
+{cmd:------------------------}
+ 
+After running {cmd:imbalance}, Stata returns {cmd:dx} ¨C the absolute 
+standardized difference in covariate means before matching, 
+{cmd:dxm} - the absolute standardized difference in covariate means 
+after matching, and the {cmd:name} of the covariate along with the 
+blockname. Both dx and dxm are similar to Cohen¡¯s d. After running 
+imbalance, Stata saves the results in a file named {cmd:savfile}. 
+The analyst can use {cmd: return list} immediately after running 
+{cmd:imbalance} to see statistics saved for further analysis.   
+ 
+ 
+{cmd:Examples}
+{cmd:--------}
+
+{cmd:. imbalance cds black kuse fm results}
+  
+{cmd:. imbalance "D:\PSA\cds.dta" black kuse fm "C:\tmp\results"}
+{cmd:. return list}
+{cmd:. use "C:\tmp\results", clear}
+{cmd:. list}
+ 
+ 
+ 
+{cmd:References}
+{cmd:----------}
+ 
+Guo, S., & Fraser, M. (2009). Propensity score analysis: Statistical 
+methods and applications. Thousand Oaks, CA: Sage Publications Inc.
+ 
+Haviland, A., Nagin, D. S., & Rosenbaum, P. R. (2007). Combining 
+propensity score matching and group-based trajectory analysis in an 
+observational study. Psychological Methods, 12, 247-267.
+ 
+ 
+{cmd:Author}
+{cmd:------}
+ 
+        Shenyang Guo
+        University of North Carolina at Chapel Hill
+        sguo@email.unc.edu 
+
+ 
+{cmd:Also see:}
+{cmd:---------}
+ 
+{psee}Online:  help for {helpb hodgesl} if installed

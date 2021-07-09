@@ -1,0 +1,38 @@
+d 'MLOGITROC': module to calculate multiclass ROC Curves and AUC from Multinomial Logistic Regression
+d
+d mlogitroc generates multiclass ROC curves for classification
+d accuracy based on multinomial logistic regression using mlogit.
+d The algorithm begins by running mlogit B=100 times using
+d bootstrapped records for each run while the original class labels
+d are intact.  Class prediction is then performed for records not
+"d sampled during bootstrapping, and accuracy for the left out"
+d records is determined as the fraction of correct class membership
+d predictions.  This results in B=100 realizations of the accuracy
+"d for the alternative distribution.  Next, B=100 mlogit runs are"
+"d made again, but this time after shuffling class labels of all"
+"d records prior to modeling, which results in B=100 realizations of"
+d null accuracy.  Smoothed probability distributions are obtained
+d for the B=100 alternative and null accuracy values using kernel
+"d density estimation (KDE, Gaussian kernel) to obtain 100 smoothed"
+d realizations for alternative and null accuracy.  The false
+"d positive rate (FPR), true positive rate (TPR), and area under the"
+d curve (AUC) are determined from the smooth pdfs derived from KDE.
+"d  Twoway scatter plots of the smoothed pdfs are constructed,"
+d followed by plotting the ROC curve.
+d
+d KW:  Multinomial logistic regression
+d KW: ROC curve
+d KW: multiclass
+d KW: kernel density estimation
+d KW: bootstrap
+d
+d Requires: Stata version 11
+d
+d Distribution-Date: 20100930
+d
+"d Author: Leif E. Peterson, Methodist Hospital Research Institute"
+d Support: email LEPeterson@@tmhs.org
+d
+f mlogitroc.ado
+f mlogitroc.sthlp
+f mlogitroc.png

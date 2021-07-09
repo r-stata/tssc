@@ -1,0 +1,210 @@
+{smcl}
+{* 18feb2004}{...}
+{hline}
+help for {hi:biplot}{right:manual:  }
+{right:dialog:  }
+{hline}
+
+{title:Draw JK-, SQ- and GH- biplots}
+
+{p 8 18 2}{cmd:biplot} {it:varlist} [{it:weight}] [{cmd:if} {it:exp}] [{cmd:in} {it:range}]
+[{cmd:,}
+[{cmd:jk}|{cmd:sq}|{cmd:gh}|{cmd:mixed(}{it:jk}|{it:sq}|{it:gh} {it:jk}|{it:sq}|{it:gh}{cmd:)}]
+{cmdab:dim:ensions(}{it:# #}{cmd:)}
+[{cmd:obsonly|varonly}]
+{cmdab:cov:ariance}
+{cmd:rv}
+{cmdab:mahal:anobis}
+{cmdab:sub:pop(}{it:varname}{cmd:)}
+{cmdab:f:lip(}{it:x}|{it:y} {it:xy}{cmd:)}
+{cmdab:st:retch(}{it:#}{cmd:)} 
+{cmd:jitter(}{it:relativesize}{cmd:)}
+{cmdab:gen:erate(}{it:varname1 varname2}{cmd:)}
+{it:scatter_options}
+{it:line_options}
+{it:twoway_options} ]
+
+{p 4 4 2}
+{cmd:aweight}s, and {cmd:fweight}s, are allowed; see help
+{help weights}.  However, no weights are allowed with option {cmd:rv}, 
+and {cmd:aweight}s are not allowed with options {cmd:sq} 
+option {cmd:gh}.
+
+{title:Description}
+
+{p 4 4 2} {cmd:biplot} draws biplots of the data matrix defined by
+varlist. By default, a JK-biplot with standardized values will be
+drawn. Biplots are useful for visual inspection of data matrices,
+allowing the eye to identify patterns, regularities and outliers. In a
+biplot variables (columns) are shown as arrows from the origin and
+observations (rows) are shown as points.
+
+{p 4 4 2} The configuration of arrows reflects the relations of the
+variables. The cosine of the angle between the arrows reflects the
+correlation between the variables they represent. If the variables are
+not standardized, the length of each arrow reflects the standard
+deviation of the variable it represents.
+
+{p 4 4 2} The scatter of observations shows relations among
+observations. The distance between two points approximates the
+Euclidean distance between two observations of the data matrix. The
+cutpoint of a perpendicular from a point to an arrow shows the value
+of the variable the arrow represents.
+
+{title:Options}
+
+{p 4 8 2} {cmd:jk}|{cmd:sq}|{cmd:gh} specifies the type of
+biplot. {cmd:jk} specifies the default, a JK-biplot. The JK biplot
+approximates the Euclidean distances between observations more closely
+than the other types. {cmd:gh} specifies a GH-biplot.  The GH biplot
+represents the relations between variables more closely than the other
+types. {cmd:sq} specifies a SQ biplot ({it:symmetric biplot}).
+
+{p 4 8 2} {cmd:mixed()} can be used instead of the biplot-types to
+combine the relataive advantages of the different biplot-types. Inside
+the parentheses one first states a byplot-type for the observations
+and than a type for the variables. The plot positions of observations
+and variables are than calculeted respectively. Gabriel (2001), for
+example, proposes a "correspondence analysis", by using a JK-biplot
+for the observations and a GH-biplot for the variables. This can be
+achieved with {cmd:mixed(jk gh)}.
+
+{p 8 8 2} {it:Note:} In Intercooled Stata "matsize too small" is a
+likely error message with type {cmd:gh} or {cmd:sq}, even with small
+sample sizes. {help matsize} has to be at least number of observations
++ 1. With Intercooled Stata, SQ and GH biplots are only recommended
+for data with few observations and are only possible up to 799
+observations.
+
+{p 4 8 2} {cmdab:dim:ensions(}{it:# #}{cmd:)} is used specify the
+meaning of the graph-axis. The default is to use the coordinates which
+corresponent to the highest two Eigenvalues. For JK-biplots these are
+the first two principal components.  {cmd:dimensions()} allows to use
+arbitrary axes. A JK-biplot with {cmd:dim(3 4)} for example, would
+plot all values in the space of the 3rd and 4th principal component.
+
+{p 4 8 2} {cmd:obsonly|varonly} are used to supress either the
+plotting of observations or variables. A JK-biplot with {cmd:obsonly}
+is a component score plot, and a JK-biplot with options {cmd:varonly}
+and {cmd:stretch(1)} is a Plot of the PCA-coefficients.
+
+{p 4 8 2} {cmd:covariance} uses original instead of standardized
+values.
+
+{p 4 8 2} {cmd:rv} is used to produce relative variation
+diagramms. Relative variation diagrams are biplots for compositional
+data and compositional data are data sets with constant row-sums and
+only positive value (like, for example the row percentages of twoway
+frequency tables). To get a relative variation diagramm the data
+matrix needs to be transformed before producing the biplot, and the
+option {cmd:rv} does this transformtion for you.
+
+{p 4 8 2} {cmd:mahalanobis} can be used for GH biplots to rescale the
+graph in a way that the distances between the observations
+approximates the Mahalnobis distances.
+
+{p 4 8 2} {cmd:generate(varname1 varname2)} is used to store the coordinates
+for the observations and the variables as variables in the
+dataset. The y-axis coordinates for the observations are stored in
+name1_y and the x_axis coordinates for the observations are stored in
+name1_x. Accordingly, the coordinates for the variables are stored in
+name2_y and name2_x.
+
+{p 4 8 2} {cmd:subpop(}{it:varname}{cmd:)} is used to hilite
+observations from different subpopulations with different
+plotsymbols. Note, that by default a legend is drawn to identify the
+subpopulation.  The legend, however, changes the aspect ratio of the
+biplot. If you don't like this, you can turn the legend off or you can
+refine the aspect ration with {cmd:xsize()}. Another way to hilite
+subpopulations would be the option {cmd:mlab()}, which is described
+below.
+
+{p 4 8 2} {cmd:flip(x|y|xy)} exchanges the signs of the
+axes. {cmd:flip(x)} and {cmd:flip(y)} exchange signs of the indicated
+axis. {cmd:flip(xy)} flips both axes. {cmd:flip()} is seldom used, but
+might be useful if you want to compare your results with the results
+of other software-packages.
+
+{p 4 8 2} {cmd:stretch(#)} draws longer (or if needed shorter) lines
+for the variable.  By default {cmd:stretch()} is set to a value which
+improves readability. You can set the value to any real positive
+number. With {cmd:stretch(1)} you will get the original length, and
+with {cmd:stretch(2)} the lines will be drawn twice as long as the
+original values.  {cmd:stretch()} is seldom used.
+
+{p 4 8 2} {cmd:jitter(}{it:relativesize}{cmd:)} adds spherical random
+noise to the plot symbols of observations. This is useful when
+plotting data which otherwise would result in points plotted on top of
+each other. Commonly specified are {cmd:jitter(5)} or {cmd:jitter(6)};
+{cmd:jitter(0)} is the default.  See help {it:{help relativesize}} for
+a description of relative sizes.
+
+{p 4 8 2} {cmd:scatter_options} are the following set of the options
+allowed with {help scatter}:
+
+{col 8}{hline 70}
+{col 8}{cmdab:m:symbol:(}{it:{help symbolstyle}list}{cmd:)}{col 42}shape of marker
+{col 8}{cmdab:mc:olor:(}{it:{help colorstyle}list}{cmd:)}{col 42}color of marker, inside and out
+{col 8}{cmdab:msiz:e:(}{it:{help markersizestyle}list}{cmd:)}{col 42}size of marker
+{col 8}{cmd:mlabel(}{it:varlist}{cmd:)}{col 42}specify marker variables
+{col 8}{cmdab:mlabp:osition:(}{it:{help clockpos}list}{cmd:)}{col 42}where to locate label
+{col 8}{cmdab:mlabv:position:(}{it:varlist}{cmd:)}{col 42}where to locate label 2
+{col 8}{cmdab:mlabg:ap:(}{it:{help relativesize}list}{cmd:)}{col 42}gap between marker and label
+{col 8}{cmdab:mlabs:ize:(}{it:{help textsizestyle}list}{cmd:)}{col 42}size of label
+{col 8}{cmdab:mlabc:olor:(}{it:{help colorstyle}list}{cmd:)}{col 42}color of label
+{col 8}{hline 70}
+
+{p 8 8 2} You can specify up to two elements within each option. The
+first element refers to the display of the observations, the second
+element refers to the variables. Note, that the default plot symbol
+for the position of the variables is invisible, that is the default
+value for msymbol is {cmd:msymbol(oh i)}. The lines for the variables
+are, however, changed with the {it: line_options}.
+
+{p 4 8 2}
+{cmd:line_options} are the following set of the options allowed with {help line}:
+
+{col 8}{hline 70}
+{col 8}{cmdab:cl:pattern:(}{it:{help linepatternstyle}list}{cmd:)}{col 42}whether line solid, dashed, etc.
+{col 8}{cmdab:clw:idth:(}{it:{help linewidthstyle}list}{cmd:)}{col 42}thickness of line
+{col 8}{cmdab:clc:olor:(}{it:{help colorstyle}list}{cmd:)}{col 42}color of line
+{col 8}{hline 70}
+
+{p 8 8 2} Note that the line_options only refer to the display of the
+variable vectors.
+
+{p 4 8 2} {cmd:twoway_options} are those allowed with {cmd:graph
+twoway} see help {help twoway_options}:
+
+{title:Examples}
+
+    {cmd:. biplot mpg weight length turn}
+{p 4 8 2}{cmd:. biplot mpg weight length turn, gh mlabel(make)}{p_end}
+{p 4 8 2}{cmd:. biplot mpg weight length turn, gh mlabel(make) msymbol(oh o)}
+
+
+{title:Also see}
+
+ {p 4 13 2}
+Online:  help for {help twoway}, {help graph}, {help scatter},
+
+
+{title:Author}
+
+ {p 4 13 2}
+ Ulrich Kohler, WZB,  kohler@wz-berlin.de
+ 
+
+{title:References}
+
+ {p 4 4 2}
+    Gabriel, K.R. 1971. The biplot graphical display of matrices with
+    application to principal component analysis. Biometrika 58, 453-467.
+
+ {p 4 4 2}
+    Gower, J.C. and Hand, D.J. 1996. Biplots. London: Chapman and Hall.
+
+ {p 4 4 2}
+   Gabriel, K.R. 2002. Goodness of Fit of Biplots and Correspondence Analysis.
+   Biometrica, 89, 423--436 
+

@@ -1,0 +1,209 @@
+{smcl}
+{* 27 June 2005/29 November 2005/22 February 2006}{...}
+{cmd:help beamplot}
+{hline}
+
+{title:Title}
+
+{p2colset 5 17 17 2}{...}
+{p2col :{hi:beamplot} {hline 2}}Horizontal dotplots using beams{p_end}
+{p2colreset}{...}
+
+
+{title:Syntax}
+
+{p 8 17 2}
+{cmd:beamplot} {it:varlist} {ifin} [{cmd:,} {it:options}]
+
+{p 8 17 2}
+{cmd:beamplot} {it:varname} {ifin} {cmd:,} {cmd:over(}{it:varname}{cmd:)} [{it:options}]
+
+{synoptset 29 tabbed}{...}
+{synopthdr}
+{synoptline}
+{syntab :Main plot}
+{synopt :{opt h:eight()}}control height of dotplots{p_end}
+{synopt :{opt w:idth()}}control bin width of dotplots{p_end}
+{synopt :{opt floor}}bins defined by floors of intervals{p_end}
+{synopt :{opt ceil:ing}}bins defined by ceilings of intervals{p_end}
+{synopt :{opt over()}}separate dotplots, same  panel{p_end}
+{synopt :{opt by()}}separate dotplots, separate panels{p_end}
+{synopt :{opt su:mmary()}}change summary from mean{p_end}
+{synopt :{opt variablelabels}}use variable labels on vertical axis{p_end}
+{synopt :{it:twoway_options}}control other features of graph{p_end}
+
+{syntab :Details of dots, beam and fulcrum}
+{synopt :{opt dots()}}change details of dots display{p_end}
+{synopt :{opt beam()}}change details of beam display{p_end}
+{synopt :{opt fulcrum()}}change details of fulcrum display{p_end}
+
+{syntab :Add plot}
+{synopt :{opth "addplot(addplot_option:plot)"}}add other plots to the generated graph{p_end}
+
+{synoptline}
+{p2colreset}{...}
+
+
+{title:Description}
+
+{pstd}
+{cmd:beamplot} produces horizontal dotplots using beams.  The dots represent
+individual data points, possibly rounded slightly within bins.  The beams
+extend from minimum to maximum for each group or variable plotted. Each beam 
+rests on a fulcrum, by default at the mean of its data. 
+
+{pstd}
+Many standard texts explain that the mean is the centre of gravity 
+of a distribution, motivating a display of data with the mean shown 
+as a fulcrum. For examples, see 
+Hays (1963. pp.163{c -}165), 
+Mosteller {it:et al.} (1970, p.200), 
+Hays and Winkler (1971, pp.144{c -}146), 
+Helsel and Hirsch (1992, p.5), 
+Freedman, Pisani and Purves (1998, pp.61{c -}66), 
+Wild and Seber (2000, pp.63{c -}64), 
+Dekking {it: et al.} (2005, pp.90{c -}91) 
+or  
+Moore and McCabe (2006, pp.68{c -}69). 
+See also Doane and Tracy (2000). 
+The author would be most grateful for other references, especially 
+if older or excellent. 
+
+
+{title:Options}
+
+{dlgtab:Main plot} 
+
+{phang}{opt height()} specifies the height of each dotplot 
+as a fraction of the distance between beams. Default 0.6.{p_end}
+
+{phang}{opt width()} specifies the bin width of dotplots. Data are by 
+default rounded to {cmd:round(}{it:data}{cmd:,}{it:width}{cmd:)} before any calculation
+or display. That is, the minima, maxima and summaries shown are those
+of the rounded data, not those of the original data. (Experience indicates
+that rounding the data, but not the extremes and summaries, 
+is disconcerting rather than helpful.) See also {opt floor} and 
+{opt ceiling} below. 
+{p_end}
+
+{phang}{cmd:floor} or {cmd:ceiling} in conjunction with {cmd:width()} 
+specifies rounding by {it:width} {cmd:* floor(}{it:varname/width}{cmd:)}
+or {it:width} {cmd:* ceil(}{it:varname/width}{cmd:)} respectively. Only 
+one may be specified. (These options are included to give some users the 
+minute control they may desire, but if either option produces a marked
+difference in your plot, you may be rounding too much.)  
+
+{phang}{opt over()} produces separate dotplots, in the same graph panel, 
+according to the distinct values of the variable specified.
+This option is allowed only with a single {it:varname}.{p_end}
+
+{phang}{opt by()} produces separate dotplots, in different graph panels, 
+according to the distinct values of the variable specified.{p_end}
+
+{phang}{opt summary()} changes the summary measure for which 
+a fulcrum is shown for each beam from the default of mean. Any summary 
+for which an {help egen} function exists may be chosen.{p_end}
+
+{phang}{opt variablelabels} specifies that variable labels, rather than
+variable names, should be used on the vertical axis. This may be useful when
+dotplots for several variables are being shown in a panel.{p_end}
+
+{phang}{it:twoway_options}} are options of {help graph twoway} controlling 
+other features of the graph. 
+
+{dlgtab:Details of dots, beam and fulcrum} 
+
+{phang}{opt dots()} is a holder for options of 
+{help twoway scatter} that change the details of the display of dots.
+The defaults include {cmd:ms(0) yla(, nogrid notick)}. For example, 
+{cmd:dots(msize(small))} produces small markers. 
+
+{phang}{opt beam()} is a holder for options of 
+{help twoway rspike} that change the details of the display of each beam.
+For example, {cmd:beam(lcolor(none))} makes the beam invisible. 
+
+{phang}{opt fulcrum()} is a holder for options of 
+{help twoway pcarrow} that change the details of the display of each fulcrum. 
+The defaults include {cmd:msize(medlarge) barbsize(medlarge)}. 
+For example, {cmd:fulcrum(lcolor(none) mcolor(none))} makes the fulcrum invisible. 
+
+{pstd}(If you like {cmd:beamplot}, but prefer to omit beam and fulcrum, 
+you should be using {help dotplot} or {help stripplot} instead.) 
+
+{dlgtab:Add plot}
+
+{phang}
+{opt addplot(plot)} provides a way to add other plots to the generated graph.
+See {it:{help addplot option}}.
+
+
+{title:Examples}
+
+{phang}{cmd:. beamplot mpg}{p_end}
+{phang}{cmd:. beamplot mpg, over(rep78)}{p_end}
+{phang}{cmd:. beamplot mpg, by(foreign)}{p_end}
+{phang}{cmd:. beamplot mpg, by(foreign) over(rep78)}
+
+{phang}{cmd:. beamplot length, over(grade) width(25) note(bin width 25 m) height(0.4) xti("Cirque length, m")}{p_end}
+{phang}{cmd:. beamplot length width wallht, w(25) note(bin width 25 m) height(1.5) yla(1.3 "length" 2.3 "width" 3.3 "wall height") xtitle("cirque dimensions, m") fulcrum(mcolor(red))}
+
+
+{title:Acknowledgments}
+
+{pstd}Vince Wiggins made encouraging noises. 
+Richard T. Campbell helped considerably in identifying references to 
+Hays' work.  
+
+
+{title:Author}
+
+{pstd}Nicholas J. Cox, Durham University{break}
+n.j.cox@durham.ac.uk
+
+
+{title:References} 
+
+{p 4 8 2}Dekking, F.M., C. Kraaikamp, H.P. Lopuha{c a:} and L.E. Meester. 2005.
+{it:A modern introduction to probability and statistics: understanding why and how}. 
+London: Springer. 
+
+{p 4 8 2}Doane, D.P. and R.L. Tracy. 2000. 
+Using beam and fulcrum displays to explore data. 
+{it:The American Statistician} 54: 289{c -}90. 
+
+{p 4 8 2}Freedman, D., R. Pisani and R. Purves. 1998. 
+{it:Statistics.} New York: W.W. Norton. 
+
+{p 4 8 2}Hays, W.L. 1963.   
+{it:Statistics for psychologists.} 
+New York: Holt, Rinehart and Winston.
+
+{p 4 8 2}Hays, W.L. and R.L. Winkler. 1971.
+{it:Statistics: Probability, inference, and decision.}
+New York: Holt, Rinehart and Winston. 
+
+{p 4 8 2}Helsel, D.R. and R.M. Hirsch. 1992. 
+{it:Statistical methods in water resources.}
+Amsterdam: Elsevier. 
+
+{p 4 8 2}Moore, D.S. and G.P. McCabe. 2006. 
+{it:Introduction to the practice of statistics.} 
+New York: W.H. Freeman. 
+
+{p 4 8 2}Mosteller, F., R.E.K. Rourke and G.B. Thomas. 1970. 
+{it:Probability with statistical applications.} 
+Reading, MA: Addison-Wesley. 
+
+{p 4 8 2}Wild, C.J. and G.A.F. Seber. 2000. 
+{it:Chance encounters: a first course in data analysis and inference.} 
+New York: John Wiley. 
+
+
+{title:Also see}
+
+{psee}
+Manual:  {bf:[G] twoway}, {bf:[R] dotplot}
+
+{psee}
+Online:  {helpb twoway}, {helpb dotplot}, {helpb stripplot} (if installed) 
+

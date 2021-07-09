@@ -1,0 +1,57 @@
+d 'XTOOS': module for evaluating the out-of-sample prediction performance of panel-data models
+d
+d  The package XTOOS includes four new commands that allow to
+d evaluate the out-of-sample prediction performance of panel-data
+d models in their time-series and cross-individual dimensions
+"d separately, also with separate procedures for different types of"
+d dependent variables—either continuous or dichotomous variables.
+"d  The name of the commands are xtoos_t, xtoos_i, xtoos_bin_t, and"
+d xtoos_bin_i.    The time-series procedures (xtoos_t and
+d xtoos_bin_t) exclude a number of time periods defined by the user
+d from the estimation sample for each individual in the panel.
+"d Similarly, the cross-individual procedures (xtoos_i and"
+"d xtoos_bin_i) exclude a group of individuals (for example,"
+d countries) defined by the user from the estimation sample
+"d (including all their observations throughout time). Then, for the"
+"d remaining subsamples (training-sample), they fit the specified"
+d models and use the resulting parameters to forecast the dependent
+d variable (or the probability of a positive outcome) in the unused
+d time-periods or the unused individuals (testing-sample). The
+d unused time-period or individual sets are then recursively
+d reduced by one period in every subsequent step in the time-series
+"d dimension, or in either a random or an ordered fashion in the"
+d cross-individual dimension.  The estimation and forecasting
+d evaluation are repeated until there are no more periods ahead or
+d more individuals that could be evaluated. In the continuous
+"d cases, the model's forecasting performance is reported both in"
+"d absolute terms (RMSE) and relative to a naive prediction, by"
+"d means of a U-Theil ratio. In the dichotomous case, the prediction"
+d performance is evaluated based on the area under the receiver
+d operator characteristic (ROC) statistic evaluated in both the
+d training sample and the out of sample. The procedures allow to
+"d choose different estimation methods, including some dynamic"
+"d methodologies, and could also be used in a time-series or a"
+d cross-section dataset only. They also allow evaluating the
+d model's forecasting performance for one particular individual or
+d for a defined group of individuals instead of the whole panel.
+d
+d KW: panel data
+d KW: prediction
+d KW: out-of-sample forecast
+d
+d Requires: Stata version 13
+d
+d Distribution-Date: 20200609
+d
+"d Author: Alfonso Ugarte Ruiz , BBVA Research"
+d Support: email alfonso.ugarte@@bbva.com
+d
+f xtoos_i.ado
+f xtoos_i.sthlp
+f xtoos_t.ado
+f xtoos_t.sthlp
+f xtoos_bin_i.ado
+f xtoos_bin_i.sthlp
+f xtoos_bin_t.ado
+f xtoos_bin_t.sthlp
+f ./p/predictu.ado

@@ -1,0 +1,168 @@
+{smcl}
+{* 29 March 2009}{...}
+{hline}
+help for {hi:ineqfac}{right:Stephen P. Jenkins (March 2009)}
+{hline}
+
+{title:Inequality decomposition by factor components, following Shorrocks (1982a, b)}
+
+{p 8 17 2} {cmd:ineqfac} {it:facvars} [{it:weights}] 
+         [ {cmd:if} {it:exp}] [{cmd:in} {it:range} ]
+         [,  {cmd:i2} {cmdab:s:tats} {cmdab:tot:al(}{it:newvarname}{cmd:)}   ]
+                
+{p 4 4 2} {cmd:fweight}s and {cmd:aweights} are allowed; see help {help weights}.
+
+{title:Description}
+
+{p 4 4 2} 
+{cmd:ineqfac} provides an exact decomposition of the inequality of total
+income into inequality contributions from each of the factor components
+of total income. More specifically, given the set of factors
+
+	facvars = {factor_1  factor_2  ...  factor_F}, 
+
+{p 4 4 2} 
+define the variable totvar such that for each observation in the data set,
+
+                              F
+	            totvar = SUM (factor_f).
+                             f=1
+
+{p 4 4 2} 
+Shorrocks (1982a) proved that there was a unique 'decomposition rule' 
+for which inequality in totvar across observations could be expressed 
+as the sum of inequality contributions from each of the factor components, 
+and which also satisfied some other basic axioms.  The decomposition rule 
+is the "proportionate contribution of factor f to total inequality", s_f:
+
+	s_f = rho_f*sd(factor_f)/sd(totvar)
+                   
+{p 4 4 2} 
+where rho_f is the correlation between factor_f and totvar, and sd(.) is the
+standard deviation. Equivalently, s_f is the slope coefficient from the
+regression of factor_f on totvar.   Observe that for each observation,
+
+                          F
+	                 SUM (s_f) = 1.
+                         f=1
+
+{p 4 4 2} 
+Factor components with a positive value for s_f make a disqualizing contribution 
+to inequality in total income; factor components with negative s_f values make
+an equalizing contribution.
+
+{p 4 4 2} 
+Shorrocks shows that choice of the decomposition rule is an issue independent 
+of that concerning which index is used to summarise inequality.  However there 
+happens to be a nice link with the case in which inequality is measured using 
+the coefficient of variation, for one can also re-write s_f as:
+
+	s_f = rho_f*[m(factor_f)/m(totvar)]*[CV(factor_f)/CV(totvar)]
+		
+{p 4 4 2} 
+where m(.) is the mean, and CV(.) is the coefficient of variation = 
+sd(.)/m(.). If m(factor_f) > 0 for every f, then also
+
+	s_f = rho_f*[m(factor_f)/m(totvar)]*[I2(factor_f)/I2(totvar)]^(.5)
+
+{p 4 4 2} 
+where I2(.) = half the squared coefficient of variation (a member of the 
+Generalised Entropy class of inequality measures).
+
+{p 4 4 2} 
+Thus total inequality can be written in terms of the factor correlations with
+total income, the factor shares in total income = m(factor_f)/m(totvar), and 
+the factor inequalities (summarized using CV or I2).
+
+{p 4 4 2} 
+{cmd:ineqfac} reports the estimates for each factor component of: 
+s_f, S_f = s_f*CV(totvar), m(factor_f)/m(totvar), CV(factor_f), and
+CV(factor_f)/CV(totvar), plus, optionally, the correlations, means 
+and standard deviations of the factor components and totvar. Optionally,
+inequality may be summarised using I2 rather than CV as long as m(factor_f) > 0, for every f.
+
+{p 4 4 2} 
+{cmd:ineqfac} was designed as a tool for income distribution analysis in the case
+where the current sample contains observations on income components for each 
+of a set of income receiving units (e.g. families, households, persons).  
+In this case, facvars might include labour income, income from investments 
+and pensions, cash transfers, etc. See Shorrocks (1982b) and Jenkins (1995) 
+for examples. {cmd:ineqfac} may also be used to summarise and compare the 
+riskiness of portfolios of wealth holdings: s_f has the same form as 
+the "beta coefficient" used in finance analysis.
+
+{title:Options}
+
+{p 4 8 2}
+{cmd:stats} provides the means, standard deviations, and correlations 
+of the factor components and totvar.
+
+{p 4 8 2}
+{cmd:total(}{it:newvarname}{cmd:)} creates a new variable equal to the sum of 
+the factor components for each observation.
+
+{p 4 8 2}
+{cmd:i2} summarises inequality using I2 rather than CV. The option is available
+only if every factor mean is positive.
+
+
+{title:Saved results} 
+
+    	r(mean_total), r(sd_total),			mean, standard deviation, variance and CV for Total
+	r(var_total), r(cv_total)  
+
+    	r(sf_f), r(mean_f),   				proportionate inequality contribution, mean, 
+    	r(sd_f), r(var_f), r(cv_f)			standard deviation, variance, CV, and
+	r(share_f)					share of total (mean_f/mean_total), for each factor, f.
+							"f" is replaced by the factor's varname.
+
+	r(N)						Number of non-missing observations used
+
+	r(nfactor)					Number of factor variables
+
+	r(varlist)					The names of the factor variables
+
+
+{title:Example}
+
+{p 4 8 2}{cmd:. ineqfac labour invest transfer, stats}
+
+{p 4 8 2}{cmd:. ineqfac labour invest transfer, stats total(grossi) }
+
+{p 4 8 2}{cmd:. generate negtax = -tax }
+
+{p 4 8 2}{cmd:. ineqfac labour invest transfer negtax, stats total(disposablei) }
+
+
+{title:Author}
+
+{p 4 4 2}Stephen P. Jenkins <stephenj@essex.ac.uk>{break}
+Institute for Social and Economic Research{break} 
+University of Essex, Colchester CO4 3SQ, U.K.
+
+
+{title:Acknowledgement} 
+
+{p 4 8 2}This is an update of {cmd:ineqfac}, first written for Stata version 5. 
+Andreas Peichl beta-tested the revised code. 
+
+
+{title:References} 
+
+{p 4 8 2}
+Jenkins, S.P. 1995. Accounting for Inequality Trends: Decomposition Analyses for the U.K., 1971-1986.
+{it:Economica} 62: 29{c -}63.
+
+{p 4 8 2}
+Shorrocks, A.F. 1982a. Inequality Decomposition by Factor Components. 
+    {it:Econometrica} 50: 193{c -}212.
+
+{p 4 8 2}
+Shorrocks, A.F. 1982b. The Impact of Income Components on the Distribution of Family Incomes.
+{it:Quarterly Journal of Economics} 98: 311{c -}326.
+
+
+{title:Also see}
+
+{p 4 13 2}
+{help ineqdeco} {help ineqdec0} {help ineqrbd} if installed

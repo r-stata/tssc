@@ -1,0 +1,80 @@
+{smcl}
+{cmd:help weeklyclaims}
+{hline}
+
+{title:Title}
+
+    {hi: Get Weekly Initial Jobless Claims from the US Dept. of Labor}
+
+{title:Syntax}
+
+{p 8 17 2}
+{cmd:weeklyclaims}
+<US or State>
+
+{title:Description}
+{pstd}
+{cmd:weeklyclaims} (indirectly) queries the website of the US Dept. of Labor
+at {cmd: workforcesecurity.doleta.gov} and gets the latest weekly initial 
+unemployment claims across the US or any state, whichever specified. Variable 
+names are inheritted from the website of the the US Dept of Labor and should 
+be self explanatory (e.g. {cmd: nsa_initial_claims} is the time series of the 
+non seasonally adjusted initial claims). More documentation
+can be obtained from the US Dept of Labor at http://www.dol.gov.
+
+
+{title:Examples}
+{pstd}
+The command {cmd:"weeklyclaims US"} will "use" the weekly Initial Jobless Claims across the US, whereas
+{cmd:"weeklyclaims CA"} does the same for the State of California.
+
+{title:Notes}
+{pstd}
+I wrote this because I like my data fresh and I feel better getting them each time 
+rather than store them and manage (or damage) them...Another similar in spirit program
+of mine {stata ssc install stockquote:stockquote} seems to have made some happy users
+as I will get an email or two about it every now and then...
+
+{pstd}
+Nationwide unemployment claims data start in 1967 whereas state wide time series 
+start in 1987. 
+
+{pstd}
+The service of the Dept. of Labor is meant for web presentation so the data is 
+returned in HTML and heavy cleaning is done for it to be usable. Furthermore 
+the service requires a HTTP POST. Since Stata can only HTTP GET I had the 
+option of either writing a platform specific C program to HTTP post the data 
+or build an intermediary provisioning service which will honor a HTTP GET and 
+HTTP POST the data to the US Dept of Labor's website. The latter seemed to 
+be cleaner after trying both. So all queries are done via {cmd: www.askitas.com} 
+which does all the heavy lifting in cleaning etc and returns tab seperated values.
+{cmd: weeklyclaims} then just simply queries {cmd: www.askitas.com} which provides
+provides a {browse "http://www.askitas.com/cgi-bin/weeklyclaims.cgi":GET-to-POST gateway}.
+and caches results for a day.
+The service at {cmd: workforcesecurity.doleta.gov} is not very stable in that 
+it throws SQL errors every now and then and takes a while to recover. When that 
+happens data which have already been queried on that day are cached by 
+{cmd: www.askitas.com} and continue to be available (for that day). Non cached 
+data becomes available when the provisioning service at the web site of the 
+Dept of Labor is back up. This may take several minutes.
+
+{pstd}
+The Service at the US Dept of Labor can be queried for more than one States 
+but the data is often incomplete if you have more than 5 states and many years
+since the query times out. This is the reason that {cmd: weeklyclaims} will 
+only accept one State at a time. If you want more you need to loop.
+
+{pstd}
+This script is a demonstration of what programmatic data provisioning can be like. 
+Since many data analysts are mobile and always online the cloud should be the 
+data storage and data supplier (at least for public data). This means if you 
+want the latest then you get it fresh now.
+
+{pstd}
+Enjoy.
+
+
+{title: Author}
+{pstd}
+Nikos Askitas, {browse "http://www.iza.org/home/askitas":IZA}, Bonn, Germany.
+Email: nikos@iza.org, Web: {browse "http://www.askitas.com":www.askitas.com}

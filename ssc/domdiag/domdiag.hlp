@@ -1,0 +1,101 @@
+{smcl}
+{* 12may2003/20jan2009/21jan2009}{...}
+{hline}
+help for {hi:domdiag}
+{hline}
+
+{title:Dominance diagram}
+
+{p 8 17 2}
+{cmd:domdiag} 
+{it:varname} 
+[{cmd:if} {it:exp}] 
+[{cmd:in} {it:range}] 
+{cmd:, by(}{it:byvar}{cmd:)} 
+[ 
+{cmdab:rev:erse} 
+{it:graph_options} 
+]
+
+
+{title:Description}
+
+{p 4 4 2}{cmd:domdiag} plots a dominance diagram given a division of the values 
+of the numeric variable {it:varname} into precisely two groups by the categories 
+of {it:byvar}. 
+
+{p 4 4 2}Suppose there are {it:n_1} values in the group for the lower value of
+{it:varname} (hereafter called group 1) and {it:n_2} values in the group for
+the higher value of {it:varname} (group 2). Then there are {it:n_1} * {it:n_2}
+pairwise comparisons, which are plotted on a graph with axes rank on {it:varname}
+within group 1 and rank on {it:varname} within group 2. The symbols used 
+are {cmd:"+"} if value in group 1 > value in group 2, {cmd:"0"} if value in group 1
+= value in group 2, and {cmd:"-"} if value in group 1 < value in group 2. This
+helps to make graphic what is done in {cmd:ranksum}: the proportion of pairs
+symbolised {cmd:"+"} plus 1/2 the proportion of pairs symbolised {cmd:"0"} is the
+estimate that {bind:{it:P}(({it:varname} | group 1) > ({it:varname} | group 2))}. 
+
+{p 4 4 2}By default, ranks for the group with fewer values are plotted on the 
+{it:y} axis. 
+
+
+{title:Remarks}
+
+{p 4 4 2}This graph was used by Cliff (1993, 1996). Some earlier related ideas 
+are reviewed by Fisher (1983). Newson (2002) gives a broader discussion and an 
+example implementing {cmd:domdiag}. 
+
+{p 4 4 2}{cmd:domdiag} temporarily makes a dataset of {it:n_1} * {it:n_2}
+observations.  This may be very much larger than the existing dataset and the
+user should make sure that enough memory is allocated. 
+
+
+{title:Options}
+
+{p 4 8 2}{cmd:by(}{it:byvar}{cmd:}) specifies subdivision into two groups 
+and is a required option. If {it:byvar} defines three or more categories
+and it is desired to focus on just two, make sure the others are excluded 
+by using {cmd:if}. 
+
+{p 4 8 2}{cmd:reverse} specifies that axes are to be reversed from the default. 
+
+{p 4 8 2}{it:graph_options} are options of {help scatter}. 
+By default, {cmd:note()} is used to display
+{it:P}(({it:varname} | group 1) > ({it:varname} | group 2)). 
+
+
+{title:Examples}
+
+{p 4 8 2}{cmd:. domdiag mpg, by(foreign)}
+
+
+{title:Author}
+
+{p 4 4 2}Nicholas J. Cox, Durham University, U.K.{break} 
+	n.j.cox@durham.ac.uk
+
+
+{title:References} 
+
+{p 4 8 2}Cliff, N. 1993. Dominance statistics: ordinal analyses to answer 
+ordinal questions. {it:Psychological Bulletin} 114, 494{c -}509. 
+
+{p 4 8 2}Cliff, N. 1996. {it:Ordinal methods for behavioral data analysis.} 
+Mahwah, NJ: Lawrence Erlbaum. 
+
+{p 4 8 2}Fisher, N.I. 1983. Graphical methods in nonparametric statistics: 
+a review and annotated bibliography. {it:International Statistical Review} 
+51, 25{c -}38. 
+
+{p 4 8 2}Newson, R. 2002. Parameters behind "nonparametric" statistics:
+Kendall's tau, Somers' D and median differences. 
+{it:Stata Journal} 2: 45{c -}64.
+{browse "http://www.stata-journal.com/sjpdf.html?articlenum=st0007":http://www.stata-journal.com/sjpdf.html?articlenum=st0007} 
+
+
+
+{title:Also see}
+
+ Manual:  {hi:[R] signrank}
+On-line:  {help signrank}
+

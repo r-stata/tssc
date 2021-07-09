@@ -1,0 +1,139 @@
+{smcl}
+{* 9 July 2008}{...}
+{cmd:help cdfplot}
+{hline}
+
+{title:Title}
+
+  {hi:Plots the cumulative distribution function}
+
+{title:Syntax}
+
+{p 8 27 2}
+{cmdab:cdfplot} {help varname} [{help if}] [{help in}] [{help weight}] 
+[{cmd:,} {it:options}]
+
+{synoptset 20 tabbed}{...}
+{synopthdr}
+{synoptline}
+{syntab:Main}
+{synopt:{opt by}(varname)} specifies a separate c.d.f. to be drawn for each value of varname. {p_end}
+{synopt:{opt norm:al}} specifies that a Gaussian probability curve with the same mean and standard 
+deviation to be superimposed over the c.d.f. {p_end}
+{synopt:{opt same:sd}} specifies that the normal c.d.f.s use the same same standard deviation. {p_end}
+{synopt:{opt nocdf}} specifies that the empirical c.d.f. is not drawn. {p_end}
+{synopt:{opt opt1}(twoway_options)} specifies the additional graph options for the c.d.f. plot. {p_end}
+{synopt:{opt opt2}(twoway_options)} specifies the additional graph options for the Gaussian c.d.f. plots . {p_end}
+{synopt:{opt {help twoway_options}}} any twoway options are applied to the final graph. {p_end}
+{synoptline}
+{p2colreset}{...}
+
+
+{title:Description}
+
+{pstd}
+{hi:cdfplot} plots the sample cumulative distribution function. Distributions can
+be compared within subgroups defined by a second variable. The best fitting 
+normal (Gaussian) model may be superimposed over the sample c.d.f.
+
+{title:Updating this command using SSC}
+
+{pstd} 
+To obtain the latest version click the following to uninstall the old version
+
+{pstd}
+{stata ssc uninstall cdfplot}
+
+{pstd}
+And click here to install the new version
+
+{pstd}
+{stata ssc install cdfplot}
+
+{title:Options}
+
+{phang}
+{opt by}(varname) specifies a separate c.d.f. to be drawn for each value 
+of varname. These are plotted on the same graph for easier comparison.
+
+{phang}
+{opt norm:al} specifies that a normal probability curve with the same mean and standard 
+deviation to be superimposed over the c.d.f.
+
+{phang}
+{opt same:sd} is relevant only when {hi:by} and {hi:normal} options are used together.
+It specifies that the normal curves with different means have the same standard deviations. 
+This demonstrates the fit of the conventional Gaussian location shift model.
+
+{phang}
+{opt nocdf} specifies that the empirical c.d.f. is not drawn but this option will not work unless
+the normal option is specified, hence only the smoothed Gaussian c.d.f will be drawn. {p_end}
+
+{phang}
+{cmdab:opt1}{cmd:(}{it:twoway_options}{cmd:)} specifies additional graph options for the c.d.f. plots.
+
+{phang}
+{cmdab:opt2}{cmd:(}{it:twoway_options}{cmd:)} specifies additional graph options for the Gaussian c.d.f. plots.
+
+{phang}
+If the {hi:xlog} option is used, the {hi:normal} option causes log-normal distributions
+to be fitted.
+
+{title:Examples}
+
+{pstd}
+Using the variable {hi:length} from the {hi:auto} data (click on the following commands in order):
+
+{pstd}
+{hi: NOTE DATA will be lost when loading new data}
+
+{pstd}
+{stata sysuse auto,replace}{p_end}
+{pstd}
+{stata cdfplot length, normal}{p_end}
+{pstd}
+{stata cdfplot length, by(foreign)}{p_end}
+{pstd}
+{stata cdfplot length, by(foreign) norm saving(mygraph)}{p_end}
+{pstd}
+{stata cdfplot length [fw=rep78], by(foreign) norm saving(mygraph,replace)}{p_end}
+
+{pstd}
+Using the variable {hi:bp} from the {hi:bplong} data 
+
+{pstd}
+{stata sysuse bplong,replace}{p_end}
+{pstd}
+{stata cdfplot bp, norm}{p_end}
+{pstd}
+{stata cdfplot bp, by(agegrp)}{p_end}
+{pstd}
+{stata cdfplot bp, by(agegrp) norm}{p_end}
+
+{pstd}
+Now to show the use of the options in the individual graphs, {hi:opt1} alters the line colours
+for the c.d.f. graphs and {hi:opt2} alters the line pattern for the Gaussian c.d.f.
+
+{pstd}
+{stata cdfplot bp, by(agegrp) opt1( lc(red green olive) ) opt2( lp(dash dash dash) ) norm }
+
+{title:Author}
+
+{pstd}
+Adrian Mander, MRC Human Nutrition Research Unit, Cambridge, UK.
+
+{pstd}
+Email {browse "mailto:adrian.mander@mrc-hnr.cam.ac.uk":adrian.mander@mrc-hnr.cam.ac.uk}
+
+
+{title:Acknowledgement}
+
+{pstd}
+This command is nearly a direct port of the {hi:cdf} command that was written by
+{bf: David Clayton} and {bf:Michael Hills} in STB-49.
+
+{title:Also see}
+
+{pstd}
+{help cdf} (if installed)
+

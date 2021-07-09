@@ -1,0 +1,63 @@
+{smcl}
+{hline}
+help for {hi:log2do2}
+{hline}
+
+{title:Conversion of Stata log files to do files}
+
+{p 8 15}{cmd:log2do2} {it:logfile} , {cmd:saving(}{it:filename} [ {{cmd:replace}|{cmd:append}} ]
+
+
+{title:Description}
+
+{p}{cmd:log2do2} extracts the command lines from a Stata text-format log file,
+creating a file of syntax (ie, a do file).
+
+{p}The program recognizes commands as lines in the log that begin with a period followed
+by a blank space.  It also recognizes command that are wrapped over multiple lines
+by Stata, and command that appear within {cmd:foreach} and {cmd:forvalues} loops.
+
+{p}{cmd:log2do2} uses the Stata 7 {help file} command to read and write the file.  This command
+was in an update to Stata; be sure your stata is fully {help update:up to date}.  The use
+of {cmd:file} allows {cmd:log2do2} to preserve references to local macros in command lines.
+The if the following line appears in a log file:
+
+{p 8 8}{inp:. display "local x is `x'"}
+
+{p}then the reference to {cmd:`x'} will appear in the do file as {cmd:`x'}, rather than
+being expanded by Stata and, therefore, blanked out.
+
+{p}Note that the program requires a text-format log file, and will not work with
+a {help smcl}-formatted log.  See {help translatetext:translate} to translate a smcl
+log into plain text format.
+
+
+{title:Things to watch for}
+
+{p}Several situations can confuse {cmd:log2do2}.  First, the block of code within
+a {help forvalues} or {help foreach} loop are generally displayed in the log file as
+numbered lines, rather than being preceded by a period and a space.  {cmd:log2do2}
+handles this by noticing the beginning of the loop, and counting the open- and close-braces
+(ie, {cmd:-)} and {cmd:)-} to find the end of the block of code.  This works correctly
+unless there are unmatched brace characters in comments within the looped code.
+
+{p}Second, Stata code can be written that will make output look to {cmd:log2do2} like
+input lines.  For example, the command {cmd:display ". hello there"} will lead to the
+line "hello there" appearing in the do file.
+
+{p}Finally, if the log file was created by do file that split commands over multiple
+lines, through use of the {cmd:/*} and {cmd:*/} delimiters, then {cmd:log2do2}
+will string the command together on one long line.  The resulting do file will
+work correctly, but might need editing for style points.
+
+
+{title:Example}
+
+{p 8 12}{input:. log2do2 "c:/My Files/mylog.log" , saving(c:/My Files/mydo.do) replace}
+
+
+{title:Author}
+
+{p 5 5}Nick Winter{p_end}
+{p 5 5}Cornell University{p_end}
+{p 5 5}nw53@cornell.edu{p_end}

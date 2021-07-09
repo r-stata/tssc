@@ -1,0 +1,161 @@
+{smcl}
+{hline}
+help for {hi:nbstrat} {right:(Joseph Hilbe; R. Martinez-Espineira)}
+{hline}
+
+{title:Negative Binomial with Endogenous Stratification}
+
+{p 8 13 2}{cmd:nbstrat}{space 2}{it:depvar} [{it:varlist}] 
+	[{cmd:if} {it:exp}] [{cmd:in} {it:range}]  [, {cmdab:off:set(}{it:varname}{cmd:)}
+        {cmdab:exp:osure(}{it:varname}{cmd:)} {cmdab:cl:uster(}{it:varname}{cmd:)}
+        {cmdab:l:evel(}{it:#}{cmd:)} {cmdab:from:(}{it:asis}{cmd:)} {cmdab:ir:r} {cmdab:rob:ust}
+        {cmd:nolog} {it:maximize_options} {it:survey_options}]
+
+
+{p 4 4 2}
+{cmd:aweight}s, {cmd:fweight}s, {cmd:iweight}s, and {cmd:pweight}s are
+allowed; see help {help weights}.
+
+{p 4 4 2}
+{cmd:nbstrat} provides access to all {it:maximize} options; see help {help maximize}.
+
+{p 4 4 2}
+{cmd:nbstrat} provides access to all {it:survey} options; see help {help svy}.
+
+
+{title:Description}
+
+{p 4 4 2}{cmd:nbstrat} fits a maximum-likelihood negative binomial with endogenous stratification
+regression model of {it:depvar} on {it:indepvars}, where {it:depvar} is a non-negative count variable > 0.
+
+{p 4 4 2}{cmd:nbstrat} acccepts all of the {it:help maximize} options, the {it:constraint()} 
+option, and all survey options and capabilities documented in {cmd:[SVY]}; including 
+multi-level surveys; poststratification; and BRR, jackknife, and linearization VCE estimators.
+
+{p 4 4 2}This program uses {cmd:ml lf} method. 
+
+
+{title:Options}
+
+{dlgtab:Model}
+
+{phang}
+{opth offset(varname)} specifies a {it:varname} in model with coefficient constrained to 1.
+
+{phang}
+{opth exposure(varname)} specifies a {it:ln(varname)} in model with coefficient constrained to 1.
+
+{phang}
+{opth constraints(constraints)} apply specified linear constraints.
+
+
+
+{dlgtab:SE/Robust}
+
+{phang}
+{opth cluster(varname)} 
+
+{p 4 8 2}
+{cmd:robust} specifies that the Huber/White/sandwich estimator of
+variance is to be used in place of the traditional calculation.  {cmd:robust}
+combined with {cmd:cluster}{cmd:(}{cmd:)} allows observations which are not
+independent within cluster (although they must be independent between
+clusters).  If you specify {cmd:pweight}s, {cmd:robust} is implied.
+
+{phang}
+{opth vce(options)} allowed. {cmd:vce}{cmd:(}{cmd:)} supports {it:robust}, {it:opg}, and {it:native}.
+{cmd:vce} does not support options {it:bootstrap} or {it:jacknife}, However,  {cmd:nbstrat} does support  
+the {cmd:bootstrap} and {cmd:jacknife} commands, so these modeling capabilities are allowed.  
+
+
+{dlgtab:Reporting}
+   
+{p 4 8 2}{cmd:level(}{it:#}{cmd:)} specifies the confidence level, in percent,
+for confidence intervals of the coefficients; see help {help level}.
+
+{p 4 8 2}
+{cmd:nolog} suppresses the iteration log.
+
+
+{dlgtab:max options}
+
+{phang}
+
+{p 4 8 2}
+{it:maximize_options}: technique(algorithm_spec), [no]log, trace, hessian, gradient, showstep, 
+shownrtolerance, difficult, iterate(#), tolerance(#), ltolerance(#), gtolerance(#), nrtolerance(#), 
+nonrtolerance, from(init_specs); see {help maximize}.  
+
+
+{dlgtab:svy options}
+
+{phang}
+{it:survey_options} are all available. See help {help svy}
+
+
+
+
+{title:Co-Author and support}
+
+{phang}
+{cmd: Joseph Hilbe},
+{cmd: Arizona State University}:
+{cmd: jhilbe@aol.com}
+
+
+{title:Remarks}
+
+{pstd}
+{cmd:nbstrat} is a user authored program. Support is by author. {cmd:nbstrat}
+was developed by {cmd:Joseph Hilbe}. {cmd:Roberto Martinez-Espineira}, Dept. of Economics,  
+St. Francis Xavier Univ, Antigonish, Nova Scotia, Canada, provided the likelihood for the 
+model as well as the remarks found below. Both are working together on research involving 
+this model.  
+
+
+{pstd}
+{cmd:nbstrat} simultaneously accommodates three features of on-site samples dealing with count 
+data: overdispersion relative to the Poisson; truncation at zero, and endogenous stratification 
+due to oversampling of frequent users of the site. Endogenous stratification occurs when the 
+likelihood of sampling observations is dependent on a choice made by the subject of study which 
+is in itself the dependent variable. For example, in recreational demand analysis, if an on-site 
+survey is conducted, one is more likely to interview subjects who visit the site more times per 
+week and ask how many times they visit, hence the endogeneity. Also patients who visit the doctor 
+more frequently are also more likely to be sampled if the survey is conducted at the clinic, etc.
+Note: if the data are equidispersed but still truncated and endogenously stratified this model is 
+equivalent to running poisson depvar-1 [varlist].
+
+
+{pstd}
+{cmd:nbstrat} requires a nonnegative count response, or any positive real number. If the response
+has a value of zero, the algorithm will display an error message. 
+
+
+{title:Examples}
+
+{phang}{cmd:. nbstrat los hmo white type2 type3, nolog irr}
+
+{phang}{cmd:. nbstrat los hmo white type2 type3, nolog exposure(pop) cluster(state)}
+
+{phang}{cmd:. bootstrap: nbstrat los hmo white type2 type3, nolog irr}
+
+
+{title:Also see}
+
+{psee}
+Reference:  {bf: Shaw, D. (1988), On-Site Samples' Regression, J Econometrics 37, 211-223.}
+
+{psee}
+Reference: {bf: Englin, J. and J. Shonkwiler (1995a). Estimating social welfare using count data models: An application under conditions of endogenous stratification and truncation. Review of Economics and Statistics 77, 104-112.}
+
+
+{psee}
+Online:  {helpb help} {helpb nbreg}
+
+
+
+
+
+
+
+

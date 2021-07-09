@@ -1,0 +1,265 @@
+{smcl}
+{* December 2005}{...}
+{hline}
+help for {hi:hshaz}{right:Stephen P. Jenkins (December 2005)}
+{hline}
+
+{title:Discrete time (grouped data) proportional hazards models}
+
+{p 8 17 2}{cmd:hshaz} {it:covariates} [{it:weight}] [{cmd:if} {it:exp}]
+	[{cmd:in} {it:range}] [{cmd:,}
+	{cmdab:i:d(}{it:idvar}{cmd:)} {cmdab:d:ead(}{it:deadvar}{cmd:)} 
+	{cmdab:s:eq(}{it:seqvar}{cmd:)} 
+	{cmdab:n:mp(}{it:#}{cmd:)} {cmdab:m2(}{it:#}{cmd:)} {cmdab:p2(}{it:#}{cmd:)}
+	 {cmdab:m3(}{it:#}{cmd:)} {cmdab:p3(}{it:#}{cmd:)}
+	 {cmdab:m4(}{it:#}{cmd:)} {cmdab:p4(}{it:#}{cmd:)}
+	 {cmdab:m5(}{it:#}{cmd:)} {cmdab:p5(}{it:#}{cmd:)}
+	{cmdab:ef:orm} {cmd:nocons} {cmd:nolog} {cmdab:nob:eta0} 
+	{cmdab:l:evel(}{it:#}{cmd:)} {it:maximize_options}]
+
+{p 4 4 2}{cmd:by} {it:...} {cmd::} may be used with {cmd:hshaz}; see help
+{help by}. 
+
+{p 4 4 2}{cmd:fweight}s and {cmd:iweight}s are allowed; see help {help weights}. 
+
+
+{title:Description}
+
+{p 4 4 2}
+{cmd:hshaz} estimates, by ML, two discrete time (grouped data) proportional
+hazards regression models, one of which incorporates a discrete mixture 
+distribution to summarize unobserved individual heterogeneity
+(or 'frailty').  Covariates may include regressor variables 
+summarizing observed differences between persons (either 
+fixed or time-varying), and variables summarizing the duration 
+dependence of the hazard rate.  With suitable definition of 
+covariates, models with a fully non-parametric specification 
+for duration dependence may be estimated; so too may parametric 
+specifications.  {cmd:hshaz} thus provides a useful complement to 
+{cmd:stcox} (for continuous survival time data), and related programs.
+For further discussion of hazard regression models with unobserved heterogeneity, 
+see e.g. {browse "http://www.iser.essex.ac.uk/teaching/stephenj/ec968/index.php"},
+espcially `Lesson 7'. The Lesson also shows how to derive predicted hazard 
+and survivor functions from the estimates of the model.
+
+{p 4 4 2}
+{cmd:hshaz} estimates two models by maximum likelihood:
+(1) the Prentice-Gloeckler (1978) model; and
+(2) the Prentice-Gloeckler (1978) model incorporating a discrete mixture 
+distribution to summarize unobserved individual heterogeneity, as proposed 
+by Heckman and Singer (1984).  (To estimate a model incorporating Gamma distributed
+heterogeneity, use {cmd:pgmhaz8}.)
+
+{p 4 4 2}
+Suppose there are individuals {it:i} = 1,...,{it:N}, who each enter a state
+(e.g. unemployment) at time {it:t} = 0 and are observed for {it:j} time 
+periods, at which point each person either remains in the state 
+(censored duration data) or leaves the state (complete duration data).
+
+{p 4 4 2}
+In Model 1, the discrete hazard rate in period {it:t} is
+
+{centre: {it:h_t} = 1-exp(-exp({it:b0} + {it:X_it*b}))}
+
+{p 4 4 2}
+where {it:b0} is an intercept and the linear index function, {it:X_it*b}, 
+incorporates the impact of covariates {it:X_it}. The contribution to the 
+sample likelihood for a subject with a spell length of {it:j} periods is 
+
+{centre: {it:S}({it:j}) * ({it:h_j}/(1 - {it:h_j}))^{it:c} }
+
+{p 4 4 2}
+where {it:S}({it:j}) is the probability of remaining in the state {it:j} periods,
+i.e. the survivor function, and {it:c} is a censoring indicator, equal to one
+for a completed spell and zero otherwise.
+
+{p 4 4 2}
+Suppose now that each individual belongs to one of a number of different types,
+and membership of each class is unobserved. This is parameterized by 
+allowing the intercept term in the hazard function to differ across types. Thus,
+for a model with types {it:z} = 1,...,{it:Z}, the hazard function for an individual
+belonging to type {it:z} is:
+
+{centre: {it:hz_t} = 1-exp(-exp({it:m_z} + {it:b0} + {it:X_it*b}))}
+
+{p 4 4 2}
+and the probability of belonging to type {it:z} is {it:p_z}. The {it:m_z} characterize the
+discrete points of support of a multinomial distribution (`mass points'),
+ with {it:m_1} normalized to equal zero and 
+{it:p_1} = 1 - SUM({it:z}=2 to {it:z}={it:Z})[ {it:p_z} ]. The {it:z}th mass point equals
+{it:m_z + b0}.
+
+{p 4 4 2}
+In {cmd:hshaz}, the default number of mass points is 2, but optionally may be set equal to 3, 4, or 5.
+
+{p 4 4 2}
+The contribution to the sample likelihood of a subject with observed 
+duration {it:j} is:
+
+{centre: {it:L} = SUM({it:z}=1 to {it:z}={it:Z}) [ {it:p_z} * {it:Sz}({it:j}) * ({it:hz_j}/(1 - {it:hz_j}))^{it:c} ]  }
+
+{p 4 4 2}
+For suitably re-organised data, the log-likelihood function for Model 
+1 is the same as the log-likelihood for a generalized linear model
+of the binomial family with complementary log-log link: see Allison (1982) 
+or Jenkins (1995).  Model 1 is estimated using the {help glm} command 
+({help cloglog} produces the same estimates).
+
+{p 4 4 2}
+Model 2 is estimated using {cmd:ml d0}. Heckman and Singer (1984) note 
+potential problems with finding the global maxima rather multiple local maxima, 
+and emphasize the benefits of estimating models with alternative sets of starting 
+values to check convergence. Different starting values for the mass points and 
+associated probabilities may be set optionally: see below. See also the discussion
+of {it:maximize_options} below.
+
+
+{title:Important note about data organization and variables}
+
+{p 4 4 2}
+The data set must be organised beforehand so that there is a 
+data row corresponding to each time period at risk of the event
+for each subject.  (This corresponds to `episode splitting' at 
+each and every period.) {help expand} is useful for putting the data 
+in this form.  Also see the `data step' discussion in Jenkins (1995).
+
+{title:Options}
+
+{p 4 8 2}The first three options are required:
+
+{p 4 8 2}{cmd:id(}{it:idvar}{cmd:)} specifies the variable uniquely identifying 
+	each subject, {it:i}.
+
+{p 4 8 2}{cmd:seq(}{it:seqvar}{cmd:)} is the variable uniquely identifying each time 
+	period at risk for each subject. For each {it:i} at risk {it:j} periods, 
+	the variable is the integer sequence 1, 2, ..., {it:j_i}. 
+
+{p 4 8 2}{cmd:dead(}{it:deadvar}{cmd:)} summarizes censoring status during each time
+	period at risk.  If {it:c_i} = 0, deadvar = 0 for all 
+	{it:t} = 1, 2, ..., {it:j_i}; if {it:c_i} = 1, {it:deadvar} = 0 for all {it:t} = 
+	1,2,...,{it:(j_i)}-1, and {it:deadvar} = 1 for {it:t} = {it:j_i}.
+
+{p 4 8 2}{cmd:nmp(}{it:#}{cmd:)} specifies the number of discrete points of support {it:Z}.
+	The default is two.
+	
+{p 4 8 2}{cmd:m2(}{it:#}{cmd:)}, {cmd:m3(}{it:#}{cmd:)}, {cmd:m4(}{it:#}{cmd:)}, {cmd:m5(}{it:#}{cmd:)}, specify 
+	starting values for {it:m_2}, {it:m_3}, {it:m_4}, {it:m_5}. The default values are 1, -1, 0.1, -0.1, 
+	respectively. 
+
+{p 4 8 2}{cmd:p2(}{it:#}{cmd:)}, {cmd:p3(}{it:#}{cmd:)}, {cmd:p4(}{it:#}{cmd:)}, {cmd:p5(}{it:#}{cmd:)}, specify 
+	starting values for the probabilities of belonging to types 2, 3, 4, and 5. 
+	The default values are 0.3, 0.3, 0.1, 0.1, respectively.
+	
+{p 4 8 2}{cmd:eform} reports the coefficients transformed to hazard ratio format,
+	i.e. exp(b) rather than b. Standard errors and confidence 
+	intervals are similarly transformed. {cmd:eform} may be
+	specified at estimation or when redisplaying results.
+
+{p 4 8 2}{cmd:level(}{it:#}{cmd:)} specifies the significance level, in percent, for
+	confidence intervals of the parameters; see help {help level}.
+
+{p 4 8 2}{cmd:nocons} specifies no intercept term, i.e. {it:b0} = 0.
+
+{p 4 8 2}{cmd:nolog} suppresses the iteration logs.
+
+{p 4 8 2}{cmd:nobeta0} suppresses reporting of the estimates from Model 1.
+
+{p 4 8 2}{it:maximize_options} control the maximization process. The options
+available are those available for {cmd:ml d0} as shown by help {help maximize}, 
+with the exception of {cmd:from()}.  For difficult maximization problems, 
+using the {cmd:difficult} or {cmd:technique} options may help convergence. 
+So too might different starting values for the frailty parameters.
+
+
+{title:Saved results}
+
+{p 4 4 2}In addition to the usual results saved after {cmd:ml}, {cmd:hshaz} also
+saves the following:
+
+{p 4 4 2}{cmd:e(m2)} and {cmd:e(se_m2)}, {cmd:e(m3)} and {cmd:e(se_m3)}, 
+{cmd:e(m4)} and {cmd:e(se_m4)}, {cmd:e(m5)} and {cmd:e(se_m5)}, are the estimated {it:m_z} and 
+their corresponding standard errors. {cmd:e(m1)} = 0.
+
+{p 4 4 2}{cmd:e(pr1)} and {cmd:e(se_pr1)}, {cmd:e(pr2)} and {cmd:e(se_pr2)}, 
+{cmd:e(pr3)} and {cmd:e(se_pr3)}, {cmd:e(pr4)} and {cmd:e(se_pr4)}, {cmd:e(pr5)} and {cmd:e(se_pr5)}, 
+are the estimated probabilities of each type and their corresponding 
+standard errors. {cmd:e(pr1)} = 1 - SUM({it:z}=2 to {it:z}={it:Z})[{cmd:e(prz)}].
+
+{p 4 4 2}{cmd:e(ll_nofr)} is the log-likelihood value from Model 1.
+
+{p 4 4 2}{cmd:e(depvar)}, {cmd:e(deadvar)}, and {cmd:e(seqvar)} contain the names of
+{it:depvar}, {it:deadvar}, and {it:seqvar}. 
+
+{p 4 4 2}{cmd:e(N_spell)} is the number of spells in the data. (Cf. {cmd:e(N)}, the total
+number of `person-period' observations in the estimation data set.)
+
+
+{title:Examples}
+
+{p 4 8 2}{inp:. sysuse cancer, clear }
+
+{p 4 8 2}{inp:. ge id = _n }
+
+{p 4 8 2}{inp:. recode drug 1=0 2/3=1 }
+
+{p 4 8 2}{inp:. expand studytime }
+
+{p 4 8 2}{inp:. bysort id: ge t = _n // 'survival time', t, is # periods at risk per subject }
+
+{p 4 8 2}{inp:. bysort id: ge dead = died & _n==_N // event indicator }
+
+{p 4 8 2}{inp:. //  duration dependence: log(time) }
+
+{p 4 8 2}{inp:. ge logt = ln(t)   }
+
+{p 4 8 2}{inp:. // two mass points  }
+
+{p 4 8 2}{inp:. hshaz drug age logt, id(id) seq(t) d(dead)  }
+
+{p 4 8 2}{inp:. hshaz, eform }
+
+{p 4 8 2}{inp:. // equivalent model estimated using -gllamm- }
+
+{p 4 8 2}{inp:. gllamm dead age drug logt , i(id) ip(fn) nip(2) f(bin) l(cll) allc nocons  }
+
+{p 4 8 2}{inp:. // three mass points  }
+
+{p 4 8 2}{inp:. hshaz drug age logt, id(id) seq(t) d(dead) nmp(3) difficult tech(dfp) }
+
+
+{title:Author}
+
+{p 4 4 2}Stephen P. Jenkins <stephenj@essex.ac.uk>, Institute for Social
+and Economic Research, University of Essex, Colchester CO4 3SQ, U.K.
+
+{title:Acknowledgements}
+
+{p 4 4 2}Adrienne tenCate found a bug in the handling of fweighted data, and 
+Jeff Pitblado showed me how to fix it. Arne Uhlendorff and Peter Haan found a bug in the
+calculation of the SEs for the estimated probabilities of the various Types.
+
+{title:References}
+
+{p 4 8 2}Allison, P.D. (1982). Discrete-time methods for the analysis of event
+	histories. In {it:Sociological Methodology 1982}, ed. S. Leinhardt, 
+	San Francisco: Jossey-Bass Publishers, 61-97.
+
+{p 4 8 2}Heckman, J.J. and Singer, B. (1984). A Method for minimizing the 
+	impact of distributional assumptions in econometric models for duration 
+	data, {it:Econometrica}, 52 (2): 271-320. 
+
+{p 4 8 2}Jenkins, S.P. (1995). Easy estimation methods for discrete-time
+	duration models. {it:Oxford Bulletin of Economics and Statistics}
+	57 (1): 129-138.
+
+{p 4 8 2}Prentice, R. and Gloeckler L. (1978). Regression analysis of grouped
+	survival data with application to breast cancer data.
+	{it:Biometrics} 34 (1): 57-67.
+
+
+{title:Also see}
+
+{p 4 13 2}
+Help for {help stcox}, {help glm}, {help cloglog}, {help xtcloglog}, {help expand},
+and, if installed, {help pgmhaz}, {help pgmhaz8}. 
+

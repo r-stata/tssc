@@ -1,0 +1,118 @@
+{smcl}
+{* 13may2004}{...}
+{hline}
+help for {hi:disjoint}
+{hline}
+
+{title:Generate end variable demarcating disjoint spells}
+
+{p 8 17 2}
+{cmd:disjoint}
+{it:start end}
+[{cmd:if} {it:exp}]
+[{cmd:in} {it:range}]
+{cmd:,} {cmdab:g:enerate(}{it:newvar}{cmd:)}
+[ {cmd:id(}{it:idvar}{cmd:)} ]
+
+
+{title:Description}
+
+{p 4 4 2}{cmd:disjoint} calculates an end variable demarcating disjoint
+spells based on information in {it:start} and {it:end} variables containing 
+integer dates (and optionally an identifier variable {it:idvar}). 
+
+
+{title:Remarks}
+
+{p 4 4 2}Consider the following dataset:
+
+        +------------------+
+        | id   start   end |
+        |------------------|
+     1. |  1       3     6 |
+     2. |  1      12    17 |
+     3. |  1      13    14 |
+     4. |  1      13    22 |
+     5. |  1      14    20 |
+     6. |  2       2     8 |
+     7. |  2       3    12 |
+     8. |  2      13    15 |
+     9. |  2      13    16 |
+    10. |  2      18    28 |
+        +------------------+
+    
+{p 4 4 2}For each identifier {cmd:id} the variables {cmd:start} and {cmd:end}
+define spells, but some spells overlap (and some are indeed wholly included in
+others).  For some purposes we need to demarcate disjoint spells and we can do
+this by defining a new end variable, such that each end is always less than the
+next start. This is what {cmd:disjoint} does. 
+
+{p 4 4 2}{inp:. disjoint start end, id(id) gen(end2)}{p_end}
+{p 4 4 2}{inp:. l}
+     
+        +-------------------------+
+        | id   start   end   end2 |
+        |-------------------------|
+     1. |  1       3     6      6 |
+     2. |  1      12    17     12 |
+     3. |  1      13    14      . |
+     4. |  1      13    22     22 |
+     5. |  1      14    20      . |
+     6. |  2       2     8      2 |
+     7. |  2       3    12     11 |
+     8. |  2      12    15     12 |
+     9. |  2      13    16     16 |
+    10. |  2      18    28     28 |
+        +-------------------------+
+
+{p 4 4 2}This is easier to understand if we focus on observations with 
+non-missing generated values. 
+
+{p 4 4 2}{inp:. l id start end2 if end2 < .}
+
+        +-------------------------+
+        | id   start   end   end2 |
+        |-------------------------|
+     1. |  1       3     6      6 |
+     2. |  1      12    17     12 |
+     4. |  1      13    22     22 |
+     6. |  2       2     8      2 |
+     7. |  2       3    12     12 |
+     9. |  2      13    16     16 |
+    10. |  2      18    28     28 |
+        +-------------------------+
+
+{p 4 4 2}That is, the "spells" for {cmd:id} 1 are (3,6), (12,12) and (13,22).
+Observations for {cmd:id} 1 with ({cmd:start},{cmd:end}) of (13,14) and (14,20)
+are ignored for this purpose as they indicate spells included in other spells.
+The generated variable marks a true end whenever it is equal to the original
+end variable. Note that the length of each "spell" would usually be defined as
+1 + generated variable - {it:start}. With this approach no observations are
+inserted or deleted. 
+
+{p 4 4 2}See also packages on SSC {cmd:spellutil} (Edwin Leuven) and 
+{cmd:spell} (Nicholas J. Cox). 
+
+
+{title:Options}
+
+{p 4 8 2}{cmd:generate()} specifies the name of the new variable and is not
+ optional.
+
+{p 4 8 2}{cmd:id()} specifies an identifier variable. Spells are
+determined separately for each identifier. 
+
+
+{title:Author}
+
+{p 4 4 2}Nicholas J. Cox, University of Durham, U.K.{break} 
+n.j.cox@durham.ac.uk
+
+
+{title:Also see}
+
+{p 4 13 2}
+On-line:  help for {help spell} (if installed), 
+{cmd:spellutil} ({help spellsplit}, {help spellmerge}, {help spell2panel}) 
+(if installed) 
+

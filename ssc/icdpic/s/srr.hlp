@@ -1,0 +1,226 @@
+{smcl}
+{* October 25, 2010}
+{* Version 3.0}
+help for {hi:srr}
+{hline}
+
+{title:Title}
+
+{p 4 8 2}
+{cmd:srr} -- Survival Risk Ratio and Independent Survival Risk Ratio Table
+
+
+{title:Version}
+
+{p 4 4 2}
+Version 3.0.
+
+{p 4 4 2}
+ICDPIC Version 3.0 requires STATA 8.0 or higher.  ICDPIC Version 3.0 has been tested in STATA 10 and STATA 11, but the authors believe it
+should also work without incident in STATA 8 and STATA 9.  If you have any problems using ICDPIC Version 3.0 in STATA 8 or STATA 9, please
+inform the authors.
+
+{p 4 4 2}
+ICDPIC Version 3.0 may be installed from within STATA using the {bf:ssc} command.  If you installed a previous version of ICDPIC from the SSC
+archives website using the {bf:ssc} command, we suggest that you first delete it by typing {bf:ssc uninstall icdpic} followed by
+{bf:ssc install icdpic}.  Alternatively, you may use {bf:ssc install icdpic, replace}.  See help for {help ssc}.
+
+{p 4 4 2}
+If you installed any previous ICDPIC files obtained directly from the authors, please delete them {bf:ALL} (.ado, .hlp and .dta files) to avoid
+any conflicts with ICDPIC 3.0 files.
+
+{p 4 4 2}
+Please enter complete variable names in the ICDPIC Version 3.0 dialog boxes.  Do not use abbreviations.
+
+{p 4 4 2}
+New to Version 3.0 is the addition of a dialog box (.dlg) file associated with each individual ICDPIC Version 3.0 program (.ado) file.  To access
+the ICDPIC dialog box, and all the ICDPIC programs, type: {cmd:db icdpic}.  Typing {cmd:icdpic}, as in earlier versions, will still work, but
+{bf:ONLY} with {bf:icdpic}.  For example, to access the SRR\SRRi Table program directly, type: {bf:db srr}.  Typing {bf:srr}, as in previous
+versions, will produce an error.
+
+{p 4 4 2}
+Fixed in ICDPIC Version 3.0 is the ability to use path\file names containing spaces.
+
+{p 4 4 2}
+Fixed in ICDPIC Version 3.0 is the ability to run in STATA 11.0.
+
+{p 4 4 2}
+Fixed in ICDPIC Version 3.0 is a bug that caused the {bf:triss} program to crash if the {it:rts} variable was named anything other than "rts".
+
+{p 4 4 2}
+New in ICDPIC Version 3.0 ({bf:trauma} program only) is the ability to choose whether an AIS value of 6 automatically forces an ISS of
+75 or to automatically have all AIS values of 6 changed to an AIS value of 5 and then have the ISS calculated normally.
+
+{p 4 4 2}
+All dialog boxes in ICDPIC Version 3.0 have memory.  Each time a dialog box is opened within the same STATA session, it will remember the values
+last entered.
+
+{p 4 4 2}
+All dialog boxes in ICDPIC Version 3.0 have the following buttons:
+
+{p 6 9 2}
+{it:OK} executes the program and removes the dialog box from the screen.
+
+{p 6 13 2}
+{it:SUBMIT} executes the program and leaves the dialog box on the screen.  Note that if an error message is generated the dialog box may
+be minimized.
+
+{p 6 13 2}
+{it:CANCEL} removes the dialog box from the screen and does nothing.  Clicking on the close icon of the dialog box does the same thing.
+
+{p 6 11 2}
+{it:HELP} leaves the dialog box on the screen and presents the program help file.  The {it:HELP} button has a question mark on it.
+
+{p 6 11 2}
+{it:COPY} leaves the dialog box on the screen and copies the program command to the clipboard.
+
+{p 6 12 2}
+{it:RESET} resets the values of the controls in the dialog box to their initial state, just as if the dialog box were invoked
+for the first time.  Each time a user invokes a dialog box, its controls will be filled in with the values the user last entered.
+{it:RESET} restores the control values to their defaults.  The {it:RESET} button has an R on it.
+
+
+{title:Syntax}
+
+{p 8 17 2}
+{cmd:db srr}
+
+{p 4 4 2}
+The {it:SRR\SRRi Table} dialog box will open.  Follow the instructions.  
+
+{center:{bf:{it:OR}}}
+
+{p 8 17 2}
+{cmd:db icdpic}
+
+{p 4 4 2}
+The {it:ICDPIC} dialog box will open.  Choose {it:SRR\SRRi Table} and click {it:OK} or {it:Submit}.  The {it:SRR\SRRi Table} dialog box will open.
+Follow the instructions.  
+
+
+{title:Description}
+
+{p 4 4 2}
+{cmd:srr} calculates the survival risk ratio (SRR) and the independent survival risk ratio (SRRi) for all valid
+ICD-9-CM injury codes (N-Codes) in a data set and stores them in a file on disk.
+
+{p 4 4 2}
+SRR and SRRi are defined by analysis of whatever population is deemed the index population.
+
+{p 4 4 2}
+SRR is equivalent to the number of survivors with a given N-Code divided by the number of survivors plus non survivors with
+that same N-Code.
+
+{p 4 4 2}
+SRRi is equivalent to the number of survivors with a given N-Code (and no other N-Codes) divided by the number of survivors
+plus non survivors with that same N-Code (and no other N-Codes).
+
+
+{title:Options}
+
+{p 4 4 2}
+ICD-9-CM diagnosis codes in the user's data may, or may not, contain a decimal point.  Simply choose the option that
+applies to your data in the {it:SRR\SRRi Table} dialog box. 
+
+
+{title:Remarks}
+
+{p 4 4 2}
+The user's data must contain ICD-9-CM diagnosis codes.  Diagnosis codes in the user's data must be of type string.  A
+decimal point in the diagnosis codes is optional.  Diagnosis codes should have a width of 5 (6 if a decimal point is
+present).  The diagnosis code prefix must be the same for all diagnosis codes and numbered sequentially starting with 1,
+for example, dx1...dxN.
+
+{p 4 4 2}
+The user's data also requires a Boolean variable of type byte to indicate discharge status.  0 if the patient was discharged
+alive and 1 if the patient died.
+
+{p 4 4 2}
+{cmd:srr} adds the following variables to a new file stored on disk:
+
+
+{p 8 12 2}
+{it:dx}: N-Code {p_end}
+{p 8 12 2}
+{it:survive1}: number of observations in the user's data in which a given N-Code occurred and the patient
+survived  {p_end}
+{p 8 12 2}
+{it:expire1}: number of observations in the user's data in which a given N-Code occurred and the patient
+died  {p_end}
+{p 8 12 2}
+{it:srr}: survival risk ratio (SRR), or survive1/(survive1 + expire1) {p_end}
+{p 8 12 2}
+{it:survive2}: number of observations in the user's data in which a given N-Code is the only N-Code and the patient
+survived  {p_end}
+{p 8 12 2}
+{it:expire2}: number of observations in the user's data in which a given N-Code is the only N-Code code and the patient
+died  {p_end}
+{p 8 12 2}
+{it:srri}: independent survival risk ratio (SRRi), or survive2/(survive2 + expire2)  {p_end}
+
+
+{p 4 4 2}
+SRR and SRRi are rounded to the nearest 0.0001.  If SRR or SRRi are equal, or round to, 0.0000 or 1.0000 they are replaced
+with 0.0001 and 0.9999 respectively. 
+
+{p 4 4 2}
+{cmd:srr} requires the use of lookup tables {bf:ntab_s1.dta} and {bf:ntab_s2.dta}.  These data tables are supplied.  _s1
+tables are for use with data without the decimal point in ICD-9-CM codes and _s2 tables are for data that include the
+decimal point.  See help for {help icdpic}, specifically the LOOKUP TABLES part of the {bf:Remarks} section.
+
+
+{title:Examples}
+
+None
+
+
+{title:Authors}
+
+{p 4}
+David E. Clark, M.D.
+
+{p 8 12 2}
+Maine Medical Center, Portland, Maine, USA {p_end}
+{p 8 12 2}
+University of Vermont College of Medicine, Burlington, Vermont, USA {p_end}
+{p 8 12 2}
+Harvard Injury Control Research Center, Harvard School of Public Health, Boston, Massachusetts, USA {p_end}
+
+{p 8}
+Correspondence to Dr. Clark, {p_end}
+{p 8}
+887 Congress Street, Portland ME 04102 {p_end}
+{p 8} 
+Email:  clarkd@mmc.org {p_end}
+
+{p 4}
+Turner M. Osler, M.D.
+
+{p 8 12 2}
+University of Vermont College of Medicine, Burlington, Vermont, USA {p_end}
+
+{p 4}
+David R. Hahn
+
+{p 8 12 2}
+Maine Medical Center, Portland, Maine, USA {p_end}
+
+
+{title:References}
+
+{p 4 8 2}
+None
+
+
+{title:Also see}
+
+{p 4}
+help for {help iciss}
+
+{p 4}
+help for {help icdpic}
+
+{p 4}
+help for {help srr}
+
+

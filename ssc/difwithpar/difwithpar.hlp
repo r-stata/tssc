@@ -1,0 +1,180 @@
+{smcl}
+{hline}
+help for {cmd:difwithpar} {right:(Sept 26, 2012)}
+{hline}
+
+{title:Description}
+
+{p 0 4 2}
+{cmd:Detection of and adjustment for differential item functioning (DIF):}{break} 
+Identifies differential item functioning, creates dummy/virtual items to be used to adjust ability or trait estimates in PARSCALE, 
+writes the code and data file needed to process the updated item list in PARSCALE, 
+runs PARSCALE, and merges the ability estimates and standard errors into the original data set.
+
+{p 4 12 2}
+{cmd:difwithpar } {it: varlist} {cmd:,} {cmd:ID}{it:(var)} 
+{cmdab:RUnname}{cmd:}{it:(str)}{cmd:} 
+{cmd:ABility}{it:(var)} {cmd:GRoup}{it:(var)}
+[{cmdab:NUL}{cmd:}{it:(#)}{cmd:}
+{cmdab:NUW}{cmd:}{it:(#)}{cmd:} 		{cmdab:NUPValue}{cmd:}{it:(#)}{cmd:}
+{cmdab:UBeta}{cmd:}{it:(#)}{cmd:}		{cmdab:UBCH}{cmd:}{it:(#)}{cmd:}
+{cmdab:UL}{cmd:}{it:(#)}{cmd:}
+{cmdab:ULPValue}{cmd:}{it:(#)}{cmd:}	{cmdab:UW}{cmd:}{it:(#)}{cmd:}
+{cmdab:UWPValue}{cmd:}{it:(#)}{cmd:}	{cmd:MULtinomial}{it:(var)}			
+{cmdab:minsize}{cmd:}{it:(#)}{cmd:}	{cmd:SCale}{it:(#)}{hi:} 
+   {cmd:CYcles}{it:(#)}{hi:} 	{cmd:NQpt}{it:(#)}{hi:} 
+   {cmdab:cleanup}{it:(#)}]
+
+{p 4 12 2}
+where:
+
+{p 8 12 2}
+{it:varlist} is the list of variables (items, blocks) to be tested for DIF
+
+{p 8 12 2}
+{it:id} is the subject id variable.
+
+{p 8 12 2}
+{it:runname} is the name of the Parscale run to be generated. code_{it:runname}.psl will be the Parscale input file, and data_{it:runname}.txt will be the Parscale data file.  The results will also go to DfP_{it:runname}.log 
+
+{p 8 12 2}
+{it:ability} is an ability or trait variable.
+
+{p 8 12 2}
+{it:group} is a {it:binary} grouping variable.
+
+{title:Options}
+
+{p 8 12 2}
+{cmdab:multinomial} is a multinomial grouping variable.
+
+{p 8 12 2}
+{cmdab:nul} indicates whether the log-likelihood test will be used as a criterion for non-uniform DIF.  Default is yes (1).  Nul(0) will omit this criterion.
+
+{p 8 12 2}
+{cmdab:nuw} indicates whether the Wald test for the interaction term will be used as a criterion for non-uniform DIF.  Default is no (0).  Nuw(1) will include this criterion.
+
+{p 8 12 2}
+{cmdab:nupvalue} is the p-value for testing non-uniform DIF.  Default is 0.05.
+
+{p 8 12 2}
+{cmdab:ubeta} indicates whether the change in the ability coefficient will be used as a criterion for uniform DIF.  Default is yes (1).  UBeta(0) will omit this criterion.
+
+{p 8 12 2}
+{cmdab:ubch} is percent change in the ability coefficient for determining uniform DIF.  Default is .10. A positive change indicates an increase in the relationship between ability and the outcome with a higher value of the grouping variable.
+
+{p 8 12 2}
+{cmdab:ul} indicates whether the log-likelihood test will be used as a criterion for uniform DIF.  Default is no (0).  UL(1) will include this criterion.
+
+{p 8 12 2}
+{cmdab:ulpvalue} is the p-value for testing uniform DIF with the log-likelhood method.  Default is 0.05.
+
+{p 8 12 2}
+{cmdab:uw} indicates whether the Wald test for the group term will be used as a criterion for uniform DIF.  Default is no (0).  UW(1) will include this criterion.
+
+{p 8 12 2}
+{cmdab:uwpvalue} is the p-value for testing uniform DIF with the Wald test.  Default is 0.05.
+
+{p 8 12 2}
+{cmdab:minsize} is the minimum number of observations/category (default is 20)
+
+{p 8 12 2}
+{cmd:scale} - changes the scale parameter from the default of 1.7.
+
+{p 8 12 2}
+{cmd:nqpt} - changes the number of quadrature points from a default of 11.
+
+{p 8 12 2}
+{cmd:cycles} - changes the maximun number of iterations in PARSCALE stage 2 from the default of 1000.
+
+{p 8 12 2}
+{cmdab:cleanup(1)} deletes the PARSCALE files when the merge is completed.
+
+
+{title:Remarks}
+
+{p 8 12 2}
+Sends DIF results to DIFd{it:runname}.log.  
+
+{p 8 12 2}
+Generates an output data set, DIFdetect.dta, which includes individual model results, with Brant test p-values for ordinal items and Hosmer-Lemeshow p-values for binary items.  [The relevance of the fit statistics has not been established for DIF.]
+
+{p 8 12 2}
+Creates dummy/virtual items to be used to adjust ability scores for DIF in PARSCALE.  These items will be of the form {it:item}group{it:x}, where {it:x} = 1 represents the lower value of {it:group}, and {it:x} = 2 the higher.
+For example, if item {it:item1} had DIF by {it:ethnic}, the virtual items will be {it:item1ethnic1} and {it:item1ethnic2}.  You can merge these virtual items into your data set using {cmd:mergevirtual}.
+
+{p 8 12 2}
+Displays warning messages when models do not converge, collinearity problems are observed, models are completely determined, standard errors are large, Brant tests are not possible, or items have > 15 levels (PARSCALE will reject).
+
+{p 8 12 2}
+Collapses categories on variables for which the number of observations is below a specified threshold (default is minszie(20)).  If you do not want any categories combined, specify minsize(1). 
+
+{p 8 12 2}
+Drops any variable that does not have enough observations for at least 2 categories, and displays a warning message.
+
+{p 8 12 2}
+Automatically makes letter codes for item values 10-15. 
+
+{p 8 12 2}
+Allows missing values.
+
+{p 8 12 2}
+Allows character or numeric ID's up to 9 digits.
+
+{p 8 12 2}
+Creates a numeric, 12-digit ID code for Parscale by adding 1,000,000,000 to the ID, first converting string IDs to a unique number if needed.
+
+{p 8 12 2}
+Please make sure that Stata's current working directory is the same as your data's directory (help cd).
+
+{p 8 8 2}
+Default Parscale instructions are: 
+
+{p 12 12 2}
+        >CALIB GRADED, LOGISTIC, SCALE=1.7, NQPT=11, CYCLES=1000, CRIT=.001 
+
+{p 12 12 2}
+        >SCORE EAP 
+
+{p 12 12 2}
+If you want to change anything but the scale and cycles, you can edit the .PSL file or this program before running it.
+
+{p 8 12 2}
+Maximum number of items is 230.
+
+{p 8 12 2}
+If you will be adjusting for DIF on multiple categories (groups), subdividing can lead to dummy/virtual item names longer than the 31 character limit.  
+Our tip is to generate a new grouping variable with a really short name.  For example, .gen g=gender
+
+{p 12 12 2}
+Otherwise you may get an error message about a variable already being defined or being too long, and end up having to rename long variables within Stata.
+
+{p 8 12 2}
+Written for Stata 8.2.  
+
+
+{title:Examples}
+
+{p 4 8 2}
+difwithpar item1-item13, id(id) ru(gender0) ab(theta0) gr(g) 
+
+{p 4 8 2}
+difwithpar apple - item11, id(id) ru(ethnic0) ab(itemtot) gr(eth) nupv(0.01) ul(1) ulpv(.01) itemsub(1) minsize(35) cleanup(1)
+
+
+{title:Authors}
+
+{p 4 4 2}
+Paul Crane, Laura Gibbons, Lance Jolley, and Gerald van Belle.  {break}
+University of Washington, Copyright 2005.{break}
+Email: {browse mailto: gibbonsl@u.washington.edu}
+
+{p 4 4 2}
+We appreciate the assistance of Tom Koepsell and Rich Jones. 
+
+{title:Also see}
+
+{p 4 4 2}
+{cmd:difd}, {cmd:runparscale}, {cmd:prepar}, and {cmd:mergevirtual}.  
+
+The PARSCALE website is {browse "http://www.ssicentral.com"} {break}

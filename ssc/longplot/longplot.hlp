@@ -1,0 +1,107 @@
+.-
+help for ^longplot^
+.-
+
+Exploratory plot for longitudinal data
+--------------------------------------
+
+    ^longplot^ yvar xvar [^if^ exp] [^in^ range] ^, [ i^d^(^idvar^)^
+    ^by(^groupvar^) rowbeg(^#^) rowstep(^#^) col^pos^(^#^) sh^ake
+    graph_options ]
+
+Description
+-----------
+
+^longplot^ plots values of a response variable yvar against a time
+variable xvar such that each individual with a unique identifier is
+shown by a distinct connected line. If you specify a group variable,
+different groups are represented by different colors and different
+symbols.
+
+
+Options
+-------
+
+^id(^idvar^)^ specifies the individual identifier. If the data have 
+    been ^tsset^ as panel data, then by default the panel variable 
+    is taken as the identifier. If the data have not been ^tsset^ 
+    as panel data, or another variable is desired as identifier, 
+    then ^id( )^ is required. 
+    
+^by(^groupvar^)^ specifies a grouping variable, which should not be
+    time-dependent. Up to 7 groups may be distinguished. The groups 
+    will be identified in a key on the right of the graph. 
+    
+Note that using the same variable for ^id( )^ and ^by( )^ may be 
+    appropriate. ^id( )^ controls which data points are connected. 
+    ^by( )^ controls which are identified by colour and by key. 
+    
+For understanding placement of material on the plot, it helps to know
+that @gph@ draws in a space defined by 23063 rows and 32000 columns
+with origin at top left. See help for @gph@.
+
+^rowbeg(^#^)^ specifies the row position of the first group identifier
+    under ^by( )^. Default 1500.
+    
+^rowstep(^#^)^ specifies the step between row positions of group identifiers
+    under ^by( )^. Default 1500. 
+
+^colpos(^#^)^ specifies the column position of each group identifier
+    under ^by( )^. Default 28200.
+
+^shake^ shakes apart ties by adding a small amount of random noise to 
+    a temporary copy of xvar. Occasionally there are spurious connections
+    whenever different ids are represented just once each in the data and 
+    have the same value of xvar. 
+
+graph_options are options of ^graph, twoway^. The defaults include 
+
+   ^connect(L)^ -- which cannot be varied 
+   
+   ^symbol(OSTodp.)^ --  which can be varied except that ^sy([^varname^])^ 
+   and ^sy([_n])^ are not supported (if varied, the number of symbols 
+   should match the number of groups) 
+    
+   ^pen(2345678)^ -- which can be varied (if varied, the number of pens 
+   should match the number of groups) 
+    
+   neither ^xlabel^ by itself nor ^ylabel^ by itself may be specified, 
+   but each is the default
+    
+   ^bbox(0,0,23063,28000,570,290,0)^ if ^by( )^ is specified. 
+ 
+Examples
+--------
+
+    . ^longplot weight age if race==1, i(id)^
+    . ^longplot weight age, i(id) by(sex)^
+    . ^longplot weight age, i(id) by(sex) xlab(10(10)50)^
+
+
+Authors
+-------
+
+        Zhiqiang Wang
+        Menzies School of Health Research
+        Australia
+        email: wang@@sun0.menzies.edu.au
+
+        Nicholas J. Cox
+        University of Durham, U.K.
+        email: n.j.cox@@durham.ac.uk
+
+
+Acknowledgements 
+----------------
+
+	Thanks to Kit Baum and Ulrich Kohler for helpful suggestions. 
+
+
+Also see
+--------
+
+N. J. Cox  3/98 How do I connect points only within groups?
+On-line FAQ at http://www.stata.com/support/faqs/graphics/
+
+Manual: ^[G] graph^, ^[G] gph^, etc.  
+

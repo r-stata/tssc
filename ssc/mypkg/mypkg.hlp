@@ -1,0 +1,97 @@
+{smcl}
+{* 21 January 2003}{...}
+{hline}
+help for {hi:mypkg}
+{hline}
+
+{title:Inform on packages installed over net}
+
+{p 8 17 2}
+{cmd:mypkg} 
+[
+{cmd:,}
+{cmd:all} 
+{it:list_options} 
+]  
+
+{p 8 17 2}
+{cmd:mypkg} 
+{it:pkgpattern} [{it:pkgpattern} [{it:pkgpattern} [ ... ]]]
+[
+{cmd:,}
+{cmd:all} 
+{it:list_options} 
+] 
+
+{p 8 17 2}
+{cmd:mypkg} 
+{it:pkgname} [{it:pkgname} [{it:pkgname} [ ... ]]]
+[
+{cmd:,}
+{cmd:all} 
+]
+
+
+{title:Description}
+
+{p 4 4 2}{cmd:mypkg} informs on packages installed with {help ado}, {help net} 
+or {help ssc} and accessible to your Stata. 
+
+{p 4 4 2}With no arguments, {cmd:mypkg} displays a list of packages installed,  
+sorted alphabetically by their name and giving the last date installed. 
+Two or more packages with the same name or a package installed more than 
+once will by default be listed just once.
+
+{p 4 4 2}Given one or more package name patterns, {cmd:mypkg} displays information 
+on each such package installed according to the last date installed.  
+Two or more packages with the same name or a package installed more than 
+once will by default be listed just once. A pattern includes one or more 
+uses of {cmd:*} or {cmd:?} as understood by the {cmd:match()} function.
+Thus {cmd:xt*} means all names starting with {cmd:xt} and {cmd:parmes?} 
+means all names which are {cmd:parmes} followed by one character. 
+
+{p 4 4 2}Given one or more package names, {cmd:mypkg} displays information 
+on each installed according to the last date installed.  
+Two or more packages with the same name or a package installed more than 
+once will by default listed just once.
+
+{p 4 4 2}{cmd:mypkg} takes its information from, and depends on the existence
+of, the file {cmd:stata.trk} within what {cmd:sysdir} knows as STBPLUS. (In
+Stata 8, this is equivalent to what {cmd:sysdir} knows as PLUS.) 
+ 
+ 
+{title:Options}
+ 
+{p 4 8 2}{cmd:all} specifies that all packages satisfying the criteria should
+be shown and not just the last installed with each distinct name. 
+ 
+{p 4 8 2}{it:list_options} are options of {help list} other than {cmd:noobs}. 
+
+
+{title:Examples}
+
+{p 4 8 2}{inp:. mypkg}
+
+{p 4 8 2}{inp:. mypkg ts* xt*} 
+
+{p 4 8 2}{inp:. mypkg parmest}
+
+{p 4 8 2}{inp:. mypkg parmest, all}
+
+
+{title:Author} 
+
+        Nicholas J. Cox, University of Durham, U.K.
+        n.j.cox@durham.ac.uk
+
+
+{title:Acknowledgements} 
+
+        {p 8 8}Fred Wolfe suggested this problem. He and Lee Sieswerda
+	provided valuable feedback during development. 
+ 
+ 
+{title:Also see}
+
+{p 0 19}On-line:  help for {help net}; {help ssc}; {help sysdir}; {help list}{p_end}
+

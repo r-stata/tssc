@@ -1,0 +1,142 @@
+* developed by E. F. Haghish - 2018
+
+VERSION 14
+POSITION . . 400 420
+
+LIST file_ext
+BEGIN
+	do-file
+	ado-file
+END
+
+LIST file_style
+BEGIN
+	Complete
+	Basic
+END
+
+
+DIALOG d, label("dotemplate - Create template for Stata files") 
+BEGIN				 
+	
+	//---------------------
+	// File content
+	//---------------------
+	
+	// select installable files
+	TEXT tx_doinfo  10  10  . ., label("File information")
+	
+	// Type of file
+	TEXT tx_fext  10   +20  . 290, label("File ext")
+	COMBOBOX adofile  100    @  85  .  , dropdownlist /* 
+	 */ contents(file_ext)
+	
+	// Style of file
+	TEXT tx_fstyle  10   +25  . 290, label("Style")
+	COMBOBOX type  100    @  85  .  , dropdownlist /* 
+	 */ contents(file_style) option(type)
+
+	// Name of the file
+	TEXT tx_name 10 +25 . ., label("File name*")
+	EDIT file    100 @ 290 19 , default("") option(file)
+	
+	// Objective of the document
+	TEXT tx_obj 10 +20 . ., label("Objective")
+	EDIT project    100 @ 290 19, default("") option(project)
+	
+	// Number of seciton
+	TEXT tx_sec   10 +20 . ., label("# Sections")
+	EDIT sections  100 @ 120 19, default("") option(sections)
+	TEXT tx_sec2  230 @ . ., label("Integer")
+
+	// Number of subsections
+	TEXT tx_sub 10 +20 . ., label("# Subsections")
+	EDIT steps    100 @ 120 19, default("") option(steps)
+	TEXT tx_sub2  230 @ . ., label("Integer")
+	
+	// Path
+	TEXT tx_dir  10   +20  . 290, label("Directory path")
+	FILE path    100    @  200  .  , label("Browse ...")        ///
+        directory option(path)
+	
+	//---------------------
+	// Author information
+	//---------------------
+	TEXT tx_autinfo  10   +30  . ., label("Author information")
+	
+	// Author of the document
+	TEXT tx_author 10 +20 . +59, label("Author")
+	EDIT author 100 @ 290 19, option(author)  
+	
+	// E-mail
+	TEXT tx_email 10 +20 . ., label("e-mail")
+	EDIT email 100 @ 290 19, option(email)
+	 
+	// Affiliation
+	TEXT tx_affiliation 10 +20 . ., label("Affiliation")
+	EDIT depend 100 @ 290 19 , option(depend)
+	 
+	// URL
+	TEXT tx_url 10 +20 . ., label("url link")
+	EDIT url 100 @ 290 19  , option(url)
+		
+		
+	//---------------------
+	// Additional options
+	//---------------------
+	TEXT tx_addinfo  10   +30  . ., label("Additional options")
+		
+	// log
+	CHECKBOX log  10  +20   @   .  , option(log) default(0) ///
+	         label("Create log file") 
+	// replace
+	CHECKBOX replace  10  +20   @   .  , option(replace) default(0) ///
+	         label("replace") 
+	
+	// required
+	TEXT tx_required  10   +40  . 290, label("* stared items are required")
+	
+END
+
+OK ok1,      label("OK")
+CANCEL can1, label("Cancel")
+SUBMIT sub1, label("Submit")
+HELP hlp1,   view("help usersite")
+RESET res1
+COPY copy1
+
+
+// ---------------------------------------------------------
+// MAKE COMMAND
+// =========================================================
+PROGRAM command
+BEGIN
+	
+	// checks
+	if (!d.file | d.file.iseq("")) {
+		stopbox stop "Name of the file is required"
+	}
+	
+	
+	
+ put "dotemplate"
+ put ", "
+     	optionarg d.type
+     	optionarg d.file
+			optionarg d.project
+			optionarg d.sections
+			optionarg d.steps
+			optionarg d.path
+			optionarg d.author
+			optionarg d.depend
+			optionarg d.email
+			optionarg d.url
+			option d.log
+			option d.replace
+  
+	if (d.adofile.iseq("ado-file")) {
+			put "adofile"
+	}
+
+END
+

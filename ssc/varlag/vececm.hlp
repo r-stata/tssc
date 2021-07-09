@@ -1,0 +1,382 @@
+{smcl}
+{* 19dec2002}{...}
+{hline}
+help for {hi:vececm}{right:[P.Joly]}
+{hline}
+
+{title:Vector error correction models (ECMs)}
+
+{p 8 25}
+{cmd:vececm}
+[{cmd:if} {it:exp}]
+[{cmd:in} {it:range}]
+{cmd:,}
+    {cmdab:c:ir(}{it:#}{cmd:)}
+    {cmd:sm(}{it:case}{cmd:)}
+[
+    {cmdab:l:ags(}{it:#}{cmd:)}
+    {cmd:wn}
+    {cmdab:cor:r}
+    {cmdab:testl:ag(}{it:#}{cmd:)}
+    {cmd:large}
+    {cmdab:noh:eader}
+    {cmdab:not:able}
+    {cmdab:m:atrices}
+    {cmdab:l:evel(}{it:#}{cmd:)}
+]
+
+
+{p}
+{cmd:vececm} is for use after {cmd:johans}.  You must run {cmd:johans}
+prior to using {cmd:vececm}; see help {help johans}.
+
+{p}
+{cmd:vececm} is for use with time-series data.  You must {cmd:tsset}
+your data before using this commands; see help {help tsset}.
+
+{p}
+{cmd:vececm} shares the features of all estimation commands; see help
+{help est}.
+The only non-standard feature is that, since {cmd:vececm} does not
+allow a varlist, the display of previously estimated results only
+occurs when the user omits options {cmd:cir()} and {cmd:sm()},
+normally required.
+
+
+{p}The syntax of {help predict} following {cmd:vececm} is
+
+{p 8 29}
+{cmd:predict}
+[[{it:type}] {it:newvarname}]
+[{cmd:if} {it:exp}]
+[{cmd:in} {it:range}]
+[{cmd:,}
+    {it:statistic}
+    {c -(}{cmdab:s:uffix(}{it:string}{cmd:)}{c |}{cmdab:p:refix(}{it:string}{cmd:)}{c )-}
+    {cmdab:d:ynamic(}{it:time_constant}{cmd:)}
+    {cmdab:eq:uation(}{it:eqno}{cmd:)}
+    {cmdab:t:ype(byte}{c |}{cmd:int}{c |}{cmd:long}{c |}{cmd:float}{c |}{cmd:double)}
+    {cmd:set(}{it:setvarlist}{cmd:)}
+]
+
+{p}where {it:statistic} is
+
+{p 8 30}{cmd:xb}{space 16}predicted values for the model, the default{p_end}
+{p 8 30}{cmd:y}{space 17}predicted values in y -- the fitted values in terms of levels of the dependent variable, that is, stripped of any time-series operator{p_end}
+{p 8 30}{cmdab:r:esiduals}{space 9}residuals or predicted innovations{p_end}
+{p 8 30}{cmdab:yr:esiduals}{space 8}residuals or predicted innovations in y -- where the dependent variable is converted to levels{p_end}
+{p 8 30}{cmd:stdp}{space 14}standard error of the prediction{p_end}
+
+{p}and {it:time_constant} is a {it:#} or a time literal such as
+{cmd:d(1jan1995)} or {cmd:q(1995q1)}, etc.; see help {help tfcn}.
+
+{p}These statistics are available both in and out of sample; type
+{cmd:predict} {it:...} {cmd:if e(sample)} {it:...} if wanted only for the estimation sample.
+
+
+{title:Description}
+
+{p}
+{cmd:vececm} estimates a vector error correction model (ECM) after one
+or more cointegrating vectors have been identified using Johansen's
+maximum-likelihood cointegration rank test (see help {help johans}).
+{cmd:vececm} uses the estimates of the cointegrating vectors as
+calculated by {cmd:johans} (the {it:beta'} matrix) to compute the
+value of each vector.
+Each vector then appears in the system estimates constrained
+by the value of its corresponding weight (given by the {it:alpha}
+matrix) in each equation.
+{cmd:vececm} doesn't allow a varlist as it simply uses the one
+specified at {cmd:johans}.
+
+{p}
+The user must specify the appropriate statistical model for the form
+of the deterministic components (the polynomial in time) based on the
+{it:Decision Table} in Osterwald-Lenum (1992); see {hi:References} and
+option {cmd:sm()}.
+Caution should be exercised when specifying the form of this
+polynomial in time since the selection of a specific model amounts to
+imposing certain restrictions on the system of equations.
+If the true model is different from the one specified, estimation may
+yield implausible results such as negative R-squared statistics.
+
+
+{title:Options}
+
+{p 0 4}
+{cmd:cir(}{it:#}{cmd:)} indicates the number of cointegrating
+relationships or vectors as inferred after the cointegration rank test
+(see help {help johans}).
+
+{p 0 4}
+{cmd:sm(}{it:case}{cmd:)} refers to the statistical model and
+specifies the assumption regarding the form of the deterministic
+component in the ECM.
+The possible cases are outlined in Osterwald-Lenum (1992) (see
+{hi:References}).
+Specifically, {it:case} is an integer (possibly with an asterisk)
+corresponding to the number of terms comprised in the polynomial
+in time {hi:_cons} + {hi:b}*{hi:trend} (where {hi:trend} is a linear
+trend) within the reduced-form VAR representation of the ECM -- that
+is, where the vector of dependent variables on the left-hand side
+is represented in differenced-form.
+{it:case} must be one of 0, 1, 1*, 2, or 2* where
+
+{p 4}{it:If no trend in data}{p_end}
+{p 10 18 }{bind:0    -->   no deterministic component}{p_end}
+{p 10 18 }{bind:1*   -->   constant within CE only}{p_end}
+{p 4}{it:If linear trend in data}{p_end}
+{p 10 18 }{bind:1    -->   constant in VAR}{p_end}
+{p 10 18 }{bind:2*   -->   constant in VAR, trend within CE only}{p_end}
+{p 4}{it:If quadratic trend in data}{p_end}
+{p 10 18 }{bind:2    -->   constant and trend in VAR}{p_end}
+
+{p 4 4}
+where CE stands for cointegrating equation(s) and VAR refers to the
+vector autoregression portion of the ECM, i.e. that part of the system
+which lies outside any CE.
+
+{p 4 4}
+{cmd:sm(0)} is rarely used.  Novice users should probably limit
+themselves to {cmd:sm(1)}.
+
+{p 0 4}
+{cmd:lags(}{it:#}{cmd:)} specifies the number of lags of the
+endogenous variable to include in the original VAR (representation in
+levels); there is one fewer lag in the reduced-form difference
+representation.
+
+{p 0 4}
+{cmd:restricted(}{it:numlist}{cmd:)} imposes restrictions on one or
+more of the cointegrating vectors.
+({cmd:lrjtest} with option {cmd:restrict} must have been previously
+conducted.)
+{it:numlist} refers to those specific vectors which are to be
+restricted, that is, type {cmd:restricted(2 4)} to use restricted
+vectors 2 and 4 as computed by {cmd:lrjtest}.
+
+{p 0 4}
+{cmd:wn} requests the calculation of the multivariate Ljung-Box
+portmanteau (or Q) test for white noise residuals.
+
+{p 0 4}
+{cmd:testlag(}{it:#}{cmd:)} is relevant only with {cmd:wn} and
+specifies the largest lag length to consider for the multivariate
+portmanteau statistic.
+The default is {it:min}([N/2]-2,40).
+
+{p 0 4}
+{cmd:corr} displays the correlation matrix of the residuals between
+equations and performs a Breusch-Pagan test for independent equations,
+i.e., that the disturbance covariance matrix is diagonal.
+
+{p 0 4}
+{cmd:large} specifies that large sample statistics are to be computed,
+rather than small.
+It shifts the test statistics from F statistics and t-statistics to
+chi-squared and Z statistics and uses the number of sample
+observations, {it:T}, as a divisor in computing the covariance matrix
+for the equation errors rather than alternate divisor, {it:T-K}.
+As an asymptotically justified estimator, {cmd:vececm} may use large
+sample statistics.
+
+{p 0 4}
+{cmd:matrices} requests the display of the Alpha and Beta'
+factorisation of the cointegrating matrix.
+
+{p 0 4}
+{cmd:notable} suppresses display of the coefficient table.
+
+{p 0 4}
+{cmd:noheader} suppresses display of the header reporting the
+estimation method and the table of equation summary statistics.
+
+{p 0 4}
+{cmd:level(}{it:#}{cmd:)} specifies the confidence level, in percent,
+for confidence intervals of the coefficients; see help {help level}.
+
+
+{title:Options for {help predict}}
+
+{p 0 4}
+{cmd:xb} the default, calculates the predictions from the estimated
+model. If {cmd:D.}{it:depvar} is the dependent variable for a given
+equation, these predictions are of {cmd:D.}{it:depvar} and not
+{it:depvar}.
+
+{p 0 4}
+{cmd:y} specifies that predictions of {it:depvar} are to be made in
+terms of the dependent variable once stripped of any time-series
+operator.
+For instance, if the dependent variable were {cmd:D.}{it:depvar},
+{cmd:L.}{it:depvar}, or even {cmd:L2D2S3.}{it:depvar}, predictions
+would be of {it:depvar} itself and not of {cmd:D.}{it:depvar},
+{cmd:L.}{it:depvar}, or {cmd:L2D2S3.}{it:depvar}.
+
+{p 0 4}
+{cmd:residuals} calculates the residuals.
+
+{p 0 4}
+{cmd:yresiduals} calculates the residuals in terms of {it:depvar},
+even if the model was specified in terms of, say, {cmd:D.}{it:depvar}
+(see option {cmd:y}).
+
+{p 0 4}
+{cmd:stdp} calculates the standard error of the prediction (may not
+be combined with {cmd:dynamic()}.
+
+{p 0 4}
+{cmd:equation(}{it:eqno}{cmd:)} specifies to which
+equation you are referring and is relevant only with {it:newvarname}.
+{cmd:equation(#1)} would mean the calculation is to be made for the
+first equation, {cmd:equation(#2)} would mean the second, and so on.
+Alternatively, you could refer to the equations by their names.
+{cmd:equation(income)} would refer to the equation named income and
+{cmd:equation(hours)} to the equation named hours.
+
+{p 4 4}
+If you do not specify {cmd:equation()}, it is as if you specified
+{cmd:equation(#1)}.
+
+{p 0 4}
+{cmd:suffix(}{it:string}{cmd:)} will cause {cmd:predict} to generate
+{it:statistic} for all equations in the system at once.
+The base name (i.e. the name without time-series operators) of each
+dependent variable  in the system will be used as a stub name and
+{it:string} will be apposed as a suffix in generating a name for each
+predicted series.
+{it:newvarname} should not be specified if {cmd:suffix} is invoked.
+
+{p 0 4}
+{cmd:prefix(}{it:string}{cmd:)} is identical to {cmd:suffix()} but
+apposes a prefix to each stub name rather than a suffix.
+
+{p 0 4}
+{cmd:dynamic(}{it:time_constant}{cmd:)} specifies how lags of y in the
+model are to be handled.
+If {cmd:dynamic()} is not specified, actual values are used everywhere
+lagged values of y appear in the model to produce one-step ahead
+forecasts.
+
+{p 4 4}
+{cmd:dynamic(}{it:time_constant}{cmd:)} produces dynamic (also known
+as recursive) forecasts.
+{it:time_constant} specifies when the forecast is to switch from
+one-step ahead to dynamic.
+In dynamic forecasts, references to y evaluate to the prediction of y
+for all periods at or after {it:time_constant}; they evaluate to the
+actual value of y for all prior periods.
+
+{p 0 4}
+{cmd:set(}{it:setvarlist}{cmd:)} is only allowed with {cmd:dynamic()}
+and may be used to generate scenarios such as pre-determining, either
+arbitrarily or from some other forecast/estimator, the predicted
+values of one or more of the endogenous variables in the VAR or ECM.
+For instance, one may want to forecast the system vector conditional
+on certain a priori assumptions, e.g., such that GDP will grow 2% in
+year t+1, 3% in t+2, etc.
+Predicted values of the conditioning variables must already be defined
+for the length of the forecast horizon.
+Variables in {it:setvarlist} must be a subset of those in
+{cmd:johans}'s {it:varlist} and must contain time-series operators if
+corresponding variables in {it:varlist} contained operators.
+Predictions will only be generated for variables that do not figure in
+{it:setvarlist} since predictions on the latter are already defined, by
+construct.
+
+{p 0 4}
+{cmd:type(byte}{c |}{cmd:int}{c |}{cmd:long}{c |}{cmd:float}{c |}{cmd:double)}
+specifies the storage type of the predicted values and is useful when
+generating predictions for all equations (since {it:type}
+{it:newvarname} cannot be specified in this case).
+Otherwise, the default storage type is used, see help {help generate}
+and {help datatypes}.
+{cmd:type()} overrides any other storage type specification.
+
+
+{title:Examples}
+
+{p 8 12}{inp:. * 1 - General}{p_end}
+{p 8 12}{inp:.} {stata "use http://fmwww.bc.edu/ec-p/data/macro/wgmacro.dta, clear":use http://fmwww.bc.edu/ec-p/data/macro/wgmacro.dta, clear}{p_end}
+{p 8 12}{inp:. johans investment income consumption, lags(4)}{p_end}
+{p 8 12}{inp:. vececm, cir(1) sm(1) lags(3)}{p_end}
+{p 8 12}{inp:. predict, suffix(hat) y}{p_end}
+{p 8 12}{inp:. predict fit, eq(#2) y}
+
+{p 8 12}{inp:. * 2 - Zero-mean (centered) seasonal dummies}{p_end}
+{p 8 12}{inp:.} {stata "use http://fmwww.bc.edu/ec-p/data/macro/wgmacro.dta, clear":use http://fmwww.bc.edu/ec-p/data/macro/wgmacro.dta, clear}{p_end}
+{p 8 12}{inp:. forvalues i = 1/4 { gen byte q`i' = 0 }}{p_end}
+{p 8 12}{inp:. forvalues i = 1/4 { replace q`i' = 1 if quarter(dofq(qtr))==`i' }}{p_end}
+{p 8 12}{inp:. forvalues i = 1/4 { replace q`i' = q4-q`i' }}{p_end}
+{p 8 12}{inp:. johans investment income consumption, lags(4) exog(q1 q2 q3)}{p_end}
+{p 8 12}{inp:. vececm, cir(1) sm(1) lags(4)}{p_end}
+
+{p 8 12}{inp:. * 3 - Dynamic forecasts}{p_end}
+{p 8 12}{inp:.} {stata "use http://fmwww.bc.edu/ec-p/data/macro/wgmacro.dta, clear":use http://fmwww.bc.edu/ec-p/data/macro/wgmacro.dta, clear}{p_end}
+{p 8 12}{inp:. set obs 112}{p_end}
+{p 8 12}{inp:. replace qtr = qtr[_n-1]+1 if qtr==.}{p_end}
+{p 8 12}{inp:. johans investment income consumption, lags(4)}{p_end}
+{p 8 12}{inp:. vececm, cir(1) sm(1) lags(4)}{p_end}
+{p 8 12}{inp:. predict, suffix(hat) dyn(q(1983q1)) y}
+
+{p 8 12}{inp:. * 4 - Dynamic forecasts, conditional}{p_end}
+{p 8 12}{inp:.} {stata "use http://fmwww.bc.edu/ec-p/data/macro/wgmacro.dta, clear":use http://fmwww.bc.edu/ec-p/data/macro/wgmacro.dta, clear}{p_end}
+{p 8 12}{inp:. set obs 112}{p_end}
+{p 8 12}{inp:. replace qtr = qtr[_n-1]+1 if qtr==.}{p_end}
+{p 8 12}{inp:. tsset}{p_end}
+{p 8 12}{inp:. arima income, arima(2,1,1)}{p_end}
+{p 8 12}{inp:. predict incarima, dyn(q(1983q1)) y}{p_end}
+{p 8 12}{inp:. johans investment income consumption, lags(4)}{p_end}
+{p 8 12}{inp:. vececm, cir(1) sm(1) lags(4)}{p_end}
+{p 8 12}{inp:. replace income = incarima if tin(1983q1,)}{p_end}
+{p 8 12}{inp:. predict, suffix(hat) dyn(q(1983q1)) set(income) y}
+
+{p 8 12}{inp:. * 5 - Time-series operators}{p_end}
+{p 8 12}{inp:.} {stata "use http://fmwww.bc.edu/ec-p/data/macro/wgmacro.dta, clear":use http://fmwww.bc.edu/ec-p/data/macro/wgmacro.dta, clear}{p_end}
+{p 8 12}{inp:. johans l2d.investment l.income consumption, lags(4)}{p_end}
+{p 8 12}{inp:. vececm, cir(1) sm(1) lags(3)}{p_end}
+{p 8 12}{inp:. predict, suffix(hat) y}
+
+
+{title:References}
+
+{p 0 2}
+Johansen, S. (1988). "Statistical Analysis of Cointegration Vectors".
+{it:Journal of Economic Dynamics and Control}. {cmd:12}. 231-254.
+
+{p 0 2}
+Johansen, S. and K. Juselius. (1990). "Maximum Likelihood Estimation
+and Inference on Cointegration - With Applications to the Demand for
+Money". {it:Oxford Bulletin of Economics and Statistics}. {cmd:52}.
+169-210.
+
+{p 0 2}
+Osterwald-Lenum, M. (1992). "A Note with Quantiles of the Asymptotic
+Distribution of the Maximum Likelihood Cointegration Rank Test
+Statistics". {it:Oxford Bulletin of Economics and Statistics}.
+{cmd:54}. 461-472.
+
+
+{title:Author}
+
+Patrick Joly, Industry Canada
+pat.joly@utoronto.ca
+
+{p}
+The author welcomes comments/suggestions regarding this package.
+Please send via email.
+
+
+{title:Also see}
+
+{p 0 19}
+On-line:  help for
+	{help est},
+	{help postest},
+	{help johans},
+	{help vecar}, (if installed),
+	{help reg3},
+	{help mvreg},
+	{help wntstmvq} (if installed),
+	{help omninorm} (if installed)
+{p_end}

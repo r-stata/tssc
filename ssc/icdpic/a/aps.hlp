@@ -1,0 +1,229 @@
+{smcl}
+{* October 25, 2010}
+{* Version 3.0}
+help for {hi:aps}
+{hline}
+
+{title:Title}
+
+{p 4 8 2}
+{cmd:aps} -- Anatomic Profile Score
+
+
+{title:Version}
+
+{p 4 4 2}
+Version 3.0.
+
+{p 4 4 2}
+ICDPIC Version 3.0 requires STATA 8.0 or higher.  ICDPIC Version 3.0 has been tested in STATA 10 and STATA 11, but the authors believe it
+should also work without incident in STATA 8 and STATA 9.  If you have any problems using ICDPIC Version 3.0 in STATA 8 or STATA 9, please
+inform the authors.
+
+{p 4 4 2}
+ICDPIC Version 3.0 may be installed from within STATA using the {bf:ssc} command.  If you installed a previous version of ICDPIC from the SSC
+archives website using the {bf:ssc} command, we suggest that you first delete it by typing {bf:ssc uninstall icdpic} followed by
+{bf:ssc install icdpic}.  Alternatively, you may use {bf:ssc install icdpic, replace}.  See help for {help ssc}.
+
+{p 4 4 2}
+If you installed any previous ICDPIC files obtained directly from the authors, please delete them {bf:ALL} (.ado, .hlp and .dta files) to avoid
+any conflicts with ICDPIC 3.0 files.
+
+{p 4 4 2}
+Please enter complete variable names in the ICDPIC Version 3.0 dialog boxes.  Do not use abbreviations.
+
+{p 4 4 2}
+New to Version 3.0 is the addition of a dialog box (.dlg) file associated with each individual ICDPIC Version 3.0 program (.ado) file.  To access
+the ICDPIC dialog box, and all the ICDPIC programs, type: {cmd:db icdpic}.  Typing {cmd:icdpic}, as in earlier versions, will still work, but
+{bf:ONLY} with {bf:icdpic}.  For example, to access the Anatomic Profile Score program directly, type: {bf:db aps}.  Typing {bf:aps}, as in previous
+versions, will produce an error.
+
+{p 4 4 2}
+Fixed in ICDPIC Version 3.0 is the ability to use path\file names containing spaces.
+
+{p 4 4 2}
+Fixed in ICDPIC Version 3.0 is the ability to run in STATA 11.0.
+
+{p 4 4 2}
+Fixed in ICDPIC Version 3.0 is a bug that caused the {bf:triss} program to crash if the {it:rts} variable was named anything other than "rts".
+
+{p 4 4 2}
+New in ICDPIC Version 3.0 ({bf:trauma} program only) is the ability to choose whether an AIS value of 6 automatically forces an ISS of
+75 or to automatically have all AIS values of 6 changed to an AIS value of 5 and then have the ISS calculated normally.
+
+{p 4 4 2}
+All dialog boxes in ICDPIC Version 3.0 have memory.  Each time a dialog box is opened within the same STATA session, it will remember the values
+last entered.
+
+{p 4 4 2}
+All dialog boxes in ICDPIC Version 3.0 have the following buttons:
+
+{p 6 9 2}
+{it:OK} executes the program and removes the dialog box from the screen.
+
+{p 6 13 2}
+{it:SUBMIT} executes the program and leaves the dialog box on the screen.  Note that if an error message is generated the dialog box may
+be minimized.
+
+{p 6 13 2}
+{it:CANCEL} removes the dialog box from the screen and does nothing.  Clicking on the close icon of the dialog box does the same thing.
+
+{p 6 11 2}
+{it:HELP} leaves the dialog box on the screen and presents the program help file.  The {it:HELP} button has a question mark on it.
+
+{p 6 11 2}
+{it:COPY} leaves the dialog box on the screen and copies the program command to the clipboard.
+
+{p 6 12 2}
+{it:RESET} resets the values of the controls in the dialog box to their initial state, just as if the dialog box were invoked
+for the first time.  Each time a user invokes a dialog box, its controls will be filled in with the values the user last entered.
+{it:RESET} restores the control values to their defaults.  The {it:RESET} button has an R on it.
+
+
+{title:Syntax}
+
+{p 8 17 2}
+{cmd:db aps}
+
+{p 4 4 2}
+The {it:APS (Anatomic Profile Score)} dialog box will open.  Follow the instructions.  
+
+{center:{bf:{it:OR}}}
+
+{p 8 17 2}
+{cmd:db icdpic}
+
+{p 4 4 2}
+The {it:ICDPIC} dialog box will open.  Choose {it:Anatomic Profile Score} and click {it:OK} or {it:Submit}.  The {it:APS (Anatomic Profile Score)}
+dialog box will open.  Follow the instructions.  
+
+
+{title:Description}
+
+{p 4 4 2}
+{cmd:aps} calculates the anatomic profile score.  The anatomic profile score (APS) is computed from three modified
+components from three different body region groups: The mA component represents head/brain and spinal cord injures;
+the mB component represents thorax and neck injuries and; the mC component represents all other serious injuries.
+The modified components are defined as the square root of the sum of the squares of all serious injuries
+(AIS = 3, 4, 5 or 6) within their specified body region groups.  Once the modified components are determined,
+
+
+{center:APS = 0.3199(mA) + 0.4381(mB) + 0.1406(mC) + 0.7961(maxAIS)}
+
+
+{p 4 4 2}
+maxAIS is the maximum severity of all a patients injuries.
+
+{p 4 4 2}
+See also the {bf:Remarks} section for {bf:IMPORTANT} information on, and requirements for, {cmd:aps}.
+
+
+{title:Options}
+
+{p 4 4 2}
+None
+
+
+{title:Remarks}
+
+{p 4 4 2}
+The user should first run {cmd:trauma} or {cmd:icdpic} on his/her data to add anatomic profile (AP) component variables, 
+severity variables and the maxAIS variable.  See help for {help trauma} for descriptions and names of these variables. 
+
+
+{p 4 4 2}
+{cmd:aps} adds the following variables to a new copy of the user's data stored on disk:
+
+
+{p 8 12 2}
+{it:aps}: anatomic profile score {p_end}
+{p 8 12 2}
+{it:mA}: the sum of the squares of the severities of all serious injuries with AP component category A {p_end}
+{p 8 12 2}
+{it:mB}: the sum of the squares of the severities of all serious injuries with AP component category B {p_end}
+{p 8 12 2}
+{it:mC}: the sum of the squares of the severities of all serious injuries with AP component category C {p_end}
+
+
+{p 4 4 2}
+Variables {it:mA}, {it:mB}, {it:mC} and {it:aps} are rounded to the nearest 0.0001.
+
+{p 4 4 2}
+Anatomical profile scores include AIS values of 6.  Thus, it is possible to have an injury severity score of 75 and
+differing values of the anatomical profile score.  Also, it is possible to have an anatomical profile score when
+there are no serious injuries because of the term 0.7961(maxAIS) in the equation.
+
+{p 4}
+Also note:
+
+{p 4 8 2}
+1) If maxAIS is 9, variables {it:mA}, {it:mB}, {it:mC}, and {it:aps} all are assigned 99.9999.{p_end}
+{p 4 8 2}
+2) If maxAIS is any number 1 thru 6, variables {it:mA}, {it:mB}, and {it:mC} are assigned the sum of the squares of
+the severities with those AP components respectively.  The anatomical profile score is computed per the
+equation given under the {bf:Description} section.  If there are no injuries with a particular AP component value, then a
+value of 0 is assigned.{p_end}
+{p 4 8 2}  
+3) If maxAIS is 0, variables {it:mA}, {it:mB}, and {it:mC} all have the value 0 and {it:aps} has the value 0.0000. {p_end}
+
+
+{title:Examples}
+
+{p 4 8 2}
+None
+
+
+{title:Authors}
+
+{p 4}
+David E. Clark, M.D.
+
+{p 8 12 2}
+Maine Medical Center, Portland, Maine, USA {p_end}
+{p 8 12 2}
+University of Vermont College of Medicine, Burlington, Vermont, USA {p_end}
+{p 8 12 2}
+Harvard Injury Control Research Center, Harvard School of Public Health, Boston, Massachusetts, USA {p_end}
+
+{p 8}
+Correspondence to Dr. Clark, {p_end}
+{p 8}
+887 Congress Street, Portland ME 04102 {p_end}
+{p 8} 
+Email:  clarkd@mmc.org {p_end}
+
+{p 4}
+Turner M. Osler, M.D.
+
+{p 8 12 2}
+University of Vermont College of Medicine, Burlington, Vermont, USA {p_end}
+
+{p 4}
+David R. Hahn
+
+{p 8 12 2}
+Maine Medical Center, Portland, Maine, USA {p_end}
+
+
+{title:References}
+
+{p 4 8 2}
+Copes WS, Champion HR, Sacco WJ, et al. Progress in characterizing anatomic injury. {it:J Trauma} 1990;30:1200-1207.
+
+{p 4 8 2}
+Meredith JW, Evans G, Kilgo PD, et al.  A comparison of the abilities of nine scoring algorithms in predicting
+mortality. {it:J Trauma} 2002;53:621-629.
+
+
+{title:Also see}
+
+{p 4}
+help for {help trauma}
+
+{p 4}
+help for {help icdpic}
+
+{p 4}
+help for {help aps}
+
+

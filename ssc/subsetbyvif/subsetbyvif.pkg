@@ -1,0 +1,39 @@
+d 'SUBSETBYVIF': module to select a subset of covariates constrained by VIF
+d
+d   subsetByVIF selects subsets of the covariates listed in varlist
+d such that each covariate in a given subset has a VIF that is less
+d than or equal to a specified value given by viflist. We are
+d frequently faced with analyzing data sets in which the ratio of
+d covariates to patients is high. There are several approaches to
+"d analyzing such data including penalized regression methods,"
+"d k-fold cross-validation    techniques, and bagging. A problem"
+"d with any of these approaches is that, even after the elimination"
+"d of variables causing multi-collinearity, the variance-covariance"
+d matrix of the remaining covariates is often highly
+d ill-conditioned. The subsetByVIF program reduces the number of
+d covariates to the largest subsample such that the maximum VIF for
+d each variable in the subsample is less than some value specified
+d by the user. These variables are    selected without regard to
+"d the dependent variable of interest, which should mitigate"
+d problems due to overfitting.  The use of this program should
+d improve the convergence properties of many methods of exploratory
+d data analysis.
+d
+d KW: covariates
+d KW: VIF
+d KW: subset
+d KW: conditioning
+d
+d Requires: Stata version 15
+d
+d Distribution-Date: 20190428
+d
+"d Author: W. Dale Plummer, Jr., Vanderbilt University School of Medicine"
+d Support: email dale.plummer@@vanderbilt.edu
+d
+"d Author: William D. Dupont, Vanderbilt University School of Medicine"
+d Support: email william.dupont@@vanderbilt.edu
+d
+f subsetbyvif.ado
+f subsetbyvif.sthlp
+f sample_subsetbyvif.do

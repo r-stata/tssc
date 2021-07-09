@@ -1,0 +1,407 @@
+{smcl}
+{* 25oct2006}{...}
+{hline}
+help for {hi:smithwelch}
+{hline}
+
+{title:Trend decomposition of outcome differentials}
+
+{p 8 15 2}
+ {cmd:smithwelch} {it:est11} {it:est21}  {it:est12} {it:est22}
+ [{cmd:,}
+ {bind:{cmdab:b:enchmark:(}{cmd:1}|{cmd:2}|{it:est1bm} {it:est2bm}{cmd:)}}
+ {bind:{cmdab:r:eference:(}{cmd:1}|{cmd:2}|{it:estref1} {it:estref2} [{it:estrefbm}]{cmd:)}}
+ {cmdab:d:etail}[{cmd:(}{it:dlist}{cmd:)}]
+ {cmdab:a:djust:(}{it:varlist}{cmd:)}
+ {cmd:eform}
+ {cmdab:non:otes}  ]
+
+
+{p 4 4 2} where {it:dlist} is
+
+{p 15 15 2}
+ {it:name1} {cmd:=} {it:varlist1} [ {cmd:,} {it:name2} {cmd:=} {it:varlist2}
+ [{cmd:,} {it:...} ] ]
+
+
+{title:Description}
+
+{p 4 4 2}
+ {cmd:smithwelch} computes decompositions of differences in mean outcome
+ differentials. Smith and Welch (1989) used such decomposition techniques
+ in their analysis of the change in the black-white wage differential over
+ time. An alternative application would be the decomposition of country
+ differences in the male-female wage gap. Also see Lee (2000) and Heckman
+ et al. (2000).
+
+{p 4 4 2}
+{it:est11}, {it:est21}, {it:est12}, and {it:est22} specify the
+ previously fitted and stored regression estimates to be used with the
+ decomposition (see help {help estimates store}). The model estimated last
+ may be indicated by a period (.), even if it has not yet been stored.
+ {it:est11} and {it:est21} specify the group 1 estimates (e.g. male, black)
+ and the group 2 estimates (e.g. female, white) for the first sample (e.g.
+ time point 1, country A), {it:est12} and {it:est22} are the group
+ estimates for the second sample (time point 2, country B). Note that the
+ estimation samples ({cmd:e(sample)}) of the specified models determine the
+ relevant observations for the decomposition. Group 1 and group 2 must not
+ overlap.
+
+{p 4 4 2}
+ See the {help jmpierce2} package (available from the SSC archive; type
+  {net "describe http://fmwww.bc.edu/repec/bocode/j/jmpierce2":ssc describe jmpierce2})
+ for an alternative approach for the decomposition of differences in
+ differentials. See the {help oaxaca} package (type
+  {net "describe http://fmwww.bc.edu/repec/bocode/o/oaxaca":ssc describe oaxaca})
+ for a program to compute single differential decompositions.
+
+
+{title:Options}
+
+{p 4 8 2}
+ {cmd:benchmark(1}|{cmd:2}|{it:est1bm} {it:est2bm}{cmd:)} specifies (the
+ estimates for) the "benchmark" sample. {cmd:benchmark(1)} signifies that
+ sample 1 is the benchmark sample and {it:est11} and {it:est21} are the
+ benchmark estimates. Analogously, {it:est12} and {it:est22} are used as the
+ benchmark, if you specify {cmd:benchmark(2)}. Alternatively, use
+  {bind:{cmd:benchmark(}{it:est1bm} {it:est2bm}{cmd:)}} to provide the
+ estimates from another sample to be used as the benchmark (e.g. the pooled
+ sample over all time points or countries). If {cmd:benchmark()} is
+ omitted, an extended decomposition containing interaction terms for
+ simultaneous changes in endowments {it:and} coefficients is computed. See the
+ Methods and Formulas Section below.
+
+{p 4 8 2}
+ {cmd:reference(}{cmd:1}|{cmd:2}|{it:estref1} {it:estref2}
+ [{it:estrefbm}]{cmd:)} determines the reference coefficients within the
+ samples to be used with the decomposition. {cmd:reference(1)} means that
+ the coefficients from the first group (i.e. {it:est11} and {it:est12}) are
+ used; {cmd:reference(2)} uses the group 2 estimates ({it:est21} and
+ {it:est22}). Alternatively, specify
+  {bind:{cmd:reference(}{it:estref1} {it:estref2} [{it:estrefbm}]{cmd:)}}
+ to provide other reference estimates (e.g. models based on the pooled
+ samples over both groups). {it:estrefbm} is required only if
+  {bind:{cmd:benchmark(}{it:est1bm} {it:est2bm}{cmd:)}} is specified. If
+ {cmd:reference()} is omitted, an extended decomposition containing
+ interaction terms for the combined effect of differences in endowments
+ {it:and} coefficients is computed. See the Methods and Formulas Section
+ below.
+
+{p 4 8 2}
+ {cmd:detail}[{cmd:(}{it:dlist}{cmd:)}] requests that detailed
+ decomposition results for the individual regressors be reported. Use
+ {it:dlist} to subsume the results
+ for specific groups of regressors (variables not appearing in {it:dlist}
+ are listed individually). The usual shorthand conventions apply to the
+ {it:varlist}s specified in {it:dlist} (see help {it:varlist}). For
+ example, specify {cmd:detail(exp=exp*)} if the models contain {cmd:exp}
+ (experience) and {cmd:exp2} (experience squared). Note that individual
+ results concerning the effect of changes/differences in coefficients
+ may arbitrarily depend on the scaling of the regressors.
+
+{p 4 8 2}
+ {cmd:adjust(}{it:varlist}{cmd:)} may be used to adjust the outcome
+ differentials for the effects of certain variables (e.g. selection
+ variables) before computing the decomposition.
+
+{p 4 8 2}
+ {cmd:eform} causes the results to be displayed in exponentiated form.
+
+{p 4 8 2}
+ {cmd:nonotes} suppresses the display of the legend.
+
+
+
+{title:Examples}
+
+        {com}. regress lnwage educ exp exp2 if sex==0 & year==1
+        . estimates store male1
+        . regress lnwage educ exp exp2 if sex==1 & year==1
+        . estimates store female1
+        . regress lnwage educ exp exp2 if sex==0 & year==2
+        . estimates store male2
+        . regress lnwage educ exp exp2 if sex==1 & year==2
+        . estimates store female2
+        . smithwelch male1 female1 male2 female2
+        {txt}
+
+        {com}. smithwelch male1 female1 male2 female2, benchmark(1) reference(1)
+        {txt}
+
+        {com}. generate byte year2 = year==2
+        . regress lnwage educ exp exp2 year2 if sex==0 & (year==1 | year==2)
+        . estimates store male12
+        . regress lnwage educ exp exp2 year2 if sex==1 & (year==1 | year==2)
+        . estimates store female12
+        . smithwelch male1 female1 male2 female2, benchmark(male12 female12)
+        {txt}
+
+        {com}. regress lnwage educ exp exp2 if year==1
+        . estimates store pooled1
+        . regress lnwage educ exp exp2 if year==2
+        . estimates store pooled2
+        . smithwelch male1 female1 male2 female2, reference(pooled1 pooled2)
+        {txt}
+
+
+{title:Saved Results}
+
+{p 4 4 2}
+Matrices:
+
+{p 4 22 2}{cmd:r(D)}{space 14}Decomposition of individual differentials{p_end}
+{p 4 22 2}{cmd:r(DD)}{space 13}Decomposition of difference in differentials{p_end}
+{p 4 22 2}{cmd:r(b11)} ... {cmd:r(b22)} Parameter vectors{p_end}
+{p 4 22 2}{cmd:r(X11)} ... {cmd:r(X22)} Vectors of means of regressors{p_end}
+{p 4 22 2}{cmd:r(b1b)}, {cmd:r(b2b)}{space 4}Parameter vectors for benchmark
+ sample (if provided){p_end}
+{p 4 22 2}{cmd:r(br1)}, {cmd:r(br2)}{space 4}Reference parameter vectors (if
+ provided){p_end}
+{p 4 22 2}{cmd:r(brb)}{space 12}Reference parameter vector for
+ benchmark sample (if provided){p_end}
+
+
+{title:Methods and Formulas}
+
+{p 4 4 2}
+ Consider the linear model
+
+       Y_gt = X_gt'b_gt + e_gt,  E(e_gt) = 0,  g = 1,2  t = 1,2,
+
+{p 4 4 2}
+ where Y_gt is a vector of outcomes (e.g. log hourly wages) for group g at
+ time t, X_gt is the data matrix (the values of the regressors), b_gt is a
+ coefficients vector, and e_gt is the vector of residuals. The group
+ differential in mean outcome at time t can be decomposed as follows (also
+ see help {help oaxaca}, if installed):
+
+       dy_t = y_1t - y_2t = x_1t'b_1t - x_2t'b_2t
+
+            = (x_1t-x_2t)'b_2t + x_2t'(b_1t-b_2t) + (x_1t-x_2t)'(b_1t-b_2t)
+
+            =     dx_t'b_2t    +    x_2t'db_t     +       dx_t'db_t
+
+            =         E        +         C        +           EC
+
+{p 4 4 2}
+ where y_gt and x_gt symbolize group means and the "d" prefix indicates
+ group differences. Thus, the mean outcome differential is decomposed into
+ a part that is due to group differences in characteristics or "endowments"
+ (E), a part that is due to differences in coefficients (including the
+ intercept) (C), and a correction term capturing the interaction effect of
+ differences in endowments and coefficients (EC). The fist term, E,
+ measures the change in mean outcome for group 2 if, everything
+ else equal, group 2 had the group 1 endowment levels. The second term, C, measures
+ the change in mean outcome for group 2 if group 2 retained its own
+ endowment levels, but had the group 1 coefficients. The last term, EC,
+ quantifies the additional effect that is due to the combined differences in
+ in endowments and coefficients.
+
+{p 4 4 2}
+ Now suppose that we want to analyze the change in the outcome differential
+ over time (or compare the outcome differentials for different countries).
+ The change in the differential from t=1 to t=2 can be written as the sum
+ of the changes in the decomposition components E, C, and CE:
+
+        dy_2 - dy_1 = [dx_2'b_22 - dx_1'b_21] + [x_22'db_2 - x_21'db_1]
+
+                      + [dx_2'db_2 - dx_1'db_1]
+
+                    = dE + dC + dEC
+
+{p 4 4 2}
+ Each of the three terms can again be divided into a part due to changes
+ in the x's, a part due to changes in the b's, and an interaction effect
+ accounting for the simultaneous change in the x's and b's:
+
+        dE  = (dx_2-dx_1)'b_21 + dx_1'(b_22-b_21) + (dx_2-dx_1)'(b_22-b_21)
+
+        dC  = (x_22-x_21)'db_1 + x_21'(db_2-db_1) + (x_22-x_21)'(db_2-db_1)
+
+        dEC = (dx_2-dx_1)'db_1 + dx_1'(db_2-db_1) + (dx_2-dx_1)'(db_2-db_1)
+
+                     (E)               (C)                   (CE)
+
+
+{p 4 4 2}
+ {it:Specifying reference models for the group differentials}
+
+{p 4 4 2}
+ It is common practice to remove the interaction term in the
+ decomposition of the group differentials by specifying "reference"
+ coefficients to be used with the decomposition (for example, the
+ pooled estimates over both groups). Let b_rt indicate the
+ reference coefficients vector at time t. The decomposition of the outcome
+ differential at time t can then be written as:
+
+       dy_t = dx_t'b_rt + [x_1t'(b_1t-b_rt) + x_2t'(b_rt-b_2t)]
+
+            =     E     +                   C
+
+{p 4 4 2}
+ Accordingly, the difference in differentials may be expressed as
+
+        dy_2 - dy_1 = dE + dC
+
+    with
+
+        dE = (dx_2-dx_1)'b_r1 + dx_1'(b_r2-b_r1) + (dx_2-dx_1)'(b_r2-b_r1)
+
+        dC = [(x_12-x_11)'(b_11-b_r1) + (x_22-x_21)'(b_r1-b_21)]
+
+             + [x_11'((b_12-b_r2)-(b_11-b_r1))
+
+                + x_21'((b_r2-b_22)-(b_r1-b_21))]
+
+             + [(x_12-x_11)'((b_12-b_r2)-(b_11-b_r1))
+
+                + (x_22-x_21)'((b_r2-b_22)-(b_r1-b_21))]
+
+{p 4 4 2}
+ Note that the equations simplify a lot if the reference coefficients are
+ the coefficients from the first group or the second group. For example, if
+ b_rt=b_1t:
+
+        dy_t = dx_t'b_1t + x_2t'(b_1t-b_2t)
+
+        dy_2 - dy_1 = dE + dC
+
+        dE = (dx_2-dx_1)'b_11 + dx_1'(b_12-b_11) + (dx_2-dx_1)'(b_12-b_11)
+
+        dC = (x_22-x_21)'db_1 + x_21'(db_2-db_1) + (x_22-x_21)'(db_2-db_1)
+
+
+{p 4 4 2}
+ {it:Specifying a benchmark sample}
+
+{p 4 4 2}
+ Similarly, the number of terms in the decomposition of the change in
+ differentials can be reduced by specifying a "benchmark"
+ sample. Let b_1b and b_2b be the coefficient vectors from the benchmark
+ sample for group 1 and group 2. The decomposition of the difference in
+ differentials then is:
+
+        dy_2 - dy_1 = dE + dC + dEC
+
+        dE  = (dx_2-dx_1)'b_2b + [dx_2'(b_22-b_2b) + dx_1'(b_2b-b_21)]
+
+        dC  = (x_22-x_21)'db_b + [x_22'(db_2-db_b) + x_21'(db_b-db_1)]
+
+        dEC = (dx_2-dx_1)'db_b + [dx_2'(db_2-db_b) + dx_1'(db_b-db_1)]
+
+{p 4 4 2}
+ Again, the formulas simplify if one of the two time points is the benchmark.
+ For example, if b_gb=b_g1:
+
+        dE  = (dx_2-dx_1)'b_21 + dx_2'(b_22-b_21)
+
+        dC  = (x_22-x_21)'db_1 + x_22'(db_2-db_1)
+
+        dEC = (dx_2-dx_1)'db_1 + dx_2'(db_2-db_1)
+
+{p 4 4 2}
+ Note that, if the benchmark estimates are the estimates from the pooled sample
+ over both time points (or, e.g., all time points if there are more than
+ two time points), it seems reasonable to include time point dummies in the
+ models. While this is unproblematic for the decomposition of dE, it may
+ have unwanted effects on the decomposition of dC (because the year
+ dummies will appear in the first term of the decomposition of dC). A
+ better solution would be to implicitly introduce the year dummies using the
+ {help areg} command for the benchmark estimates.
+
+
+{p 4 4 2}
+ {it:Specifying reference models {sf:and} a benchmark sample}
+
+{p 4 4 2}
+ If reference and benchmark models both are specified, the formulas may be
+ written as:
+
+        dy_2 - dy_1 = dE + dC
+
+        dE = (dx_2-dx_1)'b_rb + [dx_2'(b_r2-b_rb) + dx_1'(b_rb-b_r1)]
+
+        dC = [(x_12-x_11)'(b_1b-b_rb) + (x_22-x_21)'(b_rb-b_2b)]
+
+             + [x_12'((b_12-b_r2)-(b_1b-b_rb))
+
+                + x_22'((b_r2-b_22)-(b_rb-b_2b))
+
+                + x_11'((b_1b-b_rb)-(b_11-b_r1))
+
+                + x_21'((b_rb-b_2b)-(b_r1-b_21))]
+
+{p 4 4 2}
+ where b_rb is the reference coefficients vector from the benchmark sample.
+ Using the second group estimates as the reference estimates and the
+ first time point as the benchmark yields the parametrization applied by
+ Smith and Welch (1989):
+
+        dy_2 - dy_1 = dE + dC
+
+        dE = (dx_2-dx_1)'b_21 + dx_2'(b_22-b_21)
+
+                   (1.i)            (1.iii)
+
+        dC = (x_12-x_11)'(b_11-b_21) + x_12'((b_12-b_22)-(b_11-b_21))
+
+                     (1.ii)                      (1.iv)
+
+{p 4 4 2}
+ The numbers in parentheses beneath the decomposition components
+ correspond to the equation numbers in Smith and Welch (1989:529).
+ Furthermore, note that Smith and Welch use different indices
+ (12 is 1, 22 is 2, 11 is 3, 21 is 4).
+
+
+{p 4 4 2}
+ Technical notes:
+
+{p 8 10 2}
+ - {cmd:smithwelch} does not require all models to contain the exact same
+ set of regressors. Coefficients not appearing in a model are simply
+ assumed to be zero for that model. However, it is important that all
+ regressors are defined (i.e. non-missing) for all observations used with
+ the decomposition. Thus, even if a regressor does not appear in an
+ individual model, the regressor must contain valid values for the
+ observations in the estimation sample of that model.
+
+{p 8 10 2}
+ - If the models were estimated using weighted data (see help
+  {help weight}), {cmd:smithwelch} will take account of these weights in
+ its computations of the means of the regressors.
+
+{p 8 10 2}
+ - If multiple-equation models or models with ancillary parameters are used
+ with {cmd:smithwelch}, only the first equation in {cmd:e(b)} is taken into
+ account.
+
+
+{title:References}
+
+{p 4 8 2}
+Heckman, James J., Thomas M. Lyons, Petra E. Todd (2000). Understanding
+Black-White Wage Differentials, 1960-1990. American Economic Review 90:
+344-349.
+{p_end}
+{p 4 8 2}
+Lee, Sang-Hyop (2000). On Decomposing Changes in Male-Female Wage Gap.
+Working Paper No. 00-12. University of Hawaii at Manoa.
+ {p_end}
+{p 4 8 2}
+Smith, James P., Finis R. Welch (1989). Black Economic Progress After
+Myrdal. Journal of Economic Literature 27: 519-564.
+ {p_end}
+
+
+{title:Author}
+
+{p 4 4 2}
+ Ben Jann, ETH Zurich, jann@soz.gess.ethz.ch
+
+
+{title:Also see}
+
+{p 4 13 2}
+ Online:  help for {help regress}, {help estimates}, {help jmpierce2} (if installed),
+ {help oaxaca} (if installed)

@@ -1,0 +1,36 @@
+"d 'ONESPELL': module to generate single longest spell for each unit in panel data, listwise"
+d
+d onespell produces a subset of a panel data set in which all
+d observations  on varlist are non-missing and contiguous in the
+d time dimension. If a panel unit  contains more than one such
+"d subset, the longest ""spell"" is retained.  Although performing"
+d this operation for a single variable of interest is fairly
+"d straightforward,  this routine deals with a more challenging"
+"d task: generating the single longest spell in a listwise  fashion,"
+"d across a set of variables. This applies the same logic as does,"
+"d e.g., regress: an  observation with a missing value in any"
+d variable will be deleted from the regression sample.  Some matrix
+"d software (e.g., DPD for Ox) requires that panel data be organized"
+"d in this fashion,  with each unit appearing as a single contiguous"
+d block of non-missing observations. onespell  will produce such a
+"d dataset, which after conversion to Stata version 6 format  (by,"
+"d e.g., Stat/Transfer) may be read directly by Ox. The routine has"
+d been tested with the latest  version of Ox (3.40) and the DPD
+d package (1.21). The routine makes use of N.J. Cox's -tsspell-.
+d
+d KW: panel data
+d KW: spell
+d KW: streak
+d KW: run
+d
+d Requires: Stata version 8.2
+d
+d Distribution-Date: 20050115
+d
+"d Author: Christopher F Baum, Boston College"
+d Support: email baum@@bc.edu
+d
+f onespell.ado
+f onespell.hlp
+f ./t/tsspell.ado
+f ./t/tsspell.hlp

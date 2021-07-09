@@ -1,0 +1,94 @@
+{smcl}
+{* 18-Oct2004}
+{hline}
+help for {hi:doubletofloat}
+{hline}
+
+{title:Change double-type variables to float where possible.}
+
+{p 8 17 2}
+{cmd:doubletofloat} [{it:varlist}]
+
+{title:Description}
+
+{p 4 4 2}
+This is simply a convenience, issuing {cmd:recast float} {it:varlist2}, where
+{it:varlist2} is the set of variables in {it:varlist} that are of type
+{cmd:double}.
+This has some resemblance to, and is intended to complement {cmd:compress},
+which does not include the possibility of changing {cmd:double} to
+{cmd:float}.
+
+{p 4 4 2}
+{cmd:doubletofloat} would be typically used immediately following
+{cmd:compress}, and saves you the trouble of seeking out all the remaining
+{cmd:double} variables.  There are some potental complications if you do not
+preceed it with {cmd:compress}; see notes under {bf:Remarks}.
+
+{p 4 4 2}
+If no {it:varlist} is specified, {cmd:_all} is assumed.
+
+{p 4 4 2}
+{cmd:doubletofloat} ignores variables that are not {cmd:double}.
+
+
+{title:Examples}
+
+{p 4 8 2}{cmd:. doubletofloat}{p_end}
+
+{p 4 8 2}{cmd:. doubletofloat wage income}{p_end}
+
+
+{title:Remarks}
+
+{p 4 4 2}
+This is for those instances when you have some {cmd:double} variables which
+could be stored as {cmd:float} without any loss of precision, but do require
+{cmd:float} rather than an integer type.
+Thus, there are fractional values present, but all can be represented exactly
+using {cmd:float}.  Typical values would have fractional parts involving
+halves and quarters, etc., such as in 2.5, 2.75, and 10.375.
+
+{p 4 4 2}
+It is best to use this immediately following {cmd:compress}.  If you use it
+without a preceeding {cmd:compress}, you might recast some variables to {cmd:float}
+which would otherwise become {cmd:long}, {cmd:int}, or {cmd:byte}.
+If you use it without a preceeding {cmd:compress}, but you do follow it with
+{cmd:compress}, then those variables that {cmd:compress} would have recast as
+{cmd:int} or {cmd:byte} (but not {cmd:long}) had it been called first,
+will still receive that change.
+
+{p 4 4 2}
+For a similar related program, see {help floattolong} by the same author.
+Both {cmd:doubletofloat} and {cmd:floattolong} are intended as companions to
+{cmd:compress}, and would best be used as follows:
+
+{p 4 8 2}{cmd:. compress}{p_end}
+{p 4 8 2}{cmd:. floattolong}{p_end}
+{p 4 8 2}{cmd:. doubletofloat}{p_end}
+
+{p 4 4 2}
+Note that in this sequence, the relative placement of {cmd:floattolong} is
+not critical, as long as {cmd:compress} comes before {cmd:doubletofloat}.
+(The sequence {cmd:doubletofloat}, {cmd:compress}, {cmd:floattolong} should
+also work properly, but it is easiest to remember to place {cmd:compress}
+first.)
+
+{p 4 4 2}
+In general data preparation, {cmd:doubletofloat} would usually be called
+without a {it:varlist}; there is little point in calling it with a specific
+set of variables, since you could just as well type {cmd:recast float} 
+with the same {it:varlist}.  The exception is where you use it within a
+program that generates a variable that is initially {cmd:double}, and you
+want to clean up that one variable without affecting others.
+
+
+{title:Author}
+
+{p 4 4 2}
+David Kantor, Institute for Policy Studies, Johns Hopkins University.
+Email {browse "mailto:dkantor@jhu.edu":dkantor@jhu.edu} if you observe any
+problems.
+
+{title:Also see}
+{help compress}, {help recast}, {help floattolong}, {help datatypes}

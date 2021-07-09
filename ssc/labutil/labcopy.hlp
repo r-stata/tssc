@@ -1,0 +1,103 @@
+.-
+help for ^labcopy^
+.-
+
+Copy value labels 
+-----------------
+
+    ^labcopy^ valuelabelname [ ^, f^rom^(^numlist^) t^o^(^numlist^) l^ist ] 
+
+    ^labcopy^ valuelabelname [ ^, s^wap^(^#1 #2^) l^ist ]  
+
+Description
+-----------
+
+^labcopy^ copies specified value labels from value label valuelabelname.
+
+There are two syntaxes, for mapping value labels (copying from one set of 
+labels to another set) and for swapping value labels (interchanging the 
+labels associated with two values). 
+
+The ^label define^ ... ^, modify^ command that executes the copying is 
+echoed to the monitor. 
+
+
+Remarks
+-------
+
+Suppose that variable ^gender^ is coded ^0^ for male and ^1^ for female by 
+
+^label def gender 0 "male" 1 "female"^ 
+^label val gender gender^ 
+
+but we find it convenient to reverse the coding: 
+
+^replace gender = 1 - gender^ 
+
+We need to reverse the value labels. Slow but sure is 
+
+^label def gender 0 "female" 1 "male", modify^ 
+
+An alternative is 
+
+^labcopy gender, s(0 1)^ 
+
+Suppose we have a set of labels 
+
+^label def rating 1 "poor" 2 "fair" 3 "OK" 4 "good" 5 "excellent"^ 
+
+and we wish to reverse the labelling. This is done by 
+
+^labcopy rating, f(1/5) t(5/1)^ 
+
+
+Options
+-------
+
+^from(^numlist^)^ specifies a numlist of integers whose value labels are 
+    to be copied. These labels will not be changed unless an element of the 
+    numlist also appears in ^to( )^. 
+
+^to(^numlist^)^ specifies a numlist of integers whose value labels are to 
+    be defined. Existing value labels are modified. 
+
+^from( )^ and ^to( )^ must contain the same number of elements after expansion. 
+
+All replacements take place independently. Thus ^from(2 1) to(1 2)^ would 
+swap value labels associated with 1 and 2: the label of 2 becomes that of 
+1, and vice versa. (^swap(1 2)^ would in practice be the way to do this.) 
+
+^swap(^#1 #2^)^ specifies two non-negative integers possessing value labels 
+    under valuelabelname whose labels are to be swapped. 
+
+^list^ invokes ^label list^ valuelabelname after the changes produced. 
+    
+    
+Examples
+--------
+
+    . ^labcopy gender, s(0 1)^
+    . ^labcopy rating, f(1/5) t(5/1)^
+    . ^labcopy foo, f(1 1 1 1) t(2/5)^ 
+
+
+Author
+------
+
+         Nicholas J. Cox, University of Durham, U.K.
+         n.j.cox@@durham.ac.uk
+
+
+Acknowledgements
+----------------
+
+    Fred Wolfe made interesting and helpful comments. 
+
+
+Also see
+--------
+
+On-line: help for @label@, @numlist@, @recode@, @labedit@ (if installed),
+         @labdel@ (if installed) 
+ Manual: ^[U] 15.6^, ^[R] label^, ^[R] recode^
+

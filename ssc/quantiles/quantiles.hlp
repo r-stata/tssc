@@ -1,0 +1,106 @@
+{smcl}
+{* 09feb2006}{...}
+{hline}
+help for {hi:quantiles}
+{hline}
+
+{title:Categorize by quantiles}
+
+{p 8 18 2}{cmd:quantiles} {it:varname} [{it:weight}] [{cmd:if} {it:exp}] [{cmd:in} {it:range}], {cmdab:gen:catvar(}{it:newvar}{cmd:)} [{cmdab:n:quant(}{it:#}{cmd:)} {cmdab:k:eeptog(}{it:varname}{cmd:)} {cmdab:s:table}]
+
+
+{p 4 4 2}
+{cmd:by} {it:...} {cmd::} may be used with {cmd:quantiles}; see help {help by}.
+
+{p 4 4 2}
+{cmd:fweight}, {cmd:aweight} and {cmd:iweight} are allowed; see help {help weights}.
+
+
+{title:Description} 
+
+{p 4 4 2}
+{cmd:quantiles} creates a new variable ({it:newvar}) that categorizes {it:varname} by its quantiles. It differs from {help xtile} because the categories are defined by the ideal size of the quantile rather than by the cutpoints, therefore
+ yielding less unequaly sized categories when the cutpoint value is frequent, when using weights or when the number of observations in the dataset is not a product of the number of quantiles. It may not work properly on small datasets or if
+ calculated for small groups. If the number of observations in the dataset or group is small, {help tabulate} {it:newvar} afterwards to check the results.
+
+
+{title:Options}
+
+{p 4 8 2}
+{cmdab:gen:catvar(}{it:newvar}{cmd:)} specifies the new variable to be generated. 
+
+{p 4 8 2}
+{cmdab:n:quant(}{it:#}{cmd:)} specifies the number of quantiles; {it:#} must be an integer and greater than or equal to 2. If not specified default is 10 quantiles.
+
+{p 4 8 2}
+{cmdab:k:eeptog(}{it:varname}{cmd:)} specifies that all cases within a group defined by {it:varname} should be kept together in the same quantile. This option might make more unequal the size of the quantiles. Useful, for instance, when working
+ with household surveys to avoid having members of a single household belonging to different quantiles.
+
+{p 4 8 2}
+{cmdab:s:table} specifies that the internal sort will use the stable option of the {help sort} command.
+
+
+{title:Examples}
+
+{p 4 4 2}
+{cmd:. quantiles ypercap, gen(deciles)}{break}
+{cmd:. quantiles ypercap [w=weight], gen(tenths)}{break}
+{cmd:. quantiles ypercap [w=weight], gen(fifths) n(5)}{break}
+{cmd:. quantiles ypercap [w=weight], gen(hundredths) n(100) k(hhkey)}{break}
+{cmd:. bysort econact: quantiles ylabtot [w=weight], gen(tenthlab)}{break}
+{cmd:. quantiles ypercap [w=weight] if literacy==1, gen(centlite) n(100)}{break}
+
+{p 4 4 2}
+For the sake of comparison, see below the result of categorizing the weighted distribution of main occupation's earnings from the Brazilian 2005 National Household Survey using {help xtile} and using quantiles
+
+{help xtile}:
+
+ymainoccu   |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          1 | 10,253,932       12.05       12.05
+          2 |  6,877,819        8.08       20.14
+          3 |  8,392,821        9.87       30.00
+          4 | 11,396,936       13.40       43.40
+          5 |  9,535,935       11.21       54.61
+          6 |  4,600,509        5.41       60.02
+          7 | 10,515,418       12.36       72.38
+          8 |  6,738,072        7.92       80.30
+          9 |  9,694,872       11.40       91.69
+         10 |  7,066,854        8.31      100.00
+------------+-----------------------------------
+      Total | 85,073,168      100.00
+
+
+quantiles:
+
+ymainoccu   |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          1 |  8,507,057       10.00       10.00
+          2 |  8,507,047       10.00       20.00
+          3 |  8,507,667       10.00       30.00
+          4 |  8,506,796       10.00       40.00
+          5 |  8,507,913       10.00       50.00
+          6 |  8,507,231       10.00       60.00
+          7 |  8,507,440       10.00       70.00
+          8 |  8,507,315       10.00       80.00
+          9 |  8,506,894       10.00       90.00
+         10 |  8,507,808       10.00      100.00
+------------+-----------------------------------
+      Total | 85,073,168      100.00
+
+
+{title:Author}
+
+{p 8 8 2}
+Rafael Guerreiro Osorio{break}
+International Poverty Centre/UNDP{break}
+http://www.undp-povertycentre.org/{break}
+SBS Quadra 01 Bloco J Ed. BNDES 10º Andar{break}
+700076-900, Brasilia, DF, BRAZIL
+
+
+{title:Also see}
+
+{p 4 13 2}
+Online:  help for {help pctile}, {help centile}, {help summarize}
+

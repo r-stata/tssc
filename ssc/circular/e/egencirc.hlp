@@ -1,0 +1,140 @@
+{smcl}
+{* 6may2004}{...}
+{hline}
+help for {hi:egencirc}
+{hline}
+
+{title:Extensions to generate (circular functions)}
+
+{p 8 30 2}{cmd:egen} [{it:type}] {it:newvar} {cmd:=}
+{it:fcn}{cmd:(}{it:arguments}{cmd:)} [{cmd:if} {it:exp}] [{cmd:in} {it:range}]
+[{cmd:,} {it:options}]
+
+
+{title:Description}
+
+{p 4 4 2}
+{cmd:egen} creates {it:newvar} of the optionally specified storage type
+equal to {it:fcn}{cmd:(}{it:arguments}{cmd:)}.  Depending on {it:fcn()},
+{it:arguments}, if present, refers to an expression, {it:varlist}, or a
+{it:numlist} and the {it:options} are similarly {it:fcn} dependent. 
+
+{p 4 4 2}
+This help file documents various user-written {cmd:egen} functions
+for use with circular variables, usually measured on a scale from 0 to 360 
+degrees. 
+
+
+{title:{cmd:egen} functions}
+
+{p 4 8 2}{cmd:atan2(}{it:sinevar cosinevar}{cmd:)} [ {cmd:,} {cmdab:rad:ians} ]
+returns the arctangent of two variables {it:sinevar} and {it:cosinevar} as a
+angle in the range 0 to 360 degrees.  The option {cmd:radians} specifies that
+the results should be in radians. 
+
+{p 4 8 2}{cmd:invvm(}{it:exp}{cmd:)} [{cmd:,} {cmdab:k:appa(}{it:#}{cmd:)}
+{cmd:tol(}{it:#}{cmd:)} {cmd:log} {cmdab:rad:ians} ] returns the inverse
+distribution function (quantile function) of a variable following a von Mises
+distribution with vector mean zero and concentration parameter specified by the
+{cmd:kappa()} option as angles in the range -180 to 180 degrees, and as a
+function of an expression giving cumulative probabilities and so taking values
+between 0 and 1.  If {cmd:kappa()} is not specified, the function looks for
+{cmd:r(kappa)}, as is left in memory by {help circvm}. The quantile function is
+calculated using the {cmd:vm()} function documented below and an algorithm
+given by Fisher (1993, p.53). (Note that the steps of that algorithm should be
+numbered 1 to 4, contrary to early printings of Fisher 1993.) The default
+tolerance for that algorithm is 1e-6. This may be varied by the {cmd:tol()}
+option.  The {cmd:log} option may be used to see a display of the maximum error
+of approximation as the algorithm proceeds, as a check on convergence.
+{cmd:tol} and {cmd:log()} are technical options and are rarely used.  The
+option {cmd:radians} specifies that the results should be in radians. 
+
+{p 4 8 2}{cmd:rndvm(}{cmd:),} [{cmd:,} {cmdab:k:appa(}{it:#}{cmd:)}
+{cmdab:m:u(}{it:#}{cmd:)} {cmdab:rad:ians} ] returns a random sample from a von
+Mises distribution with vector mean specified by the {cmd:mu()} option and
+concentration parameter specified by the {cmd:kappa()} option, as angles in the
+range 0 to 360 degrees. Note that no argument is required or allowed.  If
+{cmd:mu()} is not specified, the function looks for {cmd:r(vecmean)}, as is
+left in memory by {help circvm}; if that is not found, a value of 0 is assumed.
+Any argument of {cmd:mu()} should be in degrees.  If {cmd:kappa()} is not
+specified, the function looks for {cmd:r(kappa)}, as is left in memory by 
+{help circvm}. The random sample is calculated using an algorithm introduced by 
+Best and Fisher (1979) and given by Fisher (1993, p.49) and Mardia and Jupp
+(2000, p.43). The option {cmd:radians} specifies that the results should be in
+radians. 
+ 
+{p 4 8 2}{cmd:vm(}{it:varname}{cmd:),} [{cmd:,} {cmdab:k:appa(}{it:#}{cmd:)}
+{cmdab:m:u(}{it:#}{cmd:)} {cmdab:rad:ians} ] returns the cumulative
+distribution function of a von Mises distribution with vector mean specified by
+the {cmd:mu()} option and concentration parameter specified by the
+{cmd:kappa()} option, given angles in the range 0 to 360 degrees.  If
+{cmd:mu()} is not specified, the function looks for {cmd:r(vecmean)}, as is
+left in memory by {help circvm}; if that is not found, a value of 0 is assumed.
+Any argument of {cmd:mu()} should be in degrees, unless the {cmd:radians}
+option is also specified.  If {cmd:kappa()} is not specified, the function
+looks for {cmd:r(kappa)}, as is left in memory by {help circvm}. The
+distribution function is calculated using an algorithm discussed and implemented
+in Fortran by Hill (1976, 1977), using choices of constants to ensure 
+accuracy to 8 decimal places (see Hill 1977, p.280). 
+The option {cmd:radians} specifies that the inputs are in radians. 
+
+{p 4 8 2}{cmd:vmden(}{it:varname}{cmd:)} [{cmd:,} {cmdab:k:appa(}{it:#}{cmd:)}
+{cmdab:m:u(}{it:#}{cmd:)} {cmdab:rad:ians} ] returns the 
+density function of a von Mises distribution with vector mean specified by
+the {cmd:mu()} option and concentration parameter specified by the
+{cmd:kappa()} option, given angles in the range 0 to 360 degrees.  If
+{cmd:mu()} is not specified, the function looks for {cmd:r(vecmean)}, as is
+left in memory by {help circvm}; if that is not found, a value of 0 is assumed.
+Any argument of {cmd:mu()} should be in degrees, unless the {cmd:radians}
+option is also specified.  If {cmd:kappa()} is not specified, the function
+looks for {cmd:r(kappa)}, as is left in memory by {help circvm}. 
+The option {cmd:radians} specifies that the inputs are in radians. 
+
+
+{title:Remarks} 
+   
+{p 4 4 2}{cmd:invvm()} and {cmd:vmden()} use the calculator 
+function {help i0kappa}. 
+
+
+{title:Examples}
+
+{p 4 8 2}{cmd:. egen angle = atan2(sine cosine)}
+
+{p 4 8 2}{cmd:. circvm wallasp}{p_end}
+{p 4 8 2}{cmd:. egen rndvm = rndvm()}{p_end}
+{p 4 8 2}{cmd:. egen Fvm = vm(wallasp)}{p_end}
+{p 4 8 2}{cmd:. egen vmden = vmden(wallasp)}{p_end}
+
+
+{title:Author} 
+
+{p 4 4 2}Nicholas J. Cox, University of Durham, U.K.{break}
+         n.j.cox@durham.ac.uk
+
+
+{title:References}
+
+{p 4 8 2}Best, D.J. and Fisher, N.I. 1979. 
+Efficient simulation of the von Mises distribution. 
+{it:Applied Statistics} 28: 152--157. 
+
+{p 4 8 2}Fisher, N.I. 1993. {it:Statistical analysis of circular data.} 
+Cambridge: Cambridge University Press.
+
+{p 4 8 2}Hill, G.W. 1976. New approximations to the von Mises distribution. 
+{it:Biometrika} 63: 673--676. (Erratum 1997, 64: 655.) 
+
+{p 4 8 2}Hill, G.W. 1977. ALGORITHM 518: Incomplete Bessel function I_0:
+the von Mises distribution. {it:ACM Transactions on Mathematical Software}
+3: 279--284. 
+
+{p 4 8 2}Mardia, K.V. and Jupp, P.E. 2000. {it:Directional statistics.}
+Chichester: John Wiley.
+
+
+{title:Also see}
+
+    Manual:  {hi:[R] egen}
+
+{p 4 13 2}Online:  help for {help circular}, {help circvm}, {help i0kappa} 

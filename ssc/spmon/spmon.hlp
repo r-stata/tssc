@@ -1,0 +1,157 @@
+{smcl}
+{* *! version 3.0 20march2010}{...}
+{cmd:help spmon}
+{hline}
+
+{title:Title}
+
+{title:spmon - Creates spatial effect variable for {it}monadic{bf} data}
+
+
+{title:Syntax}
+
+{phang}
+
+{p 8 17 2}
+{cmdab:spmon}
+lagvar {ifin}, {opt w:eightvar(varname)} {opt i(varname)} {opt k(varname)} 
+ [{cmd:}{it:options}]
+
+
+{synoptset 20 tabbed}{...}
+{synopthdr}
+{synoptline}
+{synopt:{opt time(varname)}}contains the numeric time variable{p_end}
+{synopt:{opt rev:erse_W}}revert the direction of weight variable{p_end}
+{synopt:{opt nor:owst}}spatial effect variable not row-standardized{p_end}
+{synopt:{opt nom:erge}}no automatic merge of spatial effect variable into original dataset{p_end}
+{synopt:{opt se:name(name)}}name to be given to created spatial effect variable{p_end}
+{synopt:{opt label:name(name)}}name of label given to spatial effect variable{p_end}
+{synopt:{opt file:name(name)}}name of file to which spatial effect variable saved{p_end}
+{synoptline}
+{p2colreset}{...}
+
+
+{title:Description}
+
+{pstd}
+{cmd: spmon} generates a spatial effect variable for analysis of spatial dependence in monadic data, i.e. where
+the estimation dataset consists of individual units (as in the vast majority of datasets used in the social sciences),
+rather than of dyads (pairs of units).
+It can create spatial effect variables for spatial lag, spatial-x and spatial error models.
+See Neumayer and Plümper (2010) for a discussion of the difference between monadic and dyadic data.
+See Plümper and Neumayer (2010) for a discussion of model specification in the analysis of spatial dependence.
+
+{title:Additional information}
+
+{pstd}
+See {browse "http://personal.lse.ac.uk/neumayer/spmon.htm"}.
+
+
+{title:Arguments}
+
+{dlgtab:Main}
+
+{phang}
+{opt lagvar} is the variable to be spatially lagged. It is the dependent variable of unit {it}k{sf} in spatial lag models, a selected independent
+variable of unit {it}k{sf} in spatial-x models and a saved regression residual in spatial error models.
+It must be the same for all dyads of a specific unit {it}k{sf} with all combinations of unit {it}i{sf} (for any given time period).
+
+{phang}
+{opt w:eightvar(varname)} is the weighting or connectivity variable. It connects unit {it}i{sf} with unit {it}k{sf}. It must be numeric
+and must not contain negative values. It may or may not be directed.
+
+{phang}
+{opt i(varname)} is the identifying variable of unit {it}i{sf}. It can be a numeric or string variable.
+
+{phang}
+{opt k(varname)} is the identifying variable of unit {it}k{sf}. It can be a numeric or string variable.
+
+
+{title:Options}
+
+{dlgtab:Main}
+
+{phang}
+{opt time(varname)} is an optional argument. If users wish to generate a time-varying spatial effect variable, then the numeric time variable must be stated here.
+
+{phang}
+{opt rev:erse_W} requests that the direction of the connectivity variable is to be reversed. This only matters if the weighting variable {opt w:eightvar(varname)} is a
+directed variable. In the default option, {opt w:eightvar(varname)} represents connectivity from unit {it}i{sf}
+to other units {it}k{sf}. {bf}reverse_W{sf} requests that the direction of this weighting variable is to be reversed,
+such that a virtually transformed weighting matrix instead represents connectivity from other units {it}k{sf} to unit {it}i{sf}.
+
+{phang}
+{opt nor:owst} requests that the generated spatial effect variable is not row-standardized.
+See Plümper and Neumayer (2010) for an explanation and discussion of row-standardization.
+Row-standardization is the default option.
+
+{phang}
+{opt nom:erge} requests that the generated spatial effect variable is not automatically merged into the original data set.
+
+{phang}
+{opt se:name(name)} names the generated spatial effect variable. In the default option,
+if the weighting matrix is row-standardized, then the generated spatial effect variable is called SE_var_monadic_rowst. If the weighting matrix
+is not row-standardized, then the spatial effect variable is called SE_var_monadic_norowst.
+Any previously existing variable with the same name will be replaced.
+
+{phang}
+{opt label:name(name)} names the label of the generated spatial effect variable. The default label given is
+"Monadic spatial effect variable".
+
+{phang}
+{opt file:name(name)} requests that a dataset containing the generated spatial effect variable is saved
+in the current working directory under the defined name. In the default option, if the weighting matrix
+is row-standardized, then a file is saved in the current working directory called SE_file_monadic_rowst.
+If the weighting matrix is not row-standardized, then the saved file is called SE_file_monadic_norowst. 
+Any previously existing file with the same name will be replaced.
+
+{title:References}
+
+{pstd}
+Neumayer, Eric and Plümper, Thomas. 2010. Spatial Effects in Dyadic Data. {it}International Organization{sf} 64 (1), pp. 145-165.
+
+{pstd}
+Plümper, Thomas and Eric Neumayer. 2010. Model Specification in the Analysis of Spatial Dependence. {it}European Journal of Political Research{sf} 49 (3), pp. 418-442.
+
+{title:Examples}
+
+{phang}{cmd:. spmon y, w(contiguity) i(country_i) k(country_k) sename(se_monadic) filename(se_monadic_file)}
+
+{phang}{cmd:. spmon y, w(exports) i(country_i) k(country_k) time(year) revert_W norowst}
+
+{phang}{cmd:. spmon y, w(exports) i(country_i) k(country_k) time(year) norowst}
+
+
+{title:Authors}
+
+{pstd}
+Eric Neumayer{p_end}
+{pstd}
+Department of Geography and Environment{p_end}
+{pstd}
+London School of Economics and Political Science (LSE){p_end}
+{pstd}
+London WC2A 2AE, UK{p_end}
+{pstd}
+e.neumayer@lse.ac.uk{p_end}
+{pstd}
+{browse "http://personal.lse.ac.uk/neumayer"}{p_end}
+
+{pstd}
+Thomas Plümper{p_end}
+{pstd}
+Department of Government{p_end}
+{pstd}
+University of Essex{p_end}
+{pstd}
+Wivenhoe Park{p_end}
+{pstd}
+Colchester CO4 3SQ, UK{p_end}
+{pstd}
+tpluem@essex.ac.uk{p_end}
+{pstd}
+{browse "http://www.polsci.org/pluemper/"}{p_end}
+
+
+

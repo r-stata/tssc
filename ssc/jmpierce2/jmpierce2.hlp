@@ -1,0 +1,408 @@
+{smcl}
+{* 25oct2006}{...}
+{hline}
+help for {hi:jmpierce2}
+{hline}
+
+{title:Second-order Juhn-Murphy-Pierce decomposition}
+
+{p 8 15 2}
+ {cmd:jmpierce2}  {it:est11} {it:est21}  {it:est12} {it:est22}
+ [ {cmd:,}
+ {bind:{cmdab:b:enchmark:(}{cmd:1}|{cmd:2}|{it:est1bm} {it:est2bm}{cmd:)}}
+ {bind:{cmdab:r:eference:(}{cmd:1}|{cmd:2}|{it:estref1} {it:estref2} [{it:estrefbm}]{cmd:)}}
+ {cmdab:d:etail}[{cmd:(}{it:dlist}{cmd:)}]
+ {cmdab:par:ametric}
+ {bind:{cmdab:res:iduals:(}{it:newvar1 newvar2}|{it:prefix}{cmd:)}}
+ {bind:{cmdab:rank:s:(}{it:newvar1 newvar2}|{it:prefix}{cmd:)}}
+ {cmdab:non:otes} {cmd:nopreserve} ]
+
+
+{p 4 4 2} where {it:dlist} is
+
+{p 15 15 2}
+ {it:name1} {cmd:=} {it:varlist1} [ {cmd:,} {it:name2} {cmd:=} {it:varlist2}
+ [{cmd:,} {it:...} ] ]
+
+
+{title:Description}
+
+{p 4 4 2}
+ {cmd:jmpierce2} computes the decomposition of differences in mean outcome
+ differentials proposed by Juhn, Murphy and Pierce (1991). An example is
+ the decomposition of the change of the black-white or the male-female wage
+ differential over time (Juhn, Murphy and Pierce 1991; Blau and Kahn 1997)
+ or the decomposition of differences in the male-female wage differential
+ between countries (Blau and Kahn 1992, 1996; OECD 2002).
+
+{p 4 4 2}
+{it:est11}, {it:est21}, {it:est12}, and {it:est22} specify the
+ previously fitted and stored regression estimates to be used with the
+ decomposition (see help {help estimates store}). The model estimated last
+ may be indicated by a period (.), even if it has not yet been stored.
+ {it:est11} and {it:est21} specify the group 1 estimate (e.g. male, white)
+ and the group 2 estimate (e.g. female, black) for the first sample (e.g.
+ time point 1, country A), {it:est12} and {it:est22} are the group
+ estimates for the second sample (time point 2, country B). Note that the
+ estimation samples ({cmd:e(sample)}) of the specified models determine the
+ relevant observations for the decomposition. Group 1 and group 2 must not
+ overlap.
+
+{p 4 4 2}
+ See the {help smithwelch} package (available from the SSC archive; type
+  {net "describe http://fmwww.bc.edu/repec/bocode/s/smithwelch":ssc describe smithwelch})
+ for an alternative approach to decompose differences in differentials.
+
+{p 4 4 2}{hi:Warning:} {cmd:jmpierce2} is intended for use with models that have
+been estimated by the {help regress} command. Use {cmd:jmpierce2} with other
+models at your own risk.
+
+
+{title:Options}
+
+{p 4 8 2}
+ {cmd:benchmark(1}|{cmd:2}|{it:est1bm} {it:est2bm}{cmd:)} specifies (the
+ estimates for) the "benchmark" sample. {cmd:benchmark(1)} signifies that
+ sample 1 is the benchmark sample and {it:est11} and {it:est21} are the
+ benchmark estimates. Analogously, {it:est12} and {it:est22} are used as the
+ benchmark, if you specify {cmd:benchmark(2)}. Alternatively, use
+  {bind:{cmd:benchmark(}{it:est1bm} {it:est2bm}{cmd:)}} to provide the
+ estimates from another sample to be used as the benchmark (e.g. the pooled
+ sample over all time points or countries). If {cmd:benchmark()} is omitted,
+ an extended decomposition containing interaction terms for simultaneous
+ changes in quantities and prices is computed. See the Methods and Formulas
+ Section below.
+
+{p 4 8 2}
+ {cmd:reference(}{cmd:1}|{cmd:2}|{it:estref1} {it:estref2}
+ [{it:estrefbm}]{cmd:)} determines the reference coefficients and reference
+ residual distributions within the samples to be used with the
+ decomposition. The default is {cmd:reference(1)}, meaning that the
+ coefficients from the first group (i.e. {it:est11} and
+ {it:est12}) are used; {cmd:reference(2)} uses the group 2 estimates
+ ({it:est21} and {it:est22}). Alternatively, specify
+  {bind:{cmd:reference(}{it:estref1} {it:estref2} [{it:estrefbm}]{cmd:)}}
+ to provide other reference estimates (e.g. models based on the pooled
+ samples over both groups). {it:estrefbm} is required only if
+  {bind:{cmd:benchmark(}{it:est1bm} {it:est2bm}{cmd:)}} is specified.
+
+{p 4 8 2}
+ {cmd:detail}[{cmd:(}{it:dlist}{cmd:)}] requests that detailed
+ decomposition results for the individual regressors be reported (applies
+ only to the decomposition of the change in the "predicted gap"; see the
+ Methods and Formulas Section below). Use {it:dlist} to subsume the results
+ for specific groups of regressors (variables not appearing in {it:dlist}
+ are listed individually). The usual shorthand conventions apply to the
+ {it:varlist}s specified in {it:dlist} (see help {it:varlist}). For
+ example, specify {cmd:detail(exp=exp*)} if the models contain {cmd:exp}
+ (experience) and {cmd:exp2} (experience squared).
+
+{p 4 8 2}
+ {cmd:parametric} causes {cmd:jmpierce2} to compute the decomposition using
+ standardized residuals and residual standard deviations. The default is to
+ apply a nonparametric approach based on the relative ranks of the
+ residuals and the inverse residual distribution functions.
+
+{p 4 8 2}
+ {cmd:residuals(}{it:newvar1 newvar2}|{it:prefix}{cmd:)} saves the imputed
+ hypothetical residuals as variables ({it:newvar1} or {it:prefix}{cmd:1}
+ for the first sample, {it:newvar2} or {it:prefix}{cmd:2} for the second
+ sample).
+
+{p 4 8 2}
+ {cmd:ranks(}{it:newvar1 newvar2}|{it:prefix}{cmd:)} saves the computed
+ percentile ranks as variables ({it:newvar1} or {it:prefix}{cmd:1} for
+ the first sample, {it:newvar2} or {it:prefix}{cmd:2} for the second sample).
+
+{p 4 8 2}
+ {cmd:nonotes} suppresses the display of the legend.
+
+{p 4 8 2}
+ {cmd:nopreserve} is a technical option. {cmd:jmpierce2} internally preserves the
+ data (see help {help preserve}) and then drops all unused observations to
+ speed up the computations. However, if {cmd:nopreserve} is specified,
+ {cmd:jmpierce2} skips preserving the data and keeps the unused observations in
+ memory. {cmd:nopreserve} may make sense if there are only few unused
+ observations or if {cmd:parametric} is specified.
+
+
+{title:Examples}
+
+        {com}. regress lnwage educ exp exp2 if sex==0 & year==1
+        . estimates store male1
+        . regress lnwage educ exp exp2 if sex==1 & year==1
+        . estimates store female1
+        . regress lnwage educ exp exp2 if sex==0 & year==2
+        . estimates store male2
+        . regress lnwage educ exp exp2 if sex==1 & year==2
+        . estimates store female2
+        . jmpierce2 male1 female1 male2 female2
+        {txt}
+
+        {com}. jmpierce2 male1 female1 male2 female2, benchmark(1)
+        {txt}
+
+        {com}. generate byte year2 = year==2
+        . regress lnwage educ exp exp2 year2 if sex==0 & (year==1 | year==2)
+        . estimates store male12
+        . regress lnwage educ exp exp2 year2 if sex==1 & (year==1 | year==2)
+        . estimates store female12
+        . jmpierce2 male1 female1 male2 female2, benchmark(male12 female12)
+        {txt}
+
+        {com}. regress lnwage educ exp exp2 if year==1
+        . estimates store pooled1
+        . regress lnwage educ exp exp2 if year==2
+        . estimates store pooled2
+        . jmpierce2 male1 female1 male2 female2, reference(pooled1 pooled2)
+        {txt}
+
+
+{title:Saved Results}
+
+{p 4 4 2}
+Matrices:
+
+{p 4 15 2}{cmd:r(D)}{space 7}Decomposition of differentials{p_end}
+{p 4 15 2}{cmd:r(DD)}{space 6}Decomposition of difference in differentials{p_end}
+{p 4 15 2}{cmd:r(E)}{space 7}Decomposition of difference in predicted gap{p_end}
+{p 4 15 2}{cmd:r(U)}{space 7}Decomposition of difference in residual gap{p_end}
+{p 4 15 2}{cmd:r(b1)}{space 6}Parameter vector for sample 1{p_end}
+{p 4 15 2}{cmd:r(b2)}{space 6}Parameter vector for sample 2{p_end}
+{p 4 15 2}{cmd:r(b3)}{space 6}Parameter vector for benchmark sample (if provided){p_end}
+{p 4 15 2}{cmd:r(dX1)}{space 5}Vector of quantity differences for sample 1{p_end}
+{p 4 15 2}{cmd:r(dX2)}{space 5}Vector of quantity differences for sample 2{p_end}
+
+
+{title:Methods and Formulas}
+
+{p 4 4 2}
+ Consider the linear model
+
+       y_t = x_t'b_t + e_t,  E(e_t) = 0
+
+{p 4 4 2}
+ where y_t is a vector of outcomes (e.g. log hourly wages) at time t, x_t
+ is the data matrix (the values of the regressors), b_t is a coefficients
+ vector, and e_t is the vector of residuals. The model can be reformulated
+ as
+
+       y_t = x_t'b_t + r_t*s_t
+
+{p 4 4 2}
+ where s_t represents the standard deviation of the residuals and
+ r_t is the vector of standardized residuals. Thus, the equation
+ now has a two-component residual, that is, the residuals are expressed
+ as a function of the general residual inequality at time t and the
+ positions of the residuals in the residual distribution.
+
+{p 4 4 2}
+ Given two groups (e.g. males and females), the mean outcome differential
+ between the two groups can then be decomposed as follows:
+
+        dy_t = dx_t'b_t + dr_t*s_t
+
+{p 4 4 2}
+ where dy is the difference in mean outcomes between the groups, dx is a
+ vector of the group differences in means of regressors, and dr is the
+ group difference in mean standardized residuals. The first term, E = dx_t'b_t,
+ is the "predicted gap". It reflects the "explained" part of the
+ differential due to differences in "observed quantities" (aka "endowments"
+ aka regressors). The second term, U = dr_t*s_t, is the "residual gap" and
+ reflects the "unexplained" part of the differential (due to differences in
+ "unobserved quantities", their "unobserved prices", and discrimination).
+ It is easy to see that the "predicted gap" and the "residual gap"
+ are equivalent to the explained part and the unexplained part in the standard
+ Blinder-Oaxaca decomposition (see, e.g., help {help oaxaca}; available
+ from the SSC Archive, type
+  {net "describe http://fmwww.bc.edu/repec/bocode/o/oaxaca":ssc describe oaxaca}).
+
+{p 4 4 2}
+ Now, given two time points t=1 and t=2 (or, e.g., two countries), the
+ {it:change} in the outcome differential can be written as
+
+        dy_2-dy_1 = [dx_2'b_2 - dx_1'b_1] + [dr_2*s_2 - dr_1*s_1]
+
+{p 4 4 2}
+ where the first part on the right-hand side of the equation is the change
+ in the "predicted gap" (dE) and the second part is the change in the
+ "residual gap" (dU). The two terms can be further decomposed into
+
+        dE = (dx_2-dx_1)'b_1 + dx_1'(b_2-b_1) + (dx_2-dx_1)'(b_2-b_1)
+
+    and
+
+        dU = (dr_2-dr_1)s_1 + dr_1(s_2-s_1) + (dr_2-dr_1)(s_2-s_1)
+
+{p 4 4 2}
+ The first term in the decomposition of dE reflects the portion of the
+ change in the "predicted gap" that is explained by changes in the group
+ differences in "observed quantities" (aka endowments) and the second term
+ is the part that is due to changes in "observed prices" (aka
+ coefficients). The third term is an adjustment term accounting for the
+ interaction effect induced by the simultaneous change in quantities and
+ prices. Similarly, the first term in the decomposition of dU, sometimes
+ called the "gap effect", reflects the change that is due to changes in the
+ group differences in residual positions (i.e. changes in the group
+ differences in "unobserved quantities" and changes in discrimination) and
+ the second term is the part due to changes in residual inequality (i.e.
+ changes in "unobserved prices" for the "unobserved quantities"). The last
+ term again adjusts for interaction.
+
+{p 4 4 2}
+ It is common practice to reduce the three terms in the decompositions
+ above to two terms only by employing the coefficients vector and residual
+ variation from a "benchmark" sample. Be b_B the benchmark
+ coefficients vector and s_B the benchmark residual standard deviation. The
+ decompositions may then be written as
+
+        dE = (dx_2-dx_1)'b_B + [dx_2'(b_2-b_B) + dx_1'(b_B-b_1)]
+
+    and
+
+        dU = (dr_2-dr_1)s_B + [dr_2(s_2-s_B) + dr_1(s_B-s_1)]
+
+{p 4 4 2}
+ If one of the two time points is the benchmark, the formulas simplify to
+ the parametrization applied by Juhn, Murphy and Pierce (1991), that is
+
+        dE = (dx_2-dx_1)'b_1 + dx_2'(b_2-b_1)
+        dU = (dr_2-dr_1)s_1 + dr_2(s_2-s_1)
+
+{p 4 4 2}
+ or the parametrization applied by, e.g., Blau and Kahn (1997), that is
+
+        dE = (dx_2-dx_1)'b_2 + dx_1'(b_2-b_1)
+        dU = (dr_2-dr_1)s_2 + dr_1(s_2-s_1)
+
+{p 4 4 2}
+ An alternative would be, for example, to use the pooled sample over all
+ time points as the benchmark sample. Note that in this case it is
+ reasonable to include year dummies in the models for the benchmark sample
+ (see, e.g., OECD 2002:103).
+
+
+{p 4 4 2}
+ {it:Nonparametric implementation of the decomposition of dU}
+
+{p 4 4 2}
+ By definition, e_t = r_t*s_t. Therefore, dr_1*s_1 is simply the group
+ difference in mean residuals at t=1 and dr_2*s_2 is the difference in mean
+ residuals at t=2. But what about dr_1*s_2 or dr_2*s_1? One obvious
+ solution would be to estimate the residual standard deviations and the
+ standardized residuals for both time points and then multiply the standard
+ deviation of one time point with the mean difference in standardized
+ residuals of the other. This approach is applied by {cmd:jmpierce2} if
+ specifying the {cmd:parametric} option. The disadvantage of the parametric
+ approach is that differences in distributional shape (apart from the
+ variance of the distribution) are neglected. Therefore, Juhn et al. (1991)
+ proposed the following non-parametric procedure, which is the default
+ procedure in {cmd:jmpierce2}. Let F_t() be the distribution function of the
+ residuals at time t. Furthermore, let q_t represent the positions of the
+ residuals in the residual distribution at time t (see help
+  {help relrank}; available from the SSC Archive, type
+  {net "describe http://fmwww.bc.edu/repec/bocode/r/relrank":ssc describe relrank}),
+ that is
+
+        q_t = F_t(e_t)
+
+    Furthermore
+
+        e_t = F[-1]_t(q_t)
+
+{p 4 4 2}
+ where F[-1]_t() stands for the inverse of F_t() (see help {help invcdf};
+ available from the SSC Archive, type
+  {net "describe http://fmwww.bc.edu/repec/bocode/i/invcdf":ssc describe invcdf}).
+ Applying the inverse distribution function of one time point to the
+ residual ranks of the other, leads to a non-parametric version of the
+ decomposition of dU. For example, dr_1*s_2 is obtained by assigning each
+ individual at t=1 a percentile number corresponding to its position in the
+ residual distribution of t=1, then using these relative ranks to derive
+ hypothetical residuals for the t=1 individuals given the t=2 residual
+ distribution function, and finally computing the group difference in the
+ means of these hypothetical residuals.
+
+
+{p 4 4 2}
+ {it:Reference coefficients and reference residual distribution}
+
+{p 4 4 2}
+ For each time point, a reference model must be specified to determine the
+ coefficients and residual distribution to be used in the decomposition.
+ The default is to use {it:est11} and {it:est12} as the reference models
+ (see the {cmd:reference()} option). From a technical point of view, two
+ situations have to be distinguished. First, the reference model may be
+ the group 1 model ({cmd:reference(1)}) or the group 2 model
+ ({cmd:reference(2)}). In these cases, the coefficients of that model are
+ used to compute the residuals for both groups, but only the observations
+ in the reference group are used to determine the residual distribution
+ function. Second, the reference model may be some other model (e.g. a
+ pooled model over both groups). In this case, the coefficients from the
+ reference model are again used to compute the residuals for both groups.
+ The residual distribution function, however, is not derived from these
+ residuals. It is instead computed using the pooled residuals from the two
+ group-specific models.
+
+
+{p 4 4 2}
+ Technical notes:
+
+{p 8 10 2}
+ - {cmd:jmpierce2} does not require all models to contain the exact same set of
+ regressors. Coefficients not appearing in a model are simply assumed to be
+ zero for that model. However, it is important that all regressors are
+ defined (i.e. non-missing) for all observations used with the
+ decomposition. Thus, even if a regressor does not appear in an individual
+ model, the regressor must contain valid values for the observations in the
+ estimation sample of that model.
+
+{p 8 10 2}
+ - {cmd:jmpierce2} computes residuals as the differences between the values of
+ the model's dependent variable and the model's linear predictions (using
+ {help matrix score}). If the models have been estimated using weighted
+ data, {cmd:jmpierce2} will take account of these weights in its computations.
+ In the {cmd:parametric} mode, {cmd:jmpierce2} will use the value of
+ {cmd:e(rmse)} as the model's residual standard deviation. If
+ multiple-equation models or models with ancillary parameters are used with
+ {cmd:jmpierce2}, only the first equation in {cmd:e(b)} is taken into account.
+
+
+{title:References}
+
+{p 4 8 2}
+ Juhn, Chinhui, Kevin M. Murphy, Brooks Pierce (1991). Accounting for the
+ Slowdown in Black-White Wage Convergence. Pp. 107-143 in: Workers and
+ Their Wages, ed. by Marvin Kosters, Washington, DC: AEI Press.
+ {p_end}
+{p 4 8 2}
+ Blau, Francine D., Lawrence M. Kahn (1992). The Gender Earnings Gap:
+ Learning from International Comparisons. American Economic Review 82:
+ 533-538.
+ {p_end}
+{p 4 8 2}
+ Blau, Francine D., Lawrence M. Kahn (1996). Wage Structure and Gender
+ Earnings Differentials: an International Comparison. Economica 63:
+ S29-S62.
+ {p_end}
+{p 4 8 2}
+ Blau, Francine D., Lawrence M. Kahn (1997). Swimming Upstream: Trends in
+ the Gender Wage Differential in the 1980s. Journal of Labor Economics 15:
+ 1-42.
+ {p_end}
+{p 4 8 2}
+ OECD (2002). Employment Outlook, Chapter 2. Paris.
+
+
+{title:Author}
+
+{p 4 4 2}
+ Ben Jann, ETH Zurich, jann@soz.gess.ethz.ch
+
+
+{title:Also see}
+
+{p 4 13 2}
+ Online:  help for {help regress}, {help estimates}, {help cumul},
+ {help smithwelch} (if installed), {help jmp} (if installed), {help oaxaca} (if installed),
+ {help invcdf} (if installed), {help relrank} (if installed)

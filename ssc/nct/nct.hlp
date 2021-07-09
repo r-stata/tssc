@@ -1,0 +1,124 @@
+.-
+help for ^nct^
+.-
+
+Non-central t programs
+----------------------
+
+   ^nctprob^ t' delta df     /* yields p
+
+   ^nctinv^  p delta df      /* yields t'
+
+   ^nctncp^  t' p df         /* yields delta
+
+   ^nctn^    t' delta p      /* yields df + 1
+
+   ^nct2^    t' delta df     /* yields two-sided p
+
+   ^nct2inv^ p delta df      /* yields two-sided t'
+
+where
+
+   ^t'^    is the observed t-value
+   ^delta^ is the noncentrality parameter
+   ^df^    is the degrees of freedom (^df^ is a positive integer)
+   ^p^     is the probability (0 < ^p^ < 1)
+
+For each program, entering the program name with no parameters displays 
+the command syntax.
+
+
+Description
+-----------
+
+Let Y and Z be independent random variables, where
+
+      Z ~ N(delta,1) (Z is distributed Normal with mean delta and variance 1)
+      Y ~ ChiSq(n)   (Y is distributed chi-square with degrees of freedom n).
+
+Then, X = Z / sqrt(Y/n) is said to have a noncentral t distribution with 
+noncentrality delta and degrees of freedom n.  
+
+That is, X ~ t(delta, n).
+
+
+^nct^xxxx is a family of immediate programs, all related to the noncentral t
+distribution.  Each one-sided program computes a missing parameter, given 
+the other parameters, such that P(t<=^t'^| ^delta^, ^df^) = ^p^.  
+
+  for | use
+------+--------------------------------------------------------
+    ^p^ | ^nctprob^ -- Cumulative non-central t probabilities
+   ^t'^ | ^nctinv^  -- Inverse cumulative non-central t values
+^delta^ | ^nctncp^  -- Noncentrality parameter of the non-central t
+   ^df^ | ^nctn^    -- Sample size for the cumulative non-central t
+
+There are also two programs that yield two-sided values from a noncentral t, 
+defined such that P(|t|<=^t'^| ^delta^, ^df^) = 1 - ^p^.
+
+  for | use
+------+--------------------------------------------------------
+    ^p^ | ^nct2^    -- 2-sided non-central t probabilities
+   ^t'^ | ^nct2inv^ -- Inverse 2-sided non-central t values
+
+The core program, ^nctprob^, computes probabilities from the cumulative 
+non-central t distribution from negative infinity to ^t'^ for noncentrality 
+parameter, ^delta^, and positive, integer degrees of freedom, ^df^. 
+That is, ^nctprob^ computes ^p^ such that P(t<=^t'^| ^delta^, ^df^) = ^p^.
+
+Each program prints its computed value and returns it in global ^S_1^ and in
+a result ^r()^.  The value computed and the name of the returned parameter
+for each program are:
+
+^nctprob^ -- ^r(p)^     -- the probability p
+^nctinv^  -- ^r(t)^     -- the critical t' 
+^nctncp^  -- ^r(delta)^ -- the noncentrality parameter delta
+^nctn^    -- ^r(n)^     -- the minimum n
+^nct2^    -- ^r(p)^     -- the two-sided tail probability
+^nct2inv^ -- ^r(t)^     -- the two-sided critical t'
+
+^nctn^ computes the minimum ^n^ such that, for ^df^ = ^n^ - 1,
+    when ^p^ < 0.5,     P(t<=^t'^|^delta^, ^df^) <= ^p^, and 
+    when ^p^ > 0.5, 1 - P(t<=^t'^|^delta^, ^df^) <= ^p^.
+
+Warning: Convergence time for ^nctn^ is a function of the computed minimum 
+^n^ and increases greatly when that ^n^ gets large.  Because the limit of
+the noncentral t (as n gets large) is the noncentral z, a comparison
+of the desired probability ^p^ to P(z < ^t'^ - ^delta^) is informative.
+If these values are within .005 of each other, convergence time will
+be noticably non-negligible.
+
+
+Notes
+-----
+
+These programs call ^integ^.  The user is cautioned that the initial 
+Stata 6.0 release of ^integ^ (version 3.0.4) has a bug.  Please install 
+version 3.0.5 or later.
+
+Some of these programs require installation of programs ^ridder^ 
+(see STB-24, insert ssi5.4 for ^ridder^).
+
+
+Author
+------
+
+Thomas J. Steichen <steicht@@rjrt.com>
+
+
+Examples
+--------
+
+ . ^nctprob 3.6 3.0 11^    > gives p for t' = 3.6, delta = 3.0, df = 11
+
+ . ^nctinv .95 2.0 17^     > gives t' for p = .95, delta = 2.0, df = 17
+
+ . ^nctncp 4.045 .95 17^   > gives delta for t' = 4.045, p = .95, df = 17
+
+ . ^nctinv 4 2 .95^        > gives n for t' = 4, delta = 2, p = .95
+
+ . ^nct2 3.1 2.0 17^       > gives p for |t'| = 3.1, delta = 2.0, df = 17 
+
+ . ^nct2inv .05 2.0 17^    > gives |t'| for p = .05, delta = 2.0, df = 17
+
+ . ^nctprob^               > displays the command syntax

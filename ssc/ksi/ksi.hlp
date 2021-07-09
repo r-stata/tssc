@@ -1,0 +1,56 @@
+
+TITLE
+ 'KSI': module to compute Krugman specialization index
+
+DESCRIPTION/AUTHOR(S)
+
+The module computes Krugman specialization index that compares similarity of a region's production pattern with benchmark or reference economy (e.g. aggregate national output). Krugman specialization index for region `i' is the sum of absolute difference of sectoral shares of region `i' and reference economy `j'. Krugman specialization index takes value between 0 to 2. Zero indicates that region `i' production patterns exactly match with reference economy `j', while index value 2 reflects that there is nothing in common between two and region `i' industrial structure is totally different from economy `j'.
+
+KW: Krugman
+KW: Specialization
+
+Requires: Stata version 9
+Distribution-Date: 20130410
+      
+Authors: 
+Muhammad Rashid Ansari, INSEAD Business School
+Support: email rashid.ansari@insead.edu
+
+*Version April 2013
+--------------------
+basic syntax:
+ksi, i(varname) j(varname) by(varlist) [outfile, replace]
+
+Description:
+The module computes Krugman specialization index and export output in csv table format.
+
+Krugman Specialization Index:
+
+KSI= Summation |(xit/Xt)-(zj/Zt)|
+
+where,
+xit: sector-level output in region `i'
+Xt : total output in entire region
+zjt: sector-level output in reference economy `j'
+Zt: total output in reference economy `j'
+
+Options
+-------
+by(varlist): allows groups defined by `varlist' e.g. (year)
+
+outfile: export output in .csv table format 
+
+Examples:
+----------
+egen national_output=sum(regional_output), by( country sectors year)
+
+ksi, i(regional_output) j(national_output) by(region country year)
+ksi, i(regional_output) j(national_output) by(region country year) outfile
+ksi, i(regional_output) j(national_output) by(region country year) outfile replace
+
+
+Author:
+Muhammad Rashid Ansari						
+INSEAD Business School						
+1 Ayer Rajah Avenue, Singapore 138676						
+rashid.ansari@insead.edu

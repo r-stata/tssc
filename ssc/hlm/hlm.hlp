@@ -1,0 +1,583 @@
+{smcl}
+{* 30 december 2005}{...}
+{hline}
+help for {hi:hlm, mkmdm, mdmset, hlm2, hlm3, run}{right:sean f. reardon}
+{hline}
+
+{title:Writing and Running HLM v.6 files from within Stata}
+
+{p 4 15 2}{cmd:hlm mkmdm} using <a new file> [{cmd:if} {it:exp}] [{cmd:in} {it:range}]
+ {cmd:,} 
+{cmdab:id2(}{it:varname}{cmd:)}  
+[{cmdab:t:ype(}{it:string}{cmd:)} 
+{cmd:id3(}{it:varname}{cmd:)} 
+{cmd:l1(}{it:varlist}{cmd:)}
+{cmd:l2(}{it:varlist}{cmd:)}  
+{cmd:l3(}{it:varlist}{cmd:)}
+{cmdab:m:iss(now }{it:or}{cmd: analysis)}     
+{cmdab:nodta} 
+{cmdab:nomdmt} 
+{cmdab:nosts} 
+{cmd:replace}
+{cmdab:norun}] 
+
+{p 4 15 2}{cmd:hlm mdmset} {it:existing .mdm filename}
+
+{p 4 15 2}{cmd:hlm mdmset} {cmd:_drop}
+
+{p 4 15 2}{cmd:hlm hlm2} {it:depvar} {it: model}{cmd:,} 
+{cmdab:cmd:file:(}{it:newfile}{cmd:)} 
+[{cmdab:mdm:file:(}{it:existing .mdm filename}{cmd:)} 
+{cmdab:out:file:(}{it:newfile}{cmd:)}
+{cmd:run} 
+{cmd:replace} 
+{cmdab:lin:ear} 
+{cmdab:ber:nouli} 
+{cmdab:poi:sson} 
+{cmdab:bin:omial} 
+{cmdab:mul:tinomial} 
+{cmdab:ord:inal} 
+{cmdab:nc:at:(}{it:integer}{cmd:)} 
+{cmdab:ev:ar:(}{it:varname}{cmd:)} 
+{cmd:fml} 
+{cmdab:pr:ompt} 
+{cmdab:st:op} 
+{cmd:od} 
+{cmdab:lap:lace}  
+{cmd:l6} 
+{cmdab:ln:um:(}{it:integer}{cmd:)} 
+{cmdab:maci:t:(}{it:integer}{cmd:)} 
+{cmdab:mici:t:(}{it:integer}{cmd:)} 
+{cmdab:macs:top:(}{it:#}{cmd:)} 
+{cmdab:mics:top:(}{it:#}{cmd:)} 
+{cmd:wgt1(}{it:varname}{cmd:)} 
+{cmd:wgt2(}{it:varname}{cmd:)} 
+{cmd:pwgt(}{it:varname}{cmd:)} 
+{cmd:fsig(}{it:real}{cmd:)}
+{cmdab:te:st:(}{it:test_specification}{cmd:)}  
+{cmdab:dev:iance:(}{it:real integer}{cmd:)} 
+{cmdab:st:ore:(lin|us|pa|eml|l6)}
+{cmd:robust} 
+{cmd:noeq} 
+{cmdab:lo:ng} 
+{cmd:res1} 
+{cmd:rv1(}{it:varlist}{cmd:)} 
+{cmd:res2}
+{cmd:rv2(}{it:varlist}{cmd:)} 
+{cmdab:ti:tle:(}{it:string}{cmd:)} 
+{cmdab:gr:aph:(}{it:newfile}{cmd:)}]
+
+{p 4 15 2}{cmd:hlm hlm3} {it:depvar} {it: model}{cmd:,} 
+{cmdab:cmd:file:(}{it:newfile}{cmd:)} 
+[{cmdab:mdm:file:(}{it:existing .mdm filename}{cmd:)} 
+{cmdab:out:file:(}{it:newfile}{cmd:)}
+{cmd:run} 
+{cmd:replace} 
+{cmdab:lin:ear} 
+{cmdab:ber:nouli} 
+{cmdab:poi:sson} 
+{cmdab:bin:omial} 
+{cmdab:mul:tinomial} 
+{cmdab:ord:inal} 
+{cmdab:nc:at:(}{it:integer}{cmd:)} 
+{cmdab:ev:ar:(}{it:varname}{cmd:)} 
+{cmd:fml} 
+{cmdab:pr:ompt} 
+{cmdab:st:op} 
+{cmd:od} 
+{cmdab:lap:lace}  
+{cmdab:ln:um:(}{it:integer}{cmd:)} 
+{cmdab:maci:t:(}{it:integer}{cmd:)} 
+{cmdab:mici:t:(}{it:integer}{cmd:)} 
+{cmdab:macs:top:(}{it:#}{cmd:)} 
+{cmdab:mics:top:(}{it:#}{cmd:)} 
+{cmd:wgt1(}{it:varname}{cmd:)} 
+{cmd:wgt2(}{it:varname}{cmd:)} 
+{cmd:wgt3(}{it:varname}{cmd:)} 
+{cmd:pwgt(}{it:varname}{cmd:)} 
+{cmd:fsig(}{it:real}{cmd:)}
+{cmdab:te:st:(}{it:test_specification}{cmd:)}  
+{cmdab:dev:iance:(}{it:real integer}{cmd:)} 
+{cmdab:st:ore:(lin|us|pa|eml)}
+{cmd:robust} 
+{cmd:noeq} 
+{cmdab:lo:ng} 
+{cmd:res1} 
+{cmd:rv1(}{it:varlist}{cmd:)} 
+{cmd:res2}
+{cmd:rv2(}{it:varlist}{cmd:)} 
+{cmd:res3}
+{cmd:rv3(}{it:varlist}{cmd:)} 
+{cmdab:ti:tle:(}{it:string}{cmd:)} 
+{cmdab:gr:aph:(}{it:newfile}{cmd:)}]
+
+{p 4 15 2}{cmd:hlm run} {it:existing .hlm filename} 
+[, {cmd:hlm2} 
+{cmd:hlm3} 
+{cmd:mdm(}{it:mdmfile}{cmd:)}
+{cmdab:st:ore:(lin|us|pa|eml|l6)}
+{cmd:robust} 
+{cmd:noview}]
+
+
+In the {cmd:hlm2} command, {it:model} is an expression of the form 
+
+{p 2 0 2}[int[({it:L2equation})]] {it:L1var}[({it:L2equation})] [{it:L1var}[({it:L2equation})] ...]] [rand]
+
+where {it:L2equation} is an expression of the form
+
+{p 2 0 2}[int] [{it:L2 varlist}] [rand]
+
+{p 0 0 2}If {it:L2equation} is not specified, it is assumed to be {bf:(int)}.
+Any level-1 variable may be group-mean centered by preceding the variable name with an {it:#}.
+Any level-1 or level-2 variable may be grand-mean centered by preceding the variable name with an {it:%}.
+
+In the {cmd:hlm3} command, {it:model} is an expression of the form 
+
+{p 2 0 2}[int[({it:L2equation})]] [{it:L1var}[({it:L2equation})] [{it:L1var}[({it:L2equation})] ...]] [rand]
+
+where {it:L2equation} is an expression of the form
+
+{p 2 0 2}[int[({it:L3equation})]] [{it:L2var}[({it:L3equation})] [{it:L2var}[({it:L3equation})] ...]] [rand]
+
+If {it:L2equation} is not specified, it is assumed to be {bf:(int(int))}
+
+where {it:L3equation} is an expression of the form
+
+{p 2 0 2}[int] [{it:L3 varlist}] [rand]
+
+{p 0 0 2}If {it:L3equation} is not specified, it is assumed to be {bf:(int)}. 
+Any level-1 or level-2 variable may be group-mean centered by preceding the variable name with an {it:#}.
+Any level-1, level-2, or level-3 variable may be grand-mean centered by preceding the variable name with an {it:%}.
+
+{p 0 0 2}See the {bf:Examples} section below for examples of the {it:model} expression.
+
+{p 0 0 2}{bf:Note}: HLM requires that the level-1 variables in the model be listed in the order that they 
+appear in the .mdm file.  If {bf:int} is included in the model, it must be listed first; likewise, if
+{bf:rand} is included in the model, it must be listed last ({bf:rand} can be excluded from the level-1 model, 
+since HLM automatically assumes it is there).  Likewise, within each level-2 and level-3 equation,
+the variables must be listed in the order they appear in the .mdm file.
+
+{title:Description}
+
+{p 0 0 2}These commands allow the user to invoke and run HLM v6 from within Stata 8.2 or higher.
+In order for this program to run properly, the HLM directory must be included in the PATH. 
+To see how to include HLM in the PATH variable, see 
+{browse "http://www.ats.ucla.edu/stat/hlm/faq/path.htm":this page} on how to add
+HLM to the PATH variable.   
+
+{p 0 0 2}{cmd:hlm mkmdm} creates an MDM file for HLM. HLM uses an MDM file to perform analysis of univariate 
+hierarchical models and to perform analysis of multivariate hierarchical models. By default, 
+an MDM file for a 2-level univariate model is created. You can specify the type of MDM file 
+by using the {cmd:type} option. After an MDM file is created, use {cmd:hlm mdmset} to set the .mdm file
+in memory for use in writing and running HLM command files.  Use {cmd:hlm mdmset _drop} to drop the current
+.mdm file from memory.  The commands {cmd:hlm hlm2} and {cmd:hlm hlm3} 
+are used to write and run HLM command (.hlm) files.  Finally, the command {cmd:hlm run} will 
+run an existing HLM command file.
+
+{p 0 0 2}{cmd:hlm hlm2}, {cmd:hlm hlm3}, and {cmd:hlm run} are e-class programs.  Saved 
+results can be obtained after estimation by use of the {help ereturn} commands.
+
+{title:Options}
+{marker par}
+{bf:{dlgtab:options for hlm mkmdm}}
+
+{p 0 4}{cmd:id2(}{it:varname}{cmd:)} is required.  {it:Varname} specifies the level 2 id.
+
+{p 0 4}{cmd:type(}{it:string}{cmd:)} specifies the type of HLM structure. The possible types are HLM2, HLM3, 
+HMLM2 and HMLM3.  The default is HLM2.  {bf:Note}: Currently only the HLM2 and HLM3 options are enabled.
+
+{p 0 4}{cmd:id3(}{it:varname}{cmd:)} specifies the level 3 id variable if the model is a 3-level model.
+
+{p 0 4}{cmd:l1(}{it:varlist}{cmd:)} specifies the level 1 variables to be included in the MDM file.  If omitted, all variables
+except {it:id2} and {it:id3} are included at level 1.
+
+{p 0 4}{cmd:l2(}{it:varlist}{cmd:)} specifies the level 2 variables to be included in the MDM file.  If omitted, all variables
+except {it:id2} and {it:id3} are included at level 2.
+
+{p 0 4}{cmd:l3(}{it:varlist}{cmd:)} specifies the level 3 variables to be included in the MDM file.  If omitted, all variables
+except {it:id2} and {it:id3} are included at level 3.
+
+{p 0 4}{cmd:miss(now}{it: or }{cmd:analysis)} is optional in HLM2 and HLM3 to indicate how to deal with missing data.  
+{cmd:miss(now)} tells HLM to delete missing data when making the MDM file; {cmd:miss(analysis)} tells HLM to delete 
+missing data when running analyses.  If {cmd:miss} is not specified, HLM assumes there is no missing data.
+
+{p 0 4}{cmd:nodta} specifies that the stata data file used to create the MDM file should be deleted; 
+the default is to save it.
+
+{p 0 4}{cmd:nomdmt} specifies that the mdmt file should be deleted; the default is to save it.
+
+{p 0 4}{cmd:nosts} specifies that the summary statistics file should be deleted; 
+the default is to save it.
+
+{p 0 4}{cmd:replace} specifies that the MDM file should be overwritten if it already exists.
+
+{p 0 4}{cmd:norun} specifies that the mdmt file should be created, but not run.  
+This may be useful for creating MDM files in batch mode or if the mdmt file 
+needs to be manually changed prior to creating the MDM file.  Note that if 
+{cmd:norun} is specified, the {cmd:nomdmt}, {cmd:nosts}, and {cmd:nodta} options 
+are ignored (i.e., the .mdmt file is saved, the .dta file is saved, since HLM 
+needs it to make the .mdm file when the .mdmt file is run later; the {cmd:nosts} 
+option is irrelevant in this case.)
+
+
+{marker par}
+{bf:{dlgtab:options for hlm mdmset}}
+
+{p 0 4}{cmd:hlm mdmset _drop} instructs Stata to drop the current mdm file name from memory. 
+
+
+{marker par}
+{bf:{dlgtab:options for hlm2 and hlm3}}
+
+{p 0 4}{cmdab:cmd:file:(}{it:newfile}{cmd:)} is required.  The HLM command file is written to {it:newfile}.hlm.
+
+{p 0 4}{cmd:mdm(}{it:mdmfile}{cmd:)} specifies that {it:mdmfile} is the MDM file 
+to be used.  If not specified, the MDM file specified in the most recent 
+{cmd:mdmdset} command is used.
+
+{p 0 4}{cmdab:out:file:(}{it:newfile}{cmd:)} specifies that the HLM output is to be written to {it:newfile}.txt.
+If {cmdab:out:file:(}{it:newfile}{cmd:)} is not specified, the HLM output is written to {it:filename}.txt, 
+where {it:filename} is the filename specified in the {cmdab:cmd:file:(}{it:newfile}{cmd:)} command.
+
+{p 0 4}{cmd:run} specifies that the HLM command file is to be run immediately; the default is not to run the 
+command file.
+
+{p 0 4}{cmd:replace} specifies that the command and output files are to be replaced if they already exist.
+
+{p 0 4}{cmdab:lin:ear} specifies the model is linear.  This is the default.
+
+{p 0 4}{cmdab:ber:nouli} specifies the model is bernouli (0 or 1).
+
+{p 0 4}{cmdab:poi:sson} specifies a poisson model (constant or variable exposure).
+
+{p 0 4}{cmdab:bin:omial} specifies a binomial model.
+
+{p 0 4}{cmdab:mul:tinomial} specifies a multinomial model.
+
+{p 0 4}{cmdab:ord:inal} specifies an ordinal model.
+
+{p 0 4}{cmdab:nc:at:(}{it:integer}{cmd:)} specifies the number of categories of the dependent variable in a multinomial 
+or ordinal model.  It must be between 3 and 9.
+
+{p 0 4}{cmdab:ev:ar:(}{it:varname}{cmd:)} specifies the exposure variable in a variable-exposure poisson model or 
+a binomial (number of trials) model.  If {cmd:poisson} is specified and {cmd:evar:(}{it:varname}{cmd:)} 
+is omitted, a constant-exposure poisson model is estimated; if {cmd:evar:(}{it:varname}{cmd:)} is specified, a 
+variable-exposure poisson model is estimated.
+
+{p 0 4}{cmd:fml} is only available in {cmd:hlm2}.  It specifies that the model is to be 
+estimated using full maximum likelihood.  The default in {cmd:hlm2} is to use restricted 
+maximum likelihood.
+
+{p 0 4}{cmdab:pr:ompt} specifies that HLM should prompt the user if the maximum number of iterations is reached without
+convergence.  The default is to continue iterating until convergence, regarless of the number of iterations set in 
+{cmd:macit}.
+
+{p 0 4}{cmdab:st:op} specifies that HLM should stop iterating if the maximum number of iterations is reached without
+convergence.  The default is to continue iterating until convergence, regarless of the number of iterations set in 
+{cmd:macit}.
+
+{p 0 4}{cmd:od} specifies the bernouli or poisson model should be estimated with overdispersion of the level-1 variance.  
+This option is not allowed with any other type of model.
+
+{p 0 4}{cmdab:lap:lace} specifies that a bernouli or constant exposure poisson model should be estimated using the EM
+laplace estimation.  This option cannot be combined with the {cmd:od} option.  This option is only available in HLM2.
+
+{p 0 4}{cmd:l6} specifies that a bernouli model should be estimated using a 6-th order laplace approximation
+to maximum likelihood.  This option cannot be combined with the {cmd:od} option.
+
+{p 0 4}{cmdab:ln:um:(}{it:integer}{cmd:)} specifies the maximum number of laplace iterations. The default is 50.
+
+{p 0 4}{cmdab:maci:t:(}{it:integer}{cmd:)} specifies the maximum number of macro iterations in a non-linear model.  In 
+a linear model, this option specifies the maximum number of iterations.  The default is 100.  If neither of the 
+{cmd:prompt} or {cmd:stop} options are specified, {cmd:macit:(}{it:integer}{cmd:)} is irrelevant, since the default is
+to continue iteration until convergence.
+
+{p 0 4}{cmdab:mici:t:(}{it:integer}{cmd:)} specifies the maximum number of micro iterations in a non-linear model.  
+The default is 14.
+
+{p 0 4}{cmdab:macs:top:(}{it:#}{cmd:)} specifies the stopping criterion for macro iterations.  The default is 0.0001.
+
+{p 0 4}{cmdab:mics:top:(}{it:#}{cmd:)} specifies the stopping criterion for micro iterations in a non-linear model.
+  The default is 0.000001. 
+
+{p 0 4}{cmd:wgt1(}{it:varname}{cmd:)} specifies the level-1 design weight variable.
+
+{p 0 4}{cmd:wgt2(}{it:varname}{cmd:)} specifies the level-2 design weight variable.
+
+{p 0 4}{cmd:wgt2(}{it:varname}{cmd:)} specifies the level-3 design weight variable.
+
+{p 0 4}{cmd:pwgt(}{it:varname}{cmd:)} specifies the level-1 precision weight variable.. 
+
+{p 0 4}{cmd:fsig(}{it:#}{cmd:)} specifies that sigma-squared is to be set to {it:#}.  Sigma-squared cannot be fixed in
+an over-dispersed bernouli or poisson model.
+
+{p 0 4}{cmdab:te:st} is used to specify multivariate hypothesis tests.  The syntax for {it:test_specification} is
+
+{p 4 8 2}{cmd:[}{it:test}{cmd:]}[{cmd:[}{it:test}{cmd:]}[{cmd:[}{it:test}{cmd:]}...]]
+
+{p 4 4 2}Note: Distinguish between {cmd:[]}, which are to be typed, and [], which indicate optional arguments.
+In addition, while not shown in the syntax diagram, brackets around {it:test} are only required with multiple test specifications.  
+
+{p 6 8 2}{it:test} is an expression of the form
+
+{p 8 10 2}{it:eqn}[,{it:eqn}[,{it:eqn}...]]
+
+{p 6 8 2}{it:eqn} is an expression of the form
+
+{p 8 10 2}{it:exp}={it:exp}[={it:exp}...]
+
+{p 6 8 2}{it:exp} is a linear combination of the variables and/or interactions in the model.
+It can be any one of
+
+{p 8 10 2}0{p_end}
+{p 8 10 2}[{it:#}*][{it:var}][+|-[{it:#}*]{it:var}[+|-[{it:#}*]{it:var}...]]{p_end}
+
+{p 6 8 2}{it:var} is any one of{p_end}
+
+{p 8 10 2}{it:L1var}{p_end}
+{p 8 10 2}{it:L2var}{p_end}
+{p 8 10 2}{it:L3var}{p_end}
+{p 8 10 2}{it:L2var}*{it:L1var}{p_end}
+{p 8 10 2}{it:L3var}*{it:L1var}{p_end}
+{p 8 10 2}{it:L3var}*{it:L2var}{p_end}
+{p 8 10 2}{it:L3var}*{it:L2var}*{it:L1var}{p_end}
+
+{p 4 4 2}For example, to test the null hypothesis that the coefficients on {it:var1} and {it:var2} are both equal to zero, one could write any of the following:{p_end}
+
+{p 6 8 2}test([var1=0, var2=0]) {p_end}
+{p 6 8 2}test([var1=var2=0]) {p_end}
+{p 6 8 2}test([var1-var2=0, var2=0]) {p_end}
+
+{p 4 4 2}However, to test the separate null hypotheses that the coefficient on {it:var1} equals zero and that the coefficient on {it:var2} equals zero, one could write the following: {p_end}
+
+{p 6 8 2}test([var1=0][var2=0]) {p_end}
+
+{p 0 4}{cmdab:dev:iance:(}{it:real integer}{cmd:)} specifies a deviance test.  
+The model will be compared to a model with deviance {it:real} and {it:integer} 
+degrees of freedom.  Note that the deviance statistic and degrees of freedom 
+from previous models will be saved as e-class scalars (see {bf:stored results} 
+below), and so can be used in the {cmd:deviance} option to compare the 
+relative fit of different models.
+
+{p 0 4}{cmdab:st:ore:(}{it:name}{cmd:)} specifies which set of estimates are to
+be stored in e(b) and e(V).  See also {cmd:robust} below.  In {cmd:store}, {it:name}
+may be {bf:lin} (used only with a linear model), {bf:us} (unit-specific estimates,
+may be used with any non-linear model), {bf:pa} (population-average estimates,
+may be used with any non-linear model), {bf:eml} (EM laplace estimates, may be used
+when {cmd:laplace} option is specified}, or {bf:l6} (laplace-6 estimates, may be used
+when {cmd:l6} option is specified}.  If {cmd:store} is omitted, the default depends 
+on the model specified.  If {cmd:laplace} is specified, the default is {bf:eml}; 
+otherwise, if {cmd:l6} is specified, the default is {bf:l6}; otherwise, if the model
+is any other non-linear model, the default is {bf:us}; finally, if the model is linear,
+the default is {cmd:lin}. 
+
+{p 4 4}Note: The mechanism of storing the estimates is currently a bit clunky -- HLM
+saves the estimates in files called "gamvcX.dat" and "tauvcX.dat", where X is 
+something like "us" or "eml" and so indicates which estimator the estimates 
+come from.  In doing so, HLM writes over any existing files with these names, 
+but since not all files are produced by each run of HLM, there can be some 
+confusion regarding whether any existing "gamvcX.dat" come from the current 
+model.  To deal with this, this program renames any existing "gamvcX.dat" and 
+"tauvcX.dat" files to some unused filenams like "gamvcX_tempN.dat", etc. before
+HLM fits the current model.  This program then reads the estimates from the newly
+produced "gamvcX.dat" and "tauvcX.dat" files into matrices, stored in e(), and then 
+erases the current "gamvcX.dat" and "tauvcX.dat" files.  Finally the  
+"gamvcX_tempN.dat" and "tauvcX_tempN.dat" files are renamed to their old
+("gamvcX_tempN.dat" and "tauvcX_tempN.dat") names.  In principal this works fine, 
+but if there is an error in the program and the hlm commands exits before completing,
+it is possible that the "gamvcX_tempN.dat" and "tauvcX_tempN.dat" will not be
+renamed to their original names.  I tell you this so you won't wonder if a bunch of
+"gamvcX_tempN.dat" and "tauvcX_tempN.dat" files start populating your hard drive.
+
+{p 0 4}{cmd:robust} specifies that the variance-covariance matrix used to compute
+the robust standard errors should be saved in e(V), when available (robust standard
+errors are not available, for example, with laplace estimation).
+
+{p 0 4}{cmd:noeq} suppresses the writing of the full HLM model equations in stata.  The equations are written for
+users to verify that the model is correctly specified; they do not affect the writing of the command file.
+
+{p 0 4}{cmdab:lo:ng:} specifies that HLM should produce a full output file; the default is to produce only a reduced output file.
+
+{p 0 4}{cmd:res1} specifies that HLM should produce a level-1 residual file.
+The residual file is written to a file named {it:filename}_res1.dta, where 
+{it:filename} is the filename specified in the {cmdab:cmd:file:(}{it:newfile}{cmd:)} 
+command.
+
+{p 0 4}{cmd:res2} specifies that HLM should produce a level-2 residual file.
+The residual file is written to a file named {it:filename}_res2.dta, where 
+{it:filename} is the filename specified in the {cmdab:cmd:file:(}{it:newfile}{cmd:)} 
+command.
+
+{p 0 4}{cmd:res3} specifies that HLM should produce a level-3 residual file.
+The residual file is written to a file named {it:filename}_res3.dta, where 
+{it:filename} is the filename specified in the {cmdab:cmd:file:(}{it:newfile}{cmd:)} 
+command.
+
+{p 0 4}{cmd:rv1(}{it:varlist}{cmd:)} specifies that the level-1 residual file
+should include (in addition to the variables in the model, which are included by 
+default) the variables listed in {it:varlist}.  
+
+{p 0 4}{cmd:rv2(}{it:varlist}{cmd:)} specifies that the level-2 residual file
+should include (in addition to the variables in the model, which are included by 
+default) the variables listed in {it:varlist}.  
+
+{p 0 4}{cmd:rv3(}{it:varlist}{cmd:)} specifies that the level-3 residual file
+should include (in addition to the variables in the model, which are included by 
+default) the variables listed in {it:varlist}.  
+
+{p 0 4}{cmdab:ti:tle:(}{it:string}{cmd:)} specifies the title to be given to the HLM output file.
+
+{p 0 4}{cmdab:gr:aph:(}{it:newfile}{cmd:)} specifies that HLM should write a graph equations (.geq) file
+named {it:newfile}.
+
+{marker par}
+{bf:{dlgtab:options for hlm run}}
+
+{p 0 4}{cmd:hlm2} is the default.  It specifies that the .hlm command file is an 
+HLM2 command file.
+
+{p 0 4}{cmd:hlm3} specifies that the .hlm command file is an HLM3 command file.
+
+{p 0 4}{cmd:mdm(}{it:mdmfile}{cmd:)} specifies that {it:mdmfile} is the MDM file 
+to be used.  If not specified, the MDM file specified in the most recent 
+{cmd:mdmdset} command is used.
+
+{p 0 4}{cmdab:st:ore:(}{it:name}{cmd:)} specifies which set of estimates are to
+be stored in e(b) and e(V).  See also {cmd:robust} below.  In {cmd:store}, {it:name}
+may be {bf:lin} (used only with a linear model), {bf:us} (unit-specific estimates,
+may be used with any non-linear model), {bf:pa} (population-average estimates,
+may be used with any non-linear model), {bf:eml} (EM laplace estimates, may be used
+when {cmd:laplace} option is specified}, or {bf:l6} (laplace-6 estimates, may be used
+when {cmd:l6} option is specified}.  If {cmd:store} is omitted, the default depends 
+on the model specified.  If {cmd:laplace} is specified, the default is {bf:eml}; 
+otherwise, if {cmd:l6} is specified, the default is {bf:l6}; otherwise, if the model
+is any other non-linear model, the default is {bf:us}; finally, if the model is linear,
+the default is {cmd:lin}. 
+
+{p 0 4}{cmd:robust} specifies that the variance-covariance matrix used to compute
+the robust standard errors should be saved in e(V), when available (robust standard
+errors are not available, for example, with laplace estimation).
+
+{p 0 4}{cmd:noview} suppresses the viewing of the output file in the viewer window.
+
+{marker par}
+{title:Stored Results}
+
+{p 0 0 2}Depending on the model specified, HLM will produce several sets of 
+estimated coefficients and the corresponding variance-covariance matrices.  Each of
+these are stored in Stata as e-class results.  In addition, a number of scalars and
+macros are srored:
+
+{p 0 0 2}Scalars:
+
+{col 6}e(sig2)    {col 20}estimated level-1 residual variance (linear model only)
+{col 6}e(N_1)  	{col 20}number of level-1 observations
+{col 6}e(N_2)  	{col 20}number of level-2 observations
+{col 6}e(N_3)  	{col 20}number of level-3 observations
+{col 6}e(dev)	{col 20}deviance statistic from linear model
+{col 6}e(dev_l6)  {col 20}deviance statistic from laplace-6 estimates
+{col 6}e(dev_eml) {col 20}deviance statistic from EM laplace estimates
+{col 6}e(df)  	{col 20}model df (number of parameters estimated)
+
+{p 0 0 2}Macros:
+
+{col 6}e(esttype) {col 20}type of estimates stored in e(b) and e(V)
+{col 6}e(setype}  {col 20}type of standard errors stored in e(V)
+{col 6}e(cmdfile) {col 20}name of .hlm command file used
+{col 6}e(depvar)  {col 20}dependent variable
+{col 6}e(model)	{col 20}model type (distribution of outcome)
+{col 6}e(cmd)	{col 20}hlm2 or hlm3
+
+{p 0 0 2}Matrices:
+
+{col 6}e(b)     {col 20}1 x K vector of estimated coefficients
+{col 6}e(V)     {col 20}K x K variance-covariance matrix
+{col 6}e(b_lin)	{col 20}1 x K vector of estimated coefficients from linear model
+{col 6}e(b_us)	{col 20}1 x K vector of estimated unit-specific coefficients 
+{col 6}e(b_pa)	{col 20}1 x K vector of estimated population-average coefficients
+{col 6}e(b_eml)	{col 20}1 x K vector of estimated EM laplace coefficients
+{col 6}e(b_l6)	{col 20}1 x K vector of estimated laplace-6 coefficients
+{col 6}e(V_lin)	{col 20}K x K variance-covariance matrix, linear model
+{col 6}e(V_us)	{col 20}K x K variance-covariance matrix, unit-specific estimates
+{col 6}e(V_pa)	{col 20}K x K variance-covariance matrix, population-average estimates
+{col 6}e(V_eml)	{col 20}K x K variance-covariance matrix, EM laplace estimates
+{col 6}e(V_l6)	{col 20}K x K variance-covariance matrix, laplace-6 estimates
+{col 6}e(V_r)	{col 20}K x K robust variance-covariance matrix, linear model
+{col 6}e(V_usr)	{col 20}K x K robust variance-covariance matrix, unit-spec. estimates
+{col 6}e(V_par)	{col 20}K x K robust variance-covariance matrix, pop-average estimates
+{col 6}e(se_lin)  {col 20}1 x K standard error vector, linear model
+{col 6}e(se_us)	{col 20}1 x K standard error vector, unit-specific estimates
+{col 6}e(se_pa)	{col 20}1 x K standard error vector, population-average estimates
+{col 6}e(se_eml)  {col 20}1 x K standard error vector, EM laplace estimates
+{col 6}e(se_l6)	{col 20}1 x K standard error vector, laplace-6 estimates
+{col 6}e(se_r)	{col 20}1 x K robust standard error vector, linear model
+{col 6}e(se_usr)  {col 20}1 x K robust standard error vector, unit-spec. estimates
+{col 6}e(se_par)  {col 20}1 x K robust standard error vector, pop-average estimates
+{col 6}e(tau2)    {col 20}R x R level-2 tau matrix
+{col 6}e(tau2_eml){col 20}R x R level-2 tau matrix, EM laplace estimates
+{col 6}e(tau2_l6) {col 20}R x R level-2 tau matrix, laplace-6 estimates
+{col 6}e(tau3)    {col 20}R2 x R2 level-3 tau matrix
+{col 6}e(invtaui) {col 20}inverse tau information matrix
+{col 6}e(invtaui_l6) {col 20}inverse tau information matrix, laplace-6
+{col 6}e(se_tau) {col 20}vector of standard errors of tau
+{col 6}e(se_tau_l6) {col 20}vector of standard errors of tau, laplace-6
+
+{p 0 0 2}The type of estimates stored in e(b) and e(V) are determined by the 
+{cmd:store} and {cmd:robust} options.  In general, all available estimated 
+coefficients, variance-covariance matrices, and standard errors are stored, but
+those stored in e(b) and e(V) will be available for postestimation commands such as 
+{help estout}, which can then be used to display results of multiple models.
+
+
+{title:Examples}
+
+{p 0 0 2}Suppose we have a data file with outcome variable {it:score}, level-one variables {it:age}, {it:sex}, {it:race1}, {it:race2}, {it:race3}, 
+and level-two variable {it:private}.  We first sort the data by the level-two id variable ({it:schoolid} here), and then make an
+mdm file: 
+
+{p 4 8 2}sort schoolid {p_end}
+{p 4 8 2}hlm mkmdm using new_mdm_file, id2(schoolid) l1(score age sex race1 race2 race3) l2(private) miss(now) {p_end}
+
+{p 0 0 2}Next we tell Stata to use this mdm file in subsequent hlm models: {p_end}
+
+{p 4 8 2}hlm mdmset new_mdm_file.mdm {p_end}
+
+{p 0 0 2}Now, to estimate the following model: {p_end}
+
+{p 4 0 0}score(ij) = B(0j) + B(1j)*age(ij) + B(2j)*sex(ij) + R(ij) {p_end}
+{p 8 0 0}    B(0j) = G(00) + G(01)*private(j) + U(0j) {p_end}
+{p 8 0 0}    B(1j) = G(10) {p_end}
+{p 8 0 0}    B(2j) = G(20) {p_end}
+
+{p 0 0 2}we write the command:
+
+{p 4 8 2}hlm hlm2 score int(int private rand) age(int) sex(int) rand, cmd(model01) run replace
+
+{p 0 0 2}alternately, we could write the same command as:
+
+{p 4 8 2}hlm hlm2 score int(int private rand) age sex rand, cmd(model01) run replace
+
+{p 0 0 2}Now, to estimate the following model:
+
+{p 4 0}score(ij) = B(0j) + B(1j)*race1(ij) + B(2j)*race2(ij) + B(3j)*race3(ij) + R(ij) {p_end}
+{p 8 0}    B(0j) = G(00) + G(01)*private(j) + U(0j) {p_end}
+{p 8 0}    B(1j) = G(10) + G(11)*private(j) {p_end}
+{p 8 0}    B(2j) = G(20) + G(21)*private(j) {p_end}
+{p 8 0}    B(3j) = G(30) + G(31)*private(j) {p_end}
+
+{p 0 0 2}we write the command: {p_end}
+
+{p 4 8 2}hlm hlm2 score int(int private rand) race1-race3(int private) rand, cmd(model02) run replace {p_end}
+
+{p 0 0 2}Finally, to test the null hypothesis that the cofficients G(11), G(21), and G(31) are all equal to 0,
+we would write: {p_end}
+
+{p 4 8 2}hlm hlm2 score int(int private rand) race1-race3(int private) rand, cmd(model02) run replace test(private*race1=private*race2=private*race3=0) {p_end}
+
+
+{title:Author}
+
+{p 5 5}sean f. reardon{break}
+Stanford University{break}
+sean.reardon@stanford.edu {p_end}

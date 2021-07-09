@@ -1,0 +1,112 @@
+{smcl}
+{hline}
+help for {cmd:concindexg} {right:(Amadou Bassirou DIALLO: AFTPM, The World Bank and CERDI, Univ. of Auvergne)}
+{hline}
+
+{title:Estimation of the Concentration Index based on Kakwani and Wagstaff formulae.}
+
+
+{p 4 4 2}{cmd:concindexg} [{it:varlist}] [{it:if}] [{it:in}] [{it:weight}] [ {cmd:,}
+ {cmdab:w:elfarevar}{cmd:(}{it:varname}{cmd:)}
+ {cmdab:d:rop}
+ {cmdab:f:ormat}{cmd:(}{it:format}{cmd:)}
+ {cmdab:sp:litvars}{cmd:(}{it:varlist}{cmd:)}
+ {cmdab:se}
+ {cmdab:cl:ean}
+}
+
+ 
+{p 4 4 2}where :
+
+{p 4 4 2}{it:welfarevar} is the welfare variable - not optional - ,
+
+{p 4 4 2}{it:drop} is to clean the welfare indicator from missings,
+
+{p 4 4 2}{it:format} is the format type,
+
+{p 4 4 2}{it:splitvars} is to generate dummies from categorical variables,
+
+{p 4 4 2}{it:se} is to compute also standard errors of the concentration index,
+
+{p 4 4 2}{it: clean} is to erase matrices and scalars created by the program.
+
+
+{title:Description}
+
+{p 4 4 2}{cmd:concindexg} computes the concentration index on grouped data. See work by Wagstaff and Kakwani.
+
+
+{title:Formulas}
+
+{p 4 4 2}The concentration index, in the case of no standard deviations is computed as:
+
+                  C = 2 cov(yi,Ri) / µ
+
+
+{p 4 4 2}yi is the individual i's indicator variable (e.g. health status), 
+
+{p 4 4 2}µ its mean
+
+{p 4 4 2}Ri his fractional rank in the socioeconomic distribution
+
+{p 4 4 2}Standard errors of C are obtained by:
+
+
+                             1   1        2             2
+                  Var(C) =   - [ - sum (a   ) - (1 + C)   ]
+                             n   n 
+
+{p 4 4 2}where :
+
+
+                     yi
+                  a = -  ( 2 Ri - 1 - C) + 2 - qi-1 - qi
+                      µ
+
+{p 4 4 2}and :
+
+                       1
+                  qi = - sum(yi)
+                       µn 
+
+{p 4 4 2}is the ordinate of the concentration curve L(p), and q0 = 0.
+
+ 
+{title:Examples}
+
+{p 4 4 2}{cmd:. concindexg has_water has_elec, welf(quint)  }{p_end}
+
+{p 4 4 2}{cmd:. concindexg has_water has_elec, welf(quint) dr se cl)}{p_end}
+
+{p 4 4 2}{cmd:. concindexg has_water [aw=weight], we(quint) se by(urbrur)}{p_end}
+
+{p 4 4 2}{cmd:. concindexg var1 var2 [aw=weight], we(quint) f(%9.2f)}{p_end}
+
+
+{title:Saved Results}
+
+{p 4 4 2}Concentration indices are saved in matrice r(CIG).
+
+
+{title:Author}
+
+{p 4 4 2}
+Amadou Bassirou DIALLO,
+AFTPM, The World Bank
+-and- CERDI, Univ. of Auvergne (France).
+
+{p 4 4 2}Email: {browse "mailto:adiallo5@worldbank.org":adiallo5@worldbank.org}, {browse "mailto:adiallo5@gmail.com":adiallo5@gmail.com}
+
+
+{title:Note}
+
+{p 4 4 2} This program has been initially developped to use the Demographic and Health Surveys (DHS).
+
+
+{title:Also see}
+
+{p 4 4 2}Online:   help for {help concindexi}, {help ineqdeco}, {help inequal}, {help povdeco}, {help ineqerr} if installed. {p_end}
+
+
+{hline}
+

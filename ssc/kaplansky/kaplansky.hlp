@@ -1,0 +1,121 @@
+{smcl}
+{* 25 May 2007}{...}
+{hline}
+help for {hi:kaplansky}
+{hline}
+
+{title:Graph examples of distributions of varying kurtosis} 
+
+{p 8 17 2} 
+{cmd:kaplansky} 
+[{cmd:,}
+{cmd:show(}{it:numlist}{cmd:)} 
+{cmdab:ra:nge(}{it:min max}{cmd:)} 
+{it:twoway_function_options}
+]
+
+
+{title:Description}
+
+{p 4 4 2}
+{cmd:kaplansky} graphs some examples of distributions with various values of
+kurtosis discussed by Kaplansky in 1945. The intent is cautionary: values 
+of kurtosis higher and lower than the Gaussian or normal value are consistent 
+with various peak and tail properties.
+
+
+{title:Remarks} 
+
+{p 4 4 2}In a short note Kaplansky (1945a) drew attention to four examples 
+of distributions with different values of kurtosis and behaviour not 
+consistent with some discussions of kurtosis. 
+
+{p 4 4 2}The distributions all are symmetric with mean 0 and variance 1 and 
+have density functions, for variable x and c = sqrt(pi), 
+
+	(1) (1 / 3c) (9/4 + x^4) exp(-x^2) 
+
+	(2) (3 / (c sqrt(8))) exp(-x^2 / 2) - (1 / 6c) (9/4 + x^4) exp(-x^2)
+
+	(3) (1 / 6c) (exp(-x^2 / 4) + 4 exp(-x^2))  
+
+	(4) (3 sqrt(3) / 16c) (2 + x^2) exp(-3x^2 / 4) 
+
+{p 4 4 2}The kurtosis is (1) 2.75 (2) 3.125 (3) 4.5 (4) 8/3 ~ 2.667: compare the 
+Gaussian or normal value of 3. The density at the mean is 
+(1) 0.423 (2) 0.387 (3) 0.470 (4) 0.366: 
+compare the Gaussian value of 0.399. 
+
+{p 4 4 2}By default, densities are shown by {cmd:kaplansky} for the range 
+{bind:0 <= x <= 4}.  The Gaussian or normal density with kurtosis 3 is shown as a
+reference. Using a logarithmic scale for density is instructive. The graph is
+drawn using {help twoway function}, regardless of whatever data may be in
+memory. 
+
+
+{title:Vignette} 
+
+{p 4 4 2}Irving Kaplansky (1917{c -}2006) was a Canadian (later American)
+mathematician.  He was born in Toronto shortly after his parents
+immigrated from Poland and gained Bachelor's and Master's degrees from
+the University of Toronto and a Ph.D. from Harvard in field theory (as
+Saunders Mac Lane's first student).  He taught and researched at
+Harvard, Chicago and Berkeley, with a wartime year in the Applied
+Mathematics Group of the National Defense Council at Columbia
+University.  Kaplansky made major contributions to group theory, ring
+theory, the theory of operator algebras and field theory.  He was an
+accomplished pianist and lyricist and an enthusiastic and lucid expositor of
+mathematics. Kaplansky was a member of the U.S. National Academy of
+Sciences. See also some other contributions to probability and statistics 
+by Kaplansky (1943, 1945b) and Kaplansky and Riordan (1945). 
+
+
+{title:Options} 
+
+{p 4 8 2}{cmd:show()} selects distributions from the list 1 2 3 4 (see 
+numbered annotations above) and
+is to be used when you wish to show fewer than the full set. Thus 
+{cmd:show(2 4)} selects 2 and 4 from the list. The Gaussian is shown 
+regardless. 
+
+{p 4 8 2}{cmd:range()} selects a numeric range for x other than the default. 
+Minimum and maximum should be given as two numbers, such as {cmd:range(5 10)}. 
+
+{p 4 8 2}{it:twoway_function_options} are options of {help twoway function}. 
+
+
+{title:Examples}
+
+{p 4 8 2}{cmd:. kaplansky}{p_end}
+{p 4 8 2}{cmd:. kaplansky , ysc(log) yla(.3 .03 .003 .0003 0.00003) legend(pos(7))}
+
+
+{title:Author}
+
+{p 4 4 2}Nicholas J. Cox, Durham University{break} 
+n.j.cox@durham.ac.uk
+
+
+{title:References} 
+
+{p 4 8 2}Albers, D.J., Alexanderson, G.L. and Reid, C. (Eds) 1990. 
+{it:More Mathematical People.} Boston: Harcourt Brace Jovanovich, 
+pp. 119{c -}136 on Irving Kaplansky. 
+
+{p 4 8 2}Kaplansky, I. 
+1943. A characterization of the normal distribution. 
+{it:Annals of Mathematical Statistics} 14: 197{c -}198.
+
+{p 4 8 2}Kaplansky, I. 
+1945a. A common error concerning kurtosis.
+{it:Journal, American Statistical Association} 40: 259 only. 
+
+{p 4 8 2}Kaplansky, I. 
+1945b. The asymptotic distribution of runs of consecutive elements. 
+{it:Annals of Mathematical Statistics} 16: 200{c -}203. 
+
+{p 4 8 2}Kaplansky, I. and Riordan, J.
+1945. 
+Multiple matching and runs by the symbolic method.
+{it:Annals of Mathematical Statistics} 16: 272{c -}277. 
+

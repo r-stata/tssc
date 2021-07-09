@@ -1,0 +1,113 @@
+.-
+help for ^tabplot6^
+.-
+
+Table of frequencies as one or more bar charts or histograms
+------------------------------------------------------------
+
+    ^tabplot6^ [rowvar] colvar [^if^ exp] [^in^ range] [weight]
+    [ ^, colpr colfr colpc rowpr rowfr rowpc xasis yasis w^idth^(^#^)^
+    ^z^ero graph_options ]
+
+Description
+-----------
+
+^tabplot6^ plots a table of frequencies in graphical form. It is intended
+for use when at least one of the variables shown is categorical.
+
+^tabplot6^ colvar plots a vertical bar chart or histogram of the
+frequencies of colvar. The frequencies are regarded as one row of a
+multi-column table.
+
+^tabplot6^ rowvar colvar plots the frequency of each combination of row
+and column as an array of bars with height proportional to frequency,
+that is, as a series of vertically stacked bar charts or histograms.
+
+The bars are unshaded. By default they take up 50% of the horizontal
+space: this may be varied directly by use of the ^width( )^ option. By
+default both variables are mapped in sort order to successive integers
+from 1 up, but original values are used as value labels: this may be
+varied by use of the ^xasis^ or ^yasis^ options.
+
+^tabplot6^ is a renamed version of ^tabplot^ 1.0.1 of 26 February 1999, 
+written for Stata 6. Users of Stata 8 on would switch to ^tabplot^ 2.0.0 
+or later. 
+
+
+Remarks
+-------
+
+^tabplot6^ colvar differs from ^hist^:
+
+    ^tabplot6^ allows the width of bars to be controlled, but not the
+    shading. Thus bars may touch or not touch according to choice.
+    ^hist^ behaves conversely, and bars always touch unless there are
+    gaps in the data.
+
+    ^tabplot6^, but not ^hist^, takes categorical variables coded as
+    strings.
+
+    ^hist^ always takes values literally.
+
+    ^hist^ produces a maximum of 50 bins, whereas ^tabplot6^ is
+    unlimited.
+
+^tabplot6^ rowvar colvar, ^xasis^ may be useful for stacking histograms
+    vertically. A typical protocol would be
+
+    .^ gen Numvar = round(numvar, ^#^)^
+    .^ _crcslbl Numvar numvar^
+    .^ tabplot6 catvar Numvar, xasis w(^#^)^
+
+
+Options
+-------
+
+^colpr^, ^colfr^, ^colpc^, ^rowpr^, ^rowfr^, ^rowpc^ scale frequencies
+     to be proportions (fractions), adding to 1, or percents, adding to
+     100, of each column or row total. ^colpr^ and ^colfr^ are
+     numerically equivalent but the text produced on the graph will be
+     ^proportion^ or ^fraction^ respectively: the same distinction
+     applies to ^rowpr^ and ^rowfr^. The ^col^* options are useful only
+     when two variables are plotted.
+
+^width(^#^)^ specifies the widths of the bars. The default is
+    ^width(0.5)^. This may need changing with option ^xasis^.
+
+^xasis^ and ^yasis^ specify that the x (column) and y (row) variables
+    are to be treated literally (that is, numerically). Most commonly,
+    ^xasis^ will be specified if the x variable is a measured scale or a
+    graded variable with gaps. If values 1 to 5 are labelled A to E, but
+    no 4 (D) is present in the data, ^xasis^ prevents a mapping to 1 (A)
+    ... 4 (E).
+
+^zero^ specifies that zeros are to be shown explicitly by bars of
+    zero height, shown in practice by a discernible line.
+
+graph_options are options allowed with ^graph, twoway^, other than
+    ^symbol^ and ^connect^, ^xlabel^ by itself and ^ylabel^ by itself.
+    ^yreverse^ and ^yline( )^ may be useful. Note that these options do
+    not include ^shading^. ^t1(" ")^ may be used to blank out the
+    ^t1title( )^ that by default signals the maximum quantity plotted
+    when two variables are specified.
+
+
+Examples
+--------
+
+        . ^tabplot6 rep78^
+        . ^tabplot6 for rep78^
+        . ^tabplot6 for mpg, xasis w(1)^
+
+
+Author
+------
+
+         Nicholas J. Cox, University of Durham, U.K.
+         n.j.cox@@durham.ac.uk
+
+
+Also see
+--------
+
+On-line: help for @graph@, @hist@, @histplot@ (if installed)

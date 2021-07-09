@@ -1,0 +1,75 @@
+
+{smcl}
+{.-}
+help for {cmd:reghintfe} {right:()}
+{.-}
+ 
+{title:Title}
+
+reghintfe - Estimates a linear regression model with one interacted high dimensional fixed effect.
+
+{title:Syntax}
+
+{p 8 15}
+
+{cmd:reghintfe} {it:{help depvar}} [{it:{help indepvar}}] [{help if}] [{help in}] , {cmd:id1(}{it:{help varname}}{cmd:)} {cmd:intvar(}{it:{help varname}}{cmd:)} [{it:options}] 
+
+{p 8 15}
+
+
+{title:Description}
+
+{p} This command estimates a linear regression model with one high-dimensional interacted fixed effect. The command
+makes use of the Frisch-Waugh-Lovell result to avoid computing the dummy variables and the interactions for the fixed effects.
+Because of this it can be used with a very large number of groups for the fixed effect.
+
+{title:Options}
+
+{p 0 4} {cmd:id1(}{it:{help varname}}{cmd:)} fixed effect variable. This option is required.
+
+{p 0 4} {cmd:intvar(}{it:{help varname}}{cmd:)} variables that interact with the fixed effect. This option is required.
+
+{p 0 4} {cmd:cluster(}{it:varname}{cmd:)} computes clustered standard errors. 
+
+{p 0 4}{cmdab:verb:ose} gives more information during estimation.
+
+{title:Examples}
+
+Example 1:
+Estimates a model with interaction between a fixed effect i and the variable x3.
+Does the same as "regress y x1 x2 i.j##c.x3"
+
+{p 8 16}{inp:. regintfe y x1 x2, id1(j) intvar(x3)}{p_end}
+ 
+It creates two variables, __fe0 and __fe1. The variable __fe0 contains the estimates of the coefficients for the 
+fixed effect and the variable __fe1 the estimates of the coefficients for the interaction between "j" and "x3".
+
+Example 2:
+Estimates a model with interaction between a fixed effect i and the variables x2 and x3. Standard errors are clustered on "j".
+Does the same as "regress y x1 i.j##c.x2 i.j##c.x3, cluster(j)"
+
+{p 8 16}{inp:. regintfe y x1, id1(j) intvar(x2 x3)} cluster(j) {p_end}
+ 
+Creates three variables,  __fe0, __fe1 and __fe2. The variable __fe0 contains the estimates of the coefficients for the 
+fixed effect, the variable __fe1 the estimates of the coefficients for the interaction between "j" and "x2" and
+the variable __fe2 the estimates of the coefficients for the interaction between "j" and "x3".
+
+{title:Author}
+
+{p}
+Paulo Guimaraes, Universidade do Porto, Portugal.
+
+{p}
+Email: {browse "mailto:pguimaraes@fep.up.pt":pguimaraes@fep.up.pt}
+
+Comments welcome!
+
+{title:Reference}
+
+If you use this program in your research cite:
+
+Paulo Guimaraes and Pedro Portugal. "A Simple Feasible Alternative Procedure to Estimate Models with 
+High-Dimensional Fixed Effects", Stata Journal, 10(4), 628-649, 2010.
+
+{p_end}
+

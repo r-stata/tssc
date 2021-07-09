@@ -1,0 +1,32 @@
+d 'CSTI': module that modifies csi command in order to use total numbers rather than individual cell counts
+d
+d  Binary outcomes (such as mortality) are typically published in a
+d Table as the number of events over the number of patients or
+"d subjects in the group, i.e. ""n/N"".  If one wants to compute a"
+"d risk ratio and P value, Stata's -csi- command can be used."
+"d However, to use -csi- it is first necessary to calculate, within"
+"d each group, the difference between the total number of subjects"
+d and the number of events.  This is because -csi- expects the data
+"d to be entered as individual cell counts rather than ""events"" and"
+"d ""total subjects”. -csti- allows you to enter the n/N naturally"
+d and avoids having to compute the difference between the total
+d subjects and number of events. The command is implemented as a
+"d wrapper for -csi- built-into Stata. For example, if 23/130"
+d patients died in an Intervention group while 13/127 patients died
+"d in a control group, Stata's -csi- syntax would be ""csi 23 13 107"
+"d 114”, whereas when using -csti-, the command becomes ""csti 23"
+d 130 13 127”.
+d
+d KW: csi
+d KW: risk ratio
+d KW: relative risk
+d
+d Requires: Stata version 11
+d
+d Distribution-Date: 20141004
+d
+"d Author: Philip M Jones, University of Western Ontario"
+d Support: email pjones8@@uwo.ca
+d
+f csti.ado
+f csti.sthlp

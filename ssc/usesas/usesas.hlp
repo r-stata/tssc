@@ -1,0 +1,213 @@
+{smcl}
+{* version 2.1  26Feb2009}{...}
+{* 24Aug2006}{...}
+{* 04Aug2005}{...}
+{* 05Nov2003}{...}
+{hline}
+help for {hi:usesas} {right:manual:  {hi:[R] none}}
+{right:dialog:  {hi: none}    }
+{hline}
+
+
+{title:Use a SAS dataset}
+
+{p 8 17 2}{cmd:usesas}
+{cmd:using} {it:filename}
+[{cmd:,} 
+{cmdab:for:mats}
+{cmd:char2lab}
+{cmdab:ch:eck}
+{cmd:clear}
+{cmd:float}
+{cmd:xport}
+{cmdab:de:scribe}
+{cmdab:ke:ep(}{it:variable names}{cmd:)}
+{cmd:if(}{it:SAS if statement}{cmd:)}
+{cmd:in(}{it:firstobs/lastobs}{cmd:)}
+{cmdab:qu:otes}
+{cmdab:me:ssy}
+]{p_end}
+
+        
+{title:Description}
+
+{p 4 8 2} {cmd:NOTE:} Before the first use of {cmd:usesas} your {cmd:sasexe.ado} file may need to be edited to set 
+the location of your SAS executable file (sas.exe) and your savastata SAS macro file (savastata.sas).  It may be 
+that {cmd:usesas} will be able to run with the default settings in {cmd:sasexe.ado}.{p_end}
+
+{p 4 4 2}  {cmd:usesas} loads a SAS datafile into memory.  This usually occurs by supplying {cmd:usesas} a SAS 
+dataset (*.sas7bdat, *.sd7, *.sd2, *.ssd01, *.xpt, *.cport) or an SPSS portable file (*.por), 
+but {cmd:usesas} can also load a SAS datafile into memory via a SAS program (*.sas) that creates a 
+SAS dataset.  The last dataset created by the SAS program will be the SAS dataset processed by {cmd:usesas}.{p_end} 
+
+{p 4 4 2}{cmd:usesas} assumes the most common SAS datafile extension {cmd:.sas7bdat} if no file extension/suffix is 
+specified.{p_end}
+
+{p 4 4 2}{cmd:usesas} uses the savastata SAS macro to create the Stata dataset from the SAS
+dataset.  {cmd:usesas} downloads the savastata SAS macro and stores it where user-written
+Stata ado-files are stored that begin with the letter "s".  This macro can be used in SAS.
+Learn about savastata here: 
+{browse "http://www.cpc.unc.edu/research/tools/data_analysis/sas_to_stata/savastata.html":http://www.cpc.unc.edu/research/tools/data_analysis/savastata.html }{p_end}
+
+{p 4 4 2}{cmd:usesas} figures out how much memory the SAS dataset will require to be loaded into Stata
+and sets Stata's memory for you if your memory setting is less than is required.{p_end}
+
+{p 4 4 2}{cmd:usesas} indicates that it has finished running by reporting to you how many observations
+and variables are in your dataset now in memory.  For example:{p_end}
+
+{p 4 8}Stata reports that the dataset has 200 observations and 11 variables.{p_end}
+
+{p 4 8 2}{cmd:NOTE:  usesas} calls SAS to run a SAS program.  This requires the ability to run SAS on your computer.{p_end}
+
+ 
+{title:Options}
+
+{p 4 8 2}{cmd:formats} specifies to create value labels from SAS user-defined formats that are stored 
+in a SAS formats catalog file that has the same name as the dataset and is in the same directory
+as the SAS dataset.  For example: MySasData.sas7bcat .  If this file doesn't exist, {cmd:usesas} will
+look for the file formats.sas7bcat in the same directory as the dataset.{p_end}
+
+{p 4 8 2}{cmd:char2lab} specifies to encode long SAS character variables like the Stata 
+command {help encode :encode}.  Character variables that are too long for a Stata string 
+variable are maintained in value labels. This is all done with the {cmd:char2fmt} SAS 
+macro.{p_end}
+
+{p 4 8 2}{cmd:check} specifies to generate basic stats for both datasets for the user to compare the 
+newly created Stata dataset with the imported SAS dataset to make sure {cmd:usesas} created the files 
+correctly.  This is a comparison that should be done after any datafile is converted to any other 
+type of datafile by any software.  The SAS file is created in the same directory as the input SAS 
+datafile and is named starting with the name of the datafile followed by "_SAScheck.lst" 
+(SAS).  e.g. "mySASdata_SAScheck.lst"{p_end}
+
+{p 4 8 2}{cmd:clear} specifies to clear the data currently in memory before running {cmd:usesas}.{p_end}
+
+{p 4 8 2}{cmd:float} specifies that numeric variables that would otherwise be stored as numeric type
+double be stored with numeric type float.  This option should only be used if you are certain you
+have no integer variables that have more than 7 digits (like an ID variable).{p_end}
+
+{p 4 8 2}{cmd:xport} specifies that the input dataset is a SAS Transport/Xport dataset.  Since there 
+is no standard file extension for SAS Xport datasets, this option is required.  Datasets created 
+by SAS's PROC CPORT procedure are allowed.{p_end}
+
+{p 4 8 2}{cmd:describe} makes {cmd:usesas} act somewhat like the Stata command 
+{help describe :describe using}.  It does not bring the full dataset into memory.  Instead it specifies for 
+{cmd:usesas} only to load the descriptive information about the using dataset into Stata's memory as a 
+Stata dataset and print it.  So, instead of loading the actual dataset into Stata, {cmd:usesas} loads 
+the descriptive information (variable names, what type of variables they are, the variable labels and 
+formats associated to the variables) into Stata as a dataset.  You can {help clear :clear} the 
+descriptive data out of Stata's memory or use the descriptive data however you like to create variable 
+lists for your actual invocation of {cmd:usesas}.  This may be helpful for situations where the SAS 
+dataset has more variables than your version of Stata can handle.  You can create a variable list 
+from the variable called "name" to create another invocation of {cmd:usesas} to read in only the 
+variables you need.{p_end}
+
+{p 8 8 2}If you do not want to have the {cmd:describe} option list the descriptive information of the 
+imported dataset, you can use the option {cmd:listnot} with {cmd:describe}. The descriptive information 
+will still be loaded into Stata as a Stata dataset.{p_end} 
+
+{p 8 8 2}The descriptive data are sorted in the variable order of the using dataset so a variable list 
+for {cmd:usesas} could be created like so:{p_end}
+
+{p 8 8 2} {cmd:. display "`= trim(name[1])'--`= name[2047]'" }{p_end}
+
+{p 8 8 2} {cmd:id--income88 }{p_end}
+
+
+{p 8 8 2} which could then be used like so to keep the first 2,047 variables in the using dataset
+(2,047 is the maximum number of variables that Stata Intercooled can handle):{p_end}
+
+{p 8 8 2} {cmd:. usesas using "mySASdata.sas7bdat", clear keep(`= trim(name[1])'--`= name[2047]') }{p_end}
+
+{p 8 8 2} SAS variable lists using two dashes "--" tells SAS to use the variables that exist
+positionally between the first variable and the last variable in the using dataset inclusively.
+Read more about this under the documentation of the {cmd:keep} option.{p_end}
+
+{p 8 8 2}The {cmd:describe} option makes {cmd:usesas} return the following in {cmd:r()}:{p_end}
+
+{synoptset 20 tabbed}{...}
+{p2col 5 20 24 2: Scalars}{p_end}
+{synopt:{cmd:r(N)}}number of observations in using dataset{p_end}
+{synopt:{cmd:r(k)}}number of variables in using dataset{p_end}
+
+{p2col 5 20 24 2: Macros}{p_end}
+{synopt:{cmd:r(varlist)}}variables in using dataset {p_end}
+{synopt:{cmd:r(sortlist)}}variables by which using data are sorted {p_end}
+
+{p 8 8 2} The above scalars and macros contain information about the dataset that was described, 
+not information of the dataset of descriptive information that {cmd:usesas} loaded into Stata 
+with the {cmd:describe} option.{p_end}
+
+{p 4 8 2}{cmd:keep} allows for a list of variables from the imported dataset to be read in.  This list is
+used in the SAS code portion of {cmd:usesas} so must be written in the SAS variable list style.  SAS does
+not allow for variable lists to contain stars (*) or question marks (?).  For example:{p_end}
+
+{p 4 8 2}{cmd: keep(var1-var20)} includes only vars that start with "var" and end in a number between 1 and 20.{p_end}
+
+{p 4 8 2}{cmd: keep(var1--var20)} includes only vars in the dataset between var1 and var20.  This is like Stata's 
+{help varlist:varlist} style {cmd: var1-var20}.{p_end}
+
+{p 4 8 2}{cmd:if} allows for a SAS {cmd:if} statement to subset the data before it's read in.  Any valid
+SAS style {cmd:if} statement will work.{p_end}
+
+{p 4 8 2}{cmd:in} allows for subsetting the data before it's read in.  Use only {cmd:#/#} where both numbers are 
+positive, for example 1/30 for the first 30 observations.{p_end}
+
+{p 4 8 2}{cmd:quotes} specifies that double quotes that exist in string variables are to be replaced 
+with single quotes.  Since the data are written out to an ASCII file and then read into Stata, 
+there are rare instances when double quotes are not allowed inside string variables.{p_end}
+
+{p 4 8 2}{cmd:messy} specifies that all the intermediary files created by {cmd:usesas} during its operation
+are not to be deleted.  The {cmd:messy} option prevents {cmd:usesas} from cleaning up after it has
+finished.  This option is mostly useful for debugging purposes in order to find out where something went 
+wrong.  All intermediary files have a name starting with an underscore "_" followed by the process ID and 
+are located in Stata's temp directory.{p_end}
+
+{title:Examples}
+
+{p 4 8 2} {cmd:. usesas using "mySASdata.sas7bdat" }{p_end}
+
+{p 4 8 2} {cmd:. usesas using "c:\data\mySASdata.ssd01", check }{p_end}
+
+{p 4 8 2} {cmd:. usesas using "mySASdata.xpt", xport }{p_end}
+
+{p 4 8 2} {cmd:. usesas using "mySASdata.sas7bdat", formats }{p_end}
+
+{p 4 8 2} {cmd:. usesas using "mySASdata.sd2", quotes }{p_end}
+
+{p 4 8 2} {cmd:. usesas using "mySASdata.sas7bdat", messy }{p_end}
+
+{p 4 8 2} {cmd:. usesas using "mySASdata.sas7bdat", keep(id--qvm203a) if(1980<year<2000) in(1/500) }{p_end}
+
+{p 4 8 2} {cmd:. usesas using "mySASdata.sas7bdat", describe }{p_end}
+
+{p 4 8 2} {cmd:. usesas using "mySASdata.sas7bdat", describe nolist }{p_end}
+
+{p 4 8 2} {cmd:// then submit the following actual invocation of usesas: }{p_end}
+
+{p 4 8 2} {cmd:. usesas using "mySASdata.sas7bdat", clear keep(`r(sortlist)' `= trim(name[1])'--`= name[2047]') }{p_end}
+
+
+{p 4 8 2} NOTE:  If you are setting up this program on your computer for the first time, please edit 
+{cmd:sasexe.ado} to set the location of your SAS executable file (sas.exe).  If you do not, {cmd:usesas} 
+will try to set it for you.  The {cmd:sasexe.ado} file is an ASCII text file and should be saved as such 
+after editing.  Stata's {cmd:do-file} editor will do the trick.{p_end}
+
+{title:Setting up usesas}
+
+{p 4 8 2}{stata quietly adoedit sasexe:edit sasexe.ado} (click, to edit the {cmd:sasexe.ado} file, remember to save when done.){p_end}
+
+
+{title:Author}
+
+{p 4 4 2}
+Dan Blanchette {break}
+The Carolina Population Center {break}
+University of North Carolina - Chapel Hill, USA {break}
+dan_blanchette@unc.edu{p_end}
+
+
+{title:Also see}
+
+{p 4 13 2}On-line: {help use}, {help fdause}, {help savasas} (if installed){p_end}
+
+

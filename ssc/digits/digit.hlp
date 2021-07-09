@@ -1,0 +1,89 @@
+{smcl}
+{* version 2.01 14mar2006}{...}
+{cmd:help digit}
+{hline}
+
+{title:Title}
+
+{p 4 21 2}
+{hi:digit} {hline 2} Extracts digits at a specified decimal place
+
+{title:Syntax}
+
+{p 8 15 2}{cmd:egen} [{it:{help type}}] {newvar} {cmd:=} {cmdab:digit}({varname}) [{cmd:,} {opth d:igit(#)} {opth r:ound(#)} ]
+
+{title:Description}
+
+{pstd}
+The {cmd:digit} function extends the {cmd:egen} command.  
+When used as described above, a new user-named variable {newvar} is created. For each case,
+{newvar} contains the digit (0 to 9) that is located at a specified decimal position in {varname}.
+
+{pstd}Options are available to specify the decimal position that you wish to examine as well as
+any rounding that should be applied to the variable when extracting this digit.
+
+{pstd}
+
+{title:Options}
+
+{dlgtab:General}
+
+{phang}
+{opth D:igit(#)} indicates the digit you wish to extract.  This is specified using 
+the decimal exponent or power of 10 of the desired digit (e.g. digit(0) extracts the 'units' digit, 
+digit(1) extracts the 'tens' digit, and digit (-2) extracts the 'hundredths' digit).
+The detault setting is zero (extraction of the 'units' digit).
+
+{phang}
+{opth R:ound(#)} indicates the number of decimal places to which {varname} will be rounded 
+prior to extracting digit information.  When using the command repetitively to extract a series 
+of digits, this option should be constant to prevent inconsistencies due to different rounding 
+schemes being applied.  The default setting is 15 decimal places, however in some cases this may
+result in rounding errors where the number being stored exceeds the available precision. This is 
+often the case where floating point values have been imported from other data formats using 
+third-party data conversion programs (e.g. a number may have been stored as 4.9999999999997 instead of 5).
+
+{title:Remarks}
+
+{pstd}
+This function creates a new variable containing the digit stored at a certain decimal position in an existing variable.  This new variable can be tabulated to investigate digit preferences. 
+
+{pstd}
+The following example illustrates how this function can be used:
+
+    {cmd:. egen hundredths = digit(potass), digit(-2) round(2)}
+    {cmd:}
+    {cmd:. tab hundredths}
+    {dup 12:{c -}}{c TT}{dup 35:{c -}}
+    10^-2 digit {c |}
+     of potass  {c |}      Freq.     Percent        Cum.
+    {dup 12:{c -}}{c +}{dup 35:{c -}}
+    {dup 10: }0 {c |}     13,468       93.72       93.72
+    {dup 10: }1 {c |}         84        0.58       94.31
+    {dup 10: }2 {c |}        114        0.79       95.10
+    {dup 10: }3 {c |}        105        0.73       95.83
+    {dup 10: }4 {c |}         96        0.67       96.50
+    {dup 10: }5 {c |}        109        0.76       97.26
+    {dup 10: }6 {c |}        100        0.70       97.95
+    {dup 10: }7 {c |}        101        0.70       98.66
+    {dup 10: }8 {c |}         97        0.68       99.33
+    {dup 10: }9 {c |}         96        0.67      100.00
+    {dup 12:{c -}}{c BT}{dup 35:{c -}}
+
+
+{pstd}
+The tabluation of the created variable shows an overrepresentation of zero digits in the 'hundredths' position.  This suggests around 6% of scores were measured with a higher precision may have been misrecorded or mistranscribed resulting in an incorrect precision.
+
+{title:Examples}
+
+    {cmd:. egen units = digit(myvar)}
+    {cmd:. egen dm2 = digit(potass), digit(-2) round(2)}
+    {cmd:. egen dm1 = digit(potass), digit(-1) round(2)}
+    {cmd:. egen d0  = digit(potass), digit(0) round(2)}
+
+{title:Author}
+
+{pstd}Richard J. Atkins{p_end}
+{pstd}London School of Hygiene and Tropical Medicine{p_end}
+{pstd}e-mail: richard.atkins@lshtm.ac.uk{p_end}
+

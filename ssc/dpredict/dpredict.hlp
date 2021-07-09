@@ -1,0 +1,92 @@
+{smcl}
+{* June 16, 2006}{...}
+{hline}
+help for {hi: dpredict}{right: juraj.katriak@iskwien.at}
+{hline}
+
+{title:Title}
+{p 8 17 2}
+{hi: dpredict} {hline 2} Dynamic forecasting  for ARIMA(p,d,q) models
+{p_end}
+
+{title:Syntax}
+
+{p 8 17 2}
+{cmdab:dpredict} 
+[{it:varlist} ]
+{cmd:,}
+{it:from(#)} 
+{it:to(#)} 
+{it:periods(#)}
+[{it:lvl}]
+{cmd::}
+{it:command}
+{p_end}
+
+{synoptset 26 tabbed}{...}
+{synopthdr}
+{synoptline}
+{synopt: {opt f:rom(#)}}the number of the last observation of the first subsample{p_end}
+{synopt:{opt t:o(#)}}the number of the last observation of the last subsample {p_end}
+{synopt:{opt p:eriods(#)}}horizon (no. of periods) of the dynamic forecasts{p_end}
+{synopt:{opt l:vl}}specifies that the dependent variable of the arima-command is in levels, rather than in differences{p_end}
+{synopt:{opt nor:ecursive}}specifies that the subsamples will have a fixed size, rather than grow{p_end}
+{synoptline}
+{p 4 17 2}
+{it:command} must be a valid arima estimation command
+
+{title:Description}
+
+{pstd}{cmd:dpredict} calculates dynamic predictions from the {it:command}, which  must be the {it:{help arima}} command. 
+The predictions calculated by {cmd:dpredict} are all out-of-sample predictions, each based on a different subsample. The horizon 
+of the predictions (how many periods ahead) is specified by the {it:periods(#)} option. The subsamples, which the 
+predictions are based on, change sequentially starting with the subsample delimited by 1/{it:from(#)} up to 1/{it:to(#)}. If the {it:norecursive} option is specified, then the subsamples will have a fixed size of {it:from(#)} observations, i.e. 
+the first subsample will be 1/{it:from(#)} and the last ({it:to(#)}-{it:from(#)})/{it:to(#)}.
+
+{pstd}
+If the {it:lvl} options is not specified, then the direction-of-change statistic is computed assuming that
+the dependent variable of the supplied arima-commmand is in differences corresponding to the 
+forecast horizon specified in {it:periods(#)} (i.e. if the forecast horizon is e.g. 3 then the it is assumed that the
+dependent variable is of the form of s3.{it:dep_var}). 
+
+{pstd}
+If {it:varlist} is supplied then in each step the last observation in the current subsample of the all variables 
+in specified in arima (including the dependent) is replaced by the corresponding observation from {it:varlist}. Hence, if {it:varlist} is supplied,
+it must contain the same number of variables as the arima command. This allows for the possibility that the last observation of some
+variables in the dataset must, in fact, be predicted, because it is not available at the time when making the forecasts.
+
+{title:Saved Results}
+
+{p 4 4 2}
+{cmd:dpredict} saves in r(): scalars , r(RMSE), r(MAE) and r(DOC), containing the computed statistcs RMSE, MAE, DOC and matrices , r(Yhat) and r(ResMat), which contain the out-of-sample predictions and residuals respectively. Additionaly a matrix , r(DOCmat), with elements 1 (if the direction of change was predicted correctly) and 0 (if not) is saved.
+{p_end}
+
+{title:Remarks}
+
+{p 4 4 2}
+The statistisc computed along with the predictions are: RMSE - root mean square error, MAE - mean absolute errror and DOE - direction of change (gives the proportion of correctly predicted values of {it:dep_var})
+{p_end}
+
+{title:Examples}
+
+{p 4 8 2}
+{cmd:. use http://www.stata-press.com/data/r9/wpi1}
+
+{p 4 8 2}
+{cmd:. gen wpi_df = d.wpi}
+
+{p 4 8 2}
+{cmd:. dpredict , f(80) t(124) p(1) : arima wpi_df  , arima(1,0,1)}
+
+{title:Author}
+
+{p 4 4 2}
+{browse "mailto:juraj.katriak@iskwien.at":J. Katriak}, ISK Vienna, juraj.katriak@iskwien.at
+{p_end}
+
+{title:Also see}
+
+{p 4 13 2}
+Online: help for {help arima}, {help arima_postestimation}
+{p_end}
+

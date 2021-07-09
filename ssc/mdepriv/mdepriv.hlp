@@ -1,0 +1,66 @@
+{smcl}
+{* 14ma42014}{...}
+{hline}
+help for {hi:mdepriv} {right:M.N. Pi Alperin, P. Van Kerm}
+{hline}
+
+{title:Synthetic indicators of multiple deprivation}
+
+
+{p 8 23 2}
+{cmdab:mdepriv}
+{it:items}
+{ifin}
+{weight}
+[{cmd:,} {it:options}]
+
+{pstd}
+where the syntax of {it:items} is
+
+{pin}
+[{cmd:(}] {it:varlist} [{cmd:)}]  [{cmd:(} {it:varlist} {cmd:)} ... {cmd:(} {it:varlist} {cmd:)}] 
+
+{synoptset 16 tabbed}{...}
+{synopthdr}
+{synoptline}
+{synopt:{opt gen:erate(newvar [,replace])}}create variable {it:newvar} with synthetic observation-level deprivation index{p_end}
+{synopt:{opt met:hod(string)}}select weighting scheme{p_end}
+{synopt:{opt wa(string)}}select weight type for frequency-based factor{p_end}
+{synopt:{opt wb(string)}}select weight type for correlation-based factor{p_end}
+{synopt:{opt force}}force computation of index with items measured outside [0,1]{p_end}
+{synopt:{opt inst:all}}check installation of required user-written packages{p_end}
+{synoptline}
+{p2colreset}{...}
+{p 4 6 2}
+  {opt aweight}s and {opt fweight}s are allowed; see {help weight}.
+  {p_end}
+
+
+{title:Description}
+
+{pstd}
+{opt mdepriv} generates synthetic indicators of multiple deprivation. 
+Multiple unidimensional scores of item-specific deprivation (measured 
+on the [0,1] space) are linearly combined to create, for each observation, a synthetic measure of individual deprivation.
+The synthetic measure is a weighted sum of item-specific deprivation. Several alternative weighting rules can be selected. 
+
+{pstd}
+Individual scores are aggregated to produce summary measure of deprivation in the sample.  
+
+{pstd}
+Details on methods, option descriptions and usage examples are available in an {browse "http://medim.ceps.lu/stata/mdepriv_v3.pdf":online manual}.
+
+
+{title:Authors}
+
+{pstd}
+   Maria Noel Pi Alperin, 
+   Philippe Van Kerm
+   
+   CEPS/INSTEAD, Luxembourg
+   philippe.vankerm@ceps.lu
+
+   
+{* Version 2.0.0 2014-03-14}
+{* Version 1.1.0 2011-05-10}
+{* Version 1.0.5 2009-02-04}

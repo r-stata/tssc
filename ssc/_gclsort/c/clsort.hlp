@@ -1,0 +1,101 @@
+{smcl}
+{* 24oct2002}{...}
+{hline}
+help for {hi:clsort}{right:(Ph. Van Kerm)}
+{hline}
+
+{title:Single variable sorting}
+
+
+{p}{ul:Syntax 1}
+
+{p 8 15}{cmd:egen} {it:newvarname} {cmd:=}
+{cmd:clsort}{cmd:(}{it:varname1}{cmd:)} 
+[{cmd:if} {it:exp}] [{cmd:in} {it:range}] [, {cmd:inplace} ]
+
+{p}{ul:Syntax 2}
+
+{p 8 15}{cmd:egen} {it:newvarname} {cmd:=}
+{cmd:clsort}{cmd:(}{it:varname1} {it:varname2}{cmd:)} 
+[{cmd:if} {it:exp}] [{cmd:in} {it:range}] 
+ [, {cmd:inplace} {cmdab:pos:var}{cmd:(}{it:varname}){cmd:)]
+
+{title:Description}
+
+{p} {cmd:clsort} is an extension to generate (i.e. {cmd:egen}) function
+to create a variable sorted in increasing order (syntax 1), or in
+increasing order of a key variable (syntax 2). Unlike {cmd:sort} and 
+{cmd:gsort} that affect all variables in a dataset, {cmd:clsort} produces
+a single sorted variable and leaves the order of the rest of the data 
+unaffected. 
+
+{p}In the simplest case, i.e. syntax 1 without {cmd:if} and/or {cmd:in} 
+clauses,  
+
+{p 7}{cmd:egen} {it:newvarname} {cmd:=} {cmd:clsort}{cmd:(}{it:varname1}{cmd:)}  
+
+{p 2} the created variable {it:newvarname} has exactly the same values as 
+the argument variable {it:varname1} sorted in increasing order. 
+
+
+{p}If {cmd:if} and/or {cmd:in} clauses are specified in syntax 1,
+
+{p 7}{cmd:egen} {it:newvarname} {cmd:=} {cmd:clsort}{cmd:(}{it:varname1}{cmd:)}
+[{cmd:if} {it:exp}] [{cmd:in} {it:range}] [, {cmd:inplace}]
+
+{p 2} the created variable contains only the values of {it:varname1} 
+taken on by the observations selected by the {cmd:if} and/or {cmd:in} 
+clauses. By default all these values are
+ordered and fill the first rows of the data. This default behaviour can
+be overridden by the option {cmd:inplace}. When {cmd:inplace} is 
+specified, the sorted values only fill the rows of the selected 
+observations. To illustrate the difference let 
+
+{p 7 3}{cmd:egen newvarname_default = clsort(varname1) if select} {break}
+and {cmd:egen newvarname_inplace = clsort(varname1) if select , inplace}
+
+{p 2} be issued with the data below. {cmd:newvarname_default} only fills
+the top rows whereas {cmd:newvarname_inplace} fills the rows of the
+selected observations only.
+
+varname1   select  newvarname_default   newvarname_inplace 
+  20         0           10                   .
+  40         1           15                  10
+  15         1           40                  15 
+  10         1           60                  40
+  55         0            .                   .  
+  60         1            .                  60 
+
+
+{p}In syntax 1, the variable created is sorted in increasing order. 
+However a key can be specified with the optional argument {it:varname2}
+(syntax 2). If {it:varname2} is specified, then the created variable is
+sorted in increasing order of {it:varname2}.
+
+
+{title:Options}
+
+{p 0 4}{cmd:inplace} requires that the selected observations only are
+filled with the new variable. {cmd:inplace} is irrelevant without
+{cmd:if} and/or {cmd:in} clauses. 
+
+{p 0 4}{cmdab:pos:var}{cmd:(}{it:varname}){cmd:) completely changes
+the behaviour of {cmd:clsort} in syntax 2 and should be used with
+care. It requires that the order of the generated variable match 
+the order of the second variable passed as argument {it:varname2}): 
+the smallest obs. of  {it:varname1} will be placed in the same
+line as the smallest obs. of {it:varname2}, etc.  
+
+
+{title:Author}
+
+{p 5}Philippe VAN KERM <philippe.vankerm@ceps.lu>{p_end}
+{p 5}CEPS/INSTEAD{p_end}
+{p 5}B.P. 48{p_end}
+{p 5}L-4501 Differdange, G.-D. Luxembourg.{p_end}
+
+
+{title:Also see}
+
+ Manual:  {hi:[R] egen}
+{p 0 19}On-line:  help for {help egen}{p_end}

@@ -1,0 +1,65 @@
+{smcl}
+{* 23oct2004}{...}
+{hline}
+help for {hi:semean}
+{hline}
+
+{title:Calculate standard error of mean, optionally applying function}
+
+{p 8 17}{cmd:semean}
+{it:varname}
+[{cmd:if} {it:exp}]
+[{cmd:in} {it:range}] 
+[{cmd:,} {cmdab:nop:rint}
+{cmdab:func:tion(}{it:string}{cmd:)}
+]
+
+
+{p 4 4}{cmd:varname} may contain time-series operators; see help {cmd:varlist}. {p_end}
+
+{p 4 4}{cmd:semean} calculates the standard error of the mean of a variable.
+Optionally, a function of the variable may be applied prior to computation of
+the variable's statistics.{p_end}
+
+{p 4 4}This command was written as an illustration of ado-file development for
+Baum (2006). An {cmd:egen} function to compute the standard error of the mean
+is available in Nicholas Cox's {cmd:egenmore} package.
+
+{title:Options}
+    
+{p 4 8}{cmdab:func:tion(}{it:string}{cmd:)} may be given in order to calculate
+statistics based on that transformation of the variable. Any valid Stata numeric
+function may be provided.
+
+{p 4 8}{cmdab:nop:rint} specifies that no output is to be produced. With or
+without this option, the mean, standard error of mean and number of valid observations
+are placed in the return vector.
+
+
+{title:Examples}
+
+{p 4 8}{stata "webuse lutkepohl,clear" :. webuse lutkepohl,clear}{p_end}
+
+{p 4 8}{stata "semean investment" :. semean investment}{p_end}
+
+{p 4 8}{stata "semean linvestment" :. semean linvestment}{p_end}
+
+{p 4 8}{stata "semean investment, func(log)" :. semean investment, func(log)}{p_end}
+
+{title:Author}
+
+{p 4 4}Christopher F. Baum, Boston College, USA{break} 
+       baum@bc.edu
+       
+
+{title:References}
+
+{p}Christopher F Baum, 2006. An Introduction to Modern Econometrics with Stata.
+College Station:Stata Press.{p_end}
+
+
+{title:Also see}
+
+{p 4 13}On-line: {help egenmore} (if installed){p_end}
+
+

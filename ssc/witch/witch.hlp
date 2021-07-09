@@ -1,0 +1,91 @@
+{smcl}
+{* 19sep2004}{...}
+{hline}
+help for {hi:witch}{right:Version 1.0.1, T. J. Steichen}
+{hline}
+
+{title:Display location and version of all ado-related files}
+
+
+	{cmd:witch} {it:fname}[{cmd:.}{it:ftype}] [{cmd:,} {cmdab:noa:ll} {cmdab:noallt:ypes}]
+
+
+{title:Description}
+
+{p 4 4 2}
+{cmd:witch} is a more comprehensive version of the Stata-supplied command {cmd:which}.
+Like {cmd:which}, it looks for file {it:fname}{cmd:.}{it:ftype} along the {hi:S_ADO}
+path.  Unlike {cmd:which}, it reports the location of {bf:all} files matching 
+{it:fname}{cmd:.}{it:ftype} found along the search path, not just the first one. 
+
+
+{p 4 4 2}
+Further, if "{cmd:.}{it:ftype}" is omitted, {cmd:witch} automatically searches 
+along the ado-path for {it:fname} with all {it:.ftype}'s {hi:.ado}, {hi:.hlp}, {hi:.dlg}, 
+{hi:.idlg}, {hi:.class}, {hi:.scheme}, and {hi:.style}. ({cmd:which} would search 
+only for {it:fname}.ado.) 
+
+{p 4 4 2}
+If Stata is unable to find {it:fname.ftype} as any of the above filetypes, the
+message "file {it:fname.*} not found along adopath" is displayed and
+the return code set to 111.
+
+{p 4 4 2}
+If any files are found, {cmd:witch} displays the full path and filename along with, 
+if the file is ASCII, all lines in the file that begin with "{hi:*!}" in the first
+column, for each file found.
+
+
+{title:Option}
+
+{p 4 8 2}
+{cmd:noall}
+    forces {cmd:witch} to report only the location of the first file matching the
+    {it:fname}{cmd:.}{it:ftype}.
+
+{p 4 8 2}
+{cmd:noalltypes}
+    forces {cmd:witch} to report only the location of files matching {it:fname}.ado.
+
+    
+{title:Comment}
+
+{p 4 4 2}    
+{cmd:witch} uses the Stata-supplied command {cmd:which} as its internal engine, 
+iteratively invoking 
+
+	{cmd:which} {it:fname}{cmd:.}{it:ftype}{cmd:, all} 
+	
+{p 4 4 2}  	
+with the allowed {cmd:.}{it:ftype}'s and slightly formatting the combined output.
+
+
+{title:Examples}
+
+{p 4 8 2}
+{cmd:. witch metareg}
+
+{p 4 8 2}
+{cmd:. witch metareg.dlg}
+
+{p 4 8 2}
+{cmd:. witch metareg, noallt}
+
+{p 4 8 2}
+{cmd:. witch metareg, noa}
+
+    
+{title:Author}
+
+{p 4 4 2}
+Thomas J. Steichen, {browse "mailto:steichen@triad.rr.com":steichen@triad.rr.com}
+
+
+{title:Also see}
+
+{p 4 13 2}
+Manual:  {hi:[R] which}
+
+{p 4 13 2}
+Online:  help for {help findfile}, {help version}
+{p_end}

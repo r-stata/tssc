@@ -1,0 +1,54 @@
+{smcl}
+{* 28feb2003/24sept2002}{...}
+{hline}
+help for {hi:rvlrplot7}
+{hline}
+
+{title:Residuals vs lagged residuals for time series data} 
+
+{p 8 16}{cmd:rvlrplot7} [ {cmd:,} {it:graph_options} ] 
+
+
+{title:Description}
+
+{p}{cmd:rvlrplot7} plots residuals from the last model versus lagged  
+(i.e. lag 1) residuals. Data must have been {cmd:tsset} previously. 
+
+{p}More precisely, residuals are whatever {cmd:predict, res} produces
+after a model. The plot is restricted to the estimation sample. 
+
+{p}{cmd:rvlrplot7} is a renamed clone of {cmd:rvlrplot} 1.0.0 which is for 
+Stata 7. Stata 8 users should use {cmd:rvlrplot} 2.0.0 or later. 
+
+
+{title:Remarks}
+
+{p}The correlation between residuals and lagged residuals is 
+calculated quietly. This may be retrieved by {cmd:return list} 
+and then (say) used in a second pass giving the correlation on the graph. 
+
+
+{title:Options}
+
+{p 0 4}{it:graph_options} are options of {cmd:graph, twoway}. 
+
+
+{title:Examples}
+
+{p 4 8}{inp:. tsset time} 
+
+{p 4 8}{inp:. regress {it:whatever} time}
+
+{p 4 8}{inp:. rvlrplot7}
+
+
+{title:Author}
+
+    Nicholas J. Cox, University of Durham, U.K.  
+    n.j.cox@durham.ac.uk
+
+
+{title:Also see}
+
+{p 0 19}On-line:  help for {help graph}, {help predict}, {help tsset} 
+{p_end}

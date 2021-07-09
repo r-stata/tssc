@@ -1,0 +1,197 @@
+/*
+ tobithetm
+*! VERSION 2.0 10nov2011
+ keyword: eclass
+*/
+VERSION 11.0
+INCLUDE _std_large
+DEFINE _dlght 370
+INCLUDE header
+HELP hlp1, view("help tobithetm")
+RESET res1
+SCRIPT PREINIT
+BEGIN
+	script se_createAsSvyJknifeBstrapML
+	program svy_check_title
+END
+
+SCRIPT POSTINIT
+BEGIN
+	script sub_set_by_on
+	program se_setFinalInitState
+END
+
+SCRIPT svy_is_on
+BEGIN
+	rpt.gb_tests.disable
+	rpt.ck_noskip.disable
+	rpt.ck_nolrt.disable
+	script max_setDefaultNoLog
+END
+SCRIPT svy_is_off
+BEGIN
+	rpt.gb_tests.enable
+	rpt.ck_noskip.enable
+	rpt.ck_nolrt.enable
+	script max_setDefaultLog
+END
+PROGRAM svy_check_title
+BEGIN
+	if __MESSAGE.contains("-svy-") {
+ call settitle "svy: tobithetm - Tobit Multiplicative Heteroscedasticity Regression"
+	}
+END
+
+DIALOG main, tabtitle("Model")	///
+	title("tobithetm - Tobit Multiplicative Heteroscedasticity Regression") // has svy title
+BEGIN
+  TEXT tx_dv 		_lft	_top	_vnwd	.,			///
+	label("Dependent Variable:")
+  VARNAME vn_dv		@ 	_ss	@	.,			///
+	ts								///
+	label("Dependent Variable")
+
+  TEXT tx_iv		_vlx	_top	160	.,			///
+	label("Independent Variables:")
+  VARLIST vl_iv		@	_ss	_vlwd	.,			///
+	fv ts								///
+	allowcat							///
+	label("Independent Variables")
+  CHECKBOX ck_nocons @         _ms       @         .,			/*
+		*/ label("Suppress constant term")			/*
+		*/ option("noconstant")					/*
+		*/
+
+  TEXT     tx_het    _lft      _ls       350      .,			/*
+		*/ label("Heteroscedasticity Variables:")/*
+		*/
+  VARLIST  vl_het    @         _ss       350         .,			/*
+		*/ label("Heteroscedasticity Variables")	/*
+		*/ allowcat ts fv					/*
+		*/
+
+  GROUPBOX gb_output _lft      _ls       _iwd      _ht17h,		/*
+		*/ label("Options")					/*
+		*/
+
+  TEXT     tx_offset _ilft     _ms       _cwd2     .,			/*
+		*/ label("Offset Variable:")				/*
+		*/
+  VARNAME  vn_offset _ilft     _ss       _vnwd     .,			/*
+		*/ label("Offset Variable")				/*
+		*/ option("offset")					/*
+		*/
+  CHECKBOX ck_asis   _lft2     @         _cwd2     .,			/*
+		*/ label("Retain perfect predictor Variables")		/*
+		*/ option("asis")					/*
+		*/
+  TEXT     tx_hetoff _ilft     _ls       _cwd2     .,			/*
+		*/ label("Variance model offset Variable:")		/*
+		*/
+  VARNAME  vn_hetoff @         _ss       _vnwd     .,			/*
+		*/ label("Variance model offset Variable")		/*
+		*/ option("offset")					/*
+		*/
+
+  DEFINE _x _ilft
+  DEFINE _y _ls
+  DEFINE _cx _ilw80
+  DEFINE _bux _islw80
+  INCLUDE _constraints
+
+  DEFINE _x _ilft
+  DEFINE _xw _ibwd
+  INCLUDE _ck_collinear
+END
+
+INCLUDE _constraints_sc 
+INCLUDE sub_by_ifin_over_subpop
+INCLUDE weights_fpi
+INCLUDE se
+
+DIALOG rpt, tabtitle("Reporting")
+BEGIN
+  DEFINE _x _lft
+  DEFINE _cx _spr2b
+  DEFINE _y _top
+  INCLUDE _sp_level
+
+  GROUPBOX gb_tests  _lft      _xls     _iwd       _ht4h,		/*
+  		*/ label("Additional test statistics")
+  CHECKBOX ck_noskip _ilft     _ss      _cwd2      .,			/*
+		*/ label("Perform likelihood-ratio test")		/*
+		*/ option("noskip")					/*
+		*/
+  CHECKBOX ck_nolrt  @         _ms       @         .,			/*
+		*/ label("Perform Wald test on variance")		/*
+		*/ option("nolrtest")					/*
+		*/
+
+  DEFINE _x _lft
+  DEFINE _y _xls
+  DEFINE _cx _iwd
+  INCLUDE _nocnsreport
+
+  DEFINE _x _lft
+  DEFINE _y _ms
+  DEFINE _cx _iwd
+  INCLUDE _noomitted
+
+  DEFINE _x _lft
+  DEFINE _y _ms
+  DEFINE _cx _iwd
+  INCLUDE _vsquish
+
+  DEFINE _x _lft
+  DEFINE _y _ms
+  DEFINE _cx _iwd
+  INCLUDE _factor_vars_reporting
+END
+
+PROGRAM rpt_output
+BEGIN
+	optionarg /hidedefault rpt.sp_level
+	option rpt.ck_noskip
+	option rpt.ck_nolrt
+	INCLUDE _nocnsreport_pr
+	INCLUDE _noomitted_pr
+	INCLUDE _vsquish_pr
+	INCLUDE _factor_vars_reporting_pr
+END
+
+INCLUDE max_ml
+
+PROGRAM subcommand
+BEGIN
+	varlist main.vl_het
+	beginoptions
+		optionarg main.vn_hetoff
+	endoptions
+END
+
+PROGRAM command
+BEGIN
+	put /program by_output " "
+	put /program se_prefix_output " "
+	put "tobithetm "
+	varlist main.vn_dv [main.vl_iv]
+	if !main.vl_iv & main.ck_nocons {
+	  stopbox stop `""Suppress constant term" is selected without independent Variables."'
+	}
+	put " " /program ifin_output
+	put " " /program weights_output
+	beginoptions
+	option main.ck_nocons
+	put "het("
+	put /program subcommand
+	put ")"
+	optionarg main.vn_offset
+	option main.ck_asis
+	INCLUDE _constraints_main_pr
+	option main.ck_collinear
+
+	put " " /program se_output
+	put " " /program rpt_output
+	put " " /program max_output
+	endoptions
+END

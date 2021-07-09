@@ -1,0 +1,120 @@
+{smcl}
+{* 25 May 2005/13 June 2005}{...}
+{cmd:help diplot}
+{hline}
+
+{title:Title}
+
+{p2colset 5 15 15 2}{...}
+{p2col :{hi:diplot} {hline 2}}double interval plot{p_end}
+{p2colreset}{...}
+
+
+{title:Syntax}
+
+{p 8 17 2}
+{cmd:diplot} {it:shape} {it:yvar} {it:evar} {it:xvar} {it:uvar} {ifin} [{cmd:,} {it:options}]
+
+{p 8 17 2}
+{cmd:diplot} {it:shape} {it:y1var} {it:y2var} {it:x1var} {it:x2var} {ifin} {cmd:,} {cmd:limits} [{it:options}]
+
+{p 8 17 2}where {it:shape} is one of 
+
+{col 9}{cmdab:r:ectangle}{col 28}rectangle with sides parallel to axes
+{col 9}{cmdab:p:lus}{col 28}intersecting horizontal and vertical lines
+{col 9}{cmdab:c:applus}{col 28}as above, but line ends capped
+{col 9}{cmdab:d:iamond}{col 28}diamond, with diagonals parallel to axes
+{col 9}{cmdab:b:arrow}{col 28}bidirectional arrow
+
+{synoptset 29 tabbed}{...}
+{synopthdr}
+{synoptline}
+{syntab :Interpretation of variables}
+{synopt :{opt limits}}variables are to be interpreted as vertical and horizontal limits{p_end}
+
+{syntab :Main plot}
+{synopt :{opt shape()}}affect rendering of shape{p_end}
+{synopt :{it:twoway_options}}affect other features of graph{p_end}
+
+{syntab :Add plot}
+{synopt :{opth "addplot(addplot_option:plot)"}}add other plots to the generated graph{p_end}
+
+{synoptline}
+{p2colreset}{...}
+
+
+{title:Description}
+
+{pstd}
+{cmd:diplot} produces double interval plots using various specified shapes whose
+vertical and horizontal extents are specified by variables. 
+
+{pstd} 
+With the first syntax {cmd:diplot}  
+produces symbols extending vertically from {it:yvar - evar} to 
+{it:yvar + evar} and horizontally from {it:xvar - uvar} to 
+{it:xvar + uvar}. {it:evar} and {it:uvar} must contain non-negative values. 
+
+{pstd}
+With the second syntax, flagged by the {cmd:limits} option, {cmd:diplot} 
+produces symbols extending vertically from {it:yvar1} to 
+{it:yvar2} and horizontally from {it:xvar1} to {it:xvar2}. Each symbol
+will have centres at ({it:x1var} + {it:x2var})/2, ({it:y1var} + {it:y2var})/2. 
+
+
+{title:Options}
+
+{dlgtab:Interpretation of variables}
+
+{phang}
+{cmd:limits} specifies that the four variables specified are to be
+interpreted as lower and upper vertical and horizontal limits. 
+
+{dlgtab:Main plot}
+
+{phang}
+{cmd:shape()} specifies options that affect rendering of the shapes defining the 
+double intervals. 
+Know that shapes {cmd:rectangle}, {cmd:plus} and {cmd:diamond} entail calls to 
+{help twoway pcspike} and that shapes {cmd:capplus} and {cmd:barrow} entail 
+calls to {help twoway pcbarrow}. Thus their options may be specified as 
+appropriate. 
+
+{phang}
+{it:twoway_options()} are options of {help graph twoway} controlling 
+other features of the graph. 
+
+{dlgtab:Add plot}
+
+{phang}
+{opt addplot(plot)} provides a way to add other plots to the generated graph.
+See {it:{help addplot_option}}.
+
+
+{title:Examples}
+
+{phang}{cmd:. diplot capplus y yerror x xerror, shape(lcolor(blue) mcolor(blue)) addplot(scatter y x, color(blue))} 
+
+{phang}{cmd:. diplot rectangle y1 y2 x1 x2, limits title(y versus x)}
+
+
+{title:Acknowledgments}
+
+{pstd}Vince Wiggins made encouraging noises. Nick Winter helpfully 
+pointed out a silly bug. 
+
+
+{title:Author}
+
+{pstd}Nicholas J. Cox, Durham University{break}
+n.j.cox@durham.ac.uk
+
+
+{title:Also see}
+
+{psee}
+Manual:  {bf:[G] twoway}
+
+{psee}
+Online:  {helpb twoway}
+{p_end}

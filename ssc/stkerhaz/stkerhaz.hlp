@@ -1,0 +1,168 @@
+{smcl}
+{* 30nov2005}{...}
+{hline}
+help for {hi:stkerhaz}
+{hline}
+
+{title:Baseline Hazard Estimates via Kernel Smoother and plots}
+
+{p 4 13}{cmd:stkerhaz} [{cmd:if} {it:exp}] [{cmd:in} {it:range}] {cmd:,} {cmdab:b:width(}{it:# # #}{cmd:)}
+[ {cmdab:k:erkode(}{it:#}{cmd:)} {cmdab:np:oint(}{it:#}{cmd:)} {cmdab:basech:a(}{it:varname}{cmd:)} 
+{cmd:strata(}{it:varname}{cmd:)} {cmd:tmax} {cmd:ci} {cmdab:l:evel(}{it:#}{cmd:)}
+{cmdab:out:file(}{it:filename[,replace]}{cmd:)} {cmd:per(}{it:#}{cmd:)} {it:graph_options} ]
+
+
+{p}{cmd:stkerhaz} is for use with survival-time data; see help {help st}. You must 
+have {cmd:stset} your data before using this command; see help {help stset}.{p_end} 
+{p}{cmd:stkerhaz} needs {help levels7} which you can download by 
+{net "describe http://www.stata.com/stb/stb60/dm90"}. 
+See {help findit} and {help ssc install} to install user-written additions from the net.
+
+
+Examples:
+
+{p 4 4}Baseline Hazard Plot with 95% confidence bounds{p_end}
+{p 12 20}{inp:. stcox, estimate basech(H)}{p_end}
+{p 12 20}{inp:. stkerhaz,bwidth(10) ci}
+
+{p 4 4}Baseline Hazard Plot with two curves for 5 and 10 time units bandwidth{p_end}
+{p 12 20}{inp:. stcox, estimate basech(H)}{p_end}
+{p 12 20}{inp:. stkerhaz,bwidth(5 10)}
+
+{p 4 4}Baseline Hazard Plot with as much curves as hormon values. The estimates are saved in
+\currentfolder\myhaz{p_end}
+{p 12 20}{inp:. stcox, estimate basech(H) strata(hormon)}{p_end}
+{p 4}or {break}{p_end}
+{p 12 20}{inp:. sts gen H = na, by(hormon)}{p_end}
+{p 12 20}{inp:. stkerhaz,bwidth(10) strata(hormon) out(myhaz)}
+
+{p 4 4}Adjusted Baseline SMR Plot{p_end}
+{p 12 20}{inp:. xi: stcox i.yfecat i.afecat, basech(H) offset(lograte)}{p_end}
+{p 12 20}{inp:. stkerhaz,b(5)}
+
+
+{title:Description}
+
+{p}{cmd:stkerhaz} computes nonparametric estimates of the baseline hazard or baseline SMR and draws 
+the graph of the results. This command can be used after {cmd:stcox}. In this case it requires that 
+you previously specified {cmd:stcox}'s {cmd:basech()} option; see {help stcox}.
+Otherwise in {cmd:stkerhaz}'s {cmdab:basech:a} option you can specify {it:varname} storing cumulative 
+baseline hazard. {break}
+Actually {cmd:stkerhaz} can be used even to smooth a cumulative excess mortality function, so achieving
+a smoothed estimate of excess mortality function.
+
+
+{title:Options}
+
+{p 0 4}{cmd:bwidth(}{it:# # # #}{cmd:)} specifies the window half-width to be used. {cmd:bwidth} is not
+optional. At least one bandwidth must be specified. Up to four bandwidths can be used.
+Then, curves are drawn for each bandwidth.
+
+{p 0 12}{cmd:kerkode(}{it:#}{cmd:)} specifies the weight function (kernel) to be used according to the
+following numerical codes: 
+	{break}	1 = Uniform 		   
+	{break} 2 = Epanechnikov (Default) 
+	{break} 3 = Biweight		   
+
+Asymmetric kernel (see {title:Remarks} below) is computed where appropriate.
+
+{p 0 4}{cmd:npoint(}{it:#}{cmd:)} specifies the number of equally spaced points in the range used for
+the estimation. Default is 150. Unless {cmd:tmax} is used, the range of points starts at the lowest {it:_t0} 
+and stops at the last death time. 
+
+{p 0 4}{cmd:basecha(}{it:varname}{cmd:)} specifies the variable storing baseline cumulative hazard.
+
+{p 0 4}{cmd:strata(}{it:varname}{cmd:)} option is intended for use in conjunction with the {cmd:strata} 
+option of {cmd:stcox} or {cmd:by} option of {cmd:sts gen}. It enables to calculate and graph up to 
+four baseline hazard curves for corresponding numeric values of strata or by variable. If there are more
+values of the strata variable it needs to save estimates in a file and then graph them as wished. 
+
+{p 0 4}{cmd:tmax} sets the starting point of range at the time of the earliest death.
+
+{p 0 4}{cmd:ci} allows to plot confidence bounds around baseline smoothed hazard. Note that they are
+correct only when Baseline Cumulative Hazard derives from an unadjusted model. Multiple curves and 
+{cmd:ci} cannot be plotted at once.
+
+{p 0 4}{cmd:level(}{it:#}{cmd:)} specifies the confidence level, in percent, for the pointwise confidence bounds. Default is 95.
+
+{p 0 4}{cmd:outfile(}{it:filename[,replace]}{cmd:)} saves in filename values used to plot. The variable 
+containing baseline hazard estimates is prefixed by KS_. If confidence bounds are plotted the standard 
+error and pointwise high and low confidence interval, based on a log transformation, are saved as well 
+in the variables prefixed by KS_SE_, KS_HI_ and KS_LO_. Rest of names specifies bandwidth or value 
+of stratavar which they refer to. A variable named Gridpoint saves equally spaced data points where
+estimates are calculated.
+
+{p 0 4}{cmd:per(}{it:#}{cmd:)} defines the time units in which the estimated hazards will be reported. 
+If the time analysis is in year, specifying per(1000) results in the graph are in rates per 1000 
+person-years.
+
+
+{title:Remarks}
+
+{p}The kernel-smoothed hazard estimated by {cmd:stkerhaz} uses the method described by  Breslow and
+Day (1986, pp 178-229) and by Klein and Moeschberger (2003, pp 166-177) first introduced by Ramlau-Hansen
+(see formula 5.18). {break}
+This estimate is simply a weighted average of the increments in cumulative baseline hazard,
+where weights are a kernel function of {it: ((t_target - t_obs) / bandwidth)} defined in the interval
+{it: [-1,+1]}. {it: t_target} are time points at which baseline hazard is estimated and {it: t_obs} 
+are times at which increment of cumulative baseline hazard is actually observed. Kernel weigths are defined as:{p_end}
+	Uniform      {col 25} K(z) = 0.5 if |z| < 1 and K(z) = 0 otherwise            
+	Epanechnicov {col 25} K(z) = 0.75(1-z^2) if |z| < 1 and K(z) = 0 otherwise    
+	Biweight     {col 25} K(z) = 0.975(1-z^2)^2 if |z| < 1 and K(z) = 0 otherwise 
+
+{p}When {it: t_target} or, in the right-hand tail, {it: (last_death_time - t_target)} is smaller 
+than {it:bandwidth} asymmetric kernels are computed according to the formulas in Klein and 
+Moeschberger's book (2003, pp 167-168).
+
+{p}As pointed out by Breslow and Day, an estimate of cumulative baseline SMR can be obtained incorporating
+into a Cox model as an offset term the logarithm of time-dependent standard rates. 
+Cumulative SMR can be smoothed using the same method to yield non parametric estimates of SMR at various
+points in time analysis axis.
+
+{p}They say: "Cumulative baseline mortality or incidence rates are not as informative as they might appear
+at first sight. They tend to overemphasize the jumps at very high times at which the
+estimate is least stable. Also, time-specific rates are usually of greater intrinsic interest than the
+cumulative rate." Furthermore, graphing baseline hazard or SMR, trend along time axis can be appreciated showing when a
+rise or a decline appears and if it is sharp or gradual.
+{cmd:stcox} or {cmd:sts gen} can create new variable containing cumulative baseline hazard unadjusted or adjusted
+for covariates or estimated in separate groups. This command is aimed at easily deriving from this stored
+result an estimate of the baseline hazard.
+
+{p}Klein and Moeschberger also advice to use the kernel smoothing technique to compute a smoothed estimate
+of the excess mortality function starting from a cumulative excess mortality function.
+
+{p}Bandwidths have to be chosen being aware that small bandwidth (small smoothing) yields hazard (or SMR) estimates
+affected by random noise, while large bandwidth (large smoothing) blurs the structure of the data.
+Visual appearance of the graph can address the selection, although objective criteria exist.
+
+
+
+{title:Also see}
+
+{p 1 10}Manual:  {hi:{bind:[R] kdensity}}, {hi:{bind:[R] st stcox}}
+{hi:{bind:[R] st sts generate}}, {hi:{bind:[R] st sts graph}}{p_end}
+{p 0 19}On-line:  help for {help kernreg}, {help bhcalc}, {help sthaz} if installed{p_end}
+
+
+{title:Note}
+
+{p} A previous version of stkerhaz computed more kinds of kernel weigths, but it did not compute
+asymmetric kernel in the tails of the analysis time. On request I can provide this old version. 
+
+
+{title:References}
+
+{p} Breslow, N. E. and Day, N. E.  Statistical Methods in Cancer Research. Volume II - The Design and
+analysis of cohort studies.  Lyon: International Agency for Research on Cancer, 1987.
+
+{p} Klein, J. P. and Moeschberger, M. L. Survival Analysis Techniques fo Censored and Truncated Data (2nd
+Edition). New York: Springer-Verlag, 2003.
+
+
+{title:Author}
+
+        Enzo Coviello, Azienda U.S.L. BA/1, Italy
+        enzo.coviello@tin.it
+        
+ 
+

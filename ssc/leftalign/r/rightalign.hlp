@@ -1,0 +1,68 @@
+{smcl}
+{* 10sep2014}{...}
+{cmd:help rightalign}
+{hline}
+
+{title:Title}
+
+{phang}
+{bf:rightalign} {hline 2} Change the {help format} of variables to right-aligned
+
+
+{title:Syntax}
+
+	{cmd:rightalign} [{varlist}]
+
+
+{title:Description}
+
+{pstd}
+Stata uses a variable's {help format} to determine how values
+are displayed in the Data Browser, Data Editor, and in various listings.
+{cmd:rightalign} changes the variable's {help format} so that values are
+aligned to the right. {cmd:rightalign} does not change the values
+stored in a variable. 
+
+{pstd}
+If {varlist} is omitted, all variables in memory are processed. 
+
+{pstd}
+All variables in {varlist} are switched to a right-aligned format, not
+just string variables.
+
+{pstd}
+Once all variables are processed by {cmd:rightalign}, {help describe}
+is used to report which variables changed {help format}. Variables that
+were already right-aligned are omitted.
+
+
+{title:Examples}
+
+{pstd}
+Load some data in memory
+
+        {cmd:.} {stata sysuse census}
+        
+{pstd}
+There are two variables that are left-aligned
+
+        {cmd:.} {stata rightalign}
+
+
+{title:Author}
+
+{pstd}Robert Picard{p_end}
+{pstd}picard@netbox.com{p_end}
+
+
+{title:Also see}
+
+{psee}
+SSC:  {stata "ssc des listsome":listsome} list a sample of observations.
+{p_end}
+
+{psee}
+Help:  {manhelp data_types D:data types}, 
+{manhelp format D},  
+{manhelp list D}
+{p_end}

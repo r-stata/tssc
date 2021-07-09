@@ -1,0 +1,67 @@
+.-
+help for ^strgen^
+.-
+
+Generate string variable (lazy way) 
+-----------------------------------
+
+    ^strgen^ newstringvar ^=^ stringexp [^if^ exp] [^in^ range] 
+
+Description
+-----------
+
+^strgen^ generates a new string variable as the result of stringexp, an 
+expression with a string result. The string type, whether ^str1^ ... ^str80^, 
+is determined automatically as the smallest string type which will hold 
+the data. 
+
+Remarks
+-------
+
+Unless, exceptionally, ^type^ is set to one of ^str1^ ... ^str80^, which is 
+not to be recommended, the generation of a string variable requires the 
+specification of a string type, as in 
+
+	^generate str^# newstringvar ^=^ stringexp
+
+This can raise various small or large problems, as the user needs to determine
+# in advance, and a # which is too small or too large can truncate data or
+unnecessarily use valuable memory. 
+
+A two-step alternative is 
+
+	^generate str1^ newstringvar ^= ""^  
+	^replace^ newstringvar ^=^ stringexp 
+
+and another, if space is plentiful, is 
+
+	^generate str80^ newstringvar ^=^ stringexp 
+	^compress^ newstringvar 
+
+-- as Stata will itself work out a suitable # in each case. 
+
+^strgen^ automates the first of these two methods. 
+
+
+Examples
+--------
+
+    . ^strgen srep78 = string(rep78)^
+    . ^strgen frep78 = string(rep78) if foreign^
+    . ^strgen nospaces = subinstr(myvar," ", "_", .)^  
+
+
+Author
+------
+
+         Nicholas J. Cox, University of Durham, U.K.
+         n.j.cox@@durham.ac.uk
+
+
+Also see
+--------
+
+On-line: help for @generate@
+ Manual: ^[R] generate^
+
+

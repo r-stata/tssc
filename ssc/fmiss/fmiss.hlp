@@ -1,0 +1,109 @@
+{smcl}
+{hline}
+help for {hi:fmiss}: module to identify variables with problematic missing values {right:Version 1.0}
+{hline}
+
+{title:Syntax}
+
+
+{p 8 17 2}{cmd:fmiss} [{varlist}] [if] [in] [, {cmdab:d:etail} {cmdab:p:ercentage} {cmdab:l:evel(}real{cmd:)}]
+
+{title:Description}
+
+{p 4 4 2} fmiss allows you to identify not only the total number missing values in each variable, but also how many 
+of them are unique in the sense that for all other variables of the observation the information is available. This 
+distinction is important to see which variable is causing a large drop in the sample size on its own. 
+The module identifies missing value in numerical and string variable. For the case of numerical variables, also 
+stata-coded {help missing:missing values} (e.g. “.a”) are identified. 
+Since a main issue of missing values is that it might introduce a sample selection problem, fmiss offers a very 
+simple and purely introductive way to detect such problems. Using the option detail, a mean-comparison test between 
+the original sample and the sample one would get by including the variable (this means dropping the unique missing values)
+ is computed and variable where the difference is significant are reported. 
+
+ 
+
+{title:Options}
+
+{marker optiondetail}
+{p 4 8 2}{cmdab:d:etail} The option detail includes a simple analysis on how the sample would change by dropping 
+observations with unique missing values. A t-test is performed comparing the full sample to the sample one gets when 
+dropping observations with unique missing values in the current variable. All variables where the mean of the excluded observation 
+is significantly different from the mean of remaining observations are indicated. In case of not indicating such a choice, 
+it does not mean that there is no problem of sample selection bias. This module only allows you to get a first 
+impression of the data and potentially problematic variables. 
+
+{marker optionlevel}
+{p 4 8 2}{cmdab:l:evel(}{it:real}{cmd:)} This option allows you to change the level of significance for the 
+t-test performed on the sample with and without the observations with unique missing values. The default 
+value is 10%, since already at this level, severe sample selection problems are likely to be present. If you 
+prefer the standard 5% threshold, simply add the option {cmd:level(0.05)}
+
+{marker optionpercent}
+{p 4 8 2}{cmdab:p:ercentage} This option changes the output from frequencies to percentages of the total sample.  
+
+{title:Detailed explanation of the output}
+{p 4 8 2} The output of the module is mostly self-explaining, however, some of the terms used might be somewhat unclear: 
+{marker descmissing}
+
+{p 4 8 2}{bf:Missings} 
+
+{p 8 8 2} refers to the total number of missing values in the variable. This value corresponds to what you get using the command {help misstable:misstable} for instance.
+
+{marker descunique}
+{p 4 8 2}{bf:Unique missings} 
+
+{p 8 8 2} This is the number of missing values that are only missing in the current variable, not in the other variables of {varlist}. Independent of the order of deletion, these observations will always
+get lost when you include the variable. 
+
+{marker descmissing}
+{p 4 8 2}{bf:Significant change in:} 
+
+{p 8 8 2} refers to the variables where a significant change in the mean occurs when excluding the observations with unique missings 
+(in the current variable). This means that due to the inclusion of this variable the sample mean of the mentioned variable changes, 
+which might cause a sample selection problem. This is not comparing the excluded observations to the remaining observations, but the full sample to the remaining. 
+
+{title:Example}
+
+. {stata sysuse lifeexp, clear}
+(Life expectancy, 1998)
+
+. {stata fmiss region country safewater popgrowth lexp gnppc, detail}
+
+Analysis of missing variables in the dataset
+ Total sample size:               68
+ Sample without any missing:      37 (54.40%)
+---------------------------------------------------------------------------
+                            Unique
+Variable       Missings   missings     Significant change in
+---------------------------------------------------------------------------
+region                0          0     ---
+country               0          0     ---
+safewater            28         26     region
+                                       popgrowth
+popgrowth             0          0     ---
+lexp                  0          0     ---
+gnppc                 5          3     --- (Smallest pvalue:  0.880)
+---------------------------------------------------------------------------
+See help file for details on the exact definition of columns
+
+
+{p 4 4 2} In this example, {it:fmiss} perfoms the analysis on the all variables indicates in {varlist}. Without specifying a varlist, all variables of the dataset would be included.
+The option {it:{help fmiss##optiondetail:detail}} activates
+the t-tests comparing the full sample to the sample where the observations of the unique missings are excluded. This test is performed for all other variables, to see if the inclusion of the current
+variable would significantly change the mean of the other variables in the sample. In this example, we see that the average of {it:region} and {it:popgrowth} would significantly change when we 
+drop the 26 observations with unique missing in the variable {it:safewater}. Beware of the fact that the t-test is performed on all numerical variables, even if they are coded! This t-test is not 
+a proof that you have or not a sample selection problem, but it might help you as a starting point to identfiy such problems. 
+
+
+{title:Known issues}
+{p 4 6 2} - Using the option {it:detail} the t-test is performed on all numerical variables, regardless of their structure. For the case of categorical variable this statistic is rather meaningless. 
+
+{p 4 6 2} - The t-test gives only a very vague idea of possible changes in other variables due to the exclusion of missing values in an observation. For instance, any mean preserving change to the
+distritbution of the other variables will not be detected. 
+
+{p 4 6 2} - If you find another issue, please send me an email indicating the problem. 
+
+{title:Author}
+
+{p 4 4 2}	Florian Wendelspiess Chávez Juárez. University of Geneva, Department of Economics:  {browse "mailto:florian@chavezjuarez.com?subject=Stata module fmiss:":florian@chavezjuarez.com}. This is version 1.0, I plan to develop this module
+according to future needs. If you have suggestions, please let me know. 

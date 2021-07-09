@@ -1,0 +1,74 @@
+{smcl}
+{* 11aug2005}{...}
+{hline}
+help for {hi:mehetprob} {right: (version 1.0.0) }
+{hline}
+
+{title:Compute marginal effects at means an their standard errors after {help hetprob}}
+
+{p 8 20}{cmd:mehetprob}
+[, {cmdab:nod:iscrete}]  
+
+
+{title:Description}
+
+{p}{cmd:mehetprob} computes marginal effects at means and their standard errors in a heteroscedastic probit model.
+{cmd:mehetprob} is executed after Stata's {help hetprob} command. It uses the coefficients 
+and standard errors returned by {help hetprob} in order to compute marginal effects at means
+and their standard errors by using the delta method. The syntax is such that it requires at least Stata 8.
+
+{p}{cmd:mehetprob} delivers the same results as 
+
+{p 4 8}{inp:. mfx compute}
+
+after {help hetprob}.
+
+{p}While {help mfx} computes the derivatives needed to infer the standard errors numerically, {cmd:mehetprob} computes 
+them analytically and is therefore considerably faster. It takes only a few seconds while {cmd:mfx compute} after
+{help hetprob} can take several hours in Stata 8 and several minutes in Stata 9.
+
+
+
+{title:Options} 
+
+{p 0 4}{cmdab:nod:iscrete} specifies that dummy (indicator) variables be treated as continuous.
+
+
+
+{title:Saved results}
+
+{col 8}{cmd:XBAR}{col 20}The matrix {cmd:XBAR} contains means of the regressors of the main equation of the
+{col 20}heteroscedastic probit model.
+
+{col 8}{cmd:ZBAR}{col 20}The matrix {cmd:ZBAR} contains means of the regressors of the equation to model the
+{col 20}variance in the heteroscedastic probit model.
+
+{col 8}{cmd:DER}{col 20}The element (i,j) of the matrix {cmd:DER} contains the derivative of the marginal effect of the 
+{col 20}regressor w_i with respect to the regression coefficient theta_j.
+{col 20}The delta method is based on this matrix.
+
+{col 8}{cmd:C}{col 20}The matrix {cmd:C} contains the results: marginal effects, standard errors, 
+{col 20}z-values and P-values derived therefrom.
+
+{col 8}{cmd:mehetprob} temporarily creates the matrices C, C1, C2, ZG, ZGx, XB, XBx, B, ZBAR, XBAR, G, D, V.
+{col 8}If any of this matrices exists prior to the execution of the command, it will be overwritten.
+
+{title:Example}
+
+{p 4 8}{inp:. hetprob x y, het(y z)}
+
+{p 4 8}{inp:. mehetprob}
+
+
+
+{title:Author}
+
+        Thomas Corneliﬂen, University of Hannover, Germany
+        cornelissen@mbox.iqw.uni-hannover.de
+
+
+{title:Also see}
+
+{p 0 9}On line: help for 
+{help hetprob}, 
+{help mfx}.

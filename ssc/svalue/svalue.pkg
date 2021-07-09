@@ -1,0 +1,43 @@
+d 'SVALUE': module for computing and graphically displaying S-values against their respective P-values
+d
+d  svalue computes S-values corresponding to all P-values ranging
+"d from 0.0001 to 1.0, and generates a plot with the specific"
+"d S-value highlighted.  An S-value (Greenland 2018, 2019), also"
+d referred to as a self-information or surprisal information
+"d measure (Shannon 1948; MacKay 2003; Fraundorf 2019), is a"
+d negative base-2 log transformation of the P-value (or any
+"d probability value in the [0,1] range), such that S ="
+"d -log(p)/log(2). Greenland (2017, 2018, 2019) advocates for the"
+d use of S-values to assist in the interpretation of P-values. The
+"d S-value is zero (unsurprising) when P = 1.0, increases"
+"d exponentially as P approaches zero, and can be intuitively yet"
+d correctly understood via a simple coin-tossing experiment. As
+"d Fraundorf (2019) explains, a bit of surprisal is what you feel"
+"d after ""calling heads"" on a coin toss, when the coin lands with"
+d heads up! Surprisal is two bits when you throw heads on two of
+d two coins at once. Three bits of surprisal (heads up on three of
+d three coins) is starting to feel respectable. Twenty-four bits of
+"d surprisal, on the other hand, is closer to what you experience"
+"d when winning the lottery. Thus, surprisal reduces the probability"
+d of an extremely rare event to a quantity of more manageable size.
+"d In the context of P-values, larger S-values correspond to more"
+"d evidence against the null hypothesis. For example, the"
+d corresponding S-value for a P-value of 0.05 is 4.32 bits of
+"d information against the null hypothesis (b = 0), which is only"
+d slightly more surprising than seeing 4 heads on the first toss of
+d 4 coins (Greenland 2019).  Similarly a P-value of 0.0001 has a
+d corresponding S-value of 13.3 bits of information against the
+"d null hypothesis (b = 0), which is as surprising as seeing 13"
+d heads in the first toss of 13 coins.
+d
+d KW:  Compatibility; Dichotomania; P-values; S-values; Significance; Surprisal
+d
+d Requires: Stata version 11
+d
+d Distribution-Date: 20190518
+d
+"d Author: Ariel Linden, Linden Consulting Group, LLC"
+d Support: email alinden@@lindenconsulting.org
+d
+f svalue.ado
+f svalue.sthlp

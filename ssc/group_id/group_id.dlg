@@ -1,0 +1,41 @@
+/*
+	group_id
+
+*!  VERSION 1.0.0  21aug2009
+
+*/
+
+VERSION 9.2
+
+INCLUDE _std_small
+INCLUDE header
+HELP hlp1, view("help group_id")
+RESET res1
+
+
+DIALOG main, tabtitle("Main") ///
+	label("group_id - Group Values when matching")
+BEGIN
+  TEXT     tx_var       _lft       _top       _iwd 	 .,	///
+	label("Identifier Variable:")
+
+  VARNAME  vl_var       @          _ss        @          .,	///
+	label("Variables to compare 1")
+
+  TEXT     tx_var2     _lft       _ls        @          .,	///
+	label("Match by Variables:")
+
+  VARLIST  vl_var2      @          _ss        @          .,	///
+	label("Match by Variables") option(matchby)
+
+END
+
+PROGRAM command
+BEGIN
+	put "group_id "
+	varlist main.vl_var
+	beginoptions
+		require main.vl_var2
+		optionarg main.vl_var2
+	endoptions
+END

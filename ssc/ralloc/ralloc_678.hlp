@@ -1,0 +1,654 @@
+.-
+help for ^ralloc_678^                      [ralloc.ado v3.2.5 September 2, 2000]
+.-
+
+Random allocation of treatments balanced in blocks
+--------------------------------------------------
+
+  ^ralloc_678^ <Block ID varname > <Block Size varname> <Treatment varname stub>^,^
+                       ^sav^ing^(^filename1^)^
+                     [ ^multif^|^nomultif^      ^se^ed^(^#|"^date^"^)^
+                       ^ns^ubj^(^#^)^             ^nt^reat^(2^|^3^|^4^|^5)^
+                       ^ra^tio^(1^|^2^|^3)^         ^os^ize^(1^|^2^|^3^|^4^|^5^|^6^|^7)^
+                       ^init(^#^)^              ^eq^ual|^noeq^ual
+                       ^strat^a^(^#^)^            ^us^ing^(^filename2^)^
+                       ^count^v^(^varname^)^      ^tab^les|^notab^les
+                       ^trtlab(^label1 [label2] .....^)^
+                       ^fact^or^(2*2^|^2*3^|^3*2^|^3*3^|^2*4^|^4*2^|^3*4^|^4*3)^
+                       ^fra^tio^(1 1^|^2 1^|^1 2^|^2 2)^
+                       ^xov^er^(stand^|^switch^|^extra)^
+                       ^shap^e^(long^|^wide)^     ^matsiz(^#^)^ ]
+
+  ^ralloc_678 ?^
+
+
+Description
+-----------
+
+[^ralloc_678^ is the end-of-line version of ^ralloc^ to be used with Stata
+releases 6,7 and 8. It is actually ^ralloc^ version 3.2.5.]
+
+^ralloc^ provides a sequence of treatments randomly permuted in blocks of
+constant or varying size.  If not constant, the size and order of the blocks
+are also random. Allocation may be stratified by one or more variables.
+Randomisation may also proceed simultaneously on 2 factors: 2x2, 2x3, 3x2,
+3x3, 2x4, 4x2, 3x4 and 4x3 factorial designs are supported. ^ralloc^ will
+also handle a 2x2 crossover design with or without a supplementary 3rd
+period as either a "switchback" or "extra period" design (Jones and
+Kenward 1989).
+
+A typical use of ^ralloc^ is in a randomised controlled clinical trial (RCT),
+and, in particular, in a multicentred trial where balance in treatment
+allocations may be desirable within centre and other defined strata.
+
+The second syntax displays the syntax diagram for the first syntax.
+
+
+Options
+-------
+
+^sav^ing^(^filename1^)^ specifies the name of the file to which data are saved.
+    This is a required "option". If more than one stratum is specified, either
+    by the ^strata()^ option or the ^using()^ option then, in addition to
+    saving all random allocations across all strata to <filename1>, allocations
+    for each stratum may be saved to individual files (see option ^multif^). For
+    these, <filename1> is used as a stub to name one file for each stratum. The
+    schema is:
+
+                <filename1>_n1[_n2_n3 ... _nk]
+
+    for a trial with 1 to k stratification variables. n1 identifies the level
+    of the stratum of the 1st stratification variable, n2 gives the level of
+    the stratum of the 2nd stratification variable etc, each stratification
+    variable's set of suffixes being preceded by an underscore character.
+    Suffixes are padded with leading zeros to maintain alphanumeric sort order.
+    For example, if we specified ^saving(^myfile^)^ and ^multif^ and we had only
+    one stratification variable with 10 levels, the filenames would be: myfile,
+    myfile_01, myfile_02, ..., myfile_09, myfile_10 (each with .dta extension).
+    If there were a second stratification variable, with say, 3 levels, we
+    would have myfile.dta plus 30 files named: myfile_01_1, myfile_01_2,
+    myfile_01_3, myfile_02_1, ....., myfile_10_3.
+
+^multif^ specifies that multiple files will be saved, one holding all
+    allocations, and one for each stratum's allocations. The default is
+    ^nomultif^ meaning that just one file holding all allocations will
+    be generated.
+
+^se^ed^(^#|"^date^"^)^ specifies the random number seed. If unspecified, the
+    default is 1234567879. # should be an integer; if it is not it will be
+    truncated. Alternatively, the word "^date^" may be specified which invites
+    ^ralloc^ to set the seed to today's date (number of days elapsed since 
+    Jan 1 1960).
+
+^ns^ubj^(^#^)^ specifies the total number of subjects in each stratum requiring
+    a random treatment allocation. If unspecified, the default is 100. ^ralloc^
+    may yield a number greater than ^nsubj^ if this is required to complete the
+    final block. ^ns^ubj^()^ is overridden when a ^us^ing file is specified.
+
+^nt^reat^(#)^ specifies the number of treatment arms in a non-factorial design:
+    2 to 5 may be specified. ^ntreat^ should not be specified in a factorial
+    design, as the number of treatment combinations is defined in the ^factor^
+    option (see below). If unspecified, the default for a non-factorial design
+    is 2.
+
+^ra^tio^(#)^ specifies the ratio of treatment allocations to the arms of a 2
+    treatment non-factorial trial: 1, 2 or 3 may be specified, yielding a
+    1:1, 1:2 or 1:3 ratio of allocations respectively. For a 3 or 4 arm
+    non-factorial trial only ^ratio(^1^)^, the default, may be specified.
+
+^os^ize^(1^|^2^|^3^|^4^|^5^|^6^|^7)^ specifies the number of different size blocks.
+    For example, if 3 treatment arms are chosen, then ^osize(5)^, the default,
+    will yield possible block sizes of 3, 6, 9, 12, and 15. Note that it is
+    quite possible not to realise some block sizes if the number of subjects
+    requested (^nsubj^) is low. ^osize(1)^ gives a constant block size.
+
+^eq^ual specifies that block sizes will be allocated in equal proportions.
+    In the example given under the ^osize^ option, each block would appear
+    on roughly 20% of occasions. This may not be desirable: too many small
+    blocks may allow breaking the blind; too many large blocks may compromise
+    balance of treatments in the event of premature closure. The default
+    choice is to allocate treatments in proportion to elements of Pascal's
+    triangle. In the above example, if ^equal^ were not specified, or ^noequal^
+    appeared, allocation of block sizes would be in the ratio of 1:4:6:4:1.
+    That is, the relative frequency of small and large block sizes is
+    down-weighted. See the ^init^ option below for another way to limit the
+    number of small blocks, albeit at the cost of increasing the number of
+    large blocks.  If ^osize^ is 1 or 2, then equality of distribution
+    of block size(s) is forced.
+
+^strat^a^(^#^)^ specifies the number of strata. The default is 1. The number
+    of strata can be calculated as the product, over all stratification
+    variables, of the levels in each stratification variable. For example,
+    if we had a trial running in 10 centres and we further required balance
+    over 2 sexes and 3 age groups, then ^strata(^60^)^ would be specified.
+    This option may be specified with or without a ^using^ filename (see below).
+    If no ^using^ file is specified, each stratum will hold ^nsubj^ allocations.
+    If a ^using^ file is specified, the value of ^strata^ is overridden by
+    the number of rows in the file. Note that ^ralloc^ uses Stata matrices
+    and so an absolute upper limit on the number of strata that may be
+    specified is 800.
+
+^us^ing^(^filename2^)^ is a Stata .dta file defining the stratification
+    schema. The file must consist solely of variables defining strata
+    plus one other variable giving the number of subjects required
+    to be randomised in each stratum (the ^countv^ variable, see below).
+    This file should reside in the current data path. Each row (observation)
+    in this file defines a stratum. Levels of a stratification variable
+    must be coded as consecutive positive integers (1,2,3...). ^ralloc^
+    will check this and will also check that the product of levels over all
+    stratification variables equals the number of rows (strata).
+
+^count^v^(^variable name^)^ specifies the variable in the ^us^ing file whose
+    values give the number of subjects requiring randomisation in each stratum.
+    ^count^v^()^ is specified if and only if ^us^ing^()^ is specified. Values
+    of the variable specified override the value of ^ns^ubj^()^ should this
+    also be specified.
+
+^shap^e^(long^|^wide)^ allows specification of the output to the saved file(s)
+    in either long or wide form. In ^long^ form, the treatment listing is
+    sequential down page within the defined block. In ^wide^ form, the
+    treatment listing is sequential across page within the defined block.
+    The default is ^long^. A factorial or crossover design may not be
+    specified as ^wide^.
+
+^matsiz^(#) sets the maximum size of a Stata matrix. This is a rarely
+    used option, as ^ralloc^ chooses a matrix size appropriate to the
+    stratification schema specified.
+
+^trtlab(^string1 string2 ...^)^ allows specification of value labels for
+    treatments.  At most 5 labels may be specified for a non-factorial design.
+    The number of labels that may be specified for a factorial design is equal
+    to the sum of the number of possible treatments in the two randomisation
+    axes. For example, 2x3 study will allow 5 labels.  Labels are separated
+    by spaces and so may not themselves contain a space.  A label will be
+    truncated after the first 8 characters. The default treatment labels are
+    A, B, C, D and E (plus F and G if required for a factorial design). An
+    older form of the syntax for non-factorial designs, requiring an option
+    for each label: ^tr1lab(^string^)^, ^tr2lab(^string^)^, etc, is permitted
+    but obsolete.
+
+^fact^or^(^string^)^ specifies that the trial has a factorial design with two
+    "axes of randomisation". The string must be one of: ^2*2^, ^2*3^, ^3*2^, ^3*3^,
+    ^2*4^, ^4*2^, ^3*4^ or ^4*3^. Allocation combinations are balanced within
+    blocks, unless ^fratio^ is specified in a 2x2 design. The names of the two
+    treatment variables will be <Treatmentvar>1 and <Treatmentvar>2.
+
+^frat^io^(^string^)^ specifies, in the case of a 2x2 factorial design, the ratio
+    of allocations in each axis. The string must be one of: ^1 1^, ^1 2^, ^2 1^,
+    or ^2 2^. For example, if we require a 1:2 ratio of treatments in the
+    first randomisation axis and a 1:1 ratio of treatments in the second axis,
+    ^frat^io^(^2 1^)^ would be specified.
+
+^xov^er^(^string^)^ specifies the design as a 2x2 crossover. The string argument
+    may be one of ^stand^ for the standard 2 treatment, 2 period design, ^switch^
+    for the switchback design where each subject receives the treatment
+    assigned for period 1 in period 3, or ^extra^, for the extra period design,
+    where each subject has the treatment assigned for period 2 replicated in
+    period 3. The names of the treatment variables will be <Treatmentvar>1,
+    <Treatmentvar>1 and, if required, <Treatmentvar>3.
+
+^init(^#^)^ specifies the initiating value of the sequence defining the block
+    sizes. ^ralloc^ presents 5 schema:
+
+      (i) non-factorial design or with balanced allocation:
+          ---------------------------------------------
+    In this case the default for ^init^ is the number of treatments given by
+    ^ntreat^. This may also be specified by ^init(0)^. For example, in a
+    3 treatment trial, ^init(9)^ would, if the default ^osize(5)^ is chosen,
+    yield block sizes of 9, 12, 15, 18 and 21. If ^init^ were unspecified,
+    the block sizes would be 3, 6, 9, 12 and 15.
+
+     (ii) 2 treatment non-factorial design with unbalanced allocation:
+          -----------------------------------------------------------
+    When a ^ratio^ > 1 has been specified for a 2 treatment trial, the
+    default initiating value of the block size is (^ratio^ + 1).
+
+    (iii) factorial design with balanced allocation:
+          -----------------------------------------
+    When not specified the default is the number of treatment combinations,
+    for example, 6 in a 2x3 design.
+
+     (iv) 2x2 factorial design with unbalanced allocation:
+          -----------------------------------------------
+    When ^fratio^ has been specified the default initiating block size is
+    given by:  ((1st arg of ^fratio^) + 1) x ((2nd arg of ^fratio^) + 1).
+
+      (v) 2x2 crossover design with balanced allocation:
+          ---------------------------------------------
+    See case (i) above.
+
+    In all cases, when specified, ^init^ must be an integer multiple of
+    the appropriate default.
+
+^tab^les specifies that a frequency distribution of block sizes is displayed
+    for all allocations and, where appropriate, for each stratum. The default
+    is ^notab^les.
+
+
+Remarks
+-------
+^ralloc^ addresses 4 (of the many) objectives of the design of a RCT:
+
+(1) Random allocation of treatments to subjects. Each block represents
+    a random permutation of the 2, 3, 4 or 5 treatments specified.
+
+(2) Avoiding unnecessary imbalance in the number of subjects allocated to
+    each treatment. Allocation within blocks of reasonable size achieves
+    this. In the case of a trial with k treatments, even in the event of
+    unexpected termination of the trial, the imbalance will be at most
+    1/k times the size of the largest block used.
+
+(3) Maintenance of blinding by concealing the pattern of the blocks. A
+    limited number of block sizes are chosen, the number depending on
+    the ^osize^ option. Treatments are balanced within blocks; by
+    default, equal numbers of each treatment in each block, although
+    the ratio may be varied (1:2 or 1:3) in a 2 treatment trial.  Block
+    sizes are chosen at random with equal or unequal probabilities
+    (depending on the presence of the ^eq^ual option) and then the
+    order of block sizes is randomly shuffled. Such a scheme makes
+    "breaking the blind" by working out the block pattern extremely
+    difficult.  If, however, balance in the number of allocations to
+    each treatment is more critical than increased protection against
+    breaking the blind, ^osiz^e^(1)^ permits the choice of a constant
+    block size.  This may be desired in a trial with a small number of
+    subjects.
+
+(4) Ensuring that a record is kept of the randomisation protocol. The
+    program saves the allocation sequence into user-named .dta file(s).
+    It also writes a record of the options specified (seed, number of
+    subjects requested etc) and certain other useful information (number
+    of blocks used, number of subjects randomised, identification of the
+    levels of each stratum defining the schema for the current data file)
+    as notes into the data file(s).
+
+
+^ralloc^ requires specification of 3 variables that will appear in the data
+set(s) that the command creates and saves:
+        <BlockIdvar>:    Variable identifying each block.
+        <BlockSizevar>:  Variable storing the block size.
+        <Treatmentvar>:  Variable storing the randomly allocated treatment;
+                         values are 1, 2, 3, etc labelled as "A" "B" "C" etc
+                         respectively, unless labels are specified using
+                         the ^trtlab^ option. In a factorial or crossover
+                         design the variable name may be only 7 characters
+                         long to permit a "1", "2", or "3" to be suffixed.
+
+^ralloc^ creates 2 additional variables:
+    ^StratID^ is an integer identifier constant for each observation in a
+      given stratum.
+    ^SeqInBlk^ that gives the order of the allocation within block.  This
+      variable is explicit if the ^shape^ option is ^long^, and implicit
+      if ^shape^ is ^wide^.
+
+If a ^using^ file is specified, ^ralloc^ adds each stratification variable
+to the data set and fills observations with the values of the levels
+appropriate to the stratum.
+
+If ^shape(^wide^)^ is specified then each observation will be a block. ^ralloc^
+will create k = max(blocksize) new variables named <Treatmentvar>#,
+where # = 1...k to store the allocated treatments for that block.  Of course,
+if a block's size, j, is such that j < k, missing values are stored in
+variables <Treatmentvar>j+1 through <Treatmentvar>k.
+
+Should the original order of allocations be disturbed, then with the data in
+long form, it may be restored by:
+
+  ^. sort StratiD^ <BlockIdVar> ^SeqInBlk^
+
+Note that ^ralloc^ issues a ^clear^ command immediately after it is invoked,
+so existing data in memory will be lost.
+
+It is good practice for the user to open a log file before issuing a command
+such as ^ralloc^. However, even if the log file is lost, the data files
+contain, in the form of notes, the information needed to reproduce the
+randomisation protocol.
+
+
+Example 1
+---------
+
+   ^. ralloc block size treat, seed(675) sav(mytrial) shape(wide)^
+
+Allocates treatments A and B at random in a ratio of 1:1 in blocks of sizes
+2 4 6 8 and 10 to 100 subjects. Block sizes are allocated unequally in the
+ratio 1:4:6:4:1 (Pascal's triangle). Seed is set at 675. Only 1 stratum is
+specified (by default). Sequence is saved to mytrial.dta in wide form.
+
+
+Example 2
+---------
+
+   ^. ralloc bn bs Rx, nsubj(920) nt(2) osiz(4) ra(3) init(8) eq sav(mys)^
+
+Allocates treatments A and B at random in ratio of 1:3 in blocks of sizes
+8 12 16 and 20 to 920 subjects using Stata's default seed of 123456789. Roughly
+25% of blocks will be of each size.  Data saved in default (long) form to
+mys.dta. Only 1 stratum is specified, and hence 1 file is saved.
+
+
+Example 3
+---------
+
+   ^. ralloc blknum blksiz Rx, ns(494) osiz(2) eq ntreat(2) sav(mywide)^
+              ^shap(wide) seed(date) trtlab(Placebo Active) strata(4) multif^
+
+Allocates treatments labelled "Placebo" and "Active" equally in two block
+sizes, 2 and 4, to 494 subjects in each of 4 strata (maybe a 4-centre trial).
+The seed is set to today's date in Stata's elapsed days since January 1, 1960.
+Data are saved in wide form to 5 files: mywide.dta holds all allocations, and
+4 additional files named mywide_1.dta, mywide_2.dta, mywide_3.dta and
+mywide_4.dta hold stratum specific allocations.  A truncated listing of data
+from mywide_4.dta looks like this:
+
+  ^. use mywide_4^
+  ^. li in 1/7, noobs nodisp^
+
+
+  StratID     blknum     blksiz        Rx1        Rx2        Rx3        Rx4
+        4        498          2    Placebo     Active          .          .
+        4        499          2     Active    Placebo          .          .
+        4        500          2    Placebo     Active          .          .
+        4        501          4     Active    Placebo    Placebo     Active
+        4        502          2    Placebo     Active          .          .
+        4        503          2    Placebo     Active          .          .
+        4        504          2     Active    Placebo          .          .
+
+
+And we can easily recover the long form of the data:
+
+   ^. reshape long^
+   ^. sort blknum SeqInBlk^
+   ^. drop if Rx == .^
+   ^. order StratID^
+   ^. list in 1/10^
+
+
+       StratID     blknum   SeqInBlk     blksiz         Rx
+  1.         4        498          1          2    Placebo
+  2.         4        498          2          2     Active
+  3.         4        499          1          2     Active
+  4.         4        499          2          2    Placebo
+  5.         4        500          1          2    Placebo
+  6.         4        500          2          2     Active
+  7.         4        501          1          4     Active
+  8.         4        501          2          4    Placebo
+  9.         4        501          3          4    Placebo
+ 10.         4        501          4          4     Active
+
+
+Example 4
+---------
+
+   ^. ralloc blknum blksiz Rx, ns(4984) osiz(4) ntr(4) sav(mys) strat(3) tab^
+
+Allocates treatments A, B, C and D at random in ratio of 1:1:1:1 in blocks
+of sizes 4, 8, 12 and 16 to 4984 subjects in each of 3 strata using the
+default seed. Block sizes are roughly in ratio of 1:3:3:1.
+
+For this example, the following tables will appear on-screen:
+
+  Frequency of block sizes in ^stratum 1^:
+
+   block size |      Freq.     Percent        Cum.
+  ------------+-----------------------------------
+            4 |         62       12.50       12.50
+            8 |        183       36.90       49.40
+           12 |        185       37.30       86.69
+           16 |         66       13.31      100.00
+  ------------+-----------------------------------
+        Total |        496      100.00
+
+   Frequency of block sizes in ^stratum 2^:
+
+     <output not shown>
+
+   Frequency of block sizes in ^stratum 3^:
+
+     <output not shown>
+
+   Frequency of block sizes over ^ALL data^:
+
+    block size |      Freq.     Percent        Cum.
+   ------------+-----------------------------------
+             4 |        179       12.01       12.01
+             8 |        555       37.22       49.23
+            12 |        577       38.70       87.93
+            16 |        180       12.07      100.00
+   ------------+-----------------------------------
+         Total |       1491      100.00
+
+
+If one were to issue the command:
+
+   ^. tab blksiz Rx^
+
+a table showing the frequency of treatment allocations across all strata
+would be produced:
+
+           |                  treatment
+Block size |         A          B          C          D |     Total
+-----------+--------------------------------------------+----------
+         4 |       179        179        179        179 |       716
+         8 |      1110       1110       1110       1110 |      4440
+        12 |      1731       1731       1731       1731 |      6924
+        16 |       720        720        720        720 |      2880
+-----------+--------------------------------------------+----------
+     Total |      3740       3740       3740       3740 |     14960
+
+
+Note that 14960 subjects were randomised, compared with 3*4984 = 14952
+requested.  An extra 8 subjects were required to ensure completeness of
+final blocks in the strata.
+
+
+Example 5
+---------
+
+Let us say we have a file, raltest6.dta, defining strata for a RCT to be
+conducted in 3 centres and we also seek to balance allocations within 2
+age groups. The number of allocations in each of the 6 strata are held in
+the variable "freq".
+
+ ^. use raltest6^
+ ^. li ^
+
+       centre    agegrp      freq
+  1.        1         1        50
+  2.        1         2        80
+  3.        2         1       140
+  4.        2         2       100
+  5.        3         1        70
+  6.        3         2       100
+
+Note that ^ralloc^ does not care about the order of variables in the data
+set, nor of the sort order of the observations, but it is easier to check
+the completeness of the schema if levels are coherently nested.
+
+The command:
+
+   ^. ralloc bID bsiz trt, sav(myrct) count(freq) using(raltest6)^
+                              ^nsubj(80) seed(54109) multif^
+
+will cause the following output:
+
+   Counts defined in variable freq in file raltest6 will override the
+    number of subjects specified in option nsubj(80)
+
+   Number of strata read from file raltest6 is 6
+    number of stratum variables is 2
+
+   stratum variable 1 is centre
+   number of levels in centre is 3
+
+   stratum variable 2 is agegrp
+   number of levels in agegrp is 2
+
+   the stratum design and allocation numbers are:
+
+       centre  agegrp    freq
+   r1       1       1      50
+   r2       1       2      80
+   r3       2       1     140
+   r4       2       2     100
+   r5       3       1      70
+   r6       3       2     100
+
+
+   Allocations over all strata saved to file myrct
+
+   ....saving data from stratum 1 to file myrct_1_1
+   ....saving data from stratum 2 to file myrct_1_2
+   ....saving data from stratum 3 to file myrct_2_1
+   ....saving data from stratum 4 to file myrct_2_2
+   ....saving data from stratum 5 to file myrct_3_1
+   ....saving data from stratum 6 to file myrct_3_2
+
+   Data file myrct (all allocations) is now in memory
+   Issue the -notes- command to review your specifications
+
+Here are the notes saved to one of the 6 stratum-specific files generated:
+
+ ^. use myrct_2_1^
+ ^. notes ^
+
+ _dta:
+  1.  Randomisation schema created on 2 Nov 1999 22:02 using ralloc.ado
+      v3.2.3
+  2.  Seed used = 54109
+  3.  Stratum definitions and numbers of allocations were defined in file
+      'raltest6.dta'
+  4.  Number of strata requested = 6
+  5.  There were 2 treatments defined
+  6.  Treatments are labelled: 'A' 'B'
+  7.  See notes for parent file 'myrct.dta'
+  8.  This is stratum 3 of 6 strata requested
+  9.  ...level 2 of stratum variable -centre-
+ 10.  ...level 1 of stratum variable -agegrp-
+
+If the ^shape(wide)^ option had been specified, additional notes would have
+been displayed:
+
+ 11.  Data saved in wide form:
+ 12.  ...recover 'SeqInBlk' by issuing <<reshape long>> command
+ 13.  ...then you may issue <<drop if trt == .>> without losing any allocations
+
+
+
+Example 6
+---------
+
+Consider a study that aims to test both the efficacy of a blood pressure
+lowering medication, called BPzap, versus a placebo, and the utility of
+two weight reduction exercise programs, called GymSweat and JogaBit, versus
+normal activity on a specified cardiovascular endpoint. An efficient design
+might be a 2x3 factorial RCT (although there are issues of interaction here).
+
+   ^. ralloc blknum size Rx, sav(rctfact) factor(2*3) osiz(2) eq seed(4512)^
+          ^trtlab(BPzap Placebo GymSweat JogaBit normact) nsubj(300)^
+
+will allocate two treatments, called Rx1 and Rx2, to each of 300 subjects
+in a single stratum using a 2x3 factorial design. Blocks of size 6 and 12
+with equal frequency will result. After the command we might:
+
+   ^. list in 1/10^
+
+
+       StratID     blknum       size   SeqInBlk        Rx1        Rx2
+  1.         1          1          6          1    Placebo    normact
+  2.         1          1          6          2      BPzap    JogaBit
+  3.         1          1          6          3      BPzap    normact
+  4.         1          1          6          4    Placebo    JogaBit
+  5.         1          1          6          5      BPzap   GymSweat
+  6.         1          1          6          6    Placebo   GymSweat
+  7.         1          2         12          1      BPzap   GymSweat
+  8.         1          2         12          2    Placebo    normact
+  9.         1          2         12          3      BPzap    normact
+ 10.         1          2         12          4    Placebo    JogaBit
+
+So, the 5th subject in Block 1 will receive BPzap and hits the gym, but
+the 2nd subject in Block 2 takes Placebo and gets to slob around as usual.
+
+   ^. tab Rx1 Rx2^
+
+           |               Rx2
+       Rx1 |  GymSweat    JogaBit    normact |     Total
+-----------+---------------------------------+----------
+     BPzap |        50         50         50 |       150
+   Placebo |        50         50         50 |       150
+-----------+---------------------------------+----------
+     Total |       100        100        100 |       300
+
+and we note the balance in allocations in each axis of the study.
+
+
+Example 7
+---------
+
+We reformulate the preceding study as a 2x2 study by excluding the JogaBit
+treatment. Let's say we wish to have twice as many on Placebo as BPzap, and
+also twice as many subjects on normal activity as on the GymSweat regimen.
+
+   ^. ralloc blknum size Rx, sav(rctfact2) factor(2*2) osiz(2) eq seed(1131)^
+        ^trtlab(BPzap Placebo GymSweat normact) fratio(2 2) nsubj(300)^
+
+This command will give blocks of sizes 9 (the minimum possible with 1:2
+allocation ratios in each axis) and 18 (because ^osize(2)^ was specified).
+
+   ^. tab Rx*^
+
+           |          Rx2
+       Rx1 |  GymSweat    normact |     Total
+-----------+----------------------+----------
+     BPzap |        34         68 |       102
+   Placebo |        68        136 |       204
+-----------+----------------------+----------
+     Total |       102        204 |       306
+
+
+Example 8
+---------
+
+We have a 2x2 crossover design supplemented by a switchback in period 3.  The
+trial compares a new anti-arthritic drug "HipLube" versus aspirin in chronic
+osteoarthritis of the hip.
+
+   ^ralloc Bnum Bsize medic, saving(chronOA) ns(28) trtlab(HipLube aspirin)^
+        ^xover(switch) strata(2) osiz(1) init(4)^
+
+will randomise 56 subjects (28 in each of 2 strata) using blocks of constant
+size, 4, and save results to chronOA.dta. Each subject will receive either
+HipLube or aspirin in the 1st period, and the other drug in the 2nd period.
+The 1st period's drug will be readministered in the 3rd period.
+
+
+
+Acknowledgement
+---------------
+
+  I thank Liddy Griffith, Senior Data Manager, Dept. Public Health for
+  helpful comments. John Gleason reminded me of the use of the second syntax.
+
+
+Reference
+---------
+
+Jones B and Kenward MG. Design and Analysis of Crossover Trials. London.
+Chapman and Hall 1989.
+
+
+Author
+------
+
+  Philip Ryan
+  Data Management & Analysis Centre
+  Department of Public Health
+  University of Adelaide 5005
+  South Australia
+  philip.ryan@@adelaide.edu.au
+
+
+See also
+--------
+
+    STB:  @ralloc@ in STB-50 sxd1.1, STB-41 sxd1
+On-line:  help for @seed@, @notes@, @reshape@

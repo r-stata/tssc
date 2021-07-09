@@ -1,0 +1,527 @@
+{smcl}
+{.-}
+help for {cmd:mclest}{right: {browse "mailto:John_Hendrickx@yahoo.com":John Hendrickx}}
+{.-}
+
+{title:Stata macros for multinomial conditional logit models}
+
+{p}
+{it:MCL} stands for
+{it:{ul:M}ultinomial {ul:C}onditional {ul:L}ogit} model. A conditional
+logit program is used to estimate a multinomial logistic model. This
+produces the same coefficients and standard errors as a regular
+multinomial logit program but has the advantage that it provides great
+flexibility for imposing constraints on the dependent variable.
+{help mclgen} restructures the data so the model can be estimated by
+{help clogit}, {cmd:mclest} estimates the model using {cmd:clogit}.
+
+{p}
+In addition, {cmd:mclest} can estimate two special models:
+{it:stereotyped ordered regression} (SOR) and Goodman's
+{it:row and columns model} 2 (RC2). Both models estimate a scaling metric for the dependent variable; the RC2 model estimates a scaling metric for a categorical independent variable as well.
+
+{title:Syntax:}
+
+{p 8 27}
+{cmd:mclest} {it:varlist} [{cmd:if} {it:exp}] [{cmd:in} {it:range}]
+[{it:weight}]
+   [, {cmd:sor(}{it:varlist}{cmd:)}
+      {cmd:soriter(}{it:#}{cmd:)}
+      {cmd:sortol(}{it:#}{cmd:)}
+      {cmd:rc2(}{it:varname}{cmd:)}
+      {cmd:eqrc2(}{it:varname}{cmd:)}
+      {cmd:muby(}{it:varlist}{cmd:)}
+      {cmd:nonorm}
+      {cmd:debug} ]
+
+{p}
+{it:varlist} contains a model specification. The main effects of the
+{it:response factor} specified in {cmd:mclgen} correspond with the
+intercept in a multinomial logit model. Interactions of the
+{it:response factor} with independent variables correspond with the
+effects of these variables. Because the response factor is on the
+right hand side of the model specification, it is a simple matter to
+impose restrictions. The dichotomous dependent variable and the
+stratification variable are automically passed on
+from {help mclgen} to {cmd:mclest} and do not have to be specified.
+
+{title:Options}
+
+{p}
+These options are used to request the special nonlinear models
+{it:Sterotyped Ordered Regression} (SOR) and/or the
+{it:Row and Columns model 2} (RC2).
+
+{p 0 4}
+{cmd:sor(}{it:varlist}{cmd:)} specifies a list of variables for which
+the SOR model should be estimated. Note that at least two variables
+should be specified, unless either the {cmd:rc2} or {cmd:eqrc2} option
+is being used.
+
+{p 0 4}
+{cmd:soriter(}{it:#}{cmd:)} specifies the maximum number of iterations
+for estimating a SOR or RC2 model. The default value is 20.
+
+{p 0 4}
+{cmd:sortol(}{it:#}{cmd:)} specifies the convergence criterion for
+estimating a SOR or RC2 model. The default value is .0001.
+
+{p 0 4}
+{cmd:rc2(}{it:varname}{cmd:)} specifies a categorical independent
+variable for the RC2 model. The eqrc2 option will be ignored if the
+{cmd:rc2} option is specified.
+
+{p 0 4}
+{cmd:eqrc2(}{it:varname}{cmd:)} specifies a categorical independent
+variable for the EQRC2 model. The {cmd:rc2} option may not be used
+together with the eqrc2 option.
+
+{p 0 4}
+{cmd:muby(}{it:varlist}{cmd:)} specifies one or more variables which
+affect the association between the {cmd:rc2 }or {cmd:eqrc2} variable
+and the dependent variable. Ignored if not used in conjunction with
+the {cmd:rc2} or {cmd:eqrc2} option.
+
+{p 0 4}
+{cmd:nonorm} prevents the mclest program from estimating a normalized
+solution if a SOR and/or RC2 model has been requested.
+
+{p 0 4}
+{cmd:debug} prints intermediate results of {cmd:clogit}. This can be
+used to determine the source of error if something goes wrong. The
+default is {cmd:nodebug}.
+
+{p}
+{cmd:mclest} passes the following arguments on to {help clogit}
+unaltered:
+
+{p 4 4}
+{cmd:weight}, {cmd:if}, {cmd:in}
+
+{p}
+See the Stata documentation on {help clogit} for further details on these options.
+
+{title:Usage}
+
+{p}
+For basic use, {cmd:mclest} will be specified with a list of dummy
+variables representing the main effects of the {it:response factor}
+and interactions of the {it:response factor} with independent
+variables.
+
+{p}
+The main effects of the independent variables should not be specified;
+unfortunately {help xi} does not provide this option. As a result,
+clogit will report that the main effects have been "omitted due to no
+within-group variance". This has no further consquences for the
+estimates.
+
+{p}
+In the following example, the variable {cmd:occ} (respondent's
+occupation, 5 categories) is the {it:response factor}. It is specified
+in the {help mclgen} command to transform the data into a
+{it:person/choice} file. {cmd:mclgen }reports "(3352 observations
+created)", each of the 838 cases has been duplicated 4 times so that
+there are now 5 records for each respondent. The cases are indexed by
+{cmd:occ} and {cmd:__strata}. {cmd:occ} indicates response options 1
+to 5, {cmd:__strata} indicates respondents 1 to 838. The variable
+{cmd:__didep} indicates which record corresponds with the respondent's
+choice.
+
+{p}
+The model is specified as a main effect of {cmd:occ} and interactions
+of {cmd:occ} with the independent variables {cmd:educ} and
+{cmd:black}. The model could be specified as
+{input:xi: mclest i.occ*educ i.occ*black} instead. This produces the
+same estimates but a different order of the estimates.
+
+{p}
+{input:* Using mcl to estimate a multinomial logit model}
+{input:use logan}
+
+{input:mlogit occ educ black, base(1)}
+
+{input:mclgen occ}
+{input:xi: mclest i.occ i.occ|educ i.occ|black}
+
+{p}
+The coefficients of this model are the same as those found using
+{help mlogit}. For models like this, {cmd:mclest} basicly just
+specifies the {cmd:__didep} and {cmd:__strata} variables for you in a
+{help clogit} command. The model could also be estimated as:
+
+{input:xi: clogit __didep i.occ i.occ|educ i.occ|black, strata(__strata)}
+
+{p}
+This model can be estimated equivalently (and more easily) with
+{cmd:mlogit}. The advantage of mcl models lies in the ability to easily specify different {it:response functions} for different independent variables. A response function refers to the type of parameterization applied to the response factor.
+
+{p}
+Using {cmd:xi}, the first category of {cmd:occ} is treated as the reference category. In that case, the model is equivalent to using
+{input:mlogit ..., base(1)}. Using {help xi3} or {help desmat}, other
+paramterizations, or contrasts, can be applied to the response factor,
+obtaining other response functions. Equality constraints can be
+imposed on two categories of the response factor by adding the dummies
+for those two categories. A parameter can be fixed to zero by dropping
+the dummy for that cateory. A linear constraint can be imposed by
+treating the response factor as a continuous variable. In an mcl
+model, such restrictions can be imposed on the indendent variables on
+a variable by variable basis.
+
+{p}
+For example, to estimate an
+{it:adjacent logit} (Agresti 1990: 318) model with {cmd:mclest}, use the
+{it:backward difference contrast} with either
+{net search:xi3} or {net search:desmat}. Both {cmd:xi3} and
+{cmd:desmat} are available from the {help ssc} archives. To estimate
+and adjacent logit model with {cmd:xi3}, use:
+
+{input:xi3: mclest b.occ b.occ*educ b.occ*black}
+
+{p}
+Or with {cmd:desmat}:
+
+{input:char occ[pzat] dif(b)}
+{input:desmat: mclest occ occ.@educ occ.@black}
+
+{p}
+Another conceivable application might be to impose a
+{it:linear constraint} on the response factor for the effects of
+{cmd:educ} but to use the usual constraints (first category is
+reference) for {cmd:black}. This could be done as follows:
+
+{input:gen occ_ed=occ*educ}
+{input:xi: mclest i.occ occ_ed i.occ*black}
+
+{title:Mobility models}
+
+{p}
+With {cmd:mclest}, it is easy to impose any constraint you
+might wish on the response factor and to impose a different constraint
+for each independent (dummy) variable if necessary. One application of
+this is to specify {it:loglinear model for square tables}, also known
+as {it:mobility models}, as multinomial logistic models (cf. Logan
+1983, Breen 1994).
+
+{p}
+Mobility models lie in the space between a model of independence and a
+saturated loglinear model. Special constraints are imposed on the
+second degree loglinear parameters in order to test for a particular
+pattern of association and to enhance interpretablity by reducing the
+number of parameters. Hout (1983) and Goodman (1984) contain overviews
+of commonly used mobility models.
+
+{p}
+When treated as multinomial logit models, mobility models utilize a
+different {it:response function}, i.e. a different set of restrictions
+on the response factor, for different levels of the "other" variable.
+For example, in a quasi-independence model for father's occupation by
+son's occupation, son's occupation would be specified as the response
+factor. For category {it:i} of father's occupation, the response
+function would be category {it:i} of son's occupation versus the other
+categories. The model would be specified as:
+
+{input:mclgen occ}
+{input:gen d1=(focc==1)*(occ==1)}
+{input:gen d2=(focc==2)*(occ==2)}
+{input:gen d3=(focc==3)*(occ==3)}
+{input:gen d4=(focc==4)*(occ==4)}
+{input:gen d5=(focc==5)*(occ==5)}
+{input:xi: mclest i.occ d* i.occ|black i.occ|educ}
+
+{p}
+The specification {cmd:(occ==}{it:i}{cmd:)} represents the reponse
+function for a particular dummy variable. This dummy variable will
+produce the logit of landing in category {it:i} versus some other
+category. So {cmd:d1} indicates the effect of father's occupation
+being equal to 1 on the logit for the son being in category 1 versus
+some other category.
+
+{p}
+As it turns out, once the data have been transformed into a
+{it:person choice file}, mobility models can be specified in an
+{cmd:mcl} model in the same way they would be in a loglinear model. So
+the much more compact specification:
+
+{input:gen diag=(focc==occ)*focc}
+{input:xi: mclest i.occ i.diag i.occ|black i.occ|educ}
+
+{p}
+Could be used as well. Examples for estimating a number of mobility
+models are in the file {cmd:mobility.do} in the {cmd:desmat} package.
+Use {net get desmat:net get desmat} to download these ancillary files
+
+{title:Stereotyped Ordered Regression}
+
+{p}
+{cmd:mclest} is also able to estimate certain special designs
+incorporating both linear and multiplicative effects. One of these is
+the {it:Stereotyped Ordered Regression model} (Anderson 1984, DiPrete
+1990). The SOR model is an alternative to the
+{it:proportional odds model} estimated by {help ologit}. The SOR model
+estimates a scaling metric for the response factor based on the
+effects of independent variables. The model has {it:J}-1 intercept
+parameters for a response factor with {it:J} categories, just like an
+unordered multinomial logit model. However, it has a single {hi:beta}
+parameter for each independent variable, together with {it:J}-2
+independent {it:scale values} {hi:phi[j]} for the response factor.
+
+{p}
+Two restrictions must be placed on the scaling metric in order to
+identify the model. {cmd:mclest} sets the value for the first category to 0 and the
+value for the last category to 1 while estimating the model. For the final estimates,
+the scaling metric is also normalized, with a mean of 0 and a sum of
+squares of 1.
+
+{p}
+The SOR model can be specified as:
+
+{asis}
+log(P(Y==q)/P(Y==r)) = a[q]-a[r] +
+            (phi[q]-phi[r])(b[1]X[1]+b[2]X[2]+ ... +b[K]X[K])
+
+{smcl}
+
+{p 0 4}
+Where
+{break}{hi:Y} is the response factor with categories {it:j}=1 to {it:J},
+{break}{hi:q} and {hi:r} are any two categories of {hi:Y},
+{break}{hi:a[j]} represents the intercept parameters with suitable
+restrictions,
+{break}{hi:phi[j]} represents the scaling metric with suitable
+restrictions,
+{break}{hi:X[k]} represents independent variables with {it:k}=1 to
+{it:K}, and
+{break}{hi:b[k]} represents parameters of the independent variables.
+
+{p}
+Compare this to a standard multinomial logistic model:
+
+{asis}
+log(P(Y==q)/P(Y==r)) = a[q]-a[r] +
+            (b[q1]-b[r1])X[1]+(b[q2]-b[r2])X[2]+ ... +(b[qK]-b[rK])X[K])
+
+{smcl}
+
+{p}
+In a multinomial model, the difference between {hi:b[qk]} and
+{hi:b[rk]} show how the
+{cmd:logit(}{hi:q}{cmd:/}{hi:r}{cmd:)} is affected by {hi:X[k]}. In
+the SOR model, the degree of this effect equals
+{hi:(phi[q]-phi[r])b[k]X[k]}. The SOR model forces the effect on the
+logit for any two outcomes to be proportional for all independent
+variables, with the magnitude of the effect being determined by the
+{hi:b[k]} parameters.
+
+{p}
+A SOR model can be requested by specifying a varlist in the {cmd:sor}
+option. A SOR model with only one {hi:X[k]} variable would be trivial and
+equivalent to standard multinomial model since it contains the same
+number of parameters. A simple SOR model with two variables could be
+specified as:
+
+{input:use logan}
+{input:mclgen occ}
+
+{input:xi: mclest i.occ, sor(educ black)}
+
+{p}
+This model will contain 9 parameters: 4 intercept parameters, 3
+independent {hi:phi[j]} parameters, and 2 {hi:b[k]} parameters. This is only
+slightly 3 less than for an unrestricted multinomial model. However, the
+parsimony of a SOR model does increase as the number of {hi:X[k]} variables
+increase.
+
+{p}
+The SOR model contains both linear and multiplicative elements. To
+estimate it, {cmd:mclest} iteratively estimates MCL models, first taking the
+{hi:phi[j]} scaling metric as given and estimating the {hi:b[k]} parameters, then
+taking the {hi:b[k]} parameters as given and estimating the {hi:phi[j]}
+parameters. This continues until the change in log likelihood between
+successive MCL models is less than the value specified in the {cmd:sortol}
+option (defalut .0001) or the maximum number of iterations specified in
+the {cmd:soriter} option is exceeded (default 20).
+
+{p}
+As a result of this
+estimation procedure, no standard errors can be given for the {hi:phi[j]}
+parameters and standard errors for the remaining parameters are
+conditional, given the scaling metric. In addition, the model degrees
+of freedom reported by {cmd:clogit} are not correct since the
+estimates for the scaling metric are not taken into account. See the
+{hi:Model fit information} at the end of the output for the correct number of degrees of freedom. {cmd:e(df_m)} in the saved results also contains the correct degrees of freedom.
+
+{title:Row and Columns model 2}
+
+{p}
+A second special model that can be estimated by {cmd:mclest} is Goodman's
+(1979) Row and Columns model 2. Originally developed for frequency
+tables, the RC2 model estimates scaling metrics for both the dependent
+variable and one of the independent variables. The association between
+the two variables can then be expressed through a single parameter {hi:mu}.
+The scaling metric for the dependent variable is {hi:phi[j]} as in the SOR
+model, the scaling metric for the independent variable is {hi:sigma[v]}. Two
+restrictions must be imposed on {hi:phi[j]} and {hi:sigma[v]} to identify the
+model. During estimation, {cmd:mclest} sets {hi:phi}[1]={hi:sigma}[1]=0 and
+{hi:phi}[{hi:J}]={hi:sigma}[{hi:V}]=1. The final estimates are also given for normalized
+scale values, where mean({hi:phi}[{hi:j}])={hi:mean}(sigma[{hi:v}])=0 and
+SS({hi:phi}[{hi:j}])=SS({hi:sigma}[{hi:v}])=1.
+
+{p}
+A model containing an RC2 effect could be specified as:
+
+{asis}
+logit(q/r) = a[q]-a[r] + (phi[q]-phi[r])mu*sigma[v]
+
+{smcl}
+{p}
+This model can be extended with standard and/or SOR effectsof independent
+variables. Indeed, the RC2 effects can be seen as the SOR effects of a
+categorical variable, scaled by {hi:mu}*{hi:sigma[v]}.
+
+{p}
+A variation of the RC2 model is the EQual Row and Columns model 2
+(EQRC2), which as the name suggests uses the same scale for the
+dependent variable and the categorical independent.
+
+{asis}
+logit(q/r) = a[q]-a[r] + (phi[q]-phi[r])mu*phi[v]
+
+{smcl}
+{p}
+Another variation implemented in {cmd:mclest} allows the association mu
+between the dependent and independent variable to vary by one or more
+other variables.
+
+{asis}
+logit(q/r) = a[q]-a[r] + (phi[q]-phi[r])(mu[0]+mu[t]X[t])*phi[v]
+
+{smcl}
+{p}
+An overall association parameter mu[0] is estimated, together with mu[t]
+parameters indicating how the association changes for each independent
+variable X[t], t=1 to T.
+
+{p}
+An RC2 model is requested by specifying a varname in the {cmd:rc2} option. At
+present, only one variable can be used for the RC2 effect. Similarly, an
+EQRC2 model can be requested by specifying a varname in the {cmd:eqrc2}
+option. The {cmd:rc2} and {cmd:eqrc2} options are mutually exclusive. To let the
+overall association vary by one or more independent variables, specify a
+varlist in the {cmd:muby} option.
+
+{p}
+The following example estimates a quasi RC2 model for father's
+occupation, including both effects for identical categories (diag) and
+an rc2 effect. The overall association mu between father's occupation
+and respondent's occupation is allowed to vary by race. Further more,
+race and education are included in the model as covariates using a SOR
+effect.
+
+{input:use logan}
+{input:mclgen occ}
+
+{input:gen diag=(focc==occ)*focc}
+{input:xi: mclest i.occ i.diag, sor(educ black) rc2(focc) muby(black)}
+
+{p}
+Models containing RC2 or EQRC2 effects are estimated by iteratively
+running MCL models, as is the case for SOR models. Convergence criterion
+and maximum iterations are determined by the {cmd:sortol} and {cmd:soriter}
+options. As with SOR models, no standard errors are available for the
+sigma[v] metric and other standard errors are conditional on the {hi:phi[j]}
+and {hi:sigma[v]} estimates. See the {hi:Model fit information} at the end of the output for the correct number of model degrees of freedom.
+
+{p}
+For tabular data, a separate {net search rc2:rc2} program is also available from the {help ssc} archives. Note that {cmd:mclest} can estimate these models in many cases. The differences are that {cmd:mclest} will not estimate the main effects of the row variable and that interactions between the row variable and a grouping variable must be included in {cmd:rc2} for the models to be equivalent. An advantage of {cmd:rc2} is that it does not require a restructuring of the data by {cmd:mclgen}.
+
+{title:Saved results}
+
+{p}
+In addition to the results saved by {help clogit},
+{cmd:mclest} saves the following matrices:
+
+{p 0 4}
+{cmd:e(phi)}
+{break}the phi scale with the first category fixed to 0, the last to 1
+
+{p 0 4}
+{cmd:e(phi_n)}
+{break}the phi scale with mean 0 and sum of squares 1
+
+{p 0 4}
+{cmd:e(df_m)}
+{break}the model degrees of freedom adjusted for the sigma and phi parameters
+
+{p}
+If the {cmd:rc2} or {cmd:eqrc2} option has been used, {cmd:mclest} also saves:
+
+{p 0 4}
+{cmd:e(sig)}
+{break}the sigma scale with the first category fixed to 0, the last to 1
+
+{p 0 4}
+{cmd:e(sig_n)}
+{break}the sigma scale with mean 0 and sum of squares 1
+
+{title:References}
+
+{p 0 4}
+Anderson, J.A. (1984). Regression and Ordered Categorical Variables.
+{it:Journal of the Royal Statistical Society}, Series B 46: 1-30.
+
+{p 0 4}
+Breen, Richard. (1994). Individual Level Models for Mobility Tables and
+Other Cross-Classifications. {it:Sociological Methods & Research} 33:
+147-173.
+
+{p 0 4}
+DiPrete, Thomas A. (1990). Adding Covariates to Loglinear Models for
+the Study of Social Mobility. {it:American Sociological Review} 55: 757-773.
+
+{p 0 4}
+Goodman, Leo A. (1979). Multiplicative models for the analysis of
+occupational mobility tables and other kinds of cross-classification
+tables. {it:American Journal of Sociology} 84: 804-819.
+
+{p 0 4}
+Hendrickx, John, Ganzeboom, Harry B.G. (1998). Occupational Status
+Attainment in the Netherlands, 1920-1990. A Multinomial Logistic
+Analysis. {it:European Sociological Review} 14: 387-403.
+
+{p 0 4}
+Hout, Michael. (1983). {it:Mobility Tables}. Sage Publication 07-031.
+
+{p 0 4}
+Logan, John A. (1983). A Multivariate Model for Mobility Tables.
+{it:American Journal of Sociology} 89: 324-349.
+
+{p 0 4}
+Xie, Yu (2003). Association Model. In the
+{it:Encyclopedia of Social Science Research Methods}, edited by
+Michael Lewis-Beck, Alan Bryman and Tim Futing Liao. Thousand Oaks,
+Ca: Sage (2003).
+
+{p 0 4}
+{browse "http://www-personal.umich.edu/~yuxie/Research/Assoc-program.html":http://www-personal.umich.edu/~yuxie/Research/Assoc-program.html}
+
+{p}
+Direct comments to: {browse "mailto:John_Hendrickx@yahoo.com":John Hendrickx}
+
+{p}
+{cmd:mclest} is available at
+{browse "http://ideas.uqam.ca/ideas/data/bocbocode.html":SSC-IDEAS}.
+Use {help ssc} {cmd:install mcl} to obtain the latest version.
+
+{p}
+The packages {net search rc2:rc2},
+{net search desmat:desmat},
+{net search xi3:xi3},
+are also available from the ssc archives.
+
+{title:Also see}
+{p 0 21}
+On-line: help for
+  {help mclgen}, {help clogit}, {help mlogit}, {help ologit}
+  {help desmat}, {help desrep}, {help xi}, {help xi3}, {help rc2}
+{p_end}

@@ -1,0 +1,124 @@
+.-
+help for ^hallt^                                               
+.-
+
+Computes Hall's skewness adjusted t-statistic and generates bootstrapped confidence intervals
+----------------------------------------------------------------------------------------------
+
+Syntax
+------
+
+^hallt^ ^varlist^ ^[if]^ ^[in]^ ^,^ ^bs^ ^reps(#)^ ^size(#)^ ^nowarn^ ^nohead^ ^saving^ ^(bs)^ ^replace^
+
+Description
+-----------
+
+^hallt^: This program implements a skewness adjusted bootstrapped t-statistic procedure.This is implemented in Eventus
+software for event studies as the skewness adjusted transformed normal test (Cowan 2008).The skewness adjustment is based 
+on (Hall 1992) who proposed an alternative adjustment to account for skewness even when there is large skewness and sample
+size is small.The program requires that the user has a data file which contains the appropriate abnormal returns stored as 
+a variable.The hallt command is issued after this data file has been opened (used). 
+
+
+The Skewness adjusted transformed t-statistic is given by the following formula.
+
+N * (s + (1/3*G*(S-squared)) +((1/(6*N-squared))*G ) + ((1/27)*(G-squared)* (S-cubed)))
+
+wher G is skewness
+     S is the standard deviation
+     N is the square root of the number of observations	
+
+Example usage
+-------------
+
+sysuse auto
+
+hallt mpg, bs reps(100) size(2) nowarn nohead saving (c:\bs) replace 
+
+Output from the program
+-------------------------
+The program displays the parameters (N, S, G and the sample Mean) calculated from the sample that feed into the formula to compute 
+the skewness adjusted t statistic
+
+The program displays the following parameters for the example usage above.
+
+    N coefficient  = 8.602325267042627
+    S-coefficient  = 2.09027474443816
+    G-coefficient  = 1.653433511704859
+    Sample mean    = 6165.256756756757
+
+after the bootstrap the following table is displayed
+
+
+------------------------------------------------------------------------------
+             |   Observed   Bootstrap                         Normal-based
+             |      Coef.   Std. Err.      z    P>|z|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+       _bs_1 |   38.72841   7.316759     5.29   0.000     24.38782    53.06899
+------------------------------------------------------------------------------
+
+Other confidence intervals can be displayed by giving the command below after the skewt command
+
+
+Options for the bootstrap
+-------------------------
+
+reps (#): This determines the number of replications
+
+size(#) : This determines what proportion of the sample is used for the bootstrap. #=1 implies
+all the data is used. #=2 implies half of the data is used.
+
+saving () : This is used to save the bootstrapped values. For example, saving (C:\bs) will save the 
+results in c:\ . The file name will be the name of the varibale selected for the test, prefixed with bs_.
+
+
+replace: the option replace replaces the file in which the bootstrapped values are stored.
+
+Further details
+---------------
+
+Further details and cutoffs for other significance levels can be calcuated from the
+saved file. To do that, First open the file containing the saved bootstrap results, for example,
+
+use "c:\bs_mpg.dta",clear
+
+then issue the following commands
+
+* To inspect the bootstrapped distribution
+
+estat bootstrap, all
+tabstat _bs*,s(mean median p5 p25 p75 p95 p99 max min)
+histogram  _bs_1,normal
+
+* To retreive the percentile condifence intervals
+
+_pctile _bs_1, p(.5, 2.5, 5, 95, 97.5, 99.5)
+ return li
+
+
+References
+----------
+
+Hall, Peter. 1992. On the Removal of Skewness by Transformation. Journal of the Royal Statistical Society. 
+Series B (Methodological) 54, no. 1:221-228.
+
+Cowan, Arnold R. Eventus 8.0 User’s Guide, Standard Edition 2.1.(Cowan Research LC, Ames, Iowa, 2007.), p31, p87.
+
+
+Author
+------
+Rajesh Tharyan
+University of Exeter
+Centre for Finance and Investment
+www.ex.ac.uk\xfi
+r.tharyan@ex.ac.uk
+
+Scott Merryman 
+scott.merryman@gmail.com
+
+Also see
+--------
+
+STB:  STB-26 sg40 - for the johnson ado
+Manual:  [5s] ttest
+On-line:  help for @ttest@, @skewt@.

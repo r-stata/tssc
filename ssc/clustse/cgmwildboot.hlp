@@ -1,0 +1,152 @@
+{smcl}
+{* 17feb2010}{...}
+{cmd:help cgmwildboot}{right:version:  2.0.0}
+{hline}
+
+{title:Title}
+
+{p 4 8}{cmd:cgmwildboot}  -  Linear regressions with multi-way clustered standard errors, bootstrapped
+for one cluster dimension.{p_end}
+
+
+{title:Syntax}
+
+{p 4 6 2}
+{cmd:cgmwildboot}
+{depvar}
+[{indepvars}]
+{ifin}
+{weight}
+, cluster({varlist}) bootcluster({varname}) [null({it:numlist}) reps({it:integer}) seed({it:integer})]
+
+{title:Options}
+{p 4 6 2}
+- If specified, the {opt null} option requires a list of numbers that indicate the null hypothesis for the regressors other than the constant. For example, if the command regresses {it:y} on {it:x1} and {it:x2}, the user could 
+specify {opt null(0 0)} for a zero null. The user could also specify, say, {opt null(. 1)} if there is no null for {it:x1} and there is a null of 1 for {it:x2}.
+{p_end}
+{p 4 6 2}
+- The bootstrap treats regressors differently depending on whether there is a null specified. See Cameron, Gelbach and Miller (2008) for details.
+{p_end}
+
+{title:Notes}
+
+{p 4 6 2}
+- You must specify at least one clustering variable ({opt cluster}) and one cluster to bootstrap ({opt bootcluster}).{p_end}
+{p 4 6 2}
+- The p-value is based on the empirical distribution of {it: t-statistics}. It is twice the fraction of t-statistics
+above (below) the initial t-statistic for positive (negative) t-statistics.
+{p_end}
+{p 4 6 2}
+- The confidence interval is based on the empirical distribution of {it: coefficients}. It reports the 5th and 95th
+percentiles of the coefficients from the bootstrap iterations.
+{p_end}
+{p 4 6 2}
+- The covariance matrix included in {cmd:e(V)} is 'fake'. It is a diagonal matrix with the elements that will
+allow the display of coefficient p-values in regression tables (e.g. {cmd:estout}). It should not be used in 
+any post-estimation inference.{p_end}
+{p 4 6 2}
+- Updates on 2013-09-13: P-values for negative (positive) coefficients forced to use lower (upper) tail of
+bootstrap distribution of t-statistics; altered the 'fake' covariance matrix to handle extreme p-values of
+zero or one to allow reporting in post-regression commands (e.g., estout). 
+{p_end}
+{p 4 6 2}
+- Updates on 2013-10-18: Corrected P-values for the number of non-missing t-statistics; corrected error with
+the confidence intervals. 
+{p_end}
+{p 4 6 2}
+- Updates on 2014-02-04: Updated table so R2 and adjusted R2 are clearly labeled. Relevant update to the
+cgmreg command called by this program. 
+{p_end}
+{p 4 6 2}
+- Updates on 2015-03-10: Updated p-values so to avoid p-values greater than one. The code looks at
+the upper (lower) tail of the bootstrap distribution for positive (negative) coefficients, which was
+sometimes causing p-values greater than one (e.g., positive coefficient with t-stat in the bottom half
+of the bootstrap distribution) 
+{p_end}
+
+
+{p 4 6 2}
+- {bf: WARNING:} The program uses a macro string variable containing the list of regressors. If you are
+using a version of Stata that limits the length of string variables (e.g., Intercooled), you may have
+to shorten variable names so that the entire listing of variables can fit in the string macro.
+{p_end}
+
+{title:Description}
+
+{p 4 4 2}
+{opt cgmwildboot} resembles the {opt cgmreg} regression command except that it bootstraps along one of the clustering
+dimension using the wild bootstrap procedure decribed in Cameron, Gelbach and Miller (2008). The program is modified
+from the cgmreg command provided by Miller.{p_end}
+
+
+{title:Example}
+{phang}{stata "webuse nlsw88" : . webuse nlsw88}{p_end}
+{phang}{stata "reg wage tenure ttl_exp collgrad if ~missing(age), cluster(industry)" : . reg wage tenure ttl_exp collgrad if ~missing(age), cluster(industry)}{p_end}
+{phang}{stata "cgmreg wage tenure ttl_exp collgrad, cluster(industry age)" : . cgmreg wage tenure ttl_exp collgrad, cluster(industry age)}{p_end}
+{phang}{stata "cgmwildboot wage tenure ttl_exp collgrad, cluster(industry age) bootcluster(industry) reps(50) seed(999)" : . cgmwildboot wage tenure ttl_exp collgrad, cluster(industry age) bootcluster(industry) seed(999)}{p_end}
+{phang}{stata "cgmwildboot wage tenure ttl_exp collgrad, cluster(age) bootcluster(industry) reps(50) seed(999)" : . cgmwildboot wage tenure ttl_exp collgrad, cluster(age) bootcluster(industry) reps(50) seed(999)}{p_end}
+
+
+{title:Return values}
+
+{col 4}Scalars
+{col 8}{cmd:e(N)}{col 27}Number of observations
+{col 8}{cmd:e(df_m)}{col 27}Model degrees of freedom
+{col 8}{cmd:e(df_r)}{col 27}Residual degrees of freedom
+{col 8}{cmd:e(r2)}{col 27}R-squared
+{col 8}{cmd:e(r2_a)}{col 27}Adjusted R-squared
+{col 8}{cmd:e(nreps)}{col 27} Number of successfull bootstrap resamples
+{col 8}{cmd:e(NC)}{col 27}Number of cluster variables
+{col 8}{cmd:e(S)}{col 27}Number of cluster combinations
+{col 8}{cmd:e(N_i)}{col 27}Number of clusters for cluster variable i
+
+{col 4}Macros
+{col 8}{cmd:e(bootclust)}{col 27}Name of bootstrap cluster variable
+{col 8}{cmd:e(clusvar)}{col 27}Names of cluster variables
+{col 8}{cmd:e(clustvar)}{col 27}Names of cluster variables
+{col 8}{cmd:e(vcetype)}{col 27}FAKE: The covariance matrix is 'rigged' (See above)
+{col 8}{cmd:e(predict)}{col 27}Program used to implement {cmd:predict}
+{col 8}{cmd:e(properties)}{col 27}b V
+{col 8}{cmd:e(cmd)}{col 27}{cmd:cgmwildboot}
+{col 8}{cmd:e(depvar)}{col 27}Name of dependent variable
+
+{col 4}Matrices
+{col 8}{cmd:e(b)}{col 27} Coefficient vector
+{col 8}{cmd:e(V)}{col 27} Variance-covariance matrix of the estimators (See above)
+
+{col 4}Functions
+{col 8}{cmd:e(sample)}{col 27} Marks estimation sample
+
+
+{title:Reference}
+
+
+{p 4 6 2}
+- Cameron, A., J. Gelbach and D. Miller. 2006. Robust inference with multi-way clustering. NBER Technical Working Paper 327.{p_end}
+
+{p 4 6 2}
+- Cameron, A., J. Gelbach and D. Miller. 2008. Bootstrap-based improvements for inference with clustered errors. {it:Review of Economics and Statistics} 90(3): 414-427.{p_end}
+
+{p 4 6 2}
+ - Petersen,M. 2009. Estimating standard errors in finance panel data sets: Comparing approaches. {it:Review of Financial Studies} 22(1): 435-480.{p_end}
+
+{title:Author}
+
+{p 4 4 2}Mitchell Petersen at Northwestern University (mpetersen@northwestern.edu) wrote logit2, which is available at http://www.kellogg.northwestern.edu/faculty/petersen/htm/papers/se/se_programming.htm.{p_end}
+
+{p 4 4 2}Douglas Miller at UC, Davis (dmiller@ucdavis.edu) wrote cgmreg, which is available at http://www.econ.ucdavis.edu/faculty/dmiller/statafiles/index.htm.{p_end}
+
+{p 4 4 2}Judson Caskey, University of Texas, judson.caskey@mccombs.utexas.edu{p_end}
+
+
+
+{title:Also see}
+
+{psee}
+Manual:  {bf:[R] regress}
+
+{psee}
+Online:
+{helpb regress}, {helpb _robust}
+{p_end}
+

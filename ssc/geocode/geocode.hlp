@@ -1,0 +1,166 @@
+
+.-
+help for ^geocode3^
+.-
+
+geocodes addresses using google maps or yahoo maps
+----------------------------------------------------------
+
+ ^geocode^, ^address^(varname) ^city^(varname) ^state^(varname) ^zip^(varname) [^fulladdr^(varname) ^yahoo^ ^both^]
+ 
+ 
+Description
+-----------
+
+^geocode^ uses Google Maps and Yahoo! maps api to geocode 
+addresses and  calculate latitude and longitude.
+
+To use Yahoo! maps the option ^yahoo^ should be specified.
+To use both Yahoo! and Google, the option ^both^ should
+be specified. The default option is Google only. 
+
+^geocode^ generates a unique id variable named ^geoid^.  
+If the Google geocoder is specified, a variable named ^geocode^ 
+is created which corresponds to a description of the geocoding 
+accuracy, and ^geoscore^ which corresponds to a geographic level 
+of accuracy. 
+
+If the Yahoo! geooder is specified,  ^geocode^ generates a 
+variable named ^ygeocode^ which corresponds to a description of 
+the geocoding accuracy, and ^geoscore^ which corresponds to a 
+geographic level of accuracy. 
+
+
+
+^geocode^ definitions
+---------------------
+
+200 = No errors, succesful parse and geocode
+400 = Bad address request. The address is incorrectly specified
+500 = Bad server request. Unknown failure reason.
+601 = Empty Address
+602 = Unknown address. May indicate a new or incorrect address.
+603 = Address cannot be geocoded due to legal or contractual reasons
+620 = Too many queries in 24 hour period
+
+For more information on codes see: 
+@http://code.google.com/apis/maps/documentation/geocoding/@
+
+
+
+^geoscore^ definitions
+----------------------
+
+0 = Unknown accuracy.
+1 = Country level accuracy.
+2 = Region (state, province, prefecture, etc.) level accuracy.
+3 = Sub-region (county, municipality, etc.) level accuracy.
+4 = Town (city, village) level accuracy.
+5 = Post code (zip code) level accuracy.
+6 = Street level accuracy.
+7 = Intersection level accuracy.
+8 = Address level accuracy.
+9 = Premise (building name, property name, shopping center, etc.) level accuracy.
+
+For more information on codes see: 
+@http://code.google.com/apis/maps/documentation/geocoding/@
+
+
+
+^ygeocode^ definitions
+---------------------
+0 = No error
+1 = Feature not supported
+100 = No input
+102 = Not valid address
+103 = Insufficient address 
+104 = Unknown language
+105 = No country detected
+106 = Unsupported country
+10NN = Internal problem detected
+
+For more information on codes see: 
+@http://developer.yahoo.com/geo/placefinder/guide/responses.html@
+
+^geoscore^ definitions
+----------------------
+
+99 = Coordinate
+90 = Point of interest
+87 = Address match, street match
+86 = Address mismatch, street match
+85 = Address match, street mismatch
+84 = Address mismatch, street mismatch
+82 = Intersection, street match
+80 = Intersection, street mismatch
+
+For more information on codes see: 
+@http://code.google.com/apis/maps/documentation/geocoding/@
+
+
+
+Options
+-------
+      
+^fulladdr^			
+
+You may specify address, city, state, and zip separately 
+by specifiying ^address^, ^city^, ^state^, and ^zip^ 
+variables or  by using ^fulladdr^ you can specify them 
+as one string variable in the form of: 
+
+"1500 Market St, Philadelphia PA 19104". 
+
+
+
+
+Note
+----
+
+Google and Yahoo! maps have daily limit of maximum 
+geocode queries. Information on the Google Maps license 
+can be found at @https://developers.google.com/maps/terms@ 
+and for the Yahoo! Maps license at
+@http://info.yahoo.com/legal/us/yahoo/maps/mapsapi/mapsapi-2141.html@
+
+Further information on these programs can be found in:
+
+Ozimek, A. & Miles, D. (2011). Stata utilities for geocoding 
+and generating traveltime and travel distance information. 
+StataJournal, 11(1), 106Ð119.
+
+Bornmann, L. & Ozimek, A. (in press). Stata commands for 
+importing bibliometric data and processing author address 
+information. Journal of Informetrics 
+
+
+
+Examples
+--------
+
+ . ^geocode, address(home_address) city(city_name) state(name_of_state) zip(numerical_zipcode)^
+ 
+ . ^geocode, fulladdr(full_address_string)^
+ 
+ . ^geocode, fulladdr(full_address_string) yahoo^
+ 
+ . ^geocode, fulladdr(full_address_string) both^
+
+
+
+
+Authors
+-------
+
+      Adam Ozimek
+      Econsult Corporation
+      ozimek@econsult.com
+      
+      Daniel Miles
+      Econsult Corporation
+      miles@econsult.com
+      
+      
+
+
+

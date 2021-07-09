@@ -1,0 +1,166 @@
+{smcl}
+{* version 1.0.0 06dec2011}{...}
+{cmd:help labascii}
+{hline}
+
+{title:Title}
+
+{p 5}
+{cmd:labascii} {hline 2} Define value labels from ASCII (text) file
+
+
+{title:Syntax}
+
+{p 8}
+{cmd:labascii} [{it:dofile-name}] {helpb using} {it:filename}
+[{cmd:,} {it:options}]
+
+
+{p 5}
+where {it:dofile-name} is the do-file to be created
+
+{p 5 5}{...}
+and {it:filename} is the ASCII (text) file, containing the value labels 
+
+{p 5 5}
+Use double quotes if {it:dofile-name} or {it:filename} contain embedded 
+spaces. If {it:filename} is specified without extension .{it:txt} is 
+the default. For {it:dofile-name} it is .{it:do}.
+
+
+{title:Description}
+
+{pstd}
+{cmd:labascii} defines value labels from a plain text file that 
+contains only ASCII characters. In {it:filename} each line, starting 
+with a valid value label name, marks the beginning of a new value 
+label. The lines in between define the integer-to-text mappings. Lines 
+starting with non-integer numbers are skipped. Optionally a do-file, 
+containing the value label definitions, is created.
+
+
+{title:Options}
+
+{phang}
+{opt modify} modifies existing value labels (see 
+{help label:label define}). 
+
+{phang}
+{opt p:arse}{cmd:("}{it:pchars}{cmd:")} specifies the parsing 
+characters used to determine the first word in each line of 
+{it:filename}. Default is {cmd:parse(" ")} (see {help tokenize}).
+
+{phang}
+{opt f:rom(ptrn)} specifies pattern in {it:filename} that are to be 
+replaced. {it:ptrn} is ["]{it:ptrn}["] [["][{it:ptrn}]["]][...]. 
+Specified {it:ptrns} are replaced with {it:ptrns} in {opt to()}. If 
+{opt to()} is not specified, it defaults to {cmd:to("")} (see 
+{help filefilter}).
+
+{phang}
+{opt t:o(ptrn)} specifies pattern to replace {opt from()} in 
+{it:filename}. {it:ptrn} is either ["]{it:ptrn}["] (meaning one 
+pattern), or ["][{it:ptrn}]["][...], where the number of {it:ptrns} 
+equals the number of {it:ptrns} in {opt from()}. {opt to} may only be 
+specified with {opt from()}, but it is not required (see 
+{help filefilter}).
+
+{phang}
+{opt sk:ip(numlist)} specifies that lines {it:{help numlist}} in 
+{it:filename} be ignored.
+
+{phang}
+{opt sta:rt(#)} specifies start of value label definitions in 
+{it:filename}. Lines 1 to {it:#} in {it:filename} are ignored. 
+
+{phang}
+{opt sto:p(#)} specifies end of value label definitions in 
+{it:filename}. Lines in {it:filename} following {it:#} are ignored. 
+
+{phang}
+{opt replace} replaces the do-file if it already exists. May only be 
+specified if a {it:dofile-name} is specified.
+
+{phang}
+{opt nodef:ine} creates a do-file containing value label definitions, 
+but does not run it automatically. May only be specified if 
+{it:dofile-name} is specified.
+
+
+{title:Examples}
+
+{pstd}
+Suppose a log-file, created as
+
+{phang2}{cmd:. log using foo ,text}{p_end}
+{phang2}{cmd:. sysuse nlsw88 ,clear}{p_end}
+{phang2}{cmd:. label list}{p_end}
+{phang2}{cmd:. log close}{p_end}
+
+{pstd}
+First, we clear all value labels from memory.
+
+{phang2}{cmd:. label drop _all}{p_end}
+
+{pstd}
+To (re-)define the value labels from {hi:foo.log} we type
+
+{phang2}{cmd:. labascii using foo.log ,parse(": ")}{p_end}
+
+{pstd}
+We used option {cmd:parse(": ")}, because value label names in 
+{hi:foo.log} are followed by a colon ({hi::}), which makes them invalid 
+value label names. Since no value label in the {hi:nlsw88} dataset 
+uses a colon as a valid charcater, we could have also typed
+
+{phang2}{cmd:. labascii using foo.log ,from(:)}{p_end}
+
+{pstd}
+or, more explicitly
+
+{phang2}{cmd:. labascii using foo.log ,from(:) to("")}{p_end}
+
+{pstd}
+removing all colons before extracting value labels from {hi:foo.log}. 
+
+{pstd}
+Optionally we may want to save the do-file used to define the value 
+labels as {hi:bar.do}. We do so typing
+
+{phang2}{cmd:. labascii bar using foo.log ,parse(": ")}{p_end}
+
+{pstd}
+{hi:Note:} I recommend not removing periods ({hi:.}), because this 
+leads to problems defining labels for extended missing values (see 
+{help missing}) and the handling of non-integer values. If integer 
+values are directly followed by a period in the ASCII file, you do not 
+need to specify {opt parse()}. 
+
+{pstd}
+Whenever you parse on period, specifying {cmd:parse(". ")} is usually 
+better than {opt parse(.)}.
+
+
+{title:Saved results}
+
+{pstd}
+{cmd:labascii} saves the following in {cmd:r()}:
+
+{pstd}
+Macros{p_end}
+{synoptset 15 tabbed}{...}
+{synopt:{cmd:r(}{it:labelnames}{cmd:)}}value label names{p_end}
+
+
+{title:Author}
+
+{pstd}Daniel Klein, University of Bamberg, klein.daniel.81@gmail.com
+
+
+{title:Also see}
+
+{psee}
+Online: {help label}, {help file}{p_end}
+{psee}
+if installed: {help varlabdef}, {help labutil2}, {help txtlabdef} (old)
+{p_end}

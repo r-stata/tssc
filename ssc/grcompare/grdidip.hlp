@@ -1,0 +1,101 @@
+{smcl}
+{* 25dec2009}{...}
+{hline}
+help for {hi:grdidip}{right:- v001 25dec2009 jx}
+{hline}
+
+{title:Diff in difference in predicted prob in binary regressions}
+
+{p 8 15 2}{cmd:grdidip} [{cmd:if} exp] [{cmd:in} range] [{cmd:,}
+{cmd:x1(}{it:variables_and_values}{cmd:)}
+{cmd:x2(}{it:variables_and_values}{cmd:)}
+{cmd:x3(}{it:variables_and_values}{cmd:)}
+{cmd:x4(}{it:variables_and_values}{cmd:)}
+{cmdab:r:est(}{it:stat}{cmd:)}
+{cmdab:l:evel(}{it:#}{cmd:)}
+{cmdab:noba:se}
+{cmd:all}]
+
+{p 4 4 2}
+where {it:variables_and_values} is an alternating list of variables
+and either numeric values or mean, median, min, max, upper, lower,
+previous.
+
+{p 4 4 2}
+{it:stat} is either mean, median, min, max, upper, lower,
+previous, grmean(group mean), mrmedian, grmin, grmax.
+
+
+{title:Description}
+
+{p 4 4 2}
+After estimating a binary regression model, {cmd:grdidip} computes the
+difference in difference in predicted probabilities: {P(x*b|x4)-P(x*b|x3)}-{P(x*b|x2)-P(x*b|x1)}. 
+{cmd:grdidip} uses a closed form solution with the {help delta} method. It is especially useful
+for comparing the effects of nomial level independent variables.  With this program, we make comparisons 
+between two groups, and vary the values of a specific continuous variable while holding everything else 
+to be the same. 
+
+{title:Options}
+
+{p 4 8 2}
+{cmd:level()} sets the {help level} of the confidence interval for differences in difference in predicted probabilities. 
+The default confidence level is 95.
+
+{p 4 8 2}
+{cmd:x1()} sets the values of independent variables for x1 vector used in 
+{P(x*b|x4)-P(x*b|x3)}-{P(x*b|x2)-P(x*b|x1)}. The list must alternate variable 
+names and values. The values may be either numeric values or they can be mean, median, min,
+max, previous, upper, or lower.  The latter cannot be used if rest()
+specifies a group summary statistic (e.g., grmean).
+
+{p 4 8 2}
+{cmd:x2()} sets the values of independent variables for x2 vector.
+
+{p 4 8 2}
+{cmd:x3()} sets the values of independent variables for x3 vector.
+
+{p 4 8 2}
+{cmd:x4()} sets the values of independent variables for x4 vector.
+
+{p 4 8 2}
+{cmd:rest()} sets the independent variables not specified in x1() to x4()
+to their {cmd:mean} (default), {cmd:minimum}, {cmd:maximum}, {cmd:median}
+when calculating predicted values. {cmd:grmean} sets these independent
+variables to the mean conditional on the variables and values specified
+in x(); {cmd:grmedian},{cmd:grmax}, and {cmd:grmin} can also be used.
+
+{p 4 8 2}
+{cmd:nobase} suppresses inclusion of the base values of x in the output.
+
+{p 4 8 2}
+{cmd:all} specifies that any calculations of means, medians, etc.,
+should use the entire sample instead of the sample used to estimate
+the model.
+
+{title:Returned Matrices}
+
+{p 4 8 2}
+r(didipmat):   saves differences in difference in predicted probabilities and their confidence intervals
+
+{p 4 8 2}
+r(didipp1s):   saves predicted probabilities (P(y=1|x)) for x1, x2, x3, and x4 vectors.
+
+{title:Examples}
+
+{p 4 4 2}
+To compute the difference in difference in predicted probabilities and confidence intervals using delta method
+for a logit model with all other variables set at their means except for black and education.
+
+{p 4 8 2}{cmd:.logit vote black educ income}
+
+{p 4 8 2}{cmd:.grdidip, x1(black=1 educ=12) x2(black=1 educ=20) x3(black=0 educ=12) x4(black=0 educ=20)}
+
+{p 4 8 2}
+ :::
+
+{hline}
+
+{p 2 4 2}Authors: Jun Xu{p_end}
+
+

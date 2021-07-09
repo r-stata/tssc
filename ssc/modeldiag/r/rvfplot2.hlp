@@ -1,0 +1,105 @@
+{smcl}
+{* 3nov2004}{...}
+{hline}
+help for {hi:rvfplot2}
+{hline}
+
+{title:Plot residuals versus fitted values after model fit}
+
+{p 8 17 2}{cmd:rvfplot2} [{cmd:,} {it:residualtype} {it:qualifier} 
+{cmdab:rsc:ale(}{it:exp}{cmd:)}
+{cmdab:fsc:ale(}{it:exp}{cmd:)}
+{cmd:lowess}[{cmd:(}{it:lowess_options}{cmd:)}] 
+{it:scatter_options}
+{cmd:plot(}{it:plot}{cmd:)} ] 
+
+
+{title:Description}
+
+{p 4 4 2}{cmd:rvfplot2} graphs a residual-versus-fitted plot, a graph of the
+residuals versus the fitted values. The residuals are, by default, those 
+calculated by {cmd:predict, residuals} or (if the previous estimation 
+command was {cmd:glm}) by {cmd: predict, response}. The fitted 
+values are those produced by {cmd:predict} by default after each estimation 
+command.
+
+{p 4 4 2}{cmd:rvfplot2} is for use after {cmd:regress} and similar commands; see help
+on the command of interest. It is a generalisation of {cmd:rvfplot} in official Stata. 
+
+
+{title:Options}
+
+{p 4 8 2}{it:residualtype} specifies a type of residual other than the default.
+The following types are currently supported: {cmdab:a:nscombe},
+{cmdab:d:eviance}, {cmdab:l:ikelihood}, {cmdab:p:earson}, {cmdab:r:esiduals},
+{cmdab:resp:onse}, {cmdab:rsta:ndard}, {cmdab:rstu:dent}, {cmdab:s:core},
+{cmdab:w:orking}. 
+
+{p 4 8 2}{it:qualifier} specifies one of {cmdab:sta:ndardized}, 
+{cmdab:stu:dentized}, {cmdab:mod:ified}, {cmdab:adj:usted}. 
+
+{p 4 8 2}{cmd:rscale(}{it:exp}{cmd:)} specifies a transformed scale on which to
+show the residuals using Stata syntax and {cmd:X} as a placeholder for the
+residual variable name. Thus {cmd:rscale(X^2)} specifies squaring, to show relative
+contribution to residual variance; {cmd:rscale(abs(X))} specifies absolute
+value, to set aside sign; {cmd:rscale(sqrt(abs(X)))} specifies root of absolute
+value, a useful scale on which to check for heteroscedasticity.
+
+{p 4 8 2}{cmd:fscale(}{it:exp}{cmd:)} specifies a transformed scale on which to
+show the fitted values using Stata syntax and {cmd:X} as a placeholder for the
+fitted variable name. Thus for example {cmd:fscale(2 * ln(X))} specifies twice 
+the natural logarithm, which is the constant information scale for a 
+generalised linear model with gamma error. Similarly, arguments 
+of {cmd:2 * sqrt(X)}, {cmd:2 * asin(sqrt(X))}, and {cmd:-2 / sqrt(X)} 
+specify the constant information scale for Poisson, binomial 
+and inverse Gaussian errors respectively. See McCullagh and Nelder (1989, 
+p.398) for background. 
+
+{p 4 8 2}{cmd:lowess[(}{it:lowess_options}{cmd:)}] specifies that the residuals 
+will be smoothed as a function of the fitted using {help twoway lowess} 
+(options may be specified).
+
+{p 4 8 2} 
+{it:scatter_options} are options of {help twoway_scatter:twoway scatter}. 
+
+{p 4 8 2}{cmd:plot(}{help plot_option:plot}{cmd:)} provides a way to add other
+plots to the generated graph; see {help plot_option}. 
+
+
+{title:Examples}
+
+{p 4 8 2}{cmd:. gen forxmpg = foreign * mpg}{p_end}
+{p 4 8 2}{cmd:. regress price weight mpg forxmpg foreign}{p_end}
+{p 4 8 2}{cmd:. rvfplot2}
+
+{p 4 8 2}{cmd:. anova price rep foreign rep*foreign weight, cont(weight)}{p_end}
+{p 4 8 2}{cmd:. rvfplot2, rscale(sqrt(abs(X)))}
+
+{p 4 8 2}{cmd:. glm price weight, link(log)}{p_end}
+{p 4 8 2}{cmd:. rvfplot2, anscombe yli(0)}
+
+{p 4 8 2}{cmd:. glm price weight, link(log)}{p_end}
+{p 4 8 2}{cmd:. rvfplot2, anscombe yli(0) lowess}{p_end}
+{p 4 8 2}{cmd:. rvfplot2, anscombe yli(0) lowess(bw(0.9))}
+
+
+{title:Author}
+
+{p 4 4 2}Nicholas J. Cox, University of Durham, U.K.{break} 
+n.j.cox@durham.ac.uk
+
+
+{title:Acknowledgements} 
+
+{p 4 4 2}Phil Ender provided very helpful comments on a previous version. 
+
+
+{title:References}     
+
+{p 4 4 2}McCullagh, P. and Nelder, J.A. 1989. {it:Generalized linear models.}
+London: Chapman and Hall. 
+
+
+{title:Also see}
+
+{p 4 13 2}On-line:  help for {help scatter}, {help predict}, {help modeldiag}

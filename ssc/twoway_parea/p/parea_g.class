@@ -1,0 +1,18 @@
+// (C) Sergiy Radyakin, Aug. 2007
+// Class of twoway graph -- patterned area
+
+
+class {
+        string  pattern="pattern10"
+} , inherit(yxview)
+
+// ---------------------------------------------------------------------------
+
+program newkey
+	if `.numkeys' == 0 {
+		class exit ""
+	}
+	syntax [anything(name=keyid)] [ , Position(passthru) ]
+	class exit .pareakey_g.new `keyid', pattern(`"`.pattern'"') view(`.objkey') `position'
+end
+

@@ -1,0 +1,43 @@
+d 'SMWOODBURY': module to compute Sherman-Morrison-Woodbury rank-k update to matrix inverse
+d
+d  This package provides a set of Mata functions that implement the
+d Sherman-Morrison-Woodbury formula for a rank-k update to a matrix
+d inverse and that use the formula to efficiently solve matrix
+d equations. The formula is: inv(A+U*C*V) = inv(A) -
+"d inv(A)*U*inv(inv(C)+V*inv(A)*U)*V*inv(A), where A is NxN, U is"
+"d NxK, C is KxK, and V is KxN. Use of this formula can save"
+d computation time when N is much larger than K and either inv(A)
+d is easy to calculate or inv(A+U*C*V) must be calculated many
+"d times for different values of U, C and V. Such situations arise,"
+"d for example, in Markov chain Monte Carlo estimation of mixed"
+d models.
+d
+d KW: matrix inverse
+d KW: Sherman-Morrison-Woodbury
+d
+d Requires: Stata version 12
+d
+d Distribution-Date: 20111222
+d
+"d Author: Sam Schulhofer-Wohl, Federal Reserve Bank of Minneapolis"
+d Support: email wohls@@minneapolisfed.org
+d
+f smwoodbury.sthlp
+f smwoodbury.mata
+f smwoodbury_lu_solve.sthlp
+f smwoodbury_lu.sthlp
+f smwoodbury_qr_solve.sthlp
+f smwoodbury_qr.sthlp
+f smwoodbury_sym1_lu_solve.sthlp
+f smwoodbury_sym1_lu.sthlp
+f smwoodbury_sym1_posdef_solve.sthlp
+f smwoodbury_sym1_posdef.sthlp
+f smwoodbury_sym1_qr_solve.sthlp
+f smwoodbury_sym1_qr.sthlp
+f smwoodbury_sym2_lu_solve.sthlp
+f smwoodbury_sym2_lu.sthlp
+f smwoodbury_sym2_posdef_solve.sthlp
+f smwoodbury_sym2_posdef.sthlp
+f smwoodbury_sym2_qr_solve.sthlp
+f smwoodbury_sym2_qr.sthlp
+f ./l/lsmwoodbury.mlib

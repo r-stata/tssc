@@ -1,0 +1,59 @@
+d 'CLUSTSE': module to estimate the statistical significance of parameters when the data is clustered with a small number of clusters
+d
+d  clustse gives researchers several options for estimating the
+d statistical significance of parameters when the data is clustered
+d with a small number of clusters.  The default method of the
+"d program is the cluster adjusted t-statistics (CATs), which are"
+d described in Ibgragimov & Muller (2010).  This procedure runs the
+d model inside of each cluster and uses the standard error of the
+d parameter estimates across the clusters to make statistical
+d inference.  The program also gives the option to perform the
+"d pairs cluster bootstrap-t procedure, as described by Cameron,"
+"d Gelbach, & Miller (2008) and implemented by the program"
+"d ""clusterbs"".  Finally, the program gives the option for linear"
+"d models to perform the wild cluster bootstrap-t procedure, as"
+"d described by Cameron, Gelbach, & Miller (2008) and implemented by"
+"d the program ""cgmwildboot"" created by Judson Caskey.  Esarey &"
+d Menger (forthcoming) show that these procedures provide adequate
+d power and desirable false rejection rates for performing
+"d statistical inference, even for data with small numbers of"
+d clusters or clusters of uneven size. clustse implements fixed
+"d effects options for the cluster-adjusted t-statistics procedure,"
+d and allows the clustse program to call the updated clusterbs
+d program appropriately as an option. The program is updated to
+d handle omitted variables and failed models in a way that matches
+"d the sister program for R.  Now, the program will retain cluster"
+d estimates with omitted variables but omit the affected variables
+d from the reported results under the default options.  Under the
+"d option force(yes), the program will drop cluster estimates for"
+d all variables if any one variable is omitted from the model.
+d This update also addresses an error in the calculation of
+"d t-statistics caused by omitted variables.  Furthermore, the"
+d program is updated to return more descriptive error messages if
+d the procedure fails or if needed programs are not installed. The
+d newest version of clustse allows for the user to specify the
+"d truncate option.  If truncate(yes) is specified, the program will"
+d drop outlying clusters' coefficient estimates from the analysis.
+d An outlying coefficient is defined as an estimate that is more
+d than 6 times the inter-quartile range of the mean of all the
+d coefficient estimates.  This option allows for researchers to
+d eliminate cluster estimates from the analysis when they do not
+d fall within the assumed normal distribution of the parameter's
+d mean estimate.  This option only applies to the CATs procedure
+d (when the method() option is not specified).
+d
+d KW: clustering
+d KW: precision
+d KW: bootstrap
+d
+"d Requires: Stata version 9, clusterbs and estout from SSC (q.v.)"
+d
+d Distribution-Date: 20170804
+d
+"d Author: Andrew Menger, Rice University"
+d Support: email amm17@@rice.edu
+d
+f clustse.ado
+f clustse.sthlp
+f cgmwildboot.ado
+f cgmwildboot.hlp

@@ -1,0 +1,107 @@
+{smcl}
+{hline}
+help for {cmd:difd} {right:(April 11, 2011)}
+{hline}
+
+{title:Detection of differential item function (DIF).}
+
+{p 8 17 2}
+{cmd:difd} {it: varlist} {cmd:,}
+{cmd:ABility}{it:(varlist)} {cmd:GRoups}{it:(varlist)}    {break}  
+ [{cmdab:CATegorical}{cmd:}{it:(varlist)}{cmd:}
+{cmdab:RUnname}{cmd:}{it:(str)}{cmd:} 	{cmdab:NUL}{cmd:}{it:(#)}{cmd:}
+{cmdab:NUP}{cmd:}{it:(#)}{cmd:} 		{cmdab:NUPValue}{cmd:}{it:(#)}{cmd:}
+{cmdab:UBeta}{cmd:}{it:(#)}{cmd:}		{cmdab:UBP}{cmd:}{it:(#)}{cmd:}
+{cmdab:ULPV}{cmd:}{it:(#)}{cmd:}		{cmdab:UP}{cmd:}{it:(#)}{cmd:}
+{cmdab:UPPValue}{cmd:}{it:(#)}{cmd:}	{cmdab:ITemsub}{cmd:}{it:(#)}{cmd:}]
+
+{p 4 12 2}
+where:
+
+{p 8 12 2}
+{it:varlist} is the list of variables (items, blocks) to be tested for DIF
+
+{p 8 12 2}
+{it:id} is the subject id variable.
+
+{p 8 12 2}
+{it:ability} is the ability variable(s).
+
+{p 8 12 2}
+{it:groups} is the list of grouping variables.  Continuous ‘grouping’ variables are permitted.
+
+{title:Options}
+
+{p 8 12 2}
+{cmdab:categorical} is the list of any group variables that are categorical and have more than 2 levels.  Note that it is simpler to omit dichotomous variables from this list.  Default is none (all continuous or dichotomous).
+
+{p 8 12 2}
+{cmdab:runname} names the log file DIFdRUnname.log.  Default is DIFd.log.
+
+{p 8 12 2}
+{cmdab:nul} indicates whether the log-likelihood test will be used as a criterion for non-uniform DIF.  Default is yes (1).  Nul(0) will omit this criterion.
+
+{p 8 12 2}
+{cmdab:nup} indicates whether the Wald test for the interaction term will be used as a criterion for non-uniform DIF.  Default is no (0).  Nup(1) will include this criterion.
+
+{p 8 12 2}
+{cmdab:nupvalue} is the p-value for testing non-uniform DIF.  Default is 0.05.
+
+{p 8 12 2}
+{cmdab:ubeta} indicates whether the change in the ability coefficient will be used as a criterion for uniform DIF.  Default is yes (1).  UBeta(0) will omit this criterion.
+
+{p 8 12 2}
+{cmdab:ubp} is percent change in the ability coefficient for determining uniform DIF.  Default is .10.  A positive change indicates an increase in the relationship between ability and the outcome with a higher value of the grouping variable.
+
+{p 8 12 2}
+{cmdab:ul} indicates whether the log-likelihood test will be used as a criterion for uniform DIF.  Default is no (0).  UL(1) will include this criterion.
+
+{p 8 12 2}
+{cmdab:ulpvalue} is the p-value for testing uniform DIF with the log-likelhood method.  Default is 0.05.
+
+{p 8 12 2}
+{cmdab:up} indicates whether the Wald test for the group term will be used as a criterion for uniform DIF.  Default is no (0).  UP(1) will include this criterion.
+
+{p 8 12 2}
+{cmdab:ulpvalue} is the p-value for testing uniform DIF with the Wald test.  Default is 0.05.
+
+{p 8 12 2}
+{cmdab:itemsub} subtracts the item value from the ability measure.  Default is no (0).  ITemsub(1) will include this feature.  
+
+{title:Remarks}
+
+{p 8 12 2}
+Sends DIF results to DIFd{it:runname}.log.  
+
+{p 8 12 2}
+DIF results for categorical grouping variables will be in terms of the ordered values of group.  For example, if {it:ethnic} has 3 levels, 3 sets of DIF results will be reported: {it:ethnic12, ethnic13, ethnic23}, 
+where {it:ethnic12} compares the 2 lowest values of 
+{it:ethnic}, {it:ethnic13} the lowest and highest, etc.
+
+{p 8 12 2}
+Generates an output data set, DIFd.dta, which includes individual model results, with Brant test p-values for ordinal items and Hosmer-Lemeshow p-values for binary items.  [The relevance of the fit statistics has not been established for DIF.]  
+
+{p 8 12 2}
+Displays warning messages when models do not converge, collinearity problems are observed, models are completely determined, standard errors are large, or Brant tests are not possible. 
+
+{title:Examples}
+
+{p 4 8 2}
+difd item1-item13, id(id) ru(gender0) ab(theta0) gr(g) 
+
+{p 4 8 2}
+difd apple - item13, id(id) ab(theta0) gr(eth) cat(eth) nupv(0.01) ul(1) ulpv(.01) 
+
+
+{title:Authors}
+
+{p 4 4 2}
+Paul Crane, Laura Gibbons, Lance Jolley, and Gerald van Belle.  University of Washington, Copyright 2005.{break}
+Email: {browse mailto: gibbonsl@u.washington.edu}
+
+{title:Also see}
+
+{p 4 4 2}
+{cmd:difwithpar}
+
+

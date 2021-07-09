@@ -1,0 +1,72 @@
+.-
+help for ^xttrans2^
+.-
+
+Tabulate xt data
+----------------
+
+	^xttab^   varname [^if^ exp] [^,^ ^i(^varname^)^ ]
+
+	^xttrans2^ varname [^if^ exp] 
+	[^,^ ^i(^varname^)^ ^t(^varname^)^ ^f^req ^prob^ tabulate_options ]
+
+
+Description
+-----------
+
+If you have not read help for @xt@, please do so now.
+
+^xttab^, a generalization of @tabulate@, performs one-way tabulations and decom-
+poses counts into between and within components in cross-sectional time-series
+(xt) data. ^xttab^ is part of official Stata and untouched by the author. 
+
+^xttrans2^, another generalization of @tabulate@, reports transition probabilities
+(the change in a single categorical variable over time). It differs from 
+official Stata's ^xttrans^ only in detail: (a) options of ^tabulate^ other 
+than ^row^ and ^freq^ also may be specified; (b) a matrix of probabilities may 
+be saved; (c) it may not be called ^by^ varlist. 
+
+
+Options
+-------
+
+^i(^varname^)^ specifies the variable name corresponding to i; see help @xt@.
+
+^t(^varname^)^ specifies the variable name corresponding to t; see help @xt@.
+
+^freq^, allowed with ^xttrans2^ only, specifies that frequencies as well as transi-
+    tion probabilities are to be displayed.
+
+^prob^ specifies that the matrix produced contain probabilities rather than 
+    frequencies. 
+
+tabulate_options are options of ^tabulate^ other than ^row^ and ^freq^. For 
+    example, it may be useful to use ^matcell^ to save the frequencies to 
+    a matrix. 
+
+
+Examples
+--------
+
+	. ^iis id^
+	. ^tis year^
+
+	. ^xttab race^
+	. ^xttab married^
+
+	. ^xttrans2 married, matcell(T)^
+
+
+Author
+------
+
+         Nicholas J. Cox, University of Durham, U.K.
+         n.j.cox@@durham.ac.uk
+
+
+Also see
+--------
+
+ Manual:  ^[R] xttab^
+On-line:  help for @xt@, @xtdes@, @xtsum@
+

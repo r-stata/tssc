@@ -1,0 +1,180 @@
+{smcl}
+{* 13aug2014}{...}
+{cmd:help gsample}
+{hline}
+
+{title:Title}
+
+{p2colset 5 16 18 2}{...}
+{p2col :{hi:gsample} {hline 2}}Sampling{p_end}
+{p2colreset}{...}
+
+
+{title:Syntax}
+
+{p 8 16 2}
+{cmd:gsample}
+    [{it:#}|{varname}]
+    {ifin}
+    {weight}
+    [{cmd:,} {it:options}]
+
+
+{synoptset 21 tabbed}{...}
+{synopthdr}
+{synoptline}
+{synopt :{opt p:ercent}}sample size is in percent{p_end}
+{synopt :{opt wor}}sample without replacement{p_end}
+{synopt :{opth str:ata(varlist)}}variables identifying strata{p_end}
+{synopt :{opth cl:uster(varlist)}}variables identifying resampling clusters{p_end}
+{synopt :{opth id:cluster(newvar)}}create new cluster ID variable{p_end}
+{synopt :{opt k:eep}}keep observations that do not meet {it:{help if}} and {it:{help in}}{p_end}
+{synopt :{opth g:enerate(newvar)}}store sampling frequencies in {it:newvar} {p_end}
+{synopt :{opt r:eplace}}overwrite existing variables{p_end}
+{synoptline}
+{p2colreset}{...}
+{p 4 6 2}
+{cmd:iweight}s and {cmd:aweight}s are allowed; see {help weight}.{p_end}
+
+
+{title:Description}
+
+{pstd} {cmd:gsample} draws a random sample from the data in memory. Simple
+random sampling (SRS) is supported, as well as unequal probability sampling
+(UPS), of which sampling with probabilities proportional to size (PPS) is a
+special case. Both methods, SRS and UPS/PPS, provide sampling {it:with}
+replacement and sampling {it:without} replacement. Furthermore, stratified
+sampling and cluster sampling is supported.
+
+{pstd} {it:#} specifies the size of the sample. The default for {cmd:gsample}
+is to replace the data in memory with the sampled observations in random order.
+Alternatively, {cmd:gsample} may store a new variable containing the sampling
+frequencies of the observations (see the {opt generate(newvar)} option). In the
+case of sampling without replacement (see the {opt wor} option), the sample
+size must be less than or equal to the number of sampling units in the data.
+Sampling units are either single observations or clusters identified by the
+{opt cluster()} option. If {it:#} is not specified or if {it:#}==., the sample
+size is equal to the observed number of units in the data. For stratified
+sampling, {it:#} units will be selected from each stratum identified by the
+{opt strata()} option. Alternatively, specify {it:varname} instead of {it:#},
+where {it:varname} is a variable containing for each stratum a specific sample
+size. {it:varname} is assumed to be constant within strata.
+
+{pstd} Specifying weights causes unequal probability sampling (UPS/PPS) to be
+performed. The sampling probabilities of the observations will be proportional
+to the specified weights in this case (it doesn't matter whether you specify
+{cmd:iweight}s or {cmd:aweight}s, the result will be the same; you may also
+simply type {cmd:w} instead of {cmd:iweight} or {cmd:aweight}).
+
+{pstd} {cmd:gsample} is implemented as a wrapper for the {cmd:mm_sample()}
+function from the {cmd:moremata} package. See help for 
+{helpb mf_mm_sample:mm_sample()} for methodical details and references. Note
+that for unequal probability sampling without replacement many different
+algorithms have been proposed in the literature and there may be better
+solutions than the method implemented here. In addition, UPS without
+replacement may fail if the distribution of weights is very uneven (see help
+for {helpb mf_mm_sample##r8:mm_sample()} for an explanation of this problem).
+
+{pstd} If you are serious about sampling, you should first set the random
+number seed; see help {helpb generate}.
+
+
+{title:Dependencies}
+
+{pstd}
+{cmd:gsample} requires {cmd:moremata}. Type
+
+        {com}. {net "describe moremata, from(http://fmwww.bc.edu/repec/bocode/m/)":ssc describe moremata}{txt}
+
+
+{title:Options}
+
+{phang}
+{opt percent} indicates that {it:#} (or {it:varname}) specifies the percentage
+of observations to be sampled. For example,
+
+            {com}. gsample 50, percent{txt}
+
+{pmore} draws a 50% sample. For stratified sampling, a {it:#}-percent sample is
+drawn from each stratum, thus maintaining the proportion of each stratum.
+
+{phang} {opt wor} causes the observations to be sampled without replacement
+(each observation may only be drawn once). The default is to sample with
+replacement (observations may be drawn multiple times).
+
+{phang} {opth strata(varlist)} specifies the variables identifying strata. If
+{opt strata()} is specified, samples are selected within each stratum. The
+strata variables may be numeric or string.
+
+{phang} {opth cluster(varlist)} specifies the variables identifying sampling
+clusters. If {opt cluster()} is specified, the sample drawn is a sample of
+clusters. The cluster variables may be numeric or string.
+
+{phang} {opth idcluster(newvar)} creates a new variable containing a unique
+identifier for each sampled cluster. This is particularly useful when sampling
+with replacement.
+
+{phang} {opt keep} causes observations that do not meet the optional 
+{it:{help if}} and {it:{help in}} criteria (and observations that are missing
+on any of the input variables or have zero weight) to be kept (sampled at
+100%). The default is to drop these observations. Alternatively, if {opt
+generate()} is specified, {opt keep} changes the stored sampling frequencies of
+these observations from zero to one.
+
+{phang} {opth generate(newvar)} causes a variable containing sampling
+frequencies to be added to the data instead of replacing the data in memory
+with the sampled observations. Note that the original sort order of the data
+will be preserved if {opt generate()} is specified. {it:newvar} will either be
+zero or one for observations that do not meet the optional {it:{help if}} and
+{it:{help in}} criteria (or for observations that are missing on any of the
+input variables or have zero weight) depending on whether {opt keep} is
+specified or not.
+
+{phang} {opt replace} permits {cmd:gsample} to overwrite existing variables.
+
+
+{title:Examples}
+
+{pstd} For example,
+
+        {com}. gsample{txt}
+
+{pstd} draws a bootstrap sample of size {help _N} (simple random sample with
+replacement, SRSWR). The data in memory will be replaced by the sampled
+observations.
+
+{pstd} Alternatively
+
+        {com}. gsample 10, wor{txt}
+
+{pstd} draws a simple random sample without replacement (SRSWOR) of size 10.
+
+{pstd} Furthermore,
+
+        {com}. gsample 10 [w=size]{txt}
+
+{pstd} draws an unequal probability sample with replacement (UPSWR, PPSWR) with
+sampling probabilities proportional to {cmd:size}.
+
+
+{title:Author}
+
+{pstd} Ben Jann, University of Bern, jann@soz.unibe.ch
+
+{pstd} You may cite this software as follows:
+
+{pmore}
+Jann, B. (2006). gsample: Stata module to draw a random sample. Available from
+http://ideas.repec.org/c/boc/bocode/s456716.html.
+
+
+{title:Also see}
+
+{psee}
+Online: {helpb mf_mm_sample:mm_sample()}, {helpb sample}, {helpb bsample}, 
+{helpb generate}, {helpb moremata}
+{p_end}
+
+{psee}
+Links to user-written programs:
+{net "describe samplepps, from(http://fmwww.bc.edu/repec/bocode/s/)":samplepps}

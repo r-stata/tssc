@@ -1,0 +1,78 @@
+{smcl}
+{* 10apr2007}{...}
+{cmd:help labelsof}
+{hline}
+
+{title:Title}
+
+{p 4 4 2}{hi:labelsof} {hline 2} Obtain list of labeled values
+
+
+{title:Syntax}
+
+{p 8 15 2}
+{cmd:labelsof} {it:{help varname}} [ {cmd:,} {cmdab:l:abel} ]
+
+
+{title:Description}
+
+{p 4 4 2}
+{cmd:labelsof} displays and returns in {cmd:r(values)} and {cmd:r(labels)}
+the labeled values of {it:varname}. {cmd:labelsof} returns nothing 
+if {it:varname} has no value labels assigned.
+
+
+{title:Options}
+
+{p 4 8 2}
+{cmd:label} causes the specified name to be interpreted as a value 
+label name rather than a variable name and returns the values and labels 
+contained in this set of value label definitions.   
+
+
+{title:Examples}
+
+        {com}. sysuse auto
+        {txt}(1978 Automobile Data)
+        
+        {com}. labelsof foreign
+        
+        {txt}foreign ({res}origin{txt}):
+        
+                   {res}0 Domestic
+                   1 Foreign
+        {txt}
+        {com}. ret list
+        
+        {txt}macros:
+                      r(name) : "{res}origin{txt}"
+                    r(values) : "{res}0 1{txt}"
+                    r(labels) : "{res}`"Domestic"' `"Foreign"'{txt}"
+        
+        {com}. label define yesno 1 "yes" 2 "no" .a "no answer"
+        {txt}
+        {com}. labelsof yesno, label
+        
+        {txt}yesno:
+                   {res}1 yes
+                   2 no
+                  .a no answer
+        {txt}
+        {com}. ret list
+        
+        {txt}macros:
+                      r(name) : "{res}yesno{txt}"
+                    r(values) : "{res}1 2 .a{txt}"
+                    r(labels) : "{res}`"yes"' `"no"' `"no answer"'{txt}"
+        {txt}
+
+{title:Author}
+
+{p 4 4 2} Ben Jann, ETH Zurich, jann@soz.gess.ethz.ch
+
+
+{title:Also see}
+
+{p 4 13 2}
+Online:  {helpb label}, {helpb labelbook}
+

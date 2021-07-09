@@ -1,0 +1,79 @@
+{smcl}
+{* 18august2003}{...}
+{hline}
+help for {hi:cibplot}
+{hline}
+
+{title:Bar-on-bar plots of confidence intervals} 
+
+{p 8 17 2} 
+{cmd:cibplot} 
+{it: varlist}
+[{cmd:if} {it:exp}] 
+[{cmd:in} {it:range}]
+[{it:weight}]  
+[{cmd:,}
+{cmd:by(}{it:byvar}{cmd:)} 
+{cmdab:miss:ing}
+{it:ci_options}
+[{cmdab:hor:izontal} {c |} {cmdab:vert:ical}] 
+{cmdab:bar:opts(}{it:bar_options}{cmd:)} 
+{it:rcap_options}]
+
+
+{title:Description}
+
+{p 4 4 2}
+{cmd:cibplot} produces a display of means and confidence intervals. 
+Means are shown by heights or lengths of thick bars and intervals by capped bars. 
+{cmd:ci} is used for the calculations. 
+{cmd:aweight}s and {cmd:fweight}s are allowed; see help on {help weights}. 
+
+
+{title:Options}
+
+{p 4 8 2}{cmd:by()} defines a grouping variable, which is treated as 
+categorical, not measured.
+
+{p 4 8 2}{cmd:missing}, applicable only with {cmd:by()}, specifies that results
+for groups with missing values of {it:byvar} should be included in the display.
+The default is to exclude them. 
+ 
+{p 4 8 2}{it:ci_options} are options of {help ci} apart from {cmd:separator()}.
+
+{p 4 8 2}{cmd:horizontal} produces a horizontal display. The default is 
+vertical. 
+
+{p 4 8 2}{cmd:baropts(}{it:bar_options}{cmd:)} refers to other options of 
+{help twoway_bar:graph twoway bar}. Note that {cmd:base(0) bcolor(none)} 
+are among the default choices. The first may produce labelling which users might
+wish to modify. 
+ 
+{p 4 8 2}{it:rcap_options} refers to options of {help twoway_rcap:graph twoway rcap}. 
+
+
+{title:Examples}
+
+{p 4 8 2}{inp:. webuse citytemp} 
+
+{p 4 8 2}{inp:. cibplot heatdd cooldd}
+                                                                   
+{p 4 8 2}{inp:. cibplot heatdd, by(division) yla(0(1000)7000, ang(h))}
+                                                                   
+{p 4 8 2}{inp:. cibplot heatdd cooldd, hor}
+                                                                   
+{p 4 8 2}{inp:. cibplot heatdd, by(division) hor xla(0(1000)7000)}
+
+
+{title:Author}
+
+         Nicholas J. Cox, University of Durham
+         n.j.cox@durham.ac.uk
+
+
+{title:Also see}
+
+{p 4 8 2}Manual: {hi: [R] ci}
+
+{p 4 8 2}On-line: help for {help ci}, {help serrbar}, {help ciplot} (if installed)  
+

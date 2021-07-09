@@ -1,0 +1,95 @@
+/*
+ xtidt
+VERSION 2.0 15dec2011
+*/
+VERSION 10
+INCLUDE _std_large
+DEFINE _dlght 320
+INCLUDE header
+HELP hlp1, view("help xtidt")
+RESET res1
+SCRIPT show_xtset
+BEGIN
+	create STRING note
+	note.setvalue `"For a population-averaged model,"'
+	note.append   `" correlation structures other than"'
+	note.append   `" "exchangeable" and "independent""'
+	note.append   `" require that a time variable be specified."'
+	note.withvalue create CHILD xtset, message(`"" " `"@"'"')
+END
+DIALOG main, label("xtidt - Create Identification Panel Data Variables") /*
+	*/ tabtitle("Main")
+BEGIN
+  BUTTON   bu_xtset	_xsetbu	_top	_setbuwd .,	///
+	onpush(script show_xtset)			///
+	label("Panel settings...")
+  BUTTON   bu_mi_xtset  _xsetbu	_top	_setbuwd .,	///
+	onpush("view dialog mi_xtset")			///
+	label("Panel settings...")
+  GROUPBOX gb_step   _lft  _ls   _iwd   _ht5, /*
+*/ label("Specify Positive Value for:")
+  SPINNER  sp_t   _ilft     _ss       _spwd  .,	/*
+	*/ min(3) max(500) default(3)		/*
+	*/ option("t")			/*
+	*/ label("Number of Years")
+  TEXT     tx_t   _spsep    @         _sprb  .,	/*
+	*/ label("Number of Years")
+  SPINNER  sp_id  _ilft     _ms       _spwd  .,	/*
+	*/ min(4) max(1000) default(4)		/*
+	*/ option("id")			/*
+	*/ label("Number of Panels")
+  TEXT     tx_id   _spsep    @        _sprb  .,	/*
+	*/ label("Number of Panels")
+*/
+ VARNAME vn_panel _ilft   _xxls  120  ., ///
+	label("Panel")			///
+	option(panel)
+ TEXT tx_panel   150    @      300   .,	///
+	label("Panel ID Variable")
+ VARNAME vn_year _ilft   _ls    120   ., ///
+	label("Year")			///
+	option(year)
+ TEXT tx_year 150    @      300   .,	///
+	label("Year ID Variable (Time)")
+
+  GROUPBOX gb_opt   _lft  _ss   _iwd   _ht10 , /*
+*/ label("Options:")
+ VARNAME vn_time _ilft   _ms   120  .,	///
+	label("time")			///
+	option(time)
+ TEXT tx_time   150    @      300   .,	///
+	label("Time Trend Variable")
+
+ EDIT vl_dumcs _ilft   _ls   120  .,	///
+	label("dumcs")			///
+	option(dumcs)
+ TEXT tx_dumcs   150    @      300   .,	///
+	label("Cross Section Dummy Variables (Prefix Name)")
+ EDIT vl_dumts _ilft   _ms   120  .,	///
+	label("dumts")			///
+	option(dumts)
+ TEXT tx_dumts   150    @      300   .,	///
+	label("Time Series Dummy Variables (Prefix Name)")
+ CHECKBOX ck_list _ilft   _ms   200  ., option("list") /*
+*/ label("Display Panel and Time ID Variables") 
+END
+
+INCLUDE ifin
+PROGRAM command
+BEGIN
+ put "xtidt "
+ put " " /program ifin_output
+ require main.vn_panel
+ require main.vn_year
+beginoptions
+ optionarg main.sp_t
+ optionarg main.sp_id
+ optionarg main.vn_panel
+ optionarg main.vn_year
+ optionarg main.vn_time
+ optionarg main.vl_dumcs
+ optionarg main.vl_dumts
+ option main.ck_list
+ endoptions
+END
+

@@ -1,0 +1,96 @@
+{smcl}
+{* Mar 21 2010}{...}
+{hline}
+help for {hi:allsubsets}
+{hline}
+
+{title:All subsets (combinatorial) meta-analysis}
+
+{p 4 17 2}
+{cmdab: allsubsets}  varlist [{hi:if} expression] [{hi:in} range], {hi:s}ave({it:filename}) 
+[{hi:maxstudies}({it:integer}) {hi:replace} ]
+
+{title:Description}
+
+{p 4 8 2}
+{cmd:allsubsets} performs all subsets (combinatorial) meta-analysis in a set of studies and saves results. 
+By default the routine performs fixed effects meta-analysis using the inverse variance method, and random effects meta-analysis using the DerSimonian and Laird random effects model. 
+
+Let N be the number of studies in the meta-analysis.
+Then the number of possible subsets is -1+2^N. 
+The command handles up to N={hi:maxstudies} studies. See Options. 
+
+{title:Suggested citation:}
+
+{p 4 8 2}
+Olkin I, Dahabreh IJ, Trikalinos TA. {browse "http://onlinelibrary.wiley.com/doi/10.1002/jrsm.1053/abstract":GOSH - A graphical display of study heterogeneity}. {it:Research Synthesis Methods}. 2012;3(3):214-223.
+
+See also the {browse "http://www.cebm.brown.edu/resources":Center for Evidence-based Medicine (CEBM)} at Brown University for updates or additional materials.
+
+{hline}
+
+{p 4 8 2}
+{hi:varlist} Expects two numeric variables: the effect size {it:Theta} and its variance {it:var_theta}. 
+
+{hline}
+
+{p 4 8 2}
+In the saved file one finds the following variables:
+
+{p 4 8 2}
+{it:study_ES}: the effect size of the study. has non-missing values only for N (# of studies) observations.
+
+{p 4 8 2}
+{it:study_var}: the variance of each study. has non-missing values only for N (# of studies) observations. 
+
+{p 4 8 2}
+{it:es_fem}: fixed effects meta-analysis result    
+
+{p 4 8 2}
+{it:es_rem}: random effects meta-analysis result    
+
+{p 4 8 2}
+{it:df}: degrees of freedom         
+
+{p 4 8 2}
+{it:I2}: I^2 value 
+
+{p 4 8 2}
+{it:subset}: codes which studies are in the subset.  Studies are named with lowercase letters (e.g. "a", "b"). "a b g" means that the 2nd, 3rd and 7th study are included in the subset. 
+
+{p 4 8 2}
+{it:pRem_z}: p-value for the overall effect with the random effects model 
+
+{p 4 8 2}
+{it:var_fem}: variance of the summary fixed effects estimate    
+
+{p 4 8 2}
+{it:var_rem}: variance of the summary random effects estimate    
+
+{p 4 8 2}
+{it:Q}: Cochran's Q          
+
+{p 4 8 2}
+{it:tau2}: DerSimonian and Laird 1-step tau^2       
+
+{p 4 8 2}
+{it:pFem_z}: p-value for the overall effect with fixed effects     
+
+
+
+{hline}
+{p 4 8 2}
+Options for {hi:allsubsets}
+
+
+{p 4 8 2}
+{hi:save} Give the nane of the file where the command will save results
+
+{p 4 8 2}
+{hi:replace} Whether or not to replace the file if it exists.
+
+{p 4 8 2}
+{hi:maxstudies} The maximum number of studies that are allowed. This depends on 
+your computer's RAM. The default is N=20 (1'048'575 subsets). Specifying too
+high an N results in a memory allocation error.
+

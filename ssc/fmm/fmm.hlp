@@ -1,0 +1,240 @@
+{smcl}
+{* documented: June 12, 2007}{...}
+{* revised: February 12, 2012}{...}
+{cmd:help fmm} {right:also see:  {helpb fmm postestimation}}
+
+{hline}
+
+{title:Title}
+
+{cmd :fmm} {hline 2} Finite mixture models
+
+
+{title:Syntax}
+
+{phang}
+Finite mixture models
+
+{p 8 14 2}
+{cmd:fmm} {depvar} [{indepvars}] {ifin} {weight}{cmd:,} {opt comp:onents(#)}
+{opth mix:tureof(fmm##density:density)} [{it:{help fmm##fmm_options:fmm_options}}]
+
+{synoptset 28 tabbed}{...}
+{marker fmm_options}{...}
+{synopthdr :fmm_options}
+{synoptline}
+{syntab :Model}
+{synopt :{opt comp:onents(#)}}specifies the number of mixture components.  It is 
+required.{p_end}
+{synopt :{opth mix:tureof(fmm##density:density)}}specifies the component density.  
+It is required.{p_end}
+
+{syntab :Model 2}
+{synopt :{opth prob:ability(varlist)}}specifies the variables used to model the component probabilities.{p_end}
+{synopt :{opt df(#)}}specifies the degrees of freedom of the Student-t density.  The default is 5.{p_end}
+{synopt :{opt nocons:tant}}suppress constant term{p_end}
+{synopt :{opth exp:osure(varname)}}include ln({it:varname}) in model with
+coefficient constrained to 1.{p_end}
+{synopt :{opth off:set(varname)}}include {it:varname} in model with coefficient
+constrained to 1.{p_end}
+{synopt :{opth cons:traint(constraint)}}apply specified linear constraints.{p_end}
+
+{syntab :SE/Robust}
+{synopt :{opth vce(vcetype)}}{it:vcetype} may be {opt oim}, {opt r:obust}, {opt opg}, {opt boot:strap}, or {opt jack:knife}{p_end}
+{synopt :{opt r:obust}}synonym for {cmd:vce(robust)}{p_end}
+{synopt :{opth cl:uster(varname)}}adjust standard errors for intragroup correlation{p_end}
+
+{syntab :Max options}
+{synopt :{it:{help fmm##fmm_maximize:maximize_options}}}control the maximization process; some options may be useful{p_end}
+{synoptline}
+{p2colreset}{...}
+{p 4 6 2} {it:depvar}, {it:indepvars}, {it:varname_e}, and {it:varname_o} may
+contain time-series operators; see {help tsvarlist}.{p_end}
+
+{p 4 6 2}  {cmd:fweight}s, {cmd:pweight}s, {cmd:iweight}s, and {cmd:aweight}s 
+are allowed; see {help weight}.{p_end}
+{p 4 6 2} See {help postestimation commands} for features available after estimation.
+
+{marker density}{...}
+{synoptset 23}{...}
+{synopthdr :density}
+{synoptline}
+{synopt :{opt gamma}}Gamma{p_end}
+{synopt :{opt lognormal}}Lognormal{p_end}
+{synopt :{opt negbin1}}Negative Binomial-1 (constant dispersion){p_end}
+{synopt :{opt negbin2}}Negative Binomial-2 (mean dispersion){p_end}
+{synopt :{opt normal}}Normal or Gaussian{p_end}
+{synopt :{opt poisson}}Poisson{p_end}
+{synopt :{opt studentt}}Student-t with {opt df} degrees of freedom{p_end}
+{synoptline}
+{p2colreset}{...}
+
+
+{title:Description}
+
+{pstd}
+{cmd:fmm} fits a finite mixture regression model of {it:depvar} on {it:indepvars} 
+using maximum likelihood estimation.  The model is a {it:J}-component finite mixture 
+of densities, with the density within a component (j) allowed to vary in location 
+and scale.  Optionally, the mixing probabilities may be specified with covariates.
+
+
+{title:Options for fmm}
+
+{dlgtab:Model}
+
+{phang}
+{opt comp:onents(#)} specifies the number of mixing components.  It is an 
+integral part of specifying the finite mixture model and is not optional.  
+{it:#} should be an integer between 2 and 9.
+
+{phang}
+{opt mix:tureof(density)} specifies the component density in the 
+mixture model.  It is not optional.  For more on the available choices of 
+component densities and associated specifications of conditional means, see 
+{opt Remarks} below.
+
+{dlgtab:Model 2}
+
+{phang}
+{opt prob:ability(varlist)} specifies the variables used to model 
+the component probabilities.  The probabilities are specified using a 
+multinomial logit parameterization.
+
+{phang}
+{opt df(#)} specifies the degrees of freedom if a Student-t component density 
+is specified.  The default value is 5.
+
+{phang}
+{opt nocons:tant}, {opth exp:osure(varname)}, {opt off:set(varname)},
+{opt cons:traints(constraints)}; see {help estimation options}.
+
+{dlgtab:SE/Robust}
+
+{phang}
+{opt vce(vcetype)}; see {it:{help vce_option}}.
+
+{phang}
+{opt r:obust}, {opt cl:uster(varname)}; see {help estimation options}.
+{opt cl:uster()} can be used with {help pweight}s to produce estimates for
+unstratified cluster-sampled data.
+
+{dlgtab:Reporting}
+
+{phang}
+{opt level(#)}; see {help estimation options}.
+
+{marker fmm_maximize}{...}
+{dlgtab:Max options}
+
+{phang}
+{it:maximize_options}: {opt dif:ficult}, {opt tech:nique(algorithm_spec)},
+{opt iter:ate(#)}, [{cmdab:no:}]{opt lo:g}, {opt tr:ace},
+{opt grad:ient}, {opt showstep}, {opt hess:ian},
+{opt shownr:tolerance}, {opt tol:erance(#)}, {opt ltol:erance(#)},
+{opt gtol:erance(#)}, {opt nrtol:erance(#)}, {opt nonrtol:erance},
+{opt fr:om(init_specs)}; see {help maximize} are standard {help ml} options.{p_end}
+
+
+{phang}
+{opt sh:ift(#)} generates alternative starting values by systematically 
+shifting some values from the default algorithm by the proportion {opt #}.{p_end}
+
+
+{phang}
+{opt se:arch(spec)} {it:spec} may be {opt on} or {opt off} and specifies whether
+{help ml}'s initial search algorithm is used.  The default is {opt off}.{p_end}
+
+{phang}
+Because finite mixture models have complicated likelihood functions, 
+{opt shift(#)}, {opt search(spec)}, {opt dif:ficult} and {opt from(init_specs)} 
+may be useful choices if the default setup fails. The other options are seldom 
+used.{p_end}
+
+
+{title:Remarks}
+
+{pstd}
+If {opt components(2)} is specified, default starting values are specified using 
+the parameters from the associate degenerate mixture model.  In order to take 
+advantage of the built-in algorithms for specifying starting values for models 
+with {it #} components, ({it #}>2), the user must estimate models sequentially 
+{it #}=2.  This is the preferred estimation approach.  But {cmd:fmm} will not 
+check for reasonableness of the prior {cmd:fmm} estimates, so proceed 
+carefully.  Otherwise, {cmd:fmm} expects the user to specify starting values 
+using the {opt from(init_specs)} option.{p_end}
+
+{pstd}
+The available component densities and the associated conditional means are
+
+{tab}Density {col 30} {cmd:fmm} option {col 50} cond. mean
+{tab}{hline 70}
+{tab}Gamma {col 30} {cmd:density(gamma)} {col 50} alpha_j exp(xb_j)
+{tab}Lognormal {col 30} {cmd:density(lognormal)} {col 50} exp(xb_j + 0.5 sigma_j^2)
+{tab}Negative Binomial-1 {col 30} {cmd:density(negbin1)} {col 50} exp(xb_j)
+{tab}Negative Binomial-2 {col 30} {cmd:density(negbin2)} {col 50} exp(xb_j)
+{tab}Normal(Gaussian) {col 30} {cmd:density(normal)} {col 50} xb_j
+{tab}Poisson {col 30} {cmd:density(poisson)} {col 50} exp(xb_j)
+{tab}Student-t {col 30} {cmd:density(studentt)}	 {col 50} xb_j
+
+{pstd}
+Note that {cmd:fmm} has not been updated to accommodate factor variables.
+
+
+{title:Saved results}
+
+{pstd}In addition to standard results saved by maximum likelihood procedures
+in {opt e()}, {cmd:fmm} saves the following scalars:
+
+{tab}{opt e(parname_est)} parameter estimate
+{tab}{opt e(parname_se)} standard error of estimate
+
+{pstd}where {it:parname} denotes either a scale parameter or a mixing 
+probability parameter.
+ 
+
+{title:Examples}
+
+{pstd}Mixture of normals
+
+{phang}{stata "webuse womenwk, clear" : . webuse womenwk, clear}
+
+{phang}{stata "fmm wagefull educ age married, mix(normal) comp(2)" : . fmm wagefull educ age married, mix(normal) comp(2)}
+
+
+{pstd}Mixture of Negative Binomials (Type 2)
+
+{phang}{stata "webuse medpar, clear" : . webuse medpar, clear}
+
+{phang}{stata "gen los0 = los - 1" : . gen los0 = los - 1}
+
+{phang}{stata "fmm los0 died hmo type2-type3, mix(negbin2) comp(2)" : . fmm exlos died hmo type2-type3, mix(negbin2) comp(2) comp(2)}
+
+
+{title:References}
+
+{p 4 8 2}Conway, K. and P. Deb, (2005), Is Prenatal Care Really Ineffective? 
+Or, is the 'Devil' in the Distribution?, {it:Journal of Health Economics}, 
+24, 489-513.
+
+{p 4 8 2}Deb, P. and P. K. Trivedi (1997), Demand for Medical Care by 
+the Elderly: A Finite Mixture Approach, {it:Journal of Applied Econometrics}, 
+12, 313-326.
+
+{p 4 8 2}McLachlan, G.J., and D. Peel (2000), {it:Finite Mixture Models}, 
+New York: John Wiley.
+
+{p 4 8 2}Titterington, D.M., A.F.M. Smith and U.E. Makow (1985), 
+{it:Statistical Analysis of Finite Mixture Distributions}, New York: John Wiley, 1985.
+
+
+{title:Author}
+
+{phang}Partha Deb, Hunter College and the Graduate Center, City University of New York, USA{p_end}
+{phang}partha.deb@hunter.cuny.edu{p_end}
+
+
+{title:Also see}
+
+{psee}
+Online:  {help fmm postestimation}{p_end}

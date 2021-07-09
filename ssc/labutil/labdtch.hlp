@@ -1,0 +1,56 @@
+.-
+help for ^labdtch^ 
+.-
+
+Detach value labels 
+-------------------
+
+    ^labdtch^ varlist 
+
+Description
+-----------
+
+^labdtch^ detaches value labels from the variables in varlist. 
+
+Remarks 
+-------
+
+Suppose you define value labels, attach them to variables, and then 
+later change your mind about attaching labels. 
+
+Even if you drop the value labels, according to Stata, for example the 
+^describe^ or ^codebook^ commands, the variables continue to have labels
+attached: it is just that those labels do not exist. 
+
+Labels can be detached from varname by 
+
+^label values^ varname
+
+^labdtch^ makes it easy to do this with a varlist. 
+
+^labdtch^ does not drop value labels. For that, use ^label drop^. 
+
+^labdtch^ ignores any string variables in varlist. 
+
+    
+Examples
+--------
+
+    . ^labdtch foreign^
+
+    The following detaches all value labels from variables (possibly 
+    useful, but also dangerous): 
+    
+    . ^labdtch _all^ 
+
+
+Author
+------
+
+         Nicholas J. Cox, University of Durham, U.K.
+         n.j.cox@@durham.ac.uk
+
+
+On-line: help for @label@, @labedit@ (if installed) 
+ Manual: ^[U] 15.6^, ^[R] label^
+

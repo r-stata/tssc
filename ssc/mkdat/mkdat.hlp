@@ -1,0 +1,197 @@
+.-
+help for ^mkdat^ ^holrein^
+.-
+
+SOEP - Retrivals
+----------------
+
+   ^mkdat^ varlist ^using^ pathname, ^w^aves^(^wavelist^)^ ^f^iles^(^filetype^)^
+           [^k^eep^(^ppfadvars^)^ ^n^etto^(^#,[#] ... [#]^)^ ^uc^ ^hhgr^ ^clear^]
+
+   ^holrein^ varlist ^using^ pathname, ^w^aves^(^wavelist^)^ ^f^iles^(^filetype^)^ 
+           [^uc^]
+
+Description
+-----------
+^mkdat^ and ^holrein^ are tools for SOEP-Retrivals. They merge
+variables from varlist to ppfad. mkdat is to generate a new file and
+holrein to merge new variables to a file generated with mkdat.
+Balanced (default) and various unbalanced designs could be specified.
+
+Consider an example where individual gross and net income should be combined
+with information concerning the household income using 1991 and 1992 data
+(see Table 4.8a of the Desktop Companion). To make that file with
+mkdat and holrein, one may type interactivly
+
+  ^mkdat hp5401 ip5401 hp5402 ip5402 using c:\soep, files(p) waves(h i)^
+  ^holrein hh49 ih49 using c:\soep, files(h) waves(h i)^
+
+Note that ^varlist^ should be specified like the Item Correspondence List and
+should only contain variables from filetypes defined by the option ^files()^.
+After selecting waves, for which one wants to do the retrieval, one
+specifies the first variable of the retrival. After this follows the
+specification of the corresponding variable from the other waves. Then go on
+with the second variable. The specific form of the varlist could be easily
+seen, if one wrote the mkdat command above in
+the following form (an a do-file for example).
+
+#delimit ;
+mkdat
+ ^hp5401 ip5401^
+ ^hp5402 ip5402^
+using c:\soep, files(p) waves(h i) ;
+
+mkdat and holrein are especially constructed for use together with soepinfo.
+Consider one wants to observe political interest and party identification
+from 1984 to 1989. While working with soepinfo, one founds the variables and
+wrotes the Item-Correspondence list to a file. Let's see, how the file looks:
+
+-----------------------------------------------------------
+1984     |1985     |1986     |1987     |1988     |1989
+-----------------------------------------------------------
+Politik
+Politisches Interesse
+-        |BP75     |CP75     |DP84     |EP73     |FP89
+Politik
+Allgemeine Parteienpraeferenz
+AP5601   |BP7901   |CP7901   |DP8801   |EP7701   |FP9301
+Politik
+Parteienidentifikation
+AP5602   |BP7902   |CP7902   |DP8802   |EP7702   |FP9302
+
+After cutting all lines and headings and maybe change uppercase to
+lowercase (but also note ^uc^ mentioned below).  That leads to
+
+^-      bp75   cp75   dp84   ep73   fp89^
+^ap5601 bp7901 cp7901 dp8801 ep7701 fp9301^
+^ap5602 bp7902 cp7902 dp8802 ep7702 fp9302^
+
+which is exactly the structure varlist should have. Before one can put that
+table into the mkdat (or holrein) command, there is still one thing which
+should be changed:
+
+  ^ - ^   bp75   cp75   dp84   ep73   fp89
+
+Note that there is no variable name for political interest in 1984. mkdat
+will not accept a varlist which contains single dashes. Note also, that mkdat
+would not accept a varlist which is not completly rectangular. One have to
+change single dashes from the soepinfo outfile into a specific variable name.
+The new variable name should start with ^_^ and shouldn't be used twice in
+varlist. You may use _X1, _X2 and so on. However, the names do not appear in
+the generated file .
+
+The mkdat command therefore becomes
+
+#delimit ;
+mkdat
+^_x1      bp75   cp75   dp84   ep73   fp89^
+^ap5601 bp7901 cp7901 dp8801 ep7701 fp9301^
+^ap5602 bp7902 cp7902 dp8802 ep7702 fp9302^
+using c:\soep, files(p) waves(a b c d e f) ;
+
+Options
+-------
+
+^waves()^ is not optional. List letters of all waves you wish to observe
+    inside the parantheses. You can not expand the wavelist from mkdat with
+    holrein (But you may choose fewer waves in holrein). The wavelist
+    should be in the same order as variables appear in the varlist. Consider
+    the first example above:
+
+    ^mkdat hp5401 ip5401 hp5402 ip5402 using c:\soep, wave(i p) files(p)^
+
+    Note that the proper specification of wave() is wave(^h i^) not wave(i h).
+    Note also that there has to be a ^{blank}^ between the letters of
+    wavelist.
+
+    If you include variables from the specific ost-files in 1990 and 1991 the
+    wavelist should include ^gost^ and ^host^ at the corresponding position.
+    For example:
+
+    ^mkdat gp4301 zp4101 hp5401 using c:\soep, wave(g gost h) files(p)^
+
+^files()^ is not optional. Specify a letter for the type of files where the
+    variables of varlist come from. Do not include variables from different
+    filetypes in the varlist. Instead of this create a second holrein
+    statement. You can choose the following filetypes:
+
+    Letter for Filetype ...   for Variables from files
+          ^p^                  ap, bp, ... lp, ... xp
+          ^pgen^               apgen, bpgen, ... lpgen, ... xpgen
+          ^pbrutto^            apbrutto, bpbrutto, ... lpbrutto, ... xpbrutto
+          ^pequiv^             apequiv, bpequiv, ... lpequiv, ... xpequiv
+          ^kind^               apkind, bpkind, ... lpkind, ... xpkind
+          ^pausl^              apausl, bpausl, ... lpausl, ... xpausl
+          ^h^                  ah, bh, ... lh, ... xh
+          ^hgen^               ahgen, bhgen, ... lhgen, ... xhgen
+          ^hbrutto^            bhbrutto, ... lhbrutto, ... xhbrutto
+
+    Use wave() for variables from gpost, ghost  and hpost.
+
+^keep()^ lets you specify variables from ppfad that should be in the
+    generated file. The variables *netto, *hhnr, persnr and hhnr are in the
+    the file without specifiing keep. Do not specify them in the list. Use
+    the option only for additional variables.
+
+    Example:
+
+    mkdat hp5401 ip5401 using c:\soep, files(p) waves(h i) ^keep(sex gebjahr)^
+
+^netto()^ (mkdat only) defines the design of the generated file. One can list
+    the values of the specific "netto"-variables in ppfad which should be
+    included. For example netto(1) leads to an balanced panel design (default).
+    If one wants to include temporary drop-outs he may specify netto(1,4).
+    With netto(-3,-2,0,1,2,3,4) all cases of ppfad will be included.
+
+^uc^ changes an uppercased varlist into lowercase. You may usually select uc
+    if you work with varlist generated by soepinfo.
+
+^hhgr^ (mkdat only) can be used to calculate the number of persons in the
+    actual household using the persons listed in ppfad.
+
+Examples
+--------
+
+1) Constructing Longitudinal Individual Records
+   (see Table 4.5 of the Desktop Compagnion)
+
+   ^mkdat gp109 zp6401 hp10901 ip10901 jp10901 using c:\soep,
+         waves(g gost h i j) files(p)^
+
+
+2) Constructing Cross-Sectional Householt Records
+
+   ^mkdat hh49 using c:\soep, files(h) waves(h)^
+   ^sort hhhnr^
+   ^by hhnr: gen index=_n^
+   ^by hhnr: keep if index==_N^
+
+
+3) Linking Household Data to Individuals
+   (see Table 4.7 of the Desktop Compagnion)
+
+   ^mkdat hp501 hp5402, waves(h) files(p)^
+   ^holrein hh48, waves(h) files(p)^
+
+4) Linking Houshold Data to Individuals Across Waves
+   (see Table 4.8 of the Desktop Compagnion)
+
+   ^mkdat hp5401 ip5401 hp5402 ip5402 using c:\soep, files(p) waves(h i)^
+   ^holrein hh49 ih49 using c:\soep, files(h) waves(h i)^
+
+5) Houshold Level Variables from Individual Data
+   (see Table 4.9 of the Desktop Compagnion)
+
+   ^mkdat hp07 hp15 using c:\soep, files(p) waves(h)^
+   ^gen ft=1 if hp15==1^
+   ^gen pt=1 if hp15==2^
+   ^gen unemp=1 if hp07==1^
+   ^gen noinf=1 if hp15==9^
+   ^#delimit ;            ^
+   ^collapse (count) n_ft=ft^
+   ^                 n_pt=pt^
+   ^                 n_unemp=unemp^
+   ^                 n_noinf=noinf^
+   ^          (mean) hhnr=hhnr, by(hhnrakt);^
+   ^#delimit cr ^
+   ^holrein htyphh1 htyphh2 using c:\soep, waves(h) files(hgen)^

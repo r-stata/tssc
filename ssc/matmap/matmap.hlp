@@ -1,0 +1,62 @@
+.-
+help for ^matmap^
+.-
+
+Elementwise calculations for matrices
+-------------------------------------
+
+    ^matmap^ matrix1 matrix2 ^, m^ap^(^expression^)^ [ ^s^ymbol^(^str^)^ ] 
+
+Description
+-----------
+
+Given matrix A and a user-supplied expression, ^matmap^ calculates 
+matrix B with typical element
+
+    B[i,j] =  expression with A[i,j] substituted
+    
+provided that no B[i,j] would be missing. In other words, each element of 
+the matrix B results from some calculation on the corresponding element of 
+matrix A. 
+
+B may overwrite A. 
+
+Options
+-------
+
+^map(^expression^)^ specifies an expression and is a required option. 
+    The expression must include a placeholder symbol (default ^@@^). 
+    Each element A[i,j] will be substituted in turn in the expression 
+    for each occurrence of the placeholder and the result will become 
+    B[i,j]. 
+    
+^symbol(^string^)^ specifies an alternative to ^@@^ as a placeholder for 
+    each word. This is a rarely used option.  
+   
+   
+Examples
+--------
+
+    Adding a scalar to each element: 
+    . ^matmap A B , m(@@ + 2)^
+
+    Square root of each element: 
+    . ^matmap A B, m(sqrt(@@))^ 
+
+    Square of each element: 
+    . ^matmap A B, m(@@^^2)^  
+
+    Logit of each element: 
+    . ^matmap A B. m(log(@@/(1 - @@)))^ 
+
+    Boolean matrix: is each element >= 1? 
+    . ^matmap A B, m(@@ >= 1)^  
+
+
+Author
+------
+
+         Nicholas J. Cox, University of Durham, U.K.
+         n.j.cox@@durham.ac.uk
+
+

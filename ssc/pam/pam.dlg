@@ -1,0 +1,84 @@
+/*
+ pam
+*! VERSION 2.0 15/04/2015
+*/
+VERSION 11.0
+INCLUDE _std_large
+DEFINE _dlght 310
+INCLUDE header
+HELP hlp1, view("help pam")
+RESET res1
+
+DIALOG main, label("pam - Policy Analysis Matrix (PAM)") ///
+	tabtitle("Main")
+BEGIN
+
+ DEFINE _x _xsetbu
+ DEFINE _y _top
+ INCLUDE _bu_tsset
+  
+ TEXT tx_pd	_lft	+30	160	., ///
+	label("Domestic Price (Pd)")
+ TEXT tx_pw	190	@	160	., ///
+	label("World Price (Pw)")
+ VARNAME vn_pd  _lft	 _ss	160 .,	 ///
+	label("Domestic Price (Pd)")
+ VARNAME vn_pw  190	 @	160 ., ///
+	label("World Price (Pw)")
+
+ VARLIST vl_dtc _lft   _xls   340    ., ///
+	label("Private Tradable Inputs") ///
+	option(dtc)
+ TEXT tx_dtc    360   @    160   .,	///
+	label("Private Tradable Inputs")
+
+ VARLIST vl_wtc _lft	_ms	340 .,	///
+	label("Social Tradable Inputs") ///
+	option(wtc)
+ TEXT tx_wtc	360 	@ 	160 .,	///
+	label("Social Tradable Inputs")
+ VARLIST vl_ddf _lft   _xls   340    ., ///
+	label("Private Domestic Factors") ///
+	option(ddf)
+ TEXT tx_ddf    360   @    160   .,	///
+	label("Private Domestic Factors")
+
+ VARLIST vl_wdf _lft	_ms	340 .,	///
+	label("Social Domestic Factors") ///
+	option(wdf)
+ TEXT tx_wdf	360 	@ 	160 .,	///
+	label("Social Domestic Factors")
+
+ CHECKBOX ck_ptab    _lft  _ls   350  ., option("nolist") /*
+*/ label("Don't Display All Indicators") 
+
+ TEXT tx_fn	_lft	_ls	460 	.,		///
+	label("Save Policy Analysis Matrix (PAM) Results in File (*.txt):") 
+ FILE fi_fn     @	_ss	@ 	.,		///
+	option(save)						///
+	label("Save As...")					///
+	filter("Stata dta File (*.txt)|*.csv|All (*.*)|*.*")	///
+	defext(txt)						///
+	error("Filename") save
+END
+
+INCLUDE byifin
+
+PROGRAM command
+BEGIN
+ put "pam "
+ varlist main.vn_pd main.vn_pw
+ put " " /program ifin_output
+ require main.vl_dtc
+ require main.vl_wtc
+ require main.vl_ddf
+ require main.vl_wdf
+beginoptions
+ optionarg main.vl_dtc
+ optionarg main.vl_wtc
+ optionarg main.vl_ddf
+ optionarg main.vl_wdf
+ option main.ck_ptab
+ optionarg main.fi_fn
+ endoptions
+END

@@ -1,0 +1,102 @@
+{smcl}
+{hline}
+help for {hi:hapblock}
+{hline}
+
+{title:Haplotype Block Edge Identification using hapipf}
+
+{p 8 27}
+{cmdab:hapblock}
+[{it:varlist}] [{cmd:using}]
+[,
+{cmdab:mv}
+{cmdab:mvdel}
+{cmdab:hlen}{cmd:(}{it:numlist}{cmd:)}
+{cmdab:s:tart}{cmd:(}{it:#}{cmd:)}
+{cmdab:replace}
+{cmdab:b:lock}{cmd:(}{it:filename}{cmd:)}
+]
+
+{title:Description}
+{p 0 0}
+This command systematically fits a series of {hi:hapipf} log-linear models that attempts to find the edge of areas 
+containing high LD within a set of loci.
+
+{p 0 0}
+The log-linear model is fitted using iterative proportional fitting which is available using {hi ssc} and is called 
+{hi:ipf} (version 1.36 or later). Additionally, the user will also have to 
+install {hi:hapipf} (version 1.44 or later). This algorithm can handle very large contingency tables and 
+converges to maximum likelihood estimates even when the likelihood is badly behaved. 
+
+{p 0 0}
+If you are connected to the Web you can install the latest version by clicking here 
+{stata ssc install hapipf}.
+The latest version of {hi:hapblock} can be installed here {stata ssc install hapblock,replace}.
+
+{p 0 0}
+The {hi:varlist} consists of paired variables representing the alleles at each locus. If phase is known then the 
+paired variables are in fact the genotypes. When phase is unknown the algorithm assumes Hardy Weinberg 
+Equilibrium so that models are 
+based on chromosomal data and not genotypic data.
+
+{p 0 0}
+This algorithm can handle missing alleles at the loci by using the {hi:mv} or {hi:mvdel} option.
+
+{title:Options}
+{p 0 0}
+{cmdab:mv} specifies that the algorithm should replace missing data (".") with a copy
+  of each of the possible alleles at this locus. This is performed at the same
+  stage as the handling of the missing phase when the dataset is expanded into
+  all possible observations. If this option is not specified but some of the 
+  alleles do contain missing data the algorithm sees the symbol "." as another
+  allele.
+
+{cmdab:mvdel} specifies that people with missing alleles are deleted.
+
+{cmdab:hlen}{cmd:(}{it:numlist}{cmd:)} specifies the width of the sliding window of models.
+
+{cmdab:s:tart}{cmd:(}{it:#}{cmd:)} specifies the starting loci in the varlist. This is useful when
+the algorithm is taking a long time and hence the command can be rerun from the loci that the algorithm
+ended prematurely.
+
+{cmdab:replace} specifies that the results file created can be overwritten.
+
+{cmdab:b:lock}{cmd:(}{it:filename}{cmd:)} specifies that the calculated block sizes and p-values are saved
+to a file and is named {it:filename}.dta
+
+{title:Examples}
+
+{p 0 0}
+Take a dataset with 70 loci, the pairs of alleles at locus i are the variables
+li_1 and li_2.
+
+{inp:.hapblock l1_1-l70_2, hlen(6) s(10) mvdel}
+
+This will make the following comparisons
+l10*l11*l12+l13*l14*l15     vs   l10*l11*l12*l13*l14*l15
+l11*l12*l13+l14*l15*l16     vs   l11*l12*l13*l14*l15*l16
+l12*l13*l14+l15*l16*l17     vs   l12*l13*l14*l15*l16*l17
+l13*l14*l15+l16*l17*l18     vs   l13*l14*l15*l16*l17*l18
+e.t.c.
+If you specify the {hi:mvdel} missing data option then these models might not be on the same subjects.
+
+{title:Author}
+
+{p}
+Adrian Mander, Cambridge, UK.
+Email {browse "mailto:junk.ade@ntlworld.com":junk.ade@ntlworld.com}
+
+{title:Also see}
+
+Related commands
+
+HELP FILES 	Installation status		SSC installation links
+
+{help hapipf}		(MUST be installed)		({stata ssc install hapipf})
+{help ipf}		(MUST be installed)		(the above installs {hi:ipf})
+{help swblock}		(if installed)			({stata ssc install swblock})   
+{help gipf}		(if installed)       		({stata ssc install gipf}). 
+
+
+
+

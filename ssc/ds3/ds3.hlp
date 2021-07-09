@@ -1,0 +1,298 @@
+{smcl}
+{* 5 Feb 2002}{...}
+{hline}
+help for {hi:ds3}
+{hline}
+
+{title:Describe variables in memory}
+
+{p 8 12}{cmd:ds3} 
+[{it:varlist}]
+[{cmd:if} {it:exp}] 
+[{cmd:in} {it:range}]
+[{cmd:,} 
+{cmdab:str:ing}[{cmd:(}{it:numlist}{cmd:)}] 
+{cmdab:num:eric} 
+{cmd:byte}
+{cmd:int}
+{cmd:long}
+{cmd:float}
+{cmd:double} 
+{cmdab:co:mplement}
+{c -(} 
+{cmd:has(}{it:specification}{cmd:)} 
+{c |} 
+{cmd:not(}{it:specification}{cmd:)} 
+{c |} 
+{cmd:all(}{it:condition}{cmd:)}
+{c |} 
+{cmd:any(}{it:condition}{cmd:)} 
+{c |} 
+{cmd:none(}{it:condition}{cmd:)} 
+{c )-}
+{cmd:case} 
+{cmdab:place:holder(}{it:symbol}{cmd:)}
+{cmdab:d:etail}
+{cmdab:col:s(}{it:#}{cmd:)} 
+] 
+
+{p 8 12}where {it:specification} is one of 
+
+{p 12 16} {cmdab:varl:abel} [{it:patternlist}]
+
+{p 12 16} {cmdab:vall:abel} [{it:patternlist}] 
+
+{p 12 16} {cmdab:f:ormat} {it:patternlist}  
+
+{p 12 16} {cmdab:c:har} [{it:patternlist}] 
+
+{p 12 16}(for more details, see under Rule 4 below); 
+
+{p 8 12}and where {it:condition} is any true or false condition in which a
+single variable name may be substituted for the placeholder, by default
+{cmd:X}, which must appear at least once 
+
+{p 12 16}(for more details, see under Rule 5 below).
+
+
+{title:Description} 
+
+{p}{cmd:ds3} lists variable names in a compact format (or optionally, in the
+same format as {cmd:describe}). It is a variant on {cmd:ds}.
+
+{title:Options}
+
+{p}{cmd:ds3} may be considered as applying seven rules in succession. 
+
+{title:Rule 1}
+
+{p}{cmd:ds3} starts with a {it:varlist}. If not supplied, {it:varlist} is 
+a list of all variables in memory. 
+
+{p}If there are no options, {cmd:ds3} stops here and prints out {it:varlist}. 
+This alone can be very useful. In this form, it is exactly equivalent to
+{cmd:ds}. 
+
+{title:Rule 2} 
+
+{p}If any of the options {cmd:string}, {cmd:numeric}, {cmd:byte}, {cmd:int},
+{cmd:long}, {cmd:float} or {cmd:double} are specified, then {cmd:ds3} selects
+from the {it:varlist} those variables that are of the types specified.  
+
+{p}{cmd:string} may take a {it:numlist} of any integers between 1 and 80, 
+or between 1 and 244 under Stata/SE. 
+For example, {cmd:str(1/10)} specifies variables of types {cmd:str1}, {cmd:str2}, 
+..., {cmd:str9}, {cmd:str10} and {cmd:str(42)} specifies variables of 
+type {cmd:str42}. {cmd:str(1/80}), or {cmd:str(1/244)} under Stata/SE,
+is thus a synonym for {cmd:string}, although {cmd:string} is recommended. 
+
+{title:Rule 3} 
+
+If the {cmd:complement} option is specified, then the {it:varlist} is replaced 
+by its complement, i.e. all those variables not in {it:varlist}. Thus 
+{cmd:ds3, float complement} produces a list of those variables that are not 
+of type {cmd:float}. 
+
+{title:Rule 4} 
+
+{p}Either the {cmd:has()} or the {cmd:not()} option may be specified (but not
+both, and not in conjunction with any of the {cmd:all()}, {cmd:any()} or 
+{cmd:none()} options described under Rule 5). 
+
+{p 4 4}The {cmd:has()} option specifies further features: those variables will be
+listed from the {it:varlist} that have those features. 
+
+{p 4 4}The {cmd:not()} option also specifies further features: those variables will
+be listed from the {it:varlist} that do not have those features. 
+
+{p}The {it:specification} may refer to one of the following: variable labels,
+value labels, formats or characteristics. The specification must start 
+with one of the keywords {cmd:varlabel}, {cmd:vallabel}, {cmd:format} 
+or {cmd:char}, which may be abbreviated {cmd:varl}, {cmd:vall}, 
+{cmd:f} and {cmd:c}. 
+
+{p 4 4}{cmd:has(varl)} specifies variables with defined variable labels 
+and {cmd:not(varl)} specifies variables without such labels. 
+
+{p 4 4}{cmd:has(varl} {it:patternlist}{cmd:)} and {cmd:not(varl} {it:patternlist}{cmd:)} 
+refer to variable labels that satisfy one or more of the specified patterns.
+
+{p 4 4}{cmd:has(vall)} specifies variables with defined value labels 
+and {cmd:not(vall)} specifies variables without such labels. 
+
+{p 4 4}{cmd:has(vall} {it:patternlist}{cmd:)} and {cmd:not(vall} {it:patternlist}{cmd:)} 
+refer to value labels whose names satisfy one or more of the specified patterns.
+
+{p 4 4}{cmd:has(f} {it:patternlist}{cmd:)} and {cmd:not(f} {it:patternlist}{cmd:)} 
+refer to display formats satisfying specified patterns. In specifying 
+a format the leading character {cmd:%} may be omitted. 
+
+{p 4 4}Note that {cmd:has(f)} and {cmd:not(f)} are considered to be errors: 
+because all variables have some display format, the answer to each would be
+totally predictable. 
+
+{p 4 4}{cmd:has(c)} specifies variables with defined characteristics 
+and {cmd:not(c)} specifies variables without such characteristics. 
+
+{p 4 4}{cmd:has(c} {it:patternlist}{cmd:)} and {cmd:not(c} {it:patternlist}{cmd:)}
+refer to characteristics whose names satisfy one or more of the specified
+patterns.
+
+{p}The keywords or their abbreviations {cmd:varl}, {cmd:vall}, {cmd:f} and
+{cmd:c} and any patterns specified must be separated by spaces. 
+
+{p}In specifying patterns, use the
+syntax used in the {cmd:match(,)} function. That is, {cmd:*} means "0 or more
+characters go here", {cmd:?} means "1 character goes here" and any other
+character stands for itself. Comparison is case-sensitive unless the option 
+{cmd:case} is specified. Thus {cmd:has(vall origin)} would not catch any 
+variables with the value label {cmd:Origin}, but {cmd:has(vall origin) case} 
+would do so. 
+
+{title:Rule 5} 
+
+{p}One of the {cmd:all()}, {cmd:any()} and {cmd:none()} options may be 
+specified (but not in conjunction with either of the {cmd:has()} and 
+{cmd:not()} options described under Rule 4). 
+
+{p 4 4}The {cmd:all()} option specifies a {it:condition}: those variables will be
+listed from the {it:varlist} for which all values satisfy that {it:condition}.
+
+{p 4 4}The {cmd:any()} option specifies a {it:condition}: those variables will be
+listed from the {it:varlist} for which any values (one or more) satisfy that 
+{it:condition}. 
+
+{p 4 4}The {cmd:none()} option specifies a {it:condition}: those variables will be
+listed from the {it:varlist} for which no values satisfy that {it:condition}. 
+
+{p}The {it:condition} should be a true or false condition in which a 
+placeholder, by default {cmd:X}, appears at least once. This placeholder will
+be substituted by each {it:varname} in the {it:varlist}. Thus {cmd:any(X < 0)}
+would be used to test whether each variable in the {it:varlist} contains
+negative values. 
+
+{p}Any {it:condition} which makes no sense for numeric variables, such as 
+{cmd:X == ""}, will be ignored for those variables, and any {it:condition} which 
+makes no sense for string variables, such as {cmd:X < 0}, will be ignored for
+those variables, irrespective of which variables appear in the {it:varlist}. 
+
+{p}Whenever {cmd:if} or {cmd:in} is also specified, the {cmd:all()},
+{cmd:any()} or {cmd:none()} option chosen will determine whether any, all or
+none of the observations satisfying the {cmd:if} and {cmd:in} conditions also
+satisfy the {it:condition} being tested. Note that {cmd:if} and {cmd:in} have
+otherwise no effect on the results of {cmd:ds3}. 
+
+{p}The placeholder may be changed using {cmd:placeholder()}. 
+
+{title:Rule 6} 
+
+{p}The option {cmd:detail} specifies that a more detailed listing should
+be given. {cmd:ds3, str d} is equivalent to {cmd:describe} with all the string
+variables. {cmd:ds3, num d} is equivalent to {cmd:describe} with all the numeric
+variables.
+
+{title:Rule 7} 
+
+{p}The option {cmd:cols()} specifies the number of columns to be used in the
+listing. The default is 8. The number may be between 1 and 12, inclusive. Fewer
+columns than the default may be desired by those using many long variable
+names, and more by those using many very short variable names. {cmd:cols()} has
+no effect with {cmd:detail}. 
+
+
+{title:Saved results}
+
+{cmd:ds3} saves in {cmd:r(varlist)} the names of the variables listed.
+
+{title:Examples}
+
+{p}All variables:
+
+{p 4 8}{inp:. ds3} 
+
+{p 4 8}{inp:. ds3, cols(6)} 
+
+{p}All string variables: 
+
+{p 4 8}{inp:. ds3, str}
+
+{p 4 8}{inp:. ds3, str d}
+
+{p 4 8}{inp:. edit `r(varlist)'}
+
+{p}All numeric variables: 
+
+{p 4 8}{inp:. ds3, num}
+
+{p 4 8}{inp:. order `r(varlist)'}
+
+{p 4 8}{inp:. ds3, num}
+
+{p 4 8}{inp:. su `r(varlist)'}
+
+{p}All float variables: 
+
+{p 4 8}{inp:. ds3, float}
+
+{p}All variables that are not float:
+
+{p 4 8}{inp:. ds3, float co}
+
+{p}All variables with value labels attached: 
+
+{p 4 8}{inp:. ds3, has(vall)}
+
+{p}All variables with the value label {cmd:origin} attached: 
+
+{p 4 8}{inp:. ds3, has(vall origin)}
+
+{p}All date variables, i.e. those with formats {cmd:%d*} or {cmd:%t*}: 
+
+{p 4 8}{inp:. ds3, has(f d* t*)} 
+
+{p}Variables with left-justified string formats: 
+
+{p 4 8}{inp:. ds3, has(f -*s)} 
+
+{p}Variables with right-justified string formats: 
+
+{p 4 8}{inp:. ds3, str not(f -*s)} 
+
+{p}Variables with comma formats: 
+
+{p 4 8}{inp:. ds3, has(f *c)}
+
+{p}Variables with characteristics defined: 
+
+{p 4 8}{inp:. ds3, has(c)}
+
+{p}Variables with all values missing: 
+
+{p 4 8}{inp:. ds3, all(missing(X))} 
+
+{p}Variables with any values negative: 
+
+{p 4 8}{inp:. ds3, any(X < 0)}
+
+{p}Variables with any nonsensical values: 
+
+{p 4 8}{inp:. ds3 if male, any(X > 0 & X < .)} 
+
+
+{title:Author} 
+
+         Nicholas J. Cox, University of Durham, U.K.
+         n.j.cox@durham.ac.uk
+
+
+{title:Acknowledgement}
+
+{p}Suggestions from Richard Goldstein, William Gould, Jay Kaufman and 
+Fred Wolfe were very helpful in developing this program. 
+
+
+{title:Also see}
+
+On-line: help for {help describe} 
+ Manual: {hi:[R] describe}, {hi:[R] saved results}
+

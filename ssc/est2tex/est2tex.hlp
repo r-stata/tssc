@@ -1,0 +1,925 @@
+{smcl}
+{* 19mar2005}{...}
+{hline}
+help for {hi:est2tex}, {hi:est2vec}, {hi:est2one} and {hi:est2rowlbl} {right:({hi:contact {browse "mailto:muendler@econ.ucsd.edu":Marc Muendler}})}
+{hline}
+
+
+{title:Create LaTeX tables from estimation results}
+
+{p 8 15}{cmdab:est2vec} 
+{it:table} 
+[{cmd:,}
+    {cmdab:replace}
+    {cmdab:v:ars}{cmd:(}{it:list_of_regressors}{cmd:)}
+    {cmdab:shv:ars}{cmd:(}{it:varlist}{cmd:)}
+    {cmdab:e}{cmd:(}{it:list_of_macro_names}{cmd:)}
+    {cmdab:r}{cmd:(}{it:list_of_macro_names}{cmd:)}
+    {cmdab:add:to}{cmd:(}{it:oldtable}{cmd:)}
+    {cmdab:radd:to}{cmd:(}{it:oldtable}{cmd:)}
+    {cmdab:na:me}{cmd:(}{it:estimation_name}{cmd:)}
+    {cmdab:force}
+    {cmdab:nokeep}
+]
+
+{p 8 15}{cmdab:est2tex}
+{it:table}
+[{cmd:,}
+    {cmdab:replace}
+    {cmdab:dropall}
+    {cmdab:pres:erve}
+    {cmdab:p:ath}{cmd:(}{it:pathname}{cmd:)}
+    {cmdab:multse}{cmd:(}{it:list_of_integers}{cmd:)}
+    {cmdab:m:ark}{cmd:(}{it:marking_option}{cmd:)}
+    {cmdab:lev:els}{cmd:(}{it:three_levels}{cmd:)}  
+    {cmdab:marktbl}
+    {cmdab:pre:cision}{cmd:(}{it:real_number}{cmd:)}
+    {cmdab:dig:its}{cmd:(}{it:integer_number}{cmd:)}
+    {cmdab:fle:xible}{cmd:(}{it:integer_number}{cmd:)}
+    {cmdab:fan:cy}
+    {cmdab:hori:zontal}
+    {cmdab:cut}
+    {cmdab:lab:el}
+    {cmdab:collab:els}{cmd:(}{it:list_of_column_names}{cmd:)}
+    {cmdab:ex:tracols}{cmd:(}{it:list_of_column_numbers}{cmd:)}
+    {cmdab:dot:s}
+    {cmdab:suppress}
+    {cmdab:plain}{cmd:(}{it:separator_type}{cmd:)}
+    {cmdab:ready}
+    {cmdab:leadzero}
+    {cmdab:thousep}
+]
+
+{p 8 15}{cmdab:est2rowlbl} 
+{it:varlist} 
+[{cmd:,}
+    {cmdab:replace}
+    {cmdab:dropall}
+    {cmdab:s:aving}
+    {cmdab:add:to}{cmd:(}{it:table}{cmd:)}
+    {cmdab:p:ath}{cmd:(}{it:pathname}{cmd:)}
+]
+
+{p 8 15}{cmdab:est2one} 
+{it:table} 
+[{cmd:,}
+    {cmdab:multse}{cmd:(}{it:list_of_integers}{cmd:)}
+    {cmdab:hori:zontal}
+    {cmdab:cut}
+]
+
+
+{title:Description}
+
+{p}The package {cmd:est2tex} creates a LaTeX table from estimation 
+results in two stages. The package allows editing within Stata and 
+creates an output file {it:table.tex} that can be read into any 
+LaTeX document with \input{table.tex}.
+
+{p}First, the command {cmd:est2vec} collects estimation results. 
+For this purpose, est2vec uses auxiliary matrices: {it:table_b}, 
+{it:table_se} and {it:table_e} (and possibly {it:table_r}). 
+Applying est2vec after each estimation command, estimation results 
+can be added to the table in a step-by-step manner. 
+
+{p}Second, the command {cmd:est2tex} transforms the so-created 
+matrices into a LaTeX table and saves the result to disk. The 
+output file {it:table.tex} can be read directly into a LaTeX 
+document with the TeX command \input{table.tex}. Under the option 
+plain(), est2tex saves the same information in a plain ascii file 
+that can be included in any type-setting software.
+
+{p}The command {cmd:est2rowlbl} can be used prior to {cmd:est2tex} 
+to save a file {it:table_rowlbl.dta} with variable labels. Then 
+{cmd:est2tex} reports the variable labels in the rows of the LaTeX 
+table, rather than variable names.
+
+{p}The command {cmd:est2one} creates a master matrix {it:table_tbl} 
+from the auxiliary matrices {it:table_b}, {it:table_se} and 
+{it:table_e} (and possibly {it:table_r}).
+
+{p}A simple example below explains the main steps. 
+
+{p}The package {net "describe http://econ.ucsd.edu/~muendler/download/stata/matsave":matsave} 
+must be installed for {cmd:est2tex} to work.
+
+
+{title:Options for {cmd:est2vec}}
+
+{p 0 4}{cmd:replace} permits est2vec to overwrite the matrices 
+{it:table_b}, {it:table_se}, {it:table_e} and {it:table_r} in 
+memory. replace may not be abbreviated.
+
+{p 0 4}{cmd:vars(}{it:list_of_regressors}{cmd:)} Option 
+{cmd:vars(}{it:list_of_regressors}{cmd:)} specifies that 
+{it:list_of_regressors} be included in the auxiliary matrices 
+{it:table_b} (coefficients) and {it:table_se} (according standard 
+errors). If {it:list_of_regressors} contains variables that have 
+not been regressors in the estimation, the according entries are 
+set to -999 (missing for Stata versions prior to 8) in {it:table_b} 
+and {it:table_se}. They will result in blanks (or dots under the 
+option dots) in the final LaTeX table. If _cons is not in 
+{it:list_of_regressors}, {it:table_b} and {it:table_se} will not 
+include an estimate for the constant. In multiple equation 
+regressions (commands such as reg3 or mlogit), option 
+{cmd:vars(}{it:list_of_regressors}{cmd:)} recognizes regressors 
+with colons ({it:equation_name:variable}). If {cmd:vars(}{it:list_of_regressors}{cmd:)} 
+is not specified, est2vec includes all regressors from the most 
+recent estimation in {it:table_b} and {it:table_se}. 
+
+{p 0 4}{cmd:shvars(}{it:varlist}{cmd:)} can be a short-hand 
+alternative to option {cmd:vars()}. {cmd:shvars(}{it:varlist}{cmd:)} 
+specifies that {it:varlist} be included in {it:table_b} and 
+{it:table_se}. Wildcards and dashes may be used in {it:varlist}. 
+However, variables that are not in the current data will be ignored. 
+Moreover, {cmd:shvars(}{it:varlist}{cmd:)} {it:does not} allow for 
+regressors in multiple equation regressions (commands such as reg3 
+or mlogit); for those cases option {cmd:vars()} must be used. The 
+estimate for the constant is always reported (_cons cannot be in 
+{it:varlist}). If {it:varlist} contains variables that have not 
+been regressors in the estimation, the according entries are set 
+to -999 (missing for Stata versions prior to 8) in {it:table_b} and
+ {it:table_se}. They will result in blanks (or dots under the 
+ option dots) in the final LaTeX table. Option {cmd:vars()} 
+ overrides {cmd:shvars(}{it:varlist}{cmd:)}.
+
+{p 0 4}{cmd:e(}{it:list_of_macro_names}{cmd:)} specifies which e() 
+macros beyond e(N) are included in {it:table_e}. If {it:list_of_macro_names} 
+contains macros that have not been assigned during the estimation 
+or if it refers to non-scalars, the according entries are set to 
+-999 (missing for Stata versions prior to 8) in {it:table_e}. They 
+will result in blanks (or dots under the option dots) in the final 
+LaTeX table. Information in {it:table_e} will be reported below the 
+coefficient estimates in the final LaTeX table.
+
+{p 0 4}{cmd:r(}{it:list_of_macro_names}{cmd:)} If this option is 
+specified, est2vec exclusively assembles r() macros related to the 
+estimation, such as test results. For this purpose, est2vec creates 
+the auxiliary matrix {it:table_r}. If {it:list_of_macro_names} 
+contains names that have not been assigned to r() macros, the 
+according entries are set to -999 (missing for Stata versions prior 
+to 8) in {it:table_r}. They will result in blanks (or dots under the 
+option dots) in the final LaTeX table. Information in {it:table_r} 
+will be reported below the e() entries in the final LaTeX table.
+
+{p 0 4}{cmd:addto(}{it:oldtable}{cmd:)} augments the matrices {it:oldtable_b}, 
+{it:oldtable_se} and {it:oldtable_e} by a column that contains the 
+results of the latest estimation. The matrices {it:oldtable_b}, 
+{it:oldtable_se} and {it:oldtable_e} must have been created 
+previously with est2vec. If the latest estimation contains 
+coefficients that are not part of {it:oldtable}, those estimates 
+will not be included. See option {cmd:vars()}. 
+
+{p 0 4}{cmd:raddto(}{it:oldtable}{cmd:)} augments the matrix {it:oldtable_r} 
+by a column that contains the current values of the according r() 
+macros. The matrix {it:oldtable_r} must have been created 
+previously with est2vec. The procedure only applies to r() 
+macros that are also part of {it:oldtable_r}.
+
+{p 0 4}{cmd:name(}{it:estimation_name}{cmd:)} names the newly added 
+column in {it:table} with {it:estimation_name}. By default, the 
+column name of a newly added column is the dependent variable in the 
+latest estimation. However, for the command {cmd:est2tex} to work, 
+column names must be unique. The option 
+{cmd:name(}{it:estimation_name}{cmd:)} helps avoid duplicate column 
+names. When invoking the command {cmd:est2tex} later, the option 
+collabels() will allow to change the column names for the final 
+table.
+
+{p 0 4}{cmd:force} can only be specified together with {cmd:addto()} 
+or {cmd:raddto()}. Under the options {cmd:addto(}{it:oldtable}{cmd:)} 
+or {cmd:raddto(}{it:oldtable}{cmd:)}, est2vec adds estimates to 
+{it:oldtable} only for those coefficients that are part of 
+{it:oldtable}. Estimates for additional coefficients (macros) are 
+ignored. The option {cmd:force} forces est2vec to add coefficient 
+estimates (macros) to {it:oldtable} row by row, irrespective of 
+whether they match or not. The added column must be conformable to 
+the existing matrices {it:oldtable_b}, {it:oldtable_se} and 
+{it:oldtable_e} (or {it:oldtable_r} if specified).
+
+{p 0 4}{cmd:nokeep} can only be specified together with 
+{cmd:addto(}{it:oldtable}{cmd:)} or {cmd:raddto(}{it:oldtable}{cmd:)}. 
+The newly created vectors {it:table_b}, {it:table_se} and {it:table_e} 
+(or {it:table_r} if specified) are dropped once the columns have 
+been added to {it:oldtable}.
+
+
+{title:Options for {cmd:est2tex}}
+
+{p 0 4}{cmd:replace} permits est2tex to overwrite the output files 
+{it:table.tex} and {it:table_tbl.dta} if they exist. Unless the 
+option ready is specified, replace also overwrites an existing 
+matrix {it:table_tbl} in memory. replace may not be abbreviated.
+
+{p 0 4}{cmd:dropall} drops all variables from memory to execute 
+{cmd:est2tex}. If there are data in memory and neither dropall nor 
+preserve is specified, est2tex will result in the error "no; data 
+in memory would be lost".
+
+{p 0 4}{cmd:preserve} preserves the current dataset in memory 
+before dropping all variables from memory. If there are data in 
+memory and neither dropall nor preserve is specified, est2tex will 
+result in the error "no; data in memory would be lost".
+
+{p 0 4}{cmd:path(}{it:pathname}{cmd:)} supplies the path where 
+est2tex saves {it:table.tex} and {it:table_tbl.dta}. {it:pathname} 
+needs to be a valid string. If {cmd:path()} is not specified, then 
+est2tex saves in the current Stata working directory.
+
+{p 0 4}{cmd:multse(}{it:list_of_integers}{cmd:)} includes a number 
+of different standard errors below every coefficient estimate in 
+the LaTeX table. For this purpose, according auxiliary matrices 
+must be created first and named {it:table_se1}, {it:table_se2}, ... . 
+The option {cmd:multse(}1 3 2{cmd:)}, for instance, inserts 
+standard errors from matrices {it:table_se1}, {it:table_se3} and 
+{it:table_se2} in that order in the LaTeX table. When multse() is 
+specified, then the option mark() must be followed by the number 
+of the standard error table on which the marking should be based. 
+Example: mark(it 2). {cmd:multse()} expects matrices between se1 
+and se9.
+
+{p 0 4}{cmd:mark(}{it:marking_option}{cmd:)} marks estimates 
+according to their significance. When {cmd:mark(}stars{cmd:)} is 
+specified, est2tex adds stars to the standard errors. Up to three 
+levels of stars can be assigned with the levels() option (see below). 
+When {cmd:mark(}starb{cmd:)} is specified, est2tex adds stars to the 
+coefficient estimates. When {cmd:mark(}it{cmd:)} is specified, then 
+est2tex sets a coefficient estimate in italics if it fails to be 
+significant at the standard significance level (global macro 
+S_level, see levels() option below). Estimators are assumed to be 
+normally distributed. 
+
+{p 0 4}{cmd:levels(}{it:three_levels}{cmd:)} changes significance 
+levels for the mark() option. Default levels are based on the global 
+Stata macro S_level. With S_level taking the standard value of 95, 
+the default {it:three_levels} are "95 99 99.9" (for S_level 90, 
+they are "90 95 99"; for 99 they are "99 99.9 99.99"). The default 
+setting "95 99 99.9" has the following consequences. When {cmd:mark(}it{cmd:)} 
+is specified, estimates are set in italics below the 95% significance 
+level. When {cmd:mark(}stars{cmd:)} or {cmd:mark(}starb{cmd:)} is 
+specified, estimates receive one star if they are significant at 
+the 95% significance level, two stars at the 99% significance level 
+and three stars at the 99.9% level. With levels(95 99 99) specified, 
+no estimate would receive three stars. With levels(95 95 95), 
+estimates would only receive one or no star. With levels(90 95 95), 
+the {cmd:mark(}it{cmd:)} option results in italics below the 90% 
+level and the {cmd:mark(}stars{cmd:)} or {cmd:mark(}starb{cmd:)} 
+option in one star at the 90% level or above and in two stars at 
+the 95% level or above. In general, the {cmd:mark(}it{cmd:)} option 
+obeys the lowest of the {it:three_levels}. The {cmd:mark(}stars{cmd:)} 
+or {cmd:mark(}starb{cmd:)} option obeys all {it:three_levels} as 
+long as a level strictly exceeds the preceding level. Estimators 
+are assumed to be normally distributed. 
+
+{p 0 4}{cmd:marktbl} keeps an auxiliary matrix {it:t_stars} in 
+memory. This matrix contains the information on significant and 
+insignificant estimates. 
+
+{p 0 4}{cmd:precision(}{it:real_number}{cmd:)}. est2tex rounds 
+figures in the LaTeX table so that they resemble the real number 
+specified in {cmd:precision(}{it:real_number}{cmd:)}. The option 
+{cmd:precision(}.001{cmd:)}, for instance, rounds all figures to 
+three digits. {cmd:precision(}{cmd:)} cannot be specified if 
+{cmd:digits(}{cmd:)} is used. {cmd:precision(}.001{cmd:)} and 
+{cmd:digits(}3{cmd:)} are equivalent. The default for {cmd:precision(}{cmd:)} 
+is .001.
+
+{p 0 4}{cmd:digits(}{it:integer_number}{cmd:)}. est2tex rounds 
+figures in the LaTeX table to the number of digits specified in 
+{cmd:digits()}. {cmd:digits(}{cmd:)} cannot be specified if {cmd:precision(}{cmd:)} 
+is used. {cmd:digits(}3{cmd:)} and {cmd:precision(}.001{cmd:)} are 
+equivalent. The default for {cmd:digits(}{cmd:)} is 3.
+
+{p 0 4}{cmd:flexible(}{it:integer_number}{cmd:)} permits that 
+figures exceed the number of specified digits. It only applies to 
+figures that would otherwise be reported as zero. Under the option 
+{cmd:flexible(}2{cmd:)}, for instance, the figure .00005 is 
+reported as such even though rounding under the default option 
+{cmd:digits(}3{cmd:)} would create a zero. The default for 
+{cmd:flexible(}{cmd:)} is 2.
+
+{p 0 4}{cmd:fancy} results in a LaTeX table with additional 
+features such as horizontal lines like in journal publications and 
+additional intercolumn spacing to fill a predefined table width. 
+This option is recommended if the table is to be embedded in a 
+\begin{table} \end{table} environment in LaTeX. Otherwise, overfull 
+or underfull boxes may result in LaTeX.
+
+{p 0 4}{cmd:horizontal} transposes the final table. The estimation 
+results are reported in rows and the coefficient estimates are 
+listed in columns. The option {cmd:cut} is automatically activated 
+when horizontal is chosen.
+
+{p 0 4}{cmd:cut} suppresses both the e() and r() macro output in 
+the final table. 
+
+{p 0 4}{cmd:label} writes variable labels instead of variable 
+names into the final table {it:table.tex}. If a variable is no 
+longer in memory or if no label is set, the simple name is used. 
+label is ignored under the options horizontal and ready. If the 
+option {cmd:fancy} is simultaneously specified, common estimation 
+or result macros such as e(N) or r(F) are reported with their 
+according long names. If a row label file with the name {it:table_rowlbl.dta} 
+exists in {cmd:path(}{it:pathname}{cmd:)}, then the saved labels 
+override the {cmd:label} option. See the command {cmd:est2rowlbl} 
+below.
+
+{p 0 4}{cmd:collabels(}{it:list_of_column_names}{cmd:)} allows to 
+rename the column names in the final table {it:table.tex}. Blanks 
+must separate the column names in {it:list_of_column_names} from 
+each other. The LaTeX symbol ~ can be used to obtain spacing within 
+an individual column name. collabels() is ignored under the options 
+horizontal and plain.
+
+{p 0 4}{cmd:extracols(}{it:list_of_column_numbers}{cmd:)} adds 
+empty columns to a LaTeX table. The option {cmd:extracols(}1 3 5{cmd:)}, 
+for instance, adds empty columns to the LaTeX table behind columns 
+1, 3 and 5.
+
+{p 0 4}{cmd:dots} reports a dot instead of a blank for missing 
+values. 
+
+{p 0 4}{cmd:suppress} removes the standard errors from the LaTeX 
+table. suppress may not be abbreviated.
+
+{p 0 4}{cmd:plain(}{it:separator_type}{cmd:)} produces an ascii 
+file instead of a LaTeX table. plain(tab) saves a tabulator 
+separated file {it:table.txt}, and plain(csv) a comma separated 
+file {it:table.csv}. Some options producing specific LaTeX code 
+are not active when plain is chosen.
+
+{p 0 4}{cmd:ready} produces a LaTeX table from an existing matrix 
+{it:table_tbl} in Stata memory. The matrix {it:table_tbl} can be 
+created using {cmd:est2one}. When applying {cmd:ready}, the option 
+{cmd:horizontal} should be used only once, either with {cmd:est2one} 
+or with est2tex. ready may not be abbreviated. When the mark() 
+option is specified together with ready, est2tex expects coefficient 
+estimates and standard errors to alternate row by row in the ready 
+matrix {it:table_tbl}.
+ 
+{p 0 4}{cmd:leadzero} adds leading zeros to coefficient estimates, 
+standard errors, and e() and r() numbers in the LaTeX table. The 
+option leadzero requires the option fancy.
+
+{p 0 4}{cmd:thousep} inserts commas for thousands into coefficient 
+estimates and standard errors in the LaTeX table. The option 
+thousep requires the option fancy.
+
+
+{title:Options for {cmd:est2rowlbl}}
+
+{p 0 4}{cmd:replace} permits est2rowlbl to overwrite an existing 
+row label file {it:table}_rowlbl.dta in {cmd:path(}{it:pathname}{cmd:)}. 
+replace may not be abbreviated.
+
+{p 0 4}{cmd:dropall} permits est2rowlbl to drop all variables from 
+memory to save the file {it:table}_rowlbl.dta. If neither dropall 
+nor saving is specified, est2rowlbl will result in the error "no; 
+data in memory would be lost".
+
+{p 0 4}{cmd:saving} forces est2rowlbl to save the data that are 
+presently in memory and to restore the data upon completion. 
+Setting saving does not affect a preceding {cmd:preserve} command. 
+If neither dropall nor saving is specified, est2rowlbl will result 
+in the error "no; data in memory would be lost".
+
+{p 0 4}{cmd:addto(}{it:oldtable}{cmd:)} specifies the table for 
+which row labels are to be saved. The row label file receives the 
+name {it:table}_rowlbl.dta in {cmd:path(}{it:pathname}{cmd:)}.
+
+{p 0 4}{cmd:path(}{it:pathname}{cmd:)} supplies the path where 
+est2rowlbl saves {it:table}_rowlbl.dta. {it:pathname} needs to be a 
+valid string. {it:pathname} needs to be a valid string. If 
+{cmd:path()} is not specified, then est2rowlbl saves in the current 
+Stata working directory.
+
+
+{title:Options for {cmd:est2one}}
+
+{p 0 4}{cmd:multse(}{it:list_of_integers}{cmd:)} includes a number 
+of different standard errors below every coefficient estimate in 
+the final matrix {it:table_tbl}. For this purpose, according 
+auxiliary matrices must be created first and named {it:table_se1}, 
+{it:table_se2}, ... . The option {cmd:multse(}1 3 2{cmd:)}, for 
+instance, inserts standard errors from matrices {it:table_se1}, 
+{it:table_se3} and {it:table_se2} in that order in the LaTeX table. 
+{cmd:multse()} expects matrices between se1 and se9.
+
+{p 0 4}{cmd:horizontal} transposes the final table {it:table_tbl}. 
+The estimation results are reported in rows and the coefficient 
+estimates are listed in columns. The option {cmd:cut} is automatically 
+activated when horizontal is chosen. If horizontal is specified with 
+est2one, it should not be specified with est2tex under the option 
+ready.
+
+{p 0 4}{cmd:cut} suppresses both the e() and r() macro output in 
+the final table {it:table_tbl}. 
+
+
+{title:Example}
+
+{p}We want to create a LaTeX table with regression results from 
+ordinary least squares as in the Stata handbook (see {cmd:regress}). 
+We have data on the mileage rating and weight of 74 automobiles. We 
+wish to estimate mileage as a linear function of weight, squared 
+weight and an indicator variable for foreign brands.
+
+{p 8 12}{inp:. generate weightsq = weight^2}{p_end}
+{p 8 12}{inp:. regress mpg weight weightsq foreign}{p_end}
+
+              Source |       SS       df       MS              Number of obs =      74
+        -------------+------------------------------           F(  3,    70) =   52.25
+               Model |  1689.15372     3   563.05124           Prob > F      =  0.0000
+            Residual |   754.30574    70  10.7757963           R-squared     =  0.6913
+        -------------+------------------------------           Adj R-squared =  0.6781
+               Total |  2443.45946    73  33.4720474           Root MSE      =  3.2827
+        
+        ------------------------------------------------------------------------------
+                 mpg |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+        -------------+----------------------------------------------------------------
+              weight |  -.0165729   .0039692    -4.18   0.000    -.0244892   -.0086567
+            weightsq |   1.59e-06   6.25e-07     2.55   0.013     3.45e-07    2.84e-06
+             foreign |    -2.2035   1.059246    -2.08   0.041      -4.3161   -.0909002
+               _cons |   56.53884   6.197383     9.12   0.000     44.17855    68.89913
+        ------------------------------------------------------------------------------
+
+{p}We can collect information from this first regression with
+
+{p 8 12}{inp:. est2vec table, e(r2 F) vars(weight weightsq length domestic foreign _cons)}{p_end}
+
+{p}This command creates three auxiliary matrices {it:table_b}, 
+{it:table_se} and {it:table_e}. 
+
+{p 8 12}{inp:. matrix dir}{p_end}
+              table_e[3,1]
+             table_se[6,1]
+              table_b[6,1]
+
+{p}Take a look at {it:table_b}, for instance.
+
+{p 8 12}{inp:. matrix list table_b}{p_end}
+
+        table_b[6,1]
+                         mpg
+          weight  -.01657294
+        weightsq   1.591e-06
+          length        -999
+        domestic        -999
+         foreign  -2.2035002
+           _cons   56.538839
+
+{p} The auxiliary matrix {it:table_e} stores additional regression 
+information from saved result macros:
+
+{p 8 12}{inp:. matrix list table_e}{p_end}
+
+        table_e[3,1]
+                     mpg
+         e(N)         74
+        e(r2)  .69129599
+         e(F)  52.251474
+
+{p} The command est2vec always stores the number of observations N 
+in {it:table_e}. It takes this information from the saved result 
+macro e(N). The option {cmd:e(}r2 F{cmd:)} adds {it:R}-squared and 
+the {it:F} statistic from the macros e(r2) and e(F). 
+
+{p}Since the variables length and domestic were not included in the 
+regression, their coefficient estimates are reported as missing in 
+{it:table_b} with the entry -999. The option 
+{cmd:vars(}weight weightsq length domestic foreign _cons{cmd:)} 
+makes sure that est2vec includes the variables length and domestic, 
+beyond those in the regression. (The option vars() can also be used 
+to exclude variables that are not to be reported.) If {cmd:vars()} 
+is not specified, est2vec chooses all variables from the most 
+recent regression. 
+
+{p}No wildcards or dashes may be used in option {cmd:vars()}. In 
+certain cases, the option {cmd:shvars()} can be a short-hand 
+alternative to {cmd:vars()}. Here, we could have specified 
+{cmd:vars(}weight* length foreign{cmd:)}. The constant _cons would 
+be included automatically. However, {cmd:shvars()} only works for 
+existing variables. So, {cmd:vars(}weight weightsq length domestic 
+foreign{cmd:)} would result in an error message until we generate 
+the variable domestic.
+
+{p}An additional regression (also in the Stata handbook) includes 
+the variables length and domestic.
+
+{p 8 12}{inp:. gen byte domestic=~foreign}{p_end}
+{p 8 12}{inp:. reg weight length domestic, hascons}{p_end}
+{p 8 12}({it:output suppressed}){p_end}
+
+{p}We can collect information from this regression with 
+
+{p 8 12}{inp:. est2vec table, addto(table)}{p_end}
+
+{p}Under the option addto(), est2vec adds results from the present 
+regression to the previously collected matrices. Check:
+
+{p 8 12}{inp:. matrix list table_b}{p_end}
+
+        table_b[6,2]
+                         mpg      weight
+          weight  -.01657294        -999
+        weightsq   1.591e-06        -999
+          length        -999   31.444552
+        domestic        -999    133.6775
+         foreign  -2.2035002        -999
+           _cons   56.538839  -2983.9272
+
+{p}Stata sets missing values to zero in its result macros. Therefore, 
+the estimate on _cons is zero under the hascons option and so is the 
+standard error. Later, est2tex will produce a LaTeX table that sets 
+both coefficients with -999 estimates and coefficients with zero 
+standard errors to missing.
+
+{p}To create a LaTeX table from the assembled matrices, the command 
+{cmd:est2tex} produces an auxiliary dataset in memory and then 
+outputs the information to the file {it:table.tex}. So, the command 
+{cmd:est2tex} needs an empty memory. If the present data are not 
+removed from memory before, est2tex results in the error message 
+"no; data in memory would be lost." Before applying {cmd:est2tex}, 
+we could manually remove the current data from memory with the 
+command drop _all. Alternatively, we can specify the option 
+{cmd:dropall} to drop all variables from memory when {cmd:est2tex} 
+is invoked. 
+
+{p}We can also use the option {cmd:preserve} to preserve the 
+present dataset in memory ({browse "mailto:mark_holmes@unc.edu":Mark Holmes} 
+contributed the code for this option). {cmd:est2tex} still drops 
+all variables. However, the data are automatically restored once 
+{cmd:est2tex} has done its job (or after it encounters an error).
+
+{p}The command
+
+{p 8 12}{inp:. est2tex table, preserve path(../texdocs) mark(stars) fancy}{p_end}
+
+{p}creates a LaTeX table. It saves the files {it:table.tex} and 
+{it:table_tbl.dta} in the directory "../texdocs/". If the Stata 
+working directory is "c:\data\", for instance, the files will be 
+saved in "c:\texdocs\". Upon completion, the data in memory is 
+restored. 
+
+{p}The option mark(stars) adds one star (two stars, three stars) to 
+the standard error when a coefficient estimate is significant at the 
+95% (99%, 99.9%) level. The option fancy creates separating lines 
+and adds spaces between columns to fit the predetermined table 
+width in LaTeX. 
+
+{p}Suppose we did not specify the option preserve with {cmd:est2tex}. 
+Then a glance at the resulting dataset in memory shows what 
+information goes into the LaTeX table.
+
+{p 8 12}{inp:. preserve}{p_end}
+{p 8 12}{inp:. est2tex table, replace dropall path(../texdocs) mark(stars) fancy}{p_end}
+{p 8 12}{inp:. list}{p_end}
+
+              _rowname        mpg     weight
+          1.    weight  -.0165729       -999
+          2.       _se   .0039692       -999
+          3.  weightsq   1.59e-06       -999
+          4.       _se   6.25e-07       -999
+          5.    length       -999   31.44455
+          6.       _se       -999   1.601234
+          7.  domestic       -999   133.6775
+          8.       _se       -999   77.47614
+          9.   foreign    -2.2035       -999
+         10.       _se   1.059246       -999
+         11.     _cons   56.53884  -2983.927
+         12.       _se   6.197383   275.1041
+         13.      e(N)         74         74
+         14.     e(r2)    .691296   .8991605
+         15.      e(F)   52.25147   316.5447
+
+{p 8 12}{inp:. restore}{p_end}
+
+{p} The resulting LaTeX code in the final file {it:table.tex} is 
+somewhat less transparent.
+
+         \begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}lcc}     
+             & \multicolumn{1}{c}{mpg} & \multicolumn{1}{c}{weight} \\
+         \cline{2-3}     
+             & \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} \\
+         \hline      
+         weight &    -.016 & \\
+         &   \raisebox{.7ex}[0pt]{\scriptsize (.004)$^{***}$} &  \\
+         weightsq &  1.59e-06 &  \\
+         &   \raisebox{.7ex}[0pt]{\scriptsize (6.25e-07)$^{*}$} &    \\
+         length &    &   31.445 \\
+         &   &   \raisebox{.7ex}[0pt]{\scriptsize (1.601)$^{***}$} \\
+         domestic &  &   133.678 \\
+         &   &   \raisebox{.7ex}[0pt]{\scriptsize (77.476)} \\
+         foreign &   -2.203 &    \\
+         &   \raisebox{.7ex}[0pt]{\scriptsize (1.059)$^{*}$} &   \\
+         cons &  56.539 &    -2983.926 \\
+         &   \raisebox{.7ex}[0pt]{\scriptsize (6.197)$^{***}$} & 
+             \raisebox{.7ex}[0pt]{\scriptsize (275.104)$^{***}$} \\
+         e(N) &  74 &    74 \\
+         e(r2) & .691 &  .899 \\
+         e(F) &  52.251 &    316.545 \\
+         \hline\hline        
+         \end{tabular*}%     
+
+{p}The resulting LaTeX document, however, should be quite agreeable. 
+The file {it:table.tex} can be inserted into any LaTeX document 
+with the command sequence \begin{table} \input{table.tex} \end{table}. 
+
+{p}The following LaTeX code produces a sample document.
+
+         \documentclass[12pt]{article}
+         \begin{document}
+         \title{Stata: \emph{est2tex}}%
+         \author{\Large Help File Example}%
+         \maketitle
+         \thispagestyle{empty}
+         \bigskip
+         \noindent This is the resulting table.
+         
+         \begin{table}[h]
+         \input{table.tex}
+         \end{table}
+         
+         \end{document}
+
+{p}If we wanted to include Stata's variable labels rather than the 
+variable names in the LaTeX table, we could specify the option 
+{cmd:label} ({browse "mailto:mark_holmes@unc.edu":Mark Holmes} 
+contributed code for this option). Similarly, if we wanted 
+{cmd:est2tex} to override the column names from {cmd:est2vec}, we 
+could specify replacements using the option {cmd:collabels()}. Both 
+{cmd:label} and {cmd:collabels()} permit the inclusion of LaTeX 
+code in the file {it:table.tex}. The option collabels() expects 
+blanks to separate the individual column names from each other. So, 
+for collabels() to assign labels properly, the LaTeX code must be 
+written without any blanks (using the symbol ~ for spacing).
+
+{p 8 12}{inp:. label var weight "Weight ({\it lbs.})"}{p_end}
+{p 8 12}{inp:. label var weightsq "Squared weight ({\it lbs.}$^2$)"}{p_end}
+{p 8 12}{inp:. label var length "Length ({\it in.})"}{p_end}
+{p 8 12}{inp:. est2tex table, replace preserve path(../texdocs) mark(stars) levels(95 99 99) fancy lab collab("Mileage~$\left(\frac{miles}{gallon}\right)$ Weight~(\emph{lbs.})")}{p_end}
+
+{p}The option levels(95 99 99) in the last command makes sure that 
+only two levels of significance are used to mark the estimates with 
+(zero, one or two) stars (but not with three stars).
+
+{title:General Remarks}
+
+{p}When invoked after any estimation command, {cmd:est2vec} creates 
+three auxiliary vectors in memory: {it:table_b}, {it:table_se} and 
+{it:table_e}. The vector {it:table_b} contains all coefficient 
+estimates from the most recent estimation. The vector {it:table_se} 
+lists the according standard errors. The vector {it:table_e} 
+contains additional information about the estimation. 
+
+{p}By default, {it:table_e} has one row named {it:e(N)} and lists 
+the number of observations. Additional results saved as e() scalars 
+can be included in {it:table_e} by specifying the according 
+{cmd:e(}{it:list_of_macro_names}{cmd:)} option. est2vec can store 
+results from r() macros in a fourth vector {it:table_r} with option 
+{cmd:r(}{it:list_of_macro_names}{cmd:)}. This can be useful for 
+reporting test results. Under the r() option, est2vec only forms 
+the vector{it:table_r}.
+
+{p}Generally, tables contain results from more than one 
+estimation. The command {cmd:est2vec} allows to build up tables 
+gradually. After executing any additional estimation, {cmd:est2vec} 
+adds the latest estimates to the existing {it:table} with the 
+option {cmd:addto(}{it:table}{cmd:)}. Repeating this procedure, the 
+vectors {it:table_b}, {it:table_se} and {it:table_e} (and {it:table_r} 
+if specified) become matrices and the desired final LaTeX table can 
+be assembled step by step. The column name in {it:table_b}, {it:table_se} 
+and {it:table_e} (and {it:table_r} if specified) is the name of the 
+dependent variable in the most recent estimation unless option 
+{cmd:name()} specifies otherwise.
+
+{p}The command {cmd:est2tex} combines the information in the 
+matrices {it:table_b}, {it:table_se} and {it:table_e} (and 
+{it:table_r} if it exists) to one LaTeX table and saves the results 
+in a file {it:table.tex}. Any LaTeX document can include that file 
+directly with the TeX command \input{table.tex}. Various options 
+control the style of the LaTeX table in {it:table.tex}. Apart from 
+the file {it:table.tex}, est2tex creates an according table 
+{it:table_tbl} as Stata matrix in memory and saves it to disk in 
+{it:table_tbl.dta}. This table can be loaded later with the command 
+matload (see package {net "describe http://econ.ucsd.edu/~muendler/download/stata/matsave":matsave}).
+
+{p}Instead of creating LaTeX output immediately, the command 
+{cmd:est2one} combines the information from matrices {it:table_b}, 
+{it:table_se} and {it:table_e} (and {it:table_r} if it exists) to 
+one large Stata matrix {it:table_tbl}. This matrix {it:table_tbl} 
+can be edited (convenient commands for that purpose may be found in 
+packages {net "describe http://www.stata.com/stb/stb50/dm69":dm69} 
+and {net "describe http://www.stata.com/stb/stb56/dm79":dm79}; also 
+see {help matrix}). Then, the edited matrix can be saved as a LaTeX 
+table with the command {cmd:est2tex} under the option {cmd:ready}.
+
+{p}The name of {it:table} is not allowed to coincide with a 
+variable name in memory. Missing estimates are reported as -999 in 
+the Stata matrices and with blanks or dots (option dots) in the 
+LaTeX tables.
+
+
+{title:Remarks on {cmd:est2vec}}
+
+{p}The command "est2vec {it:table}, addto({it:oldtable})" creates 
+the auxiliary vectors {it:table_b}, {it:table_se} and {it:table_e}. 
+It also adds these vectors to the matrices {it:oldtable_b}, 
+{it:oldtable_se} and {it:oldtable_e}. Under the option {cmd:nokeep}, 
+the auxiliary vectors {it:table_b}, {it:table_se} and {it:table_e} 
+are dropped from memory. In the example above, a slight abuse of 
+syntax did the same: "est2vec {it:oldtable}, addto({it:oldtable})" 
+is equivalent to "est2vec {it:table}, addto({it:oldtable}) nokeep".
+
+{p}When assembling estimates from multiple equation regressions 
+(reg3 or mlogit, for instance), est2vec only adds equations that 
+have been specified initially. Consider the following regression 
+from the same automobile dataset as before. The variable rep78 can 
+take five values (1 through 5) that represent the repair record. 
+The command
+
+{p 8 12}{inp:. mlogit rep78 price mpg foreign, base(1)}{p_end}
+{p 8 12}({it:output suppressed}){p_end}
+
+{p}estimates the probability of categories 2 through 5, relative to 
+category 1, as a function of price, mpg and foreign. We can store 
+the results with
+
+{p 8 12}{inp:. est2vec table2}{p_end}
+
+{p}All estimates are identified with their according "equation name". 
+These equation names are the categories of rep78 in the case of 
+mlogit:
+
+{p 8 12}{inp:. matrix list table2_b}{p_end}
+
+        table2_b[16,1]
+                        rep78
+          2:price   .00040825
+            2:mpg  -.02318283
+        2:foreign   -18.15009
+          2:_cons  -.20046453
+          3:price    .0004733
+            3:mpg  -.00072598
+        3:foreign   19.271375
+          3:_cons   .18466295
+          4:price   .00044831
+            4:mpg   .03087516
+        4:foreign   21.364028
+          4:_cons  -1.3762754
+          5:price   .00064603
+            5:mpg   .21926142
+        5:foreign   22.223713
+          5:_cons  -8.2147995
+
+{p}If we chose category 5 as base category instead of 1, we would 
+run
+
+{p 8 12}{inp:. mlogit rep78 price mpg foreign, base(5)}{p_end}
+{p 8 12}({it:output suppressed}){p_end}
+
+{p}Adding these estimates to the preceding {it:table2} with
+
+{p 8 12}{inp:. est2vec table2, addto(table2) name(rep78_alt)}{p_end}
+
+{p}yields
+
+{p 8 12}{inp:. matrix list table2_b}{p_end}
+
+        table2_b[16,2]
+                        rep78   rep78_alt
+          2:price   .00040825  -.00023778
+            2:mpg  -.02318283  -.24244424
+        2:foreign   -18.15009  -37.373803
+          2:_cons  -.20046453    8.014335
+          3:price    .0004733  -.00017272
+            3:mpg  -.00072598  -.21998739
+        3:foreign   19.271375  -2.9523383
+          3:_cons   .18466295   8.3994624
+          4:price   .00044831  -.00019772
+            4:mpg   .03087516  -.18838626
+        4:foreign   21.364028  -.85968569
+          4:_cons  -1.3762754   6.8385241
+          5:price   .00064603           0
+            5:mpg   .21926142           0
+        5:foreign   22.223713           0
+          5:_cons  -8.2147995           0
+
+
+{p}Since equation "5" is not independently identified in the last 
+regression, the according estimates are set to missing in the 
+Stata output (check {it:table_se}). On the other hand, equation "1" 
+is left out since it was not identified before.
+
+{p}In some final tables, we may want to show the according 
+estimates. {cmd:est2vec} provides two ways to do so.
+
+{p}First, we can specify the according option {cmd:vars()} 
+initially. (The option {cmd:shvars()} is inappropriate for 
+multiple equation regressions.)
+
+{p 8 12}{inp:. mlogit rep78 price mpg foreign, base(1)}{p_end}
+{p 8 12}({it:output suppressed}){p_end}
+{p 8 12}{inp:. est2vec table3, vars(1:price 1:mpg 1:foreign 1:_cons 2:price 2:mpg 2:foreign 2:_cons 3:price 3:mpg 3:foreign 3:_cons 4:price 4:mpg 4:foreign 4:_cons 5:price 5:mpg 5:foreign 5:_cons)}{p_end}
+{p 8 12}{inp:. mlogit rep78 price mpg foreign, base(5)}{p_end}
+{p 8 12}({it:output suppressed}){p_end}
+{p 8 12}{inp:. est2vec table3, addto(table3) name(rep78_alt)}{p_end}
+{p 8 12}{inp:. matrix list table3_b}{p_end}
+
+{p}yields
+
+        table3_b[20,2]
+                        rep78   rep78_alt
+          1:price           0  -.00064603
+            1:mpg           0  -.21926142
+        1:foreign           0  -37.223714
+          1:_cons           0   8.2147995
+          2:price   .00040825  -.00023778
+            2:mpg  -.02318283  -.24244424
+        2:foreign   -18.15009  -37.373803
+          2:_cons  -.20046453    8.014335
+          3:price    .0004733  -.00017272
+            3:mpg  -.00072598  -.21998739
+        3:foreign   19.271375  -2.9523383
+          3:_cons   .18466295   8.3994624
+          4:price   .00044831  -.00019772
+            4:mpg   .03087516  -.18838626
+        4:foreign   21.364028  -.85968569
+          4:_cons  -1.3762754   6.8385241
+          5:price   .00064603           0
+            5:mpg   .21926142           0
+        5:foreign   22.223713           0
+          5:_cons  -8.2147995           0
+
+
+{p}Alternatively, we can specify the option {cmd:force} after the 
+second regression. This forces the estimates from the second 
+regression into the table irrespective of the equations and 
+variables from the first step. We need to make sure that the newly 
+added vectors conform to the previous table. This is satisfied 
+here.
+
+{p 8 12}{inp:. mlogit rep78 price mpg foreign, base(1)}{p_end}
+{p 8 12}({it:output suppressed}){p_end}
+{p 8 12}{inp:. est2vec table4}{p_end}
+{p 8 12}{inp:. mlogit rep78 price mpg foreign, base(5)}{p_end}
+{p 8 12}({it:output suppressed}){p_end}
+{p 8 12}{inp:. est2vec table4, addto(table4) name(rep78_alt) force}{p_end}
+{p 8 12}{inp:. matrix list table4_b}{p_end}
+
+        table4_b[16,2]
+                        rep78   rep78_alt
+          2:price   .00040825  -.00064603
+            2:mpg  -.02318283  -.21926142
+        2:foreign   -18.15009  -37.223714
+          2:_cons  -.20046453   8.2147995
+          3:price    .0004733  -.00023778
+            3:mpg  -.00072598  -.24244424
+        3:foreign   19.271375  -37.373803
+          3:_cons   .18466295    8.014335
+          4:price   .00044831  -.00017272
+            4:mpg   .03087516  -.21998739
+        4:foreign   21.364028  -2.9523383
+          4:_cons  -1.3762754   8.3994624
+          5:price   .00064603  -.00019772
+            5:mpg   .21926142  -.18838626
+        5:foreign   22.223713  -.85968569
+          5:_cons  -8.2147995   6.8385241
+
+{p}Much care is warranted with the force option. Most importantly, 
+the row names in the table only apply to the first but by no means 
+to the second estimation. In fact, the equation numbers underlying 
+the second column are exactly the equation numbers of the first 
+column less one.
+
+
+{title:Output to type-setting software other than LaTeX}
+
+{p}The command {net "describe http://www.stata.com/stb/stb58/sg97_2":outreg} 
+produces output files for text editors in general. It offers a 
+different and rich set of options. Sometimes, the combination of 
+two steps (est2vec and est2one) in est2tex may help create tables 
+that are hard to obtain with outreg. For such cases, est2tex offers 
+the option {cmd:plain()} and allows to produce output files similar 
+to those of outreg. 
+
+{p}Table3 above, for instance, can be saved in a plain text file 
+with
+
+{p 8 12}{inp:. est2tex table3, path(../texdocs) dropall plain(tab)}{p_end}
+
+
+{title:Author}
+
+{p}Marc-Andreas Muendler, Assistant Professor, Department of Economics, University of California, San Diego.{p_end}
+{p}URL: {browse "http://econ.ucsd.edu/~muendler/":http://econ.ucsd.edu/~muendler/}, Email: {browse "mailto:muendler@econ.ucsd.edu":muendler@econ.ucsd.edu}.{p_end}
+{p}(Code for options label and preserve courtesy of {browse "mailto:mark_holmes@unc.edu":Mark Holmes}.)
+
+{title:Also see}
+
+ Manual:  {hi:[P] matrix utility}
+{p 2 19}Stata:  help for {help matrix}, {help mkmat}, {help matrname}
+{p 0 19}On-line:  {net "describe http://www.stata.com/stb/stb50/dm69":new matrix commands}, 
+{net "describe http://www.stata.com/stb/stb56/dm79":yet more matrix commands}, 
+{net "describe http://www.stata.com/stb/stb58/sg97_2":outreg}, 
+{net "describe http://econ.ucsd.edu/~muendler/download/stata/matsave":matsave}

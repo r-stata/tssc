@@ -1,0 +1,183 @@
+/* Dialog (Version 3.0.1) by: T. J. Steichen, steichen@triad.rr.com
+
+concord       VERSION 3.0.3  6oct2004
+
+ syntax: concord vary varx [fw] [if] [in] [,
+         BY(varname) Summary LEvel(real 95) ccc[(noREF ccc_graph_options)]
+         loa[(noREF REGline loa_graph_options)] qnormd[(qnormd_graph_options}] ]
+
+
+Install in User Statistics menu via:
+  . window menu append item "stUserStatistics" "&concord (Concordance correlation coefficient)" "db concord3"
+  . window menu refresh
+To permanently install, place the commands in your -profile.do- file.
+*/
+
+VERSION 8.0
+
+INCLUDE _std_small
+INCLUDE header
+
+HELP hlp1, view("help concord")
+RESET res1
+
+DIALOG main, label("concord - Concordance correlation coefficient") tabtitle("Main")
+BEGIN
+  TEXT     tx_yvar            _lft      _top      150      .,     ///
+     label("Y Variable:")
+  VARNAME  vn_yvar            @         _ss       @        .,     ///
+     label("Y Variable")
+  TEXT     tx_xvar            180       _top      150      .,     ///
+     label("X Variable:")
+  VARNAME  vn_xvar            @         _ss       @        .,     ///
+     label("X Variable")
+
+  CHECKBOX cb_by          10  70  50 .,                           ///
+     label("By:")                                                 ///
+     onclickon(main.vn_by.enable)                                 ///
+     onclickoff(main.vn_by.disable)
+  VARNAME  vn_by          60  70  270 .,                          ///
+     label("By Variable")                                         ///
+     option("by")
+
+  CHECKBOX cb_summary     10 100  300 .,                          ///
+     label("Show Summary")                                        ///
+     option("summary")
+
+  CHECKBOX cb_level       10 130   50 .,                          ///
+     label("Level:")                                              ///
+     onclickon(main.ed_level.enable)                              ///
+     onclickoff(main.ed_level.disable)
+  EDIT     ed_level       60   @   40 .,                          ///
+     label("Level")                                               ///
+     numonly default(global S_level)                              ///
+     option("level")
+END
+
+INCLUDE ifin
+INCLUDE weights_f
+
+DIALOG graph, tabtitle("Graph")
+BEGIN
+  CHECKBOX cb_ccc       20  10  150 .,                            ///
+     label("Concordance")                                         ///
+     onclickon(script ccc_on)                                     ///
+     onclickoff(script ccc_off)                                   ///
+     option("ccc")
+  CHECKBOX cb_ccc_ref   40  30  140 .,                            ///
+     label("No CCC Reference Line")
+  CHECKBOX cb_ccc_opt   40  50   90 .,                            ///
+     label("CCC Options:")                                        ///
+     onclickon(graph.ed_ccc_opt.enable)                           ///
+     onclickoff(graph.ed_ccc_opt.disable)
+  EDIT     ed_ccc_opt  130  50  200 .,                            ///
+     label("CCC Opts")
+
+  CHECKBOX cb_loa       20  70  150 .,                            ///
+     label("Limits of Agreement")                                 ///
+     onclickon(script loa_on)                                     ///
+     onclickoff(script loa_off)                                   ///
+     option("loa")
+  CHECKBOX cb_loa_ref   40  90  140 .,                            ///
+     label("No LOA Reference Line")
+  CHECKBOX cb_loa_reg   40 110  140 .,                            ///
+     label("Regression Line")
+  CHECKBOX cb_loa_opt   40 130   90 .,                            ///
+     label("LOA Options:")                                        ///
+     onclickon(graph.ed_loa_opt.enable)                           ///
+     onclickoff(graph.ed_loa_opt.disable)
+  EDIT     ed_loa_opt  130 130  200 .,                            ///
+     label("LOA Opts")
+
+  CHECKBOX cb_qnormd    20 150  150 .,                            ///
+     label("Differences Normal plot")                             ///
+     onclickon(graph.cb_qnormd_opt.enable)                        ///
+     onclickoff(graph.cb_qnormd_opt.disable)                      ///
+     option("qnormd")
+  CHECKBOX cb_qnormd_opt   40 170   90 .,                         ///
+     label("QND Options:")                                        ///
+     onclickon(graph.ed_qnormd_opt.enable)                        ///
+     onclickoff(graph.ed_qnormd_opt.disable)
+  EDIT   ed_qnormd_opt 130 170  200 .,                            ///
+     label("QND Opts")
+END
+
+SCRIPT ccc_on
+BEGIN
+  graph.cb_ccc_ref.enable
+  graph.cb_ccc_opt.enable
+END
+
+SCRIPT ccc_off
+BEGIN
+  graph.cb_ccc_ref.disable
+  graph.cb_ccc_opt.disable
+END
+
+SCRIPT loa_on
+BEGIN
+  graph.cb_loa_ref.enable
+  graph.cb_loa_reg.enable
+  graph.cb_loa_opt.enable
+END
+
+SCRIPT loa_off
+BEGIN
+  graph.cb_loa_ref.disable
+  graph.cb_loa_reg.disable
+  graph.cb_loa_opt.disable
+END
+
+PROGRAM command
+BEGIN
+  put "concord "
+  varlist main.vn_yvar main.vn_xvar
+  INCLUDE _weights_pr
+  INCLUDE _ifin_pr
+  beginoptions
+     optionarg main.vn_by
+     option    main.cb_summary
+     optionarg main.ed_level
+     if graph.cb_ccc {
+        put "ccc"
+        if graph.cb_ccc_ref | graph.cb_ccc_opt {
+           put "("
+        }
+        if graph.cb_ccc_ref {
+           put "noref "
+        }
+        if graph.cb_ccc_opt {
+           put graph.ed_ccc_opt
+        }
+        if graph.cb_ccc_ref | graph.cb_ccc_opt {
+           put ") "
+        }
+     }
+     if graph.cb_loa {
+        put "loa"
+        if graph.cb_loa_ref | graph.cb_loa_opt | graph.cb_loa_reg {
+           put "("
+        }
+        if graph.cb_loa_ref {
+           put "noref "
+        }
+        if graph.cb_loa_reg {
+           put "regline "
+        }
+        if graph.cb_loa_opt {
+           put graph.ed_loa_opt
+        }
+        if graph.cb_loa_ref | graph.cb_loa_opt | graph.cb_loa_reg {
+           put ") "
+        }
+     }
+     if graph.cb_qnormd {
+        put "qnormd"
+        if graph.cb_qnormd_opt {
+           put "("
+           put graph.ed_qnormd_opt
+           put ") "
+        }
+     }
+  endoptions
+END

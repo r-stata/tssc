@@ -1,0 +1,91 @@
+{smcl}
+{hline}
+help for {cmd:complogit} {right:(Glenn Hoetker)}
+{hline}
+
+
+{title:Compare coefficients across logit equations}
+
+{p 8 15}{cmd:complogit} {it:varlist} , {cmdab:group}{cmd:(}{it:varname}{cmd:)} [
+  {cmdab:num:erator}{cmd:(}{it:varname}{cmd:)} {cmdab:den:ominator}{cmd:(}{it:varname}{cmd:)}
+  {cmdab:sp:ecific}{cmd:(}{it:varname}{cmd:)} ]
+
+
+{title:Description}
+
+{p}
+
+{cmd:complogit} allows for the accurate comparison of coefficients across
+groups in a logit equation by automating the calculations discussed in Hoetker (2004; 2007).  
+This help file will make little sense without reference to those articles.
+
+{p}
+
+In its basic application, it performs the requested logit equation on
+all observations, on cases where the {it: group} variable=0 and on cases 
+where it equals 1.  It then performs a logit for all observations, allowing
+residual variance to differ across groups. It then tests whether residual 
+variation differs across groups using a likelihood ratio and Wald chi-square 
+test. Lastly, it uses a likelihood ratio test to test the null hypothesis 
+that the true coefficients are the same across groups versus the alternative 
+that {it:at least one} coefficient differs.
+
+{p}
+
+Optionally, the user may request a test of test of the null hypothesis that the 
+true coefficients are the same across groups versus the alternative that 
+{it:a specific} coefficient differs. To do so, specify the desired coefficient
+in the {cmd:specific} option.  Note that this test assumes that all other
+coefficients are equal across groups.
+
+{p}
+
+Optionally, the user may request a test that the ratio of two coeffiients
+is the same across groups.  To do so, specify the desired variables in the
+{cmd:numerator} and {cmd:denominator} options.
+
+{p}
+
+{title:Options}
+
+See above
+
+
+{title:Remarks}
+
+{p}
+
+Version 8 of Stata is required.  There is minimal error checking. 
+{cmd:complogitml.ado} contains the maximum likelihood routine and is of little direct
+use.  It is based on code contained in Allison (1999). Users may also wish to see the {cmd: oglm} command
+of Richard Williams and his associated papers.
+
+{title:References}
+
+Allison, P.D. 1999. Comparing logit and probit coefficients across groups. 
+{it: SMR/Sociological Methods & Research}. 28(2): 186-208.
+
+Hoetker, G. 2004. Confounded coefficients: Accurately comparing logit 
+and probit coefficients across groups.  Working paper. 
+http://www.business.uiuc.edu/ghoetker/documents/Hoetker_comp_logit.pdf
+
+Hoetker, G. 2007. The use of logit and probit models in strategic management research: Critical issues.
+{it: Strategic Management Journal}. 28(4): 331-343. 
+
+{p}
+
+{title:Examples}
+
+{p 16 20}{inp:. complogit y x1 x2, group(type)}{p_end}
+
+{p 16 20}{inp:. complogit y x1 x2, group(type) num(x1) den(x2)}{p_end}
+
+{p 16 20}{inp:. complogit y x1 x2, group(type) sp(x1)}{p_end}
+
+
+{title:Author}
+
+{p}
+Glenn Hoetker, College of Business, University of Illinois at Urbana-Champaign
+Email: {browse "mailto:ghoetker@uiuc.edu":ghoetker@uiuc.edu}
+

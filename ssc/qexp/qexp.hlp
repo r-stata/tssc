@@ -1,0 +1,106 @@
+{smcl}
+{* 30oct2003}{...}
+{hline}
+help for {hi:qexp}
+{hline}
+
+{title:Quantile-quantile plot for data versus fitted exponential distribution}
+
+{p 8 25 2}{cmd:qexp}{space 1}{it:varname} [{cmd:if} {it:exp}]
+[{cmd:in} {it:range}] [{it:weight}] [{cmd:,} {cmdab:g:rid} 
+{cmd:param(}{it:#}{cmd:)} {cmd:show(}{it:condition}{cmd:)} 
+{cmdab:gen:erate(}{it:newvar}{cmd:)} 
+{it:graph_options} ]
+
+{p 4 4 2}
+where {it:graph_options} are
+
+{p 8 8 2}
+{cmd:rlopts(}{it:cline_options}{cmd:)}
+{cmd:plot(}{it:plot}{cmd:)}
+{it:scatter_options}
+{it:twoway_options}
+
+{p 4 4 2}{cmd:fweight}s, {cmd:aweight}s and {cmd:iweight}s 
+are allowed; see help {help weights}. 
+
+{title:Description}
+
+{p 4 4 2}
+{cmd:qexp} plots the quantiles of {it:varname} against the quantiles of a
+one-parameter exponential distribution with probability density function 
+for variable {it:x} of (1/{it:m}) exp(-{it:x}/{it:m}). The parameter {it:m}
+is by default calculated as the mean of the data specified. 
+
+
+{title:Remarks} 
+
+{p 4 4 2}In the majority of cases, {cmd:qexp} will be used to fit an
+exponential distribution on the fly and to assess that fit. In some cases, it
+may be of interest to compare data with an exponential distribution with a
+known or hypothesised mean, which may be specified using the {cmd:param()}
+option. In all cases it is important not only to specify any {cmd:if} or
+{cmd:in} restrictions, but also to specify relevant weights, which will (unless
+constant) affect the configuration of the plot. 
+
+
+{title:Options}
+
+{p 4 8 2}{cmd:grid} adds grid lines at the .05, .10, .25, .50, .75, .90, and .95
+quantiles. 
+
+{p 4 8 2}{cmd:param()} may be used to supply a parameter value (namely, the 
+mean) directly for use in estimation of fitted quantiles. 
+
+{p 4 8 2}{cmd:show()} may be used to specify 
+that you wish to restrict the graph according to some condition, say 
+looking at one tail of the distribution only. Note that {cmd:if} 
+and {cmd:in} should not be used for this purpose. 
+
+{p 4 8 2}{cmd:generate()} specifies the name of a new variable to hold values 
+of fitted exponential quantiles. 
+
+{p 4 8 2}{it:graph_options} are
+{cmd:rlopts(}{it:cline_options}{cmd:)},
+{cmd:plot(}{it:plot}{cmd:)},
+{it:scatter_options}, and
+{it:twoway_options}
+
+{p 4 8 2}
+{cmd:rlopts(}{it:cline_options}{cmd:)} affect the rendition of the reference
+line; see help {help cline_options}.
+
+{p 4 8 2}
+{cmd:plot(}{it:plot}{cmd:)} provides a way to add other plots to the generated
+graph; see help {help plot_option}.
+
+{p 4 8 2}
+{it:scatter_options} affect the rendition of the plotted points; see help
+{help scatter}.
+
+{p 4 8 2}
+{it:twoway_options} are any of the options documented in help
+{help twoway_options} excluding {cmd:by()}.  These include options for titling
+the graph (see help {help title_options}) and options for saving the graph to
+disk (see help {help saving_option}).
+
+
+{title:Examples}
+
+{p 4 8 2}{cmd:. qexp spacing}
+
+{p 4 8 2}{cmd:. qexp spacing, param(20)}
+
+{p 4 8 2}{cmd:. qexp spacing, gen(spacing_exp)} 
+
+
+{title:Author}
+
+{p 4 4 2}Nicholas J. Cox, University of Durham, U.K.{break} 
+n.j.cox@durham.ac.uk
+
+
+{title:Also see}
+
+{p 4 13 2}
+Online:  help for {help pexp} (if installed), {help graph}, {help diagplots} 

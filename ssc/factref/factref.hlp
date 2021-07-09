@@ -1,0 +1,133 @@
+{smcl}
+{hline}
+help for {cmd:factref} {right:(Roger Newson)}
+{hline}
+
+
+{title:Insert new observations with reference values for factors}
+
+{p 8 15}{cmd:factref} {it:varlist} [{cmd:if} {it:exp}] [{cmd:in} {it:range}] [ {cmd:,}
+ {cmd:by(}{it:varlist}{cmd:)} {cmdab:re:find}{cmd:(}{it:newvarname}{cmd:)}
+ {cmdab:rz:ero}{cmd:(}{it:varlist}{cmd:)} {cmdab:ru:nity}{cmd:(}{it:varlist}{cmd:)}
+ ]
+
+
+{title:Description}
+
+{p}
+{cmd:factref} is used with {help factext}, {help descsave}, {help parmby} and {help parmest}.
+It takes, as input, a data set created by {help parmby} or {help parmest}, in which factors
+have been created by {help descsave} and {help factext}. These factors are variables (numeric or string)
+representing categorical variables in the fitted model, represented by dummy variables such as those
+created by {help xi}. {cmd:factref} adds to that data set a set of additional observations
+with reference values for these factors, copied from the {cmd:omit} characteristic for each factor.
+(The {cmd:omit} characteristic is used by the {help xi} command to store the reference value
+of a categorical variable; see {hi:[R] xi}.)
+For each factor, {cmd:factref} creates one reference observation if there are non-missing values for the factor
+and there is no by-variable list, or one reference observation for each by-group where there are non-missing
+values of the factor if there is a by-variable list.
+After the reference observations have been added, the user may create a plot or table of confidence intervals
+for factor effects.
+
+
+{title:Options}
+
+{p 0 4}{cmd:by(}{it:varlist}{cmd:)} specifies a list of by-variables. {cmd:factref} will create a reference
+observation for each factor for each by-group containing non-missing values of that factor.
+
+{p 0 4}{cmd:refind(}{it:newvarname}{cmd:)} specifies an output variable indicating, in each observation,
+whether that observation is a reference observation. It contains a missing value if that observation
+is excluded by the {cmd:if} and/or {cmd:in} statements, a value of 1 if that observation is a reference observation,
+and a value of 0 otherwise.
+
+{p 0 4}{cmd:rzero(}{it:varlist}{cmd:)} specifies a list of existing variables whose values in the reference
+observations are to be set to 0 (if the variable is numeric) or "0" (if the variable is string).
+These variables might represent estimates and confidence limits for difference parameters, eg additive
+factor effects such as mean differences between factor levels.
+
+{p 0 4}{cmd:runity(}{it:varlist}{cmd:)} specifies a list of existing variables whose values in the reference
+observations are to be set to 1 (if the variable is numeric) or "1" (if the variable is string).
+These variables might represent estimates and confidence limits for ratio parameters, eg multiplicative
+factor effects such as relative risks between factor levels.
+
+
+{title:Remarks}
+
+{p}
+{cmd:factref} is typically used with {help factext}, which is used with {help parmby}, {help parmest} and
+{help descsave} to create a data set with one observation per model parameter and data on confidence intervals
+and P-values. {cmd:factref} adds, to such a data set, a set of reference observations, one for each factor,
+or one for each by-group containing at least one non-missing value of each factor if the {cmd:by()} option
+is specified. A reference observation for a factor has a value for that factor taken from the {hi:omit}
+characteristic for that factor. The other variables in a reference observation may have values reset
+to zero or one if the variable is listed in the options {cmd:rzero} or {cmd:runity},
+respectively. Otherwise, the value of any variable in a reference observation, apart from the factors and
+the by-group variables specified in the {cmd:by()} option, is set to missing.
+For {cmd:factref} to work, the {cmd:omit} characteristic for each factor must be set to the reference value
+for that factor. This can be done by specifying the {cmd:omit} characteristic for the factor of the same name
+in the original data set, and then using the {cmd:char(omit)} option with {help descsave}.
+(The {cmd:omit} characteristic is used by the {help xi} command; see {hi:[R] xi}.)
+
+
+{title:Examples}
+
+{p}
+The following example will work with the {hi:auto} data
+if {help parmest}, {help parmby}, {help descsave} and {help factext} are installed.
+A logistic regression is carried out, comparing the odds of non-US origin between
+3 tertiles of mileage, created by the {help xtile} command. The odds ratios (with confidence limits)
+are plotted against mileage tertile. Note that the characteristic {cmd:mpggp[omit]}, used optionally by {help xi},
+must be specified if {cmd:factref} is to work.
+
+{p 16 20}{inp:. xtile mpggp=mpg, nq(3)}{p_end}
+{p 16 20}{inp:. char mpggp[omit] 1}{p_end}
+{p 16 20}{inp:. tempfile tf0}{p_end}
+{p 16 20}{inp:. descsave ,char(omit) do(`"`tf0'"', replace)}{p_end}
+{p 16 20}{inp:. parmby "xi: logit foreign i.mpggp,or", label norestore eform format(estimate min* max* %8.2f p %8.1e)}{p_end}
+{p 16 20}{inp:. factext, do(`"`tf0'"')}{p_end}
+{p 16 20}{inp:. factref mpggp, ru(estimate min* max*)}{p_end}
+{p 16 20}{inp:. list}{p_end}
+{p 16 20}{inp:. version 7: graph estimate min95 max95 mpggp, s(O..) c(.II) xlab(1 2 3) ylab ylin(1)}{p_end}
+
+{p}
+The following example illustrates the {cmd:by()} option, and will work with the {hi:auto} data
+if {help parmest}, {help parmby}, {help descsave} and {help factext} are installed.
+It will add reference observations to the {help parmby} output
+data set and create a graph of confidence intervals. Note that the characteristic
+{cmd:rep78[omit]}, used optionally by {help xi}, must be specified if {cmd:factref} is to work.
+
+{p 16 20}{inp:. char rep78[omit] 1}{p_end}
+{p 16 20}{inp:. tempfile tf0}{p_end}
+{p 16 20}{inp:. descsave, char(omit) do(`"`tf0'"', replace)}{p_end}
+{p 16 20}{inp:. parmby "xi:regress mpg i.rep78", label by(foreign) norestore format(estimate min* max* %8.2f p %8.1e)}{p_end}
+{p 16 20}{inp:. factext, do(`"`tf0'"')}{p_end}
+{p 16 20}{inp:. factref rep78, by(foreign) rz(estimate stderr min* max*) refind(refcat)}{p_end}
+{p 16 20}{inp:. list}{p_end}
+{p 16 20}{inp:. version 7: graph estimate min95 max95 rep78, s(O..) c(.II) by(foreign) xlab ylab ylin(0)}{p_end}
+
+Another example of the use of {cmd:factref} can be found in Newson (2003).
+
+
+{title:Author}
+
+{p}
+Roger Newson, Imperial College London, UK.
+Email: {browse "mailto:r.newson@imperial.ac.uk":r.newson@imperial.ac.uk}
+
+
+{title:References}
+
+{p}Newson, R. 2003. Confidence intervals and {it:p}-values for delivery to the end user.
+{it:The Stata Journal} 3(3): 245-269. A pre-publication draft is downloadable from
+{net "from http://www.imperial.ac.uk/nhli/r.newson/":Roger Newson's website at http://www.imperial.ac.uk/nhli/r.newson/}
+
+
+{title:Also see}
+
+{p 0 10}
+{bind: }Manual:   {hi:[R] xi}, {hi:[R] pctile}.
+{p_end}
+{p 0 10}
+On-line:   help for {help describe}, {help tabulate}, {help xi}, {help graph}
+ {break}   help for {help parmby}, {help parmest}, {help descsave}, {help factext} and {help factmerg} if installed
+{p_end}

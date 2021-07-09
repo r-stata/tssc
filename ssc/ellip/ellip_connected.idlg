@@ -1,0 +1,228 @@
+/*
+*!  version 1.0.0  26apr2004 Anders Alexandersson
+*!  renamed from gconnected1 -- scatter and line graph options
+
+  VERSION 1.0.0  21dec2002
+
+  This idlg assumes you are using _graph.idlg include and _std_graph.idlg
+  include to set the proper lengths, widths and heights.
+  You also need _glist_def.idlg and _glist_sc.idlg included at the 
+  beginning of your dialog to initiate the lists.
+*/
+
+DIALOG co, label("") tabtitle("Connected")
+BEGIN  
+  GROUPBOX gb_marker       _lft        _top     _cwd4_g  _ht7,		/*
+  		*/label("Marker options")
+  TEXT     tx_msym         _lft4_1gi   _ss      _txwd    .,		/*
+
+  		*/label("Symbol: ") right
+  DEFINE scaty @y
+  COMBOBOX cb_msym         _txsep       @       _txr4gi  .,		/*
+  		*/label("Marker symb") option(msymbol) dropdownlist	/*
+  		*/contents(_dclst_0) value(_dvlst_0)
+  TEXT     tx_msize        _lft4_1gi    _ms     _txwd    .,		/*
+  		*/label("Size:") right
+  COMBOBOX cb_msize        _txsep       @       _txr4gi  .,		/*
+  		*/label("Marker size") option(msize) contents(_dclst_1)	/*
+  		*/value(_dvlst_1) dropdownlist
+  TEXT     tx_mcol         _lft4_1gi    _ms     _txwd    .,		/*
+  		*/label("Color:") right
+  COMBOBOX cb_mcol         _txsep       @       _tcr4gi  .,		/*
+  		*/label("Marker color") option(mcolor) dropdownlist	/*
+  		*/contents(_dclst_2) onselchangelist(co_color_mcol)	/*
+		*/value(_dvlst_2)
+  COLOR    cl_mcol         _tcr4gisep   @       _colorwd .,		/*
+  		*/label("Marker color") option(mcolor) default(255 0 0)
+  CHECKBOX ck_mlab         _lft         _xxls   _cwd4_g  _ht9h,		/*
+  		*/label("Marker labels") clickon(script co_mlab_on)	/*
+  		*/clickoff(script co_mlab_off) groupbox
+  TEXT     tx_mlab         _lft4_1gi    _ss     _txwd    .,		/*
+  		*/label("Variable: ") right
+  VARLIST  vl_mlab         _txsep       @       _txr4gi  .,		/*
+  		*/label("Marker labels variable") option(mlabel)
+  TEXT     tx_mlsiz        _lft4_1gi    _ms     _txwd    .,		/*
+  		*/label("Size:") right
+  COMBOBOX cb_mlsiz        _txsep       @       _txr4gi  .,		/*
+  		*/label("Size ") option(mlabsize) dropdownlist  	/*
+  		*/contents(_dclst_1) value(_dvlst_1)
+  TEXT     tx_mlcol        _lft4_1gi    _ms     _txwd    .,		/*
+  		*/label("Color:") right
+  COMBOBOX cb_mlcol        _txsep       @       _tcr4gi  .,		/*
+  		*/label("Marker label color") option(mlabcolor)	/*
+  		*/dropdownlist						/*
+  		*/contents(_dclst_2) onselchangelist(co_color_mlcol)	/*
+		*/value(_dvlst_2)
+  COLOR    cl_mlcol        _tcr4gisep   @       _colorwd .,		/*
+  		*/label("Marker label color") option(mlabcolor)		/*
+  		*/default(255 0 0)
+  TEXT     tx_mlpos        _lft4_1gi    _ms     _txwd    .,		/*
+  		*/label("Position:") right
+  COMBOBOX cb_mlpos        _txsep       @       _txr4gi  .,		/*
+  		*/label("Position") option(mlabposition) dropdownlist	/*
+  		*/contents(_dclst_3) value(_dvlst_3)
+  GROUPBOX gb_line        _lft4_2    _top     _cwd4_g   _ht9h,		/*
+  		*/label("Connecting Line options")
+  TEXT     tx_ccol        _lft4_2gi _ss       _txwd     .,		/*
+  		*/label("Color:") right
+DEFINE scaty @y
+  COMBOBOX cb_ccol        _txsep     @        _tcr4gi   .,		/*
+  		*/label("Line color") option(clcolor) dropdownlist	/*
+  		*/contents(_dclst_2) onselchangelist(co_color_ccol)	/*
+		*/value(_dvlst_2)
+  COLOR    cl_ccol        _tcr4gisep @        _colorwd  .,		/*
+  		*/label("Line color") option(clcolor) default(255 0 0)
+  TEXT     tx_clpat       _lft4_2gi  _ms      _txwd     .,		/*
+  		*/label("Pattern:") right
+  COMBOBOX cb_clpat       _txsep     @        _txr4gi   .,		/*
+  		*/label("Pattern") dropdownlist contents(_dclst_4) 	/*
+  		*/ option(clpat) value(_dvlst_4)
+  TEXT     tx_clwidth     _lft4_2gi  _ms      _txwd     .,		/*
+  		*/ label("Width:") right
+  COMBOBOX cb_clwidth     _txsep     @        _txr4gi   .,		/*
+  		*/label("Connect width") dropdownlist			/*
+  		*/contents(_dclst_5) value(_dvlst_5)			/*
+  		*/ option(clwidth)
+  TEXT     tx_conn        _lft4_2gi  _ms      _txwd     .,		/*
+  		*/label("Type:") right 
+  COMBOBOX cb_conn        _txsep     @        _txr4gi   .,   		/*
+  		*/label("Connect type") option(connect) 		/*
+  		*/ dropdownlist contents(_dclst_6) value(_dvlst_6)
+
+END
+
+SCRIPT gconnected1_disable
+BEGIN
+	co.gb_marker.disable
+	co.tx_msym.disable
+	co.cb_msym.disable
+	co.tx_msize.disable
+	co.cb_msize.disable
+	co.tx_mcol.disable
+	co.cb_mcol.disable
+	co.cl_mcol.disable
+	co.ck_mlab.disable
+	script co_mlab_off
+	co.gb_line.disable
+	co.tx_ccol.disable
+	co.cb_ccol.disable
+	co.cl_ccol.disable
+	co.tx_clpat.disable
+	co.cb_clpat.disable
+	co.tx_clwidth.disable
+	co.cb_clwidth.disable
+	co.tx_conn.disable
+	co.cb_conn.disable
+END
+
+SCRIPT gconnected1_enable
+BEGIN
+	program co_enable
+END
+
+PROGRAM co_enable
+BEGIN
+	call gaction co.gb_marker.enable
+	call gaction co.tx_msym.enable
+	call gaction co.cb_msym.enable
+	call gaction co.tx_msize.enable
+	call gaction co.cb_msize.enable
+	call gaction co.tx_mcol.enable
+	call gaction co.cb_mcol.enable
+	call gaction co.cl_mcol.enable
+	call gaction co.ck_mlab.enable
+	if co.ck_mlab {
+		call script co_mlab_on
+	}
+	call gaction co.gb_line.enable
+	call gaction co.tx_ccol.enable
+	call gaction co.cb_ccol.enable
+	call gaction co.cl_ccol.enable
+	call gaction co.tx_clpat.enable
+	call gaction co.cb_clpat.enable
+	call gaction co.tx_clwidth.enable
+	call gaction co.cb_clwidth.enable
+	call gaction co.tx_conn.enable
+	call gaction co.cb_conn.enable
+END
+
+SCRIPT co_mlab_on
+BEGIN
+	co.tx_mlab.enable
+	co.vl_mlab.enable
+	co.tx_mlsiz.enable
+	co.cb_mlsiz.enable
+	co.tx_mlcol.enable
+	co.cb_mlcol.enable
+	co.cl_mlcol.enable
+	co.tx_mlpos.enable
+	co.cb_mlpos.enable
+END
+
+SCRIPT co_mlab_off
+BEGIN
+	co.tx_mlab.disable
+	co.vl_mlab.disable
+	co.tx_mlsiz.disable
+	co.cb_mlsiz.disable
+	co.tx_mlcol.disable
+	co.cb_mlcol.disable
+	co.cl_mlcol.disable
+	co.tx_mlpos.disable
+	co.cb_mlpos.disable
+END
+
+SCRIPT co_color_mcol
+BEGIN
+	co.cl_mcol.hide
+	co.cl_mcol.show
+	co.cl_mcol.hide
+END
+
+SCRIPT co_color_mlcol
+BEGIN
+	co.cl_mlcol.hide
+	co.cl_mlcol.show
+	co.cl_mlcol.hide
+END
+
+
+LIST co_color_ccol
+BEGIN
+	co.cl_ccol.hide
+	co.cl_ccol.show
+	co.cl_ccol.hide
+END
+
+PROGRAM ellip_connected_output
+BEGIN
+	optionarg /hidedefault co.cb_msym
+	optionarg /hidedefault co.cb_msize
+	if H(co.cl_mcol) {
+		optionarg /hidedefault co.cb_mcol
+	}
+	if !H(co.cl_mcol) {
+		optionarg /quoted co.cl_mcol
+	}
+	if co.ck_mlab {
+		require co.vl_mlab
+		optionarg /hidedefault co.vl_mlab
+		optionarg /hidedefault co.cb_mlsiz
+		if H(co.cl_mlcol) {
+			optionarg /hidedefault co.cb_mlcol
+		}
+		if !H(co.cl_mlcol) {
+			optionarg /quoted co.cl_mlcol
+		}
+		optionarg /hidedefault co.cb_mlpos
+	}
+	if H(co.cl_ccol) {
+		optionarg /hidedefault co.cb_ccol
+	}
+	if !H(co.cl_ccol) {
+		optionarg /quoted co.cl_ccol
+	}
+	optionarg /hidedefault co.cb_clpat
+	optionarg /hidedefault co.cb_clwidth
+	optionarg /hidedefault co.cb_conn
+END

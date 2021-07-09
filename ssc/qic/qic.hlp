@@ -1,0 +1,349 @@
+{smcl}
+{* *! version 1.1.9  19 September 2008}{...}
+{cmd:help qic} 
+{right:also see:  {help xtgee }}
+{hline}
+
+{title:Title}
+
+{p2colset 5 19 21 2}{...}
+{p2col :{hi: qic} {hline 2}}QIC criterion for model selection in GEE analyses{p_end}
+{p2colreset}{...}
+
+
+{title:Syntax}
+
+{p 8 14 2}
+{cmd:qic} {depvar} [{indepvars}] {ifin} [{cmd:,} {it:options}]
+
+{synoptset 21 tabbed}{...}
+{synopthdr}
+{synoptline}
+{syntab:Model}
+{synopt :{opth "i(varname:varname_i)"}}use {it:varname_i} as the panel ID variable{p_end}
+{synopt :{opth "t(varname:varname_t)"}}use {it:varname_t} as the time variable{p_end}
+{synopt :{cmdab:f:amily(}{it:{help qic##family:family}}{cmd:)}}distribution of {depvar}{p_end}
+{synopt :{cmdab:l:ink(}{it:{help qic##link:link}}{cmd:)}}link function{p_end}
+
+{syntab:Model 2}
+{synopt :{opth e:xposure(varname)}}include ln({it:varname}) in model with coefficient constrained to 1{p_end}
+{synopt :{opth off:set(varname)}}include {it:varname} in model with coefficient constrained to 1{p_end}
+{synopt :{opt nocon:stant}}suppress constant term{p_end}
+{synopt :{opt force}}estimate even if observations unequally spaced in time{p_end}
+
+{syntab:Correlation}
+{synopt :{cmdab:c:orr(}{it:{help qic##correlation:correlation}}{cmd:)}}within-group correlation structure{p_end}
+
+{syntab:SE/Robust}
+{synopt :{opt r:obust}}synonym for {cmd:vce(robust)}{p_end}
+{synopt :{opt nmp}}use divisor N-P instead of the default N{p_end}
+{synopt :{opt rgf}}multiply the robust variance estimate by (N-1)/(N-P){p_end}
+{synopt :{cmdab:s:cale(x2)}}set scale parameter to Pearson chi-squared statistic{p_end}
+{synopt :{cmdab:s:cale(dev)}}set scale parameter to deviance divided by degrees of freedom{p_end}
+{synopt :{cmdab:s:cale(phi)}}do not rescale the variance{p_end}
+{synopt :{opt scale(#)}}set scale parameter to {it:#}{p_end}
+
+{syntab:Reporting}
+{synopt :{opt level(#)}}set confidence level; default is {cmd:level(95)}{p_end}
+{synopt :{opt ef:orm}}report exponentiated coefficients{p_end}
+
+{syntab:Opt options}
+{synopt :{it:{help qic##optimize_options:optimize_options}}}control the optimization process; seldom used{p_end}
+
+{p2coldent :{opt nodis:play}}suppress display of header and coefficients{p_end}
+
+{synoptline}
+{p2colreset}{...}
+{p 4 6 2}{it:depvar} and {it:indepvars} may contain time-series operators; see {help tsvarlist}.{p_end}
+{p 4 6 2} {opt iweight}s, {opt fweight}s, and {opt pweight}s are allowed; see
+{help weight}.  Weights must be constant within panel.{p_end}
+
+{marker family}{...}
+{synoptset 23}{...}
+{synopthdr :family}
+{synoptline}
+{synopt :{opt gau:ssian}}Gaussian (normal); {cmd:family({opt nor:mal})} is a synonym{p_end}
+{synopt :{opt ig:aussian}}inverse Gaussian{p_end}
+{synopt :{opt b:inomial}}Bernoulli/binomial (k=1){p_end}
+{synopt :{opt po:isson}}Poisson{p_end}
+{synopt :{opt nb:inomial}}negative binomial (k=1){p_end}
+{synopt :{opt gam:ma}}gamma{p_end}
+{synoptline}
+{p2colreset}{...}
+
+{marker link}{...}
+{synoptset 23}{...}
+{synopthdr :link}
+{synoptline}
+{synopt :{opt i:dentity}}identity; y=y{p_end}
+{synopt :{opt log}}log; ln(y){p_end}
+{synopt :{opt logi:t}}logit; ln{y/(1-y)}, natural log of the odds{p_end}
+{synopt :{opt p:robit}}probit; inverse Gaussian cumulative{p_end}
+{synopt :{opt cl:oglog}}cloglog; ln{-ln(1-y)}{p_end}
+{synopt :{opt pow:er}[{it:#}]}power; y^k with k=#; #=1 if not specified{p_end}
+{synopt :{opt opo:wer}[{it:#}]}odds power; [{y/(1-y)}^k - 1]/k with k=#; #=1 if not specified{p_end}
+{synopt :{opt nb:inomial}}negative binomial{p_end}
+{synopt :{opt rec:iprocal}}reciprocal; 1/y{p_end}
+{synoptline}
+{p2colreset}{...}
+
+{marker correlation}{...}
+{synoptset 23}{...}
+{synopthdr :correlation}
+{synoptline}
+{synopt :{opt exc:hangeable}}exchangeable{p_end}
+{synopt :{opt ind:ependent}}independent{p_end}
+{synopt :{opt uns:tructured}}unstructured{p_end}
+{synopt :{opt fix:ed} {it:matname}}user-specified{p_end}
+{synopt :{opt ar} {it:#}}autoregressive of order {it:#}{p_end}
+{synopt :{opt sta:tionary} {it:#}}stationary of order {it:#}{p_end}
+{synopt :{opt non:stationary} {it:#}}nonstationary of order {it:#}{p_end}
+{synoptline}
+{p2colreset}{...}
+
+
+{title:Description}
+
+{pstd}
+{cmd:qic} calculates the QIC and QIC_u criteria for model selection in GEE,
+which is an extension of the widely used AIC criterion in ordinary regression (Pan 2001). 
+It allows for specification of all 7 distributions - gaussian, inverse Gaussian, Bernoulli/binomial, 
+Poisson, negative binomial and gamma, all link functions and working correlation structures
+and all se/robust options, except for the vce option, avaiable in Stata 9.0.
+It also calculates the trace of the matrix O^{-1}V, where O is the variance estimate
+under the independent correlation structure and V is the variance estimate
+under the specified working correlation structure in GEE. When trace is close to the number
+of parametr p, the QIC_u is a good approximation to QIC.
+
+
+{title:Options}
+
+{dlgtab:Model}
+
+{phang}
+{opth "i(varname:varname_i)"}, {opth "t(varname:varname_t)"}; see 
+   {help estimation options##i():estimation options}.
+
+{pmore}
+{cmd:qic} does not need to know {opt t()} for the {cmd:corr(independent)}
+and {cmd:corr(exchangeable)} correlation structures.  Whether you specify 
+{opt t()} makes no difference in these two cases.
+
+{phang}
+{opt family(family)} specifies the distribution of {depvar};
+{cmd:family(gaussian)} is the default.
+
+{phang}
+{opt link(link)} specifies the link function; the default is
+the canonical link for the {opt family()} specified.
+
+{dlgtab:Model 2}
+
+{phang}
+{opth exposure(varname)} and {opth offset(varname)} are different ways of
+specifying the same thing.  {opt exposure()} specifies a variable that reflects
+the amount of exposure over which the {depvar} events were observed for each
+observation; ln({it:varname}) with coefficient constrained to be 1 is entered
+into the regression equation.  {opt offset()} specifies a variable that is to
+be entered directly into the log-link function with its coefficient
+constrained to be 1; thus, exposure is assumed to be e^varname.  If you were
+fitting a Poisson regression model, {cmd:family(poisson) link(log)}, for
+instance, you would account for exposure time for specifying {opt offset()}
+containing the log of exposure time.
+
+{phang}
+{opt noconstant} specifies that the linear predictor has no intercept term,
+thus forcing it through the origin on the scale defined by the link function.
+
+{phang}
+{opt force} specifies that estimation be forced even though {opt t()} is not
+equally spaced.  This is relevant only for correlation structures that require
+knowledge of {opt t()} and that require observations be equally spaced.
+
+{dlgtab:Correlation}
+
+{phang}
+{opt corr(correlation)}; see {help estimation options##corr():estimation options}.
+
+{dlgtab:SE/Robust}
+
+{phang}
+{opt robust} specifies that the Huber/White/sandwich estimator of variance is
+to be used in place of the default GLS variance estimator; 
+This produces valid standard errors even if the correlations
+within group are not as hypothesized by the specified correlation structure.
+It does, however, require that the model correctly specifies the mean.  As
+such, the resulting standard errors are labeled "semi-robust" instead of
+"robust".  Note that although there is no {opt cluster()} option, results are
+as if there were a {opt cluster()} option and you specified clustering on 
+{opt i()}.
+
+{phang}
+{opt nmp}; see {help estimation options##nmp:estimation options}.
+
+{phang}
+{opt rgf} specifies that the robust variance estimate is multiplied by
+(N-1)/(N-P), where N = # of observations, and P = # of coefficients estimated.
+This option can be used only with {cmd:family(gaussian)} when {opt robust} is
+either specified or implied by the use of {opt pweight}s.  Using this option
+implies that the robust variance estimate is not invariant to the scale of any
+weights used.
+
+{phang}
+{cmd:scale(x2}|{cmd:dev}|{it:#}|{cmd:phi)} overrides the default scale
+parameter of {cmd:scale(1)}; see {help estimation options##scale():estimation options}.
+
+{dlgtab:Reporting}
+
+{phang}
+{opt level(#)}; see {help estimation options##level():estimation options}.
+
+{phang}
+{opt eform} displays the exponentiated coefficients and corresponding standard
+erros and confidence intervals as described in {helpb maximize}.  For
+{cmd:family(binomial) link(logit)} (i.e., logistic regression), exponentiation
+results in odds ratios; for {cmd:family(poisson) link(log)} (i.e., Poisson
+regression), exponentiated coefficients are incidence-rate ratios.
+
+{dlgtab:Opt options}
+
+{phang}
+{marker optimize_options}
+{it:optimize_options} control the iterative optimization process.  These options
+are seldom used.
+
+{pmore}
+{opt iter:ate(#)} specifies the maximum number of iterations.  When the number 
+of iterations equals #, the optimization stops and presents the current results,
+even if the convergence tolerance has not been reached.  The default value of 
+{opt iterate()} is 100.
+
+{pmore}
+{opt tol:erance(#)} specifies the tolerance for the coefficient vector.  When 
+the relative change in the coefficient vector from one iteration to the next is
+less than or equal to #, the optimization process is stopped.  
+{cmd:tolerance(1e-6)} is the default.
+
+{pmore}
+{opt nolog} suppress the display of the iteration log.
+
+{pmore}
+{opt tr:ace} specifies that the current estimates should be printed at each
+iteration.
+
+{phang}
+{opt nodisplay} suppresses the display of the header
+and coefficients.
+
+
+{title:Examples1}
+
+{phang}{stata "use http://www.stata-press.com/data/r9/nlswork2, clear":use http://www.stata-press.com/data/r9/nlswork2, clear} 
+
+{phang}{stata iis id}
+
+{phang}{stata qic ln_w grade age if race == 2}
+
+{phang}{stata qic ln_w grade age, t(year) corr(uns) scale(dev) force nolog nodis trace}
+
+{phang}{stata qic ln_w grade age, t(year) corr(exc) force}
+
+
+{title:Examples2}
+
+{phang}{stata "use http://www.stata-press.com/data/r9/union, clear":use http://www.stata-press.com/data/r9/union, clear}
+ 
+{phang}{stata iis idcode}
+
+{phang}{stata tis year}
+
+{phang}{stata qic union age grade not_smsa south if black == 1, fam(bin)}
+
+{phang}{stata qic union age grade not_smsa south, fam(bin) link(probit) corr(uns) force tol(1e-8) iter(20)}
+
+{phang}{stata qic union age grade not_smsa south, fam(bin) link(cloglog) corr(ar) force scale(x2)}
+
+
+{title:Examples3}
+
+{phang}{stata "use http://www.stata-press.com/data/r9/ships, clear":use http://www.stata-press.com/data/r9/ships, clear} 
+
+{phang}{stata egen wave = group(yr_con yr_op)}
+
+{phang}{stata iis ship}
+
+{phang}{stata tis wave}
+
+{phang}{stata qic accident op_75_79 co_65_69 co_70_74 co_75_79 if wave <= 6, fam(poi) corr(exc) ex(service)}
+
+{phang}{stata qic accident op_75_79 co_65_69 co_70_74 co_75_79, fam(poi) corr(sta) ex(service) force tol(1e-10) scale(dev)}
+
+{phang}{stata qic accident op_75_79 co_65_69 co_70_74 co_75_79, fam(poi) corr(exc) ex(service) force nodis}
+
+
+{title:Examples4}
+
+{phang}{stata "use http://www.stata-press.com/data/r9/airacc, clear":use http://www.stata-press.com/data/r9/airacc, clear} 
+
+{phang}{stata iis airline}
+
+{phang}{stata tis time}
+
+{phang}{stata qic i_cnt inprog if airline <= 15, fam(nb 2) corr(exc) exposure(pmiles)}
+
+{phang}{stata qic i_cnt inprog, fam(nb 2) corr(sta) exposure(pmiles) force tol(1e-8) nodis}
+
+{phang}{stata qic i_cnt inprog, fam(nb 2) corr(uns) exposure(pmiles) force scale(x2)}
+
+{phang}{stata qic i_cnt inprog, fam(gam) corr(sta) exposure(pmiles) force scale(dev)}
+
+{phang}{stata qic i_cnt inprog, fam(ig) corr(uns) exposure(pmiles) force}
+
+
+{title:Also see}
+
+{psee}
+Manual:  {bf:[XT] xtgee}
+
+{psee}
+Online:  {help xtgee postestimation};{break}
+{helpb glm}, {helpb logistic}, {helpb prais}, {helpb regress}, {helpb svy}, 
+{help xt},
+{helpb xtcloglog}, {helpb xtdata}, {helpb xtdes}, {helpb xtgls}, 
+{helpb xtintreg}, {helpb xtlogit}, {helpb xtnbreg}, {helpb xtpcse}, 
+{helpb xtpoisson}, {helpb xtprobit}, {helpb xtreg}, {helpb xtregar}, 
+{helpb xtsum}, {helpb xttab}, {helpb xttobit}
+{p_end}
+
+
+{title:Reference}
+
+{phang}
+Cui J. QIC program and model selection in GEE analyses. {it: Stata Journal} 2007; 7:209-220.{p_end}
+
+{phang}
+Cui J and Qian G. Selection of working correlation structure and best model in GEE analyses of longitudinal data. {it: Communications in Statistics, Simulation and Computation} 2007; 36:987-996.{p_end}
+
+{phang}
+Cui J and Feng L. Correlation structure and model selection for negative binomial distribution in GEE. {it: Communications in Statistics, Simulation and Computation} 2008 (in press).{p_end}
+
+{phang}
+Pan W. Akaike's information criterion in generalized estimating equations. {it:Biometrics} 2001; 57:120-125.{p_end}
+
+
+{title:Author}
+
+{p 4 4 2}
+James Cui, WHO Collaborating Centre for Obesity Prevention, Deakin University.
+
+{p 4 4 2}
+Email: {browse "mailto:jisheng.cui@deakin.edu.au":jisheng.cui@deakin.edu.au}
+
+
+Other Commands I have written:
+{help genhwcci}   (if installed)      {stata ssc install genhwcci}     (to install this command)
+{help simuped2}   (if installed)      {stata ssc install simuped2}     (to install this command)
+{help simuped3}   (if installed)      {stata ssc install simuped3}     (to install this command)
+{help phenotype}  (if installed)      {stata ssc install phenotype}    (to install this command)
+{help buckley}    (if installed)      {stata ssc install buckley}      (to install this command)
+

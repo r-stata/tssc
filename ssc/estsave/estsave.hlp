@@ -1,0 +1,85 @@
+{smcl}
+{* 14nov2003 M Blasnik}{...}
+{hline}
+help for {hi:estsave}
+{hline}
+
+{title:Save Estimation Results with dataset for future retrieval}
+
+{p 8 13 2}{cmd:estsave} [{cmd:,} {cmdab:g:en:(}{it:newvarname}{cmd:)}
+	{cmdab:f:rom:(}{it:varname}{cmd:)} {cmdab:l:abel:(}{it:labeltext}{cmd:)}
+       {cmdab:rep:lace}]
+
+
+{title:Description}
+
+{p 4 4 2}
+{cmd:estsave} saves and retrieves estimation results with the
+current dataset, allowing retrieval of estimation results across 
+sessions.  For storing and retrieving estimation results within a 
+single Stata session, see {help estimates}.  
+
+{p 4 4 2}
+{cmd:estsave} creates a new variable that identifies the estimation
+sample and stores all estimation-related scalars, macros, and matrices 
+using characteristics associated with that variable.  Dropping the variable
+drops the estimation results.  
+
+
+{title:Options}
+
+{p 4 8 2}
+{cmd:gen(}{it:newvarname}{cmd:)} is required for saving estimation results.  {cmd:estsave}
+will generate this new byte variable to mirror the contents of e(sample) from the last estimation.  
+The variable will have characteristics associated with it that contain all of the estimation results.  
+Users may wish to choose a name that allows easy identification of estsave variables, for example using a 
+consistent prefix such as es_.
+
+
+{p 4 8 2}
+{cmd:from(}{it:varname}{cmd:)} specifies the name of the variable for retrieving
+estimation results previously saved by {cmd:estsave}.  
+
+{p 4 8 2}
+{cmd:label(}{it:labeltext}{cmd:)} is a convenience feature that adds to the variable
+label of the newly created variable.  {cmd:estsave} labels the new variable as 
+"estsave results: {it:cmdname} {it:depvarname}" followed by the text specified in {cmd:label}.
+
+{p 4 8 2}
+{cmd:replace} allows {cmd:estsave} to overwrite an existing variable.
+
+{title:Examples}
+
+    {cmd:. regress mpg weight }
+    {cmd:. estsave , gen(es_reg1) label(mpg v weight all obs)}
+    {cmd:. save mydata}
+
+in the same or a future Stata session:
+
+    {cmd:. estsave , from(es_reg1)}   retrieves results
+
+    you can now use post-estimation commands
+
+    {cmd:. test _b[weight]=.002}      
+
+
+{title:Technical Note}
+
+{p 4 4 2}
+Because of certain features within the Stata executable, estimation results 
+retrieved using {cmd:estsave} may not be able to re-play the full output 
+of some internal (vs. .ado) commands.  Still, the basic coefficient table 
+will re-display and post-estimation commands such as test and predict will work.  
+One exception is that {cmd:predict} commands with -rules- options will not honor the rules.
+
+
+{title:Author}
+
+{p 4 4 2}
+Michael Blasnik (M. Blasnik & Associates, Boston, MA) {break}
+Email: {browse "mailto:michael.blasnik@verizon.net":michael.blasnik@verizon.net}
+
+{title:Also see}
+
+{p 4 13 2}
+    Online:  help for {help estimates}, {help ereturn}

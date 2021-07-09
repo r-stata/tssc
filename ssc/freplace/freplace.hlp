@@ -1,0 +1,191 @@
+{smcl}
+{* 15Dec2009}{* 28Jan2010}{* 1Oct2010}{...}
+{hline}
+help for {hi:freplace}{right: version 2.0}
+{right:{stata ssc install freplace, replace: get the newest version}}
+{hline}
+
+
+{title:Batch Convert ASCII text or binary patterns in files}
+
+
+{title:Syntax}
+
+
+{p 13 19 2}
+{cmd:freplace}
+{it:file_extension}
+{cmd:,} {cmdab:f:rom(}{it:oldpattern}{cmd:)} [{cmdab:t:o(}{it:newpattern}{cmd:)}]{break}
+
+{p 8 4 2}
+where {it:oldpattern} and {it:newpattern} for ASCII characters are
+
+{p 10 42 2}{cmd:"}{it:string}{cmd:"} (include {cmd:Chinese characters} etc.) or {cmd:}{it:string}{cmd:}
+
+{p2colset 25 40 42 2}{...}
+{p2col 14 40 42 2 :{it:string}{space 2}{cmd::=} {cmd:[}{it:char}{cmd:[}{it:char}{cmd:[}{it:char}{cmd:[}{it:...}{cmd:]]]]}}{p_end}
+{p2col 14 40 42 2 :{it:char}{space 4}{cmd::=} {it:regchar}{cmd: | }{it:code}}{p_end}
+{p2col 14 40 42 2 :{it:regchar} {cmd::=} ASCII 32-91, 93-128, 161-255; excludes '\'}{p_end}
+{p2col 14 40 42 2 :{it:code}{space 4}{cmd::=} {cmd:\BS}}backslash{p_end}
+{p2col :{cmd:\r}}carriage return{p_end}
+{p2col :{cmd:\n}}newline{p_end}
+{p2col :{cmd:\t}}tab{p_end}
+{p2col :{cmd:\M}}Mac EOL, or \r{p_end}
+{p2col :{cmd:\W}}Windows EOL, or \r\n{p_end}
+{p2col :{cmd:\U}}Unix EOL, or \n{p_end}
+{p2col :{cmd:\LQ}}left single quote, `{p_end}
+{p2col :{cmd:\RQ}}right single quote, '{p_end}
+{p2col :{cmd:\Q}}double quote, "{p_end}
+{p2col :{cmd:\$}}dollar sign, ${p_end}
+{p2col :{cmd:\}{it:###}{cmd:d}}3-digit [0-9] decimal ASCII{p_end}
+{p2col :{cmd:\}{it:##}{cmd:h}}2-digit [0-9,A-F] hexadecimal ASCII{p_end}
+{p2colreset}{...}
+
+{synoptset 20 tabbed}{...}
+{marker options}{...}
+{synopthdr}
+{synoptline}
+{p2coldent :* {it:file_extension}}The file extension of files in current directory{p_end}
+{p2coldent :* {cmdab:f:rom(}{it:oldpattern}{cmd:)}}find {it:oldpattern} to be replaced{p_end}
+{p2coldent :* {cmdab:t:o(}{it:newpattern}{cmd:)}}use {it:newpattern} to replace of {cmd:from()}{p_end}
+{synoptline}
+{p2colreset}{...}
+
+
+{title:Description}
+
+{pstd}
+{cmdab:Attention !!!} Before using {opt freplace}, you'd better back up your files!
+
+{pstd}
+{opt freplace} provides a batch process to replace the {it: oldpattern} of all {it:file_extension} type of files in {cmd:current directory}
+to the {it:newpattern}, which reads an file, searching for the {it:oldpattern}. 
+Whenever a matching pattern is found, it is replaced with {it:newpattern}, and the file is arbitrarily overwritten! So, Before using {opt freplace}, you'd better back up your files!
+
+{pstd}
+{opt freplace} is based on the stata package of {it:filefilter}, and because of the buffering design of that package, arbitrarily large files
+can be converted quickly.
+
+
+{title:Examples}
+
+
+{phang}{cmd:. freplace txt, from(\M) to(\W)}
+
+{phang}{cmd:. freplace raw, f(\t) t(" ")}
+
+{phang}{cmd:. freplace raw, f(\t)}
+
+{phang}{cmd:. freplace log, f(\Q\W) t(\20h)}
+
+{phang}{cmd:. freplace txt, f("US$") t("USD")}
+
+{phang}{cmd:. freplace txt, f(1998) t(2001)}
+
+{phang}{cmd:. freplace csv, f(\LQ) t("left quote")}
+
+
+{title:The ASCII table}
+
+
+{center:{c TLC}{hline 11}{c TT}{hline 34}{c TT}{hline 24}{c TRC}}
+{center:{c |}           {c |}                 we    also       {c |}                        {c |}}
+{center:{c |}           {c |}               write  written     {c |}                        {c |}}
+{center:{c |} Category  {c |} Decimal  Hex    as     as        {c |} Description            {c |}}
+{center:{c LT}{hline 11}{c +}{hline 34}{c +}{hline 24}{c RT}}
+{center:{c |} Control   {c |}   000     00    \0     NUL       {c |} null                   {c |}}
+{center:{c |} Codes     {c |}   001     01    ^A     SOH       {c |} start of heading       {c |}}
+{center:{c |}           {c |}   002     02    ^B     STX       {c |} start of text          {c |}}
+{center:{c |}           {c |}   003     03    ^C     ETX       {c |} end of text            {c |}}
+{center:{c |}           {c |}   004     04    ^D     EOT       {c |} end of transmission    {c |}}
+{center:{c |}           {c |}   005     05    ^E     ENQ       {c |} enquiry                {c |}}
+{center:{c |}           {c |}   006     06    ^F     ACK       {c |} acknowledge            {c |}}
+{center:{c |}           {c |}   007     07    ^G     BEL       {c |} bell                   {c |}}
+{center:{c |}           {c |}   008     08    ^H     BS        {c |} backspace              {c |}}
+{center:{c |}           {c |}   009     09    \t     HT  ^I    {c |} horizontal tab         {c |}}
+{center:{c |}           {c |}   010     0a    \n     LF  ^J    {c |} line feed, newline     {c |}}
+{center:{c |}           {c |}   011     0b    ^K     VT        {c |} vertical tabulation    {c |}}
+{center:{c |}           {c |}   012     0c    ^L     FF        {c |} form feed              {c |}}
+{center:{c |}           {c |}   013     0d    \r     CR  ^M    {c |} carriage return        {c |}}
+{center:{c |}           {c |}   014     0e    ^N     SO        {c |} shift out              {c |}}
+{center:{c |}           {c |}   015     0f    ^O     SI        {c |} shift in               {c |}}
+{center:{c |}           {c |}   016     10    ^P     DLE       {c |} data link escape       {c |}}
+{center:{c |}           {c |}   017     11    ^Q     DC1  XON  {c |} device control 1       {c |}}
+{center:{c |}           {c |}   018     12    ^R     DC2       {c |} device control 2       {c |}}
+{center:{c |}           {c |}   019     13    ^S     DC3  XOFF {c |} device control 3       {c |}}
+{center:{c |}           {c |}   020     14    ^T     DC4       {c |} device control 4       {c |}}
+{center:{c |}           {c |}   021     15    ^U     NAK       {c |} negative acknowledge   {c |}}
+{center:{c |}           {c |}   022     16    ^V     SYN       {c |} synchronous idle       {c |}}
+{center:{c |}           {c |}   023     17    ^W     ETB       {c |} end transmission block {c |}}
+{center:{c |}           {c |}   024     18    ^X     CAN       {c |} cancel                 {c |}}
+{center:{c |}           {c |}   025     19    ^Y     EM        {c |} end of medium          {c |}}
+{center:{c |}           {c |}   026     1a    ^Z     SUB       {c |} substitute             {c |}}
+{center:{c |}           {c |}   027     1b    Esc    ESC  ^[   {c |} escape                 {c |}}
+{center:{c |}           {c |}   028     1c    28     FS   ^\   {c |} file separator         {c |}}
+{center:{c |}           {c |}   029     1d    29     GS   ^]   {c |} group separator        {c |}}
+{center:{c |}           {c |}   030     1e    30     RS   ^^   {c |} record separator       {c |}}
+{center:{c |}           {c |}   031     1f    31     US   ^_   {c |} unit separator         {c |}}
+{center:{c LT}{hline 11}{c +}{hline 34}{c +}{hline 24}{c RT}}
+{center:{c |} ASCII     {c |}   032     20    blank  SP        {c |} space                  {c |}}
+{center:{c |} printable {c |}   033     21    !                {c |} exclamation point      {c |}}
+{center:{c |}           {c |}   034     22    "                {c |} quotation mark         {c |}}
+{center:{c |}           {c |}   035     23    #                {c |} number sign            {c |}}
+{center:{c |}           {c |}   036     24    $                {c |} dollar sign            {c |}}
+{center:{c |}           {c |}   037     25    %                {c |} percent sign           {c |}}
+{center:{c |}           {c |}   038     26    &                {c |} ampersand              {c |}}
+{center:{c |}           {c |}   039     27    '                {c |} apostrophe             {c |}}
+{center:{c |}           {c |}   040     28    (                {c |} opening parenthesis    {c |}}
+{center:{c |}           {c |}   041     29    )                {c |} closing parenthesis    {c |}}
+{center:{c |}           {c |}   042     2a    )                {c |} closing parenthesis    {c |}}
+{center:{c |}           {c |}   043     2b    +                {c |} plus                   {c |}}
+{center:{c |}           {c |}   044     2c    ,                {c |} comma                  {c |}}
+{center:{c |}           {c |}   045     2d    -                {c |} hyphen                 {c |}}
+{center:{c BLC}{hline 11}{c BT}{hline 34}{c BT}{hline 24}{c BRC}}
+
+
+{title:Saved results}
+
+
+{pstd}
+{cmd:freplace} saves the following in {cmd:r()}:
+
+{synoptset 20 tabbed}{...}
+{p2col 5 20 24 2: Scalars}{p_end}
+{synopt:{cmd:r(occurrences)}}total number of {it:oldpattern} found{p_end}
+{synopt:{cmd:r(bytes_from)}}# of bytes represented by {it:oldpattern}{p_end}
+{synopt:{cmd:r(bytes_to)}}# of bytes represented by {it:newpattern}{p_end}
+{p2colreset}{...}
+
+
+{title:Acknowledgements}
+
+
+{pstd}
+The codes to get directory information are traced back to {cmd: Morten Andersen}'s {help dirlist}.
+
+
+{title:For problems and suggestions}
+
+
+{pstd}
+{cmd:Author: Liu wei}, The School of Sociology and Population Studies, Renmin University of China. {cmd:Address: }Zhongguancun Street No. 59, Haidian District, Beijing, China. {cmd:ZIP Code:} 100872. 
+{cmd:E-mail:} {browse "mailto:liuv@ruc.edu.cn":liuv@ruc.edu.cn} {break}
+
+
+{title:Also see}
+
+
+{pstd}
+Other Commands I have written: {p_end}
+
+{synoptset 30 }{...}
+{synopt:{help curvefit} (if installed)} {stata ssc install curvefit} (to install){p_end}
+{synopt:{help deci} (if installed)} {stata ssc install deci} (to install){p_end}
+{synopt:{help fdta} (if installed)} {stata ssc install fdta} (to install){p_end}
+{synopt:{help ftrans} (if installed)} {stata ssc install ftrans} (to install){p_end}
+{synopt:{help elife} (if installed)} {stata ssc install elife} (to install){p_end}
+{synopt:{help ftree} (if installed)} {stata ssc install ftree} (to install){p_end}
+{synopt:{help fren} (if installed)} {stata ssc install fren} (to install){p_end}
+{synopt:{help equation} (if installed)} {stata ssc install equation} (to install){p_end}
+{p2colreset}{...}
+

@@ -1,0 +1,146 @@
+{smcl}
+{* 18jun2007}{...}
+{cmd:help mata rpnfcn()}
+{hline}
+{* index rpn function mata}{...}
+{* index rpnfcn()}{...}
+
+{title:Title}
+
+{p 4 4 2}
+{bf:rpnfcn() -- A generic function evaluator based on Reverse Polish Notation (RPN)}
+
+
+{title:Syntax}
+
+{p 8 12 2}
+{it:numeric matrix} 
+{cmd:rpnfcn(}{it:pointer matrix A}{cmd:)}
+
+
+{title:Description}
+
+{p 4 4 2} {cmd:mf_rpnfcn(}{it:A}{cmd:)} returns the result of
+sequentially evaluating the commands given in the rows of matrix
+{it:A}.
+
+{p 4 4 2} The fundamental commands allowed in {it:A} falls in the
+following categories
+
+{p 8 35 2}{help mf_rpnstackfcn:Stack manipulation}{space 8} Commands that
+enters matrices into the stack, copies and interchange stack elements.
+
+{p 8 35 2}{help mf_rpnbinop:Binary operators}{space 10} The four basic
+arithmetic operations of addition, subtraction, multiplication, and
+division.
+
+{p 8 35 2}{help mf_rpndist:Single element functions}{space 2}
+Distribution functions which are executed on the current top element
+of the stack and replace it with the result.
+
+{p 8 35 2}{help mf_rpnint:Numerical integration}{space 5} Functions
+used for numerical integration based on Monte Carlo with stratified,
+antithetic sampling.
+
+
+
+{title:Remarks}
+
+{p 4 4 2} Each row of {it:A} should consist of two elements, first a
+pointer to a function, and second either a pointer to an appropriate
+argument matrix or a null pointer. Upon completion of evaluation of
+all rows in {it:A}, only one matrix should be present in the internal
+stack set up by {cmd:rpnfcn()}, which is then returned as the result
+of the evaluation.
+
+{p 4 4 2} Note, that it is the users responsibility that matrices are
+conformable, as most procedures internally use the Mata colon
+operators, see {help m2_op_colon:Mata colon operators}. The lack of
+check on matrix dimensions is considered a feature, as it for example
+allows specifying a (1 x 2) matrix as parameter vector for a function
+which then uses this pair of parameter values for evaluating all
+elements of a (n x m) matrix in the stack. Equally well, a (n x 2)
+parameter matrix can be supplied to the same function, now with the
+implication that the pair of values in each row of the parameter
+matrix is applied to all elements of the corresponding row in the (n x
+m) matrix in the stack.
+
+
+{title:Example}
+
+{p 4 4 2} Consider the density for the minimum of two Weibull
+distributed random variables at {it:x} with the two parameter vectors
+{it:theta1} and {it:theta2}. The following code defines and evaluates
+the algorithm matrix corresponding to this.
+
+{p 4 4 2} 
+
+{com}. mata
+{txt}{hline 49} mata (type {cmd:end} to exit) {hline}
+{com}: x = (NULL)
+{res}
+{com}: theta1 = (NULL)
+{res}
+{com}: theta2 = (NULL)
+{res}
+{com}: fweimin = (&tostack(),  &x \
+>            &enter(),    NULL \
+>            &enter(),    NULL \
+>            &fwei(),     &theta1 \
+>            &swapst(),   NULL \
+>            &Swei(),     &theta2 \
+>            &product(),  NULL \
+>            &rotst(),    NULL \
+>            &enter(),    NULL \
+>            &Swei(),     &theta1 \
+>            &swapst(),   NULL \
+>            &fwei(),     &theta2 \
+>            &product(),  NULL \
+>            &add(),      NULL
+>            )
+{res}
+{com}: x = (0, 2, 8 \
+>      .7, 1, 6)
+{res}
+{com}: theta1 = (-2, 2)
+{res}
+{com}: theta2 = (0, .3)
+{res}
+{com}: rpnfcn(fweimin)
+{res}       {txt}          1             2             3
+    {c TLC}{hline 43}{c TRC}
+  1 {c |}  {res}          0   .1344860648   4.74373e-08{txt}  {c |}
+  2 {c |}  {res}.6423218484   .4965861523   .0000298698{txt}  {c |}
+    {c BLC}{hline 43}{c BRC}
+
+{com}: end
+{txt}{hline}
+
+
+{title:Source code}
+
+{p 4 4 2}
+{view rpnfcn.mata, adopath asis:rpnfcn.mata}
+
+{title:Author}
+
+{p 4 4 2}{browse "http://www.almen.dk/hstovring":Henrik Støvring},
+Research Unit of General Practice, University of Southern Denmark.
+Please email
+{browse "mailto:hstovring@health.sdu.dk":hstovring@health.sdu.dk}
+if you have comments, questions or observe any problems.
+
+
+{title:Also see}
+
+{p 4 13 2}
+Manual:  {hi:[M] Mata Reference Manual}
+
+{p 4 13 2}
+Online:  help for 
+{bf:{help mata:[M-0] mata}},
+{bf:{help mf_rpnstackfcn:RPN stack manipulation functions}},
+{bf:{help mf_rpnbinop:RPN binary operators}}, 
+{bf:{help mf_rpndist:RPN distribution functions}},
+{bf:{help mf_rpnint:RPN functions for integration}}
+{p_end}

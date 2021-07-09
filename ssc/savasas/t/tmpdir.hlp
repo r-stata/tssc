@@ -1,0 +1,96 @@
+{smcl}
+{* *! version 1.1  18Jan2008}{...}
+{* 06Nov2003}{...}
+{hline}
+help for {hi:tmpdir} {right:manual:  {hi:[R] none}}
+{right:dialog:  {hi: none}    }
+{hline}
+
+
+{title:Returns the directory Stata is using for a temporary directory `r(tmpdir)'}
+
+{p 8 17 2}{cmd:tmpdir}
+[{cmd:short}]{p_end}
+
+
+{t:itle:Description}
+
+{p 4 4 2}{cmd:tmpdir} is designed for programmers who want to know what directory Stata
+writes temp files to.  This can be helpful when using the {help file} command
+to write intermediary files for a program.  Since spaces in directory names can
+cause problems for programs running, {cmd:tmpdir} in the Windows operating system
+replaces directory / subdirectory names that contain spaces, or optionally any name
+longer than 8 characters, with the first 6 non-space
+characters plus "~1" or "~2" (up to "~4").  After that it gets a bit crazy with
+hexadecimal replacements.  {cmd:tmpdir} shells out to DOS and finds the short
+directory name that DOS has come up with, so there's no attempt to guess the short
+name.  This makes it possible to use this program on many different versions of
+Windows and always get the short name right.  UNIX/Linux systems tend not to have
+spaces in the directory designated to be the temporary directory, but {cmd:tmpdir}
+checks for spaces to make sure the temp directory does not have spaces.{p_end}
+
+{p 4 8 2} Note: {cmd:tmpdir} can be hard coded so that it always chooses a specific directory.
+This can be helpful if you want to direct large files to your D: drive.{p_end}
+
+{title:Options}
+
+{p 4 8 2}{cmd:short} is for Windows only and it specifies that any long directory name
+should be shortened to 8.3 style names.  Not using the {cmd:short} option will allow
+for long directory names that do not have spaces.{p_end}
+
+{title:Examples}
+
+{p 4 8 2}So if your temporary directory is:  "C:\Documents and Settings\dan\Local Settings\temp"{p_end}
+
+{p 4 8 2}{cmd:. tmpdir} returns r(tmpdir):{p_end}
+
+{p 4 8 2}{cmd:. return list }{p_end}
+
+{p 4 8 2}{cmd:macros: }{p_end}
+
+{p 10 10 2}{cmd:r(tmpdir) : "C:\Docume~1\dan\LocalS~1\temp\"}{p_end}
+
+{p 4 8 2}But if your temp directory is:  "C:\Documents and Settings\dan_blanchette\Local Settings\temp"{p_end}
+
+{p 4 8 2}{cmd:. tmpdir} returns r(tmpdir):{p_end}
+
+{p 4 8 2}"C:\Docume~1\dan_blanchette\LocalS~1\temp\"{p_end}
+
+{p 4 8 2}since "dan_blanchette" has no spaces in the name.{p_end}
+
+{p 4 8 2}{cmd:. tmpdir short} returns r(tmpdir):{p_end}
+
+{p 4 8 2}"C:\Docume~1\dan_b~1\LocalS~1\temp\"{p_end}
+
+
+{title:Saved Results}
+
+{p 4 4 2}The {cmd:tmpdir} command saves in {cmd:r()}:{p_end}
+
+{p 4 8 2}
+The {cmd:adoedit} command saves in {cmd:r()}:{p_end}
+
+{synoptset 20 tabbed}{...}
+{p2col 5 20 24 2: Macros}{p_end}
+{synopt:{cmd:r(tmpdir)}}Stata's temporary directory path{p_end}
+
+
+{title:Author}
+
+{p 4 4 2}
+Dan Blanchette {break}
+The Carolina Population Center {break}
+University of North Carolina - Chapel Hill, USA {break}
+dan_blanchette@unc.edu{p_end}
+
+
+{title:Also see}
+
+{p 4 13 2}On-line: {help tempfile} {help _getfilename} ,
+{help confirmdir} (if installed)
+{help shortdir} (if installed)
+{help savasas} (if installed)
+{help usesas} (if installed){p_end}
+
+
+

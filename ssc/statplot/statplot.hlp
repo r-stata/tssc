@@ -1,0 +1,244 @@
+{smcl}
+{* 28feb2011}{...}
+{hline}
+help for {hi:statplot}
+{hline}
+
+{title:Plots of summary statistics, including plots by category} 
+
+{p 4 8 2} 
+{cmd:statplot}
+{it:varlist} 
+[{cmd:if} {it:exp}] 
+[{cmd:in} {it:range}] 
+[{it:weight}]
+{break}
+
+{p 8 8 2}
+[
+{cmd:,} 
+{cmdab:s:tatistic(}{it:stat}{cmd:)}
+{cmd:over(}{it:over_options}{cmd:)} 
+[ {cmd:over(}{it:over_options}{cmd:)} ] 
+{cmdab:miss:ing} 
+{break} 
+ 
+{p 8 8 2}
+{cmd:xpose} 
+{cmd:recast(}{it:plottype}{cmd:)} 
+{cmd:varnames}	
+{cmd:varopts(}{it:varlist_options}{cmd:)} 
+{it:graph_options}
+]
+
+{p 4 4 2}
+{cmd:fweight}s, {cmd:aweight}s and {cmd:iweight}s may be specified. 
+
+
+{title:Description}
+
+{p 4 4 2}
+{cmd:statplot} plots summary statistics for {it: varlist}.   
+
+
+{title:Remarks} 
+
+{p 4 4 2}
+By default {cmd:statplot} is a wrapper for {help graph_bar:graph hbar}.
+Optionally, {cmd:statplot} may be recast as a wrapper for 
+{help graph_bar:graph bar} or {help graph_dot:graph dot}. The choice is
+a matter of personal taste, although in general horizontal displays make
+it easier to identify names or labels of categories. 
+
+{p 4 4 2}
+{cmd:statplot} is offered as an alternative command that may 
+produce graphs that are more congenial or more convenient than those
+yielded by {help graph hbar}, {help graph bar}, or {help graph dot}.
+{cmd:statplot} is implemented in terms of those commands, and is less
+general than those commands in that only one statistic may be plotted at
+once, so where does any difference or advantage lie? 
+
+{p 4 4 2}
+Like those commands, {cmd:statplot} calls upon {help collapse} to temporarily produce
+ a reduced dataset of summary statistics. The difference is
+that it organizes that dataset in a different way. The graphs produced,
+compared with those of {cmd:graph hbar|bar|dot}, are typically based
+more on axis labeling than on the use of legends, and typically are
+shown in one color rather than several.  Thus, they are likely to be
+closer to a format acceptable for journal publication. 
+
+{p 4 4 2}
+Otherwise put, {cmd:statplot} may often reduce the need for users to
+{help collapse} the data for themselves and manipulate the resulting
+reduced dataset. 
+
+{p 4 4 2}
+The schematic examples below should help to make this concrete. 
+
+{p 8 6 1}{cmd: graph hbar (mean) var1 var2 var3}
+
+	{c TLC}{hline 41}{c TRC} 
+	{c |}                title(s)                 {c |}    
+	{c |}         {c TLC}{hline 23}{c TRC}       {c |}    
+	{c |}         {c |}           {it:plot region} {c |}       {c |}   
+	{c |}         {c |}                       {c |}       {c |}    
+	{c |}         {c |}__________             {c |}       {c |}    
+	{c |}         {c |}__________|            {c |}       {c |}    
+	{c |}         {c |}__________             {c |}       {c |}    
+	{c |}         {c |}__________|            {c |}       {c |}    
+	{c |}         {c |}__________             {c |}       {c |}      
+	{c |}         {c |}__________|            {c |}       {c |}      
+	{c |}         {c |}                       {c |}       {c |}       
+	{c |}         {c BLC}{hline 23}{c BRC}       {c |}    
+	{c |}                                         {c |}      
+	{c |}                 legend                  {c |}          
+	{c |}        {c TLC}{hline 22}{c TRC}         {c |}      
+	{c |}        {c |}[green]  Mean of Var1 {c |}         {c |}      
+	{c |}        {c |}[orange] Mean of Var2 {c |}         {c |}      
+	{c |}        {c |}[yellow] Mean of Var3 {c |}         {c |}      
+	{c |}        {c BLC}{hline 22}{c BRC}         {c |}      
+	{c BLC}{hline 41}{c BRC}
+
+{p 8 6 1}{cmd: statplot var1 var2 var3}
+
+	{c TLC}{hline 41}{c TRC} 
+	{c |}                title(s)                 {c |}    
+	{c |}         {c TLC}{hline 23}{c TRC}       {c |}    
+	{c |}         {c |}           {it:plot region} {c |}       {c |}   
+	{c |}         {c |}                       {c |}       {c |}    
+	{c |}         {c |}__________             {c |}       {c |}    
+	{c |} Var1 Lbl{c |}__________|            {c |}       {c |}    
+	{c |}         {c |}__________             {c |}       {c |}    
+	{c |} Var2 Lbl{c |}__________|            {c |}       {c |}    
+	{c |}         {c |}__________             {c |}       {c |}      
+	{c |} Var2 Lbl{c |}__________|            {c |}       {c |}      
+	{c |}         {c |}                       {c |}       {c |}       
+	{c |}         {c BLC}{hline 23}{c BRC}       {c |}    
+	{c |}                                         {c |}        
+	{c BLC}{hline 41}{c BRC}
+			
+{p 4 4 2}
+The advantages of {cmd:statplot}'s ability to group on the axis become
+even more evident when using combinations of the {cmd:over()} and
+{cmd:xpose} options.
+
+
+{title:Options} 
+
+{p 4 8 2}{it:What is plotted} 
+
+{p 4 8 2}
+{cmdab:s:tatistic()} specifies the summary statistic used to summarize
+and plot {it:varlist}.  The default is {cmd:mean}.  See {help collapse}
+for a full list of accepted statistics. Note that only one statistic may
+be specified. 
+
+{p 4 8 2}
+{cmd:over()} contains a call to an {cmd:over()} option (and its 
+{help graph bar##over_subopts:suboptions}) for 
+{help graph_bar:graph hbar}, {help graph_bar:graph bar} or 
+{help graph_bar:graph dot} as appropriate for
+controlling grouping variables for the {it:varlist} on the axis. 
+
+{p 8 8 2}
+No more than two {cmd:over()} options may be specified. 
+
+{p 8 8 2}
+If two {cmd:over()} options are used, the order is important for how
+these groupings are nested.  The second {cmd:over()} will be labeled on
+the axis and the first option will be indicated in a legend.  To
+suppress the legend and place the first {cmd:over()}'s variable labels
+closest to the axis, specify either {cmd:legend(off)} or the {cmd:xpose}
+option (see below).
+
+{p 8 8 2}
+The examples below indicate how {help separate} may be used with a single
+variable to use one {cmd:over()} option rather than two. 
+
+{p 4 8 2}
+{cmdab:miss:ing} indicates that observations for missing values in
+{cmd:over()} or {cmd:by()} variables should be included on the graph. 
+
+
+{p 4 8 2}{it:How it is presented} 
+
+{p 4 8 2}
+{cmd:xpose} indicates that the grouping labels for {cmd:over()}
+options be switched or transposed.  
+
+{p 8 8 2}
+If no {cmd:over()} options are specified, {cmd:xpose} has no effect on
+the graph.
+
+{p 8 8 2}
+If one {cmd:over()} option is used, {cmd:xpose} will switch the position
+of the {it:varlist} labels from being the outermost nesting of labels to
+being closest to the axis. Likewise, the {cmd:over()} labels will move
+off the axis.
+
+{p 8 8 2}
+If two {cmd:over()} options are used, {cmd:xpose} will switch the 
+{it:varlist} variable labels to the legend, which can be suppressed using
+{cmd:legend(off)}, move the first {cmd:over()} option labels
+closest to the axis, and move the labels of the second {cmd:over()}
+option specified off the axis, thereby nesting the first {cmd:over()}
+option labels.
+
+{p 4 8 2}
+{cmd:recast()} recasts the graph to another {it:plottype}, one
+of {cmd:hbar}, {cmd:bar}, {cmd:dot}. 
+
+{p 8 8 2}Note for users of Stata 10 up: using the {help Graph Editor} is another 
+way to produce these and many other changes. 
+
+{p 8 8 2}Note for experienced users: although the name is suggested by another
+{help advanced_options:recast()} option, this is not a back door to recasting
+to a {cmd:twoway} plot. 
+
+{p 4 8 2}
+{cmd:varnames}	indicates that variable names should be used instead of
+variable labels for {it:varlist}. 
+
+{p 4 8 2}
+{cmd:varopts()} specifies options for the display of the {it:varlist}
+bars or dots.  For example, labels could be modified with
+{cmd:varopts(label(labsize(medsmall)))}. 
+	
+{p 4 8 2}
+{it:graph_options} refer to options of 
+{help graph_bar:graph hbar}, {help graph_bar:graph bar} or 
+{help graph_bar:graph dot} as appropriate.  
+
+
+{title:Examples}
+
+{p 4 8 2}{cmd:. sysuse citytemp, clear}{p_end}
+{p 4 8 2}{cmd:. statplot heatdd cooldd}{p_end}
+{p 4 8 2}{cmd:. statplot heatdd cooldd, over(region)}{p_end}
+{p 4 8 2}{cmd:. statplot temp*, over(region, sort(1) descending) s(sd) blabel(bar, format(%2.1f)) ysc(r(. 17.5))}
+
+{p 4 8 2}{cmd:. sysuse census, clear}{p_end}
+{p 4 8 2}{cmd:. statplot marriage divorce, over(region) s(sum)}{p_end}
+{p 4 8 2}{cmd:. statplot marriage divorce, over(region) s(sum) xpose}{p_end}
+{p 4 8 2}{cmd:. statplot marriage divorce, over(region) s(sum) xpose varnames}{p_end}
+
+{p 4 8 2}{cmd:. sysuse nlsw88, clear}{p_end}
+{p 4 8 2}{cmd:. statplot wage, over(race) over(union)}{p_end}
+{p 4 8 2}{cmd:. separate wage, by(race) veryshortlabel}{p_end}
+{p 4 8 2}{cmd:. statplot wage?, over(union)}
+
+
+{title:Authors}
+
+{p 4 4 2}Eric A. Booth, Texas A&M University{break} 
+         ebooth@ppri.tamu.edu
+
+{p 4 4 2}Nicholas J. Cox, Durham University{break} 
+         n.j.cox@durham.ac.uk
+
+
+{title:Also see}
+
+{p 4 8 2}On-line:  help for {help graph_hbar:graph hbar}; 
+{help graph_bar:graph bar}; {help graph_dot:graph dot}
+

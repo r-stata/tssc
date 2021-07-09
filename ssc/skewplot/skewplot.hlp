@@ -1,0 +1,195 @@
+{smcl}
+{* 5aug2003/15nov2004}{...}
+{hline}
+help for {hi:skewplot}
+{hline}
+
+{title:Skewness plots} 
+
+{p 8 17 2}
+{cmd:skewplot} 
+{it:varname}
+[{cmd:if} {it:exp}] 
+[{cmd:in} {it:range}]
+[{cmd:,}
+{cmd:skew}
+{cmd:by(}{it:byvar}{cmd:)} 
+{cmdab:miss:ing}
+{it:scatter_options}]
+
+{p 8 17 2}
+{cmd:skewplot} 
+{it:varlist}
+[{cmd:if} {it:exp}] 
+[{cmd:in} {it:range}]
+[{cmd:,}
+{cmd:skew}
+{it:scatter_options}]
+
+
+{title:Description}
+
+{p 4 4 2}
+{cmd:skewplot} produces by default a plot of the midsummary versus the spread
+for the variables in {it:varlist}, also known as the mid versus spread plot.
+With the {cmd:skew} option, it produces a plot of the skewness function versus
+the spread function. Such plots convey both the general character and the fine
+structure of the symmetry or skewness of data sets, and can be used to compare
+distributions or to assess whether transformations are necessary or effective.
+
+
+{title:Remarks} 
+
+{p 4 4 2}Order {it:n} data values for a variable {it:x} and label them such
+that {it:x}_(1) <= ... <= {it:x}_({it:n}). In a perfectly symmetric set of
+data, the midsummaries 
+ 
+	({it:x}_(1) + {it:x}_({it:n})) / 2, 
+	({it:x}_(2) + {it:x}_({it:n} - 1)) / 2, 
+	etc. 
+
+{p 4 4 2}would all be identical, and equal to the median. A plot of each
+midsummary 
+ 
+	({it:x}_({it:i}) + {it:x}_({it:n} - {it:i} + 1)) / 2
+
+{p 4 4 2}versus each difference or spread or quasi-range  
+
+	{it:x}_({it:n} - {it:i} + 1) - {it:x}_({it:i}) 
+
+{p 4 4 2}would yield a horizontal straight line. Conversely, skewness in sets
+of data will be reflected by departures from horizontality.
+ 
+{p 4 4 2}Apart from the divisor of 2, this plot was suggested by J.W. Tukey
+(Wilk and Gnanadesikan 1968). See also Gnanadesikan (1977 or 1997, Ch.6.2) or 
+Fisher (1983). The form used here and the name `mid versus spread plot' are found in
+Hoaglin (1985). It is usual to plot only that half of the sample results for
+which spread is >= 0. 
+ 
+{p 4 4 2}The {cmd:skew} option produces an alternative form promoted by
+Benjamini and Krieger (1996, 1999). The identity 
+ 
+	{it:x}_({it:n} - {it:i} + 1) = median  
+
+	              + ({it:x}_({it:n} - {it:i} + 1) - x_({it:i})) / 2 
+
+                      + ({it:x}_({it:i}) + {it:x}_({it:n} - {it:i} + 1) - 2 * median) / 2 
+
+	              = median + spread function + skewness function 	
+
+{p 4 4 2} for {it:x}_({it:i}) in the lower half of the sample leads to a plot
+of the skewness function versus the spread function, known as the skewness
+versus spread plot. Note that the skewness function is midsummary - median, and
+will be constant and zero for a perfectly symmetric distribution, and that the
+spread function is half the spread of the mid versus spread plot.
+ 
+{p 4 4 2}In addition, the ratio of the skewness and spread functions or
+
+	{it:x}_({it:i}) + {it:x}_({it:n} - {it:i} + 1) - 2 * median
+	{hline 34}                        
+              {it:x}_({it:n} - {it:i} + 1) - {it:x}_({it:i})
+
+{p 4 4 2} is a measure of skewness (in the traditional sense) originally
+suggested for quartiles by Bowley (1902) and generalised to this form by David
+and Johnson (1956). It varies between -1 and 1. A similar general measure was
+used by Parzen (1979). Graphically this measure is the slope of the line
+connecting (0,0) and each data point. 
+ 
+{p 4 4 2} See Benjamini and Krieger (1996, 1999) and Groeneveld (1998) for
+concise reviews tracing such ideas from late 19th century antecedents to recent
+work and further details on the interpretation of the skewness versus spread
+plot. 
+ 
+
+{title:Options} 
+
+{p 4 8 2}{cmd:skew} specifies the skewness versus spread plot, not the default
+mid versus spread plot.
+
+{p 4 8 2}{cmd:by(}{it:byvar}{cmd:)} specifies that calculations are to be
+carried out separately for each group defined by {it:byvar}. {cmd:by()} is
+allowed only with a single {it:varname}.
+
+{p 4 8 2}{cmd:missing}, used only with {cmd:by()}, permits the use of
+non-missing values of {it:varname} corresponding to missing values for the
+variable named by {cmd:by()}. The default is to ignore such values.
+ 
+{p 4 8 2}{it:scatter_options} refers to options of 
+{help twoway_scatter:graph twoway scatter}. 
+
+
+{title:Examples}
+
+{p 4 8 2}{cmd:. webuse citytemp}{p_end}
+{p 4 8 2}{cmd:. describe}{p_end}
+{p 4 8 2}{cmd:. skewplot *dd}{p_end}
+{p 4 8 2}{cmd:. skewplot *dd, skew}{p_end}
+{p 4 8 2}{cmd:. skewplot cooldd, by(region)}{p_end}
+{p 4 8 2}{cmd:. skewplot cooldd, by(region) ms(i i i i) c(l l l l)}{p_end}
+{p 4 8 2}{cmd:. skewplot temp*}
+
+
+{title:References} 
+
+{p 4 8 2}
+Benjamini, Y. and Krieger, A.M. 1996. Concepts and measures for skewness
+with data-analytic implications. {it:Canadian Journal of Statistics} 24: 
+131-140.
+
+{p 4 8 2}
+Benjamini, Y. and Krieger, A.M. 1999. Skewness {c -} concepts and measures.  
+In Kotz, S., Read, C.B. and Banks, D.L. (eds) 
+{it:Encyclopedia of Statistical Sciences Update Volume 3}. New York: John Wiley, 663-670. 
+
+{p 4 8 2}
+Bowley, A.L. 1902. {it:Elements of statistics}. London: P.S. King.
+(2nd edition: see p.331.)
+
+{p 4 8 2}
+David, F.N. and Johnson, N.L. 1956. Some tests of significance with 
+ordered variables. {it:Journal, Royal Statistical Society} B 18: 1-20. 
+
+{p 4 8 2}
+Fisher, N.I. 1983. Graphical methods in nonparametric statistics: a review
+and annotated bibliography. {it:International Statistical Review} 51: 25-58.
+
+{p 4 8 2}
+Gnanadesikan, R. 1977 (2nd edition 1997). 
+{it:Methods for statistical data analysis of multivariate observations.}
+New York: John Wiley. 
+
+{p 4 8 2}
+Groeneveld, R. 1998. Skewness, Bowley's measures of. In Kotz, S., Read, 
+C.B. and Banks, D.L. (eds) 
+{it:Encyclopedia of Statistical Sciences Update Volume 2}. New York: John Wiley, 619-621. 
+
+{p 4 8 2}
+Hoaglin, D.C. 1985. Using quantiles to study shape. In Hoaglin, D.C., 
+Mosteller, F. and Tukey, J.W. (eds) 
+{it:Exploring data tables, trends, and shapes}. New York: John Wiley, 417-460. 
+
+{p 4 8 2}
+Parzen, E. 1979. Nonparametric statistical data modeling. 
+{it:Journal, American Statistical Association} 74, 105-131.
+
+{p 4 8 2}
+Wilk, M.B. and Gnanadesikan, R. 1968. Probability plotting methods for
+the analysis of data. {it:Biometrika} 55: 1-17.
+
+
+{title:Author}
+
+{p 4 4 2}Nicholas J. Cox, University of Durham{break} 
+         n.j.cox@durham.ac.uk
+
+
+{title:Acknowledgments} 
+
+{p 4 4 2}Richard Groeneveld tracked down the Bowley reference.
+
+
+{title:Also see} 
+
+{p 4 13 2}On-line: {help graph}, {help symplot}{p_end}
+{p 4 13 2}Manual: {hi:[G] graph}, {hi:[R] diagnostic plots}
+

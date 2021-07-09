@@ -1,0 +1,91 @@
+{smcl}
+{* 25dec2009}{...}
+{hline}
+help for {hi:grdiame}{right:- v001 25dec2009 jx}
+{hline}
+
+{title:Differences in Averaged Marginal effects in binary regressions}
+
+{p 8 15 2}{cmd:grdiame} [{cmd:if} exp] [{cmd:in} range] [{cmd:,}
+{cmd:x(}{it:variables_and_values}{cmd:)}
+{cmdab:r:est(}{it:stat}{cmd:)}
+{cmdab:l:evel(}{it:#}{cmd:)}
+{cmd:all}
+{cmdab:g:roup(}{it:grpvar_g0value_g1value}{cmd:)}]
+
+{p 4 4 2}
+where {it:variables_and_values} is an alternating list of variables
+and either numeric values or mean, median, min, max, upper, lower,
+previous.
+
+{p 4 4 2}
+{it:stat} is either mean, median, min, max, upper, lower,
+previous, grmean(group mean), mrmedian, grmin, grmax.
+
+
+{title:Description}
+
+{p 4 4 2}
+After estimating a binary regression model, {cmd:grdiame} computes the
+differences in average marginal effects between the 1 and 0 groups coded by the {cmd:group} variable.
+{cmd:grdiame} uses a closed form solution with the {help delta} method.
+
+{title:Options}
+
+{p 4 8 2}
+{cmd:level()} sets the {help level} of the confidence interval for differences in
+group average marginal effects. The default is 95.
+
+{p 4 8 2}
+{cmd:x()} sets the values of independent variables for calculating
+predicted values.  The list must alternate variable names and values.
+The values may be either numeric values or can be mean, median, min,
+max, previous, upper, or lower.  The latter cannot be used if rest()
+specifies a group summary statistic (e.g., grmean).
+
+{p 4 8 2}
+{cmd:rest()} sets the independent variables not specified in x()
+to their {cmd:mean} (default), {cmd:minimum}, {cmd:maximum}, {cmd:median}
+when calculating predicted values. {cmd:grmean} sets these independent
+variables to the mean conditional on the variables and values specified
+in x(); {cmd:grmedian},{cmd:grmax}, and {cmd:grmin} can also be used.
+
+{p 4 8 2}
+{cmd:all} specifies that any calculations of means, medians, etc.,
+should use the entire sample instead of the sample used to estimate
+the model.
+
+{p 4 8 2}
+{cmdab:g:roup} identifies a group indictor variable. After the group variable, 
+specify the value for the group 0, then the value for group 1 of the group variable.
+This program takes a difference of AMEg1-AMEg0. 
+
+{title:Returned Matrices}
+
+{p 4 8 2}
+r(avgmarg):    saves group average marginal effects.
+
+{p 4 8 2}
+r(avgmargdif):  saves differences in and confidence intervals for group average marginal effects
+
+{title:Examples}
+
+{p 4 4 2}
+To compute the differences in group average marginal effects and confidence intervals using delta method
+for a logit in which all independent variables are held at the mean, and we compare black with whites.
+
+{p 4 8 2}{cmd:.logit vote black asian hispn educ income}
+
+{p 4 8 2}{cmd:.grdiame, group(race 1 4)}
+
+{p 4 4 2}
+In this case, the grdiame compares group averaged marginal effects between whites (race=1) and asians (race=4). 
+
+{p 4 8 2}
+ :::
+
+{hline}
+
+{p 2 4 2}Authors: Jun Xu{p_end}
+
+

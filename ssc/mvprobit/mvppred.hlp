@@ -1,0 +1,103 @@
+{smcl}
+{* 15jan2003}{...}
+{hline}
+help for {hi:mvppred}{right:Cappellari and Jenkins (31oct2002)}
+{hline}
+
+{title:Predictions from multivariate probit models estimated by SML} 
+
+{p 4 12}{cmd:mvppred} {it:newvarname_prefix} [{cmd:if} {it:exp}] 
+	[{cmd:in} {it:range}] [{cmd:,} {it:statistic}]
+
+where {it:statistic} is one of
+
+{p 4 12}{cmdab:xb}{space 5}the linear prediction for each equation; 
+the default.{p_end}
+{p 4 12}{cmdab:stdp}{space 3}the standard error of the linear 
+predictions for each equation.{p_end}
+{p 4 12}{cmdab:pm:arg}{space 2}the marginal success probability for 
+each equation.{p_end}
+{p 4 12}{cmdab:pa:ll}{space 3}the joint probabilities: 
+(i) Pr(depvar_{it:i} = 1, all {it:i}) and (ii) Pr(depvar_{it:i} = 0, 
+all {it:i}), for equations {it:i} = 1,...,{it:M}.{p_end}
+
+{p}These statistics are available both in and out of sample; type
+"{cmd:predict} {it:...} {cmd:if e(sample)} {it:...}" if wanted only for the
+estimation sample. If no statistic is specified, the default is {cmdab:xb}.
+
+
+{title:Description}
+
+{p}{cmd:mvppred} provides predictions following estimation of an
+{it:M}-equation probit model by the method of simulated maximum 
+likelihood (SML) using the program {cmd:mvp7}. See {help mvp7}.
+Predictions provided for each equation are the fitted index values,
+the standard errors of the fitted index values for each equation, the 
+predicted marginal success probabilities, and two predicted joint 
+probabilities. These are: (i) Pr(depvar_{it:i} = 1, all {it:i}) and 
+(ii) Pr(depvar_{it:i} = 0, all {it:i}), for equations {it:i} = 
+1,...,{it:M}. (Additional joint probabilities and conditional 
+probabilities have not been provided because the number of such 
+probabilities increases substantially as {it:M} increases.) The 
+multivariate normal distributions used to calculate the joint 
+probabilities are derived by simulation using the GHK simulator, 
+with the seed and number of random draws the same as used by {cmd:mvp7} 
+to derive the parameter estimates.
+
+
+{title:Options}
+
+{p 0 4}{cmd:xb}, the default, calculates the linear prediction (Xb) for 
+each equation. Results are stored in the variables {it:newvarname_prefixi}, 
+for equations {it:i} = 1,...,{it:M}.
+
+{p 0 4}{cmd:stdp} calculates the standard error of the linear prediction 
+(Xb) for each equation. Results are stored in the variables 
+{it:newvarname_prefixi}, for equations {it:i} = 1,...,{it:M}.
+
+{p 0 4}{cmd:pmarg} calculates the marginal probit predicted probability 
+of success for each outcome, Pr(depvar{it:i}) = 1, for each equation 
+{it:i} = 1,...,{it:M}. Results are stored in the variables 
+{it:newvarname_prefixi}, for equations {it:i} = 1,...,{it:M}.
+
+{p 0 4}{cmd:pall} calculates (i) the probit predicted joint probability of 
+success in every outcome, Pr(depvar{it:i}) = 1, for all {it:i} = 1,...,{it:M}, 
+and (ii) the probit joint probability of failure in every outcome, 
+Pr(depvar{it:i}) = 0, for all {it:i} = 1,...,{it:M}. Results are stored in 
+the variables {it:newvarname_prefix1s} for predicted probability (i) and 
+{it:newvarname_prefix0s} for predicted probability (ii).
+
+
+{title:Examples}
+
+{p 8 12}{inp:. use http://www.stata-press.com/data/r7/school.dta, clear}
+
+{p 8 12}{inp:. mvp7 (private = years logptax loginc) (vote = years logptax loginc) }
+
+{p 8 12}{inp:. mvppred xb}
+
+{p 8 12}{inp:. mvppred pall, pall}
+
+{p 8 12}{inp:. mvppred pmarg, pmarg}
+
+{p 8 12}{inp:. mvppred stdp, stdp}
+
+{p 8 12}{inp:. sum xb1, xb2, pmarg1, pmarg2, stdp1, stdp2, pall1s pall0s}
+
+
+{title:Authors}
+
+{p 4 4}Lorenzo Cappellari, Universita del Piemonte-Orientale, Italy{break}
+<Lorenzo.Cappellari@eco.unipmn.it>
+
+{p 4 4}Stephen P. Jenkins, ISER, University of Essex, U.K.{break}
+<stephenj@essex.ac.uk>
+
+ 
+{title:Also see}
+
+{p 1 14}Manual:  {hi:[U] 23 Estimation and post-estimation commands},{p_end}
+{p 10 14}{hi:[U] 29 Overview of model estimation in Stata},{p_end}
+
+{p 0 19}On-line:  help for {help mvp7}, {help postest}, and 
+{help predict}.{p_end}

@@ -1,0 +1,406 @@
+{smcl}
+{* 14apr2003}{...}
+{hline}
+help for {hi:johans}, {hi:lrjtest}, {hi:wjtest}{right:[P.Joly]}
+{hline}
+
+{title:Johansen's maximum likelihood cointegration rank test}
+
+{p 8 27}
+{cmd:johans}
+{it:depvarlist}
+[{cmd:if} {it:exp}]
+[{cmd:in} {it:range}]
+[{cmd:,}
+    {cmdab:l:ags(}{it:#}{cmd:)}
+    {cmdab:noc:onstant}
+    {cmdab:t:rend}
+    {cmdab:ex:og}({it:varlist})
+    {cmdab:non:ormal}
+    {cmdab:stand:ard}
+    {cmdab:r:egress}
+    {cmdab:l:evel(}{it:#}{cmd:)}
+]
+
+{p 8 27}
+{cmd:lrjtest}
+{it:varlist}
+{bind: }
+[{cmd:,}
+    {cmdab:c:ir(}{it:#}{cmd:)}
+    {cmdab:r:estrict}
+]
+
+{p 8 27}
+{cmd:wjtest}
+{it:varlist}
+{bind:  }
+[{cmd:,}
+    {cmdab:c:ir(}{it:#}{cmd:)}
+]
+
+
+{p}
+{cmd:johans} is for use with time-series data.  You must {cmd:tsset}
+your data before using {cmd:johans}; see help {help tsset}.
+Your version of Stata must also be up-to-date.
+Type {cmd:update query} to find out whether updating is required; see
+help {help update}.
+
+{p}
+{cmd:johans} may be used with panel data if the estimation sample is
+restricted to a single panel.  Observations for which the panel
+variable is missing are omitted from the sample.
+
+{p}
+{cmd:by} {it:...} {cmd::} may be used with {cmd:johans}; see help
+{help by}.
+
+{p}
+{it:depvarlist} and {it:varlist} may contain time-series operators;
+see help {help varlist}.
+
+
+{title:Description}
+
+{p}
+      {cmd:johans} calculates the eigenvalues and the maximal
+eigenvalue and trace statistics for the VAR defined by {it:depvarlist}.
+      These statistics can be used to test for the number of
+cointegrating vectors in the system.
+      If option {it:normal} or {it:standard} is specified, maximum
+likelihood estimates of the cointegrating vectors and of the matrix of
+weights are displayed.
+      {cmd:johans} uses Johansen's method for computing the estimates and
+test statistics.
+      See the references for more information on the method.
+
+{p}
+      {cmd:lrjtest} and {cmd:wjtest} are used after {cmd:johans} to
+test the null hypothesis that one or more of the variables in the VAR
+do not enter the cointegrating relationship(s).
+      {cmd:lrjtest} calculates the likelihood-ratio test.
+      {cmd:wjtest}  calculates the Wald test.
+
+
+{title:Options}
+
+{p 0 4}
+{cmd:lags(}{it:#}{cmd:)} specifies the number of lags in the original
+VAR (in levels).  The default is 1.
+
+{p 0 4}
+{cmd:noconstant} suppresses the constant in the first stage VAR.
+
+{p 0 4}
+{cmd:trend} includes a trend term in each equation of the VAR.
+
+{p 0 4}
+{cmd:exog(}{it:varlist}{cmd:)} specifies exogenous variables that
+enter each equation of the VAR.
+
+{p 0 4}
+{cmd:nonormal} suppresses the display of the normalized Alpha and
+Beta' matrices.
+
+{p 0 4}
+{cmd:standard} requests the display of the standardized Alpha and
+Beta' matrices instead of the normalized matrices.
+
+{p 0 4}
+{cmd:regress} indicates that the VAR estimates are to be displayed.
+
+{p 0 4}
+{cmd:cir(}{it:#}{cmd:)} is for use with {cmd:lrjtest} and {cmd:wjtest}
+and indicates the number of cointegrating relationships in the system.
+The default is 1.
+
+{p 0 4}
+{cmd:restrict} is relevant only with {cmd:lrjtest} and requests the
+display of the restricted estimates of the eigenvalues and of the
+Alpha and Beta' matrices.
+
+{p 0 4}
+{cmd:level(}{it:#}{cmd:)} specifies the confidence level, in percent,
+for confidence intervals of the test statistics.
+{it:#} must be one of 50, 80, 90, 95, 97.5, or 99; 95 is the default.
+
+
+{title:Methods & Formulas}
+
+{p}
+Consider a vector autoregression of order {it:k}, VAR({it:k}),
+
+{p 12}{it:k}{p_end}
+{p 4 12}
+{bind:{hi:x}_{it:t} = }
+{bind:SUM {hi:B}_{it:i} * {hi:x}_{it:t-i}}
+{bind: + {hi:f} * {hi:D}_{it:t}}
+{bind: + {it:{hi:m}_0}}
+{bind: + {it:{hi:m}_1} * {it:t}}
+{bind: + {it:{hi:e}_t}}{p_end}
+{p 11}{it:i}=1
+
+{p 4 12}({it:t} = 1,...,{it:T} )
+
+where
+{p 4 18}{hi:x}_{it:t}{bind:       }({it:p} x1) vector of {it:p} stochastic variables;{p_end}
+{p 4 18}{hi:B}_{it:i}{bind:       }({it:p} x{it:p} ) matrix of coefficients;{p_end}
+{p 4 18}{hi:D}_{it:t}{bind:       }(optional) matrix of zero-mean seasonal dummies with corresponding coefficient vector {hi:f}; and{p_end}
+{p 4 18}{hi:m}_{it:0}, {hi:m}_{it:1}{bind:  }(optional) ({it:p} x1) vectors of coefficients on intercept and trend terms, respectively.
+
+{p}
+Any such VAR({it:k}) may be re-parameterized as
+
+{p 13}{it:k}-1{p_end}
+{p 4 12}
+{bind:d.{hi:x}_{it:t} = }
+{bind:SUM {hi:G}_{it:i} * d.{hi:x}_{it:t-i}}
+{bind: + {hi:P} * {hi:x}_{it:t-1}}
+{bind: + {hi:f} * {hi:D}_{it:t}}
+{bind: + {hi:m}_{it:0}}
+{bind: + {hi:m}_{it:1} * {it:t}}
+{bind: + {hi:e}_{it:t}}{p_end}
+{p 13}{it:i}=1
+
+{p 8}
+{hi:P} = {hi:ab'}
+
+{p}
+where "d." represents the first-difference operator and {hi:G}_{it:i},
+{hi:P}, are ({it:p} x{it:p} ) matrices of coefficients.
+As shown above, matrix {hi:P} can be further decomposed into the product
+{hi:ab'} where {hi:b'} represents the matrix of ({it:r}) cointegrating
+vectors and {hi:a}, the matrix of weights on the vectors in each
+equation of the system.
+Both {hi:a} and {hi:b} are of dimension ({it:p} x{it:r} ).
+(The notation {hi:P} = {hi:ab'} is a departure from the convention of
+using uppercase (lowercase) letters for matrices (scalars) but has
+become embedded in the cointegration literature so we stick
+to it.)
+
+{p}
+The Johansen cointegration rank test is a test of the rank of the {hi:ab'}
+matrix.
+If, after inference, the rank is deemed to be ({it:r}), then there are
+({it:r}) cointegrating relationships or vectors in the system.
+The rank of any matrix can be determined by the number of non-zero
+eigenvalues for that matrix.
+
+{p}
+Two features of the Johansen procedure are worth noting.
+First, the test is really a sequence of tests.
+The null hypothesis of rank (r)=0 (i.e. no cointegrating relationship)
+is first tested and, if rejected, subsequent null hypotheses (Ho: r=1, Ho: r=2, etc.)
+are tested until a null can no longer be rejected.
+This is eminently sensible since we must first enquire whether any
+cointegrating relation exists at all, and only in the affirmative are we
+interested in finding out exactly how many can be identified.
+
+{p}
+The second distinguishing feature of the procedure is that it provides
+two ways (two test statistics, that is) of testing the same null
+hypothesis.
+The difference lies in the alternative hypotheses implied by each.
+The {it:maximum-eigenvalue} statistic tests the null hypothesis that
+there are {cmd:at most} (r) cointegrating vectors against the
+alternative of (r+1) vectors.
+The {it:trace} statistic tests the same null hypothesis against the
+alternative that there are at most {it:p} cointegrating relations
+(where is {it:p} is always equal to the number of variables in the
+{hi:x}_{it:t} vector).
+It is important to note that the two statistics may lead to
+conflicting results.
+
+{p}
+However, before making inference using the max-lambda and trace
+statistics, certain assumptions regarding the deterministic components
+(intercept, trend terms) must be made.
+These assumptions will determine which table of critical values should
+be used.
+Following Osterwald-Lenum's notation (see {hi:references}),
+let {hi:y}_{it:t} represent a subset or portion of the
+re-parameterized VAR (the 2nd equation above), specifically, let
+
+{p 4 12}
+{bind:{hi:y}_{it:t} = }
+{bind:{hi:ab'} * {hi:x}_{it:t-1}}
+{bind:  + {hi:m}_{it:0}}
+{bind:  + {hi:m}_{it:1} * {it:t}}
+
+{p}
+The precise form of this {hi:y}_{it:t} term depends on the assumptions
+regarding the presence of intercept or trend terms and whether such
+terms appear {it:within} or {it:outside} the cointegrating
+equation(s) (CE).
+By {it:outside} it is meant that a deterministic term lies in the
+{it:remainder} of the VAR, that is, that portion of the VAR other
+than the CE.
+The possible assumptions or cases are:
+
+    {ul:Table/Case 0:}  {it: no intercept, no trend}
+        {hi:y}_{it:t} = {hi:ab'} * {hi:x}_{it:t-1}
+
+    {ul:Table/Case 1*:} {it: intercept in CE only}
+        {hi:y}_{it:t} = {hi:a}({hi:b'}, {hi:b}_0) * ({hi:x'}_{it:t-1}, 1)'
+
+    {ul:Table/Case 1:}  {it: intercept in VAR}
+        {hi:y}_{it:t} = {hi:ab'} * {hi:x}_{it:t-1}  + {hi:m}_{it:0}
+
+    {ul:Table/Case 2*:} {it: intercept in VAR, trend in CE only}
+        {hi:y}_{it:t} = {hi:a}({hi:b'}, {hi:b}_1) * ({hi:x'}_{it:t-1}, {it:t})'  + {hi:m}_{it:0}
+
+    {ul:Table/Case 2:}  {it: intercept in VAR, trend in VAR}
+        {hi:y}_{it:t} = {hi:ab'} * {hi:x}_{it:t-1}  + {hi:m}_{it:0}  + {hi:m}_{it:1} * {it:t}
+
+{p}
+where {hi:b}_0 and {hi:b}_1 are of dimension ({it:r} x 1).
+The case number refers to the table identifier in Osterwald-Lenum.
+The corresponding critical values are reported by {cmd:johans}.
+This may seem confusing but it shouldn't be.
+Recall that a constant (trend) in an equation in difference-form
+implies a trend (quadratic trend) in levels.
+Therefore, cases 0 and 1* are appropriate when the series in
+{hi:x}_{it:t} do not exhibit some apparent trend (when plotted in
+levels); otherwise cases 1 and 2* should be used.
+Case 2 is rare and only consistent with explosive series.
+Case 1 is the most common and is the default in {cmd:johans}.
+
+{p}
+For instance, using the first of the examples provided in the
+{hi:Examples} section below,
+
+{com}. use http://fmwww.bc.edu/ec-p/data/macro/wgmacro.dta, clear
+{txt}(Quarterly SA West German macro data, Bil DM, from Lutkepohl 1993 Table E.1)
+
+{com}. johans investment income consumption, l(4) nonormal
+{txt}Johansen-Juselius cointegration rank test{right: {txt}Sample: {res}1960q4 {txt}to {res}1982q4}
+{right: {txt}Number of obs =  {res}88}
+{txt}{col 25}{* c |}{col 41}H1:
+{txt}{col 18}H0:{col 25}{c |}   Max-lambda{col 47}Trace
+{txt} Eigenvalues  rank<=(r){col 25}{c |}   statistics{txt}{col 45}statistics
+{txt}  (lambda){col 19}r{col 25}{c |}  (rank<=(r+1)){txt}{col 44}(rank<=(p={res}3{txt}))
+{txt}{dup 24:{c -}}{c +}{dup 32:{c -}}
+ {res} .21617042   {txt}    0     {txt}{c |}   {res} 21.433602       33.527577
+  .11390069   {txt}    1     {txt}{c |}   {res}  10.64151       12.093974
+  .01636981   {txt}    2     {txt}{c |}   {res} 1.4524647       1.4524647
+
+
+{txt}{col 5}Osterwald-Lenum Critical values (95% interval):
+
+{txt}{col 5}Table/Case: {res:1*}
+{txt}{col 5}(assumption: {res:intercept in CE})
+
+{txt}{col 18}H0:{col 25}{c |}   Max-lambda{col 47}Trace
+{txt}{col 14}{dup 11:{c -}}{c +}{dup 32:{c -}}
+                  0     {txt}{c |}     {res} 22.00           34.91
+              {txt}    1     {txt}{c |}     {res} 15.67           19.96
+              {txt}    2     {txt}{c |}     {res}  9.24            9.24
+
+{txt}{col 5}Table/Case: {res:1}
+{txt}{col 5}(assumption: {res:intercept in VAR})
+
+{txt}{col 18}H0:{col 25}{c |}   Max-lambda{col 47}Trace
+{txt}{col 14}{dup 11:{c -}}{c +}{dup 32:{c -}}
+                  0     {txt}{c |}     {res} 20.97           29.68
+              {txt}    1     {txt}{c |}     {res} 14.07           15.41
+              {txt}    2     {txt}{c |}     {res}  3.76            3.76
+{txt}
+
+{p}
+If we believe there is an intercept term in the VAR but not in
+the CE, we refer to the quantiles in Table 1 of Osterwald-Lenum.
+Using the Max-lambda statistic, we test the null hypothesis that (r)
+= 0 against the alternative that (r) is at most 1.
+Our test statistic of 21.43 exceeds the critical value of 20.97 which
+leads to the rejection of the hypothesis of no cointegrating
+relationship.
+The Trace statistic of 33.53 also exceeds its corresponding critical
+value of 29.68 which is consistent with the result using the
+Max-lambda statistic.
+
+{p}
+We now move on to testing the null hypothesis that the rank of
+{hi:ab'} is 1.
+In this instance however, the Max-lambda statistic of 10.64 is smaller
+than the critical value of 14.07 and we cannot reject the null
+hypothesis.
+The Trace test leads to the same conclusion.
+Therefore, regardless of which statistic is used, we cannot reject the
+hypothesis that we have 1 cointegrating vector.
+
+
+{title:Examples}
+
+{p 8 12}{inp:.} {stata "use http://fmwww.bc.edu/ec-p/data/macro/wgmacro.dta, clear":use http://fmwww.bc.edu/ec-p/data/macro/wgmacro.dta, clear}
+
+{p 8 12}{inp:. johans investment income consumption, l(4)}{p_end}
+{p 8 12}{inp:. lrjtest investment, c(1)}{p_end}
+{p 8 12}{inp:. wjtest investment, c(1)}{p_end}
+{p 8 12}{inp:. lrjtest income, c(1)}
+
+{p 8 12}{inp:. * generate zero-mean (centered) seasonal dummies}{p_end}
+{p 8 12}{inp:. forvalues i = 1/4 { gen byte q`i' = 0 }}{p_end}
+{p 8 12}{inp:. forvalues i = 1/4 { replace q`i' = 1 if quarter(dofq(qtr))==`i' }}{p_end}
+{p 8 12}{inp:. forvalues i = 1/4 { replace q`i' = q4-q`i' }}{p_end}
+{p 8 12}{inp:. johans investment income consumption, l(4) exog(q1 q2 q3)}
+
+{p}With longitudinal data, for each unit of a panel,
+
+{p 8 12}{inp:.} {stata "use http://fmwww.bc.edu/ec-p/data/Greene2000/TBL15-1, clear":use http://fmwww.bc.edu/ec-p/data/Greene2000/TBL15-1, clear}
+
+{p 8 12}{inp:. tsset firm year, yearly}{p_end}
+{p 8 12}{inp:. by firm: johans i f c, l(3)}
+
+{p 8 12}{inp:. johans i f c if firm==3, l(3)}{p_end}
+{p 8 12}{inp:. lrjtest i, c(1) restrict}{p_end}
+{p 8 12}{inp:. lrjtest c, c(1) restrict}
+
+
+{title:References}
+
+{p 0 2}
+Johansen, S. (1988). "Statistical Analysis of Cointegration Vectors".
+{it:Journal of Economic Dynamics and Control}. {cmd:12}. 231-254.
+
+{p 0 2}
+Johansen, S. and K. Juselius. (1990). "Maximum Likelihood Estimation
+and Inference on Cointegration - With Applications to the Demand for
+Money". {it:Oxford Bulletin of Economics and Statistics}. {cmd:52}.
+169-210.
+
+{p 4 4}
+For inference, the most comprehensive set of critical values can be
+found in:
+
+{p 0 2}
+Osterwald-Lenum, M. (1992). "A Note with Quantiles of the Asymptotic
+Distribution of the Maximum Likelihood Cointegration Rank Test
+Statistics". {it:Oxford Bulletin of Economics and Statistics}.
+{cmd:54}. 461-472.
+
+
+{title:Acknowledgements}
+
+{p}
+Thanks to Richard Sperling for suggestions on the displayed output.
+
+
+{title:Author}
+
+{p 0 2}Ken Heinecke and Charles Morris, Federal Reserve Bank of Kansas City
+
+{p 0 2}Patrick Joly, Industry Canada{p_end}
+{p 0 2}pat.joly@utoronto.ca
+
+
+{title:Also see}
+
+{p 0 19}
+On-line:  help for
+      {help vecar} (if installed),
+      {help vececm} (if installed),
+      {help dfuller},
+      {help pperron}
+{p_end}
+

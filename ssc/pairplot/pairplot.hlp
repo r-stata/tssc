@@ -1,0 +1,168 @@
+{smcl}
+{* 30july2004/13july2005/13june2007}{...}
+{hline}
+help for {hi:pairplot}
+{hline}
+
+{title:Plots of paired observations} 
+
+{p 8 17 2} 
+{cmd:pairplot} 
+{it: yvar1 yvar2}
+[{it:xvar}] 
+[{cmd:if} {it:exp}] 
+[{cmd:in} {it:range}]
+[{cmd:,}
+{cmdab:hor:izontal} 
+{c -(}
+{cmd:diff}
+| 
+{cmd:ratio} 
+{c )-}
+{cmd:base(}{it:#}{cmd:)}
+{c -(}
+{cmd:mean}
+| 
+{cmd:gmean}
+| 
+{cmd:sort(}{it:sortvarlist}{cmd:)}
+[{cmdab:sortlab:el(}{it:labelvar}{cmd:)}] 
+{c )-} 
+{cmdab:trsc:ale(}{it:transformation_syntax}{cmd:)} 
+{cmdab:y2:options(}{it:scatter_options}{cmd:)} 
+{it:rspike_options}
+{it:scatter_options}
+]
+
+
+{title:Description}
+
+{p 4 4 2}
+{cmd:pairplot} plots paired data for {it:yvar1} and {it:yvar2} using parallel
+lines to show the differences between or ratios of values. By default 
+lines are vertical. 
+ 
+{p 4 4 2} 
+By default, {it:yvar1} and {it:yvar2} are plotted on the {it:y} axis.  
+Normally they will have the same units. 
+
+{p 4 4 2}
+If {it:xvar} is specified it is used for the {it:x} axis: otherwise 
+the order of the observations is used for the {it:x} axis.
+
+{p 4 4 2} 
+Other kinds of plots may be obtained through particular options. 
+
+
+{title:Options} 
+
+{p 4 8 2}{cmd:horizontal} specifies horizontal alignment. The 
+default is vertical. 
+
+{p 4 8 2}{cmd:diff} specifies that the {it:y} axis should show the difference  
+{it:yvar1} - {it:yvar2}.
+
+{p 4 8 2}{cmd:ratio} specifies that the {it:y} axis should show the ratio  
+{it:yvar1} / {it:yvar2}. 
+
+{p 4 8 2}{cmd:base(}{it:#}{cmd:)} specifies a baseline for comparison if either 
+{cmd:diff} or {cmd:ratio} is specified. With {cmd:diff}, {cmd:base}
+has default 0. With {cmd:ratio}, {cmd:base} has default 1. 
+
+{p 4 8 2}{cmd:mean} specifies that the {it:x} axis should show the mean of 
+{it:yvar1} and {it:yvar2}. 
+This option may not be combined with specification of {it:xvar}, 
+nor with {cmd:gmean} or {cmd:sort()}.
+
+{p 4 8 2}{cmd:gmean} specifies that the {it:x} axis should show the geometric mean of 
+{it:yvar1} and {it:yvar2}. 
+This option may not be combined with specification of {it:xvar}, 
+nor with {cmd:mean} or {cmd:sort()}.
+It requires that data be positive for both {it:yvar1} and {it:yvar2}.
+   
+{p 4 8 2}{cmd:sort(}{it:sortvarlist}{cmd:)} specifies that the order of the data is determined by 
+{it:sortvarlist}. The {it:x} axis then shows order of observations on 
+{it:sortvarlist}. This option invokes {help gsort}, so that the order of sorting 
+may be indicated by + or - signs. This option may not be combined 
+with specification of {it:xvar}, nor with {cmd:mean} or {cmd:gmean}.
+
+{p 4 8 2}{cmd:sortlabel(}{it:labelvar}{cmd:)} specifies a variable whose values
+(or whose value labels if they exist) will be used to label each observation
+whenever {cmd:sort()} is also specified.  Normally this option will be used to
+specify an identifier variable for labelling the {it:x} axis.
+
+{p 4 8 2}{cmd:trscale()} specifies the use of an alternative transformed scale
+on which to show responses. Any calculations on the fly (e.g. differences or
+means) will be carried out on that scale and results shown on that scale.
+Stata syntax should be used with {cmd:@} as placeholder for untransformed
+values. For example, to show proportions on a logit scale, specify
+{cmd:trscale(logit(@))}; to show percents on a logit scale, specify
+{cmd:trscale(logit(@/100))}.  Tools to make associated labels and ticks easier
+are available on SSC: see {stata ssc desc mylabels:ssc desc mylabels}. 
+
+{p 4 8 2}{cmd:y2options()} specifies options of 
+{help twoway_scatter:graph twoway scatter} that 
+control the display of the second {it:y} variable 
+when {cmd:horizontal} is specified. Understand that at the heart of {cmd:pairplot} 
+is a {cmd:scatter} {it: yvar1 yvar2 xvar} with vertical alignment, but 
+a {cmd:scatter} {it: xvar yvar1} {cmd: || scatter} {it:xvar yvar2} 
+with horizontal alignment. The difference means that it is easiest to control
+display of {it:yvar2} by way of a collective option to be passed to 
+the second {cmd:scatter}. 
+
+{p 4 8 2}{it:rspike_options} refers to options of 
+{help twoway_rspike:graph twoway rspike} apart from {cmd:horizontal}.
+
+{p 4 8 2}{it:scatter_options} refers to options of 
+{help twoway_scatter:graph twoway scatter}. 
+
+
+{title:Examples}
+
+{p 4 8 2}{cmd:. pairplot after before} 
+
+{p 4 8 2}{cmd:. pairplot after before, ms(Oh D)} 
+    
+{p 4 8 2}{cmd:. pairplot after before, sort(before)} 
+    
+{p 4 8 2}{cmd:. pairplot after before, diff mean}
+    
+{p 4 8 2}{cmd:. pairplot after before, ratio base(2)}
+
+{p 4 8 2}{cmd:. pairplot before after, horizontal sort(before) sortlabel(id) ms(O) mc(green) y2(ms(T) mc(red)) yla(, ang(h))}
+
+{p 4 8 2}{cmd:. pairplot spring fall, sort(fall) sortlabel(student)} 
+
+
+{title:References} 
+
+{p 4 8 2}Cox, N.J. 2004. Graphing agreement and disagreement.
+{it:Stata Journal} 4: 329{c -}349.
+
+{p 4 8 2}Cox, N.J. 2006. 
+Assessing agreement of measurements and predictions in geomorphology. 
+{it:Geomorphology} 76: 332{c -}346.                 
+
+{p 4 8 2}McNeil, D.R. 1992. On graphing paired data. 
+{it:American Statistician} 46, 307-11.
+
+
+{title:Acknowledgements}
+
+{p 4 4 2}Bob Fitzgerald alerted me to a problem. 
+Erik Beecroft alerted me to an interesting example.
+David Schwappach alerted me to another problem. 
+Scott Merryman made suggestions on how to solve it. 
+Friedrich Huebler asked a question which prompted improvements to this help. 
+         
+
+{title:Author}
+
+{p 4 4 2}Nicholas J. Cox, Durham University{break}n.j.cox@durham.ac.uk
+
+
+{title:Also see} 
+
+{p 4 13 2}
+On-line: {help graph}, {help gsort} 
+

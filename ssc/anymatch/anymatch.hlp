@@ -1,0 +1,111 @@
+{smcl}
+{* 13Sep2009}{...}
+{cmd:help anymatch}
+
+{hline}
+
+{title:Title}
+
+{p2colset 5 17 20 2}{...}
+{p2col :{hi:  anymatch} {hline 2}}distance matching based on any metric{p_end}
+
+{marker s_Syntax}
+{title:Syntax}
+
+{p 4 4 6}
+{cmdab:anymatch} [{varlist}], {opt id( )}  {opt met:ric( )} [{it:options}]
+
+{marker s_Description}
+{title:Description}
+
+{p 4 4 6}
+{cmd:anymatch} provides a fast and easy way to perform distance matching based on any metric of choice. It mathces 
+identifiers or attributes from one to another based on the metric distance. It also 
+counts the number of nearest observations that lay within a certain metric distance.
+
+{p 4 4 6}
+{cmd:anymatch} is also capable of sibling matching, extracting id and attributes of siblings within a family.
+
+{marker s_Options}
+{title:Options}
+
+{dlgtab:Main}
+
+{p 4 12 6}{opt id(varname)} unique identifiers. They cannot be missing. {p_end}
+
+{p 4 12 6}{opt met:ric(varname)} any metric of choice. {p_end}
+
+{p 4 12 6}{opt don:or(varname)} an indicator for donor. Neighbors will be found for them. The default is 1 for everyone.{p_end}
+
+{p 4 12 6}{opt rec:ipient(varname)} an indicator for recipients. They are candidate to be someone's neighbor. The default is 1 for everyone.{p_end}
+
+{p 4 12 6}{opt near:est(#)} the number of nearest neighbors to be found. {opt near:est(.)} will make it look 
+until it runs out of potential neighbors. The default is 5.{p_end}
+
+{p 4 12 6}{opt min:imum(#)} the minimum distance in the metric provided. {p_end}
+
+{p 4 12 6}{opt max:imum(#)} the maximum distance in the metric provided.{p_end}
+
+{p 4 12 6}{opt count} count the number of neighbors within the area upto {opt near:est(#)}{p_end}
+
+{p 4 12 6}{opt noi:sily} display the progress on the screen.{p_end}
+
+
+{dlgtab:Nomenclature}
+
+{p 4 12 6}{opt dist( )} name of variables to contain distances/differences. The default is "dist" {p_end}
+
+{p 4 12 6}{opt count( )} name of variable to contain the number of neighbors. The default is "count".{p_end}
+
+{p 4 12 6}{opt pre:fix( )} prefix. The default is "_". {p_end}
+
+{p 4 12 6}{opt suf:fix( )} non-index suffix before the indices. The default is none. {p_end}
+
+
+{title:Hints}
+
+{p 4 4 6}If you have more than one datasets, they need to be appeneded into one dataset. They should 
+have the same name for metric so that it will appear in the same column.
+
+{p 4 4 6}Use donor( ) option to indicate the potential pool from which a match will be found. See an example below.
+
+{p 4 4 6}Use recipient( ) option to indicate locations for which a match will be found. See an example below.
+
+{p 4 4 6}Use noisily option to see the progress on the screen.
+
+{marker s_0}
+{title:Examples}
+
+{p 4 4 6}* suggestions on how to create unique identifier{p_end}
+{p 4 8 6}gen id = _n{p_end}
+{p 4 8 6}egen id = group(state county){p_end}
+
+{p 4 4 6}* The nearest price and the difference from it {p_end}
+{p 4 8 6}{stata sysuse auto, clear} {p_end}
+{p 4 8 6}{stata gen id=_n} {p_end}
+{p 4 8 6}{stata keep price id} {p_end}
+{p 4 8 6}{stata anymatch price, id(id) metric(price) near(1) dist(price_diff)} {p_end}
+{p 4 8 6}{stata browse} {p_end}
+
+{p 4 4 6}* sibling matching with family id as metric and the maximum distance of 0 {p_end}
+{p 4 4 6}{stata sysuse auto, clear}{p_end}
+{p 4 4 6}{stata ren mpg family}{p_end}
+{p 4 4 6}{stata ren price income}{p_end}
+{p 4 4 6}{stata gen id=_n}{p_end}
+{p 4 4 6}{stata sort family id}{p_end}
+{p 4 4 6}{stata keep family id income}{p_end}
+{p 4 4 6}{stata anymatch income, id(id) met(family) max(0) near(10)}{p_end}
+{p 4 4 6}{stata browse}{p_end}
+
+
+{title:Remarks}
+
+{p 4 12 6}{opt min:imum( )} and {opt max:imum( )} are inclusive, i.e. >= and <=.{p_end}
+{p 4 12 6}Conflicts between options should be reported with detailed examples to the address below.{p_end}
+
+
+{title:Author}
+
+{p 4 4 6}Roy Wada{p_end}
+{p 4 4 6}roywada@hotmail.com{p_end}
+

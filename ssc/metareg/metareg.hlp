@@ -1,0 +1,368 @@
+{smcl}
+{* 31oct2008}{...}
+{cmd:help metareg}{right: ({browse "http://www.stata-journal.com/article.html?article=up0023":SJ8-4: sbe23_1})}
+{hline}
+
+{title:Title}
+
+{p2colset 5 16 18 2}{...}
+{p2col :{hi:metareg} {hline 2}}Meta-analysis regression (revised){p_end}
+{p2colreset}{...}
+
+
+{title:Syntax}
+
+{p 8 15 2}
+{cmd: metareg}
+{it:{help varname:depvar}} [{it:{help varlist:indepvars}}]
+{ifin} {cmd:wsse(}{it:varname}{cmd:)}
+[, {cmdab:ef:orm}
+{cmdab:g:raph}
+{cmdab:ra:ndomsize}
+{cmdab:nocons:tant}
+{cmd:mm} {cmd:reml} {cmd:eb}
+{cmdab:k:napphartung} {cmd:z}
+{cmdab:tau:2test}
+{cmdab:l:evel(}{it:#}{cmd:)}
+{cmdab:perm:ute(}{it:#} [{cmd:,} {cmdab:u:nivariable} {cmdab:d:etail} 
+{cmdab:j:oint(}{it:varlist1} [{cmd:|} {it:varlist2} ...]{cmd:)}]{cmd:)}
+{cmd:log}
+{it:maximize_options}]
+
+{pstd}
+{cmd:by} can be used with {cmd:metareg}; see {manhelp by D}.
+
+
+{title:Description}
+
+{pstd}
+{cmd:metareg} performs random-effects meta-regression
+using aggregate-level data.
+
+{pstd}
+From a more abstract perspective, it extends {helpb vwls}
+by estimating an extra additive component of variance tau2:
+
+{p 8 17 2}
+y_i = a + B*x_i + u_i + e_i
+
+{pstd} where a is a constant, u_i is a normal error term with known standard deviations
+wsse_i that may vary across units, and e_i is a normal error with variance
+tau2 to be estimated, assumed equal across units.  This is a similar model to
+those fit by the {helpb xt} commands, except that the within-unit data have
+been summarized by an effect estimate and its standard error for each unit i.
+
+
+{title:Options}
+
+{phang}{cmd:wsse(}{it:varname}{cmd:)} specifies the variable
+containing the standard error of {it:depvar} within each study
+({ul:w}ithin-{ul:s}tudy {ul:s}tandard {ul:e}rror).  All values of {it:varname}
+must be greater than zero. {cmd:wsse()} is required.
+
+{phang}{cmd:eform} indicates to output the exponentiated form of the
+coefficients and to suppress reporting of the constant.  This option may
+be useful when {it:depvar} is the logarithm of a ratio measure, such as a log
+odds-ratio or a log risk-ratio.
+
+{phang}{cmd:graph} requests a line graph of fitted values
+plotted against the first covariate in {it:indepvars},
+together with the estimates from each study represented by circles.
+By default, the circle sizes depend on the precision of each estimate
+(the inverse of its within-study variance),
+which is the weight given to each study in the fixed-effects model.
+
+{phang}{cmd:randomsize} is for use with the {cmd:graph} option.  It
+specifies that the size of the circles will depend on the weights in the
+random-effects model rather than the precision of each estimate.  These
+random-effects weights depend on the estimate of tau2.
+
+{pstd} The remaining options will mainly be of interest to more advanced users:
+
+{phang}{cmd:noconstant} suppresses the constant term (intercept).
+This is rarely appropriate in meta-regression. 
+
+{pstd} The {cmd:mm}, {cmd:reml}, and {cmd:eb} options are alternatives 
+that specify the method of estimation 
+of the additive (between-study) component of variance tau2.
+
+{phang}{cmd:mm} specifies the use of method of moments to estimate the
+additive (between-study) component of variance tau2; this is a generalization
+of the DerSimonian and Laird (1986) method commonly used for random-effects
+meta-analysis.  For speed, this is the default when the {cmd:permute()} option
+is specified, because it is the only noniterative method.
+
+{phang}{cmd:reml} specifies the use of residual maximum likelihood (REML) to estimate the additive
+(between-study) component of variance tau2.  This is the default unless the
+{cmd:permute()} option is specified.  This revised version uses
+Stata's maximum likelihood facilities to maximize the REML
+log likelihood.  It will therefore not give identical results to the previous
+version of {cmd:metareg}, which used an approximate iterative method.
+
+{phang}{cmd:eb} specifies the use of the "empirical Bayes" method
+to estimate tau2 (Morris 1983).
+
+{phang}{cmd:knapphartung} makes a modification to the variance of the
+estimated coefficients suggested by Knapp and Hartung (2003), accompanied by
+the use of a t distribution in place of the standard normal distribution when
+calculating p-values and confidence intervals.  This is the default unless the
+{cmd:permute()} option is specified.
+
+{phang}{cmd:z} requests that the {cmd:knapphartung} modification not be
+applied and that the standard normal distribution be used to calculate
+p-values and confidence intervals.  This is the default when the
+{cmd:permute()} option is specified with a fixed-effects model.
+
+{phang}{cmd:tau2test} adds to the output two tests of tau2 = 0.  The first is
+based on the residual heterogeneity statistic, Q_res. The second (not
+available if the {cmd:mm} option is also
+specified) is a likelihood-ratio test based on the REML log likelihood. These
+are two tests of the same null hypothesis (the fixed-effects model with tau2
+= 0), but the alternative hypotheses are different, as are the distributions of
+the test statistics under the null, so close agreement of the two tests is not
+guaranteed.  Both tests are typically of little interest because it is more
+helpful to quantify heterogeneity than to test for it.
+
+{phang} {opt level(#)} specifies the confidence level, as a percentage, for
+confidence intervals.  The default is {cmd:level(95)} or as set by 
+{helpb set level}.
+
+{phang} {cmd:permute(}...{cmd:)} calculates p-values by using a Monte Carlo permutation
+test. See {help metareg##permute:Option for permutation test} for more information about the option.
+
+{phang}{cmd:log} requests the display of the iteration log during estimation of
+tau2.  This is ignored if the {cmd:mm} option is specified, because this uses a
+noniterative method.
+
+{phang}{it:maximize_options} are ignored unless estimation of tau2 is by REML.
+These options control the maximization process; see {helpb maximize}.  You
+should never need to specify them; they are supported only in case problems in
+the REML estimation of tau2 are ever reported or suspected.
+
+
+{marker permute}{...}
+{title:Option for permutation test}
+
+{pstd} The {cmd:permute()} option calculates p-values by using a Monte
+Carlo permutation test, as recommended by Higgins and
+Thompson (2004).  To address multiple testing, {cmd:permute()} also calculates
+p-values for the most- to least-significant covariates, as the same
+authors also recommend.
+
+{pstd}
+The syntax of {cmd:permute()} is
+
+{p 8 15 2}{cmd:permute(}{it:#}
+[{cmd:,}
+	{cmd:univariable}
+	{cmd:detail}
+	{cmd:joint(}{it:varlist1} [{cmd:|} {it:varlist2} ...]{cmd:)}]{cmd:)}
+
+{pstd}
+where {it:#} is required and specifies the number of random permutations to
+perform.  Larger values give more precise p-values but take longer.
+
+{pstd}
+There are three suboptions:
+
+{phang}{cmd:univariable} indicates that p-values should be calculated for a
+series of single covariate meta-regressions of each covariate in {it:varlist}
+separately, instead of a multiple meta-regression of all covariates in
+{it:varlist} simultaneously.
+
+{phang}{cmd:detail} requests more detailed output in the style given by
+{helpb permute}.
+
+{phang}{cmd:joint(}{it:varlist1} [{cmd:|} {it:varlist2} ...]{cmd:)}
+specifies that a permutation p-value should also be computed for a joint
+test of the variables in each {help varlist}.
+
+{pstd}The {cmd:eform}, {cmd:level()}, and {cmd:z} options have
+no effect when the {cmd:permute()} option is specified.
+
+
+{title:Syntax of predict}
+
+{p 4 4}
+The syntax of {helpb predict} following {cmd:metareg} is
+
+{p 8 15 2}{cmd:predict} [{it:type}] {it:newvar} {ifin} [{cmd:,} {it:statistic}]
+
+{pstd}
+where {it:statistic} is
+
+{p 8 25}{cmd:xb}{space 11}fitted values; the default{p_end}
+{p 8 25}{cmd:stdp}{space 9}standard error of the prediction{p_end}
+{p 8 25}{cmd:stdf}{space 9}standard error of the forecast{p_end}
+{p 8 25}{cmd:u}{space 12}predicted random effects{p_end}
+{p 8 25}{cmdab:usta:ndard}{space 4}standardized predicted random effects{p_end}
+{p 8 25}{cmd:xbu}{space 10}prediction including random effects{p_end}
+{p 8 25}{cmd:stdxbu}{space 7}standard error of xbu{p_end}
+{p 8 25}{cmdab:h:at}{space 10}leverage (diagonal elements of hat matrix)
+
+{pstd}
+These statistics are available both in and out of sample;
+type {cmd:predict ... if e(sample) ...} if wanted only for the estimation sample.
+
+
+{title:Options for predict}
+
+{phang}{cmd:xb}, the default, calculates the linear prediction, x_i*b, that is, the fitted values excluding the random effects.
+
+{phang}{cmd:stdp} calculates the standard error of the prediction
+(the standard error of the fitted values excluding the random effects).
+
+{phang}{cmd:stdf} calculates the standard error of the forecast.
+This gives the standard deviation of the predicted distribution
+of the true value of {it:depvar} in a future study,
+with the covariates given by {it:varlist}.
+{break}stdf^2 = stdp^2 + tau2.
+
+{phang}{cmd:u} calculates the predicted random effects, u_i.  These are the
+best linear unbiased predictions of the random effects, also known as
+the empirical Bayes (or posterior mean) estimates of the random effects,
+or as shrunken residuals.
+
+{phang}{cmd:ustandard} calculates the standardized predicted random effects,
+i.e., the predicted random effects, u_i,
+divided by their (unconditional) standard errors.
+These may be useful for diagnostics and model checking.
+
+{phang}{cmd:xbu} calculates the prediction including random effects, a +
+B*x_i + u_i, also known as the empirical Bayes estimates of the effects for
+each study.
+
+{phang}{cmd:stdxbu} calculates the standard error of the prediction including
+random effects.
+
+{phang}{cmd:hat} calculates the leverages (the diagonal elements of the
+projection hat matrix).
+
+
+{title:Saved results}
+
+{pstd}When the {cmd:permute()} option is not specified, {cmd:metareg} saves
+the following in {cmd:e()}:
+
+{synoptset 20 tabbed}{...}
+{p2col 5 20 24 2: Scalars}{p_end}
+{synopt:{cmd:e(N)}}number of observations{p_end}
+{synopt:{cmd:e(df_m)}}model degrees of freedom{p_end}
+{synopt:{cmd:e(df_Q)}}degrees of freedom for test of Q=0{p_end}
+{synopt:{cmd:e(df_r)}}residual degrees of freedom (if t tests used){p_end}
+{synopt:{cmd:e(remll)}}REML log likelihood{p_end}
+{synopt:{cmd:e(chi2_c)}}chi^2 for comparison test{p_end}
+{synopt:{cmd:e(F)}}model F statistic{p_end}
+{synopt:{cmd:e(tau2)}}estimate of tau2{p_end}
+{synopt:{cmd:e(Q)}}Cochran's Q{p_end}
+{synopt:{cmd:e(I2)}}I-squared{p_end}
+{synopt:{cmd:e(q_KH)}}Knapp-Hartung variance modification factor{p_end}
+{synopt:{cmd:e(remll_c)}}REML log likelihood, comparison model{p_end}
+{synopt:{cmd:e(tau2_0)}}tau2, constant-only model{p_end}
+{synopt:{cmd:e(chi2)}}model chi^2{p_end}
+
+{synoptset 20 tabbed}{...}
+{p2col 5 20 24 2: Macros}{p_end}
+{synopt:{cmd:e(cmd)}}{cmd:metareg}{p_end}
+{synopt:{cmd:e(predict)}}program used to implement {cmd:predict}{p_end}
+{synopt:{cmd:e(wsse)}}name of {cmd:wsse()} variable{p_end}
+{synopt:{cmd:e(depvar)}}name of dependent variable{p_end}
+{synopt:{cmd:e(method)}}{cmd:REML}, {cmd:Method of moments}, or 
+            {cmd:Empirical Bayes}{p_end}
+{synopt:{cmd:e(properties)}}{cmd:b V}{p_end}
+
+{synoptset 20 tabbed}{...}
+{p2col 5 20 24 2: Matrices}{p_end}
+{synopt:{cmd:e(b)}}coefficient vector{p_end}
+{synopt:{cmd:e(V)}}variance-covariance matrix of estimators{p_end}
+
+{synoptset 20 tabbed}{...}
+{p2col 5 20 24 2: Functions}{p_end}
+{synopt:{cmd:e(sample)}}marks estimation sample{p_end}
+{p2colreset}{...}
+
+
+{title:Examples}
+
+{phang}{cmd:. metareg logrr latitude, wsse(selogrr) eform}
+
+{phang}{cmd:. metareg logrr latitude, wsse(selogrr) graph}
+
+{phang}{cmd:. metareg smd abstract duration itt, wsse(sesmd) permute(10000)}
+
+{phang}{cmd:. metareg smd abstract duration itt, wsse(sesmd) permute(1000,}
+          {cmd: univariable)}
+
+{phang}{cmd:. xi: metareg logor i.group, wsse(selogor) permute(1000, joint(i.group))}
+
+
+{title:Note}
+
+{pstd} {cmd:metareg} is programmed as a Stata estimation command and so
+supports many of the commands listed under {helpb estcom} and 
+{helpb postest} (except when the {cmd:permute()} option is used).  One
+deliberate exception is {helpb lrtest}, which is not appropriate after
+{cmd:metareg} (because the REML log likelihood cannot be used to compare models
+with different fixed effects, while the method of moments is not based on a
+likelihood).  For this reason, when the REML method is used, the iteration log
+showing the log likelihood is suppressed by default; specify
+the {cmd:log} option if you wish to see it.
+
+
+{title:References}
+
+{phang}DerSimonian, R., and N. Laird. 1986. Meta analysis in clinical trials.
+{it:Controlled Clinical Trials} 7: 177-188.
+
+{phang} Higgins, J. P. T, and S. G. Thompson. 2004. Controlling the risk of
+spurious findings from meta-regression. {it:Statistics in Medicine} 23:
+1663-1682.
+
+{phang} Knapp, G., and J. Hartung. 2003. Improved tests for a random effects
+meta-regression with a single covariate. {it:Statistics in Medicine} 22:
+2693-2710.
+
+{phang} Morris, C. N. 1983. Parametric empirical Bayes inference: Theory and
+applications. {it:Journal of the American Statistical Association} 78: 47-55.
+
+{phang} Sharp, S. 1998. sbe23: Meta-analysis regression. {it:Stata Technical Bulletin} 42: 16-22. Reprinted in {it:Stata Technical Bulletin Reprints}, vol. 7, pp. 148-155. College Station, TX: Stata Press.
+
+
+{title:Author}
+
+{pstd}Roger M. Harbord{p_end}
+{pstd}Department of Social Medicine{p_end}
+{pstd}University of Bristol, UK{p_end}
+{pstd}{browse "mailto:roger.harbord@bristol.ac.uk":roger.harbord@bristol.ac.uk}{p_end}
+
+
+{title:Acknowledgments}
+
+{pstd}
+This is a substantial revision of the original version of {cmd:metareg}
+written by Stephen Sharp (1998), who gave his permission to release this
+version under the same name and to incorporate his code.  Julian Higgins gave
+advice on the permutation test.  Aijing Shang tested early versions and made
+helpful suggestions.  Portions of the new code borrow ideas from official
+Stata commands such as {cmd:nbreg}, and I thank StataCorp for making such code
+visible to the user. 
+
+{pstd}
+A dialog box, written by Thomas J. Steichen, is available for the original
+version of the {cmd:metareg} command.
+
+
+{title:Also see}
+
+{psee} 
+Article: {it:Stata Journal}, volume 8, number 4: {browse "http://www.stata-journal.com/article.html?article=up0023":sbe23_1},{break}
+         {it:Stata Technical Bulletin} 42: {browse "http://www.stata.com/products/stb/journals/stb42.pdf":sbe23}
+
+{psee}
+Manual:  {hi:[R] meta},{break}
+{hi:[R] permute}
+
+{psee}
+Online:  {manhelp vwls R}, {manhelp permute R}, {helpb meta} (if installed),
+{helpb metan} (if installed), {help meta_dialog} (if installed)
+{p_end}

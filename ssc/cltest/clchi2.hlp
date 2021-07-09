@@ -1,0 +1,62 @@
+.-
+help for ^clchi2^
+.-
+
+Clustered Chi-squared tests
+---------------------------
+
+
+ ^clchi2^  eventvar groupvar [^if^ exp] [^in^ range] , ^cluster(^clustvar^) strata(^stratavar^)^
+
+
+Description
+-----------
+This program calculates cluster-weighted chi-square values for comparing
+dichomotous event rates when the unit of randomization is a cluster. 
+It calculates two adjusted chi-squared values, one based on the effect
+of clustering pooled across all study groups, and one based on the effects 
+of clustering by study group. See reference below for formulae for
+the 2x2 case; this program makes the natural generalization to the
+2xk case. 
+
+^eventvar^ is a dichomotous event variable. It must be clustered 
+  within ^clustvar^.
+^groupvar^ is a categorical variable indicating comparison groups.
+^clustvar^ is a categorical variable denoting clusters of observations.
+  It is ^not^ optional.
+^stratavar^ is a categorical variable denoting strata of clusters.
+
+In addition to reporting the clustered chi-squares and their P-values, 
+^clchi2^ reports Pearson's chi-squared value (with P-value) and the 
+inter-^clustvar^ correlation.  If ^stratavar^ is specified, a Mantzel-
+Haenzel statistic is calculated. 
+
+Note: The adjustment for clustering uses (and reports) the intra-cluster
+correlation estimated by ^loneway^, which applies a correction for
+imbalanced clusters. 
+
+
+Example
+-------
+
+  . ^clchi2 passfail group, cluster(school)^
+
+where observations of ^passfail^ are clustered within ^school^. 
+
+Also see
+--------
+    ^clttest^
+
+
+Author
+------
+
+    Jeph Herrin
+    Yale University
+    email: jeph.herrin@@yale.edu
+
+Reference
+---------
+    Donner A, Klar N. Design and Analysis of Cluster Randomization
+    Trials in Health REsearch. Arnold, London. 2000
+

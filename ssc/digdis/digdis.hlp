@@ -1,0 +1,486 @@
+{smcl}
+{* 28jun2007}{...}
+{hi:help digdis}
+{hline}
+
+{title:Title}
+
+{pstd}{hi:digdis} {hline 2} Analysis of digit distributions
+
+
+{title:Syntax}
+
+{p 8 15 2}
+    {cmd:digdis} {varlist} {ifin} {weight}
+    [{cmd:,}
+    {help digdis##opt:{it:options}}
+    ]
+
+
+{p 8 15 2}
+    {cmd:digdis} {varname} {ifin} {weight}
+    [{cmd:,}
+    {cmd:by(}{it:groupvar}{cmd:)}
+    {help digdis##opt:{it:options}}
+    ]
+
+
+{synoptset 21 tabbed}{...}
+{marker opt}{synopthdr:options}
+{synoptline}
+{syntab :Main}
+{synopt :{opt p:osition(#)}}digit position (1st is default); {it:#} in [1,6]
+    {p_end}
+{synopt :{opt b:ase(#)}}base of number system (10 is default); {it:#} in [2,10]
+    {p_end}
+{synopt :{opt d:ecimalplaces(#)}}precision of input values (number of decimal places)
+    {p_end}
+{synopt :{opt ben:ford}}reference is Benford's law (the default)
+    {p_end}
+{synopt :{opt uni:form}}reference distribution is uniform
+    {p_end}
+{synopt :{opt mat:rix(name)}}user defined reference distribution
+    {p_end}
+{synopt :{cmd:test(}{it:{help mgof:mgof_opts}}{cmd:)}}options for goodness-of-fit test
+    {p_end}
+{synopt :{opt notest}}suppress goodness-of-fit test
+    {p_end}
+{synopt :{opt nofreq}}suppress frequency table
+    {p_end}
+{synopt :{opth g:enerate(newvarlist)}}save variable(s) containing digits
+    {p_end}
+{synopt :{opt r:eplace}}overwrite existing variables
+    {p_end}
+
+{syntab :Graph}
+{synopt :{opt gr:aph}}display graph
+    {p_end}
+{synopt :{opt per:cent}}scale is in percent (default)
+    {p_end}
+{synopt :{opt frac:tion}}scale is in proportions
+    {p_end}
+{synopt :{opt count}}scale is in counts
+    {p_end}
+{synopt :{it:{help twoway_bar:bar_options}}}affect rendition of observed
+    distribution
+    {p_end}
+{synopt :{cmd:ci}[{cmd:(}{it:{help digdis##ci:type}}{cmd:)}]}include confidence
+    intervals (capped spikes)
+    {p_end}
+{synopt :{opt l:evel(#)}}set confidence level; default is {cmd:level(95)}
+    {p_end}
+{synopt :{cmdab:ciopt:s(}{it:{help twoway_rcap:rcap_opts}}{cmd:)}}affect
+    rendition of confidence spikes
+    {p_end}
+{synopt :{cmdab:refopt:s(}{it:{help scatter:options}}{cmd:)}}affect rendition
+    of reference distribution
+    {p_end}
+{synopt :{opt noref}}suppress reference distribution
+    {p_end}
+{synopt :{opt addplot(plot)}}add other plots to the generated graph
+    {p_end}
+{synopt :{it:{help twoway_options}}}any options other than {cmd:by()}
+    documented in help {it:{help twoway_options}}
+    {p_end}
+
+{syntab :By}
+{synopt :{opt by(groupvar)}}repeat results for subgroups
+    {p_end}
+{synopt :{cmdab:byopt:s(}{it:{help by_option:by_subopts}}{cmd:)}}graph {it:suboptions} for {cmd:by()}
+    {p_end}
+{synoptline}
+
+{pstd}
+    {cmd:by} is allowed; see help {helpb by}.
+{p_end}
+{pstd}
+    {cmd:fweight}s are allowed; see help {help weight}.
+
+
+{title:Description}
+
+{pstd}
+    {cmd:digdis} tabulates the distribution of digits of the variables in
+    {varlist}, performs goodness-of-fit tests against a reference
+    distribution and, optionally, graphs the distributions. The default is
+    to tabulate the first (nonzero) digit; specify, e.g.,
+    {cmd:position(2)} to tabulate the second digit. The default reference
+    distribution is given by Benford's law.
+
+{pstd}
+    The variables in {varlist} may be numeric or string (see help
+    {help data types}). It is sensible in some situations to use string variables
+    to store the numbers to be analyzed, since this ensures that the
+    numbers remain exactly as is. Note that, if the storage type is
+    {cmd:float} or {cmd:double} the numbers will be right-padded with zeros
+    (i.e. 1.3 is interpreted as 1.3000...) unless the {cmd:decimalplaces()}
+    option is specified. Using the {cmd:float} storage type is strongly
+    discouraged because of it's limited precision. For example, the number
+    1.30 is 1.29999995... in {cmd:float} accuracy and {cmd:digdis} will,
+    e.g., read a 2 for the second digit (unless the {cmd:decimalplaces()}
+    option is used to round the number).
+
+{pstd}
+    {cmd:digdis} sometimes displays notes such as
+    "{err:x: 7 invalid observations}". An observation is considered invalid
+    if (1) it's value 0, (2) {cmd:position(#)}>1 is specified and the value
+    does not have a {it:#}-th digit, or (3) the input variable is string and contains
+    a nonnumeric value.
+
+
+{title:Dependencies}
+
+{pstd}
+    {cmd:digdis} requires {cmd:moremata} and {cmd:mgof}. Type
+
+        {com}. {net "describe moremata, from(http://fmwww.bc.edu/repec/bocode/m/)":ssc describe moremata}{txt}
+
+        {com}. {net "describe mgof, from(http://fmwww.bc.edu/repec/bocode/m/)":ssc describe mgof}{txt}
+
+{title:Options}
+
+{dlgtab:Main}
+
+{phang}
+    {opt position(#)}, where {it:#} in [1,6], specifies the position of the
+    digits to be tabulated. {cmd:position(1)} is the default. Examples: The
+    fist digits of 236, 4.015, and 0.00789 are 1, 4, and 7; the second
+    digits are 3, 0, and 8; the third digits are 6, 1, and 9.
+
+{phang}
+    {opt base(#)}, where {it:#} in [2,10], specifies the base of the number
+    system. {cmd:base(10)} is the default. This option is rarely used.
+
+{phang}
+    {opt decimalplaces(#)} specifies the number of decimal places of the
+    input values. This option has an effect only if the
+    storage type of the variable is {cmd:float} or {cmd:double} (see help
+    {help data types}). {cmd:decimalplaces(}{it:#}{cmd:)} rounds the values
+    to {it:#} decimal places.
+
+{phang}
+    {opt benford} specifies that the expected distribution be computed
+    according to Benford's law (see help for
+    {helpb mf_mm_benford:mm_benford()}). This is the default.
+
+{phang}
+    {opt uniform} specifies that the expected distribution is uniform.
+
+{phang}
+    {opt matrix(name)} provides the name of a matrix containing the
+    expected distribution. The matrix should be a column vector containing
+    the proportions or the expected counts of the digits in ascending order
+    (i.e. frequency of 1's in the first column, frequency of 2's
+    in the second column, etc., or, if {cmd:position()}>1 is specified,
+    frequency of 0's in the first column, frequency of 1's
+    in the second column, etc.)
+
+{phang}
+    {cmd:test(}{it:{help mgof:mgof_opts}}{cmd:)} specifies options to be
+    passed through to the {cmd:mgof} command, which is used to perform
+    goodness-of-fit tests (see help {helpb mgof}). For example, type
+    {cmd:test(mc)} to perform exact tests using the Monte Carlo
+    method instead of asymptotic tests.
+
+{phang}
+    {opt notest} suppresses the goodness-of-fit tests.
+
+{phang}
+    {opt nofreq} suppresses the frequency table(s).
+
+{phang}
+    {opth generate(newvarlist)} causes variables to be generated containing
+    the extracted digits. Specify one {newvar} for each input variable.
+
+{phang}
+    {opt replace} allows the {cmd:generate()} option to overwrite existing
+    variables.
+
+{dlgtab:Graph}
+
+{phang}
+    {opt graph} displays the observed digit distribution in a graph as a
+    bar plot (see help {helpb twoway bar}). The reference
+    distribution is overlayed as connected-line plot
+    (see help {helpb twoway connected}). Type {cmd:noref} to omit the
+    reference distribution.
+
+{phang}
+    {opt percent} displays percentages. This is the default
+
+{phang}
+    {opt fraction} displays proportions.
+
+{phang}
+    {opt count} displays counts.
+
+{phang}
+    {it:{help twoway_bar:bar_options}} affect the rendition of the
+    plotted distribution. See help {helpb twoway bar}.
+
+{marker ci}{phang}
+    {cmd:ci}[{cmd:(}{it:type}{cmd:)}] specifies that pointwise confidence
+    intervals of the observed distribution be plotted as capped spikes.
+    {it:type} sets the calculation method and may be {opt exa:ct} (the
+    default), {opt wa:ld}, {opt w:ilson}, {opt a:gresti}, or
+    {opt j:effreys} (see help {helpb ci}). Alternatively, {it:type} may be
+    {cmd:reference} in which case point-wise probability intervals are plotted
+    around the reference distribution as a connected-line range plot (the intervals
+    are the shortest intervals with a probability mass of at least the value of the 
+    confidence level).
+
+{phang}
+    {opt level(#)} specifies the confidence level, as a percentage, for
+    the plotted confidence intervals. The default is {cmd:level(95)} or
+    as set by {helpb set level}.
+
+{phang}
+    {opt ciopts(options)} affects
+    the rendition of the confidence spikes. See help {helpb twoway rcap} or,
+    if {cmd:ci(reference)} is used, help {helpb twoway rconnected}.
+
+{phang}
+    {opt noref} suppresses plotting the reference distribution.
+
+{phang}
+    {cmd:refopts(}{it:{help twoway_connected:connected_options}}{cmd:)} affects the rendition
+    of the plotted reference distribution. See help {helpb twoway connected}.
+
+{phang}
+    {opt addplot(plot)} provides a way to add other plots to the generated
+    graph.  See help {help addplot_option}.
+
+{phang}
+    {it:{help twoway_options}} are any of the options documented in
+    {it:{help twoway_options}}, excluding {cmd:by()}.
+
+{dlgtab:By}
+
+{phang}
+    {opt by(groupvar)} repeats the analysis for the groups defined by
+    {it:groupvar}. The individual goodness-of-fit tests are included in
+    a single table and the individual plots are drawn within a
+    single graph. Note that {cmd:digdis} also allows the {helpb by} prefix
+    command, which arranges output differently. A difference between
+    the {cmd:by()} option and the {helpb by} prefix is also that {cmd:by()}
+    returns in {cmd:r()} the results for all groups whereas the {helpb by} prefix
+    only returns the results for the last group.
+
+{phang}
+    {cmd:byopts(}{it:{help by_option:by_subopts}}{cmd:)} affects the
+    arrangement of the individual plots in the graph. See the
+    {it:suboptions} in help {it:{help by_option}}. Do not use the
+    {cmd:total} suboption.
+
+
+{title:Examples}
+
+        {com}. {stata "sysuse auto"}
+        {txt}(1978 Automobile Data)
+
+        {com}. {stata "digdis price"}
+        {res}{txt}
+        Digit distribution ({res}1st{txt} digit)
+
+               Value {c |}     Count    Percent    Percent      Diff.    P-value
+                     {c |}             Observed   Expected      (MAD)
+        {hline 12}{hline 1}{c +}{hline 10}{hline 33}{hline 11}
+                   1 {c |} {res}       10     13.514     30.103    -16.589     0.0014
+                   {txt}2 {c |} {res}        0      0.000     17.609    -17.609     0.0000
+                   {txt}3 {c |} {res}       11     14.865     12.494      2.371     0.4844
+                   {txt}4 {c |} {res}       26     35.135      9.691     25.444     0.0000
+                   {txt}5 {c |} {res}       14     18.919      7.918     11.001     0.0018
+                   {txt}6 {c |} {res}        7      9.459      6.695      2.765     0.3456
+                   {txt}7 {c |} {res}        2      2.703      5.799     -3.096     0.4482
+                   {txt}8 {c |} {res}        2      2.703      5.115     -2.413     0.5918
+                   {txt}9 {c |} {res}        2      2.703      4.576     -1.873     0.7767
+        {txt}{hline 12}{hline 1}{c +}{hline 10}{hline 33}{hline 11}
+               Total {c |} {res}       74    100.000    100.000      9.240
+        {txt}
+        {res}
+        {txt}Goodness-of-fit tests        method =   {res}approx
+                               {txt}observations ={res}       74
+                                 {txt}categories ={res}        9
+                                         {txt}df ={res}        8
+
+        {txt}{hline 22}{c TT}{hline 23}
+               Test statistic {c |}       Coef.    P-value
+        {hline 22}{c +}{hline 23}
+                 Pearson's X2 {c |}   {res} 84.35215     0.0000
+         {txt}Log likelihood ratio {c |}   {res} 76.29649     0.0000
+        {txt}{hline 22}{c BT}{hline 23}
+
+        {com}. {stata "digdis price, position(2)"}
+        {res}{txt}
+        Digit distribution ({res}2nd{txt} digit)
+
+               Value {c |}     Count    Percent    Percent      Diff.    P-value
+                     {c |}             Observed   Expected      (MAD)
+        {hline 12}{hline 1}{c +}{hline 10}{hline 33}{hline 11}
+                   0 {c |} {res}        7      9.459     11.968     -2.508     0.5948
+                   {txt}1 {c |} {res}       13     17.568     11.389      6.179     0.0991
+                   {txt}2 {c |} {res}        7      9.459     10.882     -1.423     0.8522
+                   {txt}3 {c |} {res}        7      9.459     10.433     -0.973     1.0000
+                   {txt}4 {c |} {res}        7      9.459     10.031     -0.571     1.0000
+                   {txt}5 {c |} {res}        4      5.405      9.668     -4.262     0.3212
+                   {txt}6 {c |} {res}        4      5.405      9.337     -3.932     0.3182
+                   {txt}7 {c |} {res}       12     16.216      9.035      7.181     0.0406
+                   {txt}8 {c |} {res}        9     12.162      8.757      3.405     0.3000
+                   {txt}9 {c |} {res}        4      5.405      8.500     -3.094     0.5279
+        {txt}{hline 12}{hline 1}{c +}{hline 10}{hline 33}{hline 11}
+               Total {c |} {res}       74    100.000    100.000      3.353
+        {txt}
+        {res}
+        {txt}Goodness-of-fit tests        method =   {res}approx
+                               {txt}observations ={res}       74
+                                 {txt}categories ={res}       10
+                                         {txt}df ={res}        9
+
+        {txt}{hline 22}{c TT}{hline 23}
+               Test statistic {c |}       Coef.    P-value
+        {hline 22}{c +}{hline 23}
+                 Pearson's X2 {c |}   {res} 11.75117     0.2277
+         {txt}Log likelihood ratio {c |}   {res} 11.12604     0.2672
+        {txt}{hline 22}{c BT}{hline 23}
+
+        {com}. {stata "set seed 3217367"}
+        {txt}
+        {com}. {stata "digdis price, position(2) test(mc) nofreq"}
+        {res}
+        {txt}Goodness-of-fit tests                                method =       {res}mc
+                                                       {txt}observations ={res}       74
+                                                         {txt}categories ={res}       10
+                                                       {txt}replications ={res}    10000
+
+        {txt}{hline 22}{c TT}{hline 47}
+               Test statistic {c |}       Coef.    P-value    [99% Conf. Interval]
+        {hline 22}{c +}{hline 47}
+                 Pearson's X2 {c |}   {res} 11.75117     0.2234      0.2128      0.2343
+         {txt}Log likelihood ratio {c |}   {res} 11.12604     0.2894      0.2778      0.3012
+        {txt}{hline 22}{c BT}{hline 47}
+
+        {com}. {stata `"digdis price, position(2) graph nofreq notest ti("Second digit distribution")"':digdis price, position(2) graph nofreq}
+          {stata `"digdis price, position(2) graph nofreq notest ti("Second digit distribution")"':notest ti("Second digit distribution")}
+        {res}{txt}
+        {com}. {stata `"digdis price, position(2) by(foreign) graph byopts(ti("Second digit distribution"))"':digdis price, position(2) by(foreign) graph}
+          {stata `"digdis price, position(2) by(foreign) graph byopts(ti("Second digit distribution"))"':byopts(ti("Second digit distribution"))}
+
+        {txt}{hline}
+        -> foreign = 0
+        {res}{txt}
+        Digit distribution ({res}2nd{txt} digit)
+
+               Value {c |}     Count    Percent    Percent      Diff.    P-value
+                     {c |}             Observed   Expected      (MAD)
+        {hline 12}{hline 1}{c +}{hline 10}{hline 33}{hline 11}
+                   0 {c |} {res}        6     11.538     11.968     -0.429     1.0000
+                   {txt}1 {c |} {res}       10     19.231     11.389      7.842     0.0807
+                   {txt}2 {c |} {res}        3      5.769     10.882     -5.113     0.3687
+                   {txt}3 {c |} {res}        6     11.538     10.433      1.106     0.8189
+                   {txt}4 {c |} {res}        6     11.538     10.031      1.508     0.6448
+                   {txt}5 {c |} {res}        3      5.769      9.668     -3.898     0.4812
+                   {txt}6 {c |} {res}        2      3.846      9.337     -5.491     0.2331
+                   {txt}7 {c |} {res}        7     13.462      9.035      4.426     0.2313
+                   {txt}8 {c |} {res}        6     11.538      8.757      2.781     0.4576
+                   {txt}9 {c |} {res}        3      5.769      8.500     -2.731     0.6239
+        {txt}{hline 12}{hline 1}{c +}{hline 10}{hline 33}{hline 11}
+               Total {c |} {res}       52    100.000    100.000      3.533
+
+        {txt}{hline}
+        -> foreign = 1
+        {res}{txt}
+        Digit distribution ({res}2nd{txt} digit)
+
+               Value {c |}     Count    Percent    Percent      Diff.    P-value
+                     {c |}             Observed   Expected      (MAD)
+        {hline 12}{hline 1}{c +}{hline 10}{hline 33}{hline 11}
+                   0 {c |} {res}        1      4.545     11.968     -7.422     0.5072
+                   {txt}1 {c |} {res}        3     13.636     11.389      2.247     0.7331
+                   {txt}2 {c |} {res}        4     18.182     10.882      7.300     0.2916
+                   {txt}3 {c |} {res}        1      4.545     10.433     -5.888     0.7224
+                   {txt}4 {c |} {res}        1      4.545     10.031     -5.485     0.7194
+                   {txt}5 {c |} {res}        1      4.545      9.668     -5.122     0.7174
+                   {txt}6 {c |} {res}        2      9.091      9.337     -0.247     1.0000
+                   {txt}7 {c |} {res}        5     22.727      9.035     13.692     0.0431
+                   {txt}8 {c |} {res}        3     13.636      8.757      4.879     0.4355
+                   {txt}9 {c |} {res}        1      4.545      8.500     -3.954     1.0000
+        {txt}{hline 12}{hline 1}{c +}{hline 10}{hline 33}{hline 11}
+               Total {c |} {res}       22    100.000    100.000      5.624
+        {txt}
+        {hline}
+
+        Goodness-of-fit tests
+
+             foreign {c |}      Obs.         X2    P-value         LR    P-value
+        {hline 13}{c +}{hline 10}{hline 22}{hline 22}
+                   0 {c |} {res}       52   8.783497     0.4575   9.041643     0.4334
+                   {txt}1 {c |} {res}       22   9.744576     0.3716    9.01948     0.4355
+        {txt}
+        {com}. {stata "digdis displ, graph ci nofreq notest":digdis displ, graph ci nofreq notest}
+        {res}{txt}
+        {com}. {stata "digdis displ, graph ci(ref) nofreq notest":digdis displ, graph ci(ref) nofreq notest}
+        {res}{txt}
+
+{title:Returned results}
+
+{pstd}{cmd:digdis} saves the following in {cmd:r()}:
+
+{pstd}Scalars{p_end}
+{p2colset 7 20 20 2}{...}
+{p2col : {cmd:r(N)}}number of observations
+    {p_end}
+{p2col : {cmd:r(position)}}digit position
+    {p_end}
+{p2col : {cmd:r(base)}}base of number system
+    {p_end}
+{p2col : {cmd:r(mad)}}mean average percentage deviation between observed and
+    expected distribution
+    {p_end}
+{p2col : {cmd:r(level)}}confidence level as a percentage (if {cmd:ci} is specified)
+    {p_end}
+{p2col : {cmd:r(}{it:stat}{cmd:)}}value of test statistic
+    {p_end}
+{p2col : {cmd:r(p_}{it:stat}{cmd:)}}p-value of {cmd:r(}{it:stat}{cmd:)}
+    {p_end}
+
+{p 19 19 2}where {it:stat} may be {cmd:x2}, {cmd:lr}, {cmd:cr}, {cmd:mlnp}, or
+    {cmd:ksmirnov}, depending on {cmd:test()}
+
+{pstd}Macros{p_end}
+{p2col : {cmd:r(cmd)}}"digdis"
+    {p_end}
+{p2col : {cmd:r(refdist)}}type of reference distribution ("Benford",
+    "uniform", or "user")
+    {p_end}
+{p2col : {cmd:r(citype)}}confidence interval type (if {cmd:ci} is specified)
+    {p_end}
+{p2col : {cmd:r(byvar)}}name of variable specified in {cmd:by()}
+    {p_end}
+
+{pstd}Matrices{p_end}
+{p2col : {cmd:r(count)}}observed and expected counts
+    {p_end}
+{p2col : {cmd:r(pvals)}}p-values of individual differences
+    {p_end}
+{p2col : {cmd:r(ci)}}pointwise confidence intervals (if {cmd:ci} is
+    specified)
+    {p_end}
+
+{pstd}{cmd:r(N)}, {cmd:r(mad)}, {cmd:r(}{it:stat}{cmd:)}, and
+{cmd:r(p_}{it:stat}{cmd:)} are matrices if {cmd:digdis} is used with more than
+one variable or if {cmd:by()} is specified.
+
+
+{title:Author}
+
+{pstd}
+    Ben Jann, ETH Zurich, jann@soz.gess.ethz.ch
+
+
+{title:Also see}
+
+{psee}
+    Online:  help for
+    {helpb tabulate}, {helpb graph}, {helpb ci}, {helpb mgof},
+    {helpb mf_mm_mgof:mm_mgof()}, {helpb mf_mm_benford:mm_benford()},
+    {helpb moremata}

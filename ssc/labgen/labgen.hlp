@@ -1,0 +1,99 @@
+{smcl}
+{* 13 October 2008}{...}
+{hline}
+help for {hi:labgen} and {hi:labreplace}
+{hline}
+
+{title:Generate or replace variables with definitions copied to variable labels}
+
+{p 4 10 2}
+{cmd:labgen} 
+[{it:typname}] 
+{it:varname}
+{cmd:=}
+{it:exp}
+[{cmd:if} {it:exp}]
+[{cmd:in} {it:range}]
+
+{p 4 10 2}
+{cmd:labreplace} 
+{it:varname}
+{cmd:=}
+{it:exp}
+[{cmd:if} {it:exp}]
+[{cmd:in} {it:range}]
+[, {cmdab:nop:romote} ] 
+
+
+{title:Description}
+
+{p 4 4 2}{cmd:labgen} generates a new variable using {help generate},
+except that the definition of the variable, i.e. whatever follows the equals sign, 
+including any {help if} or {help in} qualifiers specified,
+becomes the variable label. 
+
+{p 4 4 2}{cmd:labreplace} replaces an existing variable using 
+{help replace}, 
+except that the definition of the variable, i.e. whatever follows the equals sign, 
+including any {help if} or {help in} qualifiers specified,
+becomes the variable label. 
+
+{p 4 4 2}
+Thus {cmd:labgen logy = ln(y)} creates a new variable {cmd:logy} with
+variable label {cmd:ln(y)}. Similarly 
+{cmd:labreplace logy = ln(y) if foo > 2} replaces variable {cmd:lny}
+with a new variable label {cmd:ln(y) if foo > 2}. 
+
+
+{title:Remarks}
+
+{p 4 4 2}A first version of {cmd:labgen} was posted by Paul Lin to
+Statalist on 16 July 1996. NJC posted a revision on 18 July 1996. Alan
+H. Feiveson drew my attention to it once more in Statalist postings on  
+25 September 2008. {cmd:labgen} as published on SSC is revised and 
+{cmd:labreplace} is new as of 13 October 2008. 
+
+{p 4 4 2}Note that the {it::lblname} syntax of {help generate} 
+is not supported. 
+
+{p 4 4 2}Exceptionally, if the definition exceeds 80 characters
+in length, then the definition is inserted in {help notes} for the
+variable and the variable label is a pointer to that effect. 
+
+{p 4 4 2}For other commands in similar spirit, 
+{stata search genl:search genl} and see Weesie (1997), or 
+{stata search defv:search defv} and see Gleason (1997, 1999).
+
+
+{title:Examples}
+
+{p 4 8 2}{cmd:. labgen lny = ln(y)}{p_end}
+{p 4 8 2}{cmd:. labreplace lny = ln(y) if bar > 2}
+
+
+{title:Author}
+
+{p 4 4 2}Nicholas J. Cox, Durham University, U.K.{break}
+n.j.cox@durham.ac.uk
+
+
+{title:References}
+
+{p 4 8 2}Gleason, J.R. 1997. 
+Defining variables and recording their definitions. 
+{it:Stata Technical Bulletin} 40: 9{c -}10.
+({it:STB Reprints} 7: 48{c -}49) 
+{browse "http://www.stata.com/products/stb/journals/stb40.pdf":http://www.stata.com/products/stb/journals/stb40.pdf}
+
+{p 4 8 2}Gleason, J.R. 1999. Update to defv. 
+{it:Stata Technical Bulletin} 51: 2. 
+({it:STB Reprints} 9: 14{c -}15) 
+{browse "http://www.stata.com/products/stb/journals/stb51.pdf":http://www.stata.com/products/stb/journals/stb51.pdf} 
+
+{p 4 8 2}Weesie, J. 1997. 
+Automatic recording of definitions. 
+{it:Stata Technical Bulletin} 35: 6{c -}7. 
+({it:STB Reprints} 6: 18{c -}20) 
+{browse "http://www.stata.com/products/stb/journals/stb35.pdf":http://www.stata.com/products/stb/journals/stb35.pdf}
+
+

@@ -1,0 +1,45 @@
+d 'UNDERID': module producing postestimation tests of under- and over-identification after linear IV estimation
+d
+d  underid reports tests of underidentification and
+d overidentification after estimation of single-equation linear
+"d instrumental variables (IV) models, including static and dynamic"
+"d panel data models. Stata estimators supported include ivregress,"
+"d ivreg2, xtivreg, xtivreg2, xthtaylor, xtabond2 and xtdpdgmm."
+"d Denote by y the dependent variable in a linear IV equation, Y the"
+"d set of K endogenous regressors, and Z the set of L excluded"
+d instruments; any exogenous regressors X including the constant
+d are partialled out. The model is underidentified if the rank of
+d E(Z'Y)<K. Denote the first-stage coefficients by Pi and their OLS
+d estimates by Pihat = inv(Z'Z)*Z'Y. The default
+d underidentification test reported by underid is a test of the
+"d rank of E(Z'Y) or, equivalently, a test of the rank of Pi. The"
+"d null hypothesis for underidentification is H0:rank(E(ZíY))=K-1,"
+"d with alternative H1: rank(E(ZíY))=K, and therefore a rejection"
+d of the null indicates that the model parameters are identified.
+"d Overidentification tests in IV/GMM models are available when L>K,"
+"d i.e., the model is overidentified. The usual interpretation for a"
+d test of overidentification is that the null hypothesis is
+"d H0:E(Ze)=0, i.e., that the excluded instruments Z are orthogonal"
+d to the disturbance e. underid reports a range of related tests of
+"d underidentification and overidentification: Anderson,"
+"d Cragg-Donald, Kleibergen-Paap, and Sargan-Hansen J-type 2-step"
+d GMM and Cragg-Donald CUE GMM tests. underid can report test
+"d statistics for both the classical setting (nonrobust, iid"
+d assumed) and statistics that are robust to various forms of
+"d heteroskedasticity, autocorrelation, and clustering."
+d
+d KW: underidentification; overidentification; instrumental variables; GMM; CUE; LIML; Anderson canonical correlations test; Cragg-Donald test; Sargan-Hansen J test; ivregress; ivreg2; xtivreg; xtivreg2; xthtaylor; xtabond2; xtdpdgmm
+d
+d Requires: Stata version 13.1 and ranktest from SSC (q.v.)
+d
+d Distribution-Date: 20200703
+d
+"d Author: Mark E Schaffer, Heriot-Watt University"
+d Support: email m.e.schaffer@@hw.ac.uk
+d
+"d Author: Frank Windmeijer, University of Bristol"
+d Support: email frank.windmeijer@@stats.ox.ac.uk
+d
+f underid.ado
+f underid.sthlp
+f ./c/cs_underid_1.0.00.do

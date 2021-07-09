@@ -1,0 +1,181 @@
+{smcl}
+{* 29nov2007}{...}
+{hline}
+help for {hi:corrtable} 
+{hline}
+
+{title:Correlation matrix as graphical table}
+
+{p 8 17 2}
+{cmd:corrtable} 
+{it:varlist} 
+[{cmd:if} {it:exp}]
+[{cmd:in} {it:range}]
+[, 
+{cmdab:ha:lf} 
+{cmdab:list:wise}
+{cmd:n}
+{cmdab:p:val}
+{cmd:rformat(}{it:format}{cmd:)}
+{cmd:pformat(}{it:format}{cmd:)} 
+{it:scatteri_options} 
+{cmd:flag1()} {cmd:howflag1()}
+... {cmd:flag7()} {cmd:howflag7()}
+{cmd:rsize(}{it:rule}{cmd:)} 
+{cmdab:diag:onal(}{it:scatteri_options}{cmd:)} 
+{cmdab:comb:ine(}{it:combine_options}{cmd:)} 
+]
+
+
+{title:Description}
+
+{p 4 4 2}{cmd:corrtable} displays a correlation matrix (and optionally
+corresponding sample sizes and/or P-values) as a table using 
+{help graph}. There is scope for varying the format(s) of correlations
+and P-values; for emphasising selected correlations with (for example)
+larger font sizes or different plotregion colours; and for specifying a
+rule relating font size to the magnitude of each correlation. 
+{help correlate} is used for the basic calculations. 
+
+{p 4 4 2}
+In each off-diagonal cell the correlation is displayed. If requested, the
+corresponding sample size is displayed immediately below. If requested,
+the P-value is displayed below other results. The diagonal cells show
+variable labels, or if they do not exist variable names. 
+
+
+{title:Remarks} 
+
+{p 4 4 2}Understanding of certain options pivots on knowing that 
+immediately after each {cmd:correlate} command the correlation 
+is available as {cmd:r(rho)}.  
+
+{p 4 4 2}{cmd:corrtable} is intended as indicative, not definitive.  The
+code may help others who wish to produce similar displays. Special
+effects for particular problems are sometimes better implemented by
+adding customised code, rather than by attempting a much more general
+program with large numbers of options.  Users of Stata 10 up may also
+use the Graph Editor to revise an initial graph. 
+
+{p 4 4 2}Some limitations should be flagged. 
+
+{p 8 8 2}{cmd:corrtable} can not avoid the problems of displaying large
+tables legibly, especially if you want to show several results and/or
+your variable labels are long or complicated. 
+
+{p 8 8 2}{cmd:corrtable} does not support the display of stars, which is
+deprecated by the program author. Persons wanting stars should wonder
+why and, if the desire persists, write their own code or persuade others
+to do so. 
+
+{p 8 8 2}{cmd:corrtable} can be slow. Under the hood it is producing
+several individual graphs and then using {cmd:graph combine}. With even
+modest correlation matrices that entails handling of several graphs.
+Hence the use of {cmd:corrtable} may be better restricted to producing
+presentation material. 
+
+
+{title:Options} 
+
+{p 4 8 2}{cmd:half} specifies display of the lower half of the
+correlation matrix, together with a diagonal display of variable labels
+or names. Although not the default, this option is commended as quicker
+and simpler. 
+
+{p 4 8 2}{cmd:listwise} specifies that the results for each pair of
+variables should be determined for as many observations as possible.
+Note that as a consequence the number of observations used in each
+calculation may differ. By default casewise deletion is used to ensure
+consistency in observations selected.
+
+{p 4 8 2}{cmd:n} specifies display of the sample size in addition to
+other results. This is usually advisable only in conjunction with
+{cmd:listwise}, as otherwise the same sample size will be displayed in
+each off-diagonal cell of the table.  
+
+{p 4 8 2}{cmd:pval} specifies display of the P-value in addition to
+other results. Given sample size n and sample correlation r, the P-value
+is calculated as 2 * ttail(n - 2, abs(r) * sqrt(n - 2) / sqrt(1 - r^2)). 
+There is no check of the underlying assumptions.  
+
+{p 4 8 2}{cmd:rformat(}{it:format}{cmd:)} and {cmd:pformat(}{it:format}{cmd:)}
+specify formats for correlations and P-values respectively. The default is 
+%5.3f for correlations and %4.3f for P-values. 
+
+{p 4 8 2}{it:scatteri_options} control the display of each off-diagonal
+cell.  The defaults include {cmd:mlabsize(*4) mlabpos(0)}. 
+
+{p 4 8 2}{cmd:flag1()} and {cmd:howflag1()} to {cmd:flag7()} and
+{cmd:howflag7()} are paired options selecting certain correlations for
+specific attention.  For example, {cmd:flag1()} selects correlations and
+{cmd:howflag1()} indicates how to show them.  In essence, {cmd:flag}?
+options specify conditions using Stata syntax involving the returned correlation {cmd:r(rho)}
+that must be true for the correlations to be emphasised, while
+{cmd:howflag}? specify options of {help twoway scatteri} that control
+display of emphasised results.  Any {cmd:flag}{it:k}{cmd:()} option
+overwrites any {cmd:flag}{it:j}{cmd:()} option if {it:k} > {it:j}. 
+The limit of 7 pairs of such options is arbitrary: programmers 
+may easily clone the program and change the code to raise the limit. 
+Note that there is no wired-in link to any legend option. 
+
+{p 4 8 2}{cmd:rsize()} suggests {cmd:mlabsize()} for 
+a given correlation by specifying a rule for size in terms of 
+the returned {cmd:r(rho)} using Stata syntax. Usually, but not necessarily, 
+it will be desired to show larger correlations with larger fonts. 
+A rule of {cmd:1 + 5 * abs(r(rho))} will show correlations of +1 or -1 
+at {cmd:mlabsize(6)} and correlations of 0 at {cmd:mlabsize(1)}. Rules 
+using functions such as {cmd:sqrt(abs(r(rho)))} or {cmd:(abs(r(rho))^4)}  
+would make smaller correlations more readable. Precisely what fonts you see is a little dependent on your 
+machine set-up and what graph file format you use. Representation on your 
+monitor may well be coarser than what can be printed (e.g. if you save graph files 
+as {cmd:.eps} first). {cmd:rsize()} overrides any other specification of {cmd:mlabsize()}
+for off-diagonal cells.  
+
+{p 4 8 2}{cmd:diagonal()} specifies options of {help twoway scatteri}
+that tune the appearance of the diagonal plots that show variable labels
+(or failing those, variable names). The defaults include
+{cmd:mlabsize(*3) mlabpos(0) ysc(off) xsc(off)}. It may often be 
+advisable to clone the variables and revise the variable labels 
+to obtain more concise but still informative text. For example, while it is 
+usually good practice to specify units of measurement, they are typically
+immaterial for correlations. 
+
+{p 4 8 2}{cmd:combine()} specifies options of {help graph combine()}
+that tune the combination of the graphs. {cmd:combine(imargin(zero))} is
+often a good choice. 
+
+
+{title:Examples}
+
+{p 4 8 2}{cmd:. set scheme s1color}
+
+{p 4 8 2}{cmd:. corrtable price-foreign,  flag1(abs(r(rho)) > 0.8) howflag1(mlabsize(*7)) flag2(inrange(abs(r(rho)), 0.6, 0.8)) howflag2(mlabsize(*6)) half} 
+
+{p 4 8 2}{cmd:. foreach v of var price-gear {c -(}}{p_end}
+{p 4 8 2}{cmd:. {space 8}clonevar `v'2 = `v'}{p_end}
+{p 4 8 2}{cmd:. {space 8}local label : var label `v'2}{p_end}
+{p 4 8 2}{cmd:. {space 8}if strpos("`label'", "(") local label = substr("`label'", 1, strpos("`label'", "(") - 2)}{p_end}
+{p 4 8 2}{cmd:. {space 8}label var `v'2 "`label'"}{p_end}
+{p 4 8 2}{cmd:. {c )-}}{p_end}
+{p 4 8 2}{cmd:. corrtable mpg2 gear_ratio2 rep782 price2 headroom2-displacement2, flag1(r(rho) > 0) howflag1(plotregion(color(blue * 0.1))) flag2(r(rho) < 0) howflag2(plotregion(color(pink*0.1))) half rsize(2 + 6 * abs(r(rho)))}
+
+{p 4 8 2}{cmd:. corrtable log*, rsize(5 * sqrt(abs(r(rho)))) half combine(imargin(zero))}
+
+
+{title:Acknowledgments} 
+
+{p 4 4 2}Rob Dunford sparked the development of this program. Vince Wiggins made helpful comments.  
+
+
+{title:Author}
+
+{p 4 4 2}Nicholas J. Cox, Durham University, U.K.{break} 
+         n.j.cox@durham.ac.uk
+
+
+{title:Also see}
+
+{p 4 13 2}Online:  help for {help correlate}; help for {help pwcorr};
+help for {help corrmat} (if installed); help for {help matcorr} (if
+installed); help for {help makematrix} (if installed)  
+

@@ -1,0 +1,77 @@
+.-
+help for ^tabsort6^
+.-
+
+One- and two-way tables with sorted rows and/or columns
+-------------------------------------------------------
+
+    ^tabsort6^ varlist [weight] [^if^ exp] [^in^ range] [, ^nors^ort
+    ^nocs^ort ^rev^erse ^so^rt^(^measure^) s^ummarize^(^summvar^)^
+    tabulate_options ]
+
+Description
+-----------
+
+^tabsort6^ tabulates varlist, containing either one or two variables,
+such that the order of rows (and of columns where present) is by default
+by frequency of occurrence (most frequent first), or optionally by means
+or standard deviations of a summarized variable (highest value first).
+
+Remarks
+-------
+
+1. String variables that contain only one or more spaces " " are
+tabulated with marginal ^|^, except that very long values will be 
+shown truncated, as occurs to any very long string value. 
+
+2. String values that are empty "" are tabulated as ^missing^.
+
+
+Options
+-------
+
+^norsort^ suppresses sorting of rows by frequency.
+
+^nocsort^ suppresses sorting of columns by frequency.
+
+^reverse^ reverses the sort order, so that lowest values come first.
+
+^sort(^measure^)^ indicates the measure by which rows and/or columns are
+    sorted. The default is ^f^ or ^freq^, indicating frequencies. ^c^ or
+    ^count^ is acceptable as a synonym.
+
+    Alternatively, with ^summarize( )^ ^m^ (or ^mean^) or ^s^ (or ^sd^)
+    may be specified.
+
+^summarize(^summvar^)^ indicates a variable to be summarized within
+    each cell of the table.
+
+tabulate_options are other options for ^tabulate^.
+
+
+Examples
+--------
+
+   . ^tabsort6 rep78^ 	
+
+   . ^tabsort6 rep78 foreign, su(price) so(mean)^
+
+
+Author
+------
+
+	Nicholas J. Cox, University of Durham, U.K.
+	n.j.cox@@durham.ac.uk
+
+
+Acknowledgement 	 
+---------------
+
+	Edmond Ng and Lee Sieswerda alerted me to bugs. 
+
+
+Also see
+--------
+
+On-line: help for @tabulate@, @tabsum@
+

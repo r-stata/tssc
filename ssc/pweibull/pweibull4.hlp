@@ -1,0 +1,59 @@
+.-
+help for ^pweibull4^
+.-
+
+Probability plot for data compared with fitted Weibull distribution
+-------------------------------------------------------------------
+
+    ^pweibull4^ varname [^if^ exp] [^in^ range]
+    [ ^,^ ^b(^#^)^  ^c(^#^)^ ^gr^id graph_options ]
+
+Description
+-----------
+
+^pweibull4^ produces a probability plot for varname compared with a
+two-parameter Weibull distribution with scale parameter b and shape
+parameter c. By default, b and c are taken from S_2 and S_3, which is
+where ^wbull^ puts maximum likelihood estimates of them.
+
+The probability density function is
+
+             c         c - 1               c
+    f(x) =   -  (x / b)       exp(- (x / b) )
+             b
+
+for x >= 0, b > 0 and c > 0.
+
+Note: this is the original version of ^pweibull^, written for Stata 4. 
+Users of Stata 8 up should switch to ^pweibull^. 
+
+Options
+-------
+
+^b(^#^)^ sets b to #.
+
+^c(^#^)^ sets c to #.
+
+^grid^ adds grid lines at the .05, .10, .25, .50, .75, .90, and .95
+    quantiles.
+
+graph_options are any of the options allowed with ^graph, twoway^; see
+    help for ^graph^.
+
+Examples
+--------
+
+        . ^wbull precip^
+        . ^pweibull4 precip^
+
+Author
+------
+
+         Nicholas J. Cox, University of Durham, U.K.
+         n.j.cox@@durham.ac.uk
+
+Also see
+--------
+
+On-line: help for @graph@, @wbull@, @qweibull4@
+

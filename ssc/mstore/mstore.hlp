@@ -1,0 +1,75 @@
+.-
+help for ^mstore^
+.-
+
+Store and Retrieve Matrices with Dataset
+----------------------------------------
+
+
+^mstore aliasname ,^ [ ^f^rom^(^matrix expression^) m^ake^(^newmatrixname^)^ 
+         ^del^ete ^rep^lace] 
+
+
+syntax for getting list of stored matrices:
+
+^mstore list^
+
+
+Description
+-----------
+
+^mstore^ is a utility to store matrices with a Stata dataset that can 
+be easily retrieved in future sessions.  The program uses character-
+istics so that the stored matrices are saved with the data.  Full row
+and column names are maintained.  Each matrix is stored using an alias 
+name so that it can be assigned from matrix expressions and retrieved 
+into any named matrix.
+
+Options for ^mstore^
+--------------------
+^aliasname^ is required and is used to name the stored copy of the matrix.
+    This name is used by ^mstore^ to keep track of the stored matrices and 
+    can be any arbitrary text string without spaces. 
+
+^from(^matrixexpression^)^ identifies the matrix to be stored and is required 
+    if you wish to store a matrix.  ^from^ will evaluate any argument as a 
+    matrix expression, so you could specify a matrix name, a matrix returned 
+    from an estimation command (e.g., ^from(e(b))^ ) or even an expression 
+    (e.g., ^from(syminv(A))^ ).
+
+^make(^newmatrixname^)^ is used to specify the name to assign to a matrix you 
+    are retrieving.  If ^make^ is not specified, then ^mstore^ will name the 
+    matrix using its aliasname (if you wish to use this syntax, then the 
+    aliasname must be a valid name for a Stata matrix). 
+    In either case, ^mstore^ will overwrite any existing matrix with the same name.
+
+^delete^ and ^replace^ are used to delete or replace the stored matrix aliasname.  
+
+
+Examples
+--------
+
+. ^regress mpg weight^       
+
+storing matrices
+. ^mstore myb, from(e(b))^
+. ^mstore myv, from(e(V))^
+. ^save myauto^
+
+In another session, after using myauto..
+list matrices:
+. ^mstore list^
+2 matrices found:  myb myv
+
+. ^mstore myb^  (creates matrix myb equal to stored matrix myb)
+. ^mstore myv, make(v2)^   (creates matrix v2 equal to stored matrix myv)
+
+. ^mstore myv, delete^
+
+
+Author
+------
+        Michael Blasnik, Blasnik & Associates,	Boston, MA
+	mblasnik@@110.net
+
+

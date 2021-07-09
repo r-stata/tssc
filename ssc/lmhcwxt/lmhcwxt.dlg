@@ -1,0 +1,66 @@
+/*
+ lmhcwxt
+*! VERSION 2.0 06/08/2015
+*/
+VERSION 10.0
+INCLUDE _std_large
+DEFINE _dlght 220
+INCLUDE header
+HELP hlp1, view("help lmhcwxt")
+RESET res1
+
+DIALOG main, label("lmhcwxt - Panel Data Heteroscedasticity Cook-Weisberg Test") ///
+	tabtitle("Main")
+BEGIN
+ DEFINE _x _xsetbu
+ DEFINE _y _top
+ INCLUDE _bu_tsset
+  
+ TEXT tx_yvar	_lft	+30	120	., ///
+	label("Dependent Variable:")
+ TEXT tx_xvar	_vlx	@	300	., ///
+	label("Independent Variables:")
+
+ VARNAME vn_yvar  _lft	 _ss	120 .,	 ///
+	label("Dependent Variable")
+ VARLIST vl_xvar  _vlx	 @	300 ., ///
+	label("Independent Variables")
+
+  CHECKBOX ck_nocons @         _ms       @         .,	/*
+		*/ label("No Constant")	/*
+		*/ option("noconstant")			/*
+*/
+  TEXT  tx_id   _lft   _ls    150 .,	///
+	label("ID Cross Section")
+  TEXT  tx_it _lft2     @    150 .,	///
+	label("ID Time Series")
+  VARNAME vn_id  _lft  _ss    150 .,	///
+	option("id")			///
+	label("ID Cross Section")
+  VARNAME vn_it  _lft2  @  150 ., 	/*
+	*/ label("ID Time Series")	/*
+	*/ option("it")
+*/
+ CHECKBOX ck_coll _ilft  _ls 400 ., option("coll") /*
+*/ label("coll: Keep Collinear Variables")
+ CHECKBOX ck_cross _ilft _ms 400 ., option("cross") /*
+*/ label("cross: Use Cross Section Regression and stack Residual Variables")
+END
+
+INCLUDE ifin
+
+PROGRAM command
+BEGIN
+ put "lmhcwxt "
+ varlist main.vn_yvar main.vl_xvar 
+ put " " /program ifin_output
+ require main.vn_id 
+ require main.vn_it 
+ beginoptions
+ option main.ck_nocons
+ optionarg main.vn_id
+ optionarg main.vn_it
+ option main.ck_coll
+ option main.ck_cross
+ endoptions
+END

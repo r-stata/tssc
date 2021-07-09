@@ -1,0 +1,1 @@
+*! version 1.0.0  7mar1997  preliminary version   Statalist distributionprogram define hetpr_lf	version 5.0	local lnf "`1'"	local xb "`2'"	local s "exp(`3'/2)"	quietly replace `lnf' = ln(normprob(`xb'/`s')) if $S_mldepn!=0	quietly replace `lnf' = ln(1-normprob(`xb'/`s')) if $S_mldepn==0endexit

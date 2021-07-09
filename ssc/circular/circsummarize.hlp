@@ -1,0 +1,143 @@
+{smcl}
+{* 6may2004}{...}
+{hline}
+help for {hi:circsummarize}
+{hline}
+
+{title:Summary statistics for circular data}
+
+{p 8 17 2}
+{cmdab:circsu:mmarize}
+{it:varlist}
+[{it:weight}]
+[{cmd:if} {it:exp}]
+[{cmd:in} {it:range}]
+[{cmd:,}
+    {cmd:ci}
+    {cmdab:l:evel(}{it:#}{cmd:)}
+    {cmdab:ray:leigh}
+    {cmdab:kui:per}
+    {cmdab:d:etail}
+]
+
+{p 8 17 2}
+{cmdab:circsu:mmarize}
+{it:varname}
+[{it:weight}]
+[{cmd:if} {it:exp}]
+[{cmd:in} {it:range}]
+[{cmd:,}
+    {cmd:by(}{it:byvar}{cmd:)}
+    {cmd:ci}
+    {cmdab:l:evel(}{it:#}{cmd:)}
+    {cmdab:ray:leigh}
+    {cmdab:kui:per}
+    {cmdab:d:etail}
+]
+
+{p 4 4 2} {cmd:fweight}s and {cmd:aweight}s are allowed; see help 
+{help weights}.  If weights are specified, they are used in calculating the mean
+direction and the vector strength (and hence the Rayleigh test and confidence
+limits if produced, although this may not be justifiable). Weights are not used
+in calculating the circular range or the Kuiper test.
+
+{p 4 4 2}The abbreviation {cmd:circsu} (only) is allowed. 
+
+
+{title:Description}
+
+{p 4 4 2}{cmd:circsummarize} produces summary statistics for circular
+variables with scales between 0 and 360 degrees. These are by default
+
+{p 8 8 2}the mean direction (in degrees), 
+
+{p 8 8 2}the vector strength or mean resultant length (i.e. 
+length of resultant / number of observations)
+
+{p 8 8 2}and the circular range (length of smallest arc including all
+observations) (in degrees).
+
+{p 4 4 2}
+Suppose we have {it:n} measurements of a circular variable {it:t}. 
+Then calculate in turn{p_end}
+{p 8 8 2}{it:C} = SUM cos {it:t}{p_end}
+{p 8 8 2}{it:S} = SUM sin {it:t}{p_end}
+{p 8 8 2}arctan({it:S} / {it:C}), the mean direction{p_end}
+{p 8 8 2}{it:R} = sqrt({it:C} * {it:C} + {it:S} * {it:S}),
+the length of the resultant vector{p_end}
+{p 8 8 2}{it:R} / {it:n}, the vector strength or mean resultant length.
+
+
+{title:Options}
+
+{p 4 8 2}
+{cmd:by()} specifies that results are to be shown for each group
+defined by values of {it:byvar}. This option is only available if a
+single {it:varname} is specified.
+     
+{p 4 8 2}
+{cmd:ci} produces a confidence interval for the vector mean suitable for
+large samples (at least 25 values, say). This is based on an
+assumption that sampling variation follows a normal distribution.
+If we calculate further
+
+{p 12 12 2}{it:m}_2 = (1 / {it:n}) SUM cos 2({it:t} - vector mean of {it:t}), 
+
+{p 8 8 2}then the circular standard error CSE is estimated by
+
+{p 12 12 2}sqrt[ {it:n} * (1 - {it:m}_2) / (2 * {it:R} * {it:R}) 
+
+{p 8 8 2}and the confidence interval is estimated as
+
+{p 12 12 2}(vector mean - arcsin({it:z} * CSE), 
+vector mean + arcsin({it:z} * CSE)), 
+
+{p 8 8 2}where {it:z} is the appropriate percentage point, 
+given {cmd:level()}, from the Normal distribution with mean 0 and 
+standard deviation 1.
+
+{p 4 8 2}{cmd:level()} specifies the confidence level in percent for the
+confidence interval. See help for {help ci}.
+
+{p 4 8 2}{cmd:rayleigh} produces the Rayleigh test, which tests a null 
+hypothesis of uniformity against an alternative hypothesis of unimodality. 
+The resulting {it:P}-value is shown.
+
+{p 4 8 2}{cmd:kuiper} produces the Kuiper test, which tests a null hypothesis 
+of uniformity against any alternative. The resulting {it:P}-value is shown.
+A numerical approximation due to Stephens (1970, p.118) is used that
+gives accuracy to 3 decimal places for {it:P} < 0.447.
+
+{p 4 8 2}{cmd:detail} is a synonym for {cmd:ci rayleigh kuiper}.
+
+
+{title:Examples}
+
+{p 4 8 2}{cmd:. circsummarize axisasp wallasp}
+
+{p 4 8 2}{cmd:. circsummarize wallasp, by(grade) detail} 
+
+
+{title:References} 
+
+{p 4 8 2} 
+Fisher, N.I. 1993. {it:Statistical analysis of circular data.} Cambridge:
+Cambridge University Press.
+
+{p 4 8 2} 
+Stephens, M.A. 1970. Use of the Kolmogorov-Smirnov, Cram{c e'}r-von Mises and
+related statistics without extensive tables. 
+{it:Journal, Royal Statistical Society Series B} 32: 115-22.
+
+
+{title:Author}
+
+{p 4 4 2}Nicholas J. Cox, University of Durham, U.K.{break} 
+n.j.cox@durham.ac.uk
+
+
+{title:Also see}
+
+{p 4 13 2}
+On-line:  help for {help ci} 
+

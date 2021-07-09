@@ -1,0 +1,55 @@
+d 'RANKTEST': module to test the rank of a matrix
+d
+d  ranktest implements various tests for the rank of a matrix.
+d Tests of the rank of a matrix have many practical applications.
+"d For example, in econometrics the requirement for identification"
+"d is the rank condition, which states that a particular matrix must"
+d be of full column rank. Another example from econometrics
+d concerns cointegration in vector autoregressive (VAR) models; the
+d Johansen trace test is a test of a rank of a particular matrix.
+d The traditional test of the rank of a matrix for the standard
+d (stationary) case is the Anderson (1951) canonical correlations
+"d test. If we denote one list of variables as Y and a second as Z,"
+d and we calculate the squared canonical correlations between Y and
+"d Z, the LM form of the Anderson test, where the null hypothesis is"
+d that the matrix of correlations or regression parameters B
+"d between Y and Z has rank(B)=r, is N times the sum of the r+1"
+d largest squared canonical correlations. A large test statistic
+d and rejection of the null indicates that the matrix has rank at
+d least r+1. The Cragg-Donald (1993) statistic is a closely related
+d Wald test for the rank of a matrix. The standard versions of
+d these tests require the assumption that the covariance matrix has
+"d a Kronecker form; when this is not so, e.g., when disturbances"
+"d are heteroskedastic or autocorrelated, the test statistics are no"
+d longer valid. ranktest implements various generalizations of
+"d these tests - Kleibergen-Paap, Cragg-Donald, and J-type 2-step"
+d GMM and CUE GMM tests - to the case of a non-Kronecker covariance
+d matrix. The implementation in ranktest will calculate test
+d statistics that are robust to various forms of
+"d heteroskedasticity, autocorrelation, and clustering."
+d
+d KW: matrix
+d KW: rank
+d KW: collinearity
+d KW: cointegration
+d
+"d Requires: Stata version 12 (version 9.2 for ranktest9, version 11 for ranktest11)"
+d
+d Distribution-Date: 20200626
+d
+"d Author: Frank Kleibergen, Brown University"
+d Support: email  Frank_Kleibergen@@brown.edu
+d
+"d Author: Mark E Schaffer, Heriot-Watt University"
+d Support: email m.e.schaffer@@hw.ac.uk
+d
+"d Author: Frank Windmeijer, University of Oxford"
+d Support: email frank.windmeijer@@stats.ox.ac.uk
+d
+f ranktest.ado
+f ranktest9.ado
+f ranktest11.ado
+f ranktest.sthlp
+f ranktest11.sthlp
+f ./l/livreg2.mlib
+f ./c/cs_ranktest_2.0.03.do

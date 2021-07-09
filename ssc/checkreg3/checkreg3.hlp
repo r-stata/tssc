@@ -1,0 +1,84 @@
+{smcl}
+{* 07oct2007}{...}
+{hline}
+help for {hi:checkreg3}
+{hline}
+
+{title:Check identification status of simultaneous equations system}
+
+{p 8 17 2}{cmd:checkreg3}
+{it:(depvar1 varlist1) (depvar2 varlist2) ... (depvarN varlistN)}
+
+
+{title:Description}
+
+{p 4 4 2}The conventional order condition (necessary, not sufficient) pertaining to single-equation estimation with instrumental variables is satisfied
+by counting included endogenous and excluded exogenous variables in
+the equation. The sufficient rank condition pertains to the rank of the matrix of instruments (see Baum, Schaffer, Stillman (2007)). In a full-information
+systems estimation context, such as that performed for simultaneous linear
+systems by {cmd:reg3}, it is possible that each equation satisfies the
+single-equation order and rank conditions for identification, yet
+the system is {it:unidentified}. Identifiability in this context refers
+to the unique relationship between the matrices of structural coefficients
+and the {it:reduced form} of the linear system. If the system is to be
+identified, you must be able to derive unique values of the structural coefficients
+from those of the reduced form. For a discussion of this issue in a simultaneous
+equations context, see Greene (2003, pp. 389-394) and Wooldridge (2002, p. 218).
+
+{p 4 4 2}At present, Stata's {cmd:reg3} command does not check to see that the 
+conditions for identification of a structural system are satisfied, and produces
+estimation results as long as the single-equation order and rank conditions
+are satisfied for each equation unless the {cmd:ireg3} option is used. The iterations triggered by that option will not converge if the rank condition is violated. The {cmd:checkreg3} command allows you to verify
+that these results are meaningful by checking to see that the rank condition is satisfied for each of the  {it:N} equations in the system. Unless the rank condition is satisfied for each equation in the system, the system is unidentified. Although it is unusual for a system to satisfy the order condition without satisfying the rank condition, it can occur.
+
+{p 4 4 2}To use {cmd:checkreg3}, merely take your {cmd:reg3} command,
+change the command name to {cmd:checkreg3} and remove any options. The values of 0.5, -0.5 are used only as placeholders to check the identification status.
+
+{title:Examples}
+
+{p 4 8 2}{stata "webuse auto, clear": . webuse auto}{p_end}
+
+{p 4 8 2}{stata "checkreg3 (price mpg turn headroom weight) (mpg price headroom) (turn headroom trunk weight)": . checkreg3 (price mpg turn headroom weight) (mpg price headroom) (turn headroom trunk weight)}{p_end}
+
+{p 4 8 2}{stata "checkreg3 (price mpg turn headroom weight trunk) (mpg price headroom) (turn headroom trunk weight)": . checkreg3 (price mpg turn headroom weight trunk) (mpg price headroom) (turn headroom trunk weight)}{p_end}
+
+{p 4 8 2}{stata "checkreg3 (price mpg turn headroom) (mpg price) (turn headroom trunk weight length)" : . checkreg3 (price mpg turn headroom) (mpg price) (turn headroom trunk weight length)}{p_end}
+
+{p 4 8 2}{stata "checkreg3 (price mpg turn  weight ) (mpg price headroom) (turn mpg headroom trunk )": . checkreg3 (price mpg turn  weight ) (mpg price headroom) (turn mpg headroom trunk )}{p_end}
+
+{marker s_citation}{title:Citation of checkreg3}
+
+{p}{cmd:checkreg3} is not an official Stata command. It is a free contribution
+to the research community, like a paper. Please cite it as such: {p_end}
+
+{phang}Baum, C.F.,  2007.
+checkreg3: Stata module to check identification status of simultaneous equations system.
+{browse "http://ideas.repec.org/c/boc/bocode/s456877.html":http://ideas.repec.org/c/boc/bocode/s456877.html}{p_end}
+
+{title:Acknowledgements}
+
+{phang}I am grateful to Thomas Cornelissen for raising this issue on Statalist and pointing out the relevant literature, and to David Drukker for pointing out flaws in the methodology used in an earlier version of the routine. 
+The routine makes use of Ben Jann's mm_which() function from his {cmd:moremata} package, for
+which I am grateful.
+
+{title:Authors}
+
+{p 4 4 2}Christopher F. Baum, Boston College, USA{break}
+baum@bc.edu
+
+{title:References}
+
+{p 0 4}Baum, C. F., Schaffer, M. E., Stillman, S., 2007. Enhanced routines for instrumental variables/GMM estimation and testing.  
+Boston College Department of Economics Working Paper No. 667.
+http://fmwww.bc.edu/ec-p/WP667.pdf
+
+{p 0 4}Greene, W. 2003. Econometric Analysis. 5th ed.
+Upper Saddle River, NJ: Prentice Hall.
+
+{p 0 4}Wooldridge, J.M. 2002. Econometric Analysis of Cross Section and Panel Data. Cambridge, MA: MIT Press.
+
+{title:Also see}
+
+{p 4 13 2}
+Online: {help reg3} 
+

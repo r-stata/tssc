@@ -1,0 +1,271 @@
+{smcl}
+{* 16Jul2010}{...}
+{hline}
+help for {hi:cb2html}{right:manual:  none    }
+{right:dialog:  none    }
+{hline}
+
+{title:Write a codebook to an html file}
+
+{p 8 17 2}
+{cmd:cb2html} 
+[{it:varlist}] using {it:filename}
+[{cmd:,}
+   {cmdab:replace}
+   {cmdab:ti:tle}{cmd:(}{it:string}{cmd:)}
+   {cmdab:pp:recision}{cmd:(}{it:#}{cmd:)}
+   {cmdab:f:precision}{cmd:(}{it:#}{cmd:)}
+   {cmdab:sp:recision}{cmd:(}{it:#}{cmd:)}
+   {cmdab:m:axvalues}{cmd:(}{it:#}{cmd:)}
+   {cmdab:su:mmarize}{cmd:(}{it:#}{cmd:)}
+   {cmdab:st:ringmax}{cmd:(}{it:#}{cmd:)}
+   {cmdab:n:otes}
+   {cmdab:ty:pe}
+   {cmdab:pa:gebreak}{cmd:(}{it:#}{cmd:)}
+   {cmdab:c:ombine}{cmd:(}{it:var1 var2}{cmd:)}
+   {cmdab:u:pper}
+   {cmdab:v:allabel}
+]
+
+
+{title:Description}
+
+{p 4 4 2}
+{cmd:cb2html} writes a codebook in html format for the variables specified or, if
+no variables are specified, all the variables in the data in memory, into {it:filename}.html. 
+It writes the dataset label, the variable name, label, and the data type of each variable. 
+It writes the frequency, percent, value, and label of each value by default, or
+it writes the n, mean, std dev, min, and max. 
+Optionally, it writes other information that has been stored in variable and dataset notes.
+
+{p 4 4 2}
+Survey research organizations that collect and disseminate survey data are most likely
+to find this command of use.
+The codebook it produces is intended to be an end-user product suitable for publishing or printing.
+It provides a method of combining the frequencies and/or means of the data with the full text of the
+questionnaire so that researchers have all information in a single document.
+
+{p 4 4 2}
+After creating an html file, you can edit it in Microsoft Word.
+This allows you to change fonts, insert text, etc., as you would with any MS Word document
+without editing the html code.
+You can then print from MS Word or convert the file to PDF or some other format.
+(Warning: MS Word inserts a lot of extra html code.
+This may cause problems if you use the codebook as an html document after editing it in MS Word.)
+
+{p 4 8 2}{cmd:using} {it:filename} 
+must be specified. The suffix .html is added automatically.
+
+
+{title:Options}
+
+{p 4 8 2}{cmd:replace}
+writes over {it:filename}.html if it already exists. If {it:filename}.html already exists,
+and {cmd:replace} is not specified, the file will not be written.
+
+{p 4 8 2}{cmd:title}{cmd:(}{it:string}{cmd:)}
+allows you to specify a title that is displayed in the browser title bar at the top. If 
+{cmd:title} is not specified, the dataset label is displayed instead (assuming it exists).
+
+{p 4 8 2}{cmd:pprecision}{cmd:(}{it:#}{cmd:)}
+allows you to change the number of decimal values displayed in the percents column.
+The default value is 0 (e.g., 12%). A value of 1 will preserve one decimal of precision
+(e.g., 12.3%), a value of 2 will preserve two decimals of precision (e.g., 12.34%), etc.
+Any positive integer may be given.
+
+{p 4 8 2}{cmd:fprecision}{cmd:(}{it:#}{cmd:)}
+allows you to change the number of decimal values displayed in the values column for
+floating point variables (stored in Stata as data type float or double).
+The default value is 0 (e.g., 12). A value of 1 will preserve one decimal of precision
+(e.g., 12.3), a value of 2 will preserve two decimals of precision (e.g., 12.34), etc.
+Any integer in the range 0 - 22 may be given.
+
+{p 4 8 2}{cmd:sprecision}{cmd:(}{it:#}{cmd:)}
+allows you to change the number of decimal values displayed for all statistics of 
+summarized variables.
+The default value is 0 (e.g., 12). A value of 1 will preserve one decimal of precision
+(e.g., 12.3), a value of 2 will preserve two decimals of precision (e.g., 12.34), etc.
+Any integer in the range 0 - 22 may be given.
+
+{p 4 8 2}{cmd:maxvalues}{cmd:(}{it:#}{cmd:)}
+allows you to limit the number of discrete values that will be written for a variable. 
+If a variable, e.g., each respondent's ID, has more than {it:#} discrete values, 
+only the 5 smallest and 5 largest values will be written. 
+A row will also be written that gives the range of values omitted from the display
+along with the frequency and percent of the omitted values.
+
+{p 8 8 2}
+The default value of {it:#} is 10. 
+Any integer may be given, including numbers smaller than 10. 
+However, at minimum, the 5 smallest and 5 largest values will always be printed, 
+or all the values will be printed if the variable has fewer than 10 values.
+
+{p 8 8 2}
+You can override maxvalues for one or more variables by defining a variable characteristic.
+See {it:Notes} below.
+
+{p 4 8 2}{cmd:summarize}{cmd:(}{it:#}{cmd:)}
+allows you to select a lower limit above which the frequency, mean, sd, min, and max
+are printed instead of the discrete values.
+This option overrides maxvalues.
+
+{p 8 8 2}
+You can override summarize for one or more variables by defining a variable characteristic.
+See {it:Notes} below.
+
+{p 4 8 2}{cmd:stringmax}{cmd:(}{it:#}{cmd:)}
+In Stata/SE a string value can be up to 244 characters long.
+By default, the entire string value will be written to the codebook.
+You can shorten long strings to {it:#} characters using this option.
+Leading and trailing blanks will be removed, then the first {it:#}
+characters will be written to the html file.
+
+{p 4 8 2}{cmd:notes}
+lists note1, note2, and note3 attached to the variables and note1 attached to the dataset 
+(see help {help notes}).
+ 
+{p 8 8 2}
+By default, only the variable and dataset labels are written, and labels are limited 
+to 80 characters in Stata/SE. Optionally, you may create notes for variables, e.g., 
+containing the full text of the question, skip instructions,
+or supplemental instructions to interviewers.
+You may also create a note for the dataset, e.g., describing the survey 
+or outlining the contents of a section. 
+
+{p 8 8 2}
+Notes can be up to 67,784 characters; however, you may want to limit
+your note length for readability.
+Notes should not contain double quotes, but single quotes can be used.
+Notes may contain standard html code, such as <br> to start a new line.
+
+{p 8 8 2}
+You may define up to three notes for each variable and one note for the dataset. 
+Stata numbers notes by the order that the note command appears in your do-file.
+The first note for a given variable becomes "note1", the second "note2", 
+and the third "note3". 
+These notes are handled differently as described below.
+ 
+{p 8 8 2}
+If note1 exists for a variable, it will be written in place of the variable label. 
+If note1 exists for the dataset, it will be written after the dataset label.
+Note1 is written without bold or italics.
+
+{p 8 8 2}
+You may also create note2 for variables, e.g., containing the skip conditions for 
+the variable. If note2 exists, it will be written in a separate row above note1.
+Note2 is written in bold and italics.
+
+{p 8 8 2}
+You may also create note3 for variables, e.g., containing instructions to 
+interviewers. If note3 exists, it will be written in a separate row above note2.
+Note3 is written in bold.
+
+{p 4 8 2}{cmd:type}
+writes the Stata data storage type (byte, int, float, long, double, or str#). 
+By default, whether the variable is numeric or character (string) is written.
+
+{p 4 8 2}{cmd:pagebreak}{cmd:(}{it:#}{cmd:)}
+Use this option if you intend to print the codebook and don't want the table for any
+variable split across pages.
+It inserts a page break into the html file after {it:#} lines (or fewer) have been written.
+First, it checks whether the entire table for the next variable will fit on the page
+within the line limit of {it:#}.
+If not, it inserts a page break, moving the next variable's table to the following page.
+The default is no page breaks, which minimizes paper use, 
+but is likely to result in pages breaking in the middle of a table.
+A page break is automatically inserted after the data label and data note in order to
+treat that information as a separate title page.
+
+{p 8 8 2}
+The number of lines per page that you should choose depends on many factors, including your
+printer type, browser version, and the font size and type you have set in your browser. 
+This command uses Times New Roman, which is a variable-spaced font. It does not specify 
+a size for the font. (In Mozilla Firefox you can adjust the font size in Tools, 
+Options, Content. In Internet Explorer, use View, Text Size.) 
+
+{p 8 8 2}
+The number of lines also is affected by the lengths of your variable notes, variable labels, and
+value labels. This command assumes 100 characters per line for each variable note and 60 for each
+variable and value label, and it adjusts the estimated lines per page accordingly. 
+
+{p 8 8 2}
+There's no guarantee that this option will prevent every table from splitting across pages.
+With a little experimenting, you should find a {it:#} that works for almost all
+variables and still keeps the number of printed pages reasonably low. 
+
+{p 4 8 2}{cmd:combine}{cmd:(}{it:var1 var2}{cmd:)}
+allows you to combine two variables temporarily into a single variable 
+and obtain frequencies of the combination. An example is year and month of interview.
+
+{p 4 8 2}{cmd:upper}
+will print variable names in upper case.  
+The default is lower case.
+
+{p 4 8 2}{cmd:vallabel}
+will print the value in the space used for the value label if no label has been defined.  
+The default is a blank space.
+
+{title:Notes}
+
+{p 4 4 2}
+You can define a variable characteristic called {it:freq} for one or more variables with the value {it:Yes}. 
+This tells cb2html to print all values of that variable 
+regardless of the settings for maxvalues() or summarize().
+You can define the characteristic like this:
+
+      {cmd:char def var1[freq] Yes}
+
+{p 4 4 2}
+This command requires Stata 10.
+It produces W3C valid HTML 4.01 Transitional code, which displays properly in 
+Mozilla Firefox, and Internet Explorer.  
+
+
+{title:Examples}
+
+{p 4 8 2}{cmd:. cb2html using mycodebook}
+
+{p 4 8 2}{cmd:. cb2html using mycodebook, title(Codebook for My Project)}
+
+{p 4 8 2}{cmd:. cb2html vj89-vm92a v334_* using mycodebook, replace}
+
+{p 4 8 2}{cmd:. cb2html using mycodebook, maxvalues(20) pprecision(2) fprecision(3)}
+
+{p 4 8 2}{cmd:. cb2html using mycodebook, summarize(20) sprecision(3)}
+
+{p 4 8 2}{cmd:. cb2html using "c:\My Project\mycodebook.html" pagebreak(54) upper}
+
+{p 4 8 2}{cmd:. cb2html using mycodebook, notes type stringmax(20) replace}
+
+{p 4 8 2}{cmd:. cb2html using mycodebook, combine(int_year int_month)}
+
+
+
+
+{title:Reference}
+
+{p 4 4 2}
+I incorporated many coding suggestions from Kit Baum, Nick Cox, and Dan Blanchette,
+I benefitted greatly from Ed Van Duinen's advice on web programming, 
+and I added many options suggested by programmers too numerous to mention at 
+The Carolina Population Center and elsewhere.
+Any problems you find in this program are mine alone.
+
+
+{title:Author}
+
+{p 4 4 2}
+Phil Bardsley, {browse "http://www.cpc.unc.edu":Carolina Population Center}, 
+University of North Carolina - Chapel Hill, USA. Contact
+{browse "mailto:phil_bardsley@unc.edu":phil_bardsley@unc.edu} 
+if you observe any problems.
+
+
+{title:Also see}
+
+{p 4 13 2}
+Manual:  {hi:[R] codebook, [R] notes, [R] label, [R] inspect, [R] labelbook, [R] describe }
+
+{p 4 13 2}
+Online:  help for {help codebook}, {help notes}, {help label}, {help inspect},
+{help labelbook}, {help describe}

@@ -1,0 +1,99 @@
+{smcl}
+{* 06dec2005}{...}
+{hline}
+help for {hi:insob}
+{hline}
+
+{title:Insert empty observations}
+
+{p 8 17 2}
+{cmdab:insob:}
+{it:nobs}
+{it:pos}
+[{cmd:,}
+    {cmdab:after}
+]
+
+{title:Description}
+
+{p 4 4 2}
+{cmd:insob} inserts {it:nobs} empty observations before observation number 
+{it:pos}.
+
+{title:Options}
+
+{p 4 8 2}
+{cmd:after} When the option "after" is specified, the empty observations are inserted 
+{it:after} observation number {it:pos} (in stead of before).
+
+{title:Remarks}
+
+{p 4 4 2}
+The program works by adding a local variable that fixes the original sort order. After new 
+observations have been added, the relative sort order of pre-existing observations is restored 
+with empty observations before (after) observation number {it:pos}. This approach can be 
+relatively slow for large data files.
+
+
+{title:Examples}
+
+{p 4 8 2}{cmd:. insob 1 1}              // Inserts one observation at beginning of the dataset
+
+{p 4 8 2}{cmd:. insob 2 _N, after}      // Inserts two observations at end of the dataset
+
+
+{p 4 4 2}{it:Hint:} {cmd:insob} can be used to create custom LaTeX tables (assuming existing
+commands like {cmd:tabstat}, {cmd:est2tex}, or {cmd:textab} are not what you are looking for). 
+The following example suggests a procedure to export a matrix {it:mtest} containing four 
+columns as a LaTeX table.
+
+{p 4 8 2}{cmd:. drop _all}
+
+{p 4 8 2}{cmd:. svmat mtest}
+
+{p 4 8 2}{cmd:. tostring mtest1 mtest2 mtest3 mtest4, replace force format(%9.2f)}
+
+{p 4 8 2}{cmd:. insob 1 1}                                            // Add row headers
+
+{p 4 8 2}{cmd:. replace mtest1 = "$ V_1 $" in 1}
+
+{p 4 8 2}{cmd:. replace mtest2 = "$ V_2 $" in 1}
+
+{p 4 8 2}{cmd:. replace mtest3 = "$ V_3 $" in 1}
+
+{p 4 8 2}{cmd:. replace mtest4 = "$ V_4 $" in 1}
+
+{p 4 8 2}{cmd:. gen a = "&"}                                          // Column separator
+
+{p 4 8 2}{cmd:. gen e = " \\\\"}                                      // End of row
+
+{p 4 8 2}{cmd:. }// Add tabular environment for use with the LaTeX-package {it:booktabs}
+
+{p 4 8 2}{cmd:. insob 2 1}
+
+{p 4 8 2}{cmd:. replace mtest1 = "\begin{tabular}{rrrr}" in 1}
+
+{p 4 8 2}{cmd:. replace mtest1 = "\toprule\addlinespace[\defaultaddspace]" in 2}
+
+{p 4 8 2}{cmd:. insob 1 4}
+
+{p 4 8 2}{cmd:. replace mtest1 = "\midrule\addlinespace[\defaultaddspace]" in 4}
+
+{p 4 8 2}{cmd:. insob 1 _N, after}
+
+{p 4 8 2}{cmd:. replace mtest1 = "\bottomrule" in l/l}
+
+{p 4 8 2}{cmd:. insob 1 _N, after}
+
+{p 4 8 2}{cmd:. replace mtest1 = "\end{tabular}" in l/l}
+
+{p 4 8 2}{cmd:. outfile mtest1 a mtest2 a mtest3 a mtest4 e using "testtable.tex", noquote replace wide }
+
+
+{title:Author}
+
+{p 4 4 2}
+Bas Straathof, ECIS, Eindhoven University of Technology.  Email
+{browse "mailto:bas.straathof@gmail.com":me}
+if you observe any problems. Thanks to Nick Cox for substantial improvements.
+

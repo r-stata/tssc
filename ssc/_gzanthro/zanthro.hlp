@@ -1,0 +1,355 @@
+{smcl}
+{* jul2010}{...}
+{hi:help zanthro}, {hi:help zbmicat}{right: ({browse "http://www.stata-journal.com/article.html?article=dm0004_1":SJ13-2: dm0004_1})}
+{hline}
+
+{title:Title}
+
+{p2colset 5 17 19 2}{...}
+{p2col :{hi:zanthro} {hline 2}}Extensions to generate: Standardizing
+anthropometric measures in children and adolescents{p_end}
+{p2colreset}{...}
+
+
+{title:Syntax}
+
+{p 8 17 2}{cmd:egen} [{it:{help datatype:type}}] {newvar} {cmd:=}
+{cmd:zanthro}{cmd:(}{varname}{cmd:,}{it:chart}{cmd:,}{it:version}{cmd:)} 
+{ifin}{cmd:,} 
+{cmdab:x:var(}{varname}{cmd:)} {cmdab:gen:der(}{varname}{cmd:)}
+{cmdab:genc:ode(}{cmdab:m:ale=}{it:code}{cmd:,} {cmdab:f:emale=}{it:code}{cmd:)}
+[{cmdab:ageu:nit(}{it:unit}{cmd:)} {cmdab:gest:age(}{varname}{cmd:)} {cmdab:noc:utoff}] 
+
+{p 8 17 2}{cmd:egen} [{it:{help datatype:type}}] {newvar} {cmd:=}
+{cmd:zbmicat}{cmd:(}{varname}{cmd:)} {ifin}{cmd:,} 
+{cmdab:x:var(}{varname}{cmd:)} {cmdab:gen:der(}{varname}{cmd:)} 
+{cmdab:genc:ode(}{cmdab:m:ale=}{it:code}{cmd:,} {cmdab:f:emale=}{it:code}{cmd:)}
+[{cmdab:ageu:nit(}{it:unit}{cmd:)}] 
+
+{p 4 4 2}{cmd:by} cannot be used with either of these functions.
+
+
+{title:Description}
+
+{p 4 4 2}(This is the general specification copied from the help for
+{helpb egen}.)
+
+{p 8 17 2}{cmd:egen} [{it:{help datatype:type}}] {newvar} {cmd:=}
+{it:fcn}{cmd:(}{it:arguments}{cmd:)} {ifin} [{cmd:,} {it:options}]
+
+{p 4 4 2}where depending on the {it:fcn}, {it:arguments} refers to an
+expression, {varlist}, or {it:{help numlist}}, and the {it:options} are
+also {it:fcn} dependent.
+
+{p 4 4 2}Two additional functions for {cmd:egen} have been developed,
+{hi:zanthro()} and {hi:zbmicat()}.
+
+{p 4 4 2}The function {hi:zanthro()} allows transformation of child
+anthropometric data to z scores using the LMS method and the reference
+data available from the 2000 CDC Growth Reference, the British 1990
+Growth Reference, the WHO Child Growth Standards, the WHO Reference
+2007, the UK-WHO Preterm Growth Reference, and the UK-WHO Term Growth
+Reference.
+
+{p 4 4 2}The WHO Reference 2007 (5-19 yrs) complements the WHO Child
+Growth Standards (0-5 yrs).  See the {help zanthro##remarks:Remarks}
+section for an explanation of the UK-WHO Growth References.
+
+{p 4 4 2}The function {hi:zbmicat()} allows for children to be
+categorized into thinness grades -- normal weight, overweight, and obese
+-- according to international body mass index (BMI) cutoffs.
+
+
+{title:egen functions}
+
+{p 4 4 2}{hi:zanthro(}{varname}{cmd:,}{it:chart}{cmd:,}{it:version}{cmd:)}
+calculates z scores for anthropometric measures in children and
+adolescents according to US, UK, WHO, and composite UK-WHO reference
+growth charts.  The three arguments are the following:
+
+{pmore}{varname} is the variable name of the measure in your dataset
+for which z scores are calculated (for example, {cmd:height},
+{cmd:weight}, or {cmd:BMI}).
+
+{pmore}{it:chart}; see the {help zanthro##charts:Growth charts}
+section below for a list of valid chart codes.
+
+{pmore}{it:version} is {cmd:US}, {cmd:UK}, {cmd:WHO},
+{cmd:UKWHOpreterm}, or {cmd:UKWHOterm}.  {cmd:US} calculates z scores by
+using the 2000 CDC Growth Reference; {cmd:UK} uses the British 1990
+Growth Reference; {cmd:WHO} uses the WHO Child Growth Standards and WHO
+Reference 2007 composite data files as the reference data; and
+{cmd:UKWHOpreterm} and {cmd:UKWHOterm} use the British and WHO Child
+Growth Standards composite data files for preterm and term births,
+respectively.
+
+{p 4 4 2}{hi:zbmicat(}{varname}{cmd:)} categorizes children and
+adolescents aged 2-18 years into three thinness grades -- normal weight,
+overweight, and obese -- by using international BMI cutoffs.  BMI is in
+kg/m^2.  This function generates a variable with the following values
+and labels:
+
+{col 9}Value{col 22}Grade/Label{col 39}BMI range at 18 years
+{col 9}{hline 51}
+{col 10}{cmd:-3}{col 20}Grade 3 thinness{col 48}<16
+{col 10}{cmd:-2}{col 20}Grade 2 thinness{col 45}16 to <17
+{col 10}{cmd:-1}{col 20}Grade 1 thinness{col 44}17 to <18.5
+{col 11}{cmd:0}{col 23}Normal wt{col 44}18.5 to <25
+{col 11}{cmd:1}{col 22}Overweight{col 45}25 to <30
+{col 11}{cmd:2}{col 25}Obese{col 49}30+
+
+
+{title:Options}
+
+{phang}{cmd:xvar(}{varname}{cmd:)} specifies the variable used (along
+with gender) as the basis for standardizing the measure of interest.
+This variable is usually age but can also be length or height when the
+measurement is weight; that is, weight-for-age, weight-for-length, and
+weight-for-height are all available growth charts.
+
+{phang}{cmd:gender(}{varname}{cmd:)} specifies the gender variable.  It
+can be string or numeric.  The codes for {cmd:male} and {cmd:female}
+must be specified by the {hi:gencode()} option.
+
+{phang}{cmd:gencode(male=}{it:code}{cmd:, female=}{it:code}{cmd:)}
+specifies the codes for {cmd:male} and {cmd:female}.  The gender can be
+specified in either order, and the comma is optional.  Quotes around the
+codes are not allowed, even if the gender variable is a string.
+
+{phang}{cmd:ageunit(}{it:unit}{cmd:)} gives the unit for the age
+variable and is only valid for measurement-for-age charts; that is, omit
+this option when the chart code is {cmd:wl} or {cmd:wh} (see the 
+{help zanthro##charts:Growth charts} section below).  The {it:unit} can
+be {cmd:day}, {cmd:week}, {cmd:month}, or {cmd:year}.  This option may
+be omitted if the {it:unit} is {cmd:year}, because this is the default.
+Time units are converted as follows:{p_end}
+{col 14}1 year = 12 months = 365.25/7 weeks = 365.25 days
+{col 14}1 month = 365.25/84 weeks = 365.25/12 days
+{col 14}1 week = 7 days
+{p 8 8 2}Note: Ages cannot be expressed to full accuracy for all units.
+The consequence of this will be most apparent at the extremes of age in
+the growth charts, where z scores may be generated when the age variable
+is in one unit and missing for some of those same ages when they have
+been converted to another unit.
+
+{marker gestage}{phang}{cmd:gestage(}{varname}{cmd:)} specifies the
+gestational age variable in weeks.  This option enables age to be
+adjusted for gestational age.  The default is 40 weeks.  If gestational
+age is greater than 40 weeks, the child's age will be corrected by the
+amount over 40 weeks.  A warning will be given if the gestational age
+variable contains a nonmissing value over 42.  As with the
+{cmd:ageunit()} option, this option is only valid for
+measurement-for-age charts.
+
+{phang}{cmd:nocutoff} forces calculation of all z scores, allowing for
+extreme values in your dataset.  By default, any z scores with absolute
+values greater than or equal to 5 (that is, values that are 5 standard
+deviations or more away from the mean) are set to missing.
+
+{pmore}The decision to have a default cutoff at 5 standard deviations
+from the mean was made as a way of attempting to capture extreme data
+entry errors.  Apart from this and setting to missing any z scores where
+the measurement is a nonpositive number, these functions will not
+automatically detect data errors.  As always, please check your data!
+
+
+{marker charts}{title:Growth charts}
+
+{col 5}{ul:2000 CDC Growth Charts, version US}
+
+{col 5}{it:chart}{col 18}Description{col 40}Measurement{col 57}{cmd:xvar()} range
+{col 5}{col 43}unit
+{col 5}{hline 71}
+{col 6}{cmd:la}{col 16}length-for-age{col 44}cm{col 57}0-35.5 months
+{col 6}{cmd:ha}{col 16}height-for-age{col 44}cm{col 57}2-20 years
+{col 6}{cmd:wa}{col 16}weight-for-age{col 44}kg{col 57}0-20 years
+{col 6}{cmd:ba}{col 17}BMI-for-age{col 42}kg/m^2{col 57}2-20 years
+{col 6}{cmd:hca}{col 10}head circumference-for-age{col 44}cm{col 57}0-36 months
+{col 6}{cmd:wl}{col 15}weight-for-length{col 44}kg{col 57}45-103.5 cm
+{col 6}{cmd:wh}{col 15}weight-for-height{col 44}kg{col 57}77-121.5 cm
+{col 5}{hline 71}
+
+
+{col 5}{ul:British 1990 Growth Charts, version UK}
+
+{col 5}{it:chart}{col 18}Description{col 40}Measurement{col 65}{cmd:xvar()} range
+{col 5}{col 43}unit
+{col 5}{hline 77}
+{col 6}{cmd:ha}{col 13}length/height-for-age{col 45}cm{col 65}0-23 years
+{col 6}{cmd:wa}{col 17}weight-for-age{col 45}kg{col 65}0-23 years
+{col 6}{cmd:ba}{col 18}BMI-for-age{col 43}kg/m^2{col 65}0-23 years
+{col 6}{cmd:hca}{col 11}head circumference-for-age{col 45}cm{col 58}Males: 0-18 years
+{col 56}Females: 0-17 years
+{col 6}{cmd:sha}{col 13}sitting height-for-age{col 45}cm{col 65}0-23 years
+{col 6}{cmd:lla}{col 15}leg length-for-age{col 45}cm{col 65}0-23 years
+{col 6}{cmd:wsa}{col 17}waist-for-age{col 45}cm{col 65}3-17 years
+{col 6}{cmd:bfa}{col 17}body fat-for-age{col 45}%{col 65}4.75-19.83 years
+{col 5}{hline 77}
+
+{pstd}Length/height and BMI growth data are available from 33 weeks
+gestation.{p_end}
+{pstd}Weight and head circumference growth data are available from 23 weeks gestation.
+
+
+{col 5}{ul:WHO Child Growth Charts and WHO Reference 2007 Charts, version WHO}
+
+{col 5}{it:chart}{col 18}Description{col 40}Measurement{col 57}{cmd:xvar()} range
+{col 5}{col 43}unit
+{col 5}{hline 77}
+{col 6}{cmd:ha}{col 13}length/height-for-age{col 45}cm{col 57}0-19 years
+{col 6}{cmd:wa}{col 17}weight-for-age{col 45}kg{col 57}0-10 years
+{col 6}{cmd:ba}{col 18}BMI-for-age{col 43}kg/m^2{col 57}0-19 years
+{col 6}{cmd:hca}{col 11}head circumference-for-age{col 45}cm{col 57}0-5 years
+{col 6}{cmd:aca}{col 12}arm circumference-for-age{col 45}cm{col 57}0.25-5 years
+{col 6}{cmd:ssa}{col 10}subscapular skinfold-for-age{col 45}mm{col 57}0.25-5 years
+{col 6}{cmd:tsa}{col 13}triceps skinfold-for-age{col 45}mm{col 57}0.25-5 years
+{col 6}{cmd:wl}{col 15}weight-for-length{col 45}kg{col 57}45-110 cm
+{col 6}{cmd:wh}{col 15}weight-for-height{col 45}kg{col 57}65-120 cm
+{col 5}{hline 77}
+
+
+{col 5}{ul:UK WHO Preterm Growth Charts, version UKWHOpreterm}
+
+{col 5}{it:chart}{col 18}Description{col 40}Measurement{col 65}{cmd:xvar()} range
+{col 5}{col 43}unit
+{col 5}{hline 77}
+{col 6}{cmd:ha}{col 13}length/height-for-age{col 45}cm{col 65}0-20 years
+{col 6}{cmd:wa}{col 17}weight-for-age{col 45}kg{col 65}0-20 years
+{col 6}{cmd:ba}{col 18}BMI-for-age{col 43}kg/m^2{col 65}0.038-20 years
+{col 6}{cmd:hca}{col 11}head circumference-for-age{col 45}cm{col 58}Males: 0-18 years
+{col 56}Females: 0-17 years
+{col 5}{hline 77}
+
+{pstd}Length/height growth data are available from 25 weeks gestation.{p_end}
+{pstd}Weight and head circumference growth data are available from 23 weeks
+gestation.{p_end}
+
+
+{col 5}{ul:UK WHO Term Growth Charts, version UKWHOterm}
+
+{col 5}{it:chart}{col 18}Description{col 40}Measurement{col 65}{cmd:xvar()} range
+{col 5}{col 43}unit
+{col 5}{hline 77}
+{col 6}{cmd:ha}{col 13}length/height-for-age{col 45}cm{col 65}0-20 years
+{col 6}{cmd:wa}{col 17}weight-for-age{col 45}kg{col 65}0-20 years
+{col 6}{cmd:ba}{col 18}BMI-for-age{col 43}kg/m^2{col 65}0.038-20 years
+{col 6}{cmd:hca}{col 11}head circumference-for-age{col 45}cm{col 58}Males: 0-18 years
+{col 56}Females: 0-17 years
+{col 5}{hline 77}
+
+{pstd}Length/height, weight, and head circumference growth data are available
+from 37 weeks gestation.{p_end}
+
+
+{marker remarks}{title:Remarks}
+
+{p 4 4 2}The composite UK-WHO data files are the following:
+
+{p 4 4 2}{ul:UK WHO Preterm Growth Reference} - For preterm births.  Use
+gestationally corrected age (see the {helpb zanthro##gestage:gestage()}
+option).  If this option is omitted, z scores are calculated on the
+basis of a gestational age of 40 weeks.
+
+{p 4 4 2}
+{ul:UK WHO Term Growth Reference} - For all term births (gestation 37-42 weeks).
+
+{p 4 4 2}These growth references were launched in May 2009.  They are
+made up of a birth section based on the British 1990 Growth Reference, a
+postnatal section from 2 weeks to 4 years copied from the WHO Child
+Growth Standards and, for completeness, the 4-20 years section from the
+British 1990 Growth Reference.  Acknowledgment statements for these data
+should specify the data source as follows:
+
+{col 9}Section{col 24}Data source
+{col 9}{hline 71}
+{col 9}Birth{col 24}British 1990 Growth Reference, reanalyzed 2009
+{col 9}Postnatal{col 24}WHO Child Growth Standards
+{col 9}4-20 years{col 24}British 1990 Growth Reference
+{col 9}{hline 71}
+
+
+{title:Examples}
+
+{pstd}Gender variable {cmd:sex} coded {cmd:male=1, female=2}
+
+{p 8 16}{cmd:agemth} variable in months, adjusting for gestational age{p_end}
+{p 12 16 2}{cmd:. egen zwauk = zanthro(weight,wa,UK), xvar(agemth) gender(sex) gencode(male=1, female=2) ageunit(month) gestage(gestation)}
+
+{p 8 16}{cmd:ageyr} variable in years, adjusting for gestational age{p_end}
+{p 12 16 2}{cmd:. egen zwauk = zanthro(weight,wa,UK), xvar(ageyr) gender(sex) gencode(male=1, female=2) gestage(gestation)}
+
+{p 8 16 2}{cmd:ageyr} variable in years and calculating all z scores, including where abs(z)>=5{p_end}
+{p 12 16 2}{cmd:. egen zwawho = zanthro(weight,wa,WHO), xvar(ageyr) gender(sex) gencode(male=1, female=2) nocutoff}
+
+{p 8 16 2}{cmd:xvar()} is length or height{p_end}
+{p 12 16 2}{cmd:. egen zwlus = zanthro(weight,wl,US), xvar(length) gender(sex) gencode(male=1, female=2)}
+
+{p 12 16 2}{cmd:. egen zwhus = zanthro(weight,wh,US), xvar(height) gender(sex) gencode(male=1, female=2)}{p_end}
+
+{pstd}Gender variable {cmd:sex} coded {cmd:male=M, female=F}{p_end}
+
+{p 8 16}{cmd:agemth} variable in months{p_end}
+{p 12 16 2}{cmd:. egen zbaus = zanthro(bmi,ba,US), xvar(agemth) gender(sex) gencode(male=M, female=F) ageunit(month)}{p_end}
+
+{p 12 16 2}{cmd:. egen bcat = zbmicat(bmi), xvar(agemth) gender(sex) gencode(male=M, female=F) ageunit(month)}
+
+{p 8 16}Using just the first letter of the {cmd:gencode()} arguments{p_end}
+{p 12 16 2}{cmd:. egen zbaus = zanthro(bmi,ba,US), xvar(agemth) gender(sex) gencode(m=M, f=F) ageunit(month)}{p_end}
+
+{pstd}Gender variable {cmd:sex} contains the codes {cmd:Male} and {cmd:Female}{p_end}
+
+{p 8 14 2}Note: The codes cannot be abbreviated.  They must be typed into the
+{hi:gencode()} 
+option exactly as they appear in your dataset.{p_end}
+{p 12 16 2}{cmd:. egen zbaus = zanthro(bmi,ba,US), xvar(agemth) gender(sex) gencode(m=Male, f=Female) ageunit(month)}{p_end}
+
+{p 8 16 2}Can swap the order when specifying the gender codes{p_end}
+{p 12 16 2}{cmd:. egen zbaus = zanthro(bmi,ba,US), xvar(agemth) gender(sex) gencode(f=Female, m=Male) ageunit(month)}{p_end}
+
+{p 8 16 2}Can omit the comma from the {hi:gencode()} option{p_end}
+{p 12 16 2}{cmd:. egen zbaus = zanthro(bmi,ba,US), xvar(agemth) gender(sex) gencode(f=Female m=Male) ageunit(month)}{p_end}
+
+
+{title:Authors}
+
+{pstd}Suzanna I. Vidmar{p_end}
+{pstd}Clinical Epidemiology and Biostatistics Unit{p_end}
+{pstd}Murdoch Childrens Research Institute and{p_end}
+{pstd}University of Melbourne Department of Paediatrics{p_end}
+{pstd}Royal Children's Hospital{p_end}
+{pstd}Melbourne, Australia{p_end}
+{pstd}suzanna.vidmar@mcri.edu.au{p_end}
+
+{pstd}Tim J. Cole{p_end}
+{pstd}MRC Centre of Epidemiology for Child Health{p_end}
+{pstd}UCL Institute of Child Health{p_end}
+{pstd}London, UK{p_end}
+{pstd}tim.cole@ucl.ac.uk{p_end}
+	
+{pstd}Huiqi Pan{p_end}
+{pstd}MRC Centre of Epidemiology for Child Health{p_end}
+{pstd}UCL Institute of Child Health{p_end}
+{pstd}London, UK{p_end}
+{pstd}h.pan@ich.ucl.ac.uk{p_end}
+
+	
+{title:References}
+
+{phang}World Health Organization.  2006.  WHO child growth standards:
+Length/height-for-age, weight-for-age, weight-for-length,
+weight-for-height and body mass index-for-age: Methods and development.
+Geneva: World Health Organization.
+
+{phang}World Health Organization.  2007.  WHO child growth standards:
+Head circumference-for-age, arm circumference-for-age, triceps
+skinfold-for-age and subscapular skinfold-for-age: Methods and
+development.  Geneva: World Health Organization.
+
+
+{title:Also see}
+
+{p 4 14 2}Article:  {it:Stata Journal}, volume 13, number 2: {browse "http://www.stata-journal.com/article.html?article=dm0004_1":dm0004_1}
+
+{p 5 14 2}Manual:  {manlink R egen}{p_end}
+
+{p 7 14 2}Help:  {manhelp egen R}, {manhelp functions D}, {manhelp generate D}{p_end}

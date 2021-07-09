@@ -1,0 +1,78 @@
+{smcl}
+{* October 2010}{...}
+{hline}
+{cmd:help for hlp2html} 
+{hline}
+
+{title:Title}
+
+{p 4 8 2}
+{bf:hlp2html --- translates a list of Stata help files to HTML}
+
+
+{title:Syntax}
+
+{phang}
+{cmd: hlp2html}{cmd:,}  {opt fnames(names)}  [{opt log} {it: {help log2html:log2html_options}}]
+
+
+{synoptline}
+
+{marker description}{dlgtab:Description}
+
+{phang}
+{cmd:hlp2html} translates a list of Stata help files into HTML. All generated .html files are placed in the working directory.
+
+
+{pmore}{bf:Dependency:} {cmd: hlp2html} relies heavily  on {help log2html} written by Baum, Cox, and Rising. 
+{help log2html} must be installed for {cmd:hlp2html} to work. 
+
+
+{phang}
+{bf:N.B.:} Make sure the help files to be translated are not open in the Viewer. Also, if the directory where the html files 
+will be placed contains smcl files with the same names as the help files, they will be replaced.
+
+{pmore} Stata 9.2 or higher is required.
+
+
+{title:Options}
+
+{dlgtab:Primary options}
+
+{pstd}
+{opt fname(names)} specifies a list of command names whose help files need to be translated. 
+
+{phang}
+{opt log} indicates that the file names specified with {bf:fnames()} are .smcl log files.
+
+{dlgtab:Other options}
+
+For other options that you can specify, see {help log2html}. {cmd: hlp2html} accepts all the {help log2html} options.
+
+
+{title: Examples}
+
+{phang}
+Translate a list of help files into HTML
+
+{pmore}{cmd: . hlp2html, fnames(spmlreg spwmatrix nearstat) linesize(120)  css("./mystyles.css") replace}
+
+
+{phang}
+Translate a list of log (SMCL) files into HTML
+
+{pmore}{cmd: . hlp2html, fnames(smclfile1 smclfile2 scmlfile3) log linesize(120)  css("./mystyles.css") replace}
+
+
+{title:Author}
+
+{p 4 4 2}{hi: P. Wilner Jeanty}, Dept. of Agricultural, Environmental, and Development Economics,{break} 
+           The Ohio State University{break}
+           
+{p 4 4 2}Email to {browse "mailto:jeanty.1@osu.edu":jeanty.1@osu.edu}.
+
+
+{title:Also see}
+
+{p 4 13 2}Online: {helpb log2html} if installed
+

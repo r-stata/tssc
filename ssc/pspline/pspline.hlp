@@ -1,0 +1,297 @@
+{smcl}
+{* 24jan2009}{...}
+{hi:help pspline}
+{hline}
+
+{title:Title}
+
+{pstd}{hi:pspline} {hline 2} Penalized spline scatterplot smoother based on {cmd:xtmixed}
+
+
+{title:Syntax}
+
+{p 8 15 2}
+    {cmd:pspline} {it:{help varname:yvar}}  {it:{help varname:xvar}} [{varlist}] {ifin}
+    [{cmd:,}
+    {help mesmooth##opt:{it:options}}
+    ]
+
+
+{synoptset 25 tabbed}{...}
+{marker opt}{synopthdr}
+{synoptline}
+{syntab :Main}
+{synopt :{opt d:egree(#)}}degree of spline; default is 1
+    {p_end}
+{synopt :{opt nk:nots(#)}}number of knots; default is min(int(U/4), 35) where U is
+    the number of distinct values of {it:xvar}
+    {p_end}
+{synopt :{opth k:nots(numlist)}}exact location of knots
+    {p_end}
+{synopt :{opt al:pha(#)}}significance level for pilot goodness-of-fit test
+    {p_end}
+{synopt :{opt force}}force penalized spline estimation
+    {p_end}
+{synopt :{cmd:at(}{varname} {ifin}{cmd:)}}obtain the smooth at the values
+    of {varname}
+    {p_end}
+{synopt :{opth g:enerate(newvar)}}store smoothed fit in {newvar}
+    {p_end}
+{synopt :{opt r:eplace}}overwrite existing variable
+    {p_end}
+{synopt :{opt nopen:alty}}do not apply a roughness penalty; treat spline
+    coefficients as fixed effects
+    {p_end}
+{synopt :{opt dis:crete}}treat {it:xvar} as a factor variable
+    {p_end}
+{synopt :{cmdab:estop:ts(}{it:{help xtmixed:options}}{cmd:)}}estimation options as documented
+    in help {helpb xtmixed}
+    {p_end}
+{synopt :{opt noi:sily}}display estimation output
+    {p_end}
+{synopt :{opt nogr:aph}}suppress graph
+    {p_end}
+{synopt :{opt nosc:atter}}suppress scatterplot only
+    {p_end}
+{synopt :{opt noknot:pos}}suppress ticks indicating knot positions
+    {p_end}
+
+{syntab :Scatterplot}
+{synopt :{it:{help marker_options}}}change look of markers (color, size, etc.)
+    {p_end}
+{synopt :{it:{help marker_label_options}}}add marker labels; change look or position
+    {p_end}
+
+{syntab :Smoothed line}
+{synopt :{opth lineop:ts(cline_options)}}affect rendition of the smoothed line
+    {p_end}
+
+{syntab :Add plots}
+{synopt :{opth "addplot(addplot_option:plot)"}}add other plots to the generated graph
+    {p_end}
+
+{syntab :Y axis, X axis, Titles, Legend, Overall}
+{synopt :{it:{help twoway_options}}}any options other than {cmd:by()} documented in
+    {bind:{bf:[G]} {it:twoway_options}}
+    {p_end}
+{synoptline}
+
+
+{title:Description}
+
+{pstd}
+    {cmd:pspline} uses {cmd:xtmixed} to fit a penalized spline regression of
+    {it:yvar} on {it:xvar} as discussed in Ruppert et al. (2003) and plots the
+    function. The knots of the spline are positioned at equally spaced
+    quantiles of the distinct values of {it:xvar}.
+
+{pstd}
+    {cmd:pspline} is an automatic smoother in that the optimal degree of smoothing
+    is determined from the data by (restricted) maximum likelihood.
+
+{pstd}
+    Specify {it:varlist} to adjust for additional covariates and plot partial
+    residuals.
+
+{pstd}
+    To circumvent convergence problems in situations where there is only little
+    deviation in the data from a simple parametric model (e.g. a linear model
+    if degree=1, a quadratic model if degree=2), {cmd:pspline} performs
+    a pilot goodness-of-fit (GOF) test for the parametric model. The GOF test
+    is implemented as a Wald test of the spline terms in a non-penalized
+    model (see the {cmd:nopenalty} option). A low p-value indicates that there
+    is a lot of evidence against the parametric model. {cmd:pspline} uses the penalized
+    spline model only if the p-value is smaller than 0.3 (or as set
+    by {cmd:alpha()}) and otherwise sticks with the parametric model. Specify
+    {cmd:force} to skip the test and enforce the penalized spline model.
+
+
+{title:Options}
+
+{dlgtab:Main}
+
+{phang} {opt degree(#)} specifies the degree of the spline to be used in
+the smoothing. The default is {cmd:degree(1)} (linear splines), resulting
+in a piecewise linear smooth. Use {cmd:degree(2)} (quadratic splines) for a
+continuous smooth (i.e. a smooth with a continuous first
+derivative). {cmd:degree(0)} results in a step function.
+
+{phang} {opt nknots(#)} specifies the number of knots of the spline. The
+default is min(int(U/4), 35) where U is the number of distinct values of
+{it:xvar}. {cmd:nknots(0)} is allowed and causes a parametric model
+without splines to be fitted. This is equivalent to fitting a polynomial
+model using {helpb regress} (i.e. a linear model if degree=1, a quadratic
+model if degree=2, etc.).
+
+{phang}
+{opth knots(numlist)} specifies the exact locations of knots of the spline. The
+default is to position the knots at equally spaced quantiles of the distinct
+values of {it:xvar}. {cmd:nknots()} is not allowed if {cmd:knots()}
+is specified.
+
+{phang}
+{opt alpha(#)} sets the significance level for the pilot goodness-of-fit test
+(see description above). The default is {cmd:alpha(0.3)}.
+
+{phang}
+{opt force} skips the pilot goodness-of-fit test and enforces estimation of the
+penalized spline model.
+
+{phang}{cmd:at(}{varname} {ifin}{cmd:)} obtains the smoothed fit at the
+values of {it:varname}. The default is to obtain the fit at the
+values of {it:xvar}. The fit at the values of {it:varname} is computed by
+linear interpolation (or extrapolation) from the fit at the values of {it:xvar}.
+
+{phang}
+{opth generate(newvar)} stores the smoothed values in
+{it:newvar}.
+
+{phang}
+{opt replace} permits {cmd:pspline} to overwrite an existing variable.
+
+{phang}
+{opt nopenalty} fits a non-penalized spline smooth. This is accomplished by
+treating the spline coefficients as fixed instead of random in {helpb xtmixed}
+and is equivalent to fitting a spline model using {helpb regress}.
+
+{phang}
+{opt discrete} causes {it:xvar} to be treated as a factor variable and fits a model
+containing a random effect among the levels of {it:xvar} instead of a
+spline. {cmd:nknots()}, {cmd:knots()}, and {cmd:at()} are not allowed if
+{cmd:discrete} is specified.
+
+{phang}
+{opt estopts(options)} specified options to be passed through to {helpb xtmixed}.
+
+{phang}
+{opt noisily} causes output from {helpb xtmixed} to be displayed.
+
+{phang}
+{opt nograph} suppresses drawing the graph of the estimated smooth.
+
+{phang}
+{opt noscatter} suppresses graphing a scatterplot of the observed data or partial
+residuals.
+
+{phang}{opt noknot:pos} suppresses the ticks indicating the knot positions.
+
+{dlgtab:Scatterplot}
+
+{phang}
+{it:marker_options} affect the rendition of markers drawn at the plotted points,
+including their shape, size, color, and outline; see {manhelpi marker_options G}.
+
+{phang}
+{it:marker_label_options} specify if and how the markers are to be labeled; see
+{manhelpi marker_label_options G}.
+
+{dlgtab:Smoothed line}
+
+{phang}
+{opt lineopts(cline_options)} affects the rendition of the smoothed
+line; see {manhelpi cline_options G}.
+
+{dlgtab:Add plots}
+
+{phang}
+{opt addplot(plot)} provides a way to add other plots to the generated graph;
+see {manhelpi addplot_option G}.
+
+{dlgtab:Y axis, X axis, Titles, Legend, Overall}
+
+{phang}
+{it:twoway_options} are any of the options documented in
+{manhelpi twoway_options G}, excluding {opt by()}.
+These include options for titling the
+graph (see {manhelpi title_options G}) and for saving the graph to disk
+(see {manhelpi saving_option G}).
+
+
+{title:Examples}
+
+{pstd}Example using the auto data:
+
+        {com}. {stata sysuse auto}
+        {com}. {stata pspline price mpg}                            {txt}// piecewise linear
+        {com}. {stata pspline price mpg, degree(0)}                 {txt}// step function
+        {com}. {stata pspline price mpg, degree(2)}                 {txt}// continuous
+        {com}. {stata pspline price mpg weight foreign, degree(2)}  {txt}// covariate adjustment
+        {txt}
+
+{pstd}Graph on titlepage of Ruppert et al. (2003):
+
+        {com}. {stata "use http://fmwww.bc.edu/repec/bocode/l/lidar.dta"}
+        {com}. {stata pspline logratio range}
+        {txt}
+
+{pstd}The motorcycle data:
+
+        {com}. {stata webuse motorcycle}
+        {com}. {stata pspline accel time, d(2)}
+        {txt}
+
+{title:Saved results}
+
+{pstd}{cmd:pspline} returns the results from {helpb xtmixed} in {cmd:e()} and
+saves the following in {cmd:r()}:
+
+{synoptset 15 tabbed}{...}
+{p2col 5 15 19 2: Scalars}{p_end}
+{synopt:{cmd:r(degree)}}degree of spline
+    {p_end}
+{synopt:{cmd:r(nknots)}}number of knots
+    {p_end}
+{synopt:{cmd:r(alpha)}}significance level for pilot GOF test
+    {p_end}
+{synopt:{cmd:r(gof_chi2)}}chi-squared of pilot GOF test
+    {p_end}
+{synopt:{cmd:r(gof_df)}}degrees of freedom of pilot GOF test
+    {p_end}
+{synopt:{cmd:r(gof_p)}}p-value of pilot GOF test
+    {p_end}
+
+{synoptset 15 tabbed}{...}
+{p2col 5 15 19 2: Macros}{p_end}
+{synopt:{cmd:r(model)}}{cmd:penalized}, {cmd:parametric}, or {cmd:non-penalized}
+    {p_end}
+{synopt:{cmd:r(discrete)}}{cmd:discrete} or empty
+    {p_end}
+
+{synoptset 15 tabbed}{...}
+{p2col 5 15 19 2: Matrix}{p_end}
+{synopt:{cmd:r(knots)}}knot positions
+    {p_end}
+
+
+{title:References}
+
+{phang}
+    Ruppert, D., M. P. Wand, and R. J. Carroll (2003). Semiparametric Regression.
+    Cambridge University Press.
+
+
+{title:Authors}
+
+{pstd}
+    Ben Jann, ETH Zurich, jannb@ethz.ch
+
+{pstd}
+    Roberto G. Gutierrez, StataCorp., rgutierrez@stata.com
+
+{pstd}
+    Thanks for citing this software as follows:
+
+{pmore}
+    Jann, B., and R. Gutierrez. 2008. pspline: Stata module providing a
+    penalized spline scatterplot smoother based on linear mixed model
+    technology. Available from
+    http://ideas.repec.org/c/boc/bocode/s456972.html.
+
+
+{title:Also see}
+
+{psee}
+    Online:  help for
+    {helpb xtmixed},
+    {helpb lowess},
+    {helpb lpoly}

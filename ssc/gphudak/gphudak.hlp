@@ -1,0 +1,88 @@
+{smcl}
+{* 19oct2004}{...}
+{hline}
+help for {hi:gphudak}         (SSC distribution 25 June 2006)
+{hline}
+
+{title:Estimate long memory in a timeseries via Geweke/Porter-Hudak }
+
+{p 8 17}{cmd:gphudak}
+{it:varname}
+[{cmd:if} {it:exp}]
+[{cmd:in} {it:range}] 
+[{cmd:,} {cmdab:powers(}{it:numlist}{cmd:)}]
+
+{p 4 4}{cmd:gphudak} is for use with time-series data. 
+You must {cmd:tsset} your data before using {cmd:gphudak}; see help {cmd:tsset}. 
+{cmd:gphudak} supports the {cmd:by} prefix, which may be used to operate on each 
+time series in a panel. Alternatively, the {cmd:if} qualifier may be used to specify 
+a single time series in a panel.
+
+{title:Description}
+
+{p 4 4}{cmd:gphudak} 
+computes the Geweke/Porter-Hudak (GPH, 1983) estimate of the long
+memory (fractional integration) parameter, {it:d}, of a timeseries. If a series
+exhibits long memory, it is neither stationary (I[0]) nor is it a unit 
+root (I[1]) process; it is an I[{it:d] process, with {it:d} a real number. A series
+exhibiting long memory, or persistence, has an autocorrelation function
+that damps hyperbolically, more slowly than the geometric damping exhibited
+by 'short memory' (ARMA) processes. Thus, it may be predictable at long
+horizons. An excellent survey of long memory models--which originated in
+hydrology, and have been widely applied in economics and finance--is given 
+by Baillie (1996). {p_end}
+
+{p 4 4}
+The GPH method uses nonparametric methods--a spectral regression estimator--
+to evaluate {it:d} without explicit specification of the 'short memory' (ARMA) 
+parameters of the series. The series is usually differenced so that the 
+resulting {it:d} estimate will fall in the [-0.5, 0.5] interval. {p_end}
+
+{p 4 4}
+A choice must be made of the number of harmonic ordinates to be included
+in the spectral regression. The regression slope estimate is an estimate of
+the slope of the series' power spectrum in the vicinity of the zero 
+frequency; if too few ordinates are included, the slope is calculated from
+a small sample. If too many are included, medium and high-frequency components
+of the spectrum will contaminate the estimate. A choice of root(T), or 
+{cmd:power} = 0.5 is often employed. To evaluate the robustness of the GPH estimate,
+a range of power values (from 0.4 - 0.75) is commonly calculated as well.
+{cmd:gphudak}  uses the default power of 0.5. A list of powers may be given. {p_end}
+
+{p 4 4}
+The command displays the {it:d} estimate, number of ordinates, conventional 
+standard error and P-value, as well as the asymptotic standard error.
+These values are returned in a matrix, {cmd:e(gph)}, formatted for display. 
+{cmd:ereturn list} for details.  {p_end}
+
+
+{title:Examples}
+
+{p 4 8}{stata "use http://fmwww.bc.edu/ec-p/data/Mills2d/fta.dta":. use http://fmwww.bc.edu/ec-p/data/Mills2d/fta.dta}{p_end}
+{p 4 8}{stata "gphudak ftap":. gphudak ftap}{p_end}
+{p 4 8}{stata "gphudak D.ftap, power( 0.5 0.55:0.8)":. gphudak D.ftap, power( 0.5 0.55:0.8)}{p_end}
+
+{title:Authors}
+
+{p 4 4}Christopher F. Baum, Boston College, USA{break} 
+       baum@bc.edu
+       
+{p 4 4}Vince Wiggins, StataCorp LP{break} 
+        vwiggins@stata.com
+
+{title:References}
+      
+{p}Baillie, R., Long Memory Processes and Fractional Integration in 
+      Econometrics, Journal of Econometrics, 73, 1996, 5-59.{p_end}
+      
+{p}Geweke, J. and Porter-Hudak, S.,  The Estimation and Application
+      of Long Memory Time Series Models, J. of Time Series Analysis,
+      1983, 221-238.{p_end}
+
+{title:Also see}
+
+{p 4 13}On-line:   {help regress}, {help time}, {help tsset}, {help ac}, 
+{help corrgram} {help modlpr} (if installed), {help roblpr} (if installed)
+{p_end}
+
+        

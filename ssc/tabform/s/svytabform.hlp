@@ -1,0 +1,60 @@
+.-
+help for ^svytabform^
+.-
+
+Create tables of means, standard deviations and confidence intervals for servey data
+-----------------------------------
+
+^svytabform^ varlist using filename [if] [in] [aw fw], [ by(varname) sd se ci level(#) ^not^otal bdec(#) 
+							 ^sdb^racket ^cib^race ^mt^est ^mtp^rob ^mts^e ^mtb^dec ^ver^tical ]
+
+Description
+-----------------------------------
+^svytabform^ requires that the survey-designed variables be identified using svyset
+
+^svytabform^ creates tables of means, standard deviations, and confidence intervals corrected by probability weights 
+and put them in the following format:
+
+	| 	Item1	| 	Item2	| 	Item3	| 	Item4	| 	....	
+--------|---------------|---------------|---------------|---------------|---------------
+	       mean		mean		mean		mean		mean
+	       (sd)		(sd)		(sd)		(sd)		(sd)
+	     [lb;ub]	      [lb;ub]	      [lb;ub]	      [lb;ub]	       [lb;ub]
+--------|---------------|---------------|---------------|---------------|---------------
+
+
+Options		Description
+-----------------------------------
+^sd^ 		reports standard deviations
+^se^		reports standard errors of means. Either ^sd^ or ^se^ can be specified
+^ci^ 		reports confidence intervals
+^level^ 	specifies the level of significance for the confidence intervals; The default is 95%
+^nototal^ 	specifies not to report overall statistics when using with by()
+^bdec^ 		specifies the number of digits after the decimal for the standard deviations and the confidence intervals.
+^sdbracket^	puts standard deviations (or standard errors of means) in [] rather than ()
+^cibrace^	puts confidence intervals in {} rather than []
+^mtest^		performs t tests on the equality of means (of the current category and the rest). 
+	By default, the level of significance is indicated by stars 
+	(* significant at 10%; ** significant at 5%; *** significant at 1%).
+^mtprob^	p-values of the test statistic are included instead of stars.
+^mtse^ 		SEs of the test statistic are included instead of stars.
+	Either ^mtprob^ or ^mtse^ can be speficied.
+^mtbdec^ 	specifies the number of digits after the decimal for the p-values and the SEs of the mean-difference test.
+^vertical^	presents variables in the table vertically (the default is horizontally).
+
+Remark
+-------
+If neither ^sd^ nor ^ci^ is specified, the command report means
+
+
+Examples
+-------
+
+    ^. svytabform item1 item2 item3 using Test.xls, sd^
+    ^. svytabform item1 item2 item3 using Test.xls, by(month) sd ci level(90) bdec(2) nototal sdbracket cibrace^
+
+
+Author
+-------
+		Le Dang Trung
+		ld.trung@yahoo.co.uk

@@ -1,0 +1,64 @@
+Surface Plot 
+-------------
+
+^surface7^ Var1 Var2 Var3 , saving(string) ^round^(#) ^orient^(string) 
+^nowire^ ^xtitle(string)^ ^ytitle(string)^ ^ztitle(string)^
+
+
+Description
+-----------
+
+The function attempts to draw a wireframe plot from three variables.
+Var1 specifies the x-coordinate, var2 the y-coordinate and var3 the 
+z-coordinate. Alternatively the function can draw a circle at each 
+point and add a straight line going 
+down to the lowest point.
+
+This function can handle data that is not in the form of a matrix of values.
+However if there are too many x- and y- values the function will attempt 
+to round the dataset values into a more reasonable spread of values. This 
+will result in very messy figures. However in s uch a case it is the 
+impression that is needed. Many otehr statistical packages require a full 
+matrix of values. This is not a problem for the ^nowire^ option.
+
+At present the state of rotating the diagram is limited to interchanging the 
+axes.
+
+Options
+-------
+
+^saving^(^filename)^ this will save the resulting graph in filename.gph.
+If the file already exists it is ^DELETED^ and the new graph will be saved.
+
+^nowire^ this suppresses the drawing of the wire frame in exchange for lines 
+
+^round()^, data is automatically rounded if there are too many x and y 
+values. This option controls the amount of rounding, for example round(1) 
+rounds the x and y values to the nearest integer.
+
+^orient()^ this function must take the letters xyz or a combination of them.
+Whichever letter comes first is the x-axis, second is y-axis and third is 
+the z-axis. Thus orient(zxy) means that var1 is now the y coordinates, var2 
+is the z-coordinates and var3 is the x-coordinates. This is different from 
+changing the variables around since the wireframe is still draw across the 
+original x and y values. This is a crude attempt to implement rotation to 
+obtain a clearer picture.
+
+^xtitle(string)^ specifies the title for the X-axis, the default is "X-axis"
+
+^ytitle(string)^ specifies the title for the Y-axis, the default is "Y-axis"
+
+^ztitle(string)^ specifies the title for the Z-axis, the default is "Z-axis"
+
+Examples
+-------- 
+
+surface7 x y z, saving(myfile) round(10) orient(zxy) 
+
+surface7 x y z, xtitle(my x title) ytitle(my y title) ztitle(my z title)
+
+
+
+
+ 
+

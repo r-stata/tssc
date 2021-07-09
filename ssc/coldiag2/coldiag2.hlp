@@ -1,0 +1,362 @@
+{smcl}
+{.-}
+help for {cmd:coldiag2} and {cmd:prnt_cx} {right: {browse "mailto:John_Hendrickx@yahoo.com":John Hendrickx}}
+{.-}
+
+{title:coldiag2}
+
+{p 8 27}
+{cmd:coldiag2}
+[{cmd:,}
+{cmdab:f:ull}
+{cmdab:nos:cale}
+{cmdab:c:orr}
+{cmdab:e:igenval}
+{cmd:w}({it:integer})
+{cmd:d}({it:integer})]
+{cmdab:fo:rce}
+{cmdab:fu:zz}({it:real})
+{cmdab:c:har}({it:string})
+{cmdab:s:pace}({it:integer})
+
+{p}
+or
+
+{p 8 27}
+{cmd:coldiag2} {it:varlist}
+[{cmd:if} {it:exp}]
+[{cmd:in} {it:range}]
+[{cmd:,}
+{cmdab:nof:ull}
+{cmdab:nos:cale}
+{cmdab:c:orr}
+{cmdab:nocon:stant}
+{cmdab:e:igenval}
+{cmd:w}({it:integer})
+{cmd:d}({it:integer})
+{cmdab:fo:rce}
+{cmdab:fu:zz}({it:real})
+{cmdab:c:har}({it:string})
+{cmdab:s:pace}({it:integer})
+]
+
+
+{title:prnt_cx}
+
+{p 8 27}
+{cmd:prnt_cx}
+[{cmd:,}
+{cmdab:m:atname}({it:matrix})
+{cmd:w}({it:integer})
+{cmd:d}({it:integer})
+{cmdab:fo:rce}
+{cmdab:fu:zz}({it:real})
+{cmdab:c:har}({it:string})
+{cmdab:s:pace}({it:integer})
+
+
+{title:Description}
+
+{p}
+Note: {cmd:coldiag2} is an updated version of {help coldiag} by
+{browse "mailto:joe.harkness@jhu.edu":Joseph Harkness}. Note that the
+lastest version has slightly different defaults:
+
+{p}
+* a constant term is added to the {it:varlist}
+{break}* the full output with variance decomposition proportions is
+printed
+
+{p}
+Use "{cmd:coldiag2 }{it:varlist}{cmd:, nofull noconstant}" for
+backward compatibility with {cmd:coldiag}.
+
+{p}
+{cmd:coldiag2} is an implementation of the regression collinearity
+diagnostic procedures found in Belsley, Kuh, and Welsch (1980). These
+procedures examine the "conditioning" of the matrix of independent
+variables.
+
+{p}
+In the first syntax form, {cmd:coldiag2} is used as a post-estimation
+command after an estimation procedure such as {help regress}.
+Collinearity diagnostics are based on the interrelationships among the
+independent variables so they are appropriate for models other than
+linear regression. {cmd:coldiag2} uses the sample selected by any
+{cmd:if} or {cmd:in} options in that command and will include an
+intercept according to the model that was estimated.
+
+{p}
+In the second syntax form, a {it:varlist} is specified. {cmd:if} or
+{cmd:in} options can be used to restrict the sample. Missing values
+will be deleted listwise. By default, an intercept term will be added
+to the {it:varlist}; this can be suppressed using the
+{cmd:noconstant} option.
+
+{p}
+{cmd:prnt_cx} is called by {cmd:coldiag2} to print the condition
+indexes and variance-decompostion proportions. It can also be run
+after {cmd:coldiag2} to print the variance decomposition proportions
+using different options. Note that {cmd:coldiag2} will usually be fast
+enough to simply rerun the command with different options, unless the
+dataset is very largen and a large number of independent variables are
+used.
+
+{title:Options}
+
+{p 0 4}
+{cmd:nofull} By default, {cmd:coldiag2} prints the condition number
+and variance decomposition proportions. Use {cmd:nofull} to produce
+only the condition number.
+
+{p 0 4}
+{cmd:noscale} does not scale each column vector to unit length. (This
+scaling is recommended by Belsley et al)
+
+{p 0 4}
+{cmd:corr} calculates collinearity diagnostics based on a correlation
+matrix.
+
+{p 0 4}
+{cmd:noconstant} does not add an intercept term to the {it:varlist}.
+
+{p 0 4}
+{cmd:eigenval} prints the eigenvalues of the SSCP matrix. Default is
+{cmd:noeigenval}.
+
+{p 0 4}
+{cmd:w} specifies the width for printing the result. Default is 12.
+
+{p 0 4}
+{cmd:d} specifies the decimal places for printing the result. Default is 2.
+
+{p 0 4}
+{cmd:force} By default, the widest variable name determines column
+printing and the value of {cmd:w} is ignored. Use the {cmd:force}
+option to abbreviate the column labels and obtain compact columns.
+Note that values of {cmd:w} less than 5 revert to 5.
+
+{p 0 4}
+{cmd:fuzz} If set, variance-decomposition proportions less than
+{it:fuzz} are printed as a "." or optionally by the character
+specified in the {cmd:char} option. The default is 0 for
+{cmd:coldiag2}, i.e. all values are printed. The default is .3 for
+{cmd:prnt_cx}.
+
+{p 0 4}
+{cmd:char} Used in conjuction with the fuzz option. Specify an
+alternative character to be printed. Default is "."
+
+{p 0 4}
+{cmd:space} Specify the number of spaces between columns. Default is
+2.
+
+{p 0 4}
+{cmd:matname} ({cmd:prnt_cx} only) If {cmd:prnt_cx} is run after
+{cmd:coldiag2} it will automatically obtain the matrix of condition
+indexes and variance decomposition proportions. In rare instances,
+this matrix can be specified manually using the {cmd:matname} option.
+The first column of {it:matrix} should contain the condition indexes,
+the other columns should contain variance-decomposition proportions.
+
+{title:Remarks}
+
+{p}
+{cmd:coldiag2} first computes the condition number of the matrix. If
+this number is "large" (Belsley et al suggest 30 or higher), then
+there may be collinearity problems.
+
+{p}
+The condition number is the largest condition index. Unless the
+{cmd:nofull} option is specified, {cmd:coldiag2} lists the singular
+values in the first column of the table under the heading
+"Variance-Decomposition Proportions". All "large" condition indexes may
+be worth investigating.
+
+{p}
+The variance-decomposition proportions can be used to identify the
+source of collinearity problems indicated by large singular values.
+If a large condition index is associated two or more variables with
+"large" variance decomposition portions, these variables may be
+causing collinearity problems. Belsley et al suggest that a "large"
+portion is 50 percent or more.
+
+{title:Example}
+
+{com}. use auto
+{txt}(1978 Automobile Data)
+
+{com}. coldiag2 price mpg headroom trunk weight length turn displacement gear_ratio foreign
+
+{txt}Condition number using scaled variables = {res}      118.78
+
+{txt}Condition Indexes and Variance-Decomposition Proportions
+
+condition
+    index        _cons        price          mpg     headroom        trunk
+1  {res}  1.00         0.00         0.00         0.00         0.00         0.00
+{txt}2  {res}  3.32         0.00         0.00         0.00         0.00         0.00
+{txt}3  {res}  6.56         0.00         0.15         0.02         0.00         0.00
+{txt}4  {res} 10.53         0.00         0.20         0.04         0.12         0.08
+{txt}5  {res} 16.38         0.00         0.44         0.01         0.11         0.11
+{txt}6  {res} 18.88         0.00         0.03         0.09         0.53         0.25
+{txt}7  {res} 21.64         0.00         0.00         0.26         0.21         0.43
+{txt}8  {res} 43.87         0.00         0.02         0.33         0.01         0.04
+{txt}9  {res} 59.24         0.05         0.08         0.06         0.00         0.00
+{txt}10 {res} 82.48         0.36         0.00         0.11         0.01         0.00
+{txt}11 {res}118.78         0.58         0.08         0.08         0.01         0.09
+
+{txt}condition
+    index       weight       length         turn displacement   gear_ratio
+1  {res}  1.00         0.00         0.00         0.00         0.00         0.00
+{txt}2  {res}  3.32         0.00         0.00         0.00         0.00         0.00
+{txt}3  {res}  6.56         0.00         0.00         0.00         0.01         0.00
+{txt}4  {res} 10.53         0.00         0.00         0.00         0.00         0.00
+{txt}5  {res} 16.38         0.00         0.00         0.00         0.26         0.00
+{txt}6  {res} 18.88         0.00         0.00         0.00         0.10         0.01
+{txt}7  {res} 21.64         0.01         0.00         0.00         0.14         0.02
+{txt}8  {res} 43.87         0.19         0.01         0.01         0.45         0.47
+{txt}9  {res} 59.24         0.33         0.00         0.35         0.01         0.34
+{txt}10 {res} 82.48         0.03         0.13         0.63         0.01         0.16
+{txt}11 {res}118.78         0.44         0.86         0.00         0.01         0.01
+
+{txt}condition
+    index      foreign
+1  {res}  1.00         0.00
+{txt}2  {res}  3.32         0.20
+{txt}3  {res}  6.56         0.08
+{txt}4  {res} 10.53         0.14
+{txt}5  {res} 16.38         0.30
+{txt}6  {res} 18.88         0.00
+{txt}7  {res} 21.64         0.03
+{txt}8  {res} 43.87         0.22
+{txt}9  {res} 59.24         0.01
+{txt}10 {res} 82.48         0.01
+{txt}11 {res}118.78         0.00
+
+{txt}
+
+. prnt_cx, force w(8)
+
+{txt}Condition Indexes and Variance-Decomposition Proportions
+
+condition
+    index    _cons    price      mpg headroom    trunk   weight   length     turn
+1  {res}  1.00      .        .        .        .        .        .        .        .
+{txt}2  {res}  3.32      .        .        .        .        .        .        .        .
+{txt}3  {res}  6.56      .        .        .        .        .        .        .        .
+{txt}4  {res} 10.53      .        .        .        .        .        .        .        .
+{txt}5  {res} 16.38      .       0.44      .        .        .        .        .        .
+{txt}6  {res} 18.88      .        .        .       0.53      .        .        .        .
+{txt}7  {res} 21.64      .        .        .        .       0.43      .        .        .
+{txt}8  {res} 43.87      .        .       0.33      .        .        .        .        .
+{txt}9  {res} 59.24      .        .        .        .        .       0.33      .       0.35
+{txt}10 {res} 82.48     0.36      .        .        .        .        .        .       0.63
+{txt}11 {res}118.78     0.58      .        .        .        .       0.44     0.86      .
+
+{txt}condition
+    index displa~t gear_r~o  foreign
+1  {res}  1.00      .        .        .
+{txt}2  {res}  3.32      .        .        .
+{txt}3  {res}  6.56      .        .        .
+{txt}4  {res} 10.53      .        .        .
+{txt}5  {res} 16.38      .        .       0.30
+{txt}6  {res} 18.88      .        .        .
+{txt}7  {res} 21.64      .        .        .
+{txt}8  {res} 43.87     0.45     0.47      .
+{txt}9  {res} 59.24      .       0.34      .
+{txt}10 {res} 82.48      .        .        .
+{txt}11 {res}118.78      .        .        .
+
+{txt}Variance Decomposition Proportions less than .3 have been printed as "."
+
+{p}
+The condition number of 118.78 is fairly large. Examination of the
+last row of the table of variance decomposition proportions shows that
+values associated with {hi:length} (.86), the {hi:intercept} (.58),
+and {hi:weight} (.44) are fairly high. The strong linear relationships
+among these three variables is the major source of collinearity in
+this data.
+
+{p}
+In addition, condition indexes 8, 9 and 10 should be considered high
+(43.87, 59.24, and 82.48 respectively). Condition index number 10
+(82.48) can be attributed to strong inter-relationships between the
+{hi:intercept} (.36) and {hi:turn} (.63). Condition index number 9
+(59.24) is attributable to {hi:weight} (.33), {hi:turn} (.35), and
+{hi:gear_ratio} (.34). Condition index number 8 (43.87) is attributable
+to {hi:mpg} (.33), {hi:displacement} (.45) and {hi:gear_ratio} (.47).
+
+{title:Remarks}
+
+{p}
+This program is an updated version of {help coldiag} by
+{browse "mailto:joe.harkness@jhu.edu":Joseph Harkness}. The main
+difference is that {cmd:coldiag} calculates the
+{help matsvd:singular value decomposition} of {hi:X}, the matrix of
+scaled variables in {it:varlist}, whereas {cmd:coldiag2} calculates
+the {help matsym:eigenvectors and eigenvalues} of {hi:X}'{hi:X}.
+Because {cmd:coldiag} reads {hi:X} into memory, the number of cases it
+can handle are limited by {help matsize} (maximum 800 for intercooled
+Stata, 11,000 for Stata/SE). {cmd:coldiag2} uses
+{help mataccum:matrix accum} to calculate {hi:X}'{hi:X} and can
+therefore handle larger datasets.
+
+{p}
+Belsley argues strongly against mean-centering the data. Use of the
+{cmd:corr} option is equivalent to a conditioning analysis of
+standardized variables with mean 0 and sd 1 and thus goes against this
+advice.
+
+{p}
+{cmd:coldiag2} uses the Stata command {cmd:_getrhs} to obtain a list of independent variables when used as a post-estimation command. This should work with any estimation procedure. This will usually be appropriate. If in doubt, an alternative could be to try
+{net search perturb:perturb}, available from {help SSC}. {cmd:perturb}
+evaluates collinearity by adding random noise to selected variables
+and assessing the impact on parameter stability. {cmd:perturb} is also
+suitable for use with categorical variables as well.
+
+{title:Saved results}
+
+{p 0 4}
+{cmd:r(pi)}
+{break}A matrix of variance-decomposition proportions
+
+{p 0 4}
+{cmd:r(cx)}
+{break}A matrix of condition indexes.
+
+{p 0 4}
+{cmd:r(v)}
+{break}A matrix containing the eigenvalues of the SSCP matrix.
+
+{title:References}
+
+{p 0 4}
+D. Belsley, E. Kuh, and R. Welsch (1980).
+{it:Regression Diagnostics}.
+Wiley.
+
+{p 0 4}
+Belsley, D.A. (1991).
+{it:Conditioning diagnostics, collinearity and weak data in regression}.
+New York: John Wiley & Sons.
+
+Direct comments to: {browse "mailto:John_Hendrickx@yahoo.com":John Hendrickx}
+
+{p}
+{cmd:coldiag2} is available at
+{browse "http://ideas.uqam.ca/ideas/data/bocbocode.html":SSC-IDEAS}.
+Use {help findit} {cmd:coldiag2} to locate the latest version.
+
+{p}
+{net search collin:collin}, {net search coldiag:coldiag}, and
+{net search perturb:perturb}
+are also available from SSC. Click on a name to install or use
+{cmd:ssc install}
+
+{title:Also see}
+{p 0 21}
+On-line: help for
+  {help vif}, {help collin}, {help coldiag}, {help perturb}
+{p_end}
+

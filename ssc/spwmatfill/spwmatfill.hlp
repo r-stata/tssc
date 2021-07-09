@@ -1,0 +1,160 @@
+{smcl}
+{* December 2008}{...}
+{hline}
+{cmd:help for spwmatfill} 
+{hline}
+
+{title:Title}
+
+{p 2 8 2}
+{bf:spwmatfill --- Assigns first nearest neighbors to observations with no contiguous neighbors.}
+
+{marker contents}{dlgtab: Table of Contents}
+{p 2 16 2}
+
+{p 2}{help spwmatfill##syntax:Syntax}{p_end}
+{p 2}{help spwmatfill##description:General description}{p_end}
+{p 2}{help spwmatfill##options:Description of the options}{p_end}
+{p 2}{help spwmatfill##examples:Examples}{p_end}
+{p 2}{help spwmatfill##citation:Citation}{p_end}
+{p 2}{help spwmatfill##author:Author information}{p_end}
+{hline}
+
+{marker syntax}{title:Syntax}
+
+{phang}
+{cmd: spwmatfill} {varlist}{cmd:,} {opth id(varname)} {opt inwn:ame(inwght_name)} {opt inwf:rom(Mata|Stata)} {opt outwn:ame(wght_name)}
+ [{help spwmatfill##otopt:{it:Other_options}}] 
+
+{synoptset 32 tabbed}
+{synopthdr}
+{synoptline}
+{syntab:Options}   
+     
+{synopt :{opth id(varname)}}indicate the name of the identifier variable.{p_end}
+
+{synopt :{opt inwn:ame(inwght_name)}}indicate the name of the input spatial weights matrix; i.e, the contiguity spatial weights.{p_end}
+
+{synopt :{opt inwfr:om(Stata|Mata)}}indicate the source of the input spatial weights matrix.{p_end}
+
+{synopt :{opt outwn:ame(outwght_name)}}indicate a name for the output spatial weights matrix.{p_end}
+
+{synopt :{opt cart}}use Cartesian coordinates (projected latitudes and longitudes).{p_end}
+
+{synopt :{opt r(#)}}indicate the earth radius value to use in case of spherical coordinates, default is 6371.009 km.{p_end}
+
+{synopt :{opt m:ataf}}save the output spatial weights matrix and its eigenvalues to Mata files.
+
+{synopt :{opt eignv:al(eign_name)}}specify a name for a column vector or a file to hold the eigen values.{p_end}
+
+{synopt :{opth eignvar(newvar)}}specify a variable name to hold the eigen values.{p_end}
+
+{synopt :{opt row:stand}}row-standardize the spatial weights matrix.{p_end}
+
+{synopt :{opt matlab(dat_filename)}}export the weights matrix as a .dat (text) file for use in {cmd:Matlab}.{p_end}
+
+{synopt :{opt replace}}overwrite {it:dat_filename} if it already exists as well as {it:wght_name} and {it:eig_name} {p_end}
+		                      if {opt mataf} is specified and these two matrices already exit as Mata files.
+
+{synopt :{opt con:nect}}display connectivity information about the spatial weights{p_end}
+
+
+{synoptline}
+{p2colreset}{...}
+
+{marker description}{dlgtab:Description}
+
+{pstd}
+{cmd:spwmatfill} takes a contiguity-based spatial weights matrix -created in GeoDa- whose some rows consisting of only zero elements
+represent observations with no contiguous neighbors, assigns to those observations their nearest neighbors as their sole neighbors, 
+and replaces the zero elements corresponding to the nearest neighbors with ones. In order to calculate the first nearest neighbors 
+{cmd:spwmatfill} relies on {help nearestat} which must be installed.
+
+{marker options}{dlgtab:Required Options}
+
+{phang}
+{opth id(varname)} specifies the name of the identifier variable. It is paramount that the sort order of this variable values
+be the same as that of the values of the key variable used to generate the spatial weights in GeoDa.
+
+{phang}
+{opt inwn:ame(inwght_name)} specifies the name of the input spatial weights matrix to be used. This spatial weights matrix, which should 
+{bf:not} be row-standardized, must have been imported from GeoDa using {help spwmatrix}
+
+{phang}
+{opt inwf:rom}{cmd:(}{help matrix:Stata} | {help mf_fopen##remarks5:Mata}{cmd:)} indicates whether the input spatial weights exist as Stata 
+matrix loaded in memory or as a Mata file.
+
+{phang}
+{opt outwn:ame(outwght_name)} provides a name for the output spatial weights matrix.{p_end}
+
+
+{marker otopt}{dlgtab:Optional Options}
+
+{phang}
+{opt cart} indicates that the latitudes and longitudes supplied in {varlist} are projected. By default, sperical coordinates (latitudes and 
+longitudes in decimal degrees) are assumed.
+
+{phang}
+{opt r(#)} indicates the value for the Earth radius or mean radius to be used in case of spherical coordinates. The default is {opt r(6371.009)}. 
+
+{pmore}Options {opt r(#)} and {opt cart} may not be combined. For more on these options, see the help file for {help nearstat}.
+
+{phang}
+{opt m:ataf} requests that the output spatial weights matrix and its eigenvalues be saved to permanent Mata files. For more details, see the 
+{help spwmatrix##mataf:mataf} option of the {cmd:spwmatrix} command.
+
+{phang}
+{opt eignv:al(eign_name)} specifies that eigenvalues of the output spatial weights be written to the {it:N x 1} vector or file {it:eign_name}. 
+
+{phang}
+{opth eignvar(newvar)} specifies a variable name to hold the eigenvalues.
+
+{phang}
+{opt row:stand} requests that the output spatial weights be row-standardized. 
+
+{phang}
+{opt matlab(dat_filename)} specifies that the output spatial weights be written to the text file {it:dat_filename.dat} for use in Matlab.
+
+{phang}
+{opt replace} overwrites {it:newvar} and {it:dat_filename} as well as {it:outwght_name} and {it:eign_name} if {opt mataf} is specified.
+
+{phang}
+{opt connect} requests that connectivity information such as sparseness, average number of neighbors, etc... for the output spatial weights be 
+displayed.
+
+
+{marker examples}{dlgtab:Example}
+
+{phang}
+First import a first order contiguity spatial weights matrix created in GeoDa and save it to a Mata file.
+Note that it is important not to row-standardize the weights matrix at this time.
+  
+{pmore}{cmd:. spwmatrix using C:\data\wcontig.gal, wname(wcontig) mataf }{p_end}
+
+{phang}
+You now are ready to run {cmd:spwmatfill}
+
+{pmore}{cmd:. spwmatfill latitude longitude, id(obsid_n) inwname(wcontig) inwfrom(Mata) outwname(wcontigfil) rowstand ///}{p_end}
+{pmore}{cmd:   cart mataf eignvar(eigncontig) matlab(wcontigfil)}{p_end} 
+
+{synoptline}
+
+{marker citation}{title:Citation of {cmd:spwmatfill}}
+
+Users should please cite as:
+{hi:Jeanty, P. Wilner}. 2010. spwmatfill: Stata module to assign first nearest neighbors to observations with no contiguous neighbors.
+
+
+{marker author}{title:Author}
+
+{p 4 4 2}{hi: P. Wilner Jeanty}, Dept. of Agricultural, Environmental, and Development Economics,{break} 
+    	   The Ohio State University{break}
+	   
+{p 4 4 2}Email to {browse "mailto:jeanty.1@osu.edu":jeanty.1@osu.edu} for any comments or suggestions.
+
+
+{title:Also see}
+
+{p 4 13 2}Online: {helpb nearstat} and {helpb spwmatrix} (if installed) 
+
+

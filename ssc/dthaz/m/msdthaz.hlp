@@ -1,0 +1,186 @@
+{smcl}
+{* *! version 1.2.1  27oct2011}{...}
+{cmd:help msdthaz}
+{hline}
+
+
+{title:Title}
+
+{p2colset 5 16 16 2}{...}
+{p2col:{hi:msdthaz} {hline 2}}Multiply-specified discrete-time event history analysis{p_end}
+{p2colreset}{...}
+
+
+{title:Syntax}
+
+{p 8 18 2}
+{cmd:msdthaz}
+{it:using filename}
+[{cmd:,} {it:options}]
+
+{synoptset 28 tabbed}{...}
+{synopthdr}
+{synoptline}
+{syntab:Model}
+{synopt :{opt tp:ar(#)}}select alternative parameterizations of time{p_end}
+{synopt :{opth l:ink(msdthaz##linkname:linkname)}}link function; default is logit hazard{p_end}
+
+{syntab:SE/Robust}
+{synopt :{opth clus:ter(varname)}}adjust standard errors for intragroup
+correlation{p_end}
+
+{syntab:Reporting}
+{synopt :{opt base:line}}include baseline estimates{p_end}
+{synopt :{opt m:odel}}output model estimate{p_end}
+{synopt :{opt level(#)}}set confidence level; default is {cmd:level(95)}{p_end}
+
+{syntab:Graph options}
+{synopt :{opt gr:aph(#)}}conditional hazard, survival, or cumulative incidence curves{p_end}
+
+{syntab:Miscellaneous}
+{synopt :{opt copyleft}}display license information{p_end}
+{synoptline}
+{p2colreset}{...}
+
+{marker linkname}{...}{synoptset 23}{...}{synopthdr :linkname}{synoptline}{synopt :{opt logit}}logit hazard{p_end}{synopt :{opt probit}}probit hazard{p_end}{synopt :{opt cloglog}}complimentary log log hazard{p_end}{synoptline}{p2colreset}{...}
+
+{p 4 6 2}
+{opt fweights}, {opt iweights}, and {opt pweights} are allowed; see {help weight}.
+
+
+{title:Description}
+
+{pstd}
+{cmd:msdthaz} uses {help dthaz:dthaz} to perform discrete time analyses with 
+multiply-specified models, returning the matrix e(MSHazard) that contains 
+conditional hazard and survival probabilities for all specifications of a given 
+model. The model is estimated once, and probabilities for different specifications 
+of that model are calculated thereafter. A strength of {cmd:msdthaz} is that 
+multiple conditional hazard or survival curves may be overlaid on the same graph.
+
+{pstd}
+The required {it:using filename} statement directs the program to an arbitrarily 
+named ASCII text file containing the predictor variable names and specification 
+values desired by the user. The first line of this file must contain the 
+predictor variable names, separated by spaces. Each line thereafter contains 
+exactly one set of comma or space separated specified values for these 
+variables. In this way the effects of predictors upon conditional hazard and 
+survival probabilities may be evaluated. The discrete time model to be 
+estimated is specified in the options as per {help dthaz:dthaz}. Because {cmd:msdthaz} obtains 
+its specified values from the file, the {cmd:specify()} option cannot be used with 
+{cmd:msdthaz}.
+
+{pstd}
+{cmd:msdthaz} accepts the same arguments as {help dthaz:dthaz}, excepting {help grtwoway:grtwoway} 
+options which the program will not accept.
+
+
+{title:Options}
+
+{dlgtab:Model}
+
+{phang}{cmd:{ul on}tp{ul off}ar(}{it:#}{cmd:)} selects alternative 
+parameterizations of time. Such time parameterizations allow a parsimonious 
+smoothing of the effects of time, and are as follows:
+
+{p 5 8}-1 Fully discrete time parameterization. This setting is the default, and 
+reflects unique effects of time for each period.
+
+{p 6 8}0 Constant time parameterization. This model constrains the effect of time to
+be constant across all periods. The model includes a prespecified constant 
+term, is used in the following models, and permits model nesting.
+
+{p 6 8}N Polynomial time parameterization. This model constrains the effect of 
+time as a polynomial function of order N. If the representation of time is 
+over-specified (i.e. has more predictors than the number of periods in the dataset, 
+or than the number the analysis has been truncated to) then the user will be warned
+and the parameterization will be reset to its maximum. Lower order models nest
+within higher order ones. N > 0.
+
+{p 5 8}-2 Root time parameterization. This model constrains the effect of time as a
+square-root function of period (plus constant plus linear terms)
+
+{phang}{cmd:{ul on}l{ul off}ink(}{it:linkname}{cmd:)} switches between different models of the 
+hazard function: logit, probit or complimentary log log hazards. The default is the
+logit hazard model. See {help dthaz:dthaz} for more details.
+
+{dlgtab:SE/Robust}
+
+{phang}{cmd:{ul on}clus{ul off}ter(}{it:varname}{cmd:)} adjusts the standard errors 
+of the estimates for person-level (between person) variance in repeated measures 
+designs by specifying the {it:id} variable used to construct the person-period 
+dataset.
+
+{dlgtab:Reporting}
+
+{phang}{cmd:{ul on}base{ul off}line} includes baseline (i.e. unconditional) 
+hazard and survival probabilities and graphs in the output.
+
+{phang}{cmd:{ul on}m{ul off}odel} displays the estimated model in the output.
+
+{phang}
+{opt level(#)}; see {helpb estimation options##level():[R] estimation options}.
+
+{dlgtab:Graph options}
+
+{phang}{cmd:{ul on}gr{ul off}aph(}{it:#}{cmd:)} graphs conditional hazard 
+probabilities (1), survival probabilities (2), both (3) or (4) cumulative 
+incidence probabilities (i.e. 1 - survival) against discrete time periods. 
+Graphing options available to {help graph_twoway:graph_twoway} are available. The default 
+setting is no graph. Different colors are automatically assigned to each line.
+
+{dlgtab:Miscellaneous}
+
+{phang}{cmd:copyleft} {cmd:msdthaz} is free software, licensed under the GPL. The {cmd:copyleft} option displays
+the copying permission statement for {cmd:msdthaz}. The full license can be obtained 
+by typing:
+
+{p 12 8 2}
+{inp: . net describe dthaz, from (http://www.doyenne.com/stata)}
+
+{p 4 8 2}
+and clicking on the {net "describe dthaz, from (http://www.doyenne.com/stata)":click here to get} link for the ancillary file.
+
+
+{title:Examples}
+
+The following example illustrates the specification plaint text file format, 
+with the first line containing variable names separated by spaces, and 
+subsequent four lines containing bespoke values for each variable:
+
+{col 5}female age
+{col 5}0 20
+{col 5}1 20
+{col 5}0 30
+{col 5}1 30
+
+    {hline}
+{p 4 8}{inp:. msdthaz using ":Path:myfile"}{p_end}
+
+    {hline}
+{p 4 8}{inp:. msdthaz using ":Path:myfile" truncate(6)}{p_end}
+
+    {hline}
+{p 4 8}{inp:. msdthaz using ":Path:myfile" link(cloglog) model tp(3)}{p_end}
+    {hline}
+
+{title:Author}
+
+Alexis Dinno
+Portland State University
+alexis dot dinno at pdx dot edu
+
+
+{title:Saved results}
+
+{pstd}
+{cmd:msdthaz} returns {cmd:e(MSHazard)} with period and each of the hazard and 
+survival probabilities for each specified prediction (including baseline if that 
+option is set).
+
+
+{title:Also See}
+
+{psee}
+{space 2}Help: {help dthaz:dthaz}, {help prsnperd:prsnperd}
+

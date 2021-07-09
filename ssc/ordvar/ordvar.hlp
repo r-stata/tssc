@@ -1,0 +1,78 @@
+{smcl}
+{* 08apr2010}{...}
+{hline}
+help for {hi:ordvar}{right:(Michael Lacy)}
+{hline}
+
+{p2colset 5 16 18 2}{...}
+{p2col :{hi:ordvar} {hline 2}} Ordinal variation and consensus statistics {p_end}
+{p2colreset}{...}
+
+{title:Syntax}
+
+{p 8 15 2}
+{cmd:ordvar} {it:varname}  [if] [in] [,{cmd:low(}{it:#}{cmd:)} {cmd:high(}{it:#}{cmd:)}]  {p_end}
+
+{synoptline}
+{cmd:} The {bf:by} prefix is allowed.
+
+{title:Description}
+
+{pstd} {cmd:ordvar} calculates measures of ordinal consensus
+and dispersion. These include {it:lsq} and 1-{it:lsq}, which are 0/1 normed ordinal consensus
+and dispersion statistics described in Blair and Lacy (2000). The latter statistic is
+essentially identical to the IOV measure of Berry and Mielke (1992).  The non-normed version of the 
+dispersion statistic, termed d-squared by Lacy (2006), is also calculated, as are delta-method standard
+errors for these statistics. These measures do not rely on assumptions about intercategory distances or
+distributional form.
+
+{title:Arguments and Options}
+{pstd}{it:varname} is the variable for which the dispersion and consensus statistics are desired.
+This variable is assumed to be coded with consecutive integers, starting 
+with the lowest value occurring in the data up to the highest. As an option, to allow for
+situations in which the lowest or highest theoretically possible value 
+does not occur in the data, the user may specify these values by using the low(#) and high(#) options.  
+Failure to specify this option when necessary will give incorrect results. 
+
+{title:Returned results}
+
+{pstd}{cmd:ordvar} saves the following in {cmd:r()}:
+
+{synoptset 16 tabbed}{...}
+{p2col 5 16 20 2: Scalars}{p_end}
+{synopt:{cmd:r(onemlsq)}} 1-{it:lsq} normed ordinal dispersion statistic {p_end}
+{synopt:{cmd:r(lsq)}} {it:lsq} normed ordinal dispersion statistic {p_end}
+{synopt:{cmd:r(dsq)}} {it:d-squared} non-normed ordinal dispersion statistic {p_end}
+{synopt:{cmd:r(dsqse)}}  standard error of {it:d-squared} {p_end}
+{synopt:{cmd:r(lsqse)}}  standard error of 1-{it:lsq} or {it:lsq} {p_end} 
+{p2colreset}{...}
+
+{title:Examples}
+
+{psee}{cmd:}{p_end}
+{psee}{cmd:. sysuse auto}{p_end}
+{psee}{cmd:. ordvar rep78 }{p_end}
+{psee}{cmd:.} // What if some theoretical minimum or maximum value did not occur in the data? {p_end}
+{psee}{cmd:. keep if foreign==1}{p_end}
+{psee}{cmd:. tab1 rep78}{p_end}
+{psee}{cmd:. ordvar rep78, low(1) high(5)}{p_end}
+
+
+{title:References}
+
+{phang}Blair, J. and M. Lacy. 2000. "Statistics of Ordinal Variation." 
+Sociological Methods and Research. 28: 251-280. 
+
+{phang}Lacy, M. 2006.  "An Explained Variation Measure for Ordinal Response 
+Models with Comparisons to Other Ordinal R2  Measures." Sociological Methods 
+and Research  34:469-520.
+
+{phang}Berry, K. J. and P. W. Mielke, Jr. 1992. "Assessment of Variation in 
+Ordinal Data." Perceptual and Motor Skills 74:63-66.
+
+{title:Author}
+
+{phang}Michael G. Lacy{p_end}
+{phang}Colorado State University{p_end}
+{phang}Fort Collins, Colorado{p_end}
+{phang}Michael.Lacy@colostate.edu{p_end}

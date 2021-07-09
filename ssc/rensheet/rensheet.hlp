@@ -1,0 +1,56 @@
+{smcl}
+{* 26jan2008}{...}
+{hline}
+help for {hi:rensheet}
+{hline}
+
+{title:Renaming and relabeling variables and values in a spreadsheet format}
+
+{title:Syntax}
+
+{p 6 16 2}
+{cmd:rensheet} [{vars}] using {it:filename}
+[{cmd:,}  {cmdab:l:abel} {cmdab:v:al(}{vars}{cmd:)}  
+{cmdab:d:o} {cmdab:r:un}
+{ {cmdab:a:ppend} | {cmd:replace} }]
+
+{synoptset 20 tabbed}{...}
+{synopthdr}
+{synoptline}
+{synopt:{opt d:o}}execute do file immediately{p_end}
+{synopt:{opt r:un}}execute do file immediately and suppress screen output{p_end}
+{synopt:{opt l:abel}}edit variable labels as well as variable names{p_end}
+{synopt:{opt v:al}}edit value labels for specified variables{p_end}
+{synopt:{opt a:ppend}}append generated code to existing do file{p_end}
+{synopt:{opt replace}}replace existing do file{p_end}
+{synoptline}
+{p2colreset}{...}
+
+{title:Description}
+
+{p}{cmd:rensheet} facilitates renaming, and optionally relabeling, variables 
+(and optionally their values) by opening an instance of Stata's Data Editor, 
+a spreadsheet format where new values may be typed over old.  A filename is 
+specified via {cmd:using} where the do-file that implements all changes is to 
+be saved.  The resulting file can also be executed immediately 
+via the {cmd:do} or {cmd:run} options.{p_end}
+
+{p}{cmd:rensheet} typed without {vars} opens a spreadsheet with all variable 
+names on the data in memory, any of which can be selected and changed.  
+The option {cmd:label} allows editing variable labels in addition to variable 
+names. The option {cmd:val} allows editing value labels for selected variables 
+as well.{p_end}
+
+{title:Author}
+
+    Austin Nichols
+    Urban Institute
+    Washington, DC, USA
+    austinnichols@gmail.com
+
+{title:Also see}
+
+{p 1 14}Manual:  {hi:[U] 11.3 {help name: Naming conventions} and [U] 12.6 {help label: Dataset, variable, and value labels}}{p_end}
+
+{p 1 10}On-line: {help edit}, {help label}, {help labelbook}, {help rename}, {stata "findit labutil": labutil (on SSC)}{p_end}
+

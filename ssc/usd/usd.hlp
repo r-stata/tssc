@@ -1,0 +1,73 @@
+{smcl}
+{cmd:help usd}
+{hline}
+
+{title:Title}
+
+    {hi: Get US dollar exchange rates from the Federal Reserve}
+
+{title:Syntax}
+
+{p 8 17 2}
+{cmd:usd}
+<CURRENCY>
+
+{title:Description}
+{pstd}
+{cmd:usd} queries the website of the Board of Governors of the Federal Reserve System
+at {cmd: federalreserve.gov} and returns daily (business day) US dollar exchange rates.
+You just need to specify the currency. A list of possible currencies is given below.
+
+
+ {stata usd BRD: BRD - Broad currency index (Mar 73 = 100)}
+ {stata usd MJC: MJC - Major currency index (Mar 73 = 100)}
+ {stata usd OIT: OIT - OITP currency index (Jan 97 = 100)}
+ {stata usd AUD: AUD - Australia / U.S. Dollars per Australian Dollar}
+ {stata usd BRL: BRL - Brazil / Real}
+ {stata usd CAD: CAD - Canada / Canadian Dollar}
+ {stata usd CNY: CNY - China / Yuan Renminbi}
+ {stata usd DKK: DKK - Denmark / Danish Krone}
+ {stata usd EUR: EUR - Euro Area / U.S. Dollars per Euro}
+ {stata usd HKD: HKD - Hong Kong / Hong Kong Dollar}
+ {stata usd INR: INR - India / Indian Rupee}
+ {stata usd JPY: JPY - Japan / Yen}
+ {stata usd MVR: MVR - Maldives / Rufiyaa}
+ {stata usd MXN: MXN - Mexico / Mexican Peso}
+ {stata usd NZD: NZD - New Zealand / U.S. Dollars per New Zealand Dollar}
+ {stata usd NOK: NOK - Norway / Norwegian Krone}
+ {stata usd SGD: SGD - Singapore / Singapore Dollar}
+ {stata usd ZAL: ZAL - South Africa / Rand (financial)}
+ {stata usd KRW: KRW - South Korea / Republic of Korean Won}
+ {stata usd LKR: LKR - Sri Lanka / Sri Lankan Rupee}
+ {stata usd SEK: SEK - Sweden / Swedish Krona}
+ {stata usd CHF: CHF - Switzerland / Swiss Franc}
+ {stata usd TWD: TWD - Taiwan / Taiwan Dollar}
+ {stata usd THB: THB - Thailand / Baht}
+ {stata usd GBP: GBP - United Kingdom / U.S Dollars per Pound Sterling}
+ {stata usd VEB: VEB - Venezuela / Bolivar}
+
+
+{title:Notes}
+
+The Federal Reserve System website has a slow but relatively good Data Download Program.
+It provides several possibilities but it does not provide an inventory index to programmatically
+know what's available. This is a usual weakness of this type of service. The ECB has a similarly 
+good system (which like {cmd: federalreserve.gov} supports SDMX) but suffers from having no 
+inventory index as well.
+This means it is hard to program the data API and can only do so statically. That's why 
+we download the entire series every time and that's why we only do daily rates and not 
+monthly or annual. We do leave the year month and date so the user can produce easily produce 
+weekly, monthly or annual averages.
+
+The stata links above tell you what it is you are downloading. For example {cmd: usd EUR} will give you US dollars per euro
+whereas {cmd: usd CHF} will give you Swiss francs per US dollar.
+
+The usual disclaimers apply. I wrote this for myself because I experiment with data which I need to 
+get fresh and fast from diverse sources. I put it out for fun. Use at your own risk.
+
+We return all the labels we get from the provisioning service so consult{cmd: return list}.
+
+{title: Author}
+Nikos Askitas, IZA, Bonn, Germany.
+Email: nikos@iza.org
+

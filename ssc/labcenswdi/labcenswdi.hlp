@@ -1,0 +1,190 @@
+{smcl}
+{* July 2010}{...}
+{hline}
+{cmd:help for labcenswdi} 
+{hline}
+
+{title:Title}
+
+{p 2 8 2}
+{bf:labcenswdi} ---Automatically manages datasets obtained from US Census 2000 and World Development Indicators databases.
+
+{marker contents}{dlgtab: Table of Contents}
+{p 2 16 2}
+
+{p 2}{help labcenswdi##syntax:Syntax}{p_end}
+{p 2}{help labcenswdi##description:General description}{p_end}
+{p 2}{help labcenswdi##options:Description of the options}{p_end}
+{p 2}{help labcenswdi##examples:Examples}{p_end}
+{p 2}{help labcenswdi##author:Author information}{p_end}
+{hline}
+
+{marker syntax}{title:Syntax}
+
+The syntax to display the default variable names with the variable descriptions is
+
+{phang}
+{cmd:labcenswdi}
+
+The syntax to manage the data and the variable descriptions is
+
+{phang}
+{cmd: labcenswdi} [{help newvarlist}]{cmd:,} {opt nstr(#)} [{cmdab:truncb:y(}({it:"text1"}) [({it:"text2"})]{cmd:)} 
+{cmdab:truncw:ith(}({it:"text3"}) [({it:"text4"})]{cmd:)} {cmd:repdes(}(# {it:"text5"}) [(# {it:"text6"})...]{cmd:)} 
+{opt force} {opt comma} {cmd:saving(}{it:filename} [,{it:sub_option}]{cmd:)}]
+
+
+{synoptset 38 tabbed}
+{synopthdr}
+{synoptline}
+{syntab:Options}   
+     
+{synopt :{opt nstr(#)}}indicate the number of identifier variables in the dataset.{p_end}
+
+{synopt :{cmdab:truncb:y(}({it:"text1"}) [({it:"text2"})]{cmd:)}}truncate the variable descriptions.{p_end}
+
+{synopt :{cmdab:truncw:ith(}({it:"text3"}) [({it:"text4"})]{cmd:)}}replace the truncated characters with shorter ones.{p_end}
+
+{synopt :{cmd:repdes(}(# {it:"text5"}) [(# {it:"text6"})...]{cmd:)}}replace variable descriptions entirely{p_end}
+
+{synopt :{opt force}}convert nonnumeric strind to missing values.{p_end}
+
+{synopt :{opt comma}}remove 1000-separator commas.{p_end}
+
+{synopt :{cmd:saving(}{it:filename} [,{it:sub_option}]{cmd:)}}save the original variable descriptions to text file.{p_end}
+
+{synoptline}
+{p2colreset}{...}
+
+{marker description}{dlgtab:Description}
+
+{pstd}
+{cmd:labcenswdi} automatically manages datasets obtained from databases providing variable descriptions on the second row.
+Such databases include, but not limited to, the US Census 2000 Summary Files, the American Community Survey, and the World Development
+(WDI). While renaming variables with the user's specified variable names, {cmd:labcenswdi} manages the variable descriptions including 
+removing them from the second row to place them into Stata variable labels, reducing their length to 80 characters or less, 
+and saving them to a text file. The new variable names should be supplied in {help newvarlist} (see syntax) if the user 
+elects to replace the original variable names with more meaningful names.
+
+{pstd}
+When a dataset containing variable descriptions on the second row is insheeted, Stata read all variables as string regardless of 
+their contents (string or numeric). {cmd:labcenswdi} will attempt to automatically convert back to numeric all variables containing 
+numerical contents. However, if these variables, for some observations, take on values with non-numeric characters or values with 
+1000-separator commas, unless explicitly requested by the user, no conversion from string to numeric will take place. Also, to 
+conserve memory, demoting the variables is a good idea. {cmd:labcenswdi} automatically attempts to demote both string and numeric 
+variables. For instance, storing an integer variable as {it:double}, or a string variable having maximum length of 5 characters as 
+a {it:str15}, would be a waste of memory (see {help compress} and {help data types}). All of these tasks, in addition to the variable
+descriptions being removed from the second row to be placed into as variable labels, are accomplished by default when you type 
+{cmd:labcenswdi} with option {opt nstr(#)}. But, typed by itself, {cmd:labcenswdi} will display the default variable names along with 
+the variable descriptions. 
+
+{pmore} {bf:Note 1:} To use {cmd:labcenswdi} on a WDI dataset, the data must be extracted in long form with countries or time in rows and series in columns.
+
+{pmore} {bf:Note 2:} {cmd:labcenswdi} requires at least Stata 9.2.
+
+{marker options}{dlgtab:Options}
+
+{phang}
+{opt nstr(#)} specifies the number of identifier (string) variables present in the dataset.
+These variables are assumed to be at the beginning of the dataset and will not be
+converted from string to numeric even if they have numeric content. Option {opt nstr(#)} is required.
+
+{phang}
+{cmdab:truncb:y(}({it:"text1"}) [({it:"text2"})]{cmd:)} specifies the set or sets of characters by which the
+variable definitions should be truncated. This is important since Stata will truncate all labels with length greater 
+than 80 characters. Up to two sets of characters may be specified ({help labcens##examples:see examples below}). Conspicuously, 
+the two sets of characters must be different. If your sets of characters contain space, consider using quotes.
+
+{phang}
+{cmdab:truncw:ith(}({it:"text3"}) [({it:"text4"})]{cmd:)} specifies the set or sets of characters with which {it:"text1"}) (and {it:"text2"})
+is (are) to be replaced. If {opt truncwith()} is not specified, {opt truncby()} returns the variables descriptions without {it:"text1"} 
+(and {it:"text2"})
+
+{phang}
+{cmd:repdes(}(# {it:"text5"}) [(# {it:"text6"})...]{cmd:)} specifies a list of Census variable descriptions
+to be replaced with user-defined variable descriptions. #corresponds to the {it:#th} variable description to 
+be replaced and ”{it:text5, (text6,...)}” is the text(s) to replace with. For example, specifying {cmd:repdes(}(1 {it:"Workers 16} 
+{it:and plus in Agr. Sector"}){cmd:)} will replace the first Census variable description with the quoted 
+text. Prior to specifying this option, users are encouraged to use the first syntax to decipher the order of the
+U.S. Census variable descriptions in a dataset. Also, if more than one variable definitions need to be replaced, 
+their corresponding order numbers should be specified in ascending order. Option {opt repdes()} supercedes option 
+{opt truncby()} if applied to the same variable descriptions.
+
+{phang}
+{opt force} specifies that non-numeric character values of numeric variables be converted
+to missing values. If the numerical variables in your dataset take on non-numeric
+characters such as ”(D)”, ”NA”, ”-”, ”..”, and ”ND”, you should specify the force
+option.
+
+{phang}
+{opt comma} specifies that 1000-separator commas be removed from numbers displaying them.
+You need to specify this option if one or more variables take on values with 1000-
+separator commas, or those variables will not be converted from string to numeric.
+
+{phang}
+{cmd:saving(}{it:filename} [,{it:sub_option}]{cmd:)}] specifies that the original variable descriptions be saved to the text 
+file {it:filename}. If used, {it:sub_option} must equal replace to overwrite an existing file. When option {opt saving()} is 
+specified, at the end of the process, the file name (path included) is displayed as a link which, if clicked on, displays 
+the file contents.
+
+{marker examples}{dlgtab:Examples}
+
+{phang}
+{hi:1) Example with a US Census 2000 dataset}
+
+{phang}
+Load a US Census 2000 Summary File 1 dataset
+
+{pmore} . {stata "insheet using http://fmwww.bc.edu/repec/bocode/d/dc_dec_2000_sf1_u_data1.txt, names clear delimiter(|)"}
+
+{pmore} . {stata "drop geo_id sumlevel"}
+
+{phang}
+Display the all the variables and their descriptions
+
+{pmore} . {stata "labcenswdi"}
+
+{phang}
+Manage the data by copy-pasting the following lines of code into your do-file editor
+
+{pmore}{cmd:. labcenswdi fips county tot_hhs hhu18 fhhu18 fhhu18m fhhu18o fhhu18om fhhu18of ///} {p_end}
+		{cmd: nfhhu18 nfhhu18m nfhhu18f hhn18 fhhn18 fhhn18m fhhn18o fhhn18om fhhn18of ///}
+		{cmd: nfhhn18 nfhhn18m nfhhn18f, nstr(2) saving(fem_hh, replace) ///}
+		{cmd: truncby(("Households:  Households with one or more people under 18 years") ///}
+		{cmd: ("Households:  Households with no people under 18 years")) ///}
+		{cmd: truncwith(("HH w/ 1+ person <18") ("HH w/o people <18")) ///}
+		{cmd: repdes((1 "County Fips Code") (2 "County Name") ///}
+		{cmd: (8 "HH w/ 1+ person <18; Family HH; Other family; Male householder") ///}
+		{cmd: (9 "HH w/ 1+ person <18; Family HH; Other family; Female householder") ///}
+		{cmd: (17 "HH w/o people <18; Family HH; Other family; Male HHer no wife present") ///}
+		{cmd: (18 "HH w/o people <18; Family HH; Other family; Female HHer; no husband present"))}
+
+{pmore} . {stata "describe"}
+
+{phang}
+{hi:2) Example with a long form WDI dataset downloaded with countries or time in rows and series in columns}
+
+{phang}
+Convert to numeric all string variables with numerical contents, rename all variables, 
+replace the first three variable definitions (or series descriptors) with new ones, and use all variable 
+definitions as variable labels
+
+{pmore}{cmd:. labcenswdi country code year tractsk fertilha gdpcnst gdpcur ///}{p_end}
+		{cmd:   gdppg agland irrigpct croplnd popdens popg ruraldens trade  ///}
+		{cmd:   urbpg, nstr(3) force repdes((1 "Name of Countries") ///}
+		{cmd:   (2 "Country code") (3 "Year"))}
+
+{synoptline}
+
+
+{marker author}{title:Author}
+
+{p 4 4 2}{hi: P. Wilner Jeanty}, Research Economist, Dept. of Agricultural, Environmental, and Development Economics,{break} 
+    	   The Ohio State University{break}
+	   
+{p 4 4 2}Email: {browse "mailto:jeanty.1@osu.edu":jeanty.1@osu.edu}.
+
+
+{title:Also see}
+
+{p 4 13 2} Online: {helpb infix}, {helpb infile}, {helpb destring} 

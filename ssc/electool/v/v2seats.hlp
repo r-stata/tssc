@@ -1,0 +1,305 @@
+.-
+help for ^v2seats^ - February 2010
+.-
+
+Toolkit to analyze electoral data
+
+.-
+
+   ^v2seats^ varname [^if^ exp] [^in^ range], [^party(^varname^)^] [^skip(^numlist^)^]
+        ^formula(^method^)^ | ^maj(^exp^)^ | ^lrm(^exp^)^ | ^seqv(^matname^)^ | ^hav(^exp^)^
+        [^first(^numlist^)^] [^district(^varlist^)^] ^size(^varname^)^ | ^seats(^#^)^
+        [^dthres(^numlist^)^] [^athres(^numlist^)^] [^rest^] [^waste^] [^preserve(^varlist^)^]
+        [^stat(^min | max | mean | median | sum^)^] [^collapse(^varlist^)^]
+        [^simulate(^#^)^] [^details^] [^nooutput^] [^save(^filename^)^]
+
+where
+
+   ^method^ is a keyword for the allocation method. Different methods are
+   available (see below).
+
+
+Description
+-----------
+
+^v2seats^ allocates seats to parties using different allocation methods.
+^varname^ is the variable containing voting data either at the aggregate or the
+individual level. If ^varname^ contains frequencies of vote at the aggregate
+level, ^party(^varname^)^ is required to identify party labels. This option should
+NOT be used when analyzing individual voting data. You can choose between
+allocating seats by district using ^district(^varlist^)^ ^size(^varname^)^ or
+allocating seats for the whole dataset (in case there is no district
+division) using only ^seats(^#^)^. You can also set a constant district size by
+using ^district(^varname^)^ ^seats(^#^)^. Both ^if^ and ^in^ are allowed, although ^by^ is
+not supported.
+
+Options
+-----------
+
+^party(^varname^)^ identifies the variable containing party labels. It should
+  be used only when response variable is a frequency variable containing number
+  of votes at the aggregate level.
+
+^skip(^numlist^)^ tells the program to omit the votes for which party code is equal
+  to any of the numbers in <numlist>, only for allocation purposes. These votes
+  are supposed to be valid, but they are not votes for any particular party
+  (for instance, blank votes). These votes will be taken into account to
+  compute electoral thresholds.
+
+^formula(^method^)^ | ^maj(^exp^)^ | ^lrm(^exp^)^ | ^seqv(^matname^)^ | ^hav(^exp^)^
+  [^first(^numlist^)^] have to be used to set the allocation method. You can
+  either use any of the pre-built allocation methods using ^formula(^method^)^, or
+  define your own customized formula using ^maj(^exp^)^, ^lrm(^exp^)^, ^seqv(^matname^)^
+  and ^hav(^exp^)^ [^first(^numlist^)^] options. However, only one allocation method
+  at a time is allowed. When using ^formula(^method^)^ the following ^methods^ are
+  available:
+
+  ^Majority methods:^
+    ^major^ uses majority rule (half of the vote is needed to get elected)
+    ^plural^ uses plurality method or FPTP (the first candidate get elected)
+    ^oplural^ uses ordered plurality method (the first n candidates get elected)
+
+  ^Largest remainder methods (quotas):^
+    ^hare^ uses Hare quota or Niemeyer method (quota is v/s)
+    ^hagb^ uses Hagenbach-Bischoff quota (quota is v/(s+1))
+    ^droop^ uses Droop quota (quota is int((v/(s+1))+1)
+    ^imp^ uses Imperiali quota (quota is v/(s+2))
+    ^rimp^ uses reinforced Imperiali quota (quota is v/(s+3))
+
+  ^Highest average methods (divisors):^
+    ^dhondt^ uses D'Hondt method (divisors are: 1,2,3,4,...)
+    ^stlague^ uses St. Laguë method (divisors are: 1,3,5,7,...)
+    ^stlm^ uses modified St. Lagüe method (divisors are: 1.4,3,5,7,...)
+    ^stlh^ uses Hungarian St. Lagüe method (divisors are: 1.5,3,5,7,...)
+    ^danish^ uses Danish method (divisors are: 1,4,7,10,...)
+    ^dimp^ uses Imperiali divisors method (divisors are: 1,1.5,2,2.5,...)
+
+  ^Other methods (highest average):^
+    ^hunt^ uses Huntington method (divisors are: sqrt(n*(n-1)), n = 1,2,3,4,...)
+    ^adams^ uses Adams method (divisors are: 0,1,2,3,...)
+
+  ^Mixed methods (two-stages):^
+    ^hare_h^ uses highest average remainder after Hare quota
+    ^hagb_h^ uses highest average remainder after Hagenbach-Bischoff quota
+    ^droop_h^ uses highest average remainder after Droop quota
+    ^imp_h^ uses highest average remainder after Imperiali quota
+    ^rimp_h^ uses highest average remainder after reinforced Imperiali quota
+
+  ^all^ computes allocations using majority, largest reaminder and highest
+    average methods (mixed and other methods are not reported).
+    ^save(^filename^)^ is required to store results in <filename>. You can not
+    combine ^formula(^all^)^ with ^preserve()^, ^collapse()^ or ^simulate(^#^)^. It mutes
+    ^rest^, ^waste^ and ^details^.
+
+  ^Customized methods:^
+    ^maj(^exp^)^ defines a majority formula using ^v^, where ^v^ is the total number
+    of votes. For example, ^maj(^v/2^)^ is equivalent to use ^formula(^major^)^,
+    while ^maj(^2*v/3^)^ is equivalent to set the majority rule at 2/3.
+
+    ^lrm(^exp^)^ defines a largest remainder formula using ^v^ and ^s^, where ^v^ is the
+    total number of votes and ^s^ is the number of seats. For example,
+    ^lr(^v/(s+1)^)^ is equivalent to use ^formula(^hagb^)^.
+
+    ^hav(^exp^)^ [^first(^numlist^)^] defines a highest average formula using ^n^, where
+    ^n^ is the nth divisor. [^first(^numlist^)^] is optional and sets up a customized
+    sequence for the first n divisors in <numlist>, which overrides the first n
+    divisors defined by ^hav(^exp^)^, although only the first one needs to be
+    changed for most methods. For example, ^ha(^2*n-1^)^ is equivalente to use
+    ^formula(^stlague^)^, while ^ha(^2*n-1^)^ ^first(^1.4^)^ is equivalent to use
+    ^formula(^stlm^)^.
+
+    ^seqv(^matname^)^ allows to use a customized vector of divisors for a
+    particular highest average method. To do that, user must define a column
+    vector containing the full sequence of divisors. If the vector contains
+    not enough divisors an error message will be issued. This option is not
+    compatible with ^hav(^exp^)^ or any other allocation method.
+
+^district(^varlist^)^ identifies districts. It is required when there are more
+  than one district and if you use ^size(^varname^)^. If you use this option
+  either ^size(^varname^)^ or ^seats(^#^)^ are required. If you do not use it
+  the program will create a new variable automatically. Typically, <varlist>
+  will contain only one variable identifying districts, but you can use up to
+  five variables to nest districts within higher levels of aggregation (for
+  instance, regions). I you are using ^save(^filename^)^, the new variables
+  in <filename> will be named as distl1, distl2, ... from the highest level
+  of aggregation to the lowest. For the sake of clarity, it is recommended to
+  introduce the variables in <varlist> according to this aggregation ordering,
+  since variables in <filename> will appear in the same order.
+
+^size(^varname^)^ identifies district size. It is not compatible with ^seats()^. It
+  must take constant values within districts. In case of different values
+  within districts, minimum values are taken.
+
+^seats(^#^)^ informs how many seats have to be allocated. This option can be used
+  when there is only one district or there are multiple districts of the same
+  size. ^seats(^#^)^ is incompatible with ^size()^.
+
+^dthres(^numlist^)^ and ^athres(^numlist^)^ set district and aggregate thresholds
+  respectively. You must type thresholds as percentages without % symbol. In
+  order to simulate the effect of different thresholds you can set more than
+  one value for any of the thresholds. In that case, ^save(^filename^)^ is required
+  to store results in <filename>. You cannot combine multiple thresholds with
+  ^simulate()^, ^preserve()^ or ^collapse()^.
+
+^rest^ tells the program to store not allocated seats at district level in a new
+  variable called rest. ^save(^filename^)^ is required to store the results in
+  <filename>. This option is useful when planning to allocate the remainder
+  seats using a different allocation method or aggregation level. It is only
+  allowed in combination with majority and largest remainder methods, given
+  that highest average methods allocate all the seats at once. When used in
+  combination with a largest remainder method, remainder are not used to
+  allocate extra seats at the second stage. This option has no effect combined
+  with ^formula(^all^)^, multiple thresholds and ^simulate()^.
+
+^waste^ tells the program to store wasted votes in a new variable called
+  waste in <filename>. Therefore, ^save(^filename^)^ is required to store
+  results in <filename>. Wasted votes are computed at district level for each
+  party. However, wasted votes are computed in different ways depending on the
+  method in use.  For majority and highest average methods, only parties
+  winning no seats in one or more districts get wasted votes. If one party
+  wins no seats in one particular district, votes in this district are called
+  wasted votes for this party. For largest remainder methods, wasted votes are
+  computed as the number of votes exceeding the product of the quota times the
+  number of seats the party has won in one particular district. Saving wasted
+  votes is useful in combination with ^rest^ for further allocation of not
+  allocated seats. This option has no effect combined with ^formula(^all^)^,
+  multiple thresholds or ^simulate()^.
+
+^preserve(^varlist^)^ allows to store in <filename> variables containing info
+  at different levels of nesting. The lowest level is parties at district
+  level. The highest level is the overall dataset. You can use this option to
+  store information about parties at district level, information about
+  districts, about the overall dataset or even about some intermediate levels
+  of clustering. For instance, you can store variables containing attributes
+  of a higher level of aggregation (such as regions, clusters or länders) for
+  use in further analysis or allocations. The only requisite is that all the
+  the variables must be constant within parties within districts. If there are
+  different values for the same party in the same district, average values are
+  taken. Be sure to check your data before using this option, since that could
+  be the cause of wrong aggregation, which would cause errors in further
+  analysis. Also consider that, if variables in <varlist> are not constant
+  within parties at district level you can use ^stat()^ option to define a resume
+  function. Up to ten variables are allowed. Repeated variables will be
+  dropped. ^save(^filename^)^ is required to store variables in <filename>. For
+  each variable in <varlist> one variable will be created. Variables are named
+  using infix _, as _<original_varname>. However, value labels remain
+  unchanged. You cannot combine this option with ^formula(^all^)^, multiple
+  thresholds or ^simulate()^. It may be useful to combine with ^collapse()^ to
+  aggregate results at some level of clustering.
+
+^stat(^min | max | mean | median | sum^)^ is intended to be used only in
+  combination with ^preserve(^varlist^)^, when you want to resume information
+  for variables in <varlist> for each party at district level. Then, you
+  can only use ^stat()^ with ^preserve()^. Otherwise, an error message will be
+  issued. Valid options for ^stat^ are ^min^, ^max^, ^mean^, ^median^ and ^sum^. ^mean^ is
+  set by default if ^perserve()^ is used but ^stat()^ is missing. Only one
+  statistic for <varlist> is allowed at a time. Note however, that ^stat()^ is
+  not required if you are using ^preserve(^varlist^)^, and variables in <varlist>
+  have constant values within parties at district level.
+
+^collapse(^varlist^)^ tells the program to store results in <filename> by party and
+  <varlist>. Variables in <varlist> must be in ^district(^varlist^)^. Otherwise, an
+  error message will be issued. You can collapse at any level of aggregation
+  defined by ^district(^varlist^)^. For instance, if you specify the name of some
+  intermediate level of aggregation (such as region) in ^district(^varlist^)^, you
+  can store votes, seats (waste and rest if they are present) at this level. It
+  also mutes ^details^. Be aware that aggregation level is determined by all the
+  variables in ^collapse(^varlist^)^. For instance, if you want to collapse
+  at an intermediate aggregation level you must include in <varlist> all the
+  variables at higher levels. This is an advanced option to produce more
+  personalized output in <filename> using Stata' command ^collapse^. It can
+  produce some bizarre results if not used with caution. It is only recommended
+  to use it if you are well aware of how ^collapse^ works in Stata.
+  ^save(^filename^)^ is required. You cannot combine this option with
+  ^formula(^all^)^, multiple thresholds or ^simulate()^.
+
+^simulate(^#^)^ allows to simulate different results from variations in the
+  number of votes. This option generates 100 samples of valid votes for each
+  party using ^invnormal(uniform())^. This produces a random number of votes
+  for each party drawn from a normal distribution with mean its real number
+  of votes and standard deviation computed as a percentage of the mean, where
+  this percentage is equal to #. Then you can control the scope of variation
+  setting # between 0 and 100. For each simulation the program computes seats
+  by party according to ^formula(^method^)^ and any other option. At the end of 
+  100 rounds the program computes the minimum, maximum and average number of
+  seats, which are stored in min, max and avg in <filename>. Therefore,
+  ^save(^filename^)^ is required to store results in <filename>. Also notice that
+  you cannot combine simulate with ^formula(^all^)^, multiple thresholds,
+  ^preserve()^ or ^collapse()^. It mutes ^rest^, ^waste^ and ^details^.
+
+^details^ causes the program to report votes and seats when using
+  ^formula(^plural^)^; votes, seats and quotas when using a largest remainder
+  formula; and votes, seats and divisors when using a highest average formula.
+  This option has no effect with ^formula(^all^)^, multiple thresholds,
+  ^collapse()^ and ^simulate()^. If you are using ^nooutput^ option, that will
+  cause ^details^ to report nothing.
+
+^nooutput^ tells the program to produce no output. By default it is not
+  activated, except with ^formula(^all^)^, multiple thresholds and
+  ^simulate()^. It mutes ^details^ option.
+
+^save(^filename^)^ allows to store results in <filename>. It is required with
+  ^formula(^all^)^, multiple thresholds, ^rest^, ^waste^, ^preserve()^, ^collapse()^,
+  and ^simulate()^.
+
+Examples
+-----------
+
+To compute seats using individual voting data from a survey:
+
+^. v2seats vote, formula(dhondt) seats(10) dthres(5)^
+
+To compute seats from aggregate voting data by party:
+
+^. v2seats vote, party(plab) formula(stlague) seats(10)^
+
+To build your own allocation method:
+
+^. v2seats vote, party(plab) maj(3*v/4) seats(10)^
+^. v2seats vote, party(plab) lrm(v/(s+0.5)) seats(10)^
+^. v2seats vote, party(plab) hav(2*n-1) first(1.7) seats(10)^
+
+^. matrix d = 1.1 \ 1.2 \ 1.3 \ 1.4 \ 1.5^
+^. v2seats vote, party(plab) seqv(d) seats(5)^
+
+To compute seats in multi-district elections:
+
+^. v2seats vote, party(plab) formula(hare) district(distname) size(dseats)^
+
+To compare different allocation methods:
+
+^. v2seats vote, party(plab) formula(all) seats(12) save(output.dta)^
+
+To check the effect of different thresholds:
+
+^. v2seats vote, party(plab) formula(stlm) seats(25) dthres(5 10) athres(1 3)^
+
+To simulate random variation in voting behavior:
+
+^. v2seats vote, party(plab) formula(stlague) seats(8) simulate(3)^
+
+To compute seats at different levels using different methods (advanced):
+
+^. v2seats vote, party(plab) formula(major) district(region dtname) size(dsize)^
+^> rest waste collapse(region) save(flvote.dta)^
+^. use flvote.dta^
+^. v2seats waste, party(plab) formula(hare) district(region) size(rest)^
+
+
+References
+-----------
+
+This program uses a variety of electoral formulas that are well known in the
+literature. Nevertheless, definitions are given in the reference manual
+provided with this package as an ancillary file:
+
+Jaime-Castillo, A. M. (2010). ELECTOOL. Some Tools for the Analysis of
+Electoral Systems. Mimeo.
+
+Get it from @ssc@. Also available from amjaime@ugr.es
+
+.-
+Author: Antonio M. Jaime-Castillo
+        University of Granada, Spain
+        e-mail: amjaime@ugr.es
+

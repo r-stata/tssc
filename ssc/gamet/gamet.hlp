@@ -1,0 +1,180 @@
+{smcl}
+{* 12aug2005}{...}
+{hline}
+help for {hi:gamet}
+{hline}
+
+{title:Game-theoretic calculations}
+
+{p 4 14 10}{cmd:gamet} {cmd:,} {cmdab:pay:off(}{it:#U111}{cmd:,}{it:#U211}{cmd:,}
+ ... {cmd:,}{it:#U11_c}{cmd:,}{it:#U21_c}   ... {cmd:,}{it:#U11_C}{cmd:,}{it:#U21_C} {cmd:\}
+  ... {cmd:\}{p_end}
+{p 19 17 2}{it:#U1_r1}{cmd:,}{it:#U2_r1}{cmd:,} ... {cmd:,}{it:#U1_r_c}{cmd:,}{it:#U2_r_c} ... {cmd:,}{it:#U1_r_C}{cmd:,}{it:#U2_r_C} {cmd:\}
+ ... {cmd:\}{p_end}
+{p 19 17 2}{it:#U1_R1}{cmd:,}{it:#U2_R1}{cmd:,} ... {cmd:,}{it:#U1_R_c}{cmd:,}{it:#U2_R_c} ... {cmd:,}{it:#U1_R_C}{cmd:,}{it:#U2_R_C}{cmd:)}{p_end}
+
+{p 17 17 2} 
+[    {cmd:ls1(}{it:lab_s1}{cmd:)}
+{cmd:ls2(}{it:lab_s2}{cmd:)}{break}
+{cmd:player1(}{it:rlab1 ... rlab_r ... rlab_R}{cmd:)}{break}
+{cmd:player2(}{it:clab1 ... clab_c ... clab_C}{cmd:)}
+
+{p 17 17 2}
+{cmd:domist} {cmd:elids} {cmd:neps} {cmd:nefms} {cmd:maximin} {cmd:gtree}
+
+{p 17 17 2}
+{cmd:npath} {cmd:aspect(}{it:#}{cmd:)}
+{cmd:mlabpls(}{it:clockpos}{cmd:)} {cmd:mlabppm(}{it:clockpos}{cmd:)}
+{cmd:mlabpp1(}{it:clockpos}{cmd:)} {cmd:mlabpp2(}{it:clockpos}{cmd:)}  {cmd:savingpf(}{it:filename}{cmd:)} {cmd:textpp(}{it:textsizestyle}{cmd:)}
+{cmd:texts(}{it:textsizestyle}{cmd:)}
+{cmd:msizepp(}{it:relativesize}{cmd:)} {cmd:msizes(}{it:relativesize}{cmd:)}
+
+{p 17 17 2}
+{it:scatter_options}
+]{p_end}
+
+{title:Description}
+
+{p 4 10 10}{cmd:gamet} represents the extensive form (game tree) and the strategic form
+(payoff matrix) of a non-cooperative game and identifies the
+solution of a non-zero and zero-sum game through: dominant and
+dominated strategies, iterated elimination of strictly dominated strategies,
+Nash equilibrium in pure and fully mixed strategies. Further,
+{cmd:gamet} is able to identify the solution of a zero-sum game
+through maximin criterion and the solution of extensive form
+through backward induction.{p_end}
+
+{title:Payoff matrix}
+
+    {txt}{hline 10}{c TT}{hline 75}
+              {c |}                                      {it:lab_s2}
+       {it:lab_s1} {c |}      {it:clab1}         ...         {it:clab_c}         ...          {it:clab_C}
+    {hline 10}{c +}{hline 75}
+        {txt}{it:rlab1} {c |} {res}({it:#U111}; {it:#U211})     ...   ({it:#U11_c}; {it:#U21_c})     ...    ({it:#U11_C}; {it:#U21_C})
+       {txt}   ... {c |}   {res}   ...           ...          ...           ...            ...
+       {txt}{it:rlab_r} {c |} {res}({it:#U1_r1}; {it:#U2_r1})   ...   ({it:#U1_r_c}; {it:#U2_r_c})   ...    ({it:#U1_r_C}; {it:#U2_r_C})
+       {txt}   ... {c |}   {res}   ...           ...          ...           ...            ...
+       {txt}{it:rlab_R} {c |} {res}({it:#U1_R1}; {it:#U2_R1})   ...   ({it:#U1_R_C}; {it:#U2_R_C})   ...    ({it:#U1_R_C}; {it:#U2_R_C})
+    {txt}{hline 10}{c BT}{hline 75}
+
+{p 4 8 2}{cmdab:pay:off(}...{cmd:)} is not optional and provides a way to input, row after row, a general {it:R} 
+        by {it:C} payoff matrix (help {help matrix input}), where{p_end}
+
+{p 4 8 2}{it:#U1_r_c} is the payoff for {it:lab_s1} if {it:lab_s1} chooses strategy {it:r} and {it:lab_s2} chooses strategy {it:c}{p_end}
+{p 4 8 2}{it:#U2_r_c} is the payoff for {it:lab_s2} if {it:lab_s1} chooses strategy {it:r} and {it:lab_s2} chooses strategy {it:c}{p_end}
+
+{p 4 8 2}with {it:r} = 1,2, ..., {it:R} and {it:c} = 1,2, ..., {it:C}{p_end}
+
+{title:Remark}
+
+{p 4 10 10}{cmd:gamet} is an immediate command given
+that obtains data not from the data stored in memory but from
+numbers typed as arguments (help {help immed}).{p_end}
+
+{title:Options}
+
+{p 4 8 2}{cmd:ls1(}{it:lab_s1}{cmd:)} attaches a label to the set of strategies for player 1. The default is S1.{p_end}
+
+{p 4 8 2}{cmd:ls2(}{it:lab_s2}{cmd:)} attaches a label to the set of strategies for player 2. The default is S2.{p_end}
+
+{p 4 8 2}{cmd:player1(}{it:rlab1 rlab2 ... rlab_r ... rlab_R}{cmd:)} attaches a label for each strategy of player 1.
+The default is A1, B2, C3 and so on.{p_end}
+
+{p 4 8 2}{cmd:player2(}{it:clab1 clab2 ... clab_c ... clab_C}{cmd:)} attaches a label for each strategy of player 2.
+The default is a1, b2, c3 and so on.{p_end}
+
+{p 4 8 2}{cmd:domist} seeks strictly dominated and dominant strategies for each player.{p_end}
+    
+{p 4 8 2}{cmd:elids} eliminates iteratively all strictly dominated strategies for each player.{p_end}
+
+{p 4 8 2}{cmd:neps} seeks Nash equilibrium in pure strategies. {p_end}
+
+{p 4 8 2}{cmd:nefms} seeks Nash equilibrium in fully mixed strategies (0<p<1 and 0<q<1). It works only if {it:R} and {it:C} are equal to 2.{p_end}
+
+{p 4 8 2}{cmd:maximin} seeks the saddle-point through the minimal column maximum for player 1 and maximal row minimum for player 2.
+It works for zero-sum games. That is, {it:#U1_r_c} + {it:#U2_r_c} == 0.{p_end}
+
+{p 4 8 2}{cmd:gtree} seeks the equilibrium path through backward induction (player 1 moves first).
+It produces a graphical representation of a sequential game, called game tree.{p_end}
+
+{p 4 8 2}{cmd:savingpf(}{it:filename}{cmd:)} saves the variables obtained by the conversion of the payoff matrix in a file. If the option {cmd:elids}
+is specified {cmd:savingpf()} saves one file({it:filename#}) for each iteration.{p_end}
+
+{p 4 8 2}{cmd:npath} specifies no equilibrium path on the game tree.{p_end}
+
+{p 4 8 2}{cmd:aspect(}{it:#}{cmd:)} modifies the aspect ratio (height/widht) of the plot region. By default is set to 1 (equal height and width)
+so the plot region is a square. See {help graph_display: graph_display}.{p_end}
+
+{p 4 8 2}{cmd:mlabpls(}{it:clockpos}{cmd:)} specifies the position for label {it:lab_s1} and {it:lab_s2} on the game tree. Use {help clockpos:clockpos}
+to make changes from the default (9).{p_end}
+
+{p 4 8 2}{cmd:mlabppm(}{it:clockpos}{cmd:)} specifies the position for {it:#U1_r_c}, {it:#U2_r_c} on the game tree. Use {help clockpos:clockpos}
+to make changes from the default (3).{p_end}
+
+{p 4 8 2}{cmd:mlabpp1(}{it:clockpos}{cmd:)} specifies the position for strategies' labels on the game tree for player 1. Use {help clockpos:clockpos}
+to make changes from the default (12).{p_end}
+
+{p 4 8 2}{cmd:mlabpp2(}{it:clockpos}{cmd:)} specifies the position for strategies' labels on the game tree for player 2. Use {help clockpos:clockpos}
+to make changes from the default (9). {p_end}
+
+{p 4 8 2}{cmd:textpp(}{it:textsizestyle}{cmd:)} specifies the text size style for {it:lab_s1}, {it:lab_s2} and ({it:#U1_r_c}; {it:#U2_r_c}). Use {help textsizestyle:textsizestyle}
+to make changes from the default ({it:medium}). {p_end}
+
+{p 4 8 2}{cmd:texts(}{it:textsizestyle}{cmd:)} specifies the text size style for strategies' labels. Use {help textsizestyle:textsizestyle}
+to make changes from the default ({it:small}).{p_end}
+
+{p 4 8 2}{cmd:msizepp(}{it:relativesize}{cmd:)} choices for sizes for objects {it:lab_s1}, {it:lab_s2} and ({it:#U1_r_c}; {it:#U2_r_c}).
+Use {help relativesize:relativesize} to make changes from the default (2).{p_end}
+
+{p 4 8 2}{cmd:msizes(}{it:relativesize}{cmd:)} choices for sizes for strategies' labels. Use {help relativesize:relativesize} to make changes from the default (2).{p_end}
+
+{p 4 8 2}{it:scatter_options} are options of {help scatter}.{p_end}
+
+{title:Examples}
+
+     {cmd:. gamet, payoff(2, 2, 0, 1 \ 3, 0 , 1, 1) player1(High Low) player2(Buy Not_buy) ///}
+     {cmd:           ls1(Provider) ls2(Customer) domist}
+
+     {cmd:. gamet, pay(3, 0, 0 , 2 , 0, 3\2, 0 , 1, 1 , 2, 0 \ 0, 3 , 0 , 2, 3, 0 ) ///   }
+     {cmd:          ls1(C1) ls2(C2) player1(x1 y1 z1)  player2(x2 y2 z2) elids}
+
+     {cmd:. gamet, payoff(0,0,12,8,18,9,36,0\ 8,12,16,16,20,15,32,0\9,18,15,20,18,18,27,0\0,36,0,32,0,27,0,0)///}
+     {cmd:          player1(H M L N) player2(h m l n) ls1(Firm_I) ls2(Firm_II) elids }
+
+     {cmd:. gamet, payoff(3, 1, 0, 0\0, 0, 1, 3) player1(Football Ballet) player2(Football Ballet) /// }
+     {cmd:           ls1(Boy) ls2(Girl) neps}
+
+     {cmd:. gamet, pay(0, 0, -10, 10 \ -1, 0, -6, -90) player1(Not_inspect Inspect) ///}
+     {cmd:            player2(Comply Cheat) ls1(I) ls2(II) nefms }
+
+     {cmd:. gamet, payoff(2, 2, 0, 1 \ 3, 0 , 1, 1) player1(High Low) ///  }
+     {cmd:               player2(Buy Not_buy) ls1(I) ls2(II) gtree}
+
+     {cmd:. gamet, payoff(0,0,12,8,18,9,36,0\ 8,12,16,16,20,15,32,0\9,18,15,20,18,18,27,0\0,36,0,32,0,27,0,0)///}
+     {cmd:          player1(H M L N) player2(h m l n) ls1(Firm_I) ls2(Firm_II) gtree}
+
+     {cmd:. gamet, payoff(-5,5,3,-3,1,-1,20,-20\5,-5,5,-5,4,-4,6,-6\-4,4,6,-6,0,0,-5,5) /// }
+     {cmd:               player1(1 2 3) player2(1 2) maximin }
+
+{title:Authors}
+
+{p 4 19 2}Nicola Orsini,
+Institute of Environmental Medicine, Karolinska Institutet, Stockholm, Sweden. {p_end}
+{p 4 19 2}Debora Rizzuto,
+Department of Public Health, University of Siena, Italy. {p_end}
+{p 4 19 2}Nicola Nante,
+Department of Public Health, University of Siena, Italy. {p_end}
+
+{title:Reference}
+
+{p 4 4 2}Myerson, R. B. 1991. {it:Game Theory: Analysis of Conflict}, Harvard University Press, Cambridge (MA).  {p_end}
+
+{title:Support}
+
+{p 4 12}{browse "http://nicolaorsini.altervista.org"}{p_end}
+{p 4 12}{browse "mailto:nicola.orsini@imm.ki.se?subject=info gamet":nicola.orsini@imm.ki.se}
+
+{title:Also see}
+
+{p 0 19}On-line:  help for {help matrix}, {help _variables}, {help tabdisp}, {help macrolists}{p_end}
+

@@ -1,0 +1,99 @@
+{smcl}
+{* 16mar2004}{...}
+{hline}
+help for {hi:mgen}
+{hline}
+
+{title:Apply generate to a matrix}
+
+{p 8 15 2}
+{cmd:mgen} {it:exprlist} {cmd:,} {cmdab:i:n(}{it:matname}{cmd:)}
+  {cmdab:o:ut(}{it:matname}{cmd:)} [ {cmdab:c:ommon(}{it:term}{cmd:)} ]
+
+{p 4 4 2} where {it:exprlist} is
+
+{p 8 15 2} [[{cmd:`}]{cmd:"}]{it:expr1}[{cmd:"}[{cmd:'}]]
+ [[{cmd:`}]{cmd:"}]{it:expr2}[{cmd:"}[{cmd:'}]]
+ [[{cmd:`}]{cmd:"}]{it:expr3}[{cmd:"}[{cmd:'}]] ...
+
+{p 4 4 2} and a single {it:expr} is
+
+{p 8 15 2} [{it:new}|{it:old}]{it:colname}={it:exp}
+
+{p 4 4 2} (important notes: (1) {it:expr} must not contain spaces unless
+enclosed in quotes; (2) the {it:expr}s are processed one after another, i.e.,
+{it:expr2} can refer to the column created by {it:expr1}, but not the other
+way round; (3) be careful with replacing columns and then referring to the replaced column
+in a later {it:expr})
+
+
+{title:Description}
+
+{p 4 4 2} {cmd:mgen} interprets the columns of a matrix as variables, {cmd:generate}s new
+columns (or {cmd:replace}s old columns) according to a specified list of expressions, and
+then returns the generated (and the replaced) columns as a new matrix.
+
+{p 4 4 2} Note: The column names of the input matrix and the specified new column names should
+conform to the naming conventions for variables.
+
+
+{title:Options}
+
+{p 4 8 2} {cmd:in(}{it:matname}{cmd:)} specifies the input matrix.
+
+{p 4 8 2} {cmd:out(}{it:matname}{cmd:)} specifies the output matrix.
+
+{p 4 8 2} {cmd:common(}{it:term}{cmd:)} specifies a common term which is added to the end of
+each of the expressions.
+
+
+{title:Examples}
+
+        {inp}. mat A=(1,2\3,4)
+        . mat coln A=var1 var2
+        . mat list A
+        {res}
+        A[2,2]
+            var1  var2
+        r1     1     2
+        r2     3     4
+        {txt}
+
+        {inp}. mgen var3=var1+var2 var4=var3^2, in(A) out(B)
+        {res}
+        B[2,2]
+            var3  var4
+        r1     3     9
+        r2     7    49
+        {txt}
+
+{p 4 4 2}Advanced application (note: tabstatmat is available from SSC):
+
+{p 8 12 2}{inp}. tabstat e ft, by(year) s(mean) save not{p_end}
+{p 8 12 2}. tabstatmat A{p_end}
+{p 8 12 2}. mgen ne=(1-e) pt=e*(1-ft) ft=e*ft total=(ne+pt+ft)/100 , in(A) out(B) common(*100)
+{txt}
+
+{p 4 4 2} Assume, "e" is labor force status (1 = in labor force, 0 = not in labor
+force) and "ft" is employment type (1 = fulltime, 0 = parttime,
+. = missing/not in labor force). The rows of matrix B will then contain the percentage
+distribution of nonemployed, partime employed and fulltime employed, e.g.:
+
+        {res}B[4,4]
+                     ne         pt         ft      total
+        1970  52.314139  5.8175698  41.868291        100
+        1980  51.818218  6.9509233  41.230859        100
+        1990  47.904043  9.7894623  42.306494        100
+        2000  48.004791  13.477444  38.517765        100
+        {txt}
+
+{title:Author}
+
+{p 4 4 2} Ben Jann, ETH Zurich, jann@soz.gess.ethz.ch
+
+
+{title:Also see}
+
+{p 4 13 2} Manual:  {hi:[U] 14.3 Naming conventions}
+
+{p 4 13 2} Online:  help for {help generate}, {help exp}, {help matrix}

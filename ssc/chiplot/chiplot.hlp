@@ -1,0 +1,69 @@
+{smcl}
+{* 20sep2001}{...}
+{hline}
+help for {hi:chiplot}{right:experimental version 0.0.2, a Stata v7 program}
+{hline}
+
+{title:Chi-plot: Nonparametric Graphical Assessment of Dependence}
+
+{p 4 8}{cmd:chiplot }{it:yvarname xvarname} [{cmd:if} {it:exp}]
+	[{cmd:in} {it:range}] [{cmd:,} {cmdab:h:ilite(}{it:exp}{cmd:)} 
+	{cmd:ci(}{it:#}{cmd:)} {cmdab:sam:ple(}{it:%}{cmd:)} graph_options]
+
+{title:Description}
+
+{p}{cmd:chiplot} is an experimental program implementing the nonparametric graphical 
+assessment of dependence plot described by N. I. Fisher and P. Switzer (see: Graphical 
+assessment of dependence: is a picture worth 100 tests? {it:The American Statistician} 
+55(3):233-9, 2001).  Because this is offered as an experimental program only, no details 
+about interpretation of the plots are given; please see the original article for guidance.
+Note that the matrix form of the plot is not implemented in this version of the program.
+
+{title:Options}
+
+{p 0 4}{cmd:hilite(}{it:exp}{cmd:)} allows a logical expression to be defined to
+highlight a subgroup of data in the plot.  (This is an extension to the plot described
+by Fisher and Switzer.)
+
+{p 0 4}{cmd:ci(}{it:#}{cmd:)} sets {it:p} = {it:#} such that approximately 100{it:p} % 
+of the (lambda, chi) pairs will fall between the plotted dashed horizontal control 
+lines when X and Y are independently distributed (the null hypothesis).  The only allowed
+values of {it:#} are .90, .95, and .99 (or, equivalently, 90, 95, and 99).  The default
+is .95.
+
+{p 0 4}{cmd:sample(}{it:%}{cmd:)} allows a random subsample of the data to be selected 
+for processing.  The {it:%} given to {cmd:sample()} should be a value in the 
+range: 0 < {it:%} < 100.  If {cmd:hilite()} is specified, the highlighted and 
+non-highlighted subsets will be sampled separatedly to (approximately) yield the 
+specified percentage of each subgroup.  
+
+{p 4 4}(Note that this option is offered because processing time for large samples is 
+very long -- for example, exceeding 70 seconds on a 300MHz Pentium for a file of 8000 
+observations; this despite optimization of the code in version 0.0.2 that reduced the 
+time to one-third that of version 0.0.1.)
+
+{p 0 4}{cmd:graph_options} are those of Stata's twoway graph.  With the exception of
+{cmd:saving()}, options are applied equally to both the twoway scatterplot and the 
+chiplot, so caution is warranted.
+
+{title:Examples}
+
+{p 1 33}{inp:. chiplot mpg weight} {space 21} (chi-plot of mpg against weight){p_end}
+{p 1 33}{inp:. chiplot mpg weight if foreign} {space 10} (same, but only foreign cars){p_end}
+{p 1 33}{inp:. chiplot mpg weight, hilite(price<5000)} {space 1} (same, but inexpensive cars highlighted){p_end}
+{p 1 33}{inp:. chiplot mpg weight, hilite(foreign)} {space 4} (same, but with foreign cars hilighted){p_end}
+{p 1 33}{inp:. chiplot mpg weight, h(foreign) sam(50)} {space 1} (same, but a 50% sample of each group){p_end}
+
+
+{title:Author}
+
+{p}Thomas J. Steichen, RJRT, {browse "mailto:steicht@rjrt.com":steicht@rjrt.com}
+
+
+{title:Thanks to...} 
+
+{p 0 2}Fred Wolfe for exercising the program and pointing out some useful enhancements now 
+incorporated in this, version 0.0.2; and
+{p 0 2}Nick Cox and Bill Gould for discussions that led indirectly to notable reductions in 
+processing time.
+

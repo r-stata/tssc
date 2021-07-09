@@ -1,0 +1,151 @@
+{smcl}
+{* 11May2005}
+{hline}
+help for {hi:convert_top_lines}
+{hline}
+
+{title:Convert the first one or two observations to variable names and lables.}
+
+{p 8 17 2}
+{cmd:convert_top_lines} [, {cmd:line2labels list drop}]
+
+{title:Description}
+
+{p 4 4 2}
+{cmd:convert_top_lines} will take values in the first observation, and use them
+as variable names.  Optionally, it will take values in the second observation,
+and use them as variable labels.  This works only when all datatypes are
+string, and the existing names are v1, v2, etc.
+
+
+{title:Options}
+
+{p 4 8 2}
+{cmd:line2labels} specifies that values in the second observation are to be
+taken as variable labels.
+
+{p 4 8 2}
+{cmd:drop} specifies that the first, and possibly the second observations are to
+be dropped {c -} after the names and labels are extracted from them.  With
+this option, the first observation is
+always dropped; when combined with {cmd:line2labels}, the second
+observation is also dropped.
+Typically you would want to specify this option, since, if you need
+to use this program, then these particular observations
+do not contain "regular" data, and don't belong with the others.
+
+{p 4 8 2}
+{cmd:list} specifies that the first three observations will be listed (after
+the renaming, but prior to the optional {cmd:drop} operation), so you can see
+the information that has been converted
+to names and labels.  Typically, in the first observation, you will see values
+equaling the names, and the third observation would typically contain regular
+data values.
+
+
+{title:Remarks}
+
+{p 4 4 2}
+This is intended to aid in clearing up some problems that may occur with
+{cmd:insheet}.
+
+{p 4 4 2}
+Often, comma-separated-value (csv) files have the variable names in the first line.
+If the data follow, starting on the second line, then {cmd:insheet} knows what to do;
+it uses the values in the first line as the variable names, and collects the regular
+data beginning with the second.
+
+{p 4 4 2}
+But sometimes, csv raw data files come with descriptive information in the second
+line, in addition to variable names in the first.  This descriptive information
+is often suitable as variable labels.  But {cmd:insheet} is not able
+to handle that situation, and will...
+
+{p 8 10 2}
+a, use default names, v1, v2, v3, etc.
+
+{p 8 10 2}
+b, use long string datatypes, such as str68.
+
+{p 4 4 2}
+{cmd:insheet}, as it stands at the time of this writing, is not set up to
+recognize this situation, and it invokes its "take everything as string"
+mode.  Thus, it selects datatypes that can accomodate the values in all the
+lines, including the second, where those long descriptions dwell.  Often, in
+this situation, the datatype is tailored to that one longest value, and all
+other "actual" data values are much shorter, and possibly numeric.
+
+{p 4 4 2}
+This program is meant to partly remedy that situation.
+It will first check that all the variables are named v1, v2, etc.
+Then it renames them to the values contained in the first line, with these names
+converted to lower case.  With the {cmd:line2labels} option, the values in the
+second line become variable labels.
+
+{p 4 4 2}
+Typically, you would want the {cmd:line2labels} optioon, because,
+if you don't have
+descriptive information in the second line, then {cmd:insheet} probably would have
+succeeded at taking variable names from the first line (if they exist therein),
+and you wouldn't be needing this program.  But this feature was made optional
+for the sake of generality and to give you more control.
+
+{p 4 4 2}
+Some truncation may occur when the values in the second line are read into
+the variables during insheet, and possibly when these values are converted
+to variable labels. (The latter would occur with Stata SE only.)  Whenever
+this possibility is
+detected (when the length of the value is >=80), a note is added to the
+variable, indicating the possibility of truncation.
+
+
+{title:Examples}
+
+{p 6 6 2}{cmd:. convert_top_lines }{p_end}
+
+{p 6 6 2}{cmd:. convert_top_lines, line2labels list drop}{p_end}
+
+
+{title:Additional Remarks}
+
+{p 4 4 2}
+In the situation where you would want to use this, all datatypes are
+initially string, which may not be appropriate after the
+operation is completed.  But it is beyond the scope of {cmd:convert_top_lines}
+to try to remedy that situation.
+Thus, you may want to follow this with some
+changes to datatypes, such as with {cmd:compress} and {cmd:destring}.
+
+{col 12}{hline}
+{p 12 12 12}
+{hi:Technical note:} While the presence of string types may be ultimately
+undesirable for most variables, it makes the operations within
+{cmd:convert_top_lines} possible, as variable names and labels are string
+values.
+{p_end}
+{col 12}{hline}
+
+{p 4 4 2}
+This always converts the names to lower case, which would be a problem if some
+names are distinguished only by case.  If users find they need to be able to
+control that, they should contact the author.
+
+{p 4 4 2}
+If you are using {cmd:insheet} on a large csv file with descriptive information
+in the second line, then you may need a large amount of memory just for the
+{cmd:insheet} operation.  Once {cmd:convert_top_lines} is done, followed by
+appropriate changes to datatypes, the dataset will be much smaller, and you
+can return to using less memory.  See {help memory}.
+
+
+{title:Author}
+
+{p 4 4 2}
+David Kantor, Institute for Policy Studies, Johns Hopkins University.
+Email {browse "mailto:dkantor@jhu.edu":dkantor@jhu.edu} if you observe any
+problems.
+
+{title:Also see}
+
+{p 4 4 2} {help insheet}, {help datatypes}, {help destring}, {help compress}
+

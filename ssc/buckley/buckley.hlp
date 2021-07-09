@@ -1,0 +1,106 @@
+{smcl}
+{* *! version 9.0.1  5Oct2006}{...}
+{cmd:help buckley}
+{right:(SJ-5-4: 517-526)}
+{hline}
+
+{title:Title}
+
+{p2colset 5 19 21 2}{...}
+{p2col :{hi: buckley} {hline 2}}Buckley-James method for analysing censored data{p_end}
+
+{p2colreset}{...}
+
+
+{title:Syntax}
+
+{p 8 14 2}
+{cmd:buckley} {depvar} {it: censorvar} {varlist} [{cmd:,} {it:options}]
+
+{synoptset 21 tabbed}{...}
+{synopthdr}
+{synoptline}
+{syntab:Main}
+{synopt :{cmdab:i:terate(}{it:#}{cmd:)}}specifies the maximum number of iterations{p_end}
+{synopt :{cmdab:t:olerance(}{it:#}{cmd:)}}specifies the convergence criterion{p_end}
+{synopt :{cmdab:d:ispnum(}{it:#}{cmd:)}}specifies how frequently to display the iteration{p_end}
+{synoptline}
+{p2colreset}{...}
+
+
+{title:Description}
+
+{pstd}
+{cmd:buckley} uses the Buckley-James method (Buckley and James 1979)
+to estimate the regression coefficients and generate the expected value of the censored outcome.
+{it:depvar} is the dependent variable whose value is rightly censored when the
+censoring variable {it:censorvar}=1.
+Otherwise it is observed exactly when {it:censorvar}=0.
+{it:varlist} is a list of explanatory variable names. At least one 
+explanatory variable must be specified.
+
+
+{title:Options}
+
+{dlgtab:Main}
+
+{phang}
+{opt iterate(#)} specifies the maximum number of iterations allowed in the optimization.
+It must be a positive integer. The default is {bf:iterate(100)}.
+
+{phang}
+{opt tolerance(#)} specifies the convergence criterion defined as the change of the sum of
+squares of the difference of regression coefficients between iterations.
+It must be a positive number between 0 and 1. The default is {bf:tolerance(1e-6)}.
+
+{phang}
+{opt dispnum(#)} specifies how frequently to display the iteration; For example, {bf:dispnum(50)}
+displays every 50th iteration. {it:#} must be a positive integer. The default is {bf:dispnum(100)}.
+
+
+{title:Examples}
+
+{phang}{stata use aids, clear}
+
+{phang}{stata gen censor = 1 - aids}
+
+{phang}{stata gen age30 = age - 30}
+
+{phang}{stata buckley time censor age30, i(20) t(1e-6) d(10)}
+
+{phang}{stata tabstat time varbj, by(aids) stats(n mean sd min max) col(stats) f(%7.2f) long}
+
+
+{title:Also see}
+
+{psee}
+   SJ-5-4: 517-526 
+
+
+{title:References}
+
+{phang}
+Buckley J, James I. Linear regression with censored data. Biometrika 1979; 66: 429-436.
+
+{phang}
+Cui J. Buckley-James method for analyzing censored data, with an application to a cardiovascular
+disease and an HIV/AIDS study. Stata Journal 2005; 4: 517-526.
+
+
+{title:Author}
+
+{p 4 4 2}
+James Cui, Department of Epidemiology and Preventive Medicine, Monash University.
+
+{p 4 4 2}
+Email: {browse "mailto:james.cui@med.monash.edu.au":james.cui@med.monash.edu.au}
+
+
+Other Commands I have written:
+{help genhwcci}   (if installed)      {stata ssc install genhwcci}     (to install this command)
+{help simuped2}   (if installed)      {stata ssc install simuped2}     (to install this command)
+{help simuped3}   (if installed)      {stata ssc install simuped3}     (to install this command)
+{help phenotype}  (if installed)      {stata ssc install phenotype}    (to install this command)
+{help qic}        (if installed)      {stata ssc install qic}          (to install this command)
+
+

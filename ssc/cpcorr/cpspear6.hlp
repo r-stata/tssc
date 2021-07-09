@@ -1,0 +1,62 @@
+.-
+help for ^cpspear6^
+.-
+
+Spearman correlations for each row vs each column variable
+----------------------------------------------------------
+
+    ^cpspear6^ rowvarlist \ colvarlist [^if^ exp] [^in^ range]
+    [ ^, s^quare ^m^atrix^(^matname^)^ matlist_options ]
+    
+    ^cpspear6^ varlist [^if^ exp] [^in^ range]
+    [ ^, s^quare ^m^atrix^(^matname^)^ matlist_options ]
+
+
+Description
+-----------
+
+^cpspear6^ produces a matrix of Spearman correlations for rowvarlist versus
+colvarlist (first syntax) or for varlist (second syntax). With the first 
+syntax, the matrix may thus be oblong, and need not be square. With the 
+second syntax, the matrix is square. 
+
+The stub ^cp^ is derived from Cartesian product; it may also be interpreted 
+as `cross pairs'. 
+
+The backslash ^\^ must be used to separate the rowvarlist and the colvarlist
+in the first syntax. 
+ 
+
+Options
+-------
+
+^square^ specifies squaring of correlations. 
+
+^matrix(^matname^)^ specifies that the matrix produced be saved as 
+    matrix matname. 
+
+matlist_options are options of ^matrix list^. The default includes 
+    ^format(%5.4f)^. 
+
+
+Examples
+--------
+
+	. ^cpspear6 mpg-foreign \ price^
+	. ^cpspear6 mpg-foreign, f(%4.2f)^ 
+
+
+Author
+------
+
+         Nicholas J. Cox, University of Durham, U.K.
+         n.j.cox@@durham.ac.uk
+
+
+Also see
+--------
+
+On-line: help for @correlate@, @matutil@, @cpcorr6@ (if installed), 
+         @pwcorrs@ (if installed)
+ Manual: [R] correlate 
+

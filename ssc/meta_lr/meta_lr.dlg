@@ -1,0 +1,102 @@
+/* 
+*! meta_lr dialog version 1.0.0, 16 Apr 2004, T. J. Steichen, steichen@triad.rr.com 
+*!    for meta_lr version 1.0.0, 16 Apr 2004, Aijing Shang, shang@ispm.unibe.ch 
+
+Graph of positive and negative likelihood ratios in diagnostic test
+-------------------------------------------------------------------
+
+Syntax: meta_lr theta1 se_theta1 theta2 se_theta2 stratavariables [if] [in]
+	[, STratify combine WEighting id(strvar) Fix Eform ylab graphoptions]
+
+Install in User Statistics menu via Stata commands:
+  . window menu append item "stUserStatistics" "meta_lr (Likelihood Ratios Graph)" "db meta_lr"
+  . window menu refresh
+To permanently install, place the commands in your -profile.do- file.
+*/
+
+VERSION 8.0
+
+INCLUDE _std_medium
+INCLUDE header
+
+HELP hlp1, view("help meta_lr")
+RESET res1, label("Reset")
+
+DIALOG main, label("meta_lr 1.0.0 - Likelihood Ratios Graph") tabtitle("Main")
+BEGIN
+  TEXT     tx_vars      15   15   380     .,              ///
+     label("Vars for: theta1 se(theta1) theta2 se(theta2), in that order")
+  VARLIST  vl_vars       @   _ss   @      .,              ///
+     label("Vars for theta1, se(theta1) theta2, se(theta2)")
+
+  CHECKBOX ck_strata    15 60  130       .,               ///
+     onclickon(main.vl_strata.enable)                     ///
+     onclickoff(main.vl_strata.disable)                   ///
+     label("Strata Variable(s):")                         ///
+     option("stratify")
+  VARLIST vl_strata    145 60  250       .,               /// 
+     label("Strata Variable(s)")
+ 
+  CHECKBOX ck_fix       15 80  55        .,               ///
+     label("fix")                                         ///
+     option("fix")
+    
+  CHECKBOX ck_ylab      15 100 55        .,               ///
+     label("ylab")                                        ///
+     option("ylab")
+  
+  CHECKBOX ck_eform     15 120 55        .,               ///
+     label("eform")                                       ///
+     option("eform")
+     
+  CHECKBOX ck_combine   15 140 75        .,               ///
+     label("combine")                                     ///
+     option("combine")
+    
+  CHECKBOX ck_weighting 15 160 80        .,               ///
+     label("weighting")                                   ///
+     option("weighting")
+
+  CHECKBOX ck_idvar     15 180 110       .,               ///
+     label("ID Variable):")                               ///
+     onclickon(main.vn_idvar.enable)                      ///
+     onclickoff(main.vn_idvar.disable)
+  VARNAME  vn_idvar    125 180 270       .,               /// 
+     label("ID Variable)")                                ///
+     option("id")
+
+  GROUPBOX gb_gopts    10 205  390   _ht1h,               ///
+     label("Allowed Graph8 Options:")
+  EDIT     ed_gopts    15 225  380       .,               ///
+     label("Graph8 Options")
+
+END
+ 
+INCLUDE ifin
+
+PROGRAM command
+BEGIN
+  put "meta_lr "
+  if !main.ck_strata {
+    varlist main.vl_vars
+  }
+  if main.ck_strata {
+    varlist main.vl_vars main.vl_strata
+  }
+  INCLUDE _ifin_pr
+  beginoptions
+    option main.ck_strata
+    option main.ck_eform
+      option main.ck_fix
+      if main.ck_strata {
+      option main.ck_ylab
+    }
+    if !main.ck_strata {
+
+      option main.ck_combine
+      option main.ck_weighting
+      optionarg main.vn_idvar
+    }
+    put main.ed_gopts " "
+  endoptions
+END

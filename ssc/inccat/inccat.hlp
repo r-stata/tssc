@@ -1,0 +1,123 @@
+{smcl}
+{hline}
+help for {cmd:inccat} {right:(Roger Newson)}
+{hline}
+
+
+{title:Concatenate one or more input files to an output file inserting additional input files}
+
+{p 8 15}{cmd:inccat} {it:infilename_list} , {cmdab:t:o}{cmd:(}{it:outfilename}{cmd:)} [ {cmd:replace}
+  {cmdab:pr:efix}{cmd:(}{it:prefix_string}{cmd:)} {cmdab:po:stfix}{cmd:(}{it:postfix_string}{cmd:)}
+  {cmdab:hm:ax}{cmd:(}{it:#}{cmd:)}
+
+{p}
+where {it:infilename_list} is a list of names of existing text files separated by spaces.
+
+
+{title:Description}
+
+{p}
+{cmd:inccat} ("{it:inc}lude and con{it:cat}enate") takes, as input, a list of one or more input files,
+and concatenates them to an output file.
+Optionally, one or more of the input files may contain one or more lines beginning with a user-specified
+prefix and continuing with a list of valid file names belonging to additional input files, and each such
+line is replaced in the output file by the contents of these files. These additional input files can
+contain prefixed lines with lists of further additional input files, which are also included in the
+same way.
+
+
+{title:Options}
+
+{p 0 4}{cmd:to()} specifies an output file, to be created by {cmd:inccat}, containing the concatenation
+of the input files, including additional input files listed in prefixed lines.
+
+{p 0 4}{cmd:replace} specifies that, if a file exists with the name specified by {cmd:to()}, then that
+file is to be overwritten.
+
+{p 0 4}{cmd:prefix(}{it:prefix_string}{cmd:)} specifies a prefix string. If {cmd:prefix()} is specified,
+then lines in the input files beginning with {it:prefix_string} will be assumed to contain a list
+of one or more file names, and the line is replaced in the output file by the contents of these files.
+The prefix string may contain spaces, but must be at the beginning of a line to be recognised.
+
+{p 0 4}{cmd:postfix(}{it:postfix_string}{cmd:)} specifies a postfix string. If {cmd:prefix()}
+and {cmd:postfix()} are both specified, then the postfix string acts as a terminator for file lists
+in lines beginning with the prefix string. The postfix string must be a valid Stata token,
+and therefore must be separated from the last file in the list by at least one space,
+and may not contain spaces, except if it begins and ends with quotes. If {cmd:prefix()}
+is not specified, then {cmd:postfix()} is ignored.
+
+{p 0 4}{cmd:hmax(}{it:#}{cmd:)} specifies the maximum height of a family tree where the nodes are input
+files, the root is one of the original list of input files in {it:infilename_list}, and the
+daughters of any input file are the input files named in prefixed lines in that file. In default,
+this maximum height is 31. If an input file of generation {cmd:hmax} contains any prefixed lines,
+then these prefixed lines are copied to the output file, not replaced by the contents of the
+files listed in these prefixed lines. The option {cmd:hmax} exists to prevent {inccat} from attempting
+to create infinite files, as might happen if an input file contains a prefixed line listing itself.
+
+
+{title:Remarks}
+
+{p}
+{cmd:inccat} is an extended version of {cmd:copy}. The file inclusion enabled by prefixed lines is useful
+if the user wants to create HTML files containing tables with rows created by {help listtex}
+(downloadable from SSC) and updated from time to time. {cmd:inccat} takes advantage of the fact that
+the Stata language is recursive (like C or Pascal), so that a program can call itself.
+
+
+{title:Examples}
+
+{p 16 20}{inp:. inccat myfile1.txt myfile2.txt myfile3.txt myfile4.txt, to(mynewfile1.txt) replace}{p_end}
+
+{p 16 20}{inp:. inccat myfile1.txt myfile2.txt myfile3.txt myfile4.txt, to(mynewfile2.txt) pre(!include) replace}{p_end}
+
+{p}
+The following advanced example uses prefixed lines to create an updatable HTML file with a table
+containing some of the {hi:auto} data. Suppose the user has a file {hi:auto1_r.htm},
+containing HTML code for the heading (but not the rows) of a simple table, as follows:
+
+{p 16 20}{inp:<table border="1">}{p_end}
+{p 16 20}{inp:<caption>Weight and mileage in US and non-US cars</caption>}{p_end}
+{p 16 20}{inp:<tr><th>Make</th><th>Origin</th><th>Weight (lbs.)</th><th>Mileage (mpg)</th></tr>}{p_end}
+{p 16 20}{inp:<!--include rows1.htm -->}{p_end}
+{p 16 20}{inp:</table>}{p_end}
+
+{p}
+Note that the fourth line ({inp:<!--include rows1.htm -->}) is a comment in HTML.
+If the user has the {help listtex} package, downloadable from SSC, then s/he might then type, in Stata:
+
+{p 16 20}{inp:. listtex make foreign weight mpg using rows1.htm, b(<tr><td>) d(</td><td>) e(</td></tr>) replace}{p_end}
+{p 16 20}{inp:. inccat auto1_r.htm, to(auto1.htm) prefix(<!--include) postfix(-->) replace}{p_end}
+
+{p}
+The first line will use {help listtex} to create a text file {hi:rows1.htm}, containing the table rows.
+The second line will use {cmd:inccat} to copy {hi:auto1_r.htm} to {hi:auto.htm}, replacing the line
+
+{p 16 20}{inp:<!--include rows1.htm -->}{p_end}
+
+{p}
+with the table rows in {hi:rows1.htm}. The file {hi:auto1.htm} will then contain a simple HTML table
+giving weight and mileage in US and non-US cars. The user can update the table, if the {hi:auto} data
+set is ever updated.
+
+{p}
+Similar things can be done with {hi:stata.toc} files in a user's website, if the user
+wishes to keep the lines beginning with {hi:p} and listing packages in one file (revised regularly by {cmd:listtex})
+and the other lines in another file (revised occasionally). See on-line help for {help net}.
+
+
+{title:Author}
+
+{p}
+Roger Newson, Imperial College London, UK.
+Email: {browse "mailto:r.newson@imperial.ac.uk":r.newson@imperial.ac.uk}
+
+
+{title:Also see}
+
+{p 0 10}
+{bind: }Manual:   {hi:[R] copy}, {hi: [R] shell}, {hi:[R] net}
+{p_end}
+{p 0 10}
+On-line:   help for {help copy}, {help shell}, {help net}
+ {break} help for {help listtex} if installed
+{p_end}

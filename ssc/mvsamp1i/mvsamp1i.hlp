@@ -1,0 +1,102 @@
+.-
+help for ^mvsamp1i^                                              (David E. Moore)
+.-
+
+Sample size and power determination for multivariate regression
+---------------------------------------------------------------
+
+      ^mvsamp1i^ # [^, a^lpha^(^#^) p^ower^(^#^) n(^#^) ny(^#^) nx(^#^) nc(^#^)^ ]
+
+
+Description
+-----------
+
+^mvsamp1i^ estimates required sample size or power of tests for multivariate
+F tests derived from Wilks' lambda.  If ^n()^ is specified, ^mvsamp1i^ computes 
+power; otherwise, it computes sample size.  ^mvsamp1i^ is an immediate command; 
+all of its arguments are numbers; see help @immed@.
+
+At a given value of Wilks' lambda, ^mvsamp1i^ computes power for alpha and n, 
+or sample size for alpha and power.  
+
+
+Options
+-------
+
+^alpha(^#^)^ specifies the significance level of the test; the default is 
+    1-level/100 from ^set level^, see help @level@.  
+
+^power(^#^)^ is power of the test; the default is ^power(.90)^.
+
+^n(^#^)^ specifies the size of the sample.  If specified, ^mvsamp1i^
+    reports the power calculation.  If not specified, ^mvsamp1i^ computes
+    sample size.
+
+^ny(^#^)^ specifies the number of dependent variables.  Default is 1.
+
+^nx(^#^)^ specifies the number of independent variables.  Count all but one
+    category of any categorical variable as separate independent variables
+    (e.g., a five category variable counts as four independent variables).
+    Default is 1.
+
+^nc(^#^)^ specifies the number of control variables; categorical variables
+    treated as in ^nx()^.  Default is 0.
+
+
+Remarks
+-------
+
+^mvsamp1i^ follows Cohen's method of calculating power for multivariate
+F tests based on Wilks' lambda (Cohen, 1988: 550-552).  A square root 
+normal approximation of the noncentral F distribution is used to obtain
+power values.  The noncentrality parameter is a function of effect size,
+sample size, and numerator df; effect size depends on Wilks' lambda, and
+the number of dependent and independent variables.
+
+
+Examples
+--------
+
+Compute power with lambda = .75, ny = 8, nx = 6, nc = 0, n = 100, 
+    alpha = .01:
+
+ . ^mvsamp1i .75, n(100) ny(8) nx(6) a(.01)^
+
+Compute sample size with lambda = .75, ny = 8, nx = 6, nc = 0, power = .8:
+
+ . ^mvsamp1i .75, ny(8) nx(6) p(.8)^
+
+
+Stored results
+--------------
+
+
+^mvsamp1i^ stores in the ^$S_^# macros:
+
+   ^S_1^    Sample size
+   ^S_2^    Alpha
+   ^S_3^    Power
+   ^S_4^    Wilks' lambda
+   ^S_5^    Effect size
+   ^S_6^    F associated with Wilks' lambda
+   ^S_7^    df1 for F associated with Wilks' lambda
+   ^S_8^    df2 for F associated with Wilks' lambda
+   ^S_9^    R squared 
+   ^S_10^    Adjusted R squared
+   ^S_11^    Noncentrality parameter
+
+
+Author
+------
+
+   David E. Moore
+   The Hartman Group, Inc.
+   email: david@tinderboxthg.com
+
+
+Also see
+--------
+
+   Manual:  ^[R] sampsi^
+Reference:  Cohen, J.  1988.  Statistical Power Analysis for the Behavioral
+                Sciences, 2nd Ed.  Hillsdale, New Jersey: LEA.

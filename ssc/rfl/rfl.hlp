@@ -1,0 +1,849 @@
+{smcl}
+{* Version 3.6, 29 Nov 2005}{...}
+{hline}
+help for {hi:rfl}{right:dialogs: {stata rfl}}
+{hline}
+
+{title:Syntax}
+
+{p 8 17 2}
+{cmd:rfl}
+
+{p 8 17 2}
+{cmd:rfluse}
+
+{p 8 17 2}
+{cmd:rfluse}
+[{it:filename}|{it:#}]
+[{cmd:,}
+    {cmd:log(}{it:filename}{cmd:)}
+    {cmd:cmdlog(}{it:filename}{cmd:)}
+    {cmd:desc(}{it:string}{cmd:)}
+    {cmd:mem(}{it:#}{cmd:)}
+    {cmd:l(}{it:#}{cmd:)}
+    {cmd:ds}
+    {cmd:dc}
+    {cmd:lc}
+    {cmd:cc}
+]
+
+{p 8 17 2}
+{cmd:rflsetmenu}
+
+
+{marker overview}{...}
+{title:Overview}
+
+{p 4 4 2}
+{cmd:rfl} is an enhanced most recently used files list allowing a user to open a
+dataset from a list of previously opened datasets. Every file opened with {cmd:rfl}
+is added to a list of recently used files and may be accessed via rfl's dialog
+window or Stata's User menu (in Stata 9, also via Stata's Open Recent menu). In
+addition, the user can set the memory allocated to Stata (in fact, {cmd:rfl}
+automatically determines the amount of memory needed to open the dataset), attach a short
+description to each loaded dataset, and open appropriate log and cmdlog files,
+all in one step. If data are present in memory at the
+time {cmd:rfl} is called, the user is prompted
+to save and close open files from within {cmd:rfl}'s dialog.
+{p_end}
+
+{p 4 4 2}
+{cmd:rfluse} calls the ado-files behind {cmd:rfl}'s dialogs without using
+the dialog window. It either opens the specified filename or the #th entry in the
+most recently used files list. Without arguments, # is set to 1, and {cmd:rfluse} opens the most recently used
+dataset. See {hi:{help rfl##nodlg:How to make use of rfl without calling the dialog}}.
+
+{p 4 4 2}
+{cmd:rflsetmenu} adds {cmd:rfl}'s menu to Stata's User menu for easy access to the
+most recently opened datasets. You may want to invoke it only if you do not want to
+use neither {cmd:rfl} nor {cmd:rfluse}, since both set {cmd:rfl}'s menu
+automatically.
+
+{p 4 4 2}
+Please note that {cmd:rfl} has been thoroughly tested on Windows XP systems. It also works on other
+platforms. Stata 8.2 and up (both SE or non-SE) is required.
+
+
+{title:Sections of this document}
+
+{p 4 4 2}
+{cmd:rfl} is described under the following headings:
+
+{p 4 4 2}
+   {hi:{help rfl##overview:Overview}}
+{p_end}
+{p 4 4 2}
+   {hi:{help rfl##features:Features and usage}}
+{p_end}
+{p 8 4 2}
+   {hi:{help rfl##first:First usage}}
+{p_end}
+{p 8 4 2}
+   {hi:{help rfl##opening:Opening a dataset}}
+{p_end}
+{p 8 4 2}
+   {hi:{help rfl##datainmemory:How data in memory are handled}}
+{p_end}
+{p 8 4 2}
+   {hi:{help rfl##memory:Setting the size of memory}}
+{p_end}
+{p 8 4 2}
+   {hi:{help rfl##log:Choosing a log file}}
+{p_end}
+{p 8 4 2}
+   {hi:{help rfl##description:Entering or changing a description}}
+{p_end}
+{p 8 4 2}
+   {hi:{help rfl##managelist:Managing the recent files list}}
+{p_end}
+{p 12 4 2}
+   {hi:{help rfl##removelistentry:Removing a list entry}}
+{p_end}
+{p 12 4 2}
+   {hi:{help rfl##renamelistentry:Renaming a list entry}}
+{p_end}
+{p 12 4 2}
+   {hi:{help rfl##deletedfiles:Deleted, moved and renamed datasets}}
+{p_end}
+{p 8 4 2}
+   {hi:{help rfl##nodlg:How to make use of rfl without calling the dialog}}
+{p_end}
+{p 12 8 2}
+   {hi:{help rfl##fromcommand:From the command window}}
+{p_end}
+{p 12 8 2}
+   {hi:{help rfl##frommenu:From the menu}}
+{p_end}
+{p 8 4 2}
+   {hi:{help rfl##other:Other settings}}
+{p_end}
+{p 4 4 2}
+   {hi:{help rfl##windowtitle:The Stata window title}}
+{p_end}
+{p 4 4 2}
+   {hi:{help rfl##storeinfo:How rfl stores the information}}
+{p_end}
+{p 4 4 2}
+   {hi:{help rfl##call:How to call rfl on each start of Stata}}
+{p_end}
+{p 4 4 2}
+   {hi:{help rfl##problems:Known problems and unexpected behaviour}}
+{p_end}
+
+
+{marker features}{...}
+{title:Features and usage}
+
+{marker first}{...}
+{title:First usage}
+{p 4 4 2}
+Type {cmd:rfl} ({it:not}: db rfl) in the command window. The checkbox "Other dataset" will be already checked
+in the dialog. Click {hi:Choose} to choose a file
+from the {hi:file open} dialog. Accept the log and cmdlog files {cmd:rfl} suggests or
+change {cmd:rfl}'s suggestions. Enter a description, if you like (otherwise the dataset's
+label is taken). Press
+{hi:OK}. The dataset, the log files and the settings chosen will
+be remembered between sessions (also see {hi:{help rfl##other:Other settings}}), and will be present
+in the dialog the next time you invoke {cmd:rfl}.
+{p_end}
+
+{marker opening}{...}
+{title:Opening a dataset}
+{p 4 4 2}
+Type {cmd:rfl} in the command window, or choose {cmd:rfl (dialog)} from Stata's User
+menu (you may also open a dataset from the command window or {cmd:rfl}'s menu, see
+{hi:{help rfl##nodlg:How to make use of rfl without calling the dialog}}). {cmd:rfl} lets
+you choose among three views of the recent files list:
+{p_end}
+{p 8 8 2}
+{hi:(1)}	a list of the 9 most recently opened datasets, with the dataset opened last topping the list,
+{p_end}
+{p 8 8 2}
+{hi:(2)}	a list of all the datasets ever opened, in alphabetical order,
+{p_end}
+{p 8 8 2}
+{hi:(3)}	a list of the descriptions (if you have entered any) of all the datasets ever opened, in alphabetical order.
+{p_end}
+{p 4 4 2}
+From each view of the files list, you may select the dataset you want to open. If you want to open
+a dataset which is not yet included in the lists, check {hi:Other dataset}
+(see {hi:{help rfl##first:First usage}}). If you don't want to open a dataset, check {hi:No dataset}.
+{p_end}
+{p 4 4 2}
+{hi:{ul:Remarks}:}
+The files lists are filled automatically {it:after} you have opened a
+dataset. (If you use Stata 9, the dataset is also placed in Stata's Open recent
+menu). File names are shown in the lists in an abbreviated form of up to 80
+characters. If the abbreviated file name happens to be the
+same as that of another file name, a number
+in parentheses is added to the abbreviated file name. To view the unabbreviated file name,
+click the button {hi:Complete info}. {cmd:rfl} cannot handle file names which include quotation
+marks like `, ' or ". {cmd:rfl} includes a rudimentary check for quotes like ", ', and the
+macro quote "`" in file names and descriptions and will not let you open
+such files in order to avoid later runtime errors. An error message will be
+displayed in the results window. If a file name or description contains
+an unmatched double quote ("abc), the message "unmatched quote" will
+be displayed without further explanation. If you select
+an entry which is marked for deletion or renaming (see
+{hi:{help rfl##removelistentry:Removing a list entry}} and
+{hi:{help rfl##renamelistentry:Renaming a list entry}}), {hi:Del} or {hi:Ren} is
+displayed to the left of the {hi:Change description} button. If you have prevented
+{cmd:rfl}'s menu from being added to Stata's User menu (see {hi:{help rfl##other:Other settings}}), you cannot
+access {cmd:rfl} via the menu. You can change the number of entries in the recent files list
+on the second tab of the dialog window (see {hi:{help rfl##other:Other settings}}).
+
+{marker datainmemory}{...}
+{title:How data in memory are handled}
+{p 4 4 2}
+If you call {cmd:rfl} and there are data in memory or open log files, {cmd:rfl}
+displays their file names and offers to save and
+close the open files. If the data in memory have
+changed since you last saved them, the {hi:Save} checkbox will be
+checked by default. If the data in memory are unchanged, only the {hi:Close} checkbox will be
+checked. {cmd:rfl} uses the name under which the data was last known to Stata. If
+you choose to clear changed data from memory without saving, you will be prompted for confirmation. No
+changed data will be cleared from memory unless you confirm the operation. Note
+that if you choose not to clear the data from memory, {cmd:rfl} cannot change the size
+of allocated memory (if needed), and will not load a dataset. In Stata 9, {cmd:rfl} may
+also ask you to clear Mata's memory if it suspects there are any functions, matrices
+etc. in Mata. Note that if you choose not to clear Mata, Stata will refuse to allow {cmd:rfl}
+to set the memory, and the dataset may or may not be loaded, depending on whether there is
+sufficient memory available. No log or cmdlog file will be loaded if you choose not to close the currently
+open log file(s).
+{p_end}
+{p 4 4 2}
+{hi:{ul:Remarks}:}
+{cmd:rfl} relies on Stata's {cmd:c(changed)} when checking whether data in memory are
+changed. Hence it won't recognise changed notes, labels etc. Note
+that if the file names of the open files are too long to be displayed in full in the dialog
+window, you may view the complete names by typing the appropriate commands in the command
+window while the dialog is being displayed
+({stata disp c(filename):disp c(filename)}, {stata log:log},
+{stata cmdlog:cmdlog}). {cmd:rfl} will invariably save the data in version 8
+format (same as version 9). If you need to save the data in a
+previous version's format, you have to do so manually (you may do so while {cmd:rfl}'s
+dialog window is displayed).
+
+{marker memory}{...}
+{title:Setting the size of memory}
+{p 4 4 2}
+{cmd:rfl} does not recognize the size of the memory available on your computer. Therefore, for
+each dataset marked in the lists, {cmd:rfl} proposes the memory to be allocated to Stata
+according to a simple rule: size of dataset times 1.5, at least 10 MB, at most 450 MB. You
+may change the size of memory on the main tab of {cmd:rfl}'s dialog. You may control the
+memory rule from the second tab of {cmd:rfl}'s dialog (see {hi:{help rfl##other:Other settings}}).
+{p_end}
+{p 4 4 2}
+{hi:{ul:Remarks}:}
+Note that the percentage of free memory that will be available to Stata after the dataset has been
+opened, which is displayed in the dialog, is a rough approximation since it
+is calculated from integers in MB. The actual free memory will differ slightly from the value
+shown.
+
+{marker log}{...}
+{title:Choosing a log file}
+{p 4 4 2}
+For each dataset you open, you may choose an appropriate log and cmdlog file. You have four choices:
+{p_end}
+{p 8 12 2}
+{hi:(1)} The first choice is a log file whose name is formed from the file name of the dataset
+plus the current date.
+{p_end}
+{p 8 12 2}
+{hi:(2)} The second choice is the log file opened when this same dataset was opened the last
+time. If there is no last log file associated with the dataset, the button shows
+{it:No last log file yet} (in this case,
+the selection of this button does not open a log file).
+{p_end}
+{p 8 12 2}
+{hi:(3)} The third choice is to not open a log file.
+{p_end}
+{p 8 12 2}
+{hi:(4)} The fourth choice is to open a log file of your choice by calling a standard
+{it:file open} dialog.
+{p_end}
+{p 4 4 2}
+Both a log file and a cmdlog file may be opened. The cmdlog file can be chosen from {cmd:rfl}'s
+second tab. They both have the same name
+(unless you uncheck {hi:cmdlog selection follows log selection}, see
+{hi:{help rfl##other:Other settings}}), but different
+file name extensions. By
+default, the cmdlog file gets the extension txt. The log file extension (smcl or log) and the
+log file type both depend on your {hi:{help set logtype}} setting. This means,
+if set logtype is set to smcl, both the log file type and the file name extension will be smcl,
+and if set logtype is set to text, the log file type will be text, and the file name extension
+log. You may override the default extensions for the log files by choosing
+{hi:Other log file} and specifying a file with a different file name extension.
+{p_end}
+{p 4 4 2}
+{hi:{ul:Remarks}:}
+Log file names may be longer than the width of the dialog window and therefore not fully
+displayed. To view the complete file name, click the button {hi:Complete info}. Log
+files are always opened with the append option, unless you check
+the {hi:Overwrite} options on {cmd:rfl}'s second tab (see
+{hi:{help rfl##other:Other settings}}).
+
+{marker description}{...}
+{title:Entering or changing a description}
+{p 4 4 2}
+Click {hi:Enter description} to attach a description to a dataset, or click
+{hi:Change description} to edit the description
+attached to a dataset. Enter a text (of up to 244 characters). Click {hi:Done} to confirm the description. If no
+description is entered, {cmd:rfl} uses the dataset's label (if any) as its description.
+{p_end}
+{p 4 4 2}
+{hi:{ul:Remarks}:}
+After a description has been changed, it is not possible to view the descriptions list until
+{cmd:rfl} has been restarted. It is not possible to change a description if the descriptions list is
+in view. Do not include quotation marks like `, ' or " in descriptions, and never let a
+description start with a colon (:). {cmd:rfl} cannot handle
+this (see {hi:{help rfl##opening:Opening a dataset}}). Descriptions
+may be up to 244 characters long. However,
+only an abbreviated description of up to 80 characters is shown in the list. A longer part of the
+description is displayed below the files list (if the descriptions list is in
+view, the file name is displayed instead of the description). To display the complete
+description, click the button {hi:Complete info}. Changes to descriptions of datasets already listed
+are saved instantly, while descriptions of
+new datasets are stored only after the dataset has been opened successfully. The
+logic of {cmd:rfl} requires the abbreviated form of the descriptions to be different for
+each dataset. If you enter similar descriptions for two different datasets which may be abbreviated
+to the same string, {cmd:rfl} resolves the problem by adding a
+number in parentheses to the description shown in the descriptions list.
+
+{marker managelist}{...}
+{title:Managing the recent files list}
+
+{p 4 4 2}
+{marker removelistentry}{...}
+{hi: (1) Removing a list entry}
+{p_end}
+
+{p 4 4 2}
+{cmd:rfl} stores the file names of all datasets ever opened with {cmd:rfl}. If your lists grow
+large, you may choose to remove list entries manually.
+You may delete an entry from the files lists by choosing {hi:Remove/Rename entry}. The dialog will
+alter to give you a choice between {hi:Remove} and {hi:Rename}. Choose {hi:Remove}, then click
+the {cmd:Submit} button, or, if you change your mind, click {cmd:Show logs} to cancel the
+{hi:Remove} operation. Note that only the list entry is removed, whereas the file on the
+disk remains untouched. See the remarks in the
+section {hi:{help rfl##deletedfiles:Deleted, moved and renamed datasets}}.
+
+{p 4 4 2}
+{marker renamelistentry}{...}
+{hi: (2) Renaming a list entry}
+{p_end}
+
+{p 4 4 2}
+Within {cmd:rfl}'s dialog, you may also alter a list entry to point to another dataset without losing the
+stored information (useful when a dataset is moved to another directory). You may
+rename an entry in the files lists by choosing
+{hi:Remove/Rename entry}. The dialog will
+change to give you a choice between {hi:Remove} and {hi:Rename}. Choose {hi:Rename}, then click
+the {cmd:Submit} button, or, if you change your mind, click {cmd:Show logs} to cancel the
+{hi:Rename} operation. Note that only the list entry is renamed while the file on the disk remains untouched. See
+the remarks in the section {hi:{help rfl##deletedfiles:Deleted, moved and renamed datasets}}.
+
+{p 4 4 2}
+{marker deletedfiles}{...}
+{hi:(3) Deleted, moved and renamed datasets}
+{p_end}
+
+{p 4 4 2}
+If you select a dataset or a description of a dataset which has been deleted, moved or renamed on the
+disk, {cmd:rfl} detects this and asks what it should do with the selected entry
+(cf. {hi:{help rfl##removelistentry:Removing a list entry}} and
+{hi:{help rfl##renamelistentry:Renaming a list entry}}). Make your choice and click
+the {cmd:Submit} button, or, if you change your mind, click {cmd:Show logs} to leave the
+recent files list unchanged.
+{p_end}
+{p 4 4 2}
+{hi:{ul:Remarks}:}
+If you want to rename and/or remove more than one list entry at a time, you may do so. Note
+that if you click {hi:Remove/Rename entry} a list entry is not immediately removed or renamed,
+but marked for deletion or renaming. The actual renaming or removal from the list of an entry
+will take place the next time {cmd:rfl} is called ({cmd:rfluse} and the menu do not respect
+the rename or remove markers). There is no way to recall an entry marked for deletion
+from within {cmd:rfl}. However, you may open
+rfl.log (see {hi:{help rfl##storeinfo:How rfl stores the information}}) and edit
+the file manually. Be sure to close {cmd:rfl} before.
+{p_end}
+{p 4 4 2}
+If you rename a list entry by pointing it to a file which already has an own entry in the files list, the
+entry you want to rename will be removed from the files list after applicable information has been
+tranferred to the existing entry. No information in the existing entry will be overwritten. You
+will have to confirm the operation.
+
+{marker memory}{...}
+{title:Setting the size of memory}
+{p 4 4 2}
+{cmd:rfl} does not recognize the size of the memory available on your computer. Therefore, for
+each dataset marked in the lists, {cmd:rfl} proposes the size of memory to be allocated to Stata
+according to a simple rule: size of dataset times 1.5, at least 10 MB, at most 450 MB. You
+may change the size of memory on the main tab of {cmd:rfl}'s dialog. You may control the
+memory rule from the second tab of {cmd:rfl}'s dialog (see {hi:{help rfl##other:Other settings}}).
+{p_end}
+{p 4 4 2}
+{hi:{ul:Remarks}:}
+Note that the percentage of free memory that will be available to Stata after the dataset has been
+opened, which is displayed to the left of the memory spinner, is a rough approximation since it
+is calculated from integers in MB. The actual free memory will differ slightly from the value
+shown.
+
+{marker datainmemory}{...}
+{title:How data in memory are handled}
+{p 4 4 2}
+If you call {cmd:rfl} and there are data in memory or open log files, {cmd:rfl}
+displays their file names and prompts you to save and
+to close the open files. If the data in memory have
+changed since you last saved them, the {hi:Save} checkbox will be
+checked by default. If there are unchanged data in memory, only the {hi:Close} checkbox will be
+checked. {cmd:rfl} uses the name under which the data was last known to Stata. If
+you choose to clear changed data from memory without saving, you will be prompted for confirmation. No
+changed data will be cleared from memory unless you confirm the operation. Note
+that if you choose not to clear the data from memory, {cmd:rfl} cannot change the size
+of allocated memory (if needed), and will not load a dataset. No log or cmdlog file
+will be loaded unless you choose to close the currently
+open log file(s).
+{p_end}
+{p 4 4 2}
+{hi:{ul:Remarks}:}
+{cmd:rfl} relies on Stata's {cmd:c(changed)} when checking whether data in memory are
+changed. Hence it won't recognise changed notes, labels etc. Note
+that if the file names of the open files are too long to be displayed in full in the dialog
+window, you may view the complete names by typing the appropriate commands in the command
+window while the dialog is being displayed
+({stata disp c(filename):disp c(filename)}, {stata log:log},
+{stata cmdlog:cmdlog}). {cmd:rfl} will invariably save the data in version 8
+format (same as version 9). If you need to save the data in a
+previous version's format, you must do so manually (you may do so while {cmd:rfl}'s
+dialog window is displayed).
+
+{marker nodlg}{...}
+{title:How to make use of rfl without calling the dialog}
+
+{p 4 4 2}
+{marker fromcommand}{...}
+{hi:(1) From the command window}
+{p_end}
+
+{p 4 4 2}
+In general you shouldn't bother with this cumbersome
+command-line version of {cmd:rfl}. Specify all the settings you need in
+{cmd:rfl}'s dialog window, make them permanent and then use {cmd:rfl}'s
+menu (cf. the next section {hi:{help rfl##frommenu:From the menu}}).
+{p_end}
+{p 4 4 2}
+But if you really want to know: {cmd:rfluse} lets you open
+a dataset from the command window without using {cmd:rfl}'s dialog. If
+you specify a file name for the dataset, don't enclose it in quotes. You
+may also specify a log file, a cmdlog file and a description. If no
+log files are specified, the log files opened are controlled by the
+option {hi:l()}. {hi:l(1)} opens the log files which would be the first choice in
+{cmd:rfl}'s dialog window, and {hi:l(2)} opens the
+log and cmdlog files used when this same dataset was last
+opened. {hi:l(3)} tells {cmd:rfluse} not to open any log or cmdlog
+file. If the {hi:l()} option is not specified, its value is taken from
+the {hi:Load last log files} setting on the second tab of
+{cmd:rfl}'s dialog window (see {hi:{help rfl##other:Other settings}}). If
+the description specified in the {cmd:desc} option
+differs from the stored one, the stored one is overwritten. If you do not
+specify a description, the stored one remains unchanged. You may specify
+the parameters {cmd:ds}, {cmd:dc}, {cmd:lc}, {cmd:cc} to handle data in
+memory and open log files. {cmd:ds} saves the data in
+memory, {cmd:dc} clears the data from memory, {cmd:lc} closes an open log file,
+and {cmd:cc} closes an open cmdlog file. If you do not specify these options
+and {cmd:rfluse} encounters data in memory or open log files, a dialog
+window will pop up to ask you how to handle
+them (cf. {hi:{help rfl##datainmemory:How data in memory are handled}}). {cmd:rfluse} does not
+recognise remove and rename markers and therefore uses such files list
+entries as if they were not marked. For {cmd:rfluse} to work properly,
+{cmd:rfl} must have been called at least once before.
+{p_end}
+{p 4 4 2}
+{hi:{ul:Examples:}}
+{p_end}
+{p 4 4 2}
+{cmd:. rfluse} opens the most recently used file and its accompanying log and cmdlog files,
+as specified in the {hi:Load last log files} setting on the second tab of
+{cmd:rfl}'s dialog window, if no data are present in memory
+{p_end}
+{p 4 4 2}
+{cmd:. rfluse , l(3) dc cc lc} opens the most recently used file after having cleared
+data from memory and closed open log files, but opens no log or cmdlog file.
+{p_end}
+{p 4 4 2}
+{cmd:. rfluse 4} opens the 4th entry in the recent files list and its accompanying log and cmdlog files,
+as specified in the {hi:Load last log files} setting on the second tab of
+{cmd:rfl}'s dialog window, if no data are present in memory
+{p_end}
+{p 4 4 2}
+{cmd:. rfluse 4, l(2) dc cc lc} opens the 4th entry in the recent files list and the
+log and cmdlog files used when this same data file was last opened, after
+having cleared data from memory and closed open log files.
+{p_end}
+{p 4 4 2}
+{cmd:. rfluse 7, desc(different description)} opens the 7th entry in the {hi:Most recent} list
+and its accompanying log and cmdlog files,
+as specified in the {hi:Load last log files} setting on the second tab of
+{cmd:rfl}'s dialog window, and attaches "different description"
+to the entry, if no data are present in memory
+{p_end}
+{p 4 4 2}
+{cmd:. rfluse c:\mydata, desc("different description (version 2)") log(other log) cmdlog(yet another log) mem(200) ds dc lc cc}
+saves the
+data in memory, clears the memory, closes both log files, opens c:\mydata,
+other log.smcl and yet another log.txt in your current (working) directory and attaches
+"different description (version 2)" (note the quotes required because of the parentheses)
+to the entry, after having saved the data in memory, cleared the
+memory, closed any open log files, and allocated 200 MB of memory to Stata. Note
+that the file names are not enclosed in quotes.
+{p_end}
+
+{p 4 4 2}
+{marker frommenu}{...}
+{hi:(2) From the menu}
+{p_end}
+
+{p 4 4 2}
+Upon the first invocation of {cmd:rfl} or {cmd:rfluse} during a Stata session, {cmd:rfl}'s menu
+system is added to Stata's User menu. From there, one can call {cmd:rfl}'s
+dialog or open the recently used files by typing 1,2,...,9 or selecting them with the
+mouse. The calls from the menu work much the same way as does
+{cmd:rfluse} called with a data file name. However, you cannot specify a log file directly (the log files
+opened are specified in the {hi:Load last log files} setting on the second tab of
+{cmd:rfl}'s dialog window, see
+{hi:{help rfl##other:Other settings}}) and you
+cannot change an entry's description. If there are data in memory, or open log files, a
+dialog window will pop up asking you how to handle them
+(cf. {hi:{help rfl##datainmemory:How data in memory are handled}}). {cmd:rfl}'s menu shows
+abbreviated file names (which may not be fully shown by Stata's
+menu system).
+{p_end}
+{p 4 4 2}
+{hi:{ul:Remarks}:}
+Due to the static nature of Stata's menu system, the order of the entries in the menu will not always reflect the
+re-ordering of the files list entries {cmd:rfl} undertakes when you close and
+open files during a Stata session. Thus,
+the order of the menu items will differ from the order in the {hi:Most recent} list
+of {cmd:rfl}'s dialog (or from Stata 9's Open Recent list) after {cmd:rfl} has been called
+for the second time during one Stata
+session. Similarly, entries removed from the files list will not be removed from {cmd:rfl}'s menu,
+and a renamed entry will appear with its new file name only at the bottom of {cmd:rfl}'s menu,
+while the original file name will stay in place, unless you restart Stata. Files
+not present in the menu at the beginning of a Stata session and opened subsequently
+will be appended to the bottom of the menu (without a preceding number), if opened with
+{cmd:rfl} or {cmd:rfluse}.
+{break}However, you may tell {cmd:rfl} to rewrite the menu each time it re-orders the files list,
+thus showing the files in the menu in their correct order,
+by checking {hi:Rewrite rfl's menu} on the second tab of {cmd:rfl}'s dialog
+(see {hi:{help rfl##other:Other settings}}). Be aware that
+checking this option will also remove all other menu items in Stata's User menu each time {cmd:rfl} rewrites the
+menu. If you don't like {cmd:rfls}'s menu system, you may prevent it from being installed. To do so,
+check {hi:Hide rfl's menu} on the second tab of the dialog.
+
+{marker other}{...}
+{title:Other settings}
+{p 4 4 2}
+On the second tab of {cmd:rfl}'s dialog window, you may control how {cmd:rfl}
+works. As soon as you change any of these settings, the button
+{hi:Make settings permanent} is enabled. Click it to make changes
+permanent. Otherwise the settings will be in effect only for
+the dataset you're about to open.
+{p_end}
+{p 4 8 2}
+(1) To dispense with {cmd:rfl}'s menu, check {hi:Hide rfl's menu}.
+{p_end}
+{p 4 8 2}
+(2) Make your choice with the {hi:List of recent files} spinner to change the
+number of files displayed in the {hi:Most recent} list and in {cmd:rfl}'s menu.
+{p_end}
+{p 4 8 2}
+(3) If you want the menu to always be up-to-date during a Stata session, and its
+entries ordered like those in Stata 9's {hi:Open Recent} menu, check
+{hi:Rewrite rfl's menu}. Be aware that {cmd:rfl}
+removes {it:any} menu item added by another program
+(but not Stata's default menu) when rewriting the menu.
+{p_end}
+{p 4 8 2}
+(4) Check {hi:Load last log files} if you want {cmd:rfl} to open the same log
+files that were previously used with a dataset
+(cf. {hi:{help rfl##log:Choosing a log file}}) when the dataset is called from the menu or from
+{cmd:rfluse}. Uncheck it if you want {cmd:rfl} to open log
+files whose name is formed from the file name of the dataset
+plus the current date (cf. {hi:{help rfl##log:Choosing a log file}}) when opening
+a dataset using the menu or {cmd:rfluse}. This setting also affects the default choice in the
+{hi:Log file to use} and {hi:cmdlog file to use} sections of {cmd:rfl}'s dialog
+window.
+{p_end}
+{p 4 8 2}
+(5) Set the {hi: number of recent commands} from a cmdlog file you're opening
+to add them to the review window. The default is 0.
+{p_end}
+{p 4 8 2}
+(6) If you check {hi:cmdlog selection follows log selection}, the cmdlog choice
+on the second tab will always be the same as the log choice on the first tab.
+Thus, if you select the second choice from the {hi:Log file to use} section, the second choice from
+the {hi:cmdlog file to use} section will be selected, too. If you uncheck the option, {cmd:rfl}
+lets you make your log and cmdlog choices independently of each other.
+{p_end}
+{p 4 8 2}
+(7) Check {hi:Replace the log file to be opened} if you want the log file to be
+opened with the {hi:replace} option, uncheck it, if you want the log file to be
+opened with the {hi:append} option (cf. help for {help log}).
+{p_end}
+{p 4 8 2}
+(8) Check {hi:Replace the cmdlog file to be opened} if you want the cmdlog file to be
+opened with the {hi:replace} option, uncheck it, if you want the cmdlog file to be
+opened with the {hi:append} option (cf. help for {help log}).
+{p_end}
+{p 4 8 2}
+(9) Check {hi:Don't warn me before replacing a log or cmdlog file} if you do not
+wish to receive a reminder when you have chosen to open log or cmdlog files with
+the {hi:replace} option. This setting is only respected if you use {cmd:rfl}'s
+dialog. If you use {cmd:rfl}'s menu or {cmd:rfluse}, a warning message will always
+pop up. See the next entry for a possibility to circumvent this behaviour.
+{p_end}
+{p 4 8 2}
+(10) Check {hi:Make a backup copy before overwriting} log files if you want to back-up
+your log files before replacing them. The back-ups will be named
+<file name>.<extension>.bkp. (If the file names are very long, log files with the
+extension smcl will be renamed to have the extension sbkp, those with the
+extension log will be renamed to have the extension lbp, and cmdlog files will be
+renamed to have the extension bkp). By checking this option, you will also prevent the
+reminder from showing up if you have checked
+{hi:Don't warn me before replacing a log or cmdlog file} and use
+{cmd:rfl}'s menu or {cmd:rfluse}.
+{p_end}
+{p 4 8 2}
+(11) Under {hi:Memory settings}, you may change the rule {cmd:rfl} applies when
+proposing the memory to be allocated to Stata on the main tab. With the spinner in the first line
+of this section, you tell {cmd:rfl} by how much it should multiply the file size of a dataset
+(divide the number shown by 10). The spinners in the second line define a lower
+and an upper limit for the memory proposed on the main tab. The amount of memory {cmd:rfl}
+actually allocates to Stata may still be set on the main tab.
+{p_end}
+
+{marker windowtitle}{...}
+{title:The Stata window title (Windows & Unix only)}
+{p 4 4 2}
+If a dataset is opened with {cmd:rfl}, the Stata window title is set to the file name of the
+dataset. If you close a dataset with {cmd:rfl} (check {hi:No data file}), the Stata
+window title is reset to the default. However, if you close a dataset without
+using {cmd:rfl},
+the Stata window title is not restored.
+To reset the windows title to the default, invoke {cmd:rfl}, choose the second tab, and press
+{hi: Reset Stata's window title}. Press {hi:Cancel} if you do not want to open a dataset.
+
+{marker storeinfo}{...}
+{title:How rfl stores the information}
+{p 4 4 2}
+{cmd:rfl} makes use of a single text file (rfl.log) written to your PERSONAL directory. Every
+time {cmd:rfl} or {cmd:rfluse} is started, a backup copy (rfl.bkp) is created. In addition,
+upon invocation of {cmd:rfl} the files rflliall.idlg, rflldesc.idlg, and rfllast5.idlg are created and
+written to your PERSONAL directory. Make sure no files with these names that you may
+need for other purposes are present when you invoke {cmd:rfl}, because they will be
+overwritten without warning. Two global variables (rfl_SETMENU, rfl_SETMENU_no) are
+defined. They control {cmd:rfl}'s menu. In rfl.log, the first 15 lines are reserved for
+{cmd:rfl}'s menu, log and memory settings.
+{p_end}
+{p 8 8 2}
+Line 1: rfl version
+{p_end}
+{p 8 8 2}
+Line 2: hidemenu (default 0)
+{p_end}
+{p 8 8 2}
+Line 3: rewrite menu (default 0)
+{p_end}
+{p 8 8 2}
+Line 4: entries in recent file list (default 9)
+{p_end}
+{p 8 8 2}
+Line 5: Always load last log, if called from menu or from rfluse (default 1)
+{p_end}
+{p 8 8 2}
+Line 6: cmdlog selection follows log selection (default 1)
+{p_end}
+{p 8 8 2}
+Line 7: replace log (default 0)
+{p_end}
+{p 8 8 2}
+Line 8: replace cmdlog (default 0)
+{p_end}
+{p 8 8 2}
+Line 9: don't warn before replacing log and cmdlog (default 0)
+{p_end}
+{p 8 8 2}
+Line 10: Minimum memory allocated to Stata when opening a dataset (default 10)
+{p_end}
+{p 8 8 2}
+Line 11: Maximum memory allocated to Stata when opening a dataset (default 450)
+{p_end}
+{p 8 8 2}
+Line 12: multiply dataset file size by this factor (default 1.5 [=15 in the dialog control])
+{p_end}
+{p 8 8 2}
+Line 13: make backup of log files before overwriting (default 0)
+{p_end}
+{p 8 8 2}
+Line 14: Number of commands to be added from the opened cmdlog file to the
+review window (default 0)
+{p_end}
+{p 8 8 2}
+Line 15: empty
+{p_end}
+{p 4 4 2}
+From line 16 onwards, the list entries are
+stored. The most recently used dataset comes first. Each list entry occupies 15
+lines. The structure of each list entry is as follows:
+{p_end}
+{p 8 8 2}
+Line 1: Number of times the dataset has been opened
+{p_end}
+{p 8 8 2}
+Line 2: Most recent status: 5 = most recent, 4 most recent but 1, etc.
+{p_end}
+{p 8 8 2}
+Line 3: dataset file name (short)
+{p_end}
+{p 8 8 2}
+Line 4: dataset file name (long)
+{p_end}
+{p 8 8 2}
+Line 5: cmdlog file name (long)
+{p_end}
+{p 8 8 2}
+Line 6: log file name (long)
+{p_end}
+{p 8 8 2}
+Line 7: description (short)
+{p_end}
+{p 8 8 2}
+Line 8: description (long)
+{p_end}
+{p 8 8 2}
+Lines 9-13: empty
+{p_end}
+{p 8 8 2}
+Line 14: new dataset file name (only if a list entry has been altered to point to a different file [i. e. renamed])
+{p_end}
+{p 8 8 2}
+Line 15: actions on next start (delete, rename)
+{p_end}
+{p 4 4 2}
+You can safely delete the files rfllast5.idlg, rflldesc.idlg, and
+rflliall.idlg in your PERSONAL directory without losing any
+information. If you delete rfl.log, you will start from scratch.
+
+{marker call}{...}
+{title:How to call rfl on each start of Stata}
+{p 4 4 2}
+Simply add the command {cmd:rfl} to your profile.do:
+{p_end}
+{p 8 8 2}
+(other commands)
+{p_end}
+{p 8 8 2}
+{cmd:rfl}
+{p_end}
+{p 8 8 2}
+(more commands, if you like, but {cmd:rfl} is recommended to be the last line)
+{p_end}
+{p 4 4 2}
+Alternatively, you may place {cmd:rflsetmenu} into your profile.do.
+
+{marker problems}{...}
+{title:Known problems and unexpected behaviour}
+{p 4 8 2}
+{hi:(1)} In rare circumstances, {cmd:rfl} may not react to mouse clicks as expected. Specifically,
+regardless of where you click on the screen, it may repeat the last action again
+and again (but does not produce unwanted results). To regain control, either press the up or
+down arrow keys, or, if this does not help, change to some other window without using the
+mouse (e.g. by pressing <alt>+<tab> on Windows platforms), and then return to {cmd:rfl}. Now normal behaviour
+of {cmd:rfl} should be restored.
+{p_end}
+{p 8 8 2}
+{hi:{ul:Remarks}:}
+This seems to be a Stata or a Windows problem related to the focus of the radio buttons. It has
+been observed on a Windows platform when changing from one list to another and the selected entry in
+the list you're changing to produces a message saying the file could not be found.
+{p_end}
+{p 4 8 2}
+{hi:(2)} Stata allows you to open a log file and a cmdlog file both with the same file name
+and extension. If you choose a log file with the extension txt, {cmd:rfl} does not correct the
+choice and opens the same file as a log and a cmdlog file. I didn't explore the consequences
+of doing so.
+{p_end}
+{p 4 8 2}
+{hi:(3)} In very rare circumstances, double entries may be added to {cmd:rfl}'s menu during one and
+the same Stata session. In practical use, this behaviour should never occur. Anyway,
+it does not affect the functionality of the menu. You'd simply have 2 or more menu items
+to choose the same dataset from.
+{p_end}
+
+{title:Author}
+
+{p 4 4 2}
+Dankwart Plattner
+{p_end}
+{p 4 4 2}
+Please email bug reports, comments and suggestions to dankwart.plattner@web.de
+{p_end}
+
+
+{title:Acknowledgements}
+
+{p 4 4 2}Jean Marie Linhart and James Hassell of Stata Corp. provided valuable help and
+suggestions. Without Dan Chandler's support and help, {cmd:rfl}'s dialog would not display on Macs.
+{p_end}
+{p 4 4 2}
+For those who have F. Zimmerman's {cmd:elapse} installed, {cmd:rfl} shows the time
+needed to load a dataset.
+
+{title:Version history}
+{p 4 4 2}Version 3.6 available from SSC, December 2005.
+{p_end}
+{p 8 8 2} File name extension and type of log files chosen according to
+  {cmd:set logtype} (previously fixed to smcl). Fixed small bug.
+{p_end}
+{p 4 4 2}Version 3.5 available from SSC, July 2005.
+{p_end}
+{p 8 8 2}Improved memory handling: Setting the memory even if there is something in Mata.
+{p_end}
+{p 4 4 2}Version 3.4 available from SSC, July 2005.
+{p_end}
+{p 8 8 2}Added an option to add recent commands from the cmdlog file opened to
+the review window. If no description is entered, the dataset's label (if not empty) is
+taken. Fixed two bugs. Changed help file. Reorganised {cmd:rfl}'s dialog files.
+{p_end}
+{p 4 4 2}Version 3.3 available from SSC, Apr 2005.
+{p_end}
+{p 8 8 2}Fixed a bug with some cmdlog file names. Some minor improvements you may not notice.
+{p_end}
+{p 4 4 2}Version 3.2 available from SSC, Mar 2005.
+{p_end}
+{p 8 8 2}Added missing dialog file to the package. Minor bug fixes and improvements.
+{p_end}
+{p 4 4 2}Version 3.1 available from SSC, Jan 2005.
+{p_end}
+{p 8 8 2}Improved menu system. Minor bug fixes and improvements.
+{p_end}
+{p 4 4 2}Version 3.0 available from SSC, Jan 2005.
+{p_end}
+{p 8 8 2}Improved menu system. Log and cmdlog files are treated
+independently. Introduced options to control {cmd:rfl}'s
+behaviour. File  names are shown in the form <file name (path name)>
+in the lists. Minor bug fixes and improvements.
+{p_end}
+{p 4 4 2}Version 2.2 available from SSC, Nov 2004.
+{p_end}
+{p 8 8 2}Menu system. Functional on Macs. Bug fixes and minor improvements.
+{p_end}
+{p 4 4 2}Version 2.1 available from SSC, Oct 2004.
+{p_end}
+{p 8 8 2}Bug fixes. List entries can be renamed.
+{p_end}
+{p 4 4 2}Version 2.0 available from SSC, Sep 2004.
+{p_end}
+{p 4 4 2}Version 1 presented at the German Stata User Meeting, Berlin 2004.
+{p_end}

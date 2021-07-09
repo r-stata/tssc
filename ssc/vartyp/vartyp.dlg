@@ -1,0 +1,107 @@
+VERSION 8.0
+
+INCLUDE _std_medium
+INCLUDE header
+HELP hlp1, view("help vartyp")
+RESET res1
+
+DIALOG	 main,	label("vartyp - Set variable types for codebk") 
+BEGIN
+   TEXT	    tx_var   _lft	_top	_iwd	 ., label("Variables: (leave empty for all)")	
+   VARLIST    vl_var   @	     _ss	@	 .
+   
+GROUPBOX lst 7 65 125 150, label("List")
+   RADIO 		v_typf   9    _ss	90  ., first label("ALL")
+   RADIO 		v_typa   @    _ss   @   ., middle label("ID")
+   RADIO 		v_typb   @    _ss   @   ., middle label("DISC")
+   RADIO 		v_typc   @    _ss	@   ., middle label("CONT")
+   RADIO 		v_typd   @    _ss	@   ., middle label("DATE")
+   RADIO 		v_type   @    _ss	@   ., middle label("UNDEF")
+
+GROUPBOX typ 150 65 125 150, label("Set")
+   RADIO 		v_typ1  152  _ss	110 ., middle label("ID")
+   RADIO 		v_typ2  @  _ss	@  ., middle label("DISCrete")
+   RADIO 		v_typ3  @  _ss	@  ., middle label("CONTinuous")
+   RADIO 		v_typ4  @  _ss	@  ., middle label("DATE")
+   RADIO 		v_typ5  @  _ss	@  ., last label("CLEAR") onclickon(script undefa)
+   CHECKBOX    und     @  _ss @  ., label("Set undefined vars") onclickon(script undef) onclickoff(script aundef)
+
+ 
+
+END
+
+SCRIPT undef
+	BEGIN
+	main.v_typ5.disable
+	main.v_typa.disable
+	main.v_typb.disable
+	main.v_typc.disable
+	main.v_typd.disable
+	main.v_type.disable
+	main.v_typf.disable
+	END
+
+SCRIPT aundef
+	BEGIN
+	main.v_typ5.enable
+	main.v_typa.enable
+	main.v_typb.enable
+	main.v_typc.enable
+	main.v_typd.enable
+	main.v_type.enable
+	main.v_typf.enable
+	END
+
+SCRIPT undefa
+	BEGIN
+	main.und.disable
+	END
+
+PROGRAM command
+	BEGIN
+		if(main.und){
+		  put "quietly vartyp, l(undef)"
+		  stata
+		  clear
+		}
+		put "vartyp " 
+		if (main.und){
+		   put "`r(varlist)'"
+		}
+		if !(main.und){		
+		   put main.vl_var " "
+		}
+		if(main.v_typ1){
+		   put ", s(id)"
+		}
+		if(main.v_typ2){
+		   put ", s(disc)"
+		}
+		if(main.v_typ3){
+		   put ", s(cont)"
+		}
+		if(main.v_typ4){
+		   put ", s(date)"
+		}
+		if(main.v_typ5){
+		   put ", s(clear)"
+		}
+		if(main.v_typa){
+		   put ", l(id)"
+		}
+		if(main.v_typb){
+		   put ", l(disc)"
+		}
+		if(main.v_typc){
+		   put ", l(cont)"
+		}
+		if(main.v_typd){
+		   put ", l(date)"
+		}
+		if(main.v_type){
+		   put ", l(undef)"
+		}
+		if(main.v_typf){
+		   put " "
+		}
+	END

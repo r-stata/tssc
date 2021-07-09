@@ -1,0 +1,96 @@
+{smcl}
+{* *! version 4.4 24dic2010}{...}
+{cmd:help summout}
+{hline}
+
+{title:Title}
+
+{phang}
+{bf:summout} {hline 2} Comparative table of summary statistics
+
+
+{title:Syntax}
+
+{p 8 17 2}
+{cmd:summout}
+[{varlist}] {ifin} [using {it:filename}]{cmd:,} {opth "by(varname:groupvar)"} [{it:more options}]
+
+{phang} {opt by} prefix is allowed; see {manhelp by D}.
+
+
+{title:Description}
+
+{pstd}{cmd:summout} creates a table of summary statistics for the variables listed in {it:varlist} across the categories of the categorical variable {it:groupvar}.
+Output table can be copied and pasted into any worksheet using the "Copy Table" option of the right click menu.
+In addition, it can be exported in ASCII format to the file indicated in {it:filename}.
+This is useful for large tables or as part of .do files.
+
+{pstd}
+For every variable in {it:varlist}, {cmd:summout} first makes a normality test across the categories of {it:groupvar}.
+If the test concludes normality, then mean and standard deviation are calculated, and a hypothesis test is done using {help oneway}.
+If the test finds a non-normal distribution, then median, interquartile range and a {help kwallis:Kruskal-Wallis} test are shown instead.
+
+{pstd}According to options, output table can have one or more of the following columns:
+
+{phang}- Variable name or variable label{p_end}
+{phang}- {bf:nonparam}, which is 0 if the tested variable has normal distribution and 1 if otherwise{p_end}
+{phang}- {bf:est}: variable's estimate measure (mean or median) for specified category or total value{p_end}
+{phang}- {bf:dis}: variable's dispersion measure (sd, se or iqr) for specified category or total value{p_end}
+{phang}- {bf:lb}: variable's lower boundary of confidence interval for specified category or total value{p_end}
+{phang}- {bf:ub}: variable's upper boundary of confidence interval for specified category or total value{p_end}
+{phang}- {bf:p value}, indicating the p value of the corresponding hypothesis test{p_end}
+
+{pstd}{cmd:summout} needs user-written command {help mat2txt}, please check if installed.
+
+
+{title:Options}
+
+{dlgtab:Main}
+
+{phang}{opt by(groupvar)} is required, it indicates the variable containing the categories for comparison.
+{it:groupvar} must have at least two values or an error message will be shown.
+Same error will be displayed if population selected with {it:if} or {it:in} arguments leaves {it:groupvar} with only one category.
+
+{phang}{opt ig:nore} causes {cmd:summout} to assume all variables as normal (use this at your own risk).
+
+{phang}{opt se} diplays standard error of the mean instead of standard deviation (for normally distributed variables only).
+
+{phang}{opt ci} calculates and displays confidence intervals instead of a dispersion measure.
+Confidence intervals are calculated using {help ci} or {help centile} accordingly.  Option {opt ci} overrides {opt se}.
+
+{phang}{opt level(#)} sets confidence level; default is {opt level(95)}.
+
+{phang}{opt dp(#)} specifies number of decimal places for estimate and dispersion measures; default is {opt dp(2)}.
+
+{phang}{opt nt()} specifies normality test to be used: sk for {help sktest:Skewness and kurtosis test},
+ks for {help ksmirnov:Kolmogorov-Smirnov test} and sw for {help swilk:Shapiro-Wilk test}.  Default is {opt nt(sw)}.
+
+{phang}{opt nol:abel} omits variable labels and value labels on the output table.
+
+
+{title:Examples}
+
+    {bf:sysuse auto}
+    {bf:summout price mpg weight, by(foreign)}
+    {bf:summout price mpg weight, by(foreign) nt(sk)}
+    {bf:summout price mpg weight, by(foreign) nt(ks)}
+    {bf:summout price mpg weight, by(foreign) ignore}
+    {bf:summout price mpg weight, by(foreign) nolabel}
+    {bf:summout price mpg weight, by(foreign) se}
+    {bf:summout price mpg weight, by(foreign) dp(3)}
+    {bf:summout price mpg weight, by(foreign) ci level(99)}
+    {bf:summout price mpg weight using example.txt, by(rep78)}
+
+
+{title:Acknowledgements}
+
+{pstd}
+Special thanks to Ian Watson (see inspirational command {help tabout:tabout}) for his valuable programming advice and to Zumin Shi for his constructive feedback.
+
+
+{title:Author}
+
+{phang}Andrés González Rangel{p_end}
+{phang}MD, MSc Clinical Epidemiology{p_end}
+{phang}Universidad Nacional de Colombia{p_end}
+{phang}algonzalezr@unal.edu.co{p_end}

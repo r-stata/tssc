@@ -1,0 +1,116 @@
+{smcl}
+{hline}
+help for {hi:profhap}
+{hline}
+
+
+{title:Calculates profile likelihood confidence intervals for results using {hi:hapipf}}
+
+{p 8 27}
+{cmdab:profhap}
+[{cmd:if}{it: exp}] 
+ , {cmdab:or}{cmd:(}{it:string}{cmd:)}
+ {cmdab::ipf}{cmd:(}{it:string}{cmd:)}
+ [{cmdab:}
+ {cmdab:by}{cmd:(}{it:string}{cmd:)}
+ {cmdab:acc}{cmd:(}{it:real}{cmd:)}
+ {cmdab:lev:el}{cmd:(}{it:real}{cmd:)}
+ {cmdab:hapacc}{cmd:(}{it:real}{cmd:)}
+ {cmdab:savegraph}
+] 
+
+{p}
+
+{title:Description}
+
+{p 0 0}
+This function calculates the confidence intervals for the odds ratios estimated
+by the command {cmd:hapipf}. It uses the profile likelihood by estimating the log-likelihood
+of a series of constrained log-linear models.
+
+{p 0 0}
+This command will only estimate the confidence interval for a single OR and can be used to estimate
+the odds ratio in a stratified analysis.
+
+{p}
+
+{title:Options}
+
+{p 0 4}
+{cmdab:or}{cmd:(}{it:string}{cmd:)}
+first the case control variable is specified then two haplotypes/alleles. The first
+    haplotype/allele indicates the unexposed group and the other haplotype/allele is the exposed group e.g. {hi:or(D 1 2)} specifies that the case control variable is D and that the allele 1 represents the unexposed group and allele 2 the exposed. 
+
+{p 0 4}
+{cmdab::ipf}{cmd:(}{it:string}{cmd:)}
+specifies the log-linear model in the constrained table.
+  It requires special syntax of
+   the form {hi:l1*l2+l3}. {hi:l1*l2} allows all the interactions
+   between the first two loci and locus 3 is independent of them.
+   This syntax is used in most books on Log-linear modelling, "-" terms and brackets are not allowed.
+
+{p 0 4}
+{cmdab:by}{cmd:(}{it:string}{cmd:)} 
+specifies a stratifying variable.
+
+{p 0 4}
+{cmdab:acc}{cmd:(}{it:real}{cmd:)} specifies the accuracy of the estimated upper and lower bounds of the confidence interval.
+
+{p 0 4}
+{cmdab:lev:el}{cmd:(}{it:real}{cmd:)}  specifies the significance level of the confidence interval.
+
+{p 0 4}
+{cmdab:hapacc}{cmd:(}{it:real}{cmd:)} specifies the convergence threshold of both {inp:hapipf} and {inp:ipf}.
+
+{p 0 4}
+{cmdab:savegraph} specifies that the profile graph is saved to file {hi:profile.gph}
+
+{p}
+
+{title:Examples}
+
+{p 0}
+{hi:Single-point Odds Ratio (OR)}
+
+{p 0}
+The simplest example is where there is one genetic marker (with alleles 1 and 2) and a binary outcome {hi: D}.
+The model specified in the {hi:ipf()} option must not include the interaction of interest i.e. whether marker {hi:l1} is associated with {hi:D} because this term is fitting using constraint files. Only one OR confidence interval is calculated using profile likelihood and "reference" and "exposed" alleles are specified as {hi: 1} and {hi:2}, respectively, in the {hi: or()} option.
+
+{inp:. profhap a1 a2, ipf(l1+D) or(D 1 2)}
+
+{p 0}
+{hi:Stratified Estimation of an OR}
+
+{p 0}
+The parameter of interest is the OR comparing haplotype 2.2 to haplotype 1.1. 
+Where the OR is now the pooled estimate over each level of the categorical variable {hi:S}. 
+Again the haplotype-outcome interaction {hi:l1*l2*D} is not
+included in the {hi:ipf()} model.
+
+{inp:. profhap a1 a2 b1 b2, ipf(S*D+l1*l2*S) or(D 1.1 2.2) by(S) acc(0.0001)}
+
+{p 0}
+This can be extended to 3 markers (comparing haplotype 2.2.2 to haplotype 1.1.1). 
+
+{inp:. profhap a1 a2 b1 b2 c1 c2, ipf(S*D+l1*l2*l3*S) or(D 1.1.1 2.2.2) by(S) acc(0.0001)}
+
+{title:Author}
+
+{p}
+Adrian Mander, Glaxo Smithkline, Harlow, UK.
+
+Email {browse "mailto:adrian.p.mander@gsk.com":adrian.p.mander@gsk.com}
+
+{title:Also see}
+
+Related commands
+
+HELP FILES 	Installation status	SSC installation links		Description
+
+{help hapipf}		(required)		({stata ssc install hapipf})  	Haplotype Frequency estimation
+{help qhapipf}		(if installed)		({stata ssc install qhapipf})   Quantitative Trait
+{help swblock}		(if installed)		({stata ssc install swblock})   Haplotype blocks
+{help hapblock}		(if installed)		({stata ssc install hapblock})  Haplotype blocks
+{help gipf}		(if installed)    	({stata ssc install gipf})	Graphical Log-linear Representation 
+
+

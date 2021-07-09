@@ -1,0 +1,30 @@
+d 'FMISS': module to identify variables with problematic missing values
+d
+d   fmiss allows you to identify not only the total number missing
+"d values in each variable, but also how many of them are unique in"
+d the sense that for all other variables of the observation the
+d information is available. This distinction is important to see
+d which variable is causing a large drop int he sample size on its
+d own.  The module identifies missing value in numerical and string
+"d variable. For the case of numerical variables, also Stata-coded"
+d missing values (e.g. “.a”) are identified.  Since a main
+d issue of missing values is that it might introduce a sample
+"d selection problem, fmiss offers a very simple and purely"
+d introductive way to detect such problems. Using the option
+"d detail, a mean-comparison test between the original sample and"
+d the sample one would get by including the variable (this means
+d dropping the unique missing values) is computed and variable
+d where the difference is significant are reported.
+d
+d KW: missing data
+d KW: patterns
+d
+d Requires: Stata version 9.2
+d
+d Distribution-Date: 20121127
+d
+"d Author: Florian Chavez Juarez, University of Geneva"
+d Support: email Florian.Wendelspiess@@unige.ch
+d
+f fmiss.ado
+f fmiss.hlp

@@ -1,0 +1,116 @@
+{smcl}
+{* *! version 1.0.0  23aug2006}{...}
+{cmd:help grexport}
+{hline}
+
+{title:Title}
+
+{p2colset 5 20 22 2}{...}
+{p2col :{hi:grexport  } {hline 2}}Extract values out of stata graphs{p_end}
+{p2colreset}{...}
+
+
+{title:Syntax}
+
+{phang2}
+{cmd:grexport}
+[{cmd:,} {cmdab:l:ist} {cmdab:no:restore} {cmdab:saving(}{it:string}{cmd:)} {cmdab:replace} {cmdab:w:ide}
+]
+
+{title:Description}
+
+{pstd}
+{cmd:grexport} is an alternative to {helpb graph export}. It extracts all values out of the graph
+currently in memory and produces a resultset (a dataset that contains all values of the graph).
+Resultsets can be used to create tables of  the values of your graph. {cmd:grexport} is a convinient
+way to pass the values of your graph to non-stata users. It allows them to use their own software
+for re-creating your graphs.
+
+    Currently {cmd:grexport} doesn't support Stata 9's {helpb name_option} . 
+
+{title:Options}
+
+{phang}{opt l:ist}
+displays the content of the most recent graph in a table.  
+
+{phang}{opt no:restore} replaces the current dataset in memory by the dataset created with {cmd:grexport}.
+
+{phang}{opt saving()}
+determines  where the content of the most recent graph should be saved as a stata dataset.
+
+{phang}{opt replace}
+is only needed if {cmd:saving()} is specified. It allows to replace a former saved dataset.
+
+{phang}{opt w:ide}
+If the  most recent graph was a overlaid graph,  it may be usefull to change the output fotmat of grexport. By default each new overlay is entered as cases with the same variable names, overlays are indicated with the identifier variable {bf:set}
+which is numbered from 1 to n. If wide is specified suffixes to the variable names (varname{it:0}, varname{it:1}, varname{it:k}) idicating the set number. 
+
+{title:Examples}
+
+{it: Typical use}
+
+{phang}{cmd:. sysuse auto}
+
+{phang}{cmd:. scatter price weight in 1/10}
+
+{phang}{cmd:. grexport , list}
+
+{txt}  {c TLC}{hline 8}{c -}{hline 8}{c -}{hline 5}{c TRC}
+{txt}  {c |} {res} price   weight   set {txt}{c |}
+{txt}  {c LT}{hline 8}{c -}{hline 8}{c -}{hline 5}{c RT}
+{txt}  {c |} {res} 4,099    2,930     0 {txt}{c |}
+{txt}  {c |} {res} 4,749    3,350     0 {txt}{c |}
+{txt}  {c |} {res} 3,799    2,640     0 {txt}{c |}
+{txt}  {c |} {res} 4,816    3,250     0 {txt}{c |}
+{txt}  {c |} {res} 7,827    4,080     0 {txt}{c |}
+{txt}  {c LT}{hline 8}{c -}{hline 8}{c -}{hline 5}{c RT}
+{txt}  {c |} {res} 5,788    3,670     0 {txt}{c |}
+{txt}  {c |} {res} 4,453    2,230     0 {txt}{c |}
+{txt}  {c |} {res} 5,189    3,280     0 {txt}{c |}
+{txt}  {c |} {res}10,372    3,880     0 {txt}{c |}
+{txt}  {c |} {res} 4,082    3,400     0 {txt}{c |}
+{txt}  {c BLC}{hline 8}{c -}{hline 8}{c -}{hline 5}{c BRC}
+
+{it: Advanced use}
+
+{phang}{cmd:. tw (scatter price weight in 1/10) (lfit price weight in 1/10) }
+
+{phang}{cmd:. grexport , list norestore}
+
+{txt}
+{txt}  {c TLC}{hline 10}{c -}{hline 8}{c -}{hline 5}{c -}{hline 8}{c TRC}
+{txt}  {c |} {res}__000000   weight   set    price {txt}{c |}
+{txt}  {c LT}{hline 10}{c -}{hline 8}{c -}{hline 5}{c -}{hline 8}{c RT}
+{txt}  {c |} {res}2781.499     2230     1        . {txt}{c |}
+{txt}  {c |} {res}5212.535     3155     1        . {txt}{c |}
+{txt}  {c |} {res}7643.571     4080     1        . {txt}{c |}
+{txt}  {c |} {res}       .     2930     0    4,099 {txt}{c |}
+{txt}  {c |} {res}       .     3350     0    4,749 {txt}{c |}
+{txt}  {c LT}{hline 10}{c -}{hline 8}{c -}{hline 5}{c -}{hline 8}{c RT}
+{txt}  {c |} {res}       .     2640     0    3,799 {txt}{c |}
+{txt}  {c |} {res}       .     3250     0    4,816 {txt}{c |}
+{txt}  {c |} {res}       .     4080     0    7,827 {txt}{c |}
+{txt}  {c |} {res}       .     3670     0    5,788 {txt}{c |}
+{txt}  {c |} {res}       .     2230     0    4,453 {txt}{c |}
+{txt}  {c LT}{hline 10}{c -}{hline 8}{c -}{hline 5}{c -}{hline 8}{c RT}
+{txt}  {c |} {res}       .     3280     0    5,189 {txt}{c |}
+{txt}  {c |} {res}       .     3880     0   10,372 {txt}{c |}
+{txt}  {c |} {res}       .     3400     0    4,082 {txt}{c |}
+{txt}  {c BLC}{hline 10}{c -}{hline 8}{c -}{hline 5}{c -}{hline 8}{c BRC}
+
+{phang}{cmd:. outsheet using "myfile.csv" , replace}
+
+{title:Author}
+
+{p 4 4 2}Lars E. Kroll, {browse "mailto:mail@lkroll.de": email} {break} 
+          {browse "http://www.lkroll.de": http://www.lkroll.de}
+
+{title:Also see}
+
+{psee}
+Manual:  {bf:[G] graph}
+{bf:[P] serset}
+
+{psee}
+Online:  {helpb graph}, {helpb graph export}, {helpb serset}, {helpb outsheet}
+{p_end}

@@ -1,0 +1,136 @@
+/*
+index
+VERSION 11 15/04/2015
+*/
+VERSION 11
+INCLUDE _std_xlarge
+DEFINE _dlght 390
+INCLUDE header
+HELP hlp1, view("help index")
+RESET res1
+
+PROGRAM parseMessage
+BEGIN
+if __MESSAGE.contains("__MI__") {
+call script se_setMI_on
+ }
+END
+
+SCRIPT POSTINIT
+BEGIN
+program check_bytab
+program se_setFinalInitState
+END
+
+PROGRAM check_bytab
+BEGIN
+if ! __MESSAGE.contains("__MI__") {
+call script sub_set_by_on
+ }
+END
+
+DIALOG main, label("index -  Price, Quantity, and Value Index Numbers") /*
+*/ tabtitle("Main")
+BEGIN
+ TEXT    ivarslab  10  _top  230  ., label("LHS: Left  Hand Side [ LHS(P, Q) ]")
+ TEXT    tx_q    250   @    20  ., label("=")
+ TEXT    ovarslab 280   @   230  ., label("RHS: Right Hand Side [ RHS(Q, V) ]")
+ VARLIST ivars 	 10   _ss 230  .,
+ EDIT    en_q   250     @  20	.,	///
+ label("q") default(=)
+ VARLIST ovars 	280   @   230  .,
+
+ CHECKBOX ck_panel _lft  _ls   _ibwd   _ht4  , /*
+	*/ groupbox				/*
+	*/ label("Panel ID Variables")		/*
+	*/ onclickon(script ck_panel_on)	/*
+	*/ onclickoff(script ck_panel_off)	/*
+	*/ option("panel")	
+  TEXT  tx_id   _ilft      _ss  110 .,	///
+	label("ID Cross Section")
+  TEXT  tx_it 160       @     100 .,	///
+	label("ID Time Series")
+  TEXT  tx_itt 300       @     100 .,	///
+	label("Year")
+  VARNAME vn_id   _ilft      _ss  110 .,	///
+	option("id")			///
+	label("ID Cross Section")
+  VARNAME vn_it  160       @     100 ., 	/*
+	*/ label("ID Time Series")		/*
+	*/ option("it")
+  EDIT  ed_itt  300       @     100 ., 	/*
+	*/ label("Year")		/*
+	*/ default(1)	/*
+	*/ option("year")
+ TEXT  tx_base    _ilft       _xls  _rbsprb    .,	/*
+	*/ label("Base Period")
+ EDIT  ed_base  +100    @    _spwd  .,	/*
+	*/ label("Base Period")	/*
+	*/ default(1)	/*
+	*/ option("base")
+ TEXT  tx_nlhs    _ilft       _ls  _rbsprb    .,	/*
+	*/ label("LHS Type ( P, Q )")
+ EDIT  ed_nlhs  +100    @    _spwd  .,	/*
+	*/ label("LHS Type ( P, Q )")	/*
+	*/ default(p)	/*
+	*/ option("lhs")
+ TEXT  tx_nrhs    _ilft       _ls  _rbsprb    .,	/*
+	*/ label("RHS Type ( Q, V )")
+ EDIT  ed_nrhs  +100    @    _spwd  .,	/*
+	*/ label("RHS Type ( Q, V )")	/*
+	*/ default(q)	/*
+	*/ option("rhs")
+ GROUPBOX gb_opt _lft      _ls       _ibwd      _ht12 , ///
+	label("Options")
+ CHECKBOX ck_list _ilft  _ss   350  ., option("list") /*
+	*/ label("Add Index Numbers Variables to Data File")
+ CHECKBOX ck_chain _ilft  _ss   350  ., option("chain") /*
+	*/ label("Print Main Price and Quantity Index Numbers with CHAIN")
+ CHECKBOX ck_summ _ilft  _ss   300  ., option("summ") /*
+	*/ label("Report Summary Statistics")
+ CHECKBOX ck_simp _ilft  _ss   350  ., option("simple") /*
+	*/ label("Display Simple Price, Quantity, and Value Index Numbers")
+ TEXT ck_save		_ilft	_ss	400 	.,	///
+	label("Save Results in txt File:") 
+ FILE fi_save     	@	_ss	@ 	.,	///
+	option(save)					///
+	label("Save As...")				///
+	filter("Stata txt File (*.txt)|*.txt|All (*.*)|*.*")	///
+	defext(txt)					///
+	error("Filename") save
+END
+
+SCRIPT ck_panel_on
+BEGIN
+ main.vn_id.enable
+ main.vn_it.enable
+END
+
+SCRIPT ck_panel_off
+BEGIN
+ main.vn_id.disable
+ main.vn_it.disable
+END
+
+INCLUDE sub_by_ifin_over_subpop
+
+PROGRAM command
+BEGIN
+ put "index "
+ varlist main.ivars main.en_q main.ovars
+ put " " /program ifin_output
+beginoptions
+ optionarg main.ed_nlhs
+ optionarg main.ed_nrhs
+ optionarg main.ed_base
+ optionarg main.vn_id
+ optionarg main.vn_it
+ optionarg main.ed_itt
+ option main.ck_summ
+ option main.ck_simp
+ option main.ck_panel
+ option main.ck_list
+ option main.ck_chain 
+ optionarg main.fi_save
+endoptions
+END

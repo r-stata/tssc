@@ -1,0 +1,116 @@
+{smcl}
+{* 27 March 2013 Felix Leung}{...}
+{hline}
+help for {hi:quandl}
+{hline}
+
+{title:Stata module to obtain data from {browse "http://www.quandl.com":Quandl} using the {browse "http://www.quandl.com/api":Quandl API}}
+
+
+{title:Syntax}
+
+{p 8 14}
+{cmd:quandl}
+[{cmd:using}{cmd: }{it:filename}{cmd:}],
+{cmdab:q:uandlcode}{cmd:(}{it:Quandl Code}{cmd:)}
+[{cmdab:s:tart}{cmd:(}{it:Start date}{cmd:)}
+{cmdab:e:nd}{cmd:(}{it:End date}{cmd:)}
+{cmdab:auth:token}{cmd:(}{it:Authentication token}{cmd:)}
+{cmdab:t:ransformation}{cmd:(}{it:diff|rdiff}{cmd:)}
+{cmd:freq}{cmd:(}{it:daily|weekly|monthly|quarterly|annual}{cmd:)}
+{cmdab:r:ow}{cmd:(}{it:integer}{cmd:)}
+{cmd:replace}
+{cmd:clear}]
+
+
+{title:Description}
+
+{p} {browse "http://www.quandl.com":Quandl} is a collaboratively-curated portal to millions of time-series datasets.
+
+{p} The command {cmd:quandl} pulls any dataset specified by the user from {browse "http://www.quandl.com":Quandl} using the {browse "http://www.quandl.com/api":Quandl API}.
+
+{p}The dataset is copied to a temporary file in csv format. The [{cmd:using}{cmd: }{it:filename}{cmd:}] option saves {it: filename} in the current working directory.
+
+{p}The option {cmdab:q:uandlcode}{cmd:(}{it:Quandl Code}{cmd:)} is required.
+
+
+{title:Options}
+
+{p 8 8} {cmd:using}{cmd: }{it:filename}{cmd:} specifies the dataset to be saved in {it:filename} in the current working directory. If {cmd: replace} is specified, existing {cmd: }{it:filename}{cmd:} will be replaced.
+
+{p 8 8} {cmdab:q:uandlcode}{cmd:(}{it:Quandl Code}{cmd:)} identifies the dataset to be obtained from the {browse "http://www.quandl.com/api":Quandl API}. Each dataset has a unique Quandl code. 
+To get started, please visit {browse "http://www.quandl.com/faq":here}.
+
+{p 8 8} {cmdab:s:tart}{cmd:(}{it:Start date}{cmd:)} truncates data by {it: Start date} in 'yyyy-mm-dd' format.
+
+{p 8 8} {cmdab:e:nd}{cmd:(}{it:End date}{cmd:)} truncates data by {it: End date} in 'yyyy-mm-dd' format.
+
+{p 8 8} {cmdab:auth:token}{cmd:(}{it:Authentication token}{cmd:)} supplies the {it: Authentication token} needed for extended API access.
+You can find your {it: Authentication token} on the {browse "http://www.quandl.com/users/edit":Account} page, API tab.
+(The {it: Authentication token}, once supplied, will be stored as a global macro. So, in each Stata session, you only need to provide it once using {cmdab:auth:token}{cmd:(}{it:Authentication token}{cmd:)}.)
+
+{p 8 8} {cmdab:t:ransformation}{cmd:(}{it:diff|rdiff}{cmd:)} transforms the data. If the data is denoted as y[i] and the transformed data as y'[i]:
+
+{p 12 12} {cmdab:t:ransformation}{cmd:(}{it:diff}{cmd:)} transforms the data according to
+y'[i] = y[i] - y[i-1]
+{cmdab:t:ransformation}{cmd:(}{it:rdiff}{cmd:)} transforms the data according to
+y'[i] = (y[i] - y[i-1])/y[i]
+
+{p 8 8} {cmd:freq}{cmd:(}{it:daily|weekly|monthly|quarterly|annual}{cmd:)} collapses the frequency of data. When you change the frequency of a dataset, Quandl returns the last observation for the given period.
+So, if you collapse a daily dataset to "monthly", you will get a sample of the original dataset where the observation for each month is the last data point available for that month.
+
+{p 8 8} Also note that when {cmd:freq}{cmd:(}{it:weekly|monthly|quarterly|annual}{cmd:)} is specified, a new variable, formatted accordingly (i.e. week %tw, month %tm, quarter %tq, and year %ty, respectively), is created.
+
+{p 8 8} {cmdab:r:ow}{cmd:(}{it:integer}{cmd:)} selects number of dates returned. Use rows=1 to get the latest observation for any dataset.
+
+{p 8 8} {cmd: clear} removes data and value labels from memory.
+
+
+{title:Examples}
+
+{p} For more details, please visit {browse "http://www.quandl.com/api":Quandl API}.
+
+{p} {hi: A simple example}
+
+{p} To get all data points for the Prague Stock Index, do this call:
+
+{p 8 12} {stata "quandl, quandlcode(PRAGUESE/PX)":. quandl, quandlcode(PRAGUESE/PX)}
+
+
+{p} {hi: Authentication code}
+
+{p} Registered users should include their auth_token like this:
+
+{p 8 12} {stata "quandl, quandlcode(PRAGUESE/PX) authtoken(dsahFHUiewjjd)":. quandl, quandlcode(PRAGUESE/PX) authtoken(dsahFHUiewjjd)}
+
+{p} {hi: Data ranges}
+
+{p} To get the Prague Stock Index data points for November 2012:
+
+{p 8 12} {stata "quandl, quandlcode(PRAGUESE/PX) start(2012-11-01) end(2012-11-30)":. quandl, quandlcode(PRAGUESE/PX) start(2012-11-01) end(2012-11-30)}
+
+{p} {hi: Transformations}
+
+{p} To get the Canadian GDP annual per cent change:
+
+{p 8 12} {stata "quandl, quandlcode(FRED/CANRGDPR) transformation(rdiff)":. quandl, quandlcode(FRED/CANRGDPR) transformation(rdiff)}
+
+
+{p} {hi: Frequency collapsing}
+
+{p} To get crude oil prices on a quarterly basis from the EIA's daily spot price:
+
+{p 8 12} {stata "quandl, quandlcode(DOE/RWTC) freq(quarterly)":. quandl, quandlcode(DOE/RWTC) freq(quarterly)}
+
+
+{p}{hi: A Complex Example}
+
+{p 8} Annual per cent change in oil prices since 2005:
+
+{p 8 12} {stata "quandl using tempfile, quandlcode(DOE/RWTC) start(2005-01-01) freq(annual) transformation(rdiff)":. quandl using tempfile, quandlcode(DOE/RWTC) start(2005-01-01) freq(annual) transformation(rdiff)}
+
+
+{title:Author}
+
+	Felix Leung
+	Email: {browse "mailto:felix@quandl.com":felix@quandl.com}

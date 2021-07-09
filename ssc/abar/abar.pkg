@@ -1,0 +1,46 @@
+d 'ABAR': module to perform Arellano-Bond test for autocorrelation
+d
+d   abar performs the Arellano-Bond (1991) test for
+d autocorrelation. The test was originally proposed for a
+d particular linear Generalized Method of Moments  dynamic panel
+"d data estimator, but is quite general in its applicability--more"
+"d general  than dwstat, durbina, bgodfrey, and xtserial. It can be"
+"d applied to linear GMM regressions in general, and thus to"
+d ordinary least squares (OLS)  and two-stage least-squares (2SLS)
+"d regressions, which can be seen as special cases of linear GMM. It"
+d is appropriate for both time-series and cross-section time-series
+d (panel) regressions. It can also be made consistent in the
+"d presence of various patterns of error covariance. Specifically,"
+"d abar will run after regress, ivreg, ivreg2, and ivreg2, gmm in"
+"d their ""plain""  (homoskedastic), robust, and cluster variants. It"
+d will also run after newey and newey2. In the context of an
+"d Arellano-Bond GMM regression, which is run on first differences,"
+"d AR(1) is to be expected, and therefore the Arellano-Bond AR(1)"
+d test result is usually ignored in that context. The AR(2) test on
+d the residuals in first differences is used to detect AR(1) in the
+"d underlying levels variables. But in other contexts, such as"
+"d simple OLS in levels, the AR(1) test is relevant. abar is not"
+"d appropriate for fixed-effects regressions for dynamic models,"
+d assuming those are done via a mean-deviation transformation. This
+d is because the Arellano-Bond AR() test assumes that
+"d right-hand-side variables are not ""post-determined,""  i.e., not"
+"d correlated with future errors. In a dynamic setting, future"
+d values of regressors can depend on future errors. And after the
+"d mean-deviations transformation, future values of the original"
+d regressors affect  current values of the transformed versions.
+d
+d KW: Arellano-Bond
+d KW: autocorrelation
+d KW: GMM
+d KW: regression
+d
+d Requires: Stata version 7.0 (with 21jun2002 update)
+d
+d
+"d Author: David Roodman, Center for Global Development"
+d Support: email DRoodman@@CGDEV.ORG
+d
+d Distribution-Date: 20170511
+d
+f abar.ado
+f abar.hlp

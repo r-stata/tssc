@@ -1,0 +1,91 @@
+{smcl}
+{* 15Aug2007*}{...}
+{hline}
+help for {hi:twoway parea}
+{hline}
+
+{title:twoway parea}
+
+{p 4 4 2}
+{cmd:twoway parea} is a modification of standard Stata twoway area command. It uses some undocumented features of Stata to enable pattern fills (tested on Windows only).
+
+{title:Syntax}
+
+{p 8 53 2}
+{cmdab:tw:oway}
+{cmd:area}
+{it:yvar} {it:xvar}
+{ifin}
+[{cmd:,}
+{it:options}]
+
+{p2colset 9 31 33 2}{...}
+	{it:options}{col 31}description
+{p2line}
+	{cmd:pattern({it:pattern_name})}{...}
+{col 31}fill pattern; default is pattern10 (solid)
+	{cmdab:vert:ical}{...}
+{col 31}vertical area plot; the default
+	{cmdab:hor:izontal}{...}
+{col 31}horizontal area plot
+	{cmd:base(}{it:#}{cmd:)}{...}
+{col 31}value to drop to; default is 0
+	{cmdab:nodropb:ase}{...}
+{col 31}programmer's option
+	{cmd:sort}{...}
+{col 31}sort by {it:xvar}; recommended
+
+INCLUDE help gr_areaopt
+
+INCLUDE help gr_axlnk
+
+INCLUDE help gr_twopt
+{p2line}
+{pin}
+Option {cmd:base()} is {it:rightmost}; {cmd:vertical}, {cmd:horizontal},
+{cmd:nodropbase}, and {cmd:sort} are {it:unique}; see {help repeated options}.
+
+
+{title:Description}
+
+{p 4 4 2}
+This command is a modified version of the standard {cmd:twoway area} command with the pattern fills enabled. All other options of {cmd:twoway area} should be supported as well.
+
+{title:Options}
+{p 4 4 2}
+{cmd:pattern({it:pattern_name})}
+    specifies which pattern must be used for fills. Possible values are: {it:pattern1}, {it:pattern2},..., {it:pattern10}, {it:background}, and {it:none}. Value {it:pattern10} is the default value and corresponds to a solid fill. If separate areas must have different fills, combine several calls to parea with "||" symbol.
+
+{title:Examples}
+
+{cmd: . do pareademo} 
+
+{cmd: . sysuse sp500}
+{cmd: . twoway parea high date, pattern(pattern8) || parea low date, pattern(pattern6) scale(0.5)}
+
+{cmd: . sysuse auto}
+{cmd: . twoway parea l w, sort pattern(pattern6)}
+
+{cmd: . twoway parea d w, sort pattern(pattern9) || parea l w if w<=3600, sort pattern(pattern6) || parea l w if w>=3600, sort pattern(pattern4) ,legend(rows(1))}
+
+
+{title:Author}
+
+        Sergiy Radyakin, sradyakin(at)worldbank.org
+
+{title:Versions}
+
+	Aug. 2007 First version for Stata 9
+	Apr. 2008 Corrected for some undocumented internal changes in Stata 10 (which prevented the legend keys to be rendered).
+	
+
+{title:Also see}
+
+{psee}
+Manual:  {bf:[G] graph twoway area}
+
+{psee}
+Online:  
+{helpb twoway area}
+{p_end}
+

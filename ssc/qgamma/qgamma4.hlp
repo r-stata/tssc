@@ -1,0 +1,57 @@
+.-
+help for ^qgamma4^
+.-
+
+Quantile-quantile plot for data vs fitted gamma distribution
+------------------------------------------------------------
+
+    ^qgamma4^ varname [^if^ exp] [^in^ range]
+    [ ^,^ ^a^lpha^(^#^)^  ^b^eta^(^#^)^ ^t^ransform ^gr^id graph_options ]
+
+Description
+-----------
+
+^qgamma4^ plots the quantiles of varname against the quantiles of a
+two-parameter gamma distribution with shape parameter alpha and scale
+parameter beta. By default, alpha and beta are taken from S_alpha and
+S_beta, which is where ^gamma4^ puts maximum likelihood estimates of
+them.
+
+Note: this is the original version of ^qgamma^, written for Stata 4. 
+Users of Stata 8 up should switch to ^qgamma^. 
+
+Options
+-------
+
+^alpha(^#^)^ sets alpha to #.
+
+^beta(^#^)^ sets beta to #.
+
+^transform^ applies a cube-root transform to both data and fitted
+    quantiles. This may be useful for highly skewed data. The result
+    should be closer to a Gaussian (normal) distribution.
+
+^grid^ adds grid lines at the .05, .10, .25, .50, .75, .90, and .95
+    quantiles.
+
+graph_options are any of the options allowed with ^graph, twoway^; see
+    help for ^graph^.
+
+Examples
+--------
+
+        . ^gamma4 precip^
+        . ^qgamma4 precip^
+        . ^qgamma4 precip, t^
+
+Author
+------
+
+         Nicholas J. Cox, University of Durham, U.K.
+         n.j.cox@@durham.ac.uk
+
+Also see
+--------
+
+On-line: help for @graph@, @gamma4@, @pgamma4@
+

@@ -1,0 +1,75 @@
+{smcl}
+{hline}
+help for {hi:wclogit}
+{hline}
+
+
+{title:Conditional logistic regression with within-group varying weights}
+
+{p 8 27}
+{cmdab:wclogit}
+[{it:varlist}] [{cmd:using}] [{hi:if}{it:  exp}] [{hi:in}{it:  exp}] [{help:weight}{it:  exp}] 
+,
+{cmdab:g:roup}{cmd:(}{it:varname}{cmd:)}
+[
+{cmdab:l:evel}{cmd:(}{it:#}{cmd:)}
+{cmd:or}
+]
+
+{p}
+
+{title:Description}
+
+{p 0 0}
+This command maximises the partial log-likelihood for conditional logistic regression with
+weights that can vary within the matched set defined by the {hi:group} option. In calculations
+the Breslow likelihood as specified in the STATA manual. Note that only one case is
+allowed within one group so no ties are possible and that frequency weights are not allowed.
+In other words the dataset should be expanded to an "individual data" format.
+
+{p 0 0}
+The main application for this function would be when you have inverse probability weights
+to correct for any bias introduced in selecting members of each group. A typical
+epidemiological design would be the case-cohort study where every case from a larger cohort
+is included in the analysis but a smaller random sample of all possible controls are included.
+
+{title:Options}
+
+{p 0 4}
+{cmdab:g:roup}{cmd:(}{it:varname}{cmd:)} is not optional; it specifies the identifier variable (numeric or string) for the matched groups.
+
+{p 0 4}
+{cmdab:l:evel}{cmd:(}{it:#}{cmd:)} specifies the confidence level, in percent, for the confidence intervals of the coefficients; see help {help level}. 
+
+{p 0 4}
+{cmd:or} reports the estimated coefficients transformed to odds ratios, i.e., exp(b) 
+rather than b.  Standard errors and confidence intervals are
+ similarly transformed.  This option affects how results are displayed, not how they 
+are estimated. {hi: or} may be specified at estimation or when
+  redisplaying previously estimated results.
+
+{title:Examples}
+
+{p 0 0}
+To analyse an "enriched" matched case control study using inverse probability weights
+specified in the variable {hi:ipw}.
+
+{inp: .wclogit case exp [aw=ipw], or level(99) group(matchedset)}
+
+{p 0 0}
+Although in this example the option used "analytical weights" [aw=ipw] it is because these seemed
+more natural for this command. Inverse probability weights are definitely not frequency or probability weights.
+
+{title:Author}
+
+{p}
+Adrian Mander, MRC Human Nutrition Research Unit, Cambridge, UK.
+
+Email {browse "mailto:adrian.mander@mrc-hnr.cam.ac.uk":adrian.mander@mrc-hnr.cam.ac.uk}
+
+{title:Also see}
+
+On-line: help for {help clogit}, {help stcox}. 
+
+
+

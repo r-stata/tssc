@@ -1,0 +1,132 @@
+{smcl}
+{* 10june2004}{...}
+{hline}
+help for {hi:circdpvm}
+{hline}
+
+{title:Density probability plot for von Mises distribution fitted to circular data}
+
+{p 8 17 2}
+{cmd:circdpvm} 
+{it:varname} 
+[{cmd:if} {it:exp}] 
+[{cmd:in} {it:range}]
+[ {cmd:,}
+{cmd:a(}{it:#}{cmd:)}  
+{cmd:param(}{it:numlist}{cmd:)} 
+{cmdab:gen:erate(}{it:newvar1 newvar2}{cmd:)} 
+{cmd:line(}{it:line_options}{cmd:)} 
+{it:graph_options} 
+] 
+
+
+{title:Description}
+
+{p 4 4 2}
+{cmd:circdpvm} gives a density probability plot for the fit of a 
+von Mises (a.k.a. circular normal) distribution to a circular variable 
+on a scale between 0 and 360 degrees. By default {help circvm} is used 
+to fit the distribution, estimating the two parameters vector mean mu 
+and concentration parameter kappa. Both observed and expected densities 
+are rotated so that each set is centred on the vector mean. 
+Each is nevertheless labelled in terms of {it:varname}. 
+
+
+{title:Remarks}
+
+{p 4 4 2}
+To establish notation, and to fix ideas with a concrete example: consider an
+observed variable theta, whose distribution we wish to compare with a von Mises
+distributed variable phi. That variable has density function {it:f}(phi),
+distribution function {it:P = F}(phi) and quantile function {it:Q}({it:P}).
+(The distribution function and the quantile function are inverses of each
+other.) Clearly, this notation is fairly general and also covers other
+distributions, at least for continuous variables.
+ 
+{p 4 4 2} The particular density function {it:f}(theta | parameters) most
+pertinent to comparison with data for phi can be computed given values for its
+parameters, either estimates from data on theta, or parameter values chosen for
+some other good reason. In the case of a von Mises distribution, these
+parameters would usually be the vector mean and the concentration parameter
+kappa. 
+
+{p 4 4 2} The density function can also be computed indirectly via the quantile
+function as {it:f}({it:Q}({it:P})). In the case of von Mises distributions, it
+is convenient to centre variables at the vector mean, so that {it:P} = 0.5
+corresponds to the vector mean.  In practice {it:P} is calculated as so-called
+plotting positions {it:p_i} attached to values of a sample of size {it:n} which
+have rank {it:i}.  One simple rule uses {it:p}_{it:i} = ({it:i} - 0.5) /
+{it:n}.  Most other rules follow one of a family ({it:i} - {it:a}) / ({it:n} -
+2{it:a} + 1) indexed by {it:a}. 
+
+{p 4 4 2} 
+Plotting both {it:f}(theta | parameters) and {it:f}({it:Q}({it:P} = {it:p_i})),
+calculated using plotting positions, versus observed theta gives two curves. In
+our example, the first is von Mises by construction and the second would be a
+good estimate of a von Mises density if theta were truly von Mises with the
+same parameters. The match or mismatch between the curves allows graphical
+assessment of goodness or badness of fit. What is more, we can use experience
+from comparing frequency distributions, as shown on histograms, dot plots or
+other similar displays, in comparing or identifying location and scale
+differences, skewness, tail weight, tied values, gaps, outliers and so forth. 
+
+{p 4 4 2}
+Such {it:density probability plots} were suggested by Jones and Daly (1995).
+See also Jones (2004). For further discussion see {help dpplot}. 
+
+
+{title:Options}
+
+{p 4 8 2}{cmd:a()} specifies a family of plotting positions, as explained
+above. The default is 0.5. Choice of {cmd:a} is rarely material unless the
+sample size is very small, and then the exercise is moot whatever is done. 
+
+{p 4 8 2}{cmd:param()} specifies two parameter values which give an alternative
+reference distribution. The first is the vector mean and the second is the
+concentration parameter kappa. (By default these parameters are estimated from
+the data.) 
+
+{p 4 8 2} 
+{cmd:generate()} specifies two new variable names to hold 
+the results of densities estimated from the data directly (as {it:f}() given 
+parameters) and indirectly (as {it:f}({it:Q}({it:P})) given parameters). 
+
+{p 4 8 2}{cmd:line(}{it:line_options}{cmd:)} are options of 
+{help twoway_mspline:twoway mspline} and {help twoway_line:twoway line}, 
+which may be used to control the rendition of the density function curve.
+
+{p 4 8 2} 
+{cmd:show()} specifies a numlist of axis labels to be shown, overriding the 
+default.
+
+{p 4 8 2}{it:graph_options} are options of {help twoway}. 
+
+
+{title:Examples}
+
+{p 4 4 2}{cmd:. circdpvm wallasp}{p_end} 
+{p 4 4 2}{cmd:. circdpvm wallasp, show(0(45)315)}
+
+
+{title:References}
+
+{p 4 8 2}Jones, M.C. 2004. Hazelton, M.L. (2003), "A graphical tool
+for assessing normality," {it:The American Statistician} 
+57: 285-288: Comment. {it:The American Statistician} 58: 176-177. 
+
+{p 4 8 2}Jones, M.C. and F. Daly. 1995. Density probability plots. 
+{it:Communications in Statistics, Simulation and Computation} 
+24: 911-927. 
+
+
+{title:Author}
+
+{p 4 4 2}Nicholas J. Cox, University of Durham, U.K.{break} 
+         n.j.cox@durham.ac.uk
+
+
+{title:Also see}
+
+{p 4 13 2}
+On-line: help for {help circvm}, {help circpvm}, {help dpplot} (if installed) 
+

@@ -1,0 +1,321 @@
+.-
+help for ^hplot^
+.-
+
+Horizontally labelled plots
+---------------------------
+
+    ^hplot^ varlist [^if^ exp] [^in^ range] [ ^,^
+
+    ^a^xtol^(^#^) c^start^(^#^) gapm^ag^(^#^) gap^s^(^string^)^
+    ^g^rid ^li^ne ^pts^ize ^r^ange ^so^rt^(^string^)^
+    ^s^ymbol^(^string^)^
+
+    ^bo^rder ^f^ormat^(^format^) lap nox^axis ^noy^axis ^tti^ck ^vallbl(^varname^)^
+    ^xla^bel^(^string^) xli^ne^(^string^) xsc^ale^(^string^)^
+    ^xti^ck^(^string^)^
+
+    ^b^lank ^gl^egend^(^string^) gllj glpos(^#^) l^egend^(^legendvar^)^
+    ^rl^egend^(^rlegendvar^) rllj rlp^os^(^#^)^ 
+
+    ^flipt nit2 t1m(^#^) t1^title^(^string^) t2m(^#^)^
+    ^t2^title^(^string^) tim(^#^) ti^tle^(^string^)^
+
+    ^fontr(^#^) fontc(^#^) fontrb(^#^) fontcb(^#^)^
+    ^pe^n^(^string^) pent^ext^(^#^) sa^ving^(^graph_filename^)^ ]
+
+Description
+-----------
+
+The basic form of ^hplot^ is a graph with one horizontal line for each
+observation included. On that line are one or more point symbols
+representing the values in varlist according to a common scale.
+
+^hplot^ can produce a variety of horizontally labelled plots for data,
+including W.S. Cleveland's dot charts or dot plots; variations on them
+with continuous rather than dotted lines; D.R. McNeil's horizontal
+parallel line plots; and displays for showing key quantities with or
+without confidence intervals.
+
+By default, the data in varlist are represented on horizontal dotted
+lines with base at zero that extend to the maximum for each observation.
+If negative values are present, dotted lines also extend to the minimum.
+Point symbols are used to show actual values.
+
+If the ^grid^ option is used, the data are represented on horizontal
+dotted lines that extend over the whole data region of the graph.
+
+If the ^line^ option is used, the data are represented on horizontal
+continuous lines with base at the left-hand margin.
+
+If the ^range^ option is used, the data are represented on horizontal
+dotted or continuous lines which extend only over the range of values
+for each observation, from the smallest value to the largest value.
+
+If the data allow it, a different base may be forced using the ^xscale^
+option.
+
+A legend on the left of the data region can be from a specified
+variable. If that variable is not specified, the order in the data will
+be used; or, if that is not desired, the legend can be blank. The legend
+is right-justified. The legend should look readable up to about 30
+observations.
+
+For understanding placement of material on the plot, it helps to know
+that @gph@ draws in a space defined by 23063 rows and 32000 columns
+with origin at top left. See help for @gph@.
+
+
+Options
+--------
+
+Options controlling size, layout and symbol presentation:
+---------------------------------------------------------
+
+^axtol(^#^)^ controls the space between the x axis or the position of
+    the top border and the nearest data line. Default 600.
+
+^cstart(^#^)^ controls the column (horizontal position) of the start of
+    the lines.
+
+^gapmag(^#^)^ controls the magnitude of any gaps relative to the spacing
+    between lines. Default 1.
+
+^gaps(^string^)^ places gaps after lines. ^gaps(3,6)^ places gaps after
+    the 3rd and 6th lines as they appear on the graph, counting down
+    from the top. ^0^ means a gap before the first line.
+
+^grid^ places point symbols on horizontal dotted grid or guide lines
+    that extend all the way across the plot. This was originally
+    recommended by Cleveland if the base is not 0, and later used by him
+    in all examples.
+
+^sort(^string^)^ means that observations are to be plotted in the
+    vertical order determined by application of @gsort@. For example,
+    ^sort(^sortvar^)^ indicates sort in ascending order of sortvar
+    (highest values on bottom) and ^sort(- ^sortvar^)^ indicates
+    descending order (highest values on top).
+
+^line^ replaces dotted by continuous horizontal lines from the left-hand
+    margin to each data point.
+
+^ptsize(^#^)^ controls point symbol size. Default 275.
+
+^range^ restricts the dotted or continuous lines to extend from the
+    minimum to the maximum of those quantities plotted on each
+    horizontal line.
+
+^symbol(^#^)^ controls point symbols available. The list is most of the
+    standard list for @graph@, with some additions.
+    ^.^  dot
+    ^o^  small circle
+    ^O^  large circle
+    ^S^  square
+    ^T^  triangle
+    ^d^  diamond
+    ^p^  plus
+    ^i^  invisible
+    ^|^  vertical bar
+    ^,^  short vertical bar
+    ^-^  short horizontal bar
+    ^>^  arrow pointing right
+    ^<^  arrow pointing left
+    ^x^  small cross
+    ^X^  large cross
+    ^a^  arrow pointing from the value for the previous variable
+         to the value of the present variable
+
+    ^symbol^ defaults to ^opSdT^ for up to 5 variables and ^o^ for every
+    variable for 6 or more variables. With 2 or more variables and a
+    single symbol specified, that symbol is used for every variable.
+    That is, ^hplot a b c, sy(|)^ expands to ^hplot a b c, sy(|||)^.
+
+Options controlling axes, lines, labels, ticks, border:
+-------------------------------------------------------
+
+^border^ adds a border.
+
+^format(^format^)^ controls the format with which ^xlabel^s are shown.
+    Default %1.0f.
+
+^lap^ (^l^abels ^a^ll ^p^ositive) makes the labels as shown all
+    positive. ^xla(-40,-20,0,20,40) lap^ will place the labels
+    40, 20, 0, 20, 40 at the axis positions for -40, -20, 0, 20, 40.
+
+^noxaxis^ suppresses the x axis.
+
+^noyaxis^ suppresses the y axis.
+
+^ttick^ produces short unlabelled ticks on the border above the x axis
+    that echo the labelled and unlabelled ticks on the x axis. Note that
+    (unlike the option in @graph@) ^ttick^ with a string is illegal, and
+    that ^ttick^ necessarily implies ^border^, but not conversely.
+    
+^vallbl(^varname^)^ specifies that the value labels associated with 
+   varname should be used in labelling the x axis.                 
+   
+^xlabel(^string^)^ controls the labelled ticks on the x axis. Note that
+    (unlike the option in @graph@) ^xlabel^ without a string is illegal.
+    numlists may be used, such as ^1/5^ for ^1,2,3,4,5^ and ^0(10)50^
+    for ^0,10,20,30,40,50^.
+
+^xline(^string^)^ specifies lines drawn for constant values of x. Note
+    that (unlike the option in @graph@) ^xline^ without a string is
+    illegal. numlists may be used, such as ^1/5^ for ^1,2,3,4,5^ and
+    ^0(10)50^ for ^0,10,20,30,40,50^.
+
+^xscale(^string^)^ controls the scale of the graph, except that (like
+    the option in @graph@) it will not cause values to be omitted (for
+    which purpose use ^if^).
+
+^xtick(^string^)^ controls the unlabelled ticks on the x axis. Note that
+    (unlike the option in @graph@) ^xtick^ without a string is illegal.
+    numlists may be used, such as ^1/5^ for ^1,2,3,4,5^ and ^0(10)50^
+    for ^0,10,20,30,40,50^.
+
+Options controlling legends to left, right and between gaps:
+------------------------------------------------------------
+
+^blank^ blanks out any legend on the left of the data region.
+
+^glegend(^string^)^ places right-justified legend in the gaps between
+    lines. ^gaps(0,4) glegend(Males!Females)^ places ^Males^ in the gap
+    before line 1 and ^Females^ in the gap after line 4. Note that ^!^
+    must be used to separate legends, which thus enables the use of
+    commas within the legend, but has the side-effect of disallowing the
+    use of exclamation marks. ^.^ has the special meaning of blank.
+
+^gllj^ makes ^glegend^ left-justified.
+
+^glpos(^#^)^ controls the horizontal position of ^glegend^ and defaults
+    to an alignment with the main legend.
+
+^legend(^legendvar^)^ specifies a variable to be used for the legend. If
+    legendvar is a numeric variable with labels, the labels will be used
+    in the legend.
+    
+^rlegend(^rlegendvar^)^ specifies a variable to be used for the right 
+    legend. If rlegendvar is a numeric variable with labels, the labels 
+    will be used in the legend. `Right' here is indicative, not 
+    definitive, and refers to the default position, which may be altered 
+    by ^rlpos(^#^)^. By default, the right legend is right-justified. 
+
+^rllj^ makes ^rlegend^ left-justified.     
+
+^rlpos(^#^)^ controls the horizontal position of the right legend. Default
+    ^rlpos(31500)^. 
+
+Options controlling titles (^t1title^, ^t2title^, ^title^):
+-----------------------------------------------------
+
+^flipt^ flips titles: ^title^ will be shown at its (default larger) font
+    size and left-justified at the top of the graph, and ^t1title^ will
+    be shown at default font size and centred below the axis at the
+    bottom of the graph (but closer to the axis than the default).
+
+^nit2^: see ^t2title^ below.
+
+^t1title(^string^)^ controls the ^t1title^, shown at default font size
+    and left-justified at the top of the graph. But see ^flipt^ above.
+
+^t2m(^#^)^ moves the ^t2title^ bodily # to the right. The default is to
+    start hard left to allow plenty of space for several variable labels
+    or names in a key, but that default may seem too far left.
+
+^t2title(^string^)^ controls the ^t2title^, shown at default font size
+    and left-justified at the top of the graph. This defaults to a key
+    of point symbols if the number of variables is more than 2: the key,
+    however, is likely to be a mess if the number is more than 5. The
+    key uses variable labels, or variable names if either they do not
+    exist or the further option ^nit2^ is invoked. As with @graph@,
+    ^" "^ blanks out the title.
+
+^tim(^#^)^ moves the ^title^ bodily # to the right. The default is to
+    centre at whatever column would bisect the x axis.
+
+^title(^string^)^ controls the ^title^, shown at its (default larger)
+    font size and centred below the axis at the bottom of the graph. But
+    see ^flipt^ above. As with @graph@, ^" "^ blanks out the title.
+
+Other graph options:
+--------------------
+
+^fontr(^#^)^ and ^fontc(^#^)^ control the font used for all but the main
+    title and default to 570 and 290 (which is the default of @gph@).
+    Font sizes should be changed circumspectly.
+
+^fontrb(^#^)^ and ^fontcb(^#^)^ control the font used for the main
+    title and default to 923 and 444.
+
+^pen(^string^)^ controls the pens used for data. ^pen^ defaults to ^2^
+    for every variable. With 2 or more variables and a single pen
+    specified, that pen is used for every variable. That is,
+    ^hplot a b c, pen(3)^ expands to ^hplot a b c, pen(333)^.
+
+^pentext(^#^)^ controls the pen used for text and other non-data
+    elements.
+
+^saving(^graph_filename^)^ saves the graph in a .gph file.
+
+
+Examples
+--------
+
+        . ^hplot reserves, l(area) xsc(0,30) xla(0(5)30)^
+          ^t1(percent of total) ti(Oil reserves 1994) flipt border^
+
+        . ^hplot area, l(name) xsc(0,6) xla(0/6) t1(million^
+          ^square km) ti(Areas of major drainage basins) flipt line^
+          ^fontr(491) fontc(250)^
+
+        . ^hplot lcl mean ucl, l(name) xsc(0,6) xla(0/6)^
+          ^t1(95% confidence intervals) sy(|O|) border^
+
+
+Remarks
+-------
+
+In addition to the options above, many choices are coded into ^hplot^
+as parameter values. Users may want to copy ^hplot^ and then edit
+these permanently or temporarily according to taste.
+
+Cleveland's dot plots are not the same as the histogram-like dotplots
+implemented in @dotplot@.
+
+
+References
+----------
+
+Cleveland, W.S. 1984. Graphical methods for data presentation: full
+scale breaks, dot charts, and multibased logging. American Statistician
+38, 270-80.
+
+Cleveland, W.S. 1994. The elements of graphing data. Hobart Press,
+Summit, NJ.
+
+McNeil, D.R. 1992. On graphing paired data. American Statistician
+46, 307-11.
+
+McNeil, D.R. 1996. Epidemiological research methods. Wiley, Chichester.
+
+
+Author
+------
+         Nicholas J. Cox, University of Durham, U.K.
+         n.j.cox@@durham.ac.uk
+
+
+Acknowledgments
+---------------
+
+         Mike Bradburn, Arne Kolstad, Tom Steichen and Fred Wolfe 
+	 made very helpful comments.
+
+
+Also see
+--------
+
+On-line: help for @graph@, @gph@, @format@, @gsort@, @dotplot@,
+         @hbar@ (if installed), @cihplot@ (if installed),
+         @tabhplot@ (if installed), @numlist@
+

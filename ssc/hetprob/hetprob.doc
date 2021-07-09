@@ -1,0 +1,302 @@
+There have recently been a number of Statalist postings concerning the heteroskedastic probit model.  hetprob.ado represents code that James Hardin and I <jhardin@stata.com> and <wgould@stata.com>) *THINK* estimate such models correctly.  I want to emphasize the word *THINK*.  Neither James nor I have
+read the articles we should and, in fact, most of what follows comes from
+James and I hearing the words "heteroskedastic probit" and then thinking to
+ourselves, "what could that mean?"
+
+While neither James nor I would ever distribute anything -- even informally
+--- if we thought there was much chance it was completely misguided, we seek
+reassurance.  In particular, our concerns have to do with assumed
+normalizations which might make the coefficients we estimate multiplicatively
+different from those estimated by some other package.
+
+Before providing the code, let us reveal our thinking.  The sections below 
+are:
+
+        Development of probit model
+        The heteroskedastic case
+        Derivation of a heteroskedastic-corrected probit model
+        The -hetprob- command
+            Options
+        An example using -hetprob-
+        Comment on estimated standard errors and likelihood-ratio tests
+        Calculating predictions from the -hetprob- estimates
+        Request for comments
+        (signature)
+        The -hetprob- ado-files
+
+
+
+Development of probit model
+----------------------------
+
+There are lots of way to think about and so derive the probit model, but here
+is one:
+
+We have a continuous variable y_j, j=1, ..., N, and y_j is given by the linear
+model
+
+        y_j = a + X_j*b + u_j,   u_j distributed N(0, s^2)
+
+If we observed y_j and X_j, we could estimate b using linear regression.  We,
+however, do not observe y_j.  Instead, we observe
+
+       d_j = 1    if   y_j > c
+           = 0    if   y_j < c
+
+Thus, 
+
+      Pr(d_j==1) = Pr(y_j > c)
+                 = Pr(a + X_j*b + u_j > c) 
+                 = Pr(u_j > c - a - X_j*b)
+                 = Pr(u_j/s > (c-a)/s - X_j*(b/s))
+                 = Pr(-u_j/s < (a-c)/s + X_j*(b/s))
+                 = F( (a-c)/s + X_j*(b/s) )
+
+Thus, when we estimate a probit model 
+
+       Pr(outcome) = F( a' + X_j*b' )
+
+The estimates we obtain are 
+
+       a' = (a-c)/s
+       b' =     b/s
+
+In words this means that we cannot identify the scale of the unobserved y.
+
+
+The heteroskedastic case
+-------------------------
+
+Let us now consider heteroskedasticity.  Let us start with a simple case and
+then we will generalize beyond it.  Pretend we have two groups of data and
+each group is, itself, homoskedastic.
+
+       y_j = a + X_j*b + u_j,   u_j distributed N(0, s1^2) for group 1
+
+       y_j = a + X_j*b + v_j,   v_j distributed N(), s2^2) for group 2
+
+Note that we assume the coefficients (a,b) are the same for both groups.  This
+means that, if we observed y, we could estimate each model separately and we
+would expect to estimate similar coefficients.  In the probit case, however,
+something surprising happens.
+
+Estimating on each of the groups separately, we would obtain:
+
+       group 1                        group 2
+       --------------                 --------------
+       a1' = (a-c)/s1                 a2' = (a-c)/s2
+       b1' =     b/s1                 b2' =     b/s2
+
+The probit coefficients are different in each group, but related!
+
+       a2'/a1'  =  [(a-c)/s2] / [(a-c)/s1]  =  s1/s2
+       b2'/b1'  =  [    b/s2] / [    b/s1]  =  s1/s2
+
+This is a very un linear-regression like result but hardly surprising.  We do
+not observe y, we observe whether y>c or y<c, and if the variance of the
+process increases, our prediction of Pr(y>c) must move toward .5; coefficients
+must move toward zero.
+
+This issue is *NOT* addressed by the Huber/White/Robust correction to the
+standard errors.
+
+
+Derivation of a heteroskedastic-corrected probit model
+--------------------------------------------------------
+
+Let us assume 
+
+       y_j = a + X_j*b + u_j,   u_j distributed N(0, s_j^2) 
+
+where s_j^2 is given by some function of Z_j which we will specify later.
+Then:
+
+     Pr(y_j > c) = 
+                 = Pr(a + X_j*b + u_j > c) 
+                 = Pr(u_j > c - a - X_j*b)
+                 = Pr(u_j/s_j > (c-a)/s_j - X_j*(b/s_j))
+                 = Pr(-u_j/s_j < (a-c)/s + X_j*(b/s))
+                 = F( (a-c)/s_j + X_j*(b/s_j) )
+
+so
+              a' = (a-c)/s_j
+              b' =     b/s_j
+
+Let us now specify s_j^2 = exp(s0 + Z_j*g).  Then 
+
+              b' = b/s_j = b/[exp(s0/2)exp(Z_j*g/2)]
+
+and there is obviously a lack of identification problem.  We will identify the
+coefficients by (arbitrarily) setting s0=0.  Then the model is
+
+          Pr(outcome) = F( a'/s_j) + X_j*b'/s_j )
+                      = F( (a' + X_j*b') / s_j )
+where
+                s_j^2 = exp(Z_j*g)
+
+a', b', and g are to be estimated.
+
+                
+The -hetprob- command
+----------------------
+
+--hetprob- has syntax
+
+        hetprob depvar [indepvars] [if exp] [in range], variance(varlist)
+        -------                     --       --         -        
+
+                                   [ nochi  level(#)  <maximize-options> ]
+                                     -----  -
+
+and, as with all estimation commands, -hetprob- typed without arguments 
+redisplays estimation results.
+
+For instance, if I type 
+
+        . hetprob outcome bp age, v(group1 group2)
+
+I am estimating the model 
+
+      Pr(outcome) = F( b0 + b1*bp + b2*age  where 
+                                       s^2 = exp(g1*group1 + g2*group2) )
+
+                  = F( [b0+b1*bp+b2*age]/exp[(g1*group1 + g2*group2)/2] )
+
+The variance() variables are not required to be discrete variables.  If I 
+type 
+
+        . hetprob works educ sex, v(age)
+
+I am assuming s^2 = exp(g1*age).  The same variables can even appear among the
+standard explanatory variables and the explanatory variables for variance, but
+realize that you are pushing things.
+
+        . hetprob works age, v(age)
+
+amounts to estimating
+
+        Pr(works) = F( (b0 + b1*age) / exp(g1*age/2) )
+
+and obviously coefficients g1 and b1 will be highly correlated.
+
+
+Options
+--------
+
+variance(varlist) is not optional; it specifies the variables on which 
+    the variance is assumed to depend.
+
+nochi suppresses the calculation of the model chi-squared statistic -- the 
+    likelihood-ratio test against the constant-only model.  Specifying this
+    option speeds execution considerably.
+
+level(#) specifies the confidence level, in percent, for the confidence
+    intervals of the coefficients; see help level.
+
+maximize_options control the maximization process; see [R] maximize.  You
+    should never have to specify them.
+
+
+An example using -hetprob-
+---------------------------
+
+ . hetprob foreign mpg weight, v(price)
+
+Estimating constant-only model:
+Iteration 0:  Log Likelihood =  -45.03321
+Iteration 1:  Log Likelihood = -44.836587
+<output omitted>
+Iteration 8:  Log Likelihood =  -44.66722
+
+Estimating full model:
+Iteration 0:  Log Likelihood = -26.844189
+(unproductive step attempted)
+Iteration 1:  Log Likelihood = -26.572242
+<output omitted>
+Iteration 7:  Log Likelihood = -24.833819
+
+                                                    Number of obs    =      74
+                                                    Model chi2(2)    =   39.67
+                                                    Prob > chi2      =  0.0000
+Log Likelihood =    -24.8338194
+
+-------------------------------------------------------------------------------
+ foreign |      Coef.   Std. Err.       z     P>|z|       [95% Conf. Interval]
+----------+--------------------------------------------------------------------
+foreign  |
+     mpg |  -.1651034   .1257984     -1.312   0.189      -.4116637     .081457
+  weight |  -.0057221   .0031172     -1.836   0.066      -.0118317    .0003876
+   _cons |   17.44533   9.500341      1.836   0.066      -1.174997    36.06566
+----------+--------------------------------------------------------------------
+ln_var   |
+   price |   .0003066   .0001685      1.819   0.069      -.0000237    .0006369
+-------------------------------------------------------------------------------
+note, LR test for ln_var equation:  chi2(1) = 4.02, Prob > Chi2 = 0.0449
+
+
+
+Comment on estimated standard errors and likelihood-ratio tests
+----------------------------------------------------------------
+
+If you look at the output above, the Wald tests (tests based on the
+conventionally estimated standard errors) and the likelihood-ratio tests yield
+considerably different results.
+
+At the top of the output, the model chi-squared is reported as chi2(2) = 39.67
+(p=.0000).  The corresponding Wald test is
+
+        . test mpg weight
+
+         ( 1)  [foreign]mpg = 0.0
+         ( 2)  [foreign]weight = 0.0
+
+                   chi2(  2) =    3.40
+                 Prob > chi2 =    0.1831
+
+(The tests for coefficients in the ln_var equation, at least in this case, are
+in more agreement.  The reported z statistic is 1.819 (meaning chi2 = 1.819^2
+= 3.31) and the corresponding likelihood-ratio test is 4.02.)
+
+James and I took a simple example to explore how different results might be.
+In our example, we simulated data from the true model
+
+        y_j = 2*x1_j + 3*x2_j + u_j
+
+        u_j distributed N(0,1) for group 0 and N(0,4) for group 2.
+
+        d_j = 1 if y_j>average(y_j in the sample) 
+
+Here is what we obtained in five particular runs: 
+
+         Sample-size        L.R. test         Wald test
+      for each group         chi^2              chi^2
+      -------------------------------------------------
+         50 +   50           27.48              13.11
+        100 +  100           58.10              33.40
+       1000 + 1000          556.42             297.35
+       5000 + 5000         2812.04            1478.40
+
+We do not want to make too big a deal about this but we do recommend some
+caution in interpreting Wald-test results.  We would check results against the
+likelihood-ratio test before reporting them.
+
+
+Calculating predictions from the -hetprob- results
+---------------------------------------------------
+
+Here is how you obtain predicted probabilities form the -hetprob- results:
+
+        . predict i1
+        . predict s, eq(ln_var)
+        . replace s = exp(s/2)
+        . gen p = normprob(i1/s)
+
+
+Request for comments
+---------------------
+
+We seek comments and, in particular, we seek comparison of results from this
+command with other implementations.
+
+--- Bill                         -- James
+   wgould@stata.com                jhardin@stata.com

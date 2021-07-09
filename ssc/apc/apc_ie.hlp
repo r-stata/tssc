@@ -1,0 +1,134 @@
+{smcl}
+{* 30Jun2006}{...}
+{hline}
+help for {hi:apc_ie}
+{hline}
+
+{title:Intrinsic estimator for age-period-cohort effects in generalized linear models}
+
+{p 4}Syntax
+
+{p 8 14}{cmd:apc_ie} {it:depvar} [{it:indepvars}]
+[{cmd:if} {it:exp}] [{cmd:in} {it:range}] [{it:weight}]
+{cmd:,}
+{bind:[{cmd:age(}{it:varname}{cmd:)}}
+{cmd:period(}{it:varname}{cmd:)}
+{cmd:cohort(}{it:varname}{cmd:)}
+{cmdab:gen:erate(}{it:newvarname}{cmd:)}
+{bind:{it:glm_options} ]}
+
+{p 4}Replay syntax
+
+{p 8 14}{cmd:apc_ie} {bind:[{cmd:,}} {cmdab:nohead:er}
+{cmdab:le:vel(}{it:cilevel}{cmd:)} {bind:{cmdab:ef:orm} ]}
+
+{p 4} {cmd:apc_ie} allows all {it:varlists} and {it:weights} that are
+allowed by {cmd:glm}.
+
+
+{title:Description}
+
+{p} {cmd:apc_ie} estimates generalized linear models with age, period and 
+cohort effects using the intrinsic estimator (IE) described by Yang, Fu 
+and Land (2004). The structure of the design matrix -- i.e., the numbers 
+of age groups and time periods -- may affect the estimates obtained from 
+conventional CGLIM estimators. (See {help apc_cglim}.) The IE employs 
+a special principal components regression that removes the influence of 
+the null (column) space of the design matrix on the estimator.
+
+
+{title:Methods}
+
+{p} The IE estimates a constrained parameter vector that corresponds to 
+the projection of the model parameter on the non-null (column) subspace of 
+the design matrix. {cmd:apc_ie} computes this constrained parameter vector by 
+a special principal components regression.
+
+{p} The estimation algorithm proceeds by first applying an orthonormal 
+matrix transformation to the {it:X'X} matrix of the linear model (or its 
+equivalent in a generalized linear model). This transformation produces 
+the nonzero eigenvalues and corresponding eigenvectors of the matrix. The 
+principal components regression then is estimated by using these 
+eigenvectors as variables. After estimation of the principal components 
+regression model, the orthonormalizing matrix transformation is used in 
+reverse to transform the estimated regression coefficients back to the 
+original age, period, and cohort effects for ease of interpretation.
+
+{p} Instead of omitting one reference category from each set of 
+indicator variables, the IE uses the constraint that the sum of 
+coefficients in each set is zero. The algorithm in {cmd:apc_ie} adds an 
+indicator variable for each unique value of {it:age}, {it:period} and 
+{it:cohort} to the list of independent variables, but omits one category 
+for each of {it:age}, {it:period} and {it:cohort} for computational 
+purposes. Because {it:age}+{it:cohort}={it:period}, one additional 
+indicator variable is redundant. {cmd:apc_ie} therefore replaces the 
+{it:A-1+P-1+C-1} indicator variables with the {it:A-1+P-1+C-2} principal 
+components that correspond to nonzero eigenvalues. After estimating the
+principal components regression, the IE uses the zero-sum constraints
+to obtain estimates for the deleted age, period and cohort categories.
+
+{p} Because the IE -- including the coefficients obtained from zero-sum 
+constraints -- is a linear transformation of the coefficients in the 
+principal components model, the variance-covariance matrix of the IE is 
+{it:V_ie=B*V_pc*B'}, where {it:B} is a transformation matrix and {it:V_pc} 
+is the variance-covariance matrix of the principal components estimator. 
+See {help glm} for options for computing variance-covariance matrices in 
+generalized linear models; {cmd:apc_ie} simply applies a transformation to 
+whatever variance-covariance matrix you choose to compute.
+
+{p} The IE is always defined based on principal components of a design 
+matrix that has one observation per age-by-period cell. Missing data or 
+multiple observations per cell do not affect which principal components 
+are used in calculating the IE. Likewise, the principal components do not 
+depend on {it:indepvars} or {it:weights}, if any. However, if any of the 
+{it:indepvars} are collinear with {it:age}, {it:period} or {it:cohort},
+or if too many cells in the age-by-period matrix have no data, 
+eliminating only one principal component does not resolve the 
+identification problem. {cmd:apc_ie} returns an error when this happens.
+
+
+{title:Options}
+
+{p 0 4} {cmd:age(}{it:varname}{cmd:)}, {cmd:period(}{it:varname}{cmd:)}
+and {cmd:cohort(}{it:varname}{cmd:)} specify the {it:age}, {it:period} and
+{it:cohort} variables. At least two of these three must be specified. If
+all three are specified, they must satisfy 
+{it:age}+{it:cohort}={it:period}.
+If only two are specified, the missing variable is generated according to
+{it:age}+{it:cohort}={it:period}.
+
+{p 0 4} {cmd:generate(}{it:newvarname}{cmd:)} stores the generated value
+of {it:age}, {it:period} or {it:cohort} in a new variable.
+
+{p} {it:glm_options} can be any valid options for {cmd:glm}.
+
+
+{title:References}
+
+{p 0 4}Yang, Y., Fu, W., and Land, K. 2004. A Methodological Comparison of 
+Age-Period-Cohort Models: The Intrinsic Estimator and Conventional 
+Generalized Linear Models. {it:Sociological Methodology} 34(1), 75-110.
+
+
+{title:Authors}
+
+Sam Schulhofer-Wohl
+Department of Economics
+The University of Chicago
+1126 E. 59th St.
+Chicago, IL 60637
+sschulh1@uchicago.edu
+
+Yang Yang, Ph.D.
+Department of Sociology
+Population Research Center and Center on Aging at NORC
+The University of Chicago
+1126 E. 59th St.
+Chicago, IL 60637
+(O) 773-834-1113
+yangy@uchicago.edu
+
+
+{title:Also see}
+
+{p 0 19} Online: help for {help glm}; {help apc_cglim} (if installed).{p_end}

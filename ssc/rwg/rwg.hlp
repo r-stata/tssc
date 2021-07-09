@@ -1,0 +1,46 @@
+*August 2012
+---------------------------------------
+
+basic syntax:
+rwg var, scale(#) model(#)
+
+Description:
+Rwg calculates single(model 1) and multiple items(model 2) within group interrater reliability. The program requires data in "long" format with panel setup (tsset). The program makes use of panel ids to identify raters and ratees, therefore, it is very important to correctly specify items and judges in panel setup. 
+
+Multiple-items estimator (model 2) and 5 points response scale are set as default.
+
+*Model(1): Single-item estimator
+
+ Rwg(i)= 1 - [Sx^2/seu]
+
+
+*Model(2): Multiple-item estimator
+
+              J[1-(Sx^2/seu)]
+ Rwg(j)= ---------------------------
+         J[1-(Sx^2/seu)]+ (Sx^2/seu)
+
+Where Rwg(i) and Rwg(j) are within-group interrater reliability for single and multiple items. Sx^2 is the observed variance of ratings, J is number of items (model 2 eq.), seu=(A^2-1)/12 and `A' is response scale(e.g. 5 or 7 points likert scale).
+
+Examples:
+----------
+tsset items judges
+
+rwg x, scale(7) model(1)
+rwg x, scale(9) model(1)
+
+rwg x, scale(7) model(2)
+rwg x, scale(9) model(2)
+
+Author						
+Muhammad Rashid Ansari						
+INSEAD Business School						
+1 Ayer Rajah Avenue, Singapore 138676						
+rashid.ansari@insead.edu
+
+References: 
+James, L. R., Demaree, R. G., & Wolf, G. 1993. rwg: An assessment of within-group interrater agreement. Journal of Applied Psychology, 78: 306-309.
+
+James, L. R., Demaree, R. G., & Wolf, G. 1984. Estimating within-group interrater reliability with and without response bias. Journal of Applied Psychology, 69, 85-98
+
+Finn, R. H (1970) A note on estimating the reliability of categorical data. Educational and Psychological Measurement, 30, 71-76

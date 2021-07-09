@@ -1,0 +1,49 @@
+/*
+ spcs2xt
+*! VERSION 3.0 20/12/2012
+*/
+VERSION 10.0
+INCLUDE _std_medium
+DEFINE _dlght 200
+INCLUDE header
+HELP hlp1, view("help spcs2xt")
+RESET res1
+
+DIALOG main, label("spcs2xt - Convert Cross Section to Panel Spatial Weight Matrix") ///
+	tabtitle("Main")
+BEGIN
+
+ DEFINE wlabel 130
+ DEFINE cmdx 320
+ DEFINE cmdw 170
+ DEFINE _x _xsetbu
+ DEFINE _y _top
+
+ TEXT tx_xvar	_lft	_top	300	.,	///
+	label("Cross Section Weight Matrix Variables:")
+ VARLIST vl_xvar  _lft	_ss	300 .,		///
+	label("Variables:")
+ TEXT tx_nweight    _lft      _xls     cmdw     .,	///
+	label("New Panel Weight Matrix:")
+ COMBOBOX nweight  _lft   _ss    200   .,	/*
+	*/ label("New Panel Weight Matrix")	/*
+	*/ option("matrix")			/*
+	*/ contents(matrix) dropdown
+  SPINNER sp_time   _lft     _xls   _spwd  ., /*
+	*/ min(2) max(1000)		/*
+	*/ option("time")			/*
+	*/ label("Time Series in Panel Unit")
+  TEXT     tx_time   _spsep    @      _sprb  .,	/*
+	*/ label("Time Series in Panel Unit")
+*/
+END
+
+PROGRAM command
+BEGIN
+ put "spcs2xt "
+ varlist main.vl_xvar 
+ beginoptions
+ optionarg main.nweight
+ optionarg main.sp_time
+ endoptions	
+END

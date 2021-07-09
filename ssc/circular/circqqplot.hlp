@@ -1,0 +1,70 @@
+{smcl}
+{* 6may2004}{...}
+{hline}
+help for {hi:circqqplot}
+{hline}
+
+{title:Quantile-quantile plot for circular data}
+
+{p 8 17 2}
+{cmd:circqqplot} 
+{it:varname1} {it:varname2} 
+[{cmd:if} {it:exp}] 
+[{cmd:in} {it:range}]
+{cmd:,} {cmd:centre(}{it:#1} [{it:#2}]{cmd:)} 
+[{cmd:yshow(}{it:numlist}{cmd:)}
+{cmd:xshow(}{it:numlist}{cmd:)}
+{cmd:plot(}{it:plot}{cmd:)}
+{it:qqplot_options}] 
+
+
+{title:Description}
+
+{p 4 4 2}
+{cmd:circqqplot} gives a quantile-quantile plot for two circular variables on a
+scale between 0 and 360 degrees. Note that the variables are not paired and do
+not even have to be non-missing for the same observations. Both variables are
+rotated so that each set of values is centred on a specified value.  Each is
+nevertheless labelled in terms of the original variables. 
+
+
+{title:Options}
+
+{p 4 8 2}{cmd:centre()} is a required option. With one argument, 
+it specifies a centre to be used for both variables. With two 
+arguments, it specifies two centres to be used for the first 
+and second variable respectively. The spelling {cmd:center()} is 
+indulged. 
+
+{p 4 8 2} 
+{cmd:yshow()} specifies a numlist of {it:y} axis labels to be shown, 
+overriding the default.
+
+{p 4 8 2} 
+{cmd:xshow()} specifies a numlist of {it:x} axis labels to be shown, 
+overriding the default.
+
+{p 4 8 2}
+{cmd:plot(}{it:plot}{cmd:)} provides a way to add other plots to the generated
+graph; see help {help plot_option}.
+
+{p 4 8 2} 
+{it:qqplot_options} are any options allowed with {help diagplots:qqplot}.  
+
+
+{title:Examples}
+
+{p 4 4 2}{cmd:. circqqplot axisasp wallasp, centre(45)} 
+
+
+{title:Author}
+
+{p 4 4 2}Nicholas J. Cox, University of Durham, U.K.{break} 
+         n.j.cox@durham.ac.uk
+
+
+{title:Also see}
+
+{p 4 13 2}
+On-line: help for {help circqvm}, {help diagplots}   
+

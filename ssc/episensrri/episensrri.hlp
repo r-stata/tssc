@@ -1,0 +1,72 @@
+{smcl}
+{* 25sep2006}{...}
+{hline}
+help for {hi:episensrri}
+{hline}
+
+{title:Basic sensitivity analysis for binary unmeasured confounders}
+
+{p 4 14 10}{cmd:episensrri} {it:#arr} [ {cmd:,}   {cmdab:pe:xp(}{help numlist}{cmd:)} {cmdab:pu:nexp(}{help numlist}{cmd:)} {cmdab:rrcd(}{it:#}{cmd:)} 
+ {cmdab:ro:ut} {cmdab:f:ormat(%}{it:fmt}{cmd:)}  ]{p_end}
+
+{p 4 14 10} where  {p_end}
+
+{p 4 14 10}{it:#arr} is the apparent relative risk {p_end}
+
+{title:Description}
+
+{p 4 10 10}{cmd:episensrri} provides basic sensitivity analysis of the apparent or observed relative risks according to specified 
+plausible values of the prevalence of the unmeasured confounding among exposed and unexposed, and the relative risks between confounder 
+and disease. It is an immediate command, see help {help immed}.{p_end}
+
+{title:Options}
+
+{p 4 8 2}{cmdab:pe:xp(}{help numlist}{cmd:)} specifies the prevalence of the unmeasured confounder among the exposed subjects. {p_end}
+
+{p 4 8 2}{cmdab:pu:nexp(}{help numlist}{cmd:)} specifies the prevalence of the unmeasured confounder among the unexposed subjects. {p_end}
+
+{p 4 8 2}{cmdab:rrcd(}{it:#}{cmd:)} specifies the relative risk between the unmeasured confounder and disease. {p_end}
+
+{p 4 8 2} {cmdab:ro:ut} identifies (rule-out approach) the relative risk between the unmeasured confounder and disease 
+				({cmdab:rrcd(}{it:#}{cmd:)}) such that the apparent relative risk ({it:#arr}) would move to the null (1). 
+				Range for {cmdab:rrcd(}{it:#}{cmd:)} is 0 to 50. {p_end}
+
+{p 4 8 2}{cmdab:f:ormat(%}{it:fmt}{cmd:)} specifies the display format for presenting numbers.
+{cmd:format(%3.2f)} is the default; see help {help format}.{p_end}
+
+{title:Examples}
+
+     {stata "episensrri 1.76 , pexp(0.7) punexp(0.5) rrcd(5)"}
+     {stata "episensrri 1.76 , pexp(0.4(.1)0.7) punexp(0.3(.1)0.5) rrcd(5)" }
+     {stata "episensrri 1.76 , pexp(0.4(.1)0.7) punexp(0.3(.1)0.5) rrcd(10)" }
+     {stata "episensrri 1.86 , pexp(0.6) punexp(.2) rrcd(1.5) ro" }
+
+{title:References}
+
+{p 4 8 2} Schneeweiss S., 2006, Sensitivity analysis and external adjustment for unmeasured confounders in epidemiologic database studies of therapeutics.
+ {it:Pharmacoepidemiol Drug Saf}, 15(5):291-303.{p_end}
+
+{title:Authors}
+
+{p 4 8 2}Nicola Orsini, Division of Nutritional Epidemiology,
+Institute of Environmental Medicine, Karolinska Institutet, Sweden {p_end}
+
+{p 4 8 2}Rino Bellocco, Department of Medical Epidemiology and Biostatistics,
+Karolinska Institutet, Sweden {p_end}
+
+{p 4 8 2}Sander Greenland, Department of Epidemiology, 
+UCLA School of Public Health, USA {p_end}
+
+{title:Support}
+
+{p 4 12}{browse "http://nicolaorsini.altervista.org"}{p_end}
+{p 4 12}{browse "mailto:nicola.orsini@ki.se?subject=info episensrri":nicola.orsini@ki.se}{p_end}
+
+{title:Also see}
+
+    Manual:  {bf:[ST] epitab}
+
+{psee}
+Online:  {helpb epitab}, {helpb episens}, {helpb episensi} (if installed)
+{p_end}
+

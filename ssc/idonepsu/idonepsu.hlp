@@ -1,0 +1,93 @@
+Utility for dealing with strata that have singleton PSUs
+-------------------------
+
+
+     ^idonepsu^ [varlist][^if^ exp] [^in^ range] [, Strata(varname)
+                        Psu(varname) Generate(newvarname) SWitch]
+
+
+Description
+-----------
+
+^idonepsu^ identifies strata that have only one PSU and, optionally,
+merges them into the largest strata.  This command should be used 
+with caution as the appropriate merge of strata depends on the
+sample design.  This utility is intended for persons doing large
+secondary data analysis where they are uncertain of the sampling
+strategy and are, therefore, unable to identify the appropriate
+strata in which to merge.  The merge is done in accord with
+the method suggested by the STATA 7 manual.
+
+
+Options
+-------
+^varlist^ identifies the variables that are being used in the command
+that produces the singleton PSU warning.  ^idonepsu^ uses the ^varlist^
+only to identify missing values in variables and thus exclude the 
+observation from the determination of singleton PSUs
+
+^strata^ identifies the variable containing the strata.  If no variable
+is specified, the variable that is currently set as the strata is used.
+For more information, see ^svyset^.
+
+^psu^ identifies the variable containing the PSU.  If no variable is
+specified, the variable that is currently set as the PSU is used.  For
+more information, see ^svyset^.
+
+^generate^ takes the strata with singleton PSU identified and then merges
+them into the strata with the most observations and renames the PSU to
+be unique within the merged strata.  This is not the rigorous
+approach to dealing with singleton PSU, but it allows any inaccuracies to
+be absorbed by the strata with the most observations.  The newly formed
+strata variable with the merged strata variable is put into ^newvarname^str.
+The identities of the strata that were merged and the strata into which 
+They were merged are identified in the notes.  Type -notes ^newvarname^str-
+The PSUs of the merged variable are also recoded to be unique and are placed
+In the new PSU, named ^newvarname^psu.  The changes in PSU are identified in
+The notes for ^newvarname^psu.  Type -notes ^newvarnam^psu-  
+
+^switch^  To run analyses, you will need to switch your psu and strata to the 
+new psu and strata.  Using the ^switch^ option merely automates this by
+issuing the commands -svyset strata ^newvarname^str- and the corresponding
+-svyset psu ^newvarname^psu-.  
+
+Example
+-------
+
+If you want to know what strata have only one psu with the current settings:
+
+        idonepsu
+
+If you would like to merge strata with singleton PSUs into the 
+largest strata and call the new strata variable fixemstr and the 
+new PSU variable fixempsu:
+
+        idonepsu, generate(fixem)
+
+If you want to know what strata have only one psu with restrictions:
+
+        idonepsu depvar indvar1 indvar2 if smart==1, strata(str) psu(psuu)
+
+If you would like to merge strata with singleton PSUs based on the 
+restrictions into the largest strata and call the new strata variable slickstr
+and the new PSU variable slickpsu:
+
+        idonepsu depvar indvar1 indvar2 if smart==1, 
+                        strata(str) psu(psuu) generate(slick)
+
+If you would like to do the same as the above, but have the default
+psu and strata switched to the newly created psu and strata, simply
+type the ^switch^ option:
+
+        idonepsu depvar indvar1 indvar2 if smart==1, 
+                        strata(str) psu(psuu) generate(slick) switch
+
+
+Also see
+--------
+Manual: [5s] tabulate
+On-line: ^help^ for ^svy^, ^svyset^
+
+Author 
+--------
+Joshua H. Sarver, sarver@po.cwru.edu

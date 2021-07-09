@@ -1,0 +1,133 @@
+{smcl}
+{* *! version 9.0.1  5Oct2006}{...}
+{cmd:help simuped2, simuped3}
+{right:(STB-58: dm82)}
+
+{hline}
+
+{title:Title}
+
+{p2colset 5 19 21 2}{...}
+{p2col :{hi: simuped2} {hline 2}}Simulate two-generation families{p_end}
+
+{p2col :{hi: simuped3} {hline 2}}Simulate three-generation families{p_end}
+{p2colreset}{...}
+
+
+{title:Syntax}
+
+{p 8 14 2}
+{cmd:simuped2} #Age1 #Std1 #Age2 #Std2 [{cmd:,} {it:options}]
+
+{p 8 14 2}
+{cmd:simuped3} #Age1 #Std1 #Age2 #Std2 #Age3 #Std3 [{cmd:,} {it:options}]
+
+
+{synoptset 21 tabbed}{...}
+{synopthdr}
+{synoptline}
+{syntab:Main}
+{synopt :{cmdab:r:eps(}{it:#}{cmd:)}}specifies the number of families to be simulated{p_end}
+{synopt :{cmdab:sav:ing(}{it:filename}{cmd:)}}specifies the file name of the simulated data{p_end}
+{synopt :{cmdab:a:lle(}{it:#}{cmd:)}}specifies the allele frequency of a biallelic locus A{p_end}
+{synopt :{cmdab:s:ib(}{it:#}{cmd:)}}spcifies the mean number of siblings in the second generation{p_end}
+
+{syntab:For simuped3 only}
+{synopt :{cmdab:s:i3(}{it:#}{cmd:)}}spcifies the mean number of siblings in the third generation{p_end}
+{synoptline}
+{p2colreset}{...}
+
+
+{title:Description}
+
+{pstd}
+{cmd:simuped2} and {cmd:simuped3} are immediate commands to generate two- and
+three-generation family data, respectively. 
+The number of siblings in a family is determined by a Poisson distribution
+with a mean specified by sib(#) or si3(#), where the Poisson variate 
+is generated using {bf:rndpoix}. This program needs to be installed
+before running {cmd:simuped2} or {cmd:simuped3}. 
+The gender of a person is determined by a Bernoulli distribution with mean 0.5 and age is determined
+by a normal distribution with means #Age1, #Age2 and #Age3 for the
+first, second and third generation, respectively. The corresponding standard deviation is given
+by #Std1, #Std2 and #Std3 for the three generations, respectively.
+
+{pstd}
+Hardy-Weinberg equilibrium is assumed for the genotypic
+distribution of people in the first generation (Elandt-Johnson 1971). 
+The allele frequency of a biallelic locus {bf:A} is specified by option {bf:alle(#)}, denoted as {bf:p}. 
+The frequencies of genotypes {bf:AA}, {bf:Aa} and {bf:aa} in the first generation are 
+given by p^2, 2p(1-p) and (1-p)^2, respectively.
+The genotype of a person in the second- and third-generation is generated according the Mendelian
+inheritance, that is, a person inherits the allele {bf:A} from the father (or
+mother) with probability 0.5. The simulated family data are saved in a file specified by {cmd:saving(}{it:filename}{cmd:)}, 
+and the number of replications is specified by {cmd:reps(}{it:#}).
+
+
+{title:Options}
+
+{dlgtab:Main}
+
+{phang}
+{opt reps(#)} specifies the number of families to be simulated. 
+The default value is 100.
+
+{phang}
+{opt saving(filename)} specifies the file name of the simulated data.
+The default file name is temp.dta.
+
+{phang}
+{opt alle(#)} specifies the allele frequency of a biallelic locus A. 
+The default value is 0.1.
+
+{phang}
+{opt sib(#)} spcifies the number of siblings in the second generation. 
+The default value is 3.
+
+{dlgtab:For simuped3 only}
+
+{phang}
+{opt si3(#)} spcifies the number of siblings in the third generation. 
+The default value is 3.
+
+
+{title:Examples}
+
+{phang}{stata clear}
+
+{phang}{stata simuped2 70 10 40 10, reps(1000) sav(output) alle(0.05) sib(5)}
+
+{phang}{stata simuped3 80 10 50 10 20 10, reps(2000) alle(0.1) sib(4) si3(3.5)}
+
+
+{title:Also see}
+
+{psee}
+   STB:  STB-58: dm82 
+
+
+{title:References}
+
+{phang}
+Cui J. Simulating two- and three-generation families. Stata Technical Bulletin 2000; 58: 2-5.
+
+{phang}
+Elandt-Johnson R. Probability models and statistical methods in genetics. New York: John Wiley & Sons, 1971.
+
+
+{title:Author}
+
+{p 4 4 2}
+James Cui, Department of Epidemiology and Preventive Medicine, Monash University.
+
+{p 4 4 2}
+Email: {browse "mailto:james.cui@med.monash.edu.au":james.cui@med.monash.edu.au}
+
+
+Other Commands I have written:
+{help genhwcci}   (if installed)      {stata ssc install genhwcci}     (to install this command)
+{help phenotype}  (if installed)      {stata ssc install phenotype}    (to install this command)
+{help buckley}    (if installed)      {stata ssc install buckley}      (to install this command)
+{help qic}        (if installed)      {stata ssc install qic}          (to install this command)
+
+

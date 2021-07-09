@@ -1,0 +1,191 @@
+/*
+ fxbcr
+*! VERSION 1.0 25/05/2016
+*/
+VERSION 11
+INCLUDE _std_xlarge
+DEFINE _dlght 350
+INCLUDE header
+HELP hlp1, view("help fxbcr")
+RESET res1
+
+PROGRAM parseMessage
+BEGIN
+if __MESSAGE.contains("__MI__") {
+call script se_setMI_on
+ }
+END
+
+SCRIPT POSTINIT
+BEGIN
+program check_bytab
+program se_setFinalInitState
+END
+
+PROGRAM check_bytab
+BEGIN
+if ! __MESSAGE.contains("__MI__") {
+call script sub_set_by_on
+ }
+END
+
+DIALOG main, label("fxbcr - Benefit-Cost Ratio (BCR)") /*
+*/ tabtitle("Main")
+BEGIN
+
+ TEXT    ivarslab  12  _top  220  ., label("Cash IN-Flow (Benefit)")
+ TEXT    tx_q    236   @    20  ., label("=")
+ TEXT    ovarslab 263   @   220  ., label("Cash OUT-Flow (Cost)")
+
+ VARLIST ivars 	 10   _ss 220  .,
+ EDIT    en_q   235     @  20	.,	///
+ label("q") default(=)
+ VARLIST ovars 	260   @   220  .,
+
+ CHECKBOX ck_irdr _lft     _ls      _ibwd      _ht5  , /*
+	*/ groupbox				/*
+	*/ label("Interest Rate / Discount Rate") /*
+	*/ onclickon(script ck_irdr_on)	/*
+	*/ onclickoff(script ck_irdr_off)
+
+ CHECKBOX ck_dr       _ilft    _ms    +30  .,	/*
+	*/ clickon("gaction main.sp_dr.enable")	/*
+	*/ clickoff("gaction main.sp_dr.disable")	
+ TEXT     tx_dr     +20       @  _rbsprb    .,	/*
+	*/ label("Discount Rate")
+ SPINNER  sp_dr  +100    @    _spwd  .,	/*
+	*/ label("Discount Rate")		/*
+	*/ min(1) max(100) default(10)	/*
+	*/ option("dr")
+	*/
+
+ CHECKBOX ck_pe       _ilft     _ms    +30  .,	/*
+	*/ clickon("gaction main.ed_pe.enable")	/*
+	*/ clickoff("gaction main.ed_pe.disable")	
+ TEXT     tx_pe     +20       @  _rbsprb    .,	/*
+	*/ label("Seasonal Period")
+ EDIT  ed_pe  +100    @    _spwd  .,	/*
+	*/ label("Seasonal Period")	/*
+	*/ default(1)	/*
+	*/ option("pe")
+
+ CHECKBOX ck_model2  _lft    _xls   _ibwd    _ht8 , ///
+	groupbox				 ///
+	onclickon(script ck_model2_on)		 ///
+	onclickoff(script ck_model2_off)	 ///
+	label("Options:")
+ CHECKBOX ck_inf    _ilft     _ss    +50  .,	/*
+	*/ clickon("gaction main.sp_inf.enable")	/*
+	*/ clickoff("gaction main.sp_inf.disable")	
+ TEXT     tx_inf    +20       @  _rbsprb    .,	/*
+	*/ label("Inflation Rate")
+ SPINNER  sp_inf  +100    @    _spwd  .,	/*
+	*/ label("Inflation Rate")	/*
+	*/ min(0) max(100) default(0)	/*
+	*/ option("inf")
+
+ CHECKBOX ck_def    _ilft2     @    +50  .,	/*
+	*/ clickon("gaction main.sp_def.enable")	/*
+	*/ clickoff("gaction main.sp_def.disable")	
+ TEXT     tx_def    +20       @  _rbsprb    .,	/*
+	*/ label("Deflation Rate")
+ SPINNER  sp_def  +100    @    _spwd  .,	/*
+	*/ label("Deflation Rate")	/*
+	*/ min(0) max(100) default(0)	/*
+	*/ option("def")
+
+ CHECKBOX ck_ddr _ilft  _ss   300  ., option("ddr") /*
+	*/ label("Decimal Discount Rate")
+
+ CHECKBOX ck_print _ilft  _ss   350  ., option("print") /*
+	*/ label("Display NCFu and NCFd Values")
+ CHECKBOX ck_list _ilft  _ss   300  ., option("list") /*
+	*/ label("Add NCFu and NCFd Values to Data List")
+ CHECKBOX ck_sena _lft     _xls      _ibwd      _ht4  , /*
+	*/ groupbox				/*
+	*/ label("Sensitivity Analysis Scenario - Increasing Cost / Decreasing Revenue") /*
+	*/ onclickon(script ck_sena_on)	/*
+	*/ onclickoff(script ck_sena_off)
+ CHECKBOX ck_sac       _ilft     _ss    +50  .,	/*
+	*/ clickon("gaction main.sp_sac.enable")	/*
+	*/ clickoff("gaction main.sp_sac.disable")	
+ TEXT     tx_sac     +20       @  _rbsprb    .,	/*
+	*/ label("Increase/Decrease Cash OUTFlow (Cost)")
+ SPINNER  sp_sac  +220    @    _spwd  .,	/*
+	*/ label("Increase/Decrease Cash OUTFlow (Cost)")	/*
+	*/ min(-100) max(100) default(10)	/*
+	*/ option("sac")
+
+ CHECKBOX ck_sap       _ilft     _ms    +50  .,	/*
+	*/ clickon("gaction main.sp_sap.enable")	/*
+	*/ clickoff("gaction main.sp_sap.disable")	
+ TEXT     tx_sap     +20       @  _rbsprb    .,	/*
+	*/ label("Decrease/Increase Cash INFlow (Benefit)")
+ SPINNER  sp_sap  +220    @    _spwd  .,	/*
+	*/ label("Decrease/Increase Cash INFlow (Benefit)")	/*
+	*/ min(-100) max(100) default(-10)	/*
+	*/ option("sap")
+END
+
+SCRIPT ck_sena_on
+BEGIN
+ main.ck_sac.enable
+ main.ck_sap.enable
+END
+
+SCRIPT ck_sena_off
+BEGIN
+ main.ck_sac.disable
+ main.ck_sap.disable
+END
+
+SCRIPT ck_irdr_on
+BEGIN
+ main.ck_dr.enable
+ main.ck_pe.enable
+END
+
+SCRIPT ck_irdr_off
+BEGIN
+ main.ck_dr.disable
+ main.ck_pe.disable
+END
+
+SCRIPT ck_model2_on
+ BEGIN
+ main.ck_inf.enable
+ main.ck_def.enable
+ main.ck_print.enable
+ main.ck_list.enable
+ main.ck_ddr.enable
+ END
+
+SCRIPT ck_model2_off
+ BEGIN
+ main.ck_inf.disable
+ main.ck_def.disable
+ main.ck_print.disable
+ main.ck_list.disable
+ main.ck_ddr.disable
+ END
+
+INCLUDE sub_by_ifin_over_subpop
+
+PROGRAM command
+BEGIN
+ put "fxbcr "
+ varlist main.ivars main.en_q main.ovars
+ put " " /program ifin_output
+beginoptions
+ optionarg main.ed_pe
+ optionarg main.sp_dr
+ optionarg main.sp_inf
+ optionarg main.sp_def
+ option main.ck_ddr
+ optionarg main.sp_sac
+ optionarg main.sp_sap
+ option main.ck_print 
+ option main.ck_list
+endoptions
+END
+

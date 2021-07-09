@@ -1,0 +1,58 @@
+.-
+help for ^grlogit^
+.-
+
+Plots logit of a variable by categories of another variable
+----------------------------
+
+    ^grlogit^ depvar indepvar [if] [, gropt(...) ]
+
+Description
+-----------
+
+^grlogit^ plots the logit of one variable against categories of another variable.
+
+This may be of some use in the beginning of logistic regression modelling. You 
+could use this program to confirm visually that there isn't a non-linear 
+relationship of the logit of the dependent variable to the predictor variable. 
+Thus, you could screen your explanatory variables during the univariate 
+analysis  stage.
+
+It is not for use in assessing incorrectly specified link functions in
+multivariable models.
+
+The logit of a variable x is defined as
+       ^logit^(x) = x / (1-x)
+
+Options
+-------
+
+^gropt(...)^  specifies a string with options that are passed
+along to the graph command.
+
+
+Remarks 
+-------
+This program does not accept weights yet. It should be easily modified 
+for this. Just fiddle around with the "table" statement.
+
+For a discussion goodness-of-fit of multivariable models, see
+Hosmer & Lemeshow: Applied Logistic Regression, 1989 (John Wiley & Sons)
+
+Examples
+--------
+
+    . ^grlogit^ response age
+    . ^grlogit^ response age, gropt("xlab(15(10)70)")
+
+
+Author
+-------
+    Jan Brogger, University of Bergen, Norway
+    jan.brogger@@med.uib.no
+
+Shameless plug :)
+--------------
+ I am looking for internship & residency  in internal 
+ medicine/pulmonary medicine US/EU. Am doing PhD in respiratory 
+ epidemiology now. 

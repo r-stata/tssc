@@ -1,0 +1,128 @@
+{smcl}
+{* *! version 1.03  2008-02-18}{...}
+{cmd:help armadiag}{...}
+{right:see also:  {help corrgram} {help ac} {help pac} {help wntestq}}
+
+{hline}
+
+{title:Post-estimation residual diagnostics for time series}
+
+
+{title:Syntax}
+
+{p 8 25 2}
+{cmd:armadiag}
+[{varname}]
+{ifin}
+[{cmd:,} 
+{opt a:rch}
+{opt d:fc(d)}
+{opt h:etrobust}
+{opt lag:s(p)}
+{opt lev:el(alpha)}
+{opt yw}
+{opt nog:raph}
+{opt t:able}
+{opt lin:scale}
+{opt force}]
+
+{title:Description}
+
+{p}{cmd:armadiag} is a post-estimation diagnostic tool for use after {cmd:arch}, {cmd:arima}
+or {cmd:regress}. The residuals (standardized residuals
+with {cmd:arch}) are plotted together with autocorrelations, partial autocorrelations
+and p-values of the Ljung-Box Q-statistic. The variable {it:varname} is used instead of
+residuals if {it:varname} is specified.
+
+{p}Optionally the square of the variable/residuals/standardized residuals is used to
+allow detection of (remaining) ARCH-effects.
+
+{p}The degrees of freedom of the Q-statistic are adjusted for the number of estimated 
+ARMA-parameters and/or lags of the dependent variable. When the squared residuals are 
+investigated the degrees of freedom are corrected for the number of ARCH-parameters.
+
+{p}Residuals are calculated for the estimation sample unless {it:if} or {it:in} is specified.
+
+{p}You must {cmd:tsset} your data before using {cmd:armadiag}, see {manhelp tsset TS}.
+
+{p}{it:varname} may contain time-series operators; see {help tsvarlist}.
+
+{title:Options}
+
+{synoptset 15}{...}
+{synopthdr:option}
+{synoptline}
+
+{synopt:{opt a:rch}}Diagnostics for ARCH, i.e. the square of the residuals, 
+standardized residuals or variabe is plotted with autocorrelations, partial 
+autocorrelations and Q-stat p-values for the square. Degrees of freedom are
+adjusted for the number or ARCH-parameters.
+
+{synopt:{opt d:fc(n)}}Override default degrees of freedom correction. The default
+is to subtract the number of lagged dependent variables and ARMA terms for models
+estimated with {cmd:arch}, {cmd:arima} and {cmd:regress}. If {opt arch} is specified
+the number of ARCH-terms are subtracted for models estimated with {cmd:arch}.
+
+{synopt:{opt h:etrobust}}Calculate Q-statistics that are robust to heteroskedasticity
+of the ARCH-variety. Milh{c o/}j has shown that the variance of the estimated
+autocorrelations is different from 1/T when there is ARCH and {opt hetrobust} 
+corrects for this by scaling with a consistent estimate of the variance.
+
+{synopt:{opt lag:s(p)}}The number of lags to calculate statistics for. Default is
+min(int(T/2)-2,40)
+
+{synopt:{opt lev:el(alpha)}}Level for "confidence bands" in autocorrelation and partial 
+autocorrelation plots. Specified this way for consistency with {cmd:ac} and {cmd:pac} which 
+has it wrong. These are not confidence intervals, a confidence interval would be be
+centered on the estimate. They are 1-{it:alpha} critical values for testing the null that
+the autocorrelation or partial autocorrelation is zero. 
+The default is {it:alpha}=95, i.e. 5% critical values.
+
+{synopt:{opt yw}}Calculate partial autocorrelations by using Yule-Walker equations{p_end}
+
+{synopt:{opt nog:raph}}Do not plot results.
+
+{synopt:{opt t:able}}Print results in a table like {cmd:corrgram}
+
+{synopt:{opt lin:scale}}Plot p-values for Q-statistics on a linear scale. By default
+the p-values are plotted on what is almost a log scale to make the more interesting, 
+small, p-values easier to distinguish.
+
+{synopt:{opt force}}Calculates statistics for residuals from other commands than
+{cmd:arch}, {cmd:arima} or {cmd:regress}. 
+{it:This may or may not make sense. Use at your own risk}
+{synoptline}
+
+{title:References}
+
+{pstd}Milh{c o/}j, A., (1985), "The Moment Structure of ARCH Processes," 
+{it:Scandinavian Journal of Statistics}, 12, 281-292.
+
+{title:Examples}
+
+{pstd}Setup{p_end}
+{phang2}{cmd:. webuse air2}{p_end}
+{phang2}{cmd:. gen lnair = ln(air)}{p_end}
+
+{pstd}Plot data, autocorrelations and partial autocorrelations for model order identification{p_end}
+{phang2}{cmd:. armadiag lnair}{p_end}
+{phang2}{cmd:. armadiag d.lnair}{p_end}
+{phang2}{cmd:. armadiag s12.lnair}{p_end}
+{phang2}{cmd:. armadiag ds12.lnair}{p_end}
+
+{pstd}Fit "airline model" and plot residual diagnostics{p_end}
+{phang2}{cmd:. arima lnair, arima(0,1,1) sarima(0,1,1,12)}{p_end}
+{phang2}{cmd:. armadiag}{p_end}
+
+{pstd}Check for presence of ARCH in residuals{p_end}
+{phang2}{cmd:. armadiag, arch}
+
+{title:Author}
+
+{pstd}Sune Karlsson, Örebro University, Sweden{p_end}
+{pstd}sune.karlsson@oru.se{p_end}
+
+{title:Also see}
+
+{psee}
+{help corrgram} {help ac} {help pac} {help wntestq}

@@ -1,0 +1,174 @@
+.-
+help for ^meta^                                 (STB-38: sbe16; STB-42: sbe16.1)
+.-
+
+Fixed and random-effects meta-analysis, with graphics
+-----------------------------------------------------
+
+	^meta^ 	{ theta | exp(theta) } { se_theta | var_theta | ll ul [cl] }
+		[^if^ exp] [^in^ range] [^,^ ^v^ar ^ci^ ^ef^orm ^pr^int ^eb^ayes ^l^evel^(^#^)^
+		^gr^aph^(f^|^r^|^e)^ ^id(^strvar^)^ ^fm^ult^(^#^)^ ^boxy^sca^(^#^)^ ^boxsh^ad^(^#^)^ ^cl^ine
+		^ltr^unc^(^#^)^ ^rtr^unc^(^#^)^]
+
+
+Description
+-----------
+
+^meta^ provides pooled estimates, confidence limits, and a test that the true
+pooled effect is zero, obtained from fixed and random effects meta-analysis, a
+test for heterogeneity between studies and an estimator of between studies
+variance, and, optionally, plots the individual and pooled estimates.
+
+The user provides the effect estimate as ^theta^ (i.e., a log risk ratio,
+log odds ratio, or other measure of effect). Likewise, the user supplies a 
+measure of theta's variability (i.e., its standard error, ^se_theta^, or
+its variance, ^var_theta^. Alternatively,  the user provides ^exp(theta)^
+(i.e., a risk ratio or odds ratio) and its confidence interval, ^(ll, ul)^).
+
+If you have a dataset which contains data for all studies, then the @byvar@
+command (STB-27) can be used to derive the effect estimates and standard errors
+for the individual studies. For example:
+
+   . ^sort study^
+   . ^byvar study, coef(group) se(group) generate:^
+   . ^quietly poisson cases group, e(pyrs)^
+   . ^sort study^
+   . ^qui by study: keep if _n==1^
+   . ^rename _C_1 logrr^
+   . ^rename _S_1 se^
+   . ^meta logrr se^
+
+Alternatively, the @collapse@ or @for@ commands may be useful.
+
+
+Options
+-------
+
+^var^ means the user has specified a variable containing the variance of
+the effect estimate.  If this option is not included, the command assumes
+the standard error has been specified.
+
+^ci^ means the user has specified the lower and upper confidence limits of
+the effect estimate, which is assumed to be on the ratio scale (e.g. odds ratio
+or risk ratio).
+
+^eform^ requests that the output is exponentiated. This is useful for effect
+measures such as log odds ratios which are derived from generalized linear
+models. If the ^eform^ and ^graph^ options are used, then the graph output is 
+exponentiated, with a log scale for the x axis.  If either the ^print^ or
+the ^ebayes^ option are used together with the ^eform^ option, the resulting
+empirical Bayes estimates are exponentiated.
+
+^print^ requests that the weights used in the fixed and random effects
+estimation are listed for each study, together with the individual study
+estimates and confidence intervals.  The studies are labelled by name if
+the ^id^ option is specified, or by number otherwise.  If the ^ebayes^ option
+is specified, the study estimates and confidence intervals are empirical
+Bayes.
+
+^ebayes^ creates two new variables in the dataset: ^ebest^ contains empirical
+Bayes estimate for each study, and ^ebse^ the corresponding standard errors.
+Any existing variables called ^ebest^ or ^ebse^ are overwritten.  Empirical Bayes
+estimates are calculated by shrinking the study-specific estimates towards the
+overall random effects estimate by a factor which depends on the relative
+magnitude of the estimated within and between study variances.
+
+^level(^#^)^ specifies the level for the confidence intervals (default 95).
+
+
+Options for graphing results
+----------------------------
+
+^graph(f^|^r^|^e)^ requests a graph. The options ^graph(f)^ or ^graph(r)^
+request that the combined estimate in the graph is derived using fixed or
+random effects meta-analysis. The option ^graph(e)^ requests that empirical
+Bayes estimates of the individual study estimates be plotted. In this case,
+the combined estimate is the random-effects estimate, and the ^print^ and
+^ebayes^ options are also automatically requested.
+
+Graph options are allowed, except for ^ylabel()^, ^symbol()^, ^xlog^, ^ytick^
+and ^gap^.
+
+^id(^strvar^)^ is a character variable which is used to label the studies.  If
+the data contains a labelled numeric variable then the @decode@ command can be
+used to create a character variable
+
+^fmult(^#^)^ is a number greater than zero which can be used to scale 
+the font size for the study labels. The font size is automatically
+reduced if the maximum label length is greater than 8, or the number
+of studies is greater than 20. However it may be possible to increase
+it somewhat over the default size.
+
+^boxysca(^#^)^ provides a number ^#^ between zero and 1 which can be used to
+reduce the vertical length of the boxes. This is used to make boxes square if
+a vertical magnification of more than 100 has been used to increase the length
+of the graph. The default is 1.
+
+^boxshad(^#^)^ provides an integer ^#^ between 0 and 4 which gives the box shading
+(0 most, 4 no shading). The default is 0.
+
+^cline^ asks that a vertical dotted line be drawn at the combined estimate.
+
+^ltrunc(^#^)^ truncates the left side of the graph at ^#^. This is used to truncate
+very wide confidence intervals. However ^#^ must be less than each of the
+individual study estimates.
+
+^rtrunc(^#^)^ truncates the right side of the graph at ^#^, and must be greater than
+each of the individual study estimates.
+
+Required input variables
+------------------------
+
+  ^theta^        the effect estimate
+  ^se_theta^     the corresponding standard error
+
+ or
+
+  ^theta^        the effect estimate
+  ^var_theta^    the corresponding variance
+
+ or
+
+  ^exp(theta)^   the risk (or odds) ratio
+  ^ll^           the lower limit of the risk ratio's confidence interval
+  ^ul^           the upper limit of the risk ratio's confidence interval
+ [^cl^]          optional (see below)
+
+Optional input variable
+-----------------------
+
+^cl^ contains the confidence level of the confidence interval defined by
+^ll^ and ^ul^.  If ^cl^ is not provided, the procedure assumes that
+each confidence interval is at the 95% confidence level.  ^cl^ allows the
+user to provide the confidence level, by study, when the confidence interval
+is not at the default level.  ^cl^ can be specified with or without a 
+decimal point.  For example, .90 and 90 are equivalent and may be mixed 
+(i.e., 90, .95, 80, .90 etc.).
+
+
+Examples
+--------
+
+   . ^meta logor selogor, eform gr(f) cline xline(1) id(trialnam) xlab^ 
+   . ^meta meandiff vardiff, var gr(r) eb print^ 
+   . ^meta rr ll ul, ci gr(e)^
+
+
+Authors
+-------
+
+       Stephen Sharp
+       London School of Hygiene and Tropical Medicine, UK
+       email: stephen.sharp@@lshtm.ac.uk
+
+       Jonathan Sterne
+       United Medical and Dental Schools, UK
+       email: j.sterne@@umds.ac.uk
+
+
+Also see
+--------
+
+    STB:  STB-43 sbe16.2, STB-42 sbe16.1, STB-38 sbe16
+On-line:  help for @byvar@, @collapse@, @for@, @metareg@ (if installed), 
+          @metabias@ (if installed), @metacum@ (if installed)

@@ -1,0 +1,167 @@
+{smcl}
+{* *! version 1.1.0 10aug2011}{...}
+{cmd:help zscore06}
+{hline}
+
+{title:Title}
+
+{phang}
+{bf:zscore06} {hline 2} Calculate anthropometric z-scores using the 2006 WHO child growth standards
+
+
+{title:Syntax}
+
+
+{p 8 17 2}
+{cmdab:zscore06}
+{ifin}
+[{cmd:,}
+{it:options}]
+
+{synoptset 20 tabbed}{...}
+{synopthdr}
+{synoptline}
+{syntab:Main}
+{synopt:{opth a(varname)}}child's age {it:varname}{p_end}
+{synopt:{opth s(varname)}}child's sex {it:varname}{p_end}
+{synopt:{opth h(varname)}}child's length {it:varname}{p_end}
+{synopt:{opth w(varname)}}child's weight {it:varname}{p_end}
+{synopt:{opth w(varname)}}child's weight {it:varname}{p_end}
+{synopt:{opt female(#)}}value used for girls in sex {it:varname}{p_end}
+{synopt:{opt male(#)}}value used for boys in sex {it:varname}{p_end}
+{synopt:{opth measure(varname)}}recumbent length or standing height {it:varname}{p_end}
+{synopt:{opt recum(#)}}value used for recumbent length in recum {it:varname}{p_end}
+{synopt:{opt stand(#)}}value used for standing height in recum {it:varname}{p_end}
+{synopt:{opth o(varname)}}oedema {it:varname}{p_end}
+{synopt:{opt oyes(#)}}value used for presence of oedema in oedema {it:varname}{p_end}
+{synopt:{opt ono(#)}}value used for absence of oedema in oedema {it:varname}{p_end}
+
+
+{title:Description}
+
+{pstd}
+{cmd:zscore06} calculates anthropometric z-scores using the 2006 WHO child growth standards. 
+Lenght/heigh-for-age, weight-for-height, BMI-for-age and weight-for-age Z-scores are calculated for children
+0 to 5 years of age. 
+
+{title:Options}
+
+{dlgtab:Main}
+
+{phang}
+{opth a(varname)} specifies the child age {it:varname}. Age must be in months. 
+
+{phang}
+{opth s(varname)} specifies the child sex {it:varname}. The default is to code boys as 1 
+and girls as 2. If other values are used, they must be specified in {cmd:male(#)} and {cmd:female(#)}.
+
+{phang}
+{opth h(varname)} specifies the child length/height {it:varname}. Lenght/height must be 
+in cm. Recumbent lenght is assumed for children < 24 months, standing height for children > 24 months.
+If this is not the case, {cmd:measure({varname})} must be specified. At least one of 
+{cmd:h({varname})} or {cmd:w({varname})} must be specified. 
+
+{phang}
+{opth w(varname)} specifies the child weight {it:varname}. Weight must be in kg. At least one of 
+{cmd:h({varname})} or {cmd:w({varname})} must be specified. 
+
+{phang}
+{opt female(#)} value used for girls in the child sex {it:varname} specified in {cmd:s({varname})} if 
+different from 2.
+
+{phang}
+{opt male(#)} value used for boys in the the child sex {it:varname} specified in {cmd:s({varname})} if
+different from 1. 
+
+{phang}
+{opth measure(varname)} specifies the {it:varname} indicating whether recumbent length or standing 
+height was measured. If the 24 month cut-off was correctly applied {cmd:measure({varname})} need not be 
+pecified. If the 24 month cut-off was not used correctly {cmd:measure({varname})} needs to be 
+1 for recumbent length and 2 for standing height. If other values are used, they must be specified 
+in {cmd:recum(#)} and {cmd:stand(#)}.
+
+{phang}
+{opt recum(#)} value used for recumbent length in the measure {it:varname} specified in {cmd:measure({varname})}
+if different from 1.
+
+{phang}
+{opt stand(#)} value used for standing height in the measure {it:varname} specified in {cmd:measure({varname})}
+if different from 2.
+
+{phang}
+{opth o(varname)} specifies the {it:varname} indicating whether oedema was observed. {cmd: zscore06} assumes
+that children had no oedema. If this is the case, there is no need to define {cmd:o({varname})}. If some children 
+had oedema the default is to code children with oedema as 1 and children wihtout oedema as 2. If other values 
+are used, they must be specified in {cmd:oyes(#)} and {cmd:ono(#)}. Weight-for-age, weight-for-height and 
+BMI-for-age are not calculated for children with oedema. 
+
+{phang}
+{opt oyes(#)} value used for the presence of oedema in the oedema {it:varname} specified in {cmd:o({varname})}
+if different from 1.
+
+{phang}
+{opt ono(#)} value used for the absence of oedema in the oedema {it:varname} specified in {cmd:o({varname})}
+if different from 2.
+
+{title:Remarks}
+{pstd}
+Even though {cmd: zscore06} uses the same algorithm to calculate anthropometric z-scores as WHO's igrowup macro, there are
+some differences in the created variables:
+
+{phang}
+. {cmd: zscore06} does not calculate any of the z-scores if child age is missing. Igrowup does calculate the 
+weight-for-height z-score.
+
+{phang}
+. If the age, height or weight values are outside the range of the reference values (e.g. a child older than 5 years 
+of age), the corresponding z-score(s) will be set to 99. Igrowup will assign a missing value to these observations. 
+
+{phang}
+. Differences in the precision of the storage types used in zscore06 (all stored as double) and igrowup (some stored as float) can lead to 
+small differences (<=0.01) in the calculated Z-scores. These differences, however, are rare (<1/1000). In the cases we have identified to date, 
+we believe that zscore06 produces the correct result. For example, take the following child:
+
+{center:{cmd:variable                 value}}
+{center:{hline 30}}
+{center: sex                       girl}
+{center: age (days)                 407}
+{center: length (cm)               70.5}
+
+{pmore}
+The reference values for this child are:
+
+{center:{cmd:parameter      reference value}}
+{center:{hline 30}}
+{center: l                            1}
+{center: m                      75.6546}
+{center: s                      0.03503}
+
+{pmore}
+Using the equation from the WHO publication cited below, we find:
+
+{pmore2}
+haz06 =	(((70.5/75.6546)^1)-1)/(0.03503*1)} = -1.94499949 ~= -1.94 as calculated by {cmd: zscore06} and not -1.95 as calculated by igrowup
+
+
+
+{title:Acknowledgements}
+{pstd}
+James Beard (University College London) provided very useful comments on the previous version of this command.
+
+{title:References}
+{pstd}
+Mercedes de Onis et al. 2006. WHO child growth standards : length/height-for-age, weight-for-age, weight-for-length, weight-for-height
+and body mass index-for-age : methods and development. World Health Organization. Geneve.
+
+
+{title:Citation of zscore06}
+{pstd}
+{cmd:zscore06} is not an official Stata command. It is a free contribution
+to the research community. Please cite it as such:
+
+{phang}Leroy, Jef L (2011).
+zscore06: Stata command for the calculation of anthropometric z-scores using the 2006 WHO child growth standards 
+{browse "http://www.ifpri.org/staffprofile/jef-leroy"}
+
+{title:Author}
+{phang}Jef L Leroy, International Food Policy Research Institute, Washington DC, USA (j.leroy@cgiar.org)

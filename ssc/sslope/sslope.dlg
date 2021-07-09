@@ -1,0 +1,88 @@
+VERSION 8
+POSITION . . 450 270
+DIALOG main, label("Linear Regression Simple Slopes") tabtitle("Main")
+BEGIN
+	TEXT tx_var 10 10 350 ., label("Criterion variable:")
+	VARNAME v1_var @ +20 @ ., label("criterion") nomem 
+	TEXT tx_var2 @ +30 @ ., label("Explanatory variables - mean centered (Full regression equation):")
+	VARLIST v1_var2 @ +20 @ ., label("explanatory") nomem
+	TEXT tx_var6 @ +30 @ ., label("Conditional value in sd units (default = +/- 1 sd):")
+	EDIT sd 290 @ 30 ., label("sd") nomem 
+	CHECKBOX graph 10 +30 +40 .,option(graph) label("Graph") nomem 
+	CHECKBOX fits +80 @ +40 .,option(fits) label("Save Fits") nomem 
+	TEXT tx_var3 10 +30 @ ., label("if:")
+	VARLIST v2_var3 +20 @ 330 ., label("if") nomem
+	TEXT tx_var4 10 +30 @ ., label("in range:")
+	EDIT v2_in1 +50 @ 30 ., label("in1") numonly nomem
+	TEXT tx_varp +35 @ @ ., label("-")
+	EDIT v2_in2 +10 @ @ ., label("in2") numonly nomem
+	TEXT tx_var7 10 +30 370 ., label("Select ONE tab above reflecting highest order interaction of interest.")
+END
+DIALOG xz,  tabtitle("xz")
+BEGIN
+	TEXT tx_var2 10 10 270 ., label("y = b1x + b2z + b3xz + b0")
+	TEXT tx_var3 @ +20 @ ., label("Simple slope of (e.g., x):")
+	VARNAME x @ +20 @ ., label("x") nomem
+	TEXT tx_var4 @ +30 @., label("Conditional upon (e.g., z): ")
+	VARNAME z @ +20 @ ., label("z") nomem
+	TEXT tx_var6 @ +30 @., label("2-way x interaction (e.g., xz)")
+	VARNAME xz @ +20 @ ., label("xz") nomem
+END
+DIALOG x2,  tabtitle("x^2")
+BEGIN
+	TEXT tx_var2 10 10 270  ., label("y = b1x + b2x-squared + b0")
+	TEXT tx_var3 @ +20 @ ., label("Linear term (e.g., x):")
+	VARNAME x @ +20 @ ., label("x") nomem
+	TEXT tx_var5 @ +30 @., label("Quadratic of x:")
+	VARNAME xx @ +20 @ ., label("x2") nomem
+END
+DIALOG xzw,  tabtitle("xzw")
+BEGIN
+	TEXT tx_var2 5 5 350 ., label("y = b1x + b2z + b3w + b4xz + b5xw + b6zw + b7xzw + b0")
+	TEXT tx_var3 @ +20 @ ., label("Simple slope of (e.g., x):")
+	VARNAME x @ +20 @ ., label("x") nomem
+	TEXT tx_var4 @ +30 @., label("Conditional upon (e.g., z w):")
+	VARLIST zandw  @ +20 @ ., label("z w") nomem
+	TEXT tx_var6 @ +30 @., label("2-way x interactions ( e.g., xz xw):")
+	VARLIST xz_xw @ +20 @ ., label("xz, xw") nomem
+	TEXT tx_var7 @ +30 @., label("2-way interaction of conditional terms (e.g., zw):")
+	VARNAME zw @ +20 @ ., label("zw") nomem
+	TEXT tx_var8 @ +30 @., label("3-way interaction (e.g., xzw):")
+	VARNAME xzw @ +20 @ ., label("xzw") nomem
+END
+DIALOG x2xz,  tabtitle("x^2, xz")
+BEGIN
+	TEXT tx_var1 10 10 270 ., label("y = b1x + b2z + b3x-squared + b4xz + b0")
+	TEXT tx_var3 @ +20 @ ., label("Simple slope of (e.g., x):")
+	VARNAME x @ +20 @ ., label("x") nomem
+	TEXT tx_var4 @ +30 @., label("Conditional upon (e.g., z): ")
+	VARNAME z @ +20 @ ., label("z") nomem
+	TEXT tx_var5 @ +30 @., label("Quadratic:")
+	VARNAME xx @ +20 @ ., label("x2") nomem
+	TEXT tx_var6 @ +30 @., label("2-way x interaction (e.g., xz)")
+	VARNAME xz @ +20 @ ., label("xz")	nomem
+END
+OK ok1,label("OK")
+SUBMIT sub1,label("Submit")
+RESET res1
+CANCEL can1
+HELP hlp1, view("help sslope")
+PROGRAM command
+BEGIN
+	put "sslope "
+	varlist main.v1_var main.v1_var2
+	ifexp main.v2_var3
+	if main.v2_in1 {
+	put "in " main.v2_in1 
+	put "/ " main.v2_in2
+	}
+	put ",i("
+	varlist [xz.x] [xz.z] [xz.xz] [x2.x] [x2.xx] [xzw.x] [xzw.zandw] [xzw.xz_xw] [xzw.zw] ///
+	[xzw.xzw] [x2xz.x] [x2xz.z] [x2xz.xx] [x2xz.xz]
+	put ")"
+	option main.graph
+	option main.fits
+	if main.sd {
+	put "sd(" main.sd ")"
+	}
+END

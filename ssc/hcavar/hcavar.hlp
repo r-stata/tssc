@@ -1,0 +1,100 @@
+{smcl}
+{* 6december2012}{...}
+{hline}
+help for {hi:hcavar}{right:Jean-Benoit Hardouin}
+{hline}
+
+{title:Hierarchical Clusters Analysis of variables}
+
+{p 8 14 2}{cmd:hcavar} {it:varlist}
+[{cmd:,} {cmdab:prox}{it:(keyword)} {cmdab:mat:rix}{it:(matrix)} {cmdab:meth:od}{it:(keyword)}
+{cmdab:part:ition}{it:(numlist)} {cmdab:meas:ures} {cmdab:det:ect} {cmdab:nodendro:gram}]
+
+{title:Description}
+
+{p 4 8 2}
+{cmd:hcavar} is the new name of the old {cmd:hcaccprox} module.
+
+{p 4 8 2}
+{cmd:hcavar} realizes a Hierarchical Clusters Analysis on variables.
+The variables can be numerous, ordinal or binary. The distances (dissimilarity
+measures for binary variables) between two variables are computed as the squared
+root of 2 times one minus the Pearson correlation. For binary variables, it is 
+possible to use other similarity coefficients as Matching, Jaccard, Russel or Dice
+(See {help measure option} for more details). The distance matrix is computed as 
+the squared root of one minus the value of these coefficients.
+In the field of Item Response Theory, it is possible to define conditional measures 
+to the score as defined by Roussos, Stout and Marden (1998): conditional correlations,
+conditional covariance, or Mantel-Haenszel measures of similarity. In the same field,
+it is possible to compute, for a set of obtained partition of the items, the DETECT,
+Iss and R indexes defined by Zhang and Stout (1999).
+
+{title:Options}
+
+{p 4 8 2}{cmd:prox} defines the proximity measures to use : {it:jaccard} 
+(alias {it:a}), {it: russel}, {it:dice}, {it:matching} (alias {it:ad}), {it:pearson}
+(alias {it:corr}), conditional covariance ({it:ccov}), conditional correlation
+({it:ccor}), or Mantel Haenszel ({it:mh}). By default, this option is put to
+{it:pearson}. {it:pearson} is the only one option available with ordinal or numerous 
+variables.
+
+{p 4 8 2}{cmd:matrix} allows using a matrix as distance matrix.
+
+{p 4 8 2}{cmd:method} defines the method to aggregate two clusters. See {help cluster}
+for more details about these methods. The complete name of the method 
+must be indicated (with or without "linkage"), none abbreviation is allowed. 
+{it:waveragelinkage} is used by default.
+
+{p 4 8 2}{cmd:partition} lists the partitions of variables to detail by
+the program.
+
+{p 4 8 2}{cmd:measures} displays the used proximity measures matrix between
+the variables.
+
+{p 4 8 2}{cmd:detect} computes, for binary variables, the DETECT, Iss and R indexes
+for the partitions indicated in the {cmd:partitions} option.
+
+{p 4 8 2}{cmdnodendrogram} enables the displaying of th dendrogram.
+
+{title:Examples}
+
+{p 4 8 2}{cmd:. hcavar var1-var10} /*displays only the dendrogram*/
+
+{p 4 8 2}{cmd:. hcavar var*, partition(1/6) measures method(single)} /*Single linkage, details of 6 partitions*/
+
+{p 4 8 2}{cmd:. hcavar itemA1-itemA7 itemB1-itemB7, prox(ccor) method(single) detect part(1/4)} /*details of 4 partitions, conditional correlations*/
+
+{title:Outputs}
+
+{p 4 8 2}{cmd:. r(nbvar)} contains the number of variables
+
+{p 4 8 2}{cmd:. r(measures)} is the distances measures matrix between the variables
+
+{p 4 8 2}{cmd:. r(clusters)} is a matrix obtained with the {cmd:partition} option
+containing the composition of the partitions defined with this option.
+
+{p 4 8 2}{cmd:. r(indexes)} is obtained with the {cmd:detect} option.
+This matrix contain the DETECT, Iss and R indexes associated to each partition 
+defined with the {cmd:partition} option.
+
+
+{title:Reference}
+
+{p 4 8 2}{cmd:Roussos L. A, Stout W. F. and Marden J. I.}, {it:Using new proximity measures with hierarchical cluster analysis to detect multidimensionality}. Journal of Educational Measurement, {cmd:35}(1), pp 1-30, 1998.
+
+{p 4 8 2}{cmd:Zhang J. and Stout W. F.}, {it:The theorical DETECT index of dimensionality and its application to approximate simple structure}. Psychometrika, {cmd:64}(2), pp 213-249, 1999.
+
+{title:Also see}
+
+{p 4 13 2} help for {help cluster}, help for {help detect} (if installed)
+
+{title:Author}
+
+{p 4 8 2}Jean-Benoit Hardouin, PhD, assistant professor{p_end}
+{p 4 8 2}EA 4275 SPHERE "Team of Biostatistics, Clinical Research and Subjective Measures in Health Sciences"{p_end}
+{p 4 8 2}University of Nantes - Faculty of Pharmaceutical Sciences{p_end}
+{p 4 8 2}1, rue Gaston Veil - BP 53508{p_end}
+{p 4 8 2}44035 Nantes Cedex 1 - FRANCE{p_end}
+{p 4 8 2}Email:
+{browse "mailto:jean-benoit.hardouin@univ-nantes.fr":jean-benoit.hardouin@univ-nantes.fr}{p_end}
+{p 4 8 2}Website {browse "http://www.anaqol.org":AnaQol}

@@ -1,0 +1,673 @@
+{smcl}
+{* 19-Jan2004; rev 9-Mar2005, 26Jan2006, 8feb2006, 27mar2008, 1apr2008, 2012feb9, 2012feb17, 2012nov12}
+{hline}
+help for {hi:mahapick}
+{hline}
+
+{title:Select matching observations based on a Mahalanobis scoring}
+
+{p 8 17 2}
+{cmd:mahapick}
+{it:varlist} [{it:weight}] {cmd:, idvar(}{it:idvarname}{cmd:)}
+{cmd:treated(}{it:treatedvar}{cmd:)}
+[
+{cmd:pickids(}{it:pickidvars}{cmd:)}
+{cmd:genfile(}{it:filename}{cmd:)}
+{cmd:replace}
+{cmd:prime_id(}{it:prime_id_var}{cmd:)}
+{cmd:matchnum(}{it:matchnum_var}{cmd:)}
+{cmd:nummatches(}{it:#}{cmd:)}
+{cmd:full}
+{cmd:matchon(}{it:matchonvars}{cmd:) sliceby(}{it:slicebyvars}{cmd:)}
+{cmd:clear  fast}
+{cmd:score} {cmd:scorevar(}{it:scorevarname}{cmd:)} {cmd:all} 
+{cmdab:unsq:uared}
+{cmdab:eucl:idean}
+{cmdab:disp:lay(}{it:display_options}{cmd:)}
+{cmd:float}
+{cmdab:nocovtrlim:itation}
+]
+
+
+{title:Description}
+
+{p 4 4 2}
+{cmd:mahapick} seeks matching observations for a set of "treated" observations,
+using a Mahalanobis distance measure which it calculates.
+
+{p 4 4 2}
+The "treated" observations are the ones for which you are seeking matches; the
+others, the non-treated, form the pool of potential matches (or "control" observations).
+(The use of the
+term "treated" comes from the study of medical treatments.){bind: } Both the treated
+and non-treated observations are expected to be present together in one dataset,
+currently in memory. The treated observations are identified by {it:treatedvar}.
+
+{p 4 4 2}
+For each treated observation, the closest matching
+non-treated observation(s) will be chosen, according to the calculated distance
+measure, and subject to the constraints of
+{cmd:matchon(}{it:matchonvars}{cmd:)} if
+that option is used. The selection of matches is done independently for each
+treated observation; a given control abservation may appear as a match for
+more than one treated observation.
+(But, of course, matched control observations are unique within the set selected
+for any particular treated observation, if multiple matches are chosen.)
+
+{col 12}{hline}
+{p 12 12 12}
+{hi:technical note:} Choosing unique matches is a beyond the scope of what
+{cmd:mahapick} was designed for, and involves a multitude of complex issues.
+However, users can take the output of {cmd:mahapick} and perform further
+processing to arrive at a uniquely-chosen set.  See the {cmd:score} and
+{cmd:all} options for more remarks about this topic. See also {help mahascores}.
+{p_end}
+
+{p 12 12 12}
+Users desiring a unique selection based on a randomization process should see
+{help mahaselectunique}.{p_end}
+{col 12}{hline}
+
+{p 4 4 2}
+{it:varlist} (the "covariates") is a set of numeric variables on which to build
+the distance measure {c -} the Mahalanobis score. For each pair of observations,
+the distance measure (or score) is the
+matrix product d'Xd, where d is a vector
+of differences in the set of variables, and X is the inverse of the
+covariance matrix of {it:varlist}.
+If i and j are indices of
+two observations, then d = (v1[i]-v1[j] \ v2[i]-v2[j] \ ... \ vn[i]-vn[j]),
+where v1 v2 ... vn are the variables of {it:varlist}. 
+
+{p 4 4 2}
+Thus, the score is the sum of all the possible products of
+pairs of elements of d, weighted by corresponding elements of X.
+See {help mahascore} for a further
+explanation of this. Note that the result is the square of what is properly
+the Mahalanobis distance, but this distinction should have no effect on the selection
+of closest matches (lowest scores). The {cmd:unsquared} option will cause
+the scores to be the proper unsquared values.
+
+{p 4 4 2}
+The covariaces are computed on the treated observations only, also
+limited to the set of
+observations that have all elements of {it:varlist} non-missing. I.e., the
+computation of covariances
+uses case-wise deletion when encountering missing values; the resulting values
+are potentially different from pair-wise covariances. This may seem like
+a limitation but it is appropriate; any treated observation with a missing value in
+one or more elements of {it:varlist} will get no matches, so it might as
+well be excluded at the outset.
+See {cmd:nocovtrlimitation} for how to override the limitation to treated
+observations.
+
+{p 4 4 2}
+Weights are allowed, but affect only the computation of the covariances.
+
+{p 4 4 2}
+The variables of {it:varlist} should be of numeric significance {c -} not categorical.
+Any categorical variables should be replaced by a set of indicator variables.
+
+
+{title:Required Options}
+
+{p 4 4 2}
+{cmd:idvar(}{it:idvarname}{cmd:)} specifies an identifying variable.  It can be
+of any type, but it must
+be a single variable.  Thus, if the existing identifying scheme consists of
+multiple variables, you should find a way to combine them uniquely into a single
+variable.
+
+{p 4 4 2}
+It is the user's responsibility to assure that {it:idvarname} uniquely identifies
+all observations, thus assuring a usable result.
+
+{p 4 4 2}
+{cmd: treated(}{it:treatedvar}{cmd:)} specifies a numeric variable that
+distinguishes the treated observations.  Its values must be 0 or 1, where 1
+indicates a treated observation.
+
+
+{title:Semi-required Options}
+
+{p 4 4 2}
+{cmd:pickids(}{it:pickidvars}{cmd:)} and {cmd:genfile(}{it:filename}{cmd:)}
+are two ways of preserving the results of the matching.
+You must use one or the other, or both.
+
+{p 4 4 2}
+{cmd:pickids(}{it:pickidvars}{cmd:)} specifies a set of one or more pre-existing
+variables to hold the id's
+of the matched observations.  It/they must be of the same type as
+{it:idvarname}, and must be filled with missing values ("" for strings) unless
+the {cmd:clear} option is specified.
+
+{p 4 4 2}
+If {it:pickidvars} consists of more than one variable, then the first will get
+the best match, the second will get the second best match, and so on.
+
+{p 4 4 2}
+{cmd:genfile(}{it:filename}{cmd:)} specifies a file into which to {help post} the results.
+
+{p 4 4 2}
+Note that {cmd:pickids(}{it:pickidvars}{cmd:)}
+puts the results into wide form within the current dataset, whereas
+{cmd:genfile(}{it:filename}{cmd:)} puts them into long form in a separate
+dataset.  (See {help reshape} for a discussion of wide- versus
+long-shaped data.)
+
+{p 4 4 2}
+Another difference between these methods is that
+with {cmd:pickids(}{it:pickidvars}{cmd:)}, it is up to the user to
+subsequently {help save} the dataset {c -} (or use it directly after its
+creation), whereas
+{cmd:genfile(}{it:filename}{cmd:)} writes the results to a separate file.
+
+{p 4 4 2}
+If you create a (wide) dataset using 
+{cmd:pickids(}{it:pickidvars}{cmd:)}, you can subsequently convert it to long
+form using {help stackids}.
+
+{col 12}{hline}
+{p 12 12 12}
+{hi:Technical note:} {cmd:pickids} was the original method provided;
+{cmd:genfile} was a later addition, and is probably more useful.
+{p_end}
+{col 12}{hline}
+
+{p 4 4 2}
+If {cmd:genfile(}{it:filename}{cmd:)} is used, the resulting file is a Stata
+dataset with these variables:
+
+{p 8 10 2}
+A "prime_id" variable of the same type as {it:idvarname}.  This holds
+the id of the treated observation for which matches are being found.
+The default name for this is _prime_id; it can be changed using the
+{cmd:prime_id} option.
+
+{p 8 10 2}
+{it:idvarname} {c -} the same name and type as in
+{cmd:idvar(}{it:idvarname}{cmd:)}.  This holds the
+ids of all observations {c -} treated or matching control observations.
+
+{p 8 10 2}
+A "matchnum" variable {c -} an int to count up the series of matches for each
+treated observation.  The default name is _matchnum; it can be changed using the
+{cmd:matchnum} option.  This variable will range from 0 to {it:#}.
+
+{p 8 10 2}
+Optionally, a "score" variable, if the {cmd:score} option is specified.
+This holds the score {c -} the distance measure between the treated (prime_id)
+observation and the given control observation.  See the {cmd:score} option for more
+about this.
+
+{p 4 4 2}
+Within this file, there will be, for each treated observation...
+
+{p 8 10 2}
+one observation representing the treated observation itself, with
+_matchnum=0, {it:idvarname}=_prime_id (or {it:prime_id_var}),
+and _score (or {it:scorevarname}) =0 (if {cmd:score} was specified);
+this is followed by...
+
+{p 8 10 2}
+zero or more observations for the matches, with _matchnum=1, 2, ... , {it:#},
+and {it:idvarname} holding the id of the matched observations.  The first will get
+the best match, the second will get the second best match, and so on.
+
+{p 4 4 2}
+For each treated observation, _prime_id (or {it:prime_id_var}) is a constant, equaling the id of the treated observation.
+Note that {it:idvarname} = _prime_id for the observations where _matchnum=0.
+
+{p 4 4 2}
+The notion of "best match" and "second best match", etc.,
+is ambiguous when ties occur in the scoring.  In this case, the present sort
+order determines the choices.  See "identical scorings" under {ul:Remarks}
+for more on this matter.
+
+
+{title:Optional Options}
+
+{p 4 4 2}
+{cmd:matchon(}{it:matchonvars}{cmd:)} imposes a restriction on
+the matching process, such that matches will be made only to observations
+that completely agree with the treated observation on the values in
+{it:matchonvars}.  In other words, the dataset is logically partitioned into
+subsets, as determined by the values in {it:matchonvars}, and matching will
+occur only within each partition.
+({it:matchonvars} may not include {it:treatedvar}.)
+
+{p 4 4 2}
+It is best that the variables in {it:matchonvars} take a fairly small set of
+values; generally, only categorical variables are appropriate.
+The types may be numeric or string.
+
+{p 4 4 2}
+Do not confuse {it:matchonvars} with {it:varlist}.  {it:varlist} is a set of
+variables on which you want the matches to be "close"; {it:matchonvars} are
+variables on which you require perfect agreement.
+
+{p 4 4 2}
+Missing values (including the extended missing values .a .b, etc.) in
+{it:matchonvars} are regarded as distinct.
+
+{p 4 4 2}
+{cmd:sliceby(}{it:slicebyvars}{cmd:)} imposes the same kind of restriction
+as does {cmd:matchon()}, restricting the matching to stay within the subsets
+as determined by the values in {it:slicebyvars}.  However, {cmd:sliceby()}
+achieves the effect by different means, dividing the dataset into subsets,
+running the matching process separately on each subset, and reuniting them
+afterwards.  By contrast, {cmd:matchon()} (without {cmd:sliceby()}) merely
+limits the matches that are chosen.
+
+{p 4 4 2}
+{cmd:sliceby(}{it:slicebyvars}{cmd:)} may only be specified if
+{cmd:matchon(}{it:matchonvars}{cmd:)} is also specified, and
+{it:slicebyvars} must be a subset of {it:matchonvars}.
+Thus, {it:matchonvars} gives the full set of variables on which the matches
+must completely agree; {it:slicebyvars} specifies which of those variables
+will be the basis for actual slicing of the dataset to achieve the effect.
+Of course, {it:slicebyvars} may equal
+{it:matchonvars}, but there may be some advantage to not doing that,
+as will be explained shortly.
+
+{p 4 4 2}
+{cmd:sliceby()} can result in very significant speed improvements
+for large datasets.
+But, of course, it is appropriate only where such a partitioning is
+an existing requirement of the desired matching operation.
+
+{p 4 4 2}
+{cmd:sliceby()} achieves its speed advantage by reducing unnecessary sorting
+{c -} at the expense of manipulating many intermediary files.  If the slices are
+exceedingly fine, the
+work involved in slicing may overshadow the advantages gained.
+Thus, it may be better for the slices to be coarser than the matchon sets; i.e.,
+use {cmd:sliceby()} to go part-way in dividing up the data, and use {cmd:matchon()}
+(with one or more additional variables) to complete the effect.
+
+{p 4 4 2}
+Because {it:slicebyvars} is a subset of {it:matchonvars}, all remarks regrding
+{it:matchonvars} apply to {it:slicebyvars}.  In particular, they ought to be
+categorical, all types are allowed, and extended missing values are regarded as
+distinct.
+
+{col 12}{hline}
+{p 12 12 12}
+{hi:Technical note:} it was not functionally necessary to require
+{it:slicebyvars} to be a subset of {it:matchonvars}.  But
+it makes for clearer syntax in that it reminds the user that slicing implicitly
+restricts the matching.  That is, regardless of that requirement,
+the use of {cmd:sliceby(}{it:slicebyvars}{cmd:)} implies the same effect as
+having {it:slicebyvars} among the {it:matchonvars}.
+
+{p 12 12 12}
+Also note that the requirement that
+{it:slicebyvars} be a subset of {it:matchonvars} imposes the opposite
+relation between the corresponding subsets of
+the data; the data subsets corresponding to {it:matchonvars} are subsets of
+those corresponding to {it:slicebyvars}.){bind: }
+{p_end}
+{col 12}{hline}
+
+{p 4 4 2}
+Note that the covariance matrix and its inverse are precalculated on the whole
+set (of treated observations only), not on each slice or matchon set.  Thus,
+the use of {cmd:matchon(}{it:matchonvars}{cmd:)}, with or without
+{cmd:sliceby(}{it:slicebyvars}{cmd:)},
+is not the same as if you were to run {cmd:mahapick} on each matchon set
+separately.
+
+{p 4 4 2}
+{cmd:fast} applies only if {cmd:sliceby} is specified.
+It causes {cmd:mahapick} to bypass the {help preserve} and {help restore}
+commands that surround the slicing operation,
+and thereby can save some time {c -} at the expense of safety.  Without
+{cmd:fast}, if you press the Break key during the processing of the slices,
+the original dataset will be restored (though any matches made during the
+processing and recorded using {cmd:pickids()} will be lost).  With {cmd:fast},
+if you press the Break key during
+the processing of the slices, you will be left with only the present slice.
+
+{p 4 4 2}
+{cmd:nocovtrlimitation} specifies that the covariance computation
+not be limited to treated observations.
+
+{p 4 4 2}
+{cmd:unsquared} modifies the score values to be the unsquared values, that is, the
+square roots of the default values. As mentioned elsewhere, the choice of
+squared or unsquared values ought to have no effect on the selection of
+matches. Thus, this should only affect the {cmd:genfile} option.
+
+{p 4 4 2}
+{cmd:euclidean} specifies that the normalized Euclidean measure is to be used, rather
+than the true Mahalanobis measure {c -} meaning that the off-diagonal elements
+of the covariance matrix are replaced with zeroes prior to inverting. The result
+is a measure that accounts for the scale of measurement in each variable of
+{it:varlist}, but ignores correlation between the variables. This is probably
+not desirable, given the advantages of the true Mahalanobis measure, but is
+provided as an alternative and for comparison to (or emulation of) earlier
+releases of {help mahascore} and {help mahapick}. See notes under
+{ul:Change History} as well as {help mahascore} for more details on this matter.
+
+{p 4 4 2}
+{cmd:display(}{it:display_options}{cmd:)} turns on the display of certain
+data structures used in the computation. If {it:display_options} contains
+{cmd:covar}, then the covariance matrix is listed;
+if is contains {cmd:invcov}, then the inverse covariance matrix is listed.
+Any other content is ignored.
+
+
+{title:Options for use with {cmd:pickids} only}
+
+{p 6 6 2}
+{cmd:clear} indicates that if {it:pickidvars} are not all
+missing, then it is okay to go ahead and replace them with missing values at
+the start of the process.
+
+
+{title:Options for use with {cmd:genfile} only}
+
+{p 6 6 2}
+{cmd:replace} indicates that if {it:filename} already exists, then it is okay
+to replace it.
+
+{p 6 6 2}
+{cmd:prime_id(}{it:prime_id_var}{cmd:)} allows you to specify the name for
+the prime_id variable.  The default name is _prime_id.
+
+{p 6 6 2}
+{cmd:matchnum(}{it:matchnum_var}{cmd:)} allows you to specify the name for
+the matchnum variable.  The default name is _matchnum.
+
+{p 6 6 2}
+{cmd:nummatches(}{it:#}{cmd:)} specifies how many matches to collect for each
+treated observation.  The default is 1.  Note that this corresponds to the number of
+{it:pickidvars} in the {cmd:pickids} option.
+
+{p 6 6 2}
+{cmd:full} specifies that if matches cannot be made, then observations with
+missing values in {it:idvarname}
+are to be written so that there will always be {it:#} +1
+observations (i.e., {it:#} "matches") for each treated observation.  Suppose that you
+specify
+{cmd:nummatches(3)}, and that for a given treated observation, only one match
+can be found.  Then by default, only two observations will be written: one
+for the treated observation, and one for the match.  If {cmd:full} is specified,
+then two additional observations (with missing values in {it:idvarname})
+will be written.
+
+{p 6 6 2}
+{cmd:score} specifies that the file will contain an additional variable,
+holding the computed distance measure between the treated observation and the
+control observation.  The default name is _score, and its type is double.
+
+{p 6 6 2}
+Note that to record all the distance measures between all treated observations
+and all other observations "in place" (using {cmd:pickids()})
+would require adding as many new variables as there are control observations,
+which may or may not be practical. Such a structure would be in wide form;
+the {cmd:score} option captures that information, but puts it in long form,
+which may be more practical.
+See also the remarks about {help mahascores}, below.
+
+{p 6 6 2}
+One possible use for this option is to allow users to supplement the results
+with an algorithm for further refinement of the matchings, for example, to
+reduce a set of candidate matches to a smaller set of unique matches,
+while minimizing the sum of all distance measures in the selected observations.
+
+{col 12}{hline}
+{p 12 12 12}
+{hi:technical note:} Implementing such an algorithm may be difficult in
+Stata; it may be necessary to export the results for use by a program
+written in a general-purpose programming language. On the other hand, it may
+be feasible to do it in Mata.
+{p_end}
+{col 12}{hline}
+
+{p 6 6 2}
+{cmd:scorevar(}{it:scorevarname}{cmd:)} allows you to specify the name of
+the score variable, if the {cmd:score} option is used.  The default name
+is _score.
+
+{p 6 6 2}
+{cmd:all} signifies that all possible control observations will be included.  {cmd:all}
+without {cmd:full} renders {cmd:nummatches(}{it:#}{cmd:)} irrelevant, and is
+equivalent to
+specifying {cmd:nummatches(}{it:#}{cmd:)}, where {it:#} is at least
+as large as the maximal number of available control observations (within
+matchon groups, if specified).
+
+{p 6 6 2}
+{cmd:all} with {cmd:full} causes {it:#} to be the miniumum number of control
+observation records
+written for each treated observation (possibly with some filled with missing values
+to fill out the quota), but there will be more control observations written if
+they are available.
+
+{p 6 6 2}
+Note that with {cmd:all}, the action of {cmd:mahapick} process is not so much
+a selecting, but
+rather a scoring and ranking process.  Also, the number of control matches
+written per treated observation can vary from one matchon group to another,
+if {cmd:matchon} was specified.
+
+{p 6 6 2}
+The intent of the {cmd:all} option is that it would be used with {cmd:score},
+by users who want to take the scores (of all potential pairings)
+and do their own selection algorithm. But if the user desires the score values,
+without the sorting or selecting of control observations, then it is recommended
+to use {help mahascores} instead of mahapick. That provides a way to
+simply capture the score values for all pairs of observations (or possibly all
+treated-to-non-treated pairs), and should prove to be faster than mahapick.
+
+{p 6 6 2}
+{cmd:float} specifies that the type for the score variable generated by
+{cmd:genfile()} will be float, rather than double.
+
+
+{title:Remarks}
+
+{p 4 4 2}
+If any of these conditions occur, then the score will be missing, and no
+matches will be made for the given treated observation:
+
+{p 8 8 2}
+Any covariate (variable in {it:varlist}) is missing in the treated observation.
+
+{p 8 8 2}
+Any of the variances are missing or zero (this would affect the whole set).
+(You can automatically avoid this by the use of the {cmd:omitmiszer} option.)
+
+{p 4 4 2}
+In addition, if any covariate is missing in a control observation, then that
+observation is excluded from consideration.
+
+{p 4 4 2}
+It may happen that no matchable control observations are found for a given
+treated observation, and no match will be assigned.  More generally, there may
+be fewer than {it:#} (or fewer than the number of
+variables in {it:pickidvars}) matchable control observations.
+For example, if you have {cmd:nummatches(3)} (or three {it:pickidvars}),
+and only two eligible matches are found for a given treated observation, then,
+only two matches will be recorded in {it:filename} (or only the first two
+of the {it:pickidvars} will be assigned) for that observation.
+
+{p 4 4 2}
+Any of these situations are unlikely to occur if the pool of control
+observations is large {c -} interpreted within each matchon group if
+{cmd:matchon()} is specified.
+
+{p 4 4 2}
+There may be cases where identical scorings occur for several potential matches.
+In this case, the existing sort order is used for breaking ties, taking the
+earlier-placed observations first (using a stable sort).  Consequently, repeated
+runs will yield identical results, even if ties exist, provided that the initial
+sort order is kept the same.
+
+{p 4 4 2}
+Identical scorings are less likely to occur if there are many variables in
+{it:varlist}, or if these variables take on many different
+values. When identical scorings occur, they usually are the result of identical
+values in {it:varlist} {c -} including cases where {it:varlist} is the same
+for the treated and control observations (for a score of 0).
+
+{p 4 4 2}
+Note that, while the processing involves sorting, the dataset is returned
+to its original sort order unless {cmd:sliceby(}{it:slicebyvars}{cmd:)} is
+specified, in which case, the order is that of a stable sort on {it:slicebyvars}.
+
+{p 4 4 2}
+{cmd:mahapick} is rather noisy in its displayed output.
+
+{p 4 4 2}
+This calls {help mahascore} and {help covariancemat}, other programs by the same
+author.
+
+{p 4 4 2}
+It is up to the user to make use of the matches.  Generally, you will want to
+{help merge} some "content" data onto the resulting set for analysis.
+If you use {cmd:genfile()} (or {cmd:pickids()}, followed by {cmd:stackids()})
+your resulting set will be a "basis" in long form, with treated and matched
+observations together in the same dataset.  You will subsequently want to merge
+content data on to this, presumably using {it:idvarname} as the matching
+variable.  This is probably the most desirable form of the resulting data for
+analysis purposes.
+
+{p 4 4 2}
+Presumably, {it:treatedvar} is an important
+variable in the analysis, but it may not be present in the basis set, if
+constructed as described above.  You
+can recover it by including it in the merge, or you can reconstruct it by
+identifying observations where _matchnum==0.
+
+{p 4 4 2}
+If you have used {cmd:pickids()} and are leaving the data in wide form, you
+would need to merge on the content data,
+once for the treated observation, and once for each pickid, with distinct
+variable names for the content data in each of these merges.
+Such a data structure may be cumbersome, but it has the one advantage of
+directly embodying the connection between treated and matched observations
+{c -} in case that is important to your planned analysis.  (For example, you
+can construct differences between the treated and matched observations.)
+
+{col 12}{hline}
+{p 12 12 12}
+{hi:technical note:} If you have used {cmd:pickids()} (and not {cmd:genfile()}),
+but find that you prefer the results in long form, you can either rerun the
+match process using {cmd:genfile()}, or convert the results to long form
+using {help stackids}.  The latter option may be convenient if the matching
+process takes a lot of time.  ({cmd:stackids} is similar to {help reshape}
+and {help stack}, but includes provisions to preserve the correspondence
+between the treated and the matched observations.)
+{p_end}
+{col 12}{hline}
+
+{p 4 4 2}
+One useful way of using {cmd:mahapick} is to take several more matches per
+treated observation than you actually expect to use.  That is, you specify a large
+{cmd:nummatches()} value (or a large set of {it:pickidvars}).
+For example, if you want three matches per treated
+observation, you might collect, say, eight matches per treated observation
+(specifying {cmd:nummatches(8)}).
+Then in subsequent analyses, using some code to pre-screen your data,
+you take the first (best) three "good" matches {c -} good in the sense that
+they have no missing values in variables needed in the analysis.  (Those would
+be variables in the "content" data mentioned above, which are typically
+{it:not} among those
+used in the matching (i.e., {it:varlist}).)  The advantage of this is that,
+rather than filtering for observations with non-missing values in the content data
+before the match, you do it
+at the time you analyze the data.  In susbsequent analyses, you might adjust the
+set of variables involved, thereby potentially shifting the set
+of control observations to exclude.  But, given this setup,
+you will not need to rerun the match.  You can also have several analyses
+with different mixes of variables, each of which takes its own best set
+of matches.  The program {help screenmatches} does this screening for you
+(with the data in long form).
+
+{p 4 4 2}
+If the inverse covariance matrix is computed on a very small set of
+observations, it may not be valid and may yield strange results. It
+might fail to be positive semi-definite, and can yield negative measures.
+(It may also cause the {cmd:unsquared} option to have a real effect on the
+choice of matches.)
+
+{p 4 4 2}
+As it stands presently, there are no [{cmd:if} {it:exp}] or
+[{cmd:in} {it:range}] features provided.  They were not deemed essential
+when {cmd:mahapick} was first created, but could be added if there is a demand
+for them.
+
+{p 4 4 2}
+See {help mahaselectunique} for a further discussion of issues relating to the
+formulation of the covariate set and the quality of the scoring, as well as how
+that relates to unique selection.
+
+{title:Examples}
+
+{p 4 8 2}
+{cmd:. mahapick income age numkids, idvar(id0) genfile(myfile)}
+{cmd:nummatches(8) full}
+{cmd:treated(assisted)}{p_end}
+{p 4 8 2}
+{cmd:. mahapick income age numkids, idvar(id0) genfile(myfile)}
+{cmd:nummatches(8) full}
+{cmd:treated(assisted)}
+{cmd:matchon(sex region) sliceby(region)}{p_end}
+{p 4 8 2}
+{cmd:. mahapick income age numkids, idvar(id0) pickids(id1 id2 id3)}
+{cmd:treated(assisted)}{p_end}
+{p 4 8 2}
+{cmd:. mahapick income age numkids, idvar(id0) pickids(id1 id2 id3)}
+{cmd:treated(assisted)}
+{cmd:matchon(sex region)}{p_end}
+{p 4 8 2}
+{cmd:. mahapick income age numkids, idvar(id0) pickids(id1 id2 id3)}
+{cmd:treated(assisted)}
+{cmd:matchon(sex region) sliceby(region)}{p_end}
+
+
+{title:Change History}
+
+{p 4 4 2}
+The 1Apr2008 release implements the full Mahalanobis measure.
+Prior to that release, the normalized Euclidean measure was used, which is
+equivalent to the current version under the {cmd:euclidean} option.
+Referring to the d vector mentioned under the description of {it:varlist},
+the normalized Euclidean measure is the sum of the squares of the components
+of d, weighted by the inverse variance of each variable.
+
+{p 4 4 2}
+The 1Apr2008 release eliminated the {cmd:common} and {cmd:omitmiszer} options,
+which were deemed as inappropriate for the changes to the program. Note that
+{cmd:common} was to limit variance computations to the set of common
+observations that have no missing values in {it:varlist}; the present
+method (for covariances) always imposes that limitation.
+
+{p 4 4 2}
+The 1Apr2008 release added these options: {cmd:unsquared}, {cmd:euclidean},
+{cmd:float}, {cmd:display()}, and {cmd:nocovtrlimitation}.
+
+
+{title:Acknowledgement}
+{p 4 4 2}
+The author wishes to thank Joseph Harkness, formerly of The
+Institute for Policy Studies
+at Johns Hopkins University for guidance in developing this program,
+as well as Heiko Giebler of Wissenschaftszentrum Berlin fur Sozialforschung
+GmbH, for suggesting further improvements.
+
+
+{title:Author}
+{p 4 4 2}
+David Kantor; initial development was done at The Institute for Policy Studies,
+Johns Hopkins University.
+Email {browse "mailto:kantor.d@att.net":kantor.d@att.net} if you observe any
+problems.
+
+{title:Also See}
+{p 4 4 2}
+{help mahascore}, {help mahascores}, {help mahascore2}, {help covariancemat}, {help variancemat},
+{help screenmatches}, {help stackids}, {help mahaselectunique}.

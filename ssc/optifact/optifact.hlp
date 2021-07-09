@@ -1,0 +1,56 @@
+{smcl}
+{hline}
+
+{title:Optifact - v1.2 - 11 Mar 2008}
+
+    {hi:Find the most appropriate summated rating scales from a list of items}
+
+{title:Syntax}
+
+{p 8 17 2}
+{cmd:optifact} {varlist} {ifin} {weight} [{cmd:,} {it:options}]
+
+{title:Options}
+{p 4 8 2}{cmd:top(#)} The number of the best candidate scales to list after analysis (default 10)
+
+{p 4 8 2}{cmd:smallest(#)} The smallest number of items allowed in the candidate scales (default 3)
+
+{p 4 8 2}{cmd:largest(#)} The largest number of items allowed in the candidate scales (default is all the items)
+
+{p 4 8 2}{cmd:maxfact(#)} The maximum number of factors (latent concepts) in the scale (default is 1)
+
+{p 4 8 2}{cmd:minslope(#)} The minimum allowable slope in the canonical correlation model (default .01)
+
+{p 4 8 2}{cmd:criteria(varlist)} A list of variables for criterion validity testing using canonical correlation
+
+{p 4 8 2}{cmd:type(string)} The type of factor analysis to use.  Must be one of pf pcf or ml.  Default is pf.  See help for {help factor}
+
+{p 4 8 2}{cmd:sig} Output the statistical significance of the model (assumes ml models).  
+Note this is the probability from the factor model (with ml option) that all parameters of the model are zero in the population. 
+{break}To get the statistical significance of alpha, {help bootstrap} the particular scale you are interested in.  
+{break}For example: bootstrap "factor item1 tem2 tem4 item6" r(alpha), reps(400)
+
+{p 4 6 2}{cmd:by} may be used with {cmd:optifact}; see {help by}.
+
+{p 4 6 2}{cmd:aweights and fweights} are allowed; see {help weight}.
+
+{p 4 6 2}{cmd:Note: you must first install {it:matsort} before you can use optifact}
+
+{title:Description}
+
+{p 4 6 2}{cmd:optifact} examines every possible combination of items specified by {varlist} 
+then lists out the scales with highest alpha and the given number of factors that can be constructed from these items.
+
+{title:Example}
+
+{p 4 6 2}{cmd:. sysuse} auto
+
+{p 4 6 2}{cmd:. optifact} price mpg rep78 headroom trunk weight length turn displacement gear_ratio, largest(4) criteria(foreign)
+
+
+{title:Author}
+
+Paul Millar
+www.ucalgary.ca/~pemillar
+pemillar@ucalgary.ca
+

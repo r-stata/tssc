@@ -1,0 +1,247 @@
+.-
+help for ^xtgraph^   Version 2.0                             (PT Seed - paul.seed@@kcl.ac.uk)
+.-
+
+
+Graphs of cross-sectional time series (xt) data
+-----------------------------------------------
+
+	^xtgraph^ yvar [^if^ exp ][^in^ exp ] , 
+		[^av^erage(avname) ^bar^(barname) ^model^ ^level^(significance level)
+		^h^alf ^gr^oup(var) ^off^set(#) ^min^obs(#) ^pow^er(#) ^log^(#) ^boxcox^(#) 
+		^savedat^(filename) v7 ^nograph^ ^list^ ^missing^ ^listwise^ ^i^(varname) ^t^(varname) 
+		graph_options]
+
+Description
+-----------
+^xtgraph^ produces graphs showing averages of a single outcome measured at 
+several points over time.  Data must be in xt format (see @xt@).  Points are 
+connected by straight lines. Separate lines can be produced for groups defined
+by any categorical variable (string or numeric).  Averages that can be plotted 
+include arithmetic mean (^mean^), geometric (^gm^) or harmonic means (^hm^), and 
+median (^median^). 
+
+Both "new" (version 8 and higher) and "old" (version 7 ands lower) graph
+types are available.  Graphs are produced in Version 8 format, unless 
+option ^V7^ is chosen. General appearance of version 7 graphs is currently 
+given by ^oldgprefs^.  However, verison 7 graphics may not be available 
+in future versions of Stata.
+
+Error bars can be drawn, showing confidence intervals (^ci^), standard errors 
+(^se^), standard deviations (^sd^) or reference ranges (^rr^).  For medians, 
+the inter-quartile range (^iqr^) and  reference ranges (^rr^) are available.  
+If there are two groups, the ^half^ option allows for half-error bars, 
+from the average to the upper limit or from the average to the lower 
+limit. Otherwise, multiple error bars can be separated horizontally using 
+the ^offset^ option. 
+
+Box-cox, power and three-parameter log transformations are also available.  
+Transformations are carried out before averages and limits of error bars 
+are calculated.  These values are back-transformed to the original 
+scale before plotting.
+
+Reference ranges are based on the Normal distribution, confidence intervals 
+use the t-distribution.  Medians and quantiles are calculated using the 
+@centile@ command.  Calculations are carried out separately for each group 
+and time point.
+
+Options
+-------
+
+^average(^avname^)^ specifies the average to be calculated.
+
+	^average(mean)^ is the default.  Simple arithmetic means are calculated.
+
+	^average(gm)^ gives for geometric means, based on a log transformation.  
+	It is a synonym for ^power(0)^
+
+	^average(hm)^ gives for harmonic means, based on the inverse transformation.  
+	It is a synonym for ^power(-1)^
+
+	^average(median)^ gives medians.  
+
+
+^group(^groupvar^)^ specifies the groups to be compared.  Separate averages and 
+limits of error bars are calculated for each group at each time.  For clarity, 
+^groupvar^ should usually have no more than four or five values.  If ^groupvar^ 
+is not specified, all observations at any one time are combined.
+
+Groups are distinguished by different plotting symbols and colours. 
+No points are plotted if ^groupvar^ is missing.  Lines are labelled 
+according to the values if ^groupvar^ is a string.  Value labels are used if 
+^groupvar^ is numberic. See @label@ for details of how to set up value labels.
+details of how to set up value labels for .
+
+^bar(^barname^)^ determines how the limits of the error bars are calculated. ^se^ 
+and ^sd^ are only available with ^average(mean)^; ^iqr^ is available only with 
+^average(median)^.
+
+	^bar(ci)^ is the default.  Standard errors and confidence intervals are 
+	calculated separately for every time point, using the t-distribution. 
+	The confidence level is set by the ^level^ option.  Otherwise, Stata's 
+	global macro $S_level, is used. It assumed that the transformed data is 
+	Normal, unless ^average(median)^ is specified.  Confidence intervals 
+	for medians are calculated using the @centile@ command.  
+
+	^bar(se)^ gives bars stretching to 1 standard errors of the mean after 
+	transformation (means only).  They correspond roughly to 68% confidence 
+	intervals for large samples, narrower for small numbers.
+
+	^bar(rr)^ gives reference ranges  within which a certain proportion 
+	(set by the ^level^ option) of the values can be expected to fall.
+	It is assumed that the transformed data is Normal, unless 
+	^average(median)^ is specified. ^bar(rr)^ ^level(68.3)^ is equivalent 
+	to ^bar(sd)^. 
+
+	^bar(sd)^ gives bars stretching to 1 standard deviation above and below 
+	the mean (means only).  For data that are normally distributed after any 
+	transformation, 68.3% (roughly two thirds) of observed values will lie 
+	within these intervals.  
+
+	^bar(iqr)^ gives the upper and lower quartiles when ^average(median)^ is specified.
+	It is equivalent to ^bar(rr)^ ^level(50)^.
+
+^level(^#^)^ specifies the confidence level, in percent, used in calculating the 
+confidence interval or the reference range.   A slight modification to the 
+command @centile@  allows non-integer values (for example 99.9%) for medians.
+It defaults to 95% or the value set by ^set level^; see help for @level@.
+
+^half^ allows for half-error bars, where there are exactly two groups.
+At each time point, the bars run either from the larger average to the upper 
+limit or from the smaller average to the lower limit.  With option ^mean^
+and no transformation, the bars are symmetric, so one half of the bar can be omitted
+without loss of information.  With more than 2 groups, ^offset^ may be used.
+
+^offset(^#^)^ changes the plotted time values by a fixed amount for each group.
+Overlapping points are separated, and the error bars are disentangled.
+Provided a suitable small value of ^offset^ is chosen, there is no distortion of the 
+impression given by the graph. A value less than 1/10 of the difference between time
+points is recommended.  With 2 groups, ^half^ may also be used.
+
+^minobs^, ^listwise^ and ^missing^ are options for handling missing data.
+If none are specified, all available data are used.
+
+^minobs(^#^)^ specifies the minimum number of observations needed for a 
+value to be included in the calculation of plotted values.  If (for any 
+group), there are not enough observations at a given time, that time point 
+is dropped.  Other groups are not affected.  If ^minobs^ is not specified, 
+the graph can be dominated by the very wide confidence intervals or 
+standard errors that occur where data are sparse.
+
+^listwise^ specifies that all panels with missing data are to be dropped.  
+
+^missing^ requires observations with the ^group^ variable missing as an extra group.  
+Otherwise such observations are dropped.
+
+^log(^#^)^ specifies a 3 parameter log transformation with the general form
+y = log(x-k) to be carried out before averages and error bars are calculated.  
+These values are back-transformed to the original scale before plotting.  
+If ^log^ is not specified, no transformation is carried out.  Only one of ^power^, 
+^boxcox^ or ^log^ can be specified.  Where data are not Normal, the command 
+@lnskew0@ will suggest suitable values for k.
+
+^power(^#^)^ specifies a power transformation to be carried out before averages 
+and error bars are calculated.  These values are back-transformed to the original 
+scale before plotting.  ^power(1)^ (no transformation) is the default value. 
+^power(0)^ is equivalent to a log transformation, leading to geometric means. 
+^power(-1)^ leads to harmonic means.  Only one of ^power^ or ^log^ can be specified.
+Where data are not Normal, the @ladder@ command or Box-Cox procedure (@bcskew0@, 
+@boxcox@) will suggest suitable power transformations.
+
+^boxcox(^#^)^ is in most circumstances a synonym for ^power^.  
+The Box-Cox transformation is a variant on a simple power transformation:
+	^y - > (y^^p - 1) / p^ , instead of ^y - > y^^p^
+The difference is only apparent in ^xtgraph^ when using the ^model^ option, 
+or (possibly) when the power is very close to zero, and there are rounding 
+problems.
+
+^model^ instructs ^xtgraph^ to use the most recent regression model to estimate the 
+average, (using @predict@), the standard deviation (^predict, stdf^) or the 
+standard error (^predict, stdp^).  Confidence intervals and reference ranges are 
+worked out in the usual way.  This option works with most of Stata's
+many regression commands for continuous data.  It can be used, for instance,
+to produce graphs with pooled or robust standard errors, or adjustment for 
+censored data. If the outcome has been transformed before fitting the model, 
+the appropriate transfomation option (^log^, ^power^, or ^boxcox^) must be used.  
+This is the only ocasion where the distinction between  ^power^ and ^boxcox^ is 
+important.  All values are taken from the last fitted model, except for the 
+frequency count used in working out confidence intervals.  Models involving 
+logit or probit transformations (@logistic@, @xtprobit@ etc.) are not supported.
+
+^list^ displays a list of the plotted means and limits by group and time in the output.
+
+^savedat(^filename[^, replace^]^)^ saves the data shown in the graph as a Stata data set.  
+Intelligent decisions are made about naming the new variables.  
+Note: to save the graph, the graphics option ^saving^ should be used. See @grother@.
+
+^nograph^ suppresses the production of the graph, which may be unnecessary if ^list^ 
+or ^savedat^ are used. If ^saving^ is set, ^nograph^ is ignored.
+
+xt options: The variables representing ^i^ and ^t^ can be set using options ^i(^ivar^)^ 
+and  ^t(^tvar^)^ or with the commands ^iis^, ^tis^.  See @xt@, @iis@, @tis@ 
+for more information.
+
+Control of version 8+ graphics is available through  the options ^lineopts^ , ^bartype^, 
+and ^baropts^.  Any graphics options contained in ^lineopts()^ is used as an option 
+or set of options for the ^line^ portion of the graph drawing. See @graph twoway 
+line@). Similarly, graphics options for the bars are given by ^baropts^.  See @graph twoway bar@.
+
+^bartype()^ sets the type of bar used. The default is ^rcap^.  Other possibilities include: ^rarea^, 
+^rbar^, ^rcapsym^, ^rconnected^. See @twoway rcap@, @twoway rarea@, @twoway rbar@, 
+@twoway rcapsym@, @twoway ronnected@.
+
+Control of plotting symbol & line type are available for version 7 graphs only.
+Use options ^symbol()^ to control the plotting symbols, and ^connect()^ for the line type.
+
+
+Examples
+--------
+
+	. ^iis pno ^
+	. ^tis week^
+	. ^xtgraph c ^
+
+	. ^xtgraph c , minobs(10) group(group) offset(.2) ^
+	. ^xtgraph c if week>=20^
+
+	. ^label define group 0 Placebo 1 vitamin^
+	. ^label values group group ^
+	. ^drop if week == 16^
+	. ^xtgraph c , xlab(20,24,28,32,36,40) ylab group(group) bar(se) offset(.2) ^
+
+	. ^replace group = 2 if control == 1^
+	. ^label define group 2 Control, modify^
+	. ^xtgraph c , xlab(20,24,28,32,36,40) ylab group(group) bar(se) offset(.2) ^
+
+
+	. ^xtgraph c , group(group) offset(.2) list ^
+
+
+	. ^xtgraph c , av(median) ^
+
+	. ^xtgraph c , av(median) bar(rr) ^
+
+
+Using xtgraph with Stata version 8 graphics
+-------------------------------------------
+
+	. ^preserve^
+	. ^tempfile myfile^
+	. ^xtgraph c, group(group) bar(se) nograph savedat("`myfile'")^
+	. ^use "`myfile'", clear^
+	. ^reshape wide  n mean lb ub , j(group) i(week)^
+
+	. ^* Carry out any desired version 8 graphics commands.  ^
+	. ^* Note that -offset- is not available in Version 8.^
+
+	. ^restore^
+
+
+
+Also see
+--------
+
+ Manual: [R] xt
+On-line: help for @xt@, @graph@, @ladder@, @bcskew0@, @boxcox@, @label@, @predict@.
+
+

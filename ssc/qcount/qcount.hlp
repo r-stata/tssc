@@ -1,0 +1,65 @@
+{smcl}
+{hline}
+help for {hi:qcount}
+{hline}
+
+{title:Quantile Regression for Count Data}
+
+{p 8 13}{cmd:qcount}{space 2}{it:depvar} [{it:varlist}] 
+    [{cmd:if} {it:exp}] [{cmd:in} {it:range}] {cmd:,}
+    {cmdab:q:uantile(}{it:number}{cmdab:)} [ {cmdab:rep:etition(}{it:integer}{cmdab:)}]{p_end}
+
+{p 15 15}Note: the number in {it:quantile} should be in the interval (0,1).{p_end}
+
+{p}After estimation, marginal effects (at the mean of the explanatory variables) are 
+obtained as:{p_end}
+
+{p 8 16}{cmd:qcount_mfx} [{cmd:if} {it:exp}] [{cmd:in} {it:range}]
+      
+{title:Description}
+
+{p}{cmd:qcount} estimates quantile regression models for count data using the jittering method 
+suggested by Machando and Santos Silva (2005). 
+
+{title:Options}
+
+{p 0 4}{cmdab:Q:uantile(}{it:number}{cmdab:)} specifies the quantile to be estimated. This is a required option.{p_end}  
+
+{p} {cmdab:rep:etition(}{it:integer}{cmdab:)} specifies the number of jittered samples to be used to calculate the 
+parameters of the model. If no specified, 1000 repetitions is the default.{p_end}
+
+{title:Examples}
+
+{p 8 12}{inp:. qcount  y x1 x2, q(0.5) rep(5000)}{p_end}
+{p 8 12}{inp:. qcount_mfx}{p_end}
+
+{title:Author}
+
+{p 4 13 2}
+{bf: Alfonso Miranda} (A.Miranda@econ.keele.ac.uk)
+Centre for Economic Research,
+Keele University,
+Keele, Staffordshire ST5 5BG, UK.
+ 
+{title:References}
+(available from the author)
+
+{p 4 13 2}
+Machado, J., Santos Silva, J.M.C. (2005) Quantiles for Counts. Journal of the American
+Statistical Association 100, 1226--1237.
+
+{p 4 13 2}
+Miranda, A. Planned Fertility and Family Background: A Quantile Regression
+for Counts Analysis. Journal of Population Economics (forthcoming).
+
+{title:Also see}
+
+{p 4 13 2}
+Manual:  {hi:[U] 23 Estimation and post-estimation commands},{break}
+{hi:[U] 29 Overview of Stata estimation commands},{break}
+
+{p 4 13 2}
+Online:  help for {help qreg}.{p_end}
+  
+
+

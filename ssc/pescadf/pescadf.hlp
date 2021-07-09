@@ -1,0 +1,99 @@
+{smcl}
+{* 09june2006}{...}
+{hline}
+help for {hi:pescadf}
+{hline}
+
+{title:Pesaran's simple panel unit root test in presence of cross section dependence}
+
+{p 8 14}{cmd:pescadf} {it:varname} 
+[{cmd:if} {it:exp}] [{cmd:in} {it:range}] {cmd:,lags({it:numlist})} [
+{cmdab:trend} {cmdab:nodemean } {cmdab:trunoff}]
+
+{p}{cmd:pescadf} is a test for panel data.  You should {cmd:tsset} your
+data before using {cmd:pescadf}, using the panel form of {cmd:tsset}; see help {help tsset}.
+
+{p} {it:varname} may contain time-series operators; see help {help varlist}.
+
+
+{title:Description}
+
+ {p}{cmd:pescadf} runs the t-test for unit roots in heterogenous panels with cross-section dependence, proposed by 
+	Pesaran (2003). Parallel to Im, Pesaran and Shin (IPS, 2003) test, it is based on the mean of individual DF (or ADF) 
+	t-statistics of each unit in the panel. Null hypothesis assumes that all series are non-stationary.  
+	To eliminate the cross dependence, the standard DF (or ADF) regressions are augmented with the cross section averages 
+	of lagged levels and first-differences of the individual series (CADF statistics). 
+	Considered is also a truncated version of the CADF statistics which has finite first and second order moments. 
+	It allows to avoid size distortions, especially in the case of models with residual serial correlations 
+	and linear trends (Pesaran, 2003).
+
+{p}	In the case where T is fixed, to ensure that the CADF statistics do not depend on the nuisance parameters 
+	the effect of the initial cross-section mean must also be eliminated, this can be achieved by applying the test to 
+	the deviations of the variable from initial crosssection mean Pesaran (2003).  
+	Lags of the dependent variable may be introduced to control for serial correlation in the errors. 
+	The order of augmentation, can be estimated using model selection criteria such as Akaike or Schwartz
+	applied as usual to the underlying time series specification.
+
+{p} The exact critical values of the t-bar statistic are given by Pesaran (2003). 
+	The critical values and summary statistics of the individual t are also given in the paper, 
+	so the Z[t-bar] statistic parallel to IPS (2003) Z[t-bar] (4.10) is distributed standard normal under the null
+	hypothesis of nonstationarity. Moreover, Pesaran (2003) suggests that generalization of the test to unbalanced panels 
+	can be made straightforwardly as IPS (2003) show. Hence in case of unbalanced panels only standarized Z[t-bar] statistics 
+	can be computed.
+
+ {p} Analogous to IPS (2003) test, Pesaran's CADF is consistent under the alternative that only a fraction of the series
+	are stationary. 
+
+
+{title:Options}
+
+{p 0 4}{cmd:lags} must be specified, and may be uqual to any non-negative integer. Provided should be or single value which determines
+	the lag length for all units in panel, or a list of lags matching the number of units in the panel.
+
+{p 0 4}{cmd:trend} includes a time trend in the estimated equation.
+
+{p 0 4}{cmd:nodemean} neglects eliminating initial cross-section mean from the variable tested. Applying the test to such deviations
+	is default version because it is suggested by Pesaran (2003).
+
+{p 0 4}{cmd:trunoff} As CADF statistics has no finite first and second moments, Pesaran (2003) suggest replacing extreme values 
+	of the test statistics by K1 or K2 such that Pr [-K1 < ti(N, T) < K2] is sufficiently large, namely in excess of 0.9999. 
+	Pesaran (2003) simulates K1 and K2 for 3 types of model depending on the deterministic part 
+	(no deterministics; intercept, intercept and linear trend)
+
+
+{title:Examples}
+
+{p 8 12}{inp:.} {stata "use http://fmwww.bc.edu/ec-p/data/hayashi/sheston91.dta,clear":use http://fmwww.bc.edu/ec-p/data/hayashi/sheston91.dta,clear}
+
+{p 8 12}{inp:. pescadf rgdppc if country>116 & country<140, lags(2)}
+
+{p 8 12}{inp:. pescadf rgdppc if country>116 & country<140, lags(2) trend}
+
+{p 8 12}{inp:. pescadf rgdppc if country>116 & country<140, lags(2) trend trunoff}
+
+{p 8 12}{inp:. pescadf D.rgdppc if country>116 & country<140, lags(1)}
+
+{title:References}
+
+Breitung, J., Pesaran, H., (2005), Unit Roots and Cointegration in Panels, 
+CESIFO Working Paper No. 1565
+
+Im, K., Pesaran, H., Shin, Y., (2003), Testing for unit roots in heterogenous panels, 
+Journal of Econometrics, vol. 115.
+
+Pesaran, H., (2003), A Simple Panel Unit Root Test in the Presence of Cross Section Dependence, 
+Cambridge Working Papers in Economics 0346, Faculty of Economics (DAE), University of Cambridge
+
+{title:Acknowledgements}
+
+This routine was inspired by C. F. Baum's & F. Bornhorst's -ipshin- routine.
+
+{title:Author}
+
+Piotr Lewandowski, Warsaw School of Economics, Institute for Structural Research, Poland, 
+Piotr.Lewandowski@sgh.waw.pl
+
+
+{title:Also see}
+
+{p 0 19}On-line:  help for {help dfuller}, {help madfuller} (if installed), {help ipshin}  (if installed), {help levinlin}  (if installed)  {p_end}

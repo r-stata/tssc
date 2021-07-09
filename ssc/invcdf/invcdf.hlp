@@ -1,0 +1,90 @@
+{smcl}
+{* 26jan2005}{...}
+{hline}
+help for {hi:invcdf}
+{hline}
+
+{title:Invert the cumulative distribution function (quantile function)}
+
+{p 8 15 2}
+{cmd:incdf} {it:varname} [{cmd:if} {it:exp}]
+ [{cmd:in} {it:range}] [{it:weight}] {cmd:,}
+  {cmdab:g:enerate:(}{it:newvar}{cmd:)}
+  {bind:{cmdab:r:eference:(}{it:refvar} [{cmd:if} {it:exp}] [{cmd:in} {it:range}]{cmd:)}}
+  [ {cmd:cdf(}{it:cdfvar}{cmd:)} ]
+
+
+{p 4 4 2}
+{cmd:by} {it:...} : may be used with {cmd:invcdf}; see help {help by}.
+
+{p 4 4 2}
+{cmd:fweight}s and {cmd:aweight}s are allowed; see help {help weights}.
+
+
+{title:Description}
+
+{p 4 4 2} {cmd:invcdf} applies the inverse cumulative distribution function
+(the so called quantile function) of {it:refvar} to the values of
+{it:varname}. Technically, {cmd:invcdf} first
+computes the empirical cumulative distribution function of {it:refvar} (see
+{help cumul}) and then applies the inverse of this CDF to the
+values of {it:varname}. Note that {it:varname} must lie between 0 and 1
+(inclusive).
+
+{p 4 4 2} The values computed by {cmd:invcdf} are equivalent to those
+obtained by {help _pctile:_pctile, percentiles()} (apart from possible precision
+problems). Also see the {cmd:relrank} command (available from the SSC
+Archive). An application of {cmd:invcdf} can be found in the
+{net "describe http://fmwww.bc.edu/repec/bocode/j/jmp":jmp} package (also
+available from the SSC Archive).
+
+
+{title:Options}
+
+{p 4 8 2} {cmd:generate(}{it:newvar}{cmd:)} it not optional. It specifies
+the name of the new variable to be created.
+
+{p 4 8 2}
+{bind:{cmd:reference(}{it:refvar} [{cmd:if} {it:exp}] [{cmd:in} {it:range}]{cmd:)}}
+is not optional. It specifies the variable representing
+the reference distribution. Use {cmd:if} and {cmd:in} within
+{cmd:reference()} to restrict the sample for {it:refvar} (the {cmd:if} and
+{cmd:in} restrictions outside {cmd:reference()} do not apply to
+{it:refvar}). Note that the indicated samples for {it:refvar} and
+{it:varname} may overlap.
+
+{p 4 8 2} {cmd:cdf(}{it:cdfvar}{cmd:)} may be used to specify a variable
+representing the empirical cumulative distribution function (e.c.d.f.)
+of {it:refvar}. In this case, {cmd:relrank} skips the computation of the
+e.c.d.f. and uses {it:cdfvar} instead. Note that {it:cdfvar} should lie in
+[0,1] and must be defined for all values of {it:refvar} in the specified sample.
+
+
+{title:Examples}
+
+{p 4 4 2} Compute the hypothetical wages for women that
+would result if women had the male wage distribution:
+
+        {com}. cumul wage if female==1, generate(cum)
+        . invcdf cum, ref(wage if female==0) g(hypwage)
+        . summarize hypwage
+        {txt}
+
+{title:Methods and Formulas}
+
+{p 4 4 2}{cmd:invcdf} inverts the empirical distribution function using
+averages where the function is flat. The formula can be found in
+{hi:[R] pctile} (standard formula).
+
+
+{title:Author}
+
+{p 4 4 2}
+Ben Jann, ETH Zurich, jann@soz.gess.ethz.ch
+
+
+{title:Also see}
+
+{p 4 13 2}
+Online:  help for {help pctile}, {help cumul}, {help relrank} (if
+installed), {help jmp} (if installed)

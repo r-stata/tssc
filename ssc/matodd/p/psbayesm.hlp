@@ -1,0 +1,110 @@
+.-
+help for ^psbayesm^
+.-
+
+Pseudo-Bayes smoothing of cell estimates (matrix version)
+---------------------------------------------------------
+
+    ^psbayesm^ data_matrix [prior_matrix]
+    [ ^, m^atrix^(^matname^) p^rob ^f^ormat^(^%fmt^)^
+
+Description
+-----------
+
+^psbayes^ takes data_matrix, which should be a set of frequencies, and
+shrinks or smooths it towards a set of frequencies implied by prior
+probabilities. This will have the effect of replacing sampling
+zeros by positive estimates whenever the priors are positive.
+
+For a matrix of data frequencies n_ij, summing to n, and a matrix of
+prior probabilities q_ij, the smoothed estimates are n * p_ij, where
+
+                  n   n_ij      k
+        p_ij =  ----- ---- +  ----- q_ij,
+                n + k   n     n + k
+
+and shrinkage is tuned by the constant
+
+                2             2
+               n  - sum ( n_ij )
+        k = -----------------------.
+                                  2
+            sum (n_ij - n * q_ij )
+
+These estimates minimise the total mean square error between
+estimated and estimand probabilities. For more details, see the
+References.
+
+If prior_matrix is specified, it must sum to 1. If prior_matrix is not
+specified, it is taken to be a matrix of equal probabilities.
+
+
+Remarks
+-------
+
+The data matrix may be entered directly into Stata or it may be produced
+by a previous command, such as ^tabulate^.
+
+
+Options
+-------
+
+^matrix(^matname^)^ specifies that results are to be placed in matrix
+    matname.
+
+^prob^ indicates that probabilities rather than estimated frequencies
+    are to be shown (and if desired kept).
+
+^format(^%fmt^)^ controls the format with which matrix output is
+    printed. Default ^format(%9.1f)^.
+
+
+Example
+-------
+
+        . ^psbayesm f^
+
+
+References
+----------
+
+Agresti, A. 1990. Categorical data analysis. New York: John Wiley.
+
+Bishop, Y.M.M., Fienberg, S.E. and Holland, P.W. 1975. Discrete
+multivariate analysis. Cambridge, MA: MIT Press.
+
+Fienberg, S.E. and Holland, P.W. 1970. Methods for eliminating zero
+counts in contingency tables. In Patil, G.P. (ed.) Random counts in
+scientific work. Volume 1: Random counts in models and structures.
+Pennsylvania State University Press, University Park, 233-260.
+
+Fienberg, S.E. and Holland, P.W. 1972. On the choice of flattening
+constants for estimating multinomial probabilities. Journal of
+Multivariate Analysis 2, 127-134.
+
+Fienberg, S.E. and Holland, P.W. 1973. Simultaneous estimation of
+multinomial cell probabilities. Journal, American Statistical
+Association 68, 683-691.
+
+Good, I.J. 1965. The estimation of probabilities: an essay on modern
+Bayesian methods. MIT Press, Cambridge, MA.
+
+Sutherland, M., Holland, P.W. and Fienberg, S.E. 1975. Combining Bayes
+and frequency approaches to estimate a multinomial parameter. In
+Fienberg, S.E. and Zellner, A. (eds) Studies in Bayesian econometrics
+and statistics in honor of Leonard J. Savage. North-Holland, Amsterdam,
+585-617.
+
+
+Author
+------
+
+         Nicholas J. Cox, University of Durham, U.K.
+         n.j.cox@@durham.ac.uk
+
+
+Also see
+--------
+
+On-line:  help for @psbayes@
+

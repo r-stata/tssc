@@ -1,0 +1,175 @@
+{smcl}
+{* *! version 1.1.1  20jan2013}{...}
+{hline}
+help for {hi:moments2}
+{hline}
+
+{title:Moment-based statistics}
+
+{p 8 17 2}{cmd:moments2}
+[{it:varlist}]
+[{cmd:if} {it:exp}]
+[{cmd:in} {it:range}]
+[{it:weight}]
+[{cmd:,}
+{cmdab:t:ype(}{it:name}{cmd:)}
+{cmdab:all:obs}
+{cmdab:f:ormat(}{it:numeric_format(s)}{cmd:)}
+{cmdab:m:atname(}{it:matrix_name}{cmd:)}
+{it:tabdisp_options}
+{cmd:variablenames}
+]
+
+{p 8 17 2}{cmd:moments2}
+{it:varname}
+[{cmd:if} {it:exp}]
+[{cmd:in} {it:range}]
+[{it:weight}]
+[{cmd:,}
+{cmdab:t:ype(}{it:name}{cmd:)}
+{cmdab:all:obs}
+{cmd:by(}{it:varlist}{cmd:)}
+{cmdab:f:ormat(}{it:numeric_format(s)}{cmd:)}
+{cmdab:m:atname(}{it:matrix_name}{cmd:)}
+{it:tabdisp_options}
+]
+
+{p 4 4 2}{cmd:by ... :} may be used with {cmd:moments2}; see help
+on {help by}.
+
+{p 4 4 2}
+{cmd:aweight}s and {cmd:fweight}s are allowed; see help
+{help weights}.
+
+
+{title:Description}
+
+{p 4 4 2}{cmd:moments2} calculates mean, standard deviation, skewness and kurtosis of {cmd:type()}
+for {it:varlist}. Any string variables in {it:varlist} are ignored. Definitions and a discussion
+of the measures specified by {cmd:type()} can be found
+in: Joanes, D. N. & Gill, C. A. (1998). {browse "http://onlinelibrary.wiley.com/doi/10.1111/1467-9884.00122/abstract":Comparing measures of sample skewness and kurtosis}. {it:The Statistician}, {it:47}, 183-189.
+
+
+{title:Options}
+
+{p 4 8 2}{cmd:{ul:t}ype()} (default: {cmd:type(G)}) specifies the type of skewness and kurtosis
+measure as follows [mr = sum((xi-mean(X))^r)/n and s = sqrt(sum((xi-mean(X))^2)/(n-1)) with r = the r-th
+moment, xi = values of variable X, n = number of cases]:
+
+{p 8 13 2}{cmd:g}{space 1} : g1 (skewness) and g2 (kurtosis) as used in many textbooks (Joanes
+& Gill's "type 1" measure); g1 = m3/m2^(3/2) and g2 = m4/m2^2-3
+
+{p 8 13 2}{cmd:g3} : as {cmd:type(g)} without subtracting 3 from the kurtosis measure as
+used in Stata's {help summarize} command
+
+{p 8 13 2}{cmd:G}{space 1} : G1 (skewness) and G2 (kurtosis) as used in SAS and SPSS (Joanes
+& Gill's "type 2" measure); G1 = g1*sqrt(n*(n-1))/(n-2) and G2 = ((n+1)*g2+6)*(n-1)/((n-2)*(n-3)); this is the default
+
+{p 8 13 2}{cmd:G3} : as {cmd:type(G)} adding 3 to the kurtosis measure
+
+{p 8 13 2}{cmd:b}{space 1} : b1 (skewness) and b2 (kurtosis) as used in
+MINITAB and BMDP (Joanes & Gill's "type 3" measure); b1 = m3/s^3 and b2 = m4/s^4-3
+
+{p 8 13 2}{cmd:b3} : as {cmd:type(b)} without subtracting 3 from the kurtosis measure
+
+{p 4 8 2}{cmd:allobs} specifies use of the maximum possible
+number of observations for each variable. The default is to
+use only those observations for which all variables in
+{it:varlist} are not missing.
+
+{p 4 8 2}{cmd:by()} specifies one or more variables defining distinct groups
+for which moment-based statistics should be calculated. {cmd:by()} is allowed
+only with a single {it:varname}. The choice between {cmd:by:} and {cmd:by()} is
+one of precisely what kind of output display is required. The display with
+{cmd:by:} is clearly structured by groups while that with {cmd:by()} is more
+compact. To show moments for several variables and several groups with
+a single call to {cmd:moments2}, the display with {cmd:by:} is essential.
+
+{p 4 8 2}{cmd:format()} controls the display format of mean, standard
+deviation, skewness and kurtosis, as follows. Up to four numeric
+formats may be given. The first numeric format
+given controls the display of the mean; any second numeric format that
+of the standard deviation; any third numeric format that of the skewness,
+and any fourth numeric format that of the kurtosis. Formats not specified
+default to {cmd:%9.3f}.
+
+{p 4 8 2}{cmd:matname()} specifies the name of a matrix in which to save
+the results of (the last set of) calculations. There will be 5 columns.
+The columns will contain n, mean, standard deviation, skewness
+and kurtosis.
+
+{p 4 8 2}{it:tabdisp_options} are options of {help tabdisp}
+other than {cmd:format()}.
+
+{p 4 8 2}{cmd:variablenames} specifies that the variable names of {it:varlist}
+should be used in display. The default is to use variable labels to indicate a
+set of variables.
+
+
+{title:Examples}
+
+{p 4 8 2}{cmd:. sysuse auto}{p_end}
+{p 4 8 2}{cmd:. moments2 price}{p_end}
+{p 4 8 2}{cmd:. moments2 price, t(G3)}{p_end}
+{p 4 8 2}{cmd:. moments2 price, t(g3)}{p_end}
+{p 4 8 2}{cmd:. moments2 price-foreign}{p_end}
+{p 4 8 2}{cmd:. moments2 price-foreign, format(%5.1f %5.1f)}{p_end}
+{p 4 8 2}{cmd:. bysort rep78: moments2 mpg}{p_end}
+
+
+{title:Saved results}
+
+{pstd}
+{cmd:moments2} saves the following results (of the last variable/by-group) in {cmd:r()}:
+
+{synoptset 15 tabbed}{...}
+{p2col 5 15 19 2: Scalars}{p_end}
+{synopt:{cmd:r(N)}}number of observations{p_end}
+{synopt:{cmd:r(sum_w)}}sum of the weights{p_end}
+{synopt:{cmd:r(mean)}}mean{p_end}
+{synopt:{cmd:r(Var)}}variance{p_end}
+{synopt:{cmd:r(sd)}}standard deviation{p_end}
+{synopt:{cmd:r(skewness)}}skewness{p_end}
+{synopt:{cmd:r(kurtosis)}}kurtosis{p_end}
+{synopt:{cmd:r(sum)}}sum of variable{p_end}
+{synopt:{cmd:r(min)}}minimum{p_end}
+{synopt:{cmd:r(max)}}maximum{p_end}
+{synopt:{cmd:r(p1)}}1st percentile{p_end}
+{synopt:{cmd:r(p5)}}5th percentile{p_end}
+{synopt:{cmd:r(p10)}}10th percentile{p_end}
+{synopt:{cmd:r(p25)}}25th percentile{p_end}
+{synopt:{cmd:r(p50)}}50th percentile{p_end}
+{synopt:{cmd:r(p75)}}75th percentile{p_end}
+{synopt:{cmd:r(p90)}}90th percentile{p_end}
+{synopt:{cmd:r(p95)}}95th percentile{p_end}
+{synopt:{cmd:r(p99)}}99th percentile{p_end}
+{p2colreset}{...}
+
+{synoptset 15 tabbed}{...}
+{p2col 5 15 19 2: Macros}{p_end}
+{synopt:{cmd:r(type)}}type of skewness and kurtosis measure{p_end}
+{p2colreset}{...}
+
+
+{title:References}
+
+{p 4 8 2}Joanes, D. N. & Gill, C. A. (1998). {browse "http://onlinelibrary.wiley.com/doi/10.1111/1467-9884.00122/abstract":Comparing measures of sample skewness and kurtosis}. {it:The Statistician}, {it:47}, 183-189.
+
+
+{title:Acknowledgments}
+
+{p 4 4 2}{cmd:moments2} (and this help file) leans heavily on Nicholas
+Cox's {cmd:moments} (see: {net "describe moments, from(http://fmwww.bc.edu/RePEc/bocode/m)":click here}). {cmd:moments2} does
+nothing more than adding the {cmd:type()}-option and making "type 2" (i.e. {cmd:type(G)}) measures of skewness and
+kurtosis the default.
+
+
+{title:Author}
+
+{p 4 4 2}Dirk Enzmann, University of Hamburg, Germany{break}
+        dirk.enzmann@uni-hamburg.de
+
+
+{title:Also see}
+
+{p 4 13 2}help for {help summarize}; help for {help tabstat}; ssc package {cmd:lmoments} ({net "describe lmoments, from(http://fmwww.bc.edu/RePEc/bocode/l)":click here})

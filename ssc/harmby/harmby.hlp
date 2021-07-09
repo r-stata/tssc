@@ -1,0 +1,58 @@
+{smcl}
+{.-}
+help for {cmd:harmby} {right:(Roger Newson)}
+{.-}
+
+
+{title:Harmonize values of variables within by-groups}
+
+{p 8 27}
+{cmd:harmby} {it:varlist} [ , {cmd:by(}{it:by_varlist}{cmd:)} ]
+
+
+{title:Description}
+
+{p}
+{cmd:harmby} ("{it:harm}onize within {it:by}-groups") checks that each variable in the {it:varlist}
+has no more than one value, other than the standard missing value, in each of the by-groups specified
+by {cmd:by()}, or in the whole data set, if {cmd:by()} is not specified. A standard missing value is {hi:.}
+for a numeric variable, or the empty string {hi:""} for a string variable. If this condition is true,
+then {cmd:harmby} replaces all standard missing values in the by-group (or data set) by the one value
+that is not standard missing, if such a value exists,
+and takes no action if all values in a by-group (or data set) are standard missing.
+{cmd:harmby} is useful if there are variables whose values should be unique within each by-group
+(or within the data set), and new observations with standard missing values for these variables
+have been added to some or all of the by-groups by {help merge},
+or by {help ingap}, which is downloadable from {help ssc:SSC}.
+
+
+{title:Options}
+
+{p 0 4}{cmd:by(}{it:by_varlist}{cmd:)} specifies a list of variables defining the by-groups.
+The data set does not have to be sorted by those variables, and remains sorted in its
+original order after {cmd:harmby} has run.
+
+
+{title:Examples}
+
+{p 8 16}{inp:. harmby N N_clust depvar, by(idnum idstr)}{p_end}
+
+
+{title:Author}
+
+{p}
+Roger Newson, King's College, London, UK.
+Email: {browse "mailto:roger.newson@kcl.ac.uk":roger.newson@kcl.ac.uk}
+
+
+{title:Also see}
+
+{p 0 21}
+{bind: }Manual:  {hi:[R] merge}, {hi:[R] by}
+{p_end}
+{p 0 21}
+On-line:  help for {help merge}, {help by}
+{p_end}
+{p 10 21}
+help for {help ingap} if installed
+{p_end}

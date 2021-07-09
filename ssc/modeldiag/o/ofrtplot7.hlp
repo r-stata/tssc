@@ -1,0 +1,136 @@
+{smcl}
+{* 11june2002}{...}
+{hline}
+help for {hi:ofrtplot7}
+{hline}
+
+{title:Observed, fitted and residuals plotted versus time variable} 
+
+{p 8 16}{cmd:ofrtplot7} [{it:varname}] [ {cmd:,} {cmd:super} 
+{cmd:tfrac(}{it:#}{cmd:)} {it:graph_options} {cmdab:nla:bel(}{it:#}{cmd:)} ] 
+
+
+{title:Description}
+
+{p}{cmd:ofrtplot7} plots observed, fitted and residuals from the last model
+against a covariate. It is designed for time series models and by default the
+covariate is whatever has been {cmd:tsset} as the time variable. However, 
+other variables may be specified, whether or not data have been {cmd:tsset}. 
+
+{p} Observed values are for the response or dependent variable from the last
+model, fitted values are whatever {cmd:predict} produces by default and
+residuals are whatever {cmd:predict, res} produces. The plot is restricted to
+the estimation sample. 
+
+{p}By default, the plot has two panels. In the top panel, observed and fitted
+are plotted against the covariate. In the bottom panel, residuals are plotted
+against the covariate, by default as spikes from zero.
+
+{p}This is the original version of {cmd:ofrtplot} for Stata 7, 
+renamed {cmd:ofrtplot7}. Users of Stata 8 upwards should upgrade to 
+{cmd:ofrtplot}.
+
+
+{title:Remarks} 
+
+{p}Whenever 
+
+{p 4 4}the time variable has a {cmd:%t} or {cmd:%d} format, and 
+
+{p 4 4}neither {cmd:xlabel} nor {cmd:xlabel()} is specified, and 
+
+{p 4 4}values span more than one year
+
+{p}{cmd:ofrtplot7} attempts to select for the time ({it:x}) axis nice labels
+based on the years included in the time series.  For daily, weekly, monthly,
+quarterly or half-yearly data, it attempts to show the first time period within
+each of various years which are nice numbers. For yearly data, it attempts to
+show years which are nice numbers. Nice numbers here are preferably multiples
+of 10, 5 or 2. The main algorithm used is based on code by Hardin (1995).
+
+
+{title:Options}
+
+{p 0 4}{cmd:super} specifies that plots are to be superimposed, not separate.
+ 
+{p 0 4}{cmd:tfrac(}{it:#}{cmd:)} specifies the fraction of the graph image
+taken up by the top panel. The default is 0.625. If the fraction specified is
+1, the bottom panel is suppressed, while if it is 0, the top panel is
+suppressed.
+
+{p 0 4}{it:graph_options} are options of {cmd:graph, twoway}, except for
+{cmd:by()} and {cmd:rescale}. The defaults include {cmd:gap(5)} and 
+(if {it:varname} is specified) {cmd:sort}. 
+
+{p 4 4}If {cmd:symbol()} is specified, the first two symbol specifications
+refer to observed and fitted and the second two symbol specifications refer to
+residuals and zeros.  The default is {cmd:sy(iiii)}. 
+
+{p 4 4}If {cmd:connect()} is specified, the first two connect specifications
+refer to observed and fitted and the second two connect specifications refer to
+residuals and zeros.  The default is {cmd:c(ll[-]||)}. 
+
+{p 4 4}By default, with no {cmd:super} option, the plot shows two separate
+panels, and {cmd:rlabel}, {cmd:rlabel()}, {cmd:rline}, {cmd:rline()},
+{cmd:rtick}, {cmd:rtick()}, {cmd:rscale()}, {cmd:r1title()} and {cmd:r2title()}
+refer to the corresponding y axis options of the bottom panel.  That is,
+{cmd:rlabel} is the {cmd:ylabel} option for the y or residual axis,
+{cmd:r1title()} is the {cmd:l1title()} option for that axis, and so forth. Thus
+these options may be thought of as specifying options referring to the
+{cmd:r}esidual axis. 
+
+{p 4 4} Correspondingly, {cmd:ylabel}, {cmd:ylabel()}, {cmd:yline},
+{cmd:yline()}, {cmd:ytick}, {cmd:ytick()}, {cmd:yscale()}, {cmd:l1title()} and
+{cmd:l2title()} refer to the y axis options of the top panel.   
+ 
+{p 4 4} With the {cmd:super} option, only one panel is produced, and these
+options all have their usual meanings. 
+
+{p 4 4} Note, however, that {cmd:saving()} and {cmd:title()} refer to the
+combined graph image, whatever other options are specified. 
+
+{p 0 4}{cmd:nlabel(}{it:#}{cmd:)} suggests the number of nice labels 
+to be shown on the time axis. The suggestion may or may not be taken 
+literally. This option is independent of {cmd:xlabel} or {cmd:xlabel()}. 
+
+
+{title:Examples}
+
+{p 4 8}{inp:. tsset time} 
+
+{p 4 8}{inp:. regress {it:whatever} time}
+
+{p 4 8}{inp:. ofrtplot7}
+
+{p 4 8}{inp:. ofrtplot7, tfrac(0.7)} 
+
+{p 4 8}{inp:. gen gpm = 1 / mpg} 
+
+{p 4 8}{inp:. regress gpm weight} 
+
+{p 4 8}{inp:. ofrtplot7 weight, c(.l||)  sy(oiii)} 
+
+
+{title:Author}
+
+    Nicholas J. Cox, University of Durham, U.K.  
+    n.j.cox@durham.ac.uk
+
+
+{title:Acknowledgements} 
+
+    Denis de Crombrugghe suggested this program. Kit Baum made several useful
+    suggestions.
+
+
+{title:References} 
+
+{p}Hardin, J.W. 1995. Calculate nice numbers for labeling or drawing grid
+lines. {it:Stata Technical Bulletin} 25, 2-3. (Also in {it:STB Reprints}
+Volume 5, 19-20.)
+
+
+{title:Also see}
+
+{p 0 19}On-line:  help for {help graph}, {help predict}, {help tsset} 
+{p_end}

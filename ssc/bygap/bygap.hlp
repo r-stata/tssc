@@ -1,0 +1,144 @@
+{smcl}
+{.-}
+help for {cmd:bygap} {right:(Roger Newson)}
+{.-}
+
+
+{title:Insert a by-gap observation at the start of each by-group}
+
+{p 8 27}
+{cmd:bygap} [ {it:varlist} ]
+ [ {cmd:if} {it:expression} ] [ {cmd:in} {it:range} ]
+ [ , {cmdab:g:apindicator}{cmd:(}{it:newvarname}{cmd:)}
+   {cmdab:rs:tring}{cmd:(}{it:string_replacement_option}{cmd:)} ]
+
+{p}
+where {it:string_replacement_option} can be {cmd:name}, {cmd:label} or {cmd:labname}.
+
+
+{title:Description}
+
+{p}
+{cmd:bygap} inserts a by-gap observation at the start of each by-group defined by the by-variables
+specified in the {it:varlist}, or at the start of the data set if the {it:varlist} is not specified.
+The by-gap observation for each by-group has the same by-variable values as the by-group,
+and all other variables are set to missing values. (The user can replace these missing values with other
+values afterwards.) Optionally, {cmd:bygap} generates an indicator variable, indicating which observations
+are by-gap observations. {cmd:bygap} is useful for preparing a data set to be plotted using {help graph}
+together with the {help sencode} package (downloadable from {help ssc:SSC}),
+or output to a TeX, LaTeX, HTML or Microsoft Word table using the {help listtex} package
+(also downloadable from {help ssc:SSC}).
+
+
+{title:Options}
+
+{p 0 4}{cmd:gapindicator(}{it:newvarname}{cmd:)} specifies the name of a new variable to be generated,
+equal to 1 for the newly-inserted by-gap observations and 0 for all other observations.
+
+{p 0 4}{cmd:rstring(}{it:string_replacement_option}{cmd:)} specifies a rule for replacing the values of
+string variables (other than by-variables) in by-gap observations. If {cmd:rstring} is set to {cmd:name},
+then string variables which are not by-variables are reset to their variable names in by-gap
+observations. If {cmd:rstring} is set to {cmd:label}, then string variables that are not by-variables
+are set to their variable labels in by-gap observations, or to missing values if their variable labels are missing.
+If {cmd:rstring} is set to {cmd:labname}, then string variables that are not by-variables
+are set to their variable labels in by-gap observations, or to their variable names if their variable labels
+are missing. If {cmd:rstring} is set to any other value, or not set, then string variables that are not
+by-variables are set to missing values. (Note that numeric variables that are not by-variables
+are always set to numeric missing values in by-gap observations.)
+The {cmd:rstring} option allows the user to add a title line to a data set of string variables,
+or to add a title line to each by-group of a data set of string variables. This option can be useful if
+the data set is output to a TeX, LaTeX, HTML or Microsoft Word table using the {help listtex} package,
+downloadable from {help ssc:SSC}.
+
+
+{title:Remarks}
+
+{p 0 0}
+{cmd:bygap} is used to convert a Stata data set to a set of table rows, with table gaps at
+the start of each by-group. The user can label these table gaps by using the {cmd:rstring} option,
+or by modifying the values of variables in the by-gap observations using {help replace}.
+The user can then create plots using the {help graph} command, or list the data set
+as a list of table rows, using either {help list} or the {help listtex} package
+(downloadable from {help ssc:SSC}).
+It is often advisable for the user to type {help preserve} before a sequence of commands including
+{cmd:bygap}, and to type {help restore} after a sequence of commands using {cmd:bygap},
+because {cmd:bygap} modifies the data set by adding new observations. It is often also advisable
+for the user to place the whole sequence of commands in a {help do:do-file}, and to execute
+this {help do:do-file}, rather than to type the sequence of commands one by one at the terminal.
+
+
+{title:Examples}
+
+{p 8 16}{inp:. bygap,g(toprow)}{p_end}
+
+{p 8 16}{inp:. bygap foreign,g(gind)}{p_end}
+
+{p 8 16}{inp:. sort foreign rep78 make}{p_end}
+{p 8 16}{inp:. bygap foreign rep78,g(gapobs)}{p_end}
+
+{p}
+The following example works in the {hi:auto} data if the user has installed the {help listtex} package,
+downloadable from {help ssc:SSC}. It outputs to the Results window a generic ampersand-delimited
+text table, which can be cut and pasted into a Microsoft Word document, and then converted to
+the rows of a table inside Microsoft Word, using the menu sequence {cmd:Table->Convert->Text to Table}.
+(Note that the {help listtex} command can alternatively create table rows suitable for input into a
+TeX, LaTeX or HTML file.)
+
+{p 8 16}{inp:. preserve}{p_end}
+{p 8 16}{inp:. bygap foreign,gap(gap)}{p_end}
+{p 8 16}{inp:. decode foreign,gene(orig)}{p_end}
+{p 8 16}{inp:. replace make=orig+" cars:" if gap==1}{p_end}
+{p 8 16}{inp:. listtex make mpg weight,type}{p_end}
+{p 8 16}{inp:. restore}{p_end}
+
+{p}
+The following example works in the {hi:auto} data if the user has installed the {help listtex} package,
+and also the {help tostring} package of Nicholas J. Cox and Jeremy Wernow. (Both of these packages
+can be downloaded from {help ssc:SSC}.) It outputs to the Results window a generic ampersand-delimited
+text table, which can be cut and pasted into a Microsoft Word document (as in the previous example),
+and then converted into two tables, one for American cars and one for non-American cars, each with a title
+line containing the variable labels in the {hi:auto} data. Note that, to do this, the user must
+convert the numeric variables to string variables, and this is done using {help tostring}.
+
+{p 8 16}{inp:. preserve}{p_end}
+{p 8 16}{inp:. tostring *,use}{p_end}
+{p 8 16}{inp:. bygap foreign,rstring(labname)}{p_end}
+{p 8 16}{inp:. listtex make mpg weight price,type}{p_end}
+{p 8 16}{inp:. restore}{p_end}
+
+{p}
+The following example works in the {hi:auto} data if the user has installed the {help sencode} package,
+downloadable from {help ssc:SSC}. It produces a graph of mileage by car type (US or non-US) and
+repair record.
+
+{p 8 16}{inp:. preserve}{p_end}
+{p 8 16}{inp:. gene str1 rowlab=""}{p_end}
+{p 8 16}{inp:. replace rowlab=string(rep78,"%2.0f")}{p_end}
+{p 8 16}{inp:. bygap foreign,gap(gapind)}{p_end}
+{p 8 16}{inp:. replace rowlab="US cars:" if gapind==1 & foreign==0}{p_end}
+{p 8 16}{inp:. replace rowlab="Others:" if gapind==1 & foreign==1}{p_end}
+{p 8 16}{inp:. sencode rowlab,gene(row) many gs(foreign -gapind rep78)}{p_end}
+{p 8 16}{inp:. lab var row "Repair record"}{p_end}
+{p 8 16}{inp:. version 7:graph row mpg,yreverse ylab(1(1)12) yscale(0 13) xlab(0(10)50)}{p_end}
+{p 8 16}{inp:. restore}{p_end}
+
+
+{title:Author}
+
+{p}
+Roger Newson, King's College, London, UK.
+Email: {browse "mailto:roger.newson@kcl.ac.uk":roger.newson@kcl.ac.uk}
+
+
+{title:Also see}
+
+{p 0 21}
+{bind: }Manual:  {hi:[U] 14.1.2 by varlist:}, {hi:[U] 14.5 by varlist: construct},
+{hi:[U] 31.2 The by construct}, {hi:[R] by}, {hi:[R] expand}
+{p_end}
+{p 0 21}
+On-line:  help for {help by}, {help byprog}, {help ssc}
+{p_end}
+{p 10 21}
+help for {help listtex}, {help sencode} and {help tostring} if installed
+{p_end}

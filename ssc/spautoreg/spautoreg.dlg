@@ -1,0 +1,547 @@
+/*
+ spautoreg
+*! VERSION 7.0 20/12/2012
+*/
+VERSION 11.2
+INCLUDE _std_xlarge
+DEFINE _dlght 430
+INCLUDE header
+HELP hlp1, view("help spautoreg")
+RESET res1
+
+SCRIPT PREINIT
+BEGIN
+program parseMessage
+script se_createAsSvyOLS
+script se_setBias_on
+program svy_check_title
+END
+
+PROGRAM parseMessage
+BEGIN
+if __MESSAGE.contains("__MI__") {
+call script se_setMI_on
+}
+END
+
+SCRIPT POSTINIT
+BEGIN
+program check_bytab
+program se_setFinalInitState
+END
+
+PROGRAM check_bytab
+BEGIN
+if ! __MESSAGE.contains("__MI__") {
+call script sub_set_by_on
+}
+END
+
+SCRIPT svy_is_on
+BEGIN
+	script max_setDefaultNoLog
+END
+SCRIPT svy_is_off
+BEGIN
+	script max_setDefaultLog
+END
+
+DIALOG main, label("spautoreg- Spatial Cross Sections Regression (SAR-SEM-SDM-SAC-Tobit)") ///
+	tabtitle("Main")
+BEGIN
+ DEFINE wlabel 130
+ DEFINE cmdx 320
+ DEFINE cmdw 170
+ DEFINE _x _xsetbu
+ DEFINE _y _top
+
+ TEXT tx_cmd1   _lft      _top      100      .,	///
+	label("Model:")
+ TEXT tx_fn1	130	@  	400 	.,	///
+ label("Weight Matrix File Name (dta):") 
+
+  COMBOBOX cb_cmd1  _lft  _ss     100        .,	///
+	label("Model")				///
+	contents(cmd1_con )		///
+	value(cmd11_con) option(model)	///
+	onselchangelist(cmd1_sel ) dropdownlist
+
+ FILE fi_fn1   130     @  	400 	.,	///
+ label("Brows...")				///
+ option("wmfile")				///
+ filter("Stata dta File (*.dta)|*.dta|All (*.*)|*.*") ///
+ defext(dta)
+
+ GROUPBOX gb_group1   _lft     _ss       _iwd     _ht6 , 
+  TEXT     tx_yvar     _ilft   +15    _vnwd     .,	/*
+		*/ label("Dependent Variable:")		/*
+		*/
+  TEXT     tx_xvar     _vlx      @      _cwd2     .,	/*
+		*/ label("Independent Variables:")	/*
+		*/
+  VARNAME  vn_yvar     _ilft       _ss       _vnwd   .,	/*
+		*/ label("Dependent Variable")		/*
+		*/
+  VARLIST  vl_xvar     _vlx       @         380      .,	/*
+		*/ label("Independent Variables")
+  CHECKBOX ck_nocons @   _ms   _cwd1  .,	/*
+		*/ label("No Constant")	/*
+		*/ option("noconstant")		/*
+		*/
+ VARLIST vl_aux _ilft   _xls   350    ., ///
+	label("Auxiliary Variables") ///
+	option(aux)
+ TEXT tx_aux    380   @    160   .,	///
+	label("Auxiliary Variables")
+ VARLIST vl_mhet _ilft	_ms	350 .,	///
+	label("Heteroscedasticity Variables") ///
+	option(mhet)
+ TEXT tx_mhet	380 	@ 	160 .,	///
+	label("Heteroscedasticity Variables")
+ VARLIST vl_varq _ilft	_ms	350 .,	///
+	label("Eq2 (GS3SLS) Variables") ///
+	option(var2)
+ TEXT tx_varq	380 	@ 	160 .,	///
+	label("Variables of Eq2 (GS3SLSAR)")
+*/	
+  CHECKBOX ck_optdst  _lft    _ls   _iwd    _ht1 , 	///
+	groupbox					///
+	onclickon(script ck_dist_on)			///
+	onclickoff(script ck_dist_off)		///
+	label("Distribution:")
+  RADIO rb_norm	_ilft   _ss     100  ., /*
+	*/ label("Normal")	 /*
+	*/ first			/*
+	*/ option("dist(norm)")		/*
+*/
+  RADIO rb_exp   120  @	100	., /*
+	*/ label("Exponential") /*
+	*/ option("dist(exp)")		/*
+*/
+  RADIO rb_weib	240	@	100 .,	/*
+	*/ label("Weibull") /*
+	*/ last				/*
+	*/ option("dist(weib)")		/*
+*/
+  CHECKBOX ck_mfx  _lft    _ls   _iwd    _ht2 , 	///
+	groupbox					///
+	onclickon(script ck_mfx_on)			///
+	onclickoff(script ck_mfx_off)		///
+label("Spatial Autocorrelation Coef. Type:   " " " " " " Total, Direct, and Indirect Marginal Effects - Elasticities:")
+
+ RADIO rb_sprho	_ilft  _ss  80  ., /*
+	*/ label("Rho")	 /*
+	*/ first			/*
+	*/ option("spar(rho)")		/*
+*/
+DEFINE y @y
+ RADIO rb_splam	100   y  @ .,	/*
+	*/ label("Lambda") /*
+	*/ clickon(program main_gmm_on)	/*
+	*/ last				/*
+	*/ option("spar(lam)")		/*
+*/	
+ RADIO rb_lin	230   y  100  ., /*
+	*/ label("Linear")	 /*
+	*/ first			/*
+	*/ option("mfx(lin)")		/*
+*/
+ RADIO rb_log	300   y  @ .,	/*
+	*/ label("Log-Log") /*
+	*/ last				/*
+	*/ option("mfx(log)")		/*
+*/	
+  CHECKBOX ck_tolog    390   y 120 ., option("tolog") /*
+*/ label("Log Transform Varlist") /*
+*/
+
+  CHECKBOX ck_model0 _lft    _xls   _iwd    _ht5 , ///
+	groupbox				 ///
+	onclickon(script ck_model0_on)		 ///
+	onclickoff(script ck_model0_off)	 ///
+	label("Standardized Weight Matrix Type:")
+  RADIO    rb_ws1  _ilft     _ss     300    ., 	/*
+	*/ label("Standardized Weight Matrix - (W)") /*
+	*/ first			/*
+	*/ option("stand")		/*
+*/
+  RADIO    rb_ws2  _ilft     _ss     300    ., 	/*
+	*/ label("Inverse Standardized Weight Matrix - (1/W)") /*
+	*/ option("stand inv")		/*
+*/
+  RADIO    rb_ws3  _ilft     _ss     300    ., 	/*
+	*/ label("Inverse Squared Standardized Weight Matrix - (1/W^2)") /*
+	*/ last					/*
+	*/ option("stand inv2")			/*
+*/
+END
+
+DIALOG est1 , tabtitle("Options")
+BEGIN
+  CHECKBOX ck_model11  _lft    _top   _ibwd    _ht16 , ///
+	groupbox				 ///
+	onclickon(script ck_model11_on)		 ///
+	onclickoff(script ck_model11_off)	 ///
+	label("Tests:")
+ CHECKBOX ck_tests    _ilft  _ss   350  ., option("tests") /*
+*/ label("Display ALL Tests") 
+ CHECKBOX ck_lmspac    _ilft  _ss   350  ., option("lmspac") /*
+*/ label("Spatial Autocorrelation Tests") 
+ CHECKBOX ck_diag   @  _ss  @  ., option("diag") /*
+*/ label("Model Selection Diagnostic Criteria") 
+ CHECKBOX ck_lmhet    _ilft  _ss   350  ., option("lmhet") /*
+*/ label("Heteroscedasticity Tests") 
+ CHECKBOX ck_lmnorm    _ilft  _ss   350  ., option("lmnorm") /*
+*/ label("Non Normality Tests") 
+ CHECKBOX ck_hausman    _ilft  _ss   350  ., option("hausman") /*
+*/ label("Hausman Specification OLS/IV-2SLS Test") 
+ CHECKBOX ck_lmiden    _ilft  _ss   350  ., option("lmiden") /*
+*/ label("Identification Restrictions Tests") 
+ CHECKBOX ck_reset    _ilft  _ss   350  ., option("reset") /*
+*/ label("REgression Specification Error Tests (RESET)") 
+
+ CHECKBOX ck_model22  _lft  _xls   _ibwd     _ht9 ,	///
+	groupbox						///
+	onclickon(script ck_model22_on)				///
+	onclickoff(script ck_model22_off)			///
+	label("GS3SLS Model Options:")
+  RADIO    rb_3sls     _ilft       _ss       _ibwd       .,	///
+	label("Three-Stage Least Squares [3SLS]")		///
+	first							///
+	option(NONE)
+  RADIO    rb_2sls     @           _ss       @           .,	///
+	label("Two-Stage Least Squares [2SLS]")			///
+	option("2sls")
+  RADIO    rb_ols      _ilft       _ss       @           .,	///
+	label("Ordinary Least Squares [OLS]")			///
+	option("ols")
+  RADIO    rb_sure     @           _ss       @           .,	///
+	label("Seemingly Unrelated Regression [SURE]")		///
+	option("sure")
+  RADIO    rb_mvreg    @           _ss       @           .,	///
+	last							///
+	option("mvreg")						///
+	label("SURE with OLS Degree-of-Freedom Adjustment [MVReg]")
+*/
+END
+
+DIALOG est3 , tabtitle("Model2")
+BEGIN
+ CHECKBOX ck_model3 _lft _top _ibwd    _ht18 , 	///
+ groupbox					///
+ onclickon(script ck_model31_on)		///
+ onclickoff(script ck_model31_off)		///
+ label("Additional Options:")
+ TEXT tx_predict _ilft    _ss    150 .,	///
+	label("Predicted Variable")
+ TEXT tx_resid   200      @      150 .,	///
+	label("Residuals Variable")
+ VARNAME vn_predict _ilft _ss   150  .,	///
+	label("predict") 		///
+	option(predict)
+ VARNAME vn_resid  200   @     150  .,	///
+	label("resid") 			///
+	option(resid)
+
+  EDIT ed_grids  _ilft       _ls    50   ., 	/*
+	*/ label("gridsearch")				/*
+	*/ option("grids")
+  TEXT     tx_grids     80    @  250    .,	/*
+	*/ label("Grid Search Initial Values (SARARML)")
+  EDIT ed_impower  _ilft        _ls    50   ., 	/*
+	*/ label("impower")			/*
+	*/ option("impower")
+  TEXT     tx_impower     80     @  250    .,	/*
+	*/ label("Impower Initial Values (SARARGS / SARARIV)")
+ CHECKBOX ck_tobit   _ilft  _ls  400  ., option("tobit") /*
+*/ label("tobit: Use Tobit Regression") 
+  EDIT ed_llt  _ilft       _ss    50   ., 	/*
+	*/ label("llt")				/*
+	*/ option("ll")
+  TEXT     tx_llt     80    @  350    .,	/*
+	*/ label("ll: Tobit Minimum Left-Censoring Dependent Variable Value")
+
+ CHECKBOX ck_hetero _ilft  _ls   450  ., option("het") /*
+*/ label("Use Heterockedasticy Model (SARARML/SARARGS/SARARIV), default Homoscedasticity") 
+*/
+  CHECKBOX ck_lagw  _lft    _xls   _ibwd    _ht3 , 	///
+	groupbox					///
+	onclickon(script ck_lagw_on)			///
+	onclickoff(script ck_lagw_off)		///
+label("Initial Values:")
+  CHECKBOX ck_inrho   _ilft    _ls    70    ., /*
+	*/ clickon("gaction est3.sp_inrho.enable") /*
+	*/ clickoff("gaction est3.sp_inrho.disable")
+  SPINNER  sp_inrho   _cksep        @    40  .,	/*
+	*/ min(0) max(1) default(0.1)		/*
+	*/ option("inrho")			/*
+	*/ label("inrho")
+  TEXT     tx_inrho   95    @     _sprb  .,	/*
+	*/ label("Rho")
+
+  CHECKBOX ck_inlam   130   @    20  ., 	/*
+	*/ clickon("gaction est3.sp_inlam.enable") /*
+	*/ clickoff("gaction est3.sp_inlam.disable")		
+  SPINNER  sp_inlam   _cksep        @    40  .,	/*
+	*/ min(0) max(1) default(0.1)		/*
+	*/ option("inlambda")			/*
+	*/ label("inlambda")
+  TEXT     tx_inlam   200    @     _sprb  .,	/*
+	*/ label("Lambda")
+
+  CHECKBOX ck_ord  260     @      70    ., 	/*
+	*/ clickon("gaction est3.sp_ord.enable") /*
+	*/ clickoff("gaction est3.sp_ord.disable")		
+  SPINNER  sp_ord   _cksep        @    40  .,	/*
+	*/ min(1) max(4) default(1)		/*
+	*/ option("order")			/*
+	*/ label("Order")
+  TEXT     tx_ord   330   @      _sprb  .,	/*
+	*/ label("Order")
+
+  CHECKBOX ck_model12  _lft    _xls   _ibwd    _ht8 , ///
+	groupbox				 ///
+	onclickon(script ck_model12_on)		 ///
+	onclickoff(script ck_model12_off)	 ///
+	label("Options:")
+ CHECKBOX ck_coll _ilft     _ss    400 ., option("coll") /*
+*/ label("coll: Keep Collinear Variables")
+ CHECKBOX ck_robust _ilft  _ss   350  ., option("robust") /*
+*/ label("robust: Use Huber-White Variance-Covariance Matrix") 
+ CHECKBOX ck_twostep _ilft  _ss   300  ., option("twostep") /*
+*/ label("twostep: Use Newey Two-Step Estimator; default is MLE") 
+ CHECKBOX ck_dn   @  _ss  @  ., option("dn") /*
+*/ label("Use (N) divisor instead of (N-K) for DF") 
+*/
+END
+
+LIST cmd1_con
+BEGIN
+sar
+sem
+sdm
+sac
+--------------
+ivtobit
+--------------
+sararml
+spgmm
+--------------
+sarargs
+sarariv
+gs2sls
+gs2slsar
+--------------
+gs3sls
+gs3slsar
+--------------
+END
+
+LIST cmd11_sel
+BEGIN
+sar
+sem
+sdm
+sac
+ivtobit
+sararml
+spgmm
+sarargs
+sarariv
+gs2sls
+gs2slsar
+gs3sls
+gs3slsar
+END
+
+SCRIPT ck_dist_on
+BEGIN
+ main.rb_norm.enable
+ main.rb_exp.enable
+ main.rb_weib.enable
+END
+
+SCRIPT ck_dist_off
+BEGIN
+ main.rb_norm.disable
+ main.rb_exp.disable
+ main.rb_weib.disable
+END
+
+SCRIPT ck_mfx_on
+BEGIN
+ main.rb_sprho.enable
+ main.rb_splam.enable
+ main.rb_lin.enable
+ main.rb_log.enable
+END
+SCRIPT ck_mfx_off
+BEGIN
+ main.rb_sprho.disable
+ main.rb_splam.disable
+ main.rb_lin.disable
+ main.rb_log.disable
+END
+
+SCRIPT ck_model0_on
+BEGIN
+ main.rb_ws1.enable
+ main.rb_ws2.enable
+ main.rb_ws3.enable
+END
+
+SCRIPT ck_model0_off
+BEGIN
+ main.rb_ws1.disable
+ main.rb_ws2.disable
+ main.rb_ws3.disable
+END
+
+SCRIPT ck_model11_on
+BEGIN
+ est1.ck_tests.enable
+ est1.ck_lmspac.enable
+ est1.ck_lmhet.enable
+ est1.ck_lmnorm.enable
+ est1.ck_reset.enable
+ est1.ck_diag.enable
+ est1.ck_lmiden.enable
+ est1.ck_hausman.enable
+END
+
+SCRIPT ck_model11_off
+BEGIN
+ est1.ck_lmspac.disable
+ est1.ck_lmhet.disable
+ est1.ck_lmnorm.disable
+ est1.ck_reset.disable
+ est1.ck_diag.disable
+ est1.ck_lmiden.disable
+ est1.ck_hausman.disable
+ est1.ck_tests.disable
+END
+
+SCRIPT ck_model12_on
+BEGIN
+ est3.ck_coll.enable
+ est3.ck_robust.enable
+ est3.ck_twostep.enable
+ est3.ck_dn.enable
+END
+
+SCRIPT ck_model12_off
+BEGIN
+ est3.ck_coll.disable
+ est3.ck_robust.disable
+ est3.ck_twostep.disable
+ est3.ck_dn.disable
+END
+
+SCRIPT ck_model22_on
+BEGIN
+ est1.rb_3sls.enable
+ est1.rb_2sls.enable
+ est1.rb_sure.enable
+ est1.rb_mvreg.enable
+ est1.rb_ols.enable
+END
+
+SCRIPT ck_model22_off
+BEGIN
+ est1.rb_3sls.disable
+ est1.rb_2sls.disable
+ est1.rb_sure.disable
+ est1.rb_mvreg.disable
+ est1.rb_ols.disable
+END
+
+SCRIPT ck_model31_on
+BEGIN
+ est3.vn_predict.enable
+ est3.vn_resid.enable
+ est3.ed_grids.enable
+ est3.ed_impower.enable
+ est3.ed_llt.enable
+ est3.ck_hetero.enable
+ est3.ck_tobit.enable
+END
+
+SCRIPT ck_model31_off
+BEGIN
+ est3.vn_predict.disable
+ est3.vn_resid.disable
+ est3.ed_grids.disable
+ est3.ed_impower.disable
+ est3.ed_llt.disable
+ est3.ck_hetero.disable
+ est3.ck_tobit.disable
+END
+
+SCRIPT ck_lagw_on
+BEGIN
+ est3.sp_inrho.enable
+ est3.sp_inlam.enable
+ est3.sp_ord.enable
+END
+
+SCRIPT ck_lagw_off
+BEGIN
+ est3.sp_inrho.disable
+ est3.sp_inlam.disable
+ est3.sp_ord.disable
+END
+
+INCLUDE byifin
+INCLUDE weights_fpai
+INCLUDE se
+INCLUDE max_ml
+
+PROGRAM command
+BEGIN
+ put /program by_output
+ put "spautoreg "
+ varlist main.vn_yvar [main.vl_xvar]
+ put " " /program ifin_output
+ put " " /program weights_output
+ put /program se_prefix_output
+ require main.fi_fn1
+beginoptions
+ optionarg main.fi_fn1
+ optionarg main.cb_cmd1
+ option radio(main rb_norm rb_exp rb_weib)
+ optionarg main.vl_mhet
+ optionarg main.vl_varq
+ optionarg main.vl_aux
+ option main.ck_nocons
+ option radio(main rb_lin rb_log)
+ option radio(main rb_sprho rb_splam)
+ option main.ck_tolog 
+ option radio(main rb_ws1 rb_ws2 rb_ws3)
+ option est1.ck_lmspac
+ option est1.ck_lmhet
+ option est1.ck_lmnorm
+ option est1.ck_diag
+ option est1.ck_hausman
+ option est1.ck_lmiden 
+ option est1.ck_reset
+ option est1.ck_tests
+ option est3.ck_coll
+ option est3.ck_robust
+ option est3.ck_twostep
+ option est3.ck_dn
+ option radio(est1 rb_ols rb_mvreg rb_sure rb_2sls rb_3sls)
+ option est3.ck_hetero
+ optionarg est3.ed_grids
+ optionarg est3.ed_impower
+ option est3.ck_tobit
+ optionarg est3.ed_llt
+ optionarg est3.vn_predict
+ optionarg est3.vn_resid
+ optionarg est3.sp_inrho
+ optionarg est3.sp_inlam
+ optionarg est3.sp_ord
+ put " " /program se_output
+ put " " /program max_output
+endoptions
+ END
+

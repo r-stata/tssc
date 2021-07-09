@@ -1,0 +1,101 @@
+.-
+help for ^rbounds^                                              
+.-
+.
+^Rosenbaum sensitivity analysis for average treatment effects on the treated^
+^---------------------------------------------------------------------------^
+.
+^rbounds^ varname [^if^ exp]^,^ ^g^amma^(^numlist^)^ [^a^lpha^(^#^)^ ^acc(^#^)^ ^sigonly^ ^dots^]
+.
+.
+^Description^
+^-----------^
+.
+^rbounds^ calculates Rosenbaum bounds for average treatment effects on 
+the treated in the presence of unobserved heterogeneity (hidden bias) 
+between treatment and control cases. ^rbounds^ takes the difference in the 
+response variable between treatment and control cases as input variable 
+^varname^. The procedure then calculates Wilcoxon signrank tests that give 
+upper and lower bound estimates of significance levels at given levels of 
+hidden bias. Under the assumption of additive treatment effects, rbounds 
+also provides Hodges-Lehmann point estimates and confidence intervals for 
+the average treatment effect on the treated. If installed, the input variable 
+^varname^ may be generated from @psmatch@ or @psmatch2@. Currently, 
+^rbounds^ implements the sensitivity tests for matched (1x1) pairs only.
+.
+.
+^Options^
+^-------^
+.
+^gamma(^numlist^)^ specifies the values of cap gamma for which to carry out
+    the sensitivity analysis. Estimates at cap gamma = 1 (no heterogeneity)
+    are included in the calculations by default. ^gamma()^ is required by
+    rbounds.
+.
+^alpha(^#^)^ specifies the values of alpha in the calculation of confidence
+    intervals for the Hodges-Lehmann point estimate of the average treatment
+    effect.
+.
+^acc(^#^)^ specifies the convergence criterion of the line search algorithm 
+    used to find the Hodges-Lehmann point estimates. Convergence level is set
+    to 1e-acc, the preset value is acc=6.
+.
+^sigonly^ restricts ^rbounds^ to calculate Wilcoxon signrank tests for 
+    significance levels only. 
+
+^dots^ may be specified for status information. The option is useful for
+    checking total execution time with large samples.
+.
+.
+^Examples^
+^--------^
+.
+^(1) post-estimation use after psmatch2 (or related) command^
+.
+. psmatch2 college, outc(wage) pscore(pscore) caliper(.25) common
+.
+. gen delta = wage - _wage if _treat==1 & _support==1
+.
+. rbounds delta, gamma(1 (1) 3)            - performs sensitivity analysis
+                                             at gamma = 1,2,3.
+.
+. rbounds delta, gamma(1 (1) 3) alpha(.90) - as above, but uses a=.90 for 
+                                             confidence interval calculations.
+.
+. rbounds delta, gamma(1 (1) 3) sigonly    - performs sensitivity analysis
+                                             at gamma = 1,2,3 without calcula-
+                                             ting the Hodges-Lehmann estimates.
+.
+^(2) using Rosenbaum (2002, p.82) data^
+.
+. use rbtest.dta, clear
+.
+. rbounds dlead, gamma(1 (1) 4 4.25 5 6)   - replicates analyses of Chapter 4.3
+                                             in Rosenbaum (2002)
+.
+.
+.
+^References^
+^----------^
+.
+Rosenbaum, P.R. (2002) Observational Studies. 2nd edition. New York: Springer.
+.
+DiPrete, T.A., Gangl, M. (2004) Assessing Bias in the Estimation of Causal Effects: 
+Rosenbaum Bounds on Matching Estimators and Instrumental Variables Estimation 
+with Imperfect Instruments. Discussion paper SP I 2004-101. Berlin: WZB.
+.
+.
+^Author^
+^-------^
+.
+        Markus Gangl
+        Social Science Centre Berlin (WZB)
+        gangl@wz-berlin.de
+.
+.
+^Also see:^
+^---------^
+.
+On-line:  help for @psmatch@, @psmatch2@ if installed
+
+

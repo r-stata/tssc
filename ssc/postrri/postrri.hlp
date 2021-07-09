@@ -1,0 +1,66 @@
+{smcl}
+{* 7july2006}{...}
+{hline}
+help for {hi:postrri}
+{hline}
+
+{title:Posterior Relative Risk}
+
+{p 4 14 10}{cmd:postrri} , {cmdab:p:rior(}{it:#lb #ub}{cmd:)}  {cmdab:d:ata(}{it:#rr #lb #ub}{cmd:)} 
+[ {cmdab:l:evel(}{it:#}{cmd:)} {cmdab:lp:rior(}{it:#}{cmd:)} 
+{cmdab:ld:ata(}{it:#}{cmd:)} {cmdab:f:ormat(%}{it:fmt}{cmd:)}  ] {p_end}
+
+{title:Description}
+
+{p 4 10 10}{cmd:postrri} provides an easy way to do Bayesian analyses via inverse-variance 
+(information) weighted averaging of the prior with the frequentist relative risk. 
+It is an immediate command, see help {help immed}.{p_end}
+ 
+{title:Options}
+
+{p 4 8 2} {cmdab:p:rior(}{it:#lb #ub}{cmd:)} specifies the confidence 
+limits for the prior relative risk.{p_end}
+
+{p 4 8 2} {cmdab:d:ata(}{it:#rr #lb #ub}{cmd:)} specifies the frequentist relative risk and confidence 
+limits for the data.{p_end}
+
+{p 4 8 2}{cmdab:l:evel(}{it:#}{cmd:)} specifies the confidence level for the posterior relative risk. 
+The default is 95%.{p_end}
+
+{p 4 8 2} {cmdab:lp:rior(}{it:#}{cmd:)} specifies the probability for the Bayesian interval. 
+The default is 95%.{p_end}
+
+{p 4 8 2} {cmdab:ld:ata(}{it:#}{cmd:)} specifies the confidence level for the frequentist interval. 
+The default is 95%.{p_end}
+
+{p 4 8 2}{cmdab:f:ormat(%}{it:fmt}{cmd:)} specifies the display format for presenting numbers.
+format(%3.2f) is the default; see help {help format}.{p_end}
+
+{title:Examples}
+
+    . {stata "postrri , prior(0.25 4) data(3.51 .80 15.4)"} 
+    . {stata "postrri , prior(0.25 4) data(3.51 .80 15.4)  l(90)" }
+    . {stata "postrri , prior(0.25 4) data(3.51 .80 15.4)  l(99)" }
+    . {stata "postrri , prior(0.25 4) data(3.51 .80 15.4)  f(%4.3f)" }
+    . {stata "postrri , prior(0.25 4) data(1.69 1.28 2.23)" }
+
+{title:Reference}
+
+{p 4 8 2}Greenland S. (2006) Bayesian perspectives for epidemiologic research. I. 
+Foundations and basic methods., {it:International Journal of Epidemiology}, 35:765-775.{p_end}
+	 
+{title:Authors}
+
+{p 4 8 2}Nicola Orsini, Division of Nutritional Epidemiology,
+Institute of Environmental Medicine, Karolinska Institutet, Sweden.{p_end}
+{p 4 8 2}Rino Bellocco,
+Department of Medical Epidemiology and Biostatistics, Karolinska Institutet, Stockholm, Sweden, 
+and Department of Statistics, University of Milano Bicocca, Milan, Italy.{p_end}
+{p 4 8 2}Sander Greenland, Departments of Epidemiology and Statistics, 
+University of California, Los Angeles, CA, U.S.A.{p_end}
+ 
+{title:Support}
+
+{p 4 12}{browse "http://nicolaorsini.altervista.org"}{p_end}
+{p 4 12}{browse "mailto:nicola.orsini@ki.se?subject=info postrri":nicola.orsini@ki.se}
+

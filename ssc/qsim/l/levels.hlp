@@ -1,0 +1,118 @@
+{smcl}
+{* 7 April 2003}{...}
+{hline}
+help for {hi:levels}
+{hline}
+
+{title:Levels of integer or string variable}
+
+{p 8 17 2}
+{cmd:levels} 
+{it:varname} 
+[{cmd:if} {it:exp}] 
+[{cmd:in} {it:range}] 
+[
+{cmd:,}
+{cmdab:c:lean} 
+{cmdab:l:ocal(}{it:macname}{cmd:)} 
+{cmdab:miss:ing} 
+{cmdab:s:eparate}{cmd:(}{it:separator}{cmd:)} 
+]  
+
+
+{title:Description}
+
+{p 4 4 2}{cmd:levels} displays a sorted list of the distinct values of {it:varname}, 
+which should be a variable taking on integer or string values, or in other 
+words, a categorical variable, very broadly so defined. 
+
+
+{title:Remarks}
+
+{p 4 4 2}{cmd:levels} serves two different functions.  Occasionally, it serves
+to give a compact display of the distinct values of {it:varname}.  More 
+commonly, it may be useful when it is desired to cycle through the 
+distinct values of {it:varname} with (say) {cmd:foreach}. 
+{cmd:levels} leaves behind a list in {cmd:r(levels)} which may be used in a
+subsequent command. 
+ 
+{p 4 4 2}{cmd:levels} may not be used if {it:varname} contains non-integer numeric 
+values. 
+
+{p 4 4 2}{cmd:levels} may hit the {help limits} imposed by your Stata. However, 
+it is likely to be most useful when the number of distinct values of 
+{it:varname} is modest. 
+
+{p 4 4 2}The terminology of levels of a factor has long been standard in 
+experimental design. See, for example, Cochran and Cox (1957, p.148) 
+or Yates (1937, p.5). 
+
+
+{title:Options}
+
+{p 4 8 2}{cmd:clean} displays string values without compound double quotes. 
+By default, each distinct string value is displayed within compound double 
+quotes, as these are the most general delimiters. If you know that the 
+string values in {it:varname} do not include embedded spaces or embedded 
+quotes, then this is an appropriate option. {cmd:clean} has no 
+effect on the display of integer values. 
+
+{p 4 8 2}{cmd:local(}{it:macname}{cmd:)} inserts the list of values in 
+local macro {it:macname} within the calling program's space. Hence 
+that macro will be accessible after {cmd:levels} has finished. 
+This is helpful for subsequent use, especially with {cmd:foreach}. 
+
+{p 4 8 2}{cmd:missing} specifies that missing values of {it:varname} 
+should be included in the calculation.  The default is to exclude them. 
+
+{p 4 8 2}{cmd:separate}{cmd:(}{it:separator}{cmd:)} specifies a separator 
+to serve as punctuation for the values of the returned list.
+The default is a space. The most obviously useful alternative is a comma. 
+
+
+{title:Examples}
+
+{p 4 8 2}{inp:. levels rep78}
+
+{p 4 8 2}{inp:. levels rep78, sep(,)}
+
+{p 4 8 2}{inp:. levels rep78, miss}
+
+{p 4 8 2}{inp:. levels make if foreign}
+
+{p 4 4 2}{inp:. levels factor, local(levels)}{break} 
+{inp:. foreach l of local levels {c -(}}{break}
+{inp:.{space 8}di "-> factor = `l'"}{break}
+{it:.{space 8}whatever}{inp: if factor == `l'}{break}
+{inp:. {c )-}}
+
+   
+{title:Saved results} 
+
+{p 4 8 2}{cmd:r(levels)}{space 8}list of distinct values 
+
+
+{title:Author} 
+
+        {p 4 4 2}Nicholas J. Cox, University of Durham, U.K.{break} 
+        n.j.cox@durham.ac.uk
+
+
+{title:Acknowledgements} 
+
+	{p 4 4 2}Nicholas Winter identified a bug in a previous version. 
+	Kit Baum made a suggestion which led to the {cmd:clean} option. 
+
+
+{title:References} 	
+
+{p 4 8 2}Cochran, W.G. and G.M. Cox. 1957. {it:Experimental design.} 
+New York: John Wiley. 
+
+{p 4 8 2}Yates, F. 1937. {it:The design and analysis of factorial experiments.}
+Harpenden: Imperial Bureau of Soil Science Technical Communication 35. 
+	 
+{title:Also see}
+
+{p 4 13 2}On-line:  help for {help foreach}; {help limits}{p_end}
+

@@ -1,0 +1,101 @@
+{smcl}
+{* 5mar2004}{...}
+{hline}
+help for {hi:ppplot}
+{hline}
+
+{title:P-P plots} 
+
+{p 8 17 2} 
+{cmd:ppplot}
+{it:plottype} 
+{it:varname}
+[{it:weight}] 
+[{cmd:if} {it:exp}] 
+[{cmd:in} {it:range}]
+{cmd:,}
+{cmd:by(}{it:byvar}{cmd:)}
+[ 
+{cmdab:miss:ing}
+{cmdab:ref:erence(}{it:#}{cmd:)} 
+{it:graph_options}
+]
+
+{p 8 17 2}
+{cmd:ppplot} 
+{it:plottype} 
+{it:varlist}
+[{cmd:if} {it:exp}] 
+[{cmd:in} {it:range}]
+[{cmd:,}
+{it:graph_options}
+]
+
+
+{title:Description}
+
+{p 4 4 2}{cmd:ppplot} produces a P-P (probability-probability) plot of the 
+cumulative distribution functions of one or more groups or 
+variables against that of a reference group or variable, for the same sets of 
+observed values. By default the reference group is the last variable named,  
+or, with a single variable, that defined by the highest value of {it:byvar}. 
+
+{p 4 4 2}For more than one variable in {it:varlist}, only observations with all
+values of {it:varlist} present are shown.
+
+{p 4 4 2}The plot may be one of eight {help graph_twoway:twoway} types, namely,
+{cmd:area}, {cmd:bar}, {cmd:connected}, {cmd:dot}, {cmd:dropline}, {cmd:line},
+{cmd:scatter} or {cmd:spike}. The {it:plottype} must be specified. 
+
+{p 4 4 2}{cmd:fweight}s and {cmd:aweight}s may be specified. 
+
+
+{title:Options}
+
+{p 4 8 2} {cmd:by(}{cmd:)} specifies that groups are defined by the 
+distinct values of a single variable {it:byvar}. {cmd:by()}
+is only allowed with a single {it:varname}.
+
+{p 4 8 2}{cmd:missing}, used only with {cmd:by()}, permits the use of
+non-missing values of {it:varname} corresponding to missing values for the
+variable named by {cmd:by()}. The default is to ignore such values.
+
+{p 4 8 2}{cmd:reference()}, used only with {cmd:by()}, specifies a reference 
+group as a value of {it:byvar}. By default, the highest value of {it:byvar} 
+in the data specified defines the reference group. 
+
+{p 4 8 2}{it:graph_options} refers to options of {help graph} appropriate to
+the {it:plottype} specified.  
+
+
+{title:Examples}
+
+{p 4 8 2}{inp:. ppplot connected mpg, by(foreign)}{p_end}
+{p 4 8 2}{inp:. ppplot connected mpg, by(foreign) ref(0)}{p_end}
+{p 4 8 2}{inp:. ppplot connected mpg, by(foreign) plot(function y = x, clp(dash))}{p_end}
+{p 4 8 2}{inp:. ppplot connected width length}{p_end}
+
+{p 4 4 2}To sample all possible {it:plottype}s: 
+
+{p 4 8 2}{inp:. foreach t in area bar connected dot dropline line scatter spike {c -(}}{p_end}
+{p 4 8 2}{inp:. {space 8}ppplot `t' mpg, by(foreign)}{p_end}
+{p 4 8 2}{inp:. {c )-}}
+
+{p 4 4 2}Some tuning may be desirable, for example:: 
+
+{p 4 8 2}{inp:. ppplot bar mpg, by(foreign) bartype(spanning) base(0)}
+
+
+{title:Author}
+
+{p 4 4 2}Nicholas J. Cox, University of Durham{break} 
+n.j.cox@durham.ac.uk
+	 
+
+{title:Also see}
+
+{p 4 13 2}On-line: help for {help graph}, {help cumul}, {help distplot} 
+(if installed)
+
+{p 4 13 2}Manual: {hi:[G] graph}, {hi:[R] cumul}, {hi:[R] diagnostic plots}
+

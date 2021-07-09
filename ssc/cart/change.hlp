@@ -1,0 +1,58 @@
+.-
+help for ^change^    					               Version 3/5/1999
+.-
+
+^Changes variable name, associated value label and variable label^ 
+^----------------------------------------------------------------^
+
+^change^ varname s2 s3 s4
+
+^Arguments:^
+^----------^
+
+varname   name of existing variable
+
+s2        
+  ^.^       the variable name remains the same
+  string  new variable name
+
+s3
+  ^-^       removes value label 
+  ^.^       no change in value label
+  ^blank^   no change in value label
+  string  (new) value label  
+
+s4        
+ ^-^        removes variable label  
+ ^. ^       no change in variable label
+ ^blank^    no change in variable label
+ string   new variable label (all other non-empty strings, unless
+          starting or ending with a ^+^ sign)
+ ^+^ string string will be attached after current variable label
+ string ^+^ string will be attached preceding the current variable label 
+
+Note that the first 3 arguments are without embedded blanks. 
+The last argument may contain blanks.
+
+^Example:^
+^--------^
+^.change var1 stage - Stage of disease^ 
+
+ renames variable ^var1^ in ^stage^ 
+ removes any value label (if present)
+ adds variable label  ^Stage of disease^.
+
+^.change stage . stage + [TNM]^ 
+
+ assigns value label ^stage^ to variable stage
+ the variable label becomes ^Stage of disease [TNM]
+  
+^Author:^
+^-------^ 
+Wim van Putten
+Erasmus MC - Daniel den Hoed Cancer Center
+Department of Statistics 
+The Netherlands
+e-mail:	w.vanputten@@erasmusmc.nl 
+
+

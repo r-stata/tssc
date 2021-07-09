@@ -1,0 +1,280 @@
+/*
+ iot
+*! VERSION iot V2.0 12/04/2016
+*/
+VERSION 11.0
+INCLUDE _std_large
+DEFINE _dlght 440
+INCLUDE header
+HELP hlp1, view("help iot")
+RESET res1
+
+DIALOG main, label("iot - Leontif Input - Output Table") ///
+	tabtitle("Main")
+BEGIN
+  
+ TEXT tx_vars	_lft	_topph	450	., ///
+	label("Intermediate Input - Output Variables:")
+ VARLIST vl_vars  _lft	 _ss	450 .,	 ///
+	label("Intermediate Input - Output Variables:")
+
+ TEXT tx_fd  _lft  _ms    450 ., ///
+	label("Final Demand Variables:")
+ VARLIST vl_fd  _lft   _ss  450 ., ///
+	label("Final Demand Variables:")  ///
+	option(fd)
+
+ CHECKBOX ck_model1 _lft _ls _iwd  _ht25 , 	///
+ groupbox					///
+ onclickon(script ck_model1_on)		///
+ onclickoff(script ck_model1_off)	///
+ label("Additional Options:")
+
+ GROUPBOX gb_invt	_ilft	_ms	_ibwd	_ht3 ,	///
+	label("Leontief Inverse Matrix Type")
+ RADIO rb_m1 +10  _ss  _inwd	.,	///
+	first					///
+	option(invt(1))			///
+	label("Non-Competitive Import Type: { (I - A)^-1 }")
+
+ RADIO rb_m2 @  _ss  _inwd	.,	///
+	last					///
+	option(invt(2))			///
+	label("Competitive Import Type: { [I - (I - M) A]^-1 }")
+
+ TEXT tx_exp  _ilft  _ls    180 ., ///
+	label("Export Variable:")
+ VARNAME vn_exp  +140  @  180 ., ///
+	label("Export Variable:")	 ///
+	option(export)
+
+ TEXT tx_imp  _ilft  _ms    180 ., ///
+	label("Import Variable:")
+ VARNAME vn_imp  +140  @  180 ., ///
+	label("Import Variable:")	 ///
+	option(import)
+
+ TEXT tx_ml  _ilft  _ms    180 ., ///
+	label("Multiplier Variable:")
+ VARNAME vn_ml  +140  @  180 ., ///
+	label("Multiplier Variable:") ///
+	option(ml)
+
+ TEXT tx_fc  _ilft  _ms    180 ., ///
+	label("Final Demand Prediction:")
+ VARNAME vn_fc   +140   @  180 ., ///
+	label("Final Demand Prediction:")	 ///
+	option(fc)
+
+ CHECKBOX ck_form       _ilft   _ls    _ckwd  ., 	/*
+	*/ clickon("gaction main.ed_form.enable")	/*
+	*/ clickoff("gaction main.ed_form.disable")		
+ EDIT ed_form     _cksep        @    _spwd   ., /*
+	*/ label("Format")	/*
+	*/ option("format")
+ TEXT tx_form     _spsep        @  _rbsprb    ., /*
+	*/ label("Format")
+ CHECKBOX ck_list    _ilft  _ms   350  ., option("list") /*
+*/ label("list: Add Input - Output Variables to Data List") 
+ CHECKBOX ck_txt    _ilft  _ms   350  ., option("txt") /*
+*/ label("txt: Save Results in text File") 
+
+ TEXT tx_fn	_lft	_ls	460 	.,		///
+	label("Save Input - Output Table Results in File (*.txt):") 
+ FILE fi_fn     @	_ss	@ 	.,		///
+	option(save)						///
+	label("Save As...")					///
+	filter("Stata dta File (*.txt)|*.txt|All (*.*)|*.*")	///
+	defext(txt)						///
+	error("Filename") save
+END
+
+DIALOG est2, tabtitle("Print Options")
+BEGIN
+
+ CHECKBOX ck_model2  _lft    _top   _ibwd    _ht0 , ///
+	groupbox				 ///
+	onclickon(script ck_model2_on)		 ///
+	onclickoff(script ck_model2_off)	 ///
+	label("Print Options:")
+ CHECKBOX ck_pall    _ilft  +17   370  ., option("pall") /*
+*/ label("pall: Print All Tables") 
+ CHECKBOX ck_piost    _ilft  +17   370  ., option("piost") /*
+*/ label("piost: Print Input-Output Sectors Transactions") 
+ CHECKBOX ck_pis    _ilft  +17   370  ., option("pis") /*
+*/ label("pis: Print Input Share (%) in Intermediate Input (Ij)") 
+ CHECKBOX ck_pos    _ilft  +17   370  ., option("pos") /*
+*/ label("pos: Print Output Share (%) in Intermediate Output (Oi)") 
+ CHECKBOX ck_pist    _ilft  +17   370  ., option("pist") /*
+*/ label("pist: Print Intermediate Input & Value Added Share in Total Output") 
+ CHECKBOX ck_post    _ilft  +17   370  ., option("post") /*
+*/ label("post: Print Intermediate & Final Output Share in Total Output") 
+ CHECKBOX ck_pcmt    _ilft  +17   370  ., option("pcmt") /*
+*/ label("pcmt: Print [(A)] Technical Coefficients Matrix Table") 
+ CHECKBOX ck_pcm    _ilft  +17   370  ., option("pcm") /*
+*/ label("pcm: Print [(A)] Technical Coefficients Matrix") 
+ CHECKBOX ck_pssr    _ilft  +17   370  ., option("pssr") /*
+*/ label("pssr: Print (SSR) Self Sufficiency Ratio") 
+ CHECKBOX ck_pcheck    _ilft  +17   370  ., option("pcheck") /*
+*/ label("pcheck: Print Check Input-Output Table Matrix") 
+ CHECKBOX ck_pia    _ilft  +17   370  ., option("pia") /*
+*/ label("pia: Print [(I-A)] Leontief Matrix") 
+ CHECKBOX ck_padjia    _ilft  +17   370  ., option("padjia") /*
+*/ label("padjia: Print [a(I-A)] Adjusted Leontief Matrix") 
+ CHECKBOX ck_pinvia    _ilft  +17   370  ., option("pinvia") /*
+*/ label("pinvia: Print [inv(I-A)] Leontief Inverse Matrix") 
+ CHECKBOX ck_pmliou    _ilft  +17   370  ., option("pmliou") /*
+*/ label("pmliou: Print [MLIOU] Unit Input-Output Multiplier Table") 
+ CHECKBOX ck_pmliot    _ilft  +17   370  ., option("pmliot") /*
+*/ label("pmliot: Print [MLIOT] Total Input-Output Multiplier Table") 
+ CHECKBOX ck_pmlio1    _ilft  +17   370  ., option("pmlio1") /*
+*/ label("pmlio1: Print Total Input-Output Multiplier [Final Output (Demand)]") 
+ CHECKBOX ck_pmlio2    _ilft  +17   370  ., option("pmlio2") /*
+*/ label("pmlio2: Print Total Input-Output Multiplier [Total Output (Demand)]") 
+ CHECKBOX ck_piot1    _ilft  +17   370  ., option("piot1") /*
+*/ label("piot1: Print Input-Output Sectors") 
+ CHECKBOX ck_piot2    _ilft  +17   370  ., option("piot2") /*
+*/ label("piot2: Print Output Sectors") 
+ CHECKBOX ck_piot3    _ilft  +17   370  ., option("piot3") /*
+*/ label("piot3: Print Input Sectors") 
+ CHECKBOX ck_pioth    _ilft  +17   370  ., option("pioth") /*
+*/ label("pioth: Print Predicted (h) Leontief Input-Output Table") 
+ CHECKBOX ck_pioth1    _ilft  +17   370  ., option("pioth1") /*
+*/ label("pioth1: Print Predicted Input-Output Sectors") 
+ CHECKBOX ck_pioth2    _ilft  +17   370  ., option("pioth2") /*
+*/ label("pioth2: Print Predicted Output Sectors") 
+ CHECKBOX ck_pioth3    _ilft  +17   370  ., option("pioth3") /*
+*/ label("pioth3: Print Predicted Input Sectors") 
+
+END
+
+SCRIPT ck_model1_on
+BEGIN
+ main.vn_ml.enable
+ main.vn_exp.enable
+ main.vn_imp.enable
+ main.vn_fc.enable
+ main.ck_list.enable
+ main.ck_form.enable
+ main.ck_txt.enable
+END
+
+SCRIPT ck_model1_off
+BEGIN
+ main.vn_ml.disable
+ main.vn_exp.disable
+ main.vn_imp.disable
+ main.vn_fc.disable
+ main.ck_list.disable
+ main.ck_form.disable
+ main.ck_txt.disable
+END
+
+SCRIPT ck_form_on
+BEGIN
+ main.ed_form.enable
+END
+SCRIPT ck_form_off
+BEGIN
+ main.ed_form.disable
+END
+
+SCRIPT ck_model2_on
+BEGIN
+ est2.ck_pall.enable
+ est2.ck_piost.enable
+ est2.ck_pis.enable
+ est2.ck_pos.enable
+ est2.ck_pist.enable
+ est2.ck_post.enable
+ est2.ck_pcmt.enable
+ est2.ck_pcm.enable
+ est2.ck_pssr.enable
+ est2.ck_pcheck.enable
+ est2.ck_pia.enable
+ est2.ck_padjia.enable
+ est2.ck_pinvia.enable
+ est2.ck_pmliou.enable
+ est2.ck_pmliot.enable
+ est2.ck_pmlio1.enable
+ est2.ck_pmlio2.enable
+ est2.ck_piot1.enable
+ est2.ck_piot2.enable
+ est2.ck_piot3.enable
+ est2.ck_pioth.enable
+ est2.ck_pioth1.enable
+ est2.ck_pioth2.enable
+ est2.ck_pioth3.enable
+END
+
+SCRIPT ck_model2_off
+BEGIN
+ est2.ck_pall.disable
+ est2.ck_piost.disable
+ est2.ck_pis.disable
+ est2.ck_pos.disable
+ est2.ck_pist.disable
+ est2.ck_post.disable
+ est2.ck_pcmt.disable
+ est2.ck_pcm.disable
+ est2.ck_pssr.disable
+ est2.ck_pcheck.disable
+ est2.ck_pia.disable
+ est2.ck_padjia.disable
+ est2.ck_pinvia.disable
+ est2.ck_pmliou.disable
+ est2.ck_pmliot.disable
+ est2.ck_pmlio1.disable
+ est2.ck_pmlio2.disable
+ est2.ck_piot1.disable
+ est2.ck_piot2.disable
+ est2.ck_piot3.disable
+ est2.ck_pioth.disable
+ est2.ck_pioth1.disable
+ est2.ck_pioth2.disable
+ est2.ck_pioth3.disable
+END
+
+PROGRAM command
+BEGIN
+ put "iot "
+ varlist main.vl_vars 
+ require main.vl_fd
+ beginoptions
+ optionarg main.vl_fd
+ optionarg main.vn_ml
+ optionarg main.vn_exp
+ optionarg main.vn_imp
+ optionarg main.vn_fc
+ option radio(main rb_m1 rb_m2)
+ option main.ck_list
+ optionarg main.ed_form
+ option est2.ck_pall
+ option est2.ck_piost
+ option est2.ck_pis
+ option est2.ck_pos
+ option est2.ck_pist
+ option est2.ck_post
+ option est2.ck_pcmt
+ option est2.ck_pcm
+ option est2.ck_pssr
+ option est2.ck_pcheck
+ option est2.ck_pia
+ option est2.ck_padjia
+ option est2.ck_pinvia
+ option est2.ck_pmliou
+ option est2.ck_pmliot
+ option est2.ck_pmlio1
+ option est2.ck_pmlio2
+ option est2.ck_piot1
+ option est2.ck_piot2
+ option est2.ck_piot3
+ option est2.ck_pioth
+ option est2.ck_pioth1
+ option est2.ck_pioth2
+ option est2.ck_pioth3
+ optionarg main.fi_fn
+ option main.ck_txt
+ endoptions
+END
+

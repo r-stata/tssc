@@ -1,0 +1,103 @@
+{smcl}
+{* *! version 3.0.0  October 2006}{...}
+{cmd:help tknz}{...}
+{right:also see:  {help "tokenize"}}
+{hline}
+
+{title:Title}
+
+{pstd}
+{hi:tknz} {hline 2} Tokenize string into consecutively numbered named macros
+
+
+{title:Syntax}
+
+{p 8 16 2}
+{cmd:tknz} {varlist}|["]string["]
+[,{opt p:arse(pchars)} {opt s:tub(string)} {opt nochar}]
+{p_end}
+
+{synoptset 27 tabbed}{...}
+{synopthdr}
+{synoptline}
+{synoptset 15 tabbed}{...}
+
+{synopt:{opt s:tub(stub)}} stub to prefix numbered positional macros.{p_end}
+
+{synopt:{opt p:arse(pchars)}} parse character(s) {p_end}
+
+{synopt:{opt nochar}} drop non space parsing character{p_end}
+{p 4 6 2}
+
+
+{title:Description}
+
+{pstd}
+{cmd:tknz} tokenizes string into tokens, storing the results in the local
+macros stub{hi:1}, stub{hi:2}, etc. Tokens are determined based on the
+parsing characters pchars, which defaults to a space if not specified.
+
+{pstd}
+The number of tokens created is returned in {hi:s(items)}.
+
+{dlgtab:Options}
+
+{phang}
+{opt s:tub(stub)} specifies a stub for the macro names. This stub should be
+short enough for the complete names all to be legal. If stub is not included
+the default _1, _2 macro naming is used.
+
+{phang}
+{opt p:arse(pchars)} specifies the parsing characters.  If {opt parse()} is
+not specified, {opt parse(" ")} is assumed, and thus the string is split into
+words.
+
+{phang}
+{opt nochar} specifies that the non space parsing character not be included
+in the consecutively numbered macros. (Stata's {help "tokenize"} includes
+the non space parsing character in the string of tokens and this conveniently
+allows them to be stripped out)
+
+{title:Examples}
+
+   . {cmd:tknz {c 'g}varlist', s(v)}
+   . {cmd:tknz "one,two,three,four", s(v) p(,) nochar}
+
+
+{title:Notes}
+
+{pstd}
+Subsequent processing for each item on the list can easily be achieved by
+using:
+
+   {cmd:forvalues i=1/{c 'g}s(items)' {c -(}}
+       {cmd:do something on {c 'g}v{c 'g}i'' // where v is the stub}
+       {cmd:{c )-}}
+
+{pstd}
+{cmd:tknz} uses the undocumented macro assignment command {hi: c_local}
+which allows local macros created by {cmd:tknz} to be used within the context
+of the program, dofile, or command line call to {cmd: tknz}. However, they
+are {hi: not} available to a new instance created by a subsequent program,
+which can lead to unexpected results or errors.  For example, if you call
+{cmd:tknz} from the command line and then again in a subsequent program or
+dofile, the values you see from the command line by issuing {cmd: macro dir}
+are {hi: not} those created by the subsequent program, but from the instance
+created by the previous command line call.  Understanding this can save a lot
+of grief!
+
+{title:Author}
+
+{pstd}David C. Elliott, Nova Scotia Department of Health, Halifax {break}
+DCElliott@gmail.com
+
+
+{title:Acknowledgements}
+
+{pstd}
+Nicholas J. Cox created the original tknz for adding stubs to the numbered
+positional macros and provided a number of suggestions for improving the
+routine and help file.
+
+{pstd}
+Vince Wiggins made very useful suggestions.

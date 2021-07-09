@@ -1,0 +1,115 @@
+{smcl}
+{* 20Sep05}{...}
+{hline}
+help for {hi:svyselmlog}
+{hline}
+
+{title:Selectivy-adjusted equation based in the multinomial logit for survey data}
+
+{p 8 16 2}	{cmd: svyselmlog} {it:depvar} [{it:varlist}]{cmd:,}
+[{cmd:if} {it:exp}] [{cmd:in} {it:range}] {cmd:,} {cmdab:sel:ect(}[{it:depvar_s}] {it:varlist_s} {cmd:)} [{cmdab:meth:od}({it:sel_method}) 
+				{cmdab:show:mlogit} {cmdab:mlop:tions}({it:mlogit_options}) {cmd:gen}({it:newvarname}) {cmdab:boot:strap}({it:# of replications}) 
+				{cmdab:f:orce} {cmdab:q:uiet}]  
+	
+	
+	{p 2 4 2} where {it:sel_meth} is one of the following selectivity correction methods:
+	
+	{p 4 8 2} {cmd:lee} Lee (1983), Econometrica 
+	
+	{p 4 8 2} {cmd:dmf} Dubin and McFadden (1984), Econometrica 
+	
+	{p 4 8 2} {cmd:dhl (# [all])} Dahl (2002), Econometrica. Where {cmd:#} is the order of the polinomial used in the conditional 
+		probability of observing the selected outcome. The option {cmd:all} includes the conditional probabilites 
+		of both, the selected and non-selected outcomes in polinomial form of degree {cmd:#}.  
+	
+	{p 4 8 2} {cmd:dmf2} Bourguignon, Fournier and Gurgand (2004), CREST Working Paper. 
+
+
+	{cmd:svyselmlog} requires that the survey design variables be identified using {cmd:svyset}, see help {help svyset}
+
+
+{title:Description}
+
+	{p 4 4 2} {cmd:svyselmlog} estimates selectivity-adjusted regression models using a multinomial logit for complex survey data.
+	
+	{p 4 4 2} {cmd:svyselmlog} estimates all the parameters of the following model:
+	
+		Main equation: y_j = Xb_j + u_{1j}
+		
+		Selection equation: y_j is observed if V_j > max{V_i} for all i different from j
+	
+	where: V_j = Zd_j + u_{2j} 
+		 Corr(u_{1j},u_{2j}) = rho   
+	
+	{p 4 4 2} Selectivity bias is corrected using the conditional probabilities based on the multinomial logit. In the syntax 
+	for {cmd:svyselmlog}, depvar and varlist are the dependent variable (y_j) and regressors (X) for the main equations, 
+	respectively; depvar_m and varlist_m are the discrete choice variable and regressors in the selection equation. 
+	The outcome variable (y_j) is observed for only one value of the discrete variable (depvar_m), therefore depvar 
+	should have missing values for all other values of depvar_m.   
+	 
+	{p 4 4 2} Since {cmd:svyselmlog} is based on {cmd:selmlog} (see help {help selmlog}; available from {browse "http://www.delta.ens.fr/gurgand/": M. Gurgand}), 
+	it allows several forms of selection correction methods as reviewed in Bourguignon, Fournier and Gurgand (2004). 
+	Given J different choices in the multinomial model, {cmd:svyselmlog} estimates a series of variables labelled _mk , 
+	k = 1...J containing the conditional probablities following the chosen parameterization method. In a seconds-step 
+	the _mk variables are used as selectivity-controls in the main equation.
+	
+	{p 4 4 2} The reported standard errors do not account for the two-step nature of the procedure (i.e. they are not consistent), 
+	however their empirical distribution can be obtained using bootstrap methods. Bootstapping within a complex survey 
+	design has to account for stratification and clustering; the {cmd:bootstrap} option used in {cmd:svyselmlog} accounts for 
+	this using {help svybsamp2}, therefore {help svybsamp2} must be intalled (see: {cmd: ssc install svybsamp2}).     
+
+
+{title:Options}
+
+	{p 4 8 2} {cmd:method} ({it:sel_method}) specifies the selection-adjustment method that should be used to generate the _mk controls. 
+		If no {cmd:method} is selected {cmd:dmf2} is used as the default option. 
+	
+	{p 4 8 2} {cmd:showmlogit} reports the estimated selection equation (multinomial logit)
+	
+	{p 4 8 2} {cmd:mloptions}({it:mlogit_options}) parse the specified options as described in {help svymlogit} to the multinomial logit 
+		estimation.  
+	
+	{p 4 8 2} {cmd:gen} ({it:newvarname}) generates a series of new variables equal to _mk
+	
+	{p 4 8 2} {cmd:bootstrap} ({it:# of replications}) reports the bootstrapped standard errors out of # replications. {cmd:svybsamp2} must be 
+		installed. 
+	
+	{p 4 8 2} {cmd:force} forces the estimation even in the presence of strata with a singel PSU (singleton). This option temporary 
+		drops the singleton(s) from the estimation, reporting how many singleton strata and observations were 
+		eliminated from the estimation. 
+	
+	{p 4 8 2} {cmd:quiet} suppresses the message indicating the current re-sampling # within the {cmd:bootstrap} estimation. 
+
+
+{title:Examples}
+
+	{p 4 4 2} {cmd:svyselmlog wage x1 x2, select(occupation x1 x2 z1 z2) meth(dhl(3 all))}
+
+	{p 4 4 2} {cmd:svyselmlog wage x1 x2, select(occupation x1 x2 z1 z2) meth(dmf) boot(100) quiet}
+
+
+{title:References}
+
+	{p 4 8 2} Bourguignon, F., Fournier, M. and Gurgand, M. (2004) `Selection bias correction based on the multinomial logit 
+		model: Monte-Carlo comparisons', Mimeo DELTA, Paris
+	
+	{p 4 8 2} Dahl, G.B. (2002) `Mobility and the return to education: testing a Roy model with multiple markets', 
+		Econometrica, vol. 70, 6.
+	
+	{p 4 8 2} Dubin, J.A. and McFadden, D. (1984) `An econometric analysis of residential electric appliance holdings and 
+		consumption', Econometrica, vol. 52, 2.
+	
+	{p 4 8 2}Lee, L.F. (1983) `Generalized econometric models with selectivity', Econometrica, vol. 51, pp. 507-512.
+
+
+{title:Author}
+
+{browse "http://www.econ.cam.ac.uk/phd/red29/":Rafael E. De Hoyos}, Faculty of Economics, University of Cambridge. {browse "mailto:red29@cam.ac.uk":red29@cam.ac.uk} 
+
+{title:Also see}
+
+Manual:	{hi:[U] 23 Estimation and post-estimation commands}
+	{hi:[SVY] svy estimators}
+
+Online:	help for {help selmlog} (if installed), {help svybsamp2} (if installed), {help svyset}, {help svyheckman}, {help svymlogit}
+

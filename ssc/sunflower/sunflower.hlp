@@ -1,0 +1,332 @@
+{smcl}
+{* 16 January 2003}{...}
+{hline}
+help for {hi:sunflower}
+{hline}
+
+{title:Density distribution sunflower plots} 
+
+{p 2 10}
+{cmd:sunflower}
+{it:yvar}
+{it:xvar}
+[{it:weight}] 
+[{cmd:if} {it:exp}] 
+[{cmd:in} {it:range}]
+[, 
+{cmdab:bi:nwidth(}{it:#d}{cmd:)}
+{cmdab:xc:enter(}{it:#x}{cmd:)}
+{cmdab:yc:enter(}{it:#y}{cmd:)}
+{cmdab:li:ght(}{it:#a}{cmd:)}
+{cmdab:da:rk(}{it:#b}{cmd:)}
+{cmdab:pe:talweight(}{it:#w}{cmd:)}
+{cmdab:po:intsize(}{it:#}{cmd:)}
+{cmdab:lights:ize(}{it:#}{cmd:)}
+{cmdab:darks:ize(}{it:#}{cmd:)}
+{cmdab:do:tsize(}{it:#}{cmd:)}
+{cmdab:ba:ckground(}{it:#}{cmd:)}
+{cmdab:sa:ving(}{it:filename} [{cmd:, replace}]{cmd:)}
+{cmdab:xs:ize(}{it:#}{cmd:)}
+{cmdab:ys:ize(}{it:#}{cmd:)}
+{cmdab:notab:le} 
+{cmdab:noke:y} 
+{it:graph_options} 
+]
+ 
+
+{title:Description}
+
+{p}{cmd:sunflower} draws density distribution sunflower plots (Dupont and
+Plummer 2002).  These plots are useful for displaying bivariate data whose
+density is too great for conventional scatter plots to be effective.  A
+sunflower is a number of line segments of equal length, called petals, that
+radiate from a central point.  There are two varieties of sunflowers: light and
+dark.  Each petal of a light sunflower represents one observation.  Each petal
+of a dark sunflower represents a specific number of observations specified by
+the user.  The program uses dark and light sunflowers to represent high and
+medium density regions of the data, and dots or circles to represent individual
+observations in low density regions.  
+ 
+{p}The program first divides the plane defined by the variables {it:yvar} and
+{it:xvar} into contiguous regular hexagonal bins of equal size.  The width of
+each bin is given by {it:#d} and is specified in the same units as {it:xvar}.
+The program then counts the number of data points that fall within each bin.
+The user specifies three values, {it:#a}, {it:#b}, and {it:#w}, that specify
+how these points are to be represented:
+ 
+{p 0 3} 
+1. When there are fewer than {it:#a} points in a bin, they are displayed as 
+   individual dots or circles as in a conventional scatter plot.
+
+{p 0 3} 
+2. When there are at least {it:#a} but fewer than {it:#b} points in a bin they
+   are represented by a light sunflower.  
+ 
+{p 0 3} 
+3. When there are {it:#b} or more points in a bin they are represented by a dark
+   sunflower.  {it:#w} specifies the number of observations represented by each
+   petal of a dark sunflower.  More precisely, if a dark sunflower bin
+   contains {it:n} points then the number of petals on its sunflower will equal
+   {it:n} / {it:#w} rounded to the nearest integer.  A sunflower with one petal is
+   represented by a dot in the center of its bin.
+
+   
+{title:Running {hi:sunflower} Under Stata Versions 7 and 8}
+
+{p}This program was written to run under Stata version 7.  We
+recommend that it only be used by people running version 7.  Stata Corp has 
+released a new version of this program that runs under version 8.  Their program 
+includes numerous enhancements over our original  program including 
+hexagonal bin shading, the ability to overlay additional curves on the 
+sunflower plot, and other graph options that have been added to version 8 programs.
+To use their program you must be running Stata Version 8.2 or later.  Type
+
+{p 4 8}{inp:. help sunflower}
+
+{p}in the version 8 Stata Command window for further details.
+
+{title:Remarks} 
+
+{p}{cmd:sunflower} uses pens 1 through 6.  Pen 1 draws and labels the axes of
+the graph.  Pen 2 draws the circles or dots for individual data points.  Pens 3
+and 5 draw the light and dark sunflowers, respectively.  Pens 4 and 6 draw
+circular colored backgrounds behind the light and dark sunflowers,
+respectively.  The user should choose the color and thickness of pens 3 through
+6 to distinguish between light and dark sunflowers.  Pens 4 and 6 give
+additional weight and contrast to the light and dark sunflowers.  Note that
+pens 3 and 4 must have different colors in order for petals on light sunflowers
+to be visible.  Similarly, pens 5 and 6 must also have different colors.  We
+recommend that pens 3 through 6 be chosen so that the color darkness increases
+with increasing data density.  An example, called {inp:fig2.do}, is given below
+which makes reasonable choices for these pen colors.
+
+{p}Frequency weights may be specified.
+
+{p}All sunflowers should lie entirely above the {it:x} axis and to the right of
+the {it:y} axis.  If you choose a small bin width, or use the default bin
+width, this should occur automatically.  With a large bin width and a cluster
+of points near an axis, it is possible for a sunflower to intersect the edge of
+the graph window.  When this happens an error message occurs.  The problem can
+be fixed by using the {cmd:xlabel} and {cmd:ylabel} options to ensure that no
+sunflower touches an axis.  
+
+
+{title:Options}
+ 
+{p 0 4}{cmd:binwidth(}{it:#d}{cmd:)} sets the horizontal width of each bin to
+{it:#d}.  This width is specified in the same units as {it:xvar}.  The default bin
+width is set to equal (max of {it:xvar} - min of {it:xvar}) / 40.  The bin height
+in units of {it:yvar} is determined by the program and depends on the bin width, the
+aspect ratio of the {it:x} and {it:y} axes, the range of values observed for
+{it:xvar} and {it:yvar}, and the aspect ratio of the graph window.  Note that
+the shape of the bins is always that of a regular hexagon.
+
+{p 0 4}{cmd:xcenter(}{it:#x}{cmd:)} and {cmd:ycenter(}{it:#y}{cmd:)} specify
+the center of a bin to be at ({it:#x}, {it:#y}).  The default values of {it:#x}
+and {it:#y} are the median values of {it:xvar} and {it:yvar}, respectively.
+The centers of the other bins are implicitly defined by ({it:#x}, {it:#y})
+together with the bin width {it:#d}. 
+
+{p 0 4}{cmd:light(}{it:#a}{cmd:)} specifies {it:#a} to be the minimum number of
+points needed in a bin to generate a light sunflower.  The default value of
+{it:#a} is 3.
+
+{p 0 4}{cmd:dark(}{it:#b}{cmd:)} specifies {it:#b} to be the minimum number of
+points needed in a bin to generate a dark sunflower.  The default value of
+{it:#b} is 13. 
+
+{p 0 4}{cmd:petalweight(}{it:#w}{cmd:)} specifies {it:#w} to be the number of
+observations represented by each petal of a dark sunflower.  The default value
+of {it:#w} is chosen so that the maximum number of petals on a dark sunflower
+equals 14.
+
+{p 0 4}{cmd:pointsize(}{it:#}{cmd:)} specifies the size of the circle
+representing individual points as a percent of the default size.  The default
+is 100 percent. 
+
+{p 0 4}{cmd:lightsize(}{it:#}{cmd:)} specifies the size of the light sunflowers as a percent
+of the maximum permitted size, which is {it:#d} / 2.  The default is 80 percent,
+which produces light sunflower petals of length 0.8 * {it:#d} / 2.
+
+{p 0 4}{cmd:darksize(}{it:#}{cmd:)} specifies the size of the dark sunflowers as a percent
+of the maximum permitted size, which is {it:#d} / 2.  The default is 97.5 percent,
+which produces dark sunflower petals of length 0.95 * {it:#d} / 2.
+
+{p 0 4}{cmd:dotsize(}{it:#}{cmd:)} specifies the size of the dot drawn at the
+center of each sunflower as a percent of the default size.  The default is 100
+percent.
+
+{p 0 4}{cmd:background(}{it:#r}{cmd:)} sets the size of the colored circular background
+behind sunflowers as a number between 0 and 1.  The default is 1, in
+which case the edge of each background passes through the vertices
+of its bin.  When {it:#r} = 0 the edge of each background kisses the edges
+of its bin.  Let {it:r0} denote the background radius when {it:#r} = 0 and let
+{it:r1} denote this radius when {it:#r} = 1.  Then {it:r0} = {it:#d} / 2 and 
+{it:r1} = {it:r0} / cos(pi / 6).
+In general, this radius equals {it:r0} + ({it:#r}) * ({it:r1 - r0}).
+
+{p 0 4}{cmd:saving(}{it:filename}{cmd: [, replace])} saves the graph in a file.  
+If you do not
+specify an extension, {cmd:.gph} will be assumed.
+
+{p 0 4}{cmd:xsize(}{it:#}{cmd:)} specifies the width, in inches, of the graph image.  The default
+is the current Stata default size in effect when {cmd:sunflower} is called.
+
+{p 0 4}{cmd:ysize(}{it:#}{cmd:)} specifies the height, in inches, of the graph image.  The default
+is the current Stata default size in effect when {cmd:sunflower} is called.
+
+{p 0 4}{cmd:notable} specifies that the summary table produced by the {cmd:sunflower}
+command be omitted.
+
+{p 0 4}{cmd:nokey} causes the sunflower key at the top of the graph to be omitted.
+
+{p 0 4}{it:graph_options} are the same as those allowed for scatter plots with the {cmd:graph} 
+command, except that the {cmd:connect()}, {cmd:symbol()}, {cmd:pen()}, {cmd:trim()}, {cmd:psize()}, {cmd:bands()},
+and {cmd:jitter()} options may not be used.
+
+
+{title:Examples}
+
+{p 4 8}{inp:. sunflower mpg displ}
+
+{p 4 8}{inp:. sunflower mpg displ, xc(100) yc(100) binwid(10)}
+
+{p 4 8}{inp:. sunflower mpg weight, binwid(300) xlab ylab petal(2) light(3) dark(15)}
+
+{p 4 8}{txt:---- fig2.do ---------------------------}{p_end}
+{p 4 8}{inp:log using "fig2.log", replace}{p_end}
+{p 4 8}{inp:*}{p_end}
+{p 4 8}{inp:*  fig2.do  }{p_end}
+{p 4 8}{inp:*}{p_end}
+{p 4 8}{inp:*      N.B.  The gprefs statements given below will }{p_end}
+{p 4 8}{inp:*            override your Custom 1 color settings!}{p_end}
+{p 4 8}{inp:*}{p_end}
+{p 4 8}{inp:*  This is a Stata program that produces figure 2 from}{p_end}
+{p 4 8}{inp:*}{p_end}
+{p 4 8}{inp:*  Dupont WD and Plummer WD Jr. (2002)  "Density Distribution Sunflower Plots" }{p_end}
+{p 4 8}{inp:*  Submitted for publication. URL pending.}{p_end}
+{p 4 8}{inp:*}{p_end}
+{p 4 8}{inp:*}{p_end}
+{p 4 8}{inp:use "http://www.mc.vanderbilt.edu/prevmed/wddtext/data/2.20.Framingham.dta", clear}{p_end}
+{p 4 8}{inp:*}{p_end}
+{p 4 8}{inp:*  Drop ten extreme outliers.}{p_end}
+{p 4 8}{inp:*}{p_end}
+{p 4 8}{inp:drop if bmi>55}{p_end}
+{p 4 8}{inp:*}{p_end}
+{p 4 8}{inp:*    Color choices for custom1}{p_end}
+{p 4 8}{inp:*}{p_end}
+{p 4 8}{inp:*    The following color choices attempt to make an analogy between data density}{p_end}
+{p 4 8}{inp:*    and a topographical map of an island in the sea.  Hence individual data points}{p_end}
+{p 4 8}{inp:*    are blue (the sea), light sunflowers are brown on green (low altitude verdant} {p_end}
+{p 4 8}{inp:*    regions), and dark flowers are black on brown (high altitude rocky areas).}  {p_end}
+{p 4 8}{inp:*}{p_end}
+{input}    *    Pen Color        hue  sat  lum:  red green blue
+{input}    *    -----------------------------------------------
+{input}    *    1   black:              0    0:    0     0    0
+{input}    *    2   true blue:   160  240  120:    0     0  255
+{input}    *    3   dark brown:   20  240   60:  128    64    0
+{input}    *    4   light green:  50  240  200:  234   255  170
+{input}    *    5   black:              0    0:    0     0    0
+{input}    *    6   light brown:  20  240  120:  255   128    0
+{input}    *
+{p 4 8}{inp:*    All pen widths are 9}{p_end}
+{p 4 8}{inp:*    Background color is white}{p_end}
+{p 4 8}{inp:*    Graph size is 6 x 4 inches}{p_end}
+{p 4 8}{inp:*}{p_end}
+{p 4 8}{inp:*    Define color scheme custom1 as specified above}{p_end}
+{p 4 8}{inp:*}{p_end}
+{p 4 8}{inp:gprefs set window scheme custom1}{p_end}
+{p 4 8}{inp:gprefs set custom1 background_color 255 255 255}{p_end}
+{p 4 8}{inp:gprefs set custom1 pen1_color   0   0   0}{p_end}
+{p 4 8}{inp:gprefs set custom1 pen2_color   0   0 255}{p_end}
+{p 4 8}{inp:gprefs set custom1 pen3_color 128  64   0}{p_end}
+{p 4 8}{inp:gprefs set custom1 pen4_color 234 255 170}{p_end}
+{p 4 8}{inp:gprefs set custom1 pen5_color   0   0   0}{p_end}
+{p 4 8}{inp:gprefs set custom1 pen6_color 255 128   0}{p_end}
+{p 4 8}{inp:gprefs set custom1 pen1_thick 9}{p_end}
+{p 4 8}{inp:gprefs set custom1 pen2_thick 9}{p_end}
+{p 4 8}{inp:gprefs set custom1 pen3_thick 9}{p_end}
+{p 4 8}{inp:gprefs set custom1 pen4_thick 9}{p_end}
+{p 4 8}{inp:gprefs set custom1 pen5_thick 9}{p_end}
+{p 4 8}{inp:gprefs set custom1 pen6_thick 9}{p_end}
+{p 4 8}{inp:gprefs set window xsize 6}{p_end}
+{p 4 8}{inp:gprefs set window ysize 4}{p_end}
+{p 4 8}{inp:*}{p_end}
+{p 4 8}{inp:* Draw sunflower plot of diastolic blood pressure by body mass index}{p_end}
+{p 4 8}{inp:* using the Framingham data (Levy 1999).}{p_end}
+{p 4 8}{inp:*}{p_end}
+{p 4 8}{inp:sunflower  dbp bmi, bin(.85)  xlabel(20 25 to 50) ylabel(50 70 to 150) gap(3)}{p_end}
+{p 4 8}{inp:log off}{p_end}
+{p 4 8}{txt:---- end fig2.do -----------------------}{p_end}
+
+
+{title:Authors}
+
+{p 4 4}This program was designed by William D. Dupont and W. Dale Plummer Jr.
+It was written by W. Dale Plummer Jr.
+
+{p 4 4}It may be downloaded together with documentation from 
+{browse "http://ideas.repec.org/c/boc/bocode/s430201.html":http://ideas.repec.org/c/boc/bocode/s430201.html}.
+
+{p 4 13}Address: Division of Biostatistics{break} 
+          S-2323 Medical Center North{break}
+          Vanderbilt University School of Medicine{break}
+          Nashville TN, 37232-2158
+
+{p 4 12}E-mail: william.dupont@vanderbilt.edu{break} 
+          dale.plummer@vanderbilt.edu
+
+{p 4 4}URL: {browse "http://www.mc.vanderbilt.edu/prevmed/biostatistics.htm":http://www.mc.vanderbilt.edu/prevmed/biostatistics.htm} 
+
+ 
+{title:Acknowledgements} 
+
+{p}The {cmd:sunflower} program is based, in part, on public domain code found
+in the program {cmd:flower} (Steichen and Cox 1999).  We thank these authors
+for making their code available.
+
+{p}We also thank Nicholas J. Cox for converting our help file to SMCL and for some helpful edits.
+
+{p}We are most grateful to Jeff Pitblado and Stata Corp for releasing the version 8.2 edition 
+of this program.  Jeff has completely rewritten the graphics part of the program to run under 
+version 8.
+
+
+{title:References}
+
+{p}Carr, D.B., Littlefield, R.J., Nicholson, W.L., and Littlefield, J.S. 
+(1987) Scatterplot matrix techniques for large N.  
+{it:Journal of the American Statistical Association}, 82: 424-436.
+
+{p}Cleveland, W.S. and McGill, R. (1984) The many faces of a scatterplot.
+{it:Journal of the American Statistical Association}, 79: 807-822.
+
+{p}Dupont, W.D. and Plummer W.D. Jr. (2003) Density distribution sunflower plots.  
+{it:Journal of Statistical Software}, 8:(3) 1-11. Downloadable from 
+{browse "http://www.jstatsoft.org/index.php?vol=8":http://www.jstatsoft.org/index.php?vol=8}.
+Accessed January 23, 2003.
+
+{p}Dupont, W.D. and Plummer, W.D. Jr. (2002)  sunflower: Stata module to 
+draw density distribution sunflower plots.  Stata program and help file
+downloadable from 
+{browse "http://ideas.repec.org/c/boc/bocode/s430201.html":http://ideas.repec.org/c/boc/bocode/s430201.html}.
+Accessed December 12, 2002.
+
+{p}Huang, C., McDonald, J.A, and Stuetzle, W. (1997) Variable resolution 
+bivariate plots. {it:Journal of Computational and Graphical Statistics}, 6: 
+383-396.  
+
+{p}Levy, D. (1999) {it:50 years of discovery: medical milestones from the National Heart, Lung, and Blood Institute's Framingham Heart Study.} Hackensack, NJ:
+Center for Bio-Medical Communication Inc.
+
+{p}Steichen, T.J. and Cox, N.J. (1999)  flower: Stata module to draw
+sunflower plots.  Stata program and help file downloadable from 
+{browse "http://ideas.repec.org/c/boc/bocode/s393001.html":http://ideas.repec.org/c/boc/bocode/s393001.html}. 
+Accessed December 6, 2002.
+
+
+{title:Also see} 
+
+Manual:  [G] graphics
+On-line:  help for {help graph}, {help functions} (for {cmd:round()})
+

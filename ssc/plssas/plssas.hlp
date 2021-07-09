@@ -1,0 +1,115 @@
+{smcl}
+{* 15 Feb 2007}{...}
+{cmd:help plssas}
+{hline}
+
+{title:Title}
+
+    {hi: SAS's PROC PLS (Partial Least Squares)}
+
+{title:Syntax}
+
+{p 8 17 2}
+{cmdab:plssas}
+[varlist]
+[{cmd:,} {it:options}]
+
+{synoptset 20 tabbed}{...}
+{synopthdr}
+{synoptline}
+{syntab:Main}
+{synopt:{opt y(varlist)}} specify a list of y-variables.{p_end}
+{synopt:{opt x(varlist)}} specify a list of x-variables.{p_end}
+{synopt:{opt n:fac(integer 0)}} specify the number of factors to extract.{p_end}
+{synopt:{opt nosas}} specify that SAS should not be run (only used when the output files exist).{p_end}
+{synopt:{opt nofile}} specifies that the Stata dataset is not exported to a csv file.{p_end}
+{synopt:{opt m:ethod(string)}} specify the general factor extraction method to use, the default is PLS partial least squares.{p_end}
+{synopt:{opt p:refix(string)}} specify a prefix to be added to the names of the output csv files.{p_end}
+{synopt:{opt exe(string asis)}} specify the path and executable to run SAS.{p_end}
+{synoptline}
+{p2colreset}{...}
+
+{title:Description}
+
+{pstd}
+{cmd:plssas} creates a *.sas program to run a PLS analysis, then runs this file in the background and the output datasets created by SAS 
+are converted to *.CSV files. The set of files of OUTPUT csv files are:
+
+      yweights.csv
+      xweights.csv
+      xload.csv
+      xeff.csv
+      pest.csv
+      perc.csv
+      csp.csv
+      codedcoef.csv
+      out.csv
+
+{pstd}
+Also a file called temp.sas will contain the syntax and temp.csv will be the dataset created ready for importing into SAS.
+
+{pstd} The default version of SAS used is 9.1 and the path is by default {bf: c:\Program Files\SAS\SAS 9.1\sas.exe}.
+
+{pstd} A full description of the PLS procedure can be found in the SAS help files. Not all the options are implemented but might be added on
+request.
+
+{pstd}
+A SAS logfile will also be created called temp.log. 
+
+{title:Options}
+
+{dlgtab:Main}
+
+{phang}
+{opt y(varlist)} specifies the list of y-variables or responses.
+
+{phang}
+{opt x(varlist)} specifies the list of x-variables or predictors.
+
+{phang}
+{opt n:fac(integer 0)} specifies the number of factors to extract. The default is exactly the same as the SAS default of the minimum of
+15 and the number of predictors.
+
+{phang}
+{opt nosas} specifies that SAS will not be executed. This option can only be used if the output csv files from a previous analysis exist in the current
+directory.
+
+{phang}
+{opt nofile} specifies that the Stata dataset is not exported to a csv file. This option should only be used when the output files already exist
+and hence this command is being used to replay results from a previous analysis.
+
+{phang}
+{opt m:ethod(string)} specifies the general factor extraction method to use. The default is PLS partial least squares, SIMPLS uses the method of de Jong (1993), 
+PCR is principal components regression, and RRR is reduced rank regression.
+
+{phang}
+{opt p:refix(string)} specifies a prefix to the csv output filenames. 
+
+{phang}
+{opt exe(string asis)} specifies the path and name of the SAS executable; note spaces are fine there is no need to use quotes in this option.
+ At present this has been implemented for only the Windows version but 
+will in the future be extended to both Unix and Mac operating systems. The default is the path {bf: c:\Program Files\SAS\SAS 9.1\sas.exe}.
+
+{title:Examples}
+
+{phang}
+{input: plssas, y(fibd99 fat99) x(fber995)}
+
+{phang}
+{input: plssas, y(fibd99 fat99) x(fber995)}
+
+{phang}
+{input: plssas, y(fibd99 fat99) x(fber995) exe(P:\sas_network_image_8\SAS\sas.exe)}
+
+{title:Author}
+
+Adrian Mander, MRC Biostatistics Unit Hub for Trials Methodology Research, Cambridge, UK.
+
+Email {browse "mailto:adrian.mander@mrc-hnr.cam.ac.uk":adrian.mander@mrc-bsu.cam.ac.uk}
+
+{title:See Also}
+
+Related commands:
+
+{help mvreg}
+

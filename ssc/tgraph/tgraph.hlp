@@ -1,0 +1,76 @@
+.-
+help for ^tgraph^                                               (Patrick Royston)
+.-
+
+Plot graph with transformed axes
+--------------------------------
+
+
+   ^tgraph^ yvarlist xvar [^if^ exp] [^in^ range]^,^ [^xtr^ans^(^x_transf^)^ ^xla^bel^(^xlablist^)^
+	^ytr^ans^(^y_transf^)^ ^yla^bel^(^ylablist^)^ graph_options ]
+
+
+Description
+-----------
+
+^tgraph^ produces a graph with one or two non-standard axes, whose labels are on
+the same scale as yvarlist and/or xvar.
+
+
+Options
+-------
+
+^xtrans()^ defines the transformation (function of xvar) to be used. The argument
+    of the function is represented by ^@@^. Standard Stata syntax is used. If you
+    specify ^xtrans()^ then you must also specify ^xlabel()^.
+
+^ytrans()^ defines the transformation (function of all the variables in yvarlist)
+    to be used. The rules for defining the function are the same as for
+    ^xtrans()^. If you specify ^ytrans()^ then you must also specify ^ylabel()^.
+
+^xlabel()^, ^ylabel()^ are the required axis labels.
+
+graph_options are any of Stata's @graph, twoway@ options except for ^xlabel()^ and
+    ^ylabel()^.
+
+
+Remarks
+-------
+
+Stata provides automatic axis scaling only for linear (natural) and logarithmic
+scales, the latter via the ^xlog^, ^ylog^ and ^rlog^ options of ^graph^. You may want
+more. For example, a square root transformation of the response or of a covar-
+iate is sometimes useful, and you would like an axis to be scaled accordingly
+but with the labels on the original scale of measurement. ^tgraph^ allows you to
+do this in a flexible way. It exploits Stata's valuable facility to label an
+axis automatically according to the score labels for the variable in question.
+
+For example, suppose you want to transform a variable called ^weeks^ to a quad-
+ratic polynomial function of it, for which the coefficients of the linear and
+quadratic terms are stored in global macros called ^$b1^ and ^$b2^. You then want
+to plot a variable called ^femur^ against ^weeks^ on the quadratically transformed
+scale, labelling values on the X-axis with ^10,20,30,40^ weeks.
+
+The quadratic function of ^weeks^ may be represented by the following expression:
+
+	^$b1*weeks + $b2*weeks^^2^
+
+The plot is produced using ^tgraph^ as follows:
+
+ . ^tgraph femur weeks, xlabel(10(10)40) xtrans($b1*@@ + $b2*@@^^2)^
+
+
+Examples
+--------
+
+ . ^tgraph femur weeks, xlabel(10,20,30,40) xtrans(sqrt(@@))^
+ . ^tgraph femur weeks, labels(10,20,30,40) xtrans($b1*@@ + $b2*@@^^2)^
+ . ^tgraph y1 y2 y3 x, connect(lll) ylabel(1,2,3,4) ytrans(-1/@@)^
+	^xlabel(10(10)40) xtrans(sqrt(@@))^
+
+
+Also see
+--------
+
+ Manual:  [U] graph
+On-line:  help for @label@, @graph@

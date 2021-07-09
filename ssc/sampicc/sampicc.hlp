@@ -1,0 +1,117 @@
+
+.-
+help for ^sampicc^
+.-
+
+ ^Sample Size and Power Estimation for Single ICC^
+---------------------------------------------------
+
+	.^sampicc <p1> <p0> <reps>^ [, ^A^lpha(#) ^P^ower(#) ^S^ample(#) ^W^idth(#) ^CI^ ]
+
+
+^Description^
+^-----------^
+
+^sampicc^ computes the sample size or, alternatively, the power required to test an
+ICC (p1) against a null value (p0).  In addition, the program will compute the sample
+size for a specified width of a confidence interval for the ICC.  There are two forms
+of the command:
+
+^FORM 1^: To compute the sample size for a test of a hypothesized value against a null 
+^------^  value, three inputs are required:
+
+            ^p1^  --- the hypothesized ICC
+            ^p0^  --- the null value for ICC
+           ^reps^ --- the number of replicates taken on each subject (must be an integer)
+
+
+         ^Options for Form 1^
+         ^------------------^
+            ^alpha(#)^   The Type 1 error value (default is 5%)
+            ^power(#)^   The power for the test (default is 80%)
+           ^sample(#)^   The number of subjects to be tested.  If specified, the program computes
+                            power for the given sample size
+
+         ^Syntax for Form 1^
+         ^-----------------^
+
+          .^sampicc <p1> <p0> <reps>^, <options>
+
+
+^NOTE to Form 1^: To be conservative, all sample size estimates are rounded to the next highest
+                integer value, if the solution involves a decimal (e.g., 15.1 resolves to 16)
+
+
+
+^FORM 2^: To compute the sample size for a specified width or, alternatively, to compute the width
+^------^   of a confidence interval for a given sample size, the ^ci^ option must be specified.  
+        
+          ^p1^  --- the hypothesized ICC
+         ^reps^ --- the number of replicates taken on each subject (must be an integer)        
+
+
+         ^Options for Form 2^
+         ^------------------^
+                ^ci^      ci ^is required^ for estimations relating to confidence intervals
+            ^alpha(#)^    In this form, alpha(#) refers to 100(1-alpha)% CI level. The default
+                             alpha is .05 (i.e., 95% CI)
+            ^sample(#)^   The number of subjects to be tested.
+             ^width(#)^   The desired width of the confidence interval. This value must be between
+                             0 and 1
+
+
+         ^Syntax for Form 2^
+         ^-----------------^
+
+             . ^sampicc p1 reps, w(#) ci^
+
+             . ^sampicc p1 reps, s(#) ci^
+
+
+
+^Examples^
+^--------^
+
+To compute sample size for an ICC against a null value, assuming a critical level of
+   5% and power of 80% (Form 1)
+
+	.^sampicc .4 .1 3^
+
+
+To compute power, for an ICC against a null, with the sample size given (Form 1)
+
+	. ^sampicc .6 .1 3, s(15)^
+
+
+To compute sample size for a specified width of the confidence interval (Form 2)
+
+	. ^sampicc .5 2, w(.15) ci^
+
+
+To estimate width of a 90% CI for a given sample size (Form 2)
+
+	. ^sampicc .5 2, s(100) alpha(.10) ci^
+
+______________________________________________________________________________________________
+
+
+^References^
+^----------^
+Shoukri MM, Asyali MH, Donner A. Sample size requirements for the design of reliability study:
+   review and new results. Statistical Methods in Medical Research, 2004; 13: 251-271.
+
+Walter SD, Eliasziw M, & Donner A. Sample size and optimal designs for reliability studies,
+   Statistics in Medicine, 1998; 17: 101-110.
+
+
+Author
+------
+Paul F. Visintainer, PhD
+Springfield, MA 01089
+visint46@gmail.com
+
+
+Also see
+--------
+Manual or on-line help for: @sampsi@, @sxd3_1@ for sskdlg on SSC.
+

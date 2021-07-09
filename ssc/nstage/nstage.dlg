@@ -1,0 +1,814 @@
+/*
+nstage.dlg
+
+VERSION 4.0.0 DB 28may2019.
+
+n-stage trial sample size
+
+keyword: rclass
+
+*/
+
+VERSION 12
+
+
+POSITION . . 500 280
+
+
+LIST tunit
+	BEGIN
+		Year
+		6 Months
+		Quarter
+		Month
+		Week
+		Day
+		Unspecified
+	END
+	
+LIST tunit_val
+	BEGIN
+		1
+		2
+		3
+		4
+		5
+		6
+		7
+	END
+
+
+LIST nstage
+	BEGIN
+		1
+		2
+		3
+		4
+		5
+	END
+
+LIST nstage_val
+	BEGIN
+		1
+		2
+		3
+		4
+		5
+	END
+	
+DEFINE wd1 60
+DEFINE wd2 145
+DEFINE wd2_n 150
+DEFINE wd3 90
+/* DEFINE wd4 270 */
+DEFINE wd4 350
+DEFINE wd4_n 360
+/* DEFINE wd5 150 */
+DEFINE wd5 170
+DEFINE wd5_n 180
+DEFINE wd6 100
+DEFINE wd6_n 120
+DEFINE wd7 180
+/* DEFINE wd8 105 */
+DEFINE wd8 135
+DEFINE wd9 30	
+DEFINE wd10 480
+DEFINE wd11 120
+DEFINE wd13 200
+	
+
+DIALOG tab1, title("Multi-Arm Multi-Stage Trial Designs")  tabtitle("Design parameters")
+BEGIN
+	
+ TEXT tx_nstage		10	10	wd2	., label("Total number of stages")
+ COMBOBOX cb_nstage	wd2_n	@	wd1	., label("Total number of stages") option(nstage) contents(nstage) onselchangelist(nstage_action) dropdownl value(nstage_val)
+ 
+ TEXT tx_allr		10	+35	wd2	., label("E:C Allocation ratio")
+ EDIT vl_allr1		wd2_n	@	wd1	., label("E:C Allocation ratio") default(1) option(allr1) numonly
+ TEXT tx_allr2          215     @       wd9      ., label(":1")
+
+ TEXT tx_tunit		10	+35 	wd2	., label("Time unit (= 1 period)") 
+ COMBOBOX cb_tunit	wd2_n	@	wd3	., label("Time unit (= 1 period)") option(tunit) contents(tunit) dropdownl value(tunit_val)
+
+ TEXT tx_tsa		10	+35	wd2	., label("Time of stopping accrual")
+ EDIT vl_tsa		wd2_n	@	wd1	., label("Time of stopping accrual") option(tsa) numonly
+ TEXT tx_tsa1           215  	@	wd1	., label("periods")
+
+ CHECKBOX ck_prob	10	+35	wd4	., label("Show probabilities for number of arms in each stage") option(probs) default(0)
+ CHECKBOX ck_fwer       @       +35     wd4     ., label("Calculate familywise error rate (FWER)") option(fwer) default(1) onclickon("script fwer_on") onclickoff("script fwer_off")	// Added conditional box for FWER control only if fwer on
+ CHECKBOX ck_fwercontrol	@	+35		wd4		., label("Control the FWER at level:")
+ EDIT vl_fwercontrol	180	@	wd1				., label("Control the FWER at level:") default(0.025) option(fwercontrol) numonly
+ CHECKBOX ck_nb		10	+35	wd4	., label("Assume non-binding stopping boundaries for lack-of-benefit") option(nb) default(0)
+ 
+END 
+	
+
+
+
+LIST nstage_action
+	BEGIN
+		script nst1
+		script nst2
+		script nst3
+		script nst4
+		script nst5
+	END
+	
+SCRIPT nst1
+BEGIN
+	tab2.lb_stg1.show
+	tab2.lb_stg2.hide
+	tab2.lb_stg3.hide
+	tab2.lb_stg4.hide
+	tab2.lb_stg5.hide
+	tab3.cb_ineqd.disable
+	tab4.cb_esb.disable
+	tab4.cb_esbrule.disable
+	tab4.tx_pval.disable
+	tab4.vl_pvalhp.disable
+	tab4.vl_pvalcust.disable
+
+	script ineqd_off
+END
+
+SCRIPT nst2
+BEGIN
+	tab2.lb_stg1.hide
+	tab2.lb_stg2.show
+	tab2.lb_stg3.hide
+	tab2.lb_stg4.hide
+	tab2.lb_stg5.hide
+	tab3.cb_ineqd.enable
+	tab4.cb_esb.enable
+END
+
+SCRIPT nst3
+BEGIN
+	tab2.lb_stg1.hide
+	tab2.lb_stg2.hide
+	tab2.lb_stg3.show
+	tab2.lb_stg4.hide
+	tab2.lb_stg5.hide
+	tab3.cb_ineqd.enable
+	tab4.cb_esb.enable
+END
+
+SCRIPT nst4
+BEGIN
+	tab2.lb_stg1.hide
+	tab2.lb_stg2.hide
+	tab2.lb_stg3.hide
+	tab2.lb_stg4.show
+	tab2.lb_stg5.hide
+	tab3.cb_ineqd.enable
+	tab4.cb_esb.enable
+END
+
+SCRIPT nst5
+BEGIN
+	tab2.lb_stg1.hide
+	tab2.lb_stg2.hide
+	tab2.lb_stg3.hide
+	tab2.lb_stg4.hide
+	tab2.lb_stg5.show
+	tab3.cb_ineqd.enable
+	tab4.cb_esb.enable
+END	
+
+
+
+DIALOG tab2, tabtitle("Operating characteristics")
+BEGIN
+ 
+
+ 
+ TEXT tx_stg		10	10	wd2	., label("Choose stage:")
+ LISTBOX  lb_stg1       @       +20     wd6     75, label("Choose stage") contents(eqn_con1) onselchangelist(eqn_sel1)
+ LISTBOX  lb_stg2       @       @       @       @, label("Choose stage") contents(eqn_con2) onselchangelist(eqn_sel2)
+ LISTBOX  lb_stg3       @       @       @       @, label("Choose stage") contents(eqn_con3) onselchangelist(eqn_sel3)
+ LISTBOX  lb_stg4       @       @       @       @, label("Choose stage") contents(eqn_con4) onselchangelist(eqn_sel4)
+ LISTBOX  lb_stg5       @       @       @       @, label("Choose stage") contents(eqn_con5) onselchangelist(eqn_sel5)
+ 
+ TEXT tx_acc1		10	+85	wd5	., label("Total accrual rate (per period)") 
+ EDIT vl_acc1		wd5_n	@	wd1	., label("Total accrual rate") default(200) option(acc1) numonly
+ EDIT vl_acc2		@	@	@	., label("Total accrual rate") option(acc2) numonly
+ EDIT vl_acc3		@	@	@	., label("Total accrual rate") option(acc3) numonly
+ EDIT vl_acc4		@	@	@	., label("Total accrual rate") option(acc4) numonly
+ EDIT vl_acc5		@	@	@	., label("Total accrual rate") option(acc5) numonly
+
+ TEXT tx_narms1		10	+30	wd5	., label("Number of recruiting arms") 
+ EDIT vl_narms1		wd5_n	@	wd1	., label("Number of arms") default(5) option(narms1) numonly
+ EDIT vl_narms2		@	@	@	., label("Number of arms") option(narms2) numonly
+ EDIT vl_narms3		@	@	@	., label("Number of arms") option(narms3) numonly
+ EDIT vl_narms4		@	@	@	., label("Number of arms") option(narms4) numonly
+ EDIT vl_narms5		@	@	@	., label("Number of arms") option(narms5) numonly
+ 
+ TEXT tx_alp1		10	+30	wd5	., label("Significance level (one-sided)")
+ EDIT vl_alpha1		wd5_n	@	wd1	., label("Significance level") default(0.2) option(alpha1) numonly
+ EDIT vl_alpha2		@	@	@	., label("Significance level") option(alpha2) numonly
+ EDIT vl_alpha3		@	@	@	., label("Significance level") option(alpha3) numonly
+ EDIT vl_alpha4		@	@	@	., label("Significance level") option(alpha4) numonly
+ EDIT vl_alpha5		@	@	@	., label("Significance level") option(alpha5) numonly
+ 
+ TEXT tx_pow1		10	+30	wd5	., label("Power")
+ EDIT vl_pow1		wd5_n	@	wd1	., label("power") default(0.95) option(pow1) numonly
+ EDIT vl_pow2		@	@	@	., label("power") option(pow2) numonly
+ EDIT vl_pow3		@	@	@	., label("power") option(pow3) numonly
+ EDIT vl_pow4		@	@	@	., label("power") option(pow4) numonly
+ EDIT vl_pow5		@	@	@	., label("power") option(pow5) numonly
+    
+
+END
+
+
+
+LIST eqn_con1
+BEGIN
+	Stage 1
+END
+
+LIST eqn_con2
+BEGIN
+	Stage 1
+	Stage 2 
+END
+
+LIST eqn_con3
+BEGIN
+	Stage 1
+	Stage 2 
+	Stage 3
+END
+
+LIST eqn_con4
+BEGIN
+	Stage 1
+	Stage 2 
+	Stage 3
+	Stage 4
+END
+
+LIST eqn_con5
+BEGIN
+	Stage 1
+	Stage 2 
+	Stage 3
+	Stage 4
+	Stage 5
+END
+
+
+
+
+LIST eqn_sel1
+BEGIN
+	script eqn1
+END
+
+
+
+LIST eqn_sel2
+BEGIN
+	script eqn1
+	script eqn2
+END
+	
+
+
+LIST eqn_sel3
+BEGIN
+	script eqn1
+	script eqn2
+	script eqn3
+END
+
+
+
+LIST eqn_sel4
+BEGIN
+	script eqn1
+	script eqn2
+	script eqn3
+	script eqn4
+END
+
+
+
+LIST eqn_sel5
+BEGIN
+	script eqn1
+	script eqn2
+	script eqn3
+	script eqn4
+	script eqn5
+END
+
+
+
+
+SCRIPT eqn1
+BEGIN
+	program hide_all
+	tab2.vl_narms1.show
+	tab2.vl_acc1.show
+	tab2.vl_alpha1.show
+	tab2.vl_pow1.show
+END
+
+SCRIPT eqn2
+BEGIN
+	program hide_all
+	tab2.vl_narms2.show
+	tab2.vl_acc2.show
+	tab2.vl_alpha2.show
+	tab2.vl_pow2.show
+END
+
+SCRIPT eqn3
+BEGIN
+	program hide_all
+	tab2.vl_narms3.show
+	tab2.vl_acc3.show
+	tab2.vl_alpha3.show
+	tab2.vl_pow3.show
+END
+
+SCRIPT eqn4
+BEGIN
+	program hide_all
+	tab2.vl_narms4.show
+	tab2.vl_acc4.show
+	tab2.vl_alpha4.show
+	tab2.vl_pow4.show
+END
+
+SCRIPT eqn5
+BEGIN
+	program hide_all
+	tab2.vl_narms5.show
+	tab2.vl_acc5.show
+	tab2.vl_alpha5.show
+	tab2.vl_pow5.show
+END
+
+
+PROGRAM hide_all
+BEGIN
+	if !H(tab2.vl_narms1) {
+		call gaction tab2.vl_narms1.hide
+		call gaction tab2.vl_acc1.hide
+		call gaction tab2.vl_alpha1.hide
+		call gaction tab2.vl_pow1.hide
+	}
+	if !H(tab2.vl_narms2) {
+		call gaction tab2.vl_acc2.hide
+		call gaction tab2.vl_narms2.hide
+		call gaction tab2.vl_alpha2.hide
+		call gaction tab2.vl_pow2.hide
+	}
+	if !H(tab2.vl_narms3) {
+		call gaction tab2.vl_acc3.hide
+		call gaction tab2.vl_narms3.hide
+		call gaction tab2.vl_alpha3.hide
+		call gaction tab2.vl_pow3.hide
+	}
+	if !H(tab2.vl_narms4) {
+		call gaction tab2.vl_narms4.hide
+		call gaction tab2.vl_acc4.hide
+		call gaction tab2.vl_alpha4.hide
+		call gaction tab2.vl_pow4.hide
+	}
+	if !H(tab2.vl_narms5) {
+		call gaction tab2.vl_narms5.hide
+		call gaction tab2.vl_acc5.hide
+		call gaction tab2.vl_alpha5.hide
+		call gaction tab2.vl_pow5.hide
+	}
+END
+
+
+
+
+DIALOG tab3, tabtitle("Intermediate outcome")
+BEGIN
+ GROUPBOX gb_setupd    	10      5       wd10     110, label("Design Parameters for Intermediate Outcome (if applicable)")
+
+ CHECKBOX cb_ineqd	25	+20	wd4	., label("Intermediate and primary outcomes differ") option(ineqd) onclickon("script ineqd_on") onclickoff("script ineqd_off")
+ 
+ TEXT tx_survpi		25	+30	wd8	., label("Survival probability") 	
+ EDIT vl_survpi		145	@	wd1	., label("Survival probability") default(0.5) option(survpi) numonly
+ 
+ TEXT tx_survti		290	@	wd8	., label("Survival time (periods)")
+ EDIT vl_survti		410	@	wd1	., label("Survival time") default(1.5) option(survti) numonly
+ 
+ TEXT tx_hr0i		25	+30	wd8	., label("Hazard ratio under H0")
+ EDIT vl_hr0i		145	@	wd1	., label("Hazard ratio under H0") default(1) option(hr0i) numonly
+ 
+ TEXT tx_hr1i		290	@	wd8	., label("Hazard ratio under H1") 
+ EDIT vl_hr1i		410	@	wd1	., label("Hazard ratio under H1") default(0.75) option(hr1i) numonly
+
+ 
+ GROUPBOX gb_corr	10 	125	wd10	140, label("Between-stage Correlation")
+ 
+ RADIO cor1		20	+20	wd4	., first label("Use Royston et al (2011) approximation to correlation structure") onclickon("program corr_hr") 
+ 
+ TEXT tx_corhr		37 	+30	wd4	., label("Correlation between hazard ratios on I and D outcomes") 
+ EDIT ed_corhr		wd4_n	@	wd1	., label("Correlation") default(0.6) option(corr) numonly
+  
+ RADIO cor2		20	+30	wd4   	., last label("Use simulation to estimate the correlation structure") onclickon("program corr_st") 
+ 
+ TEXT tx_cor2n		315	@	wd8	., label("Number of replicates") 
+ EDIT vl_cor2n		428	@	wd1	., label("Number of replicates") default(1000) numonly
+
+ TEXT tx_corst		37 	+30	wd4	., label("Correlation between survival times on I and D outcomes") 
+ EDIT ed_corst		wd4_n	@	wd1	., label("Correlation") default(0.6) option(corr) numonly
+ 
+END
+
+
+LIST esbs
+	BEGIN
+		Haybittle-Peto
+		O'Brien-Fleming
+		Custom
+	END
+
+LIST esbs_code
+	BEGIN
+		hp
+		obf
+		custom
+	END
+
+
+DIALOG tab4, tabtitle("Primary outcome")
+BEGIN
+ GROUPBOX gb_setupd    	10      5       wd10     95, label("Design Parameters for Primary Outcome")
+
+ TEXT tx_survpd		25	+30	wd8	., label("Survival probability") 	
+ EDIT vl_survpd		145	@	wd1	., label("Survival probability") default(0.5) option(survpd) numonly
+ 
+ TEXT tx_survtd		290	@	wd8	., label("Survival time (periods)")
+ EDIT vl_survtd		410	@	wd1	., label("Survival time") default(1.5) option(survtd) numonly
+ 
+ TEXT tx_hr0d		25	+30	wd8	., label("Hazard ratio under H0")
+ EDIT vl_hr0d		145	@	wd1	., label("Hazard ratio under H0") default(1) option(hr0d) numonly
+ 
+ TEXT tx_hr1d		290	@	wd8	., label("Hazard ratio under H1") 
+ EDIT vl_hr1d		410	@	wd1	., label("Hazard ratio under H1") default(0.75) option(hr1d) numonly
+
+ 
+ GROUPBOX gb_corr	10 	125	wd10	140, label("Efficacy stopping rules (one-sided)")
+  
+ CHECKBOX cb_esb	25	+20	wd4	., label("Assess primary outcome for efficacy at interim stage analyses") option(esbs) onclickon("script esbs_on") onclickoff("script esbs_off")
+
+ TEXT tx_esbrule	25	+30	wd13	., label("Efficacy stopping rule")
+ COMBOBOX cb_esbrule 145	@	wd11	., label("Efficacy stopping rule") option(esbs) contents(esbs) onselchangelist(esb_action) dropdownl value(esbs_code)
+
+ TEXT tx_pval		25	+30	wd6	., label("p-values") 
+ TEXT tx_pvalobf	25	@	wd4	., label("p-values generated by O'Brien-Fleming function") 
+ EDIT vl_pvalhp	145	@	wd6	., label("p-values") default(0.0005) numonly
+ 
+ *if tab2.lb_stg2 {
+ *if !H(tab2.vl_narms2) {
+ EDIT vl_pvalcust	145	@	wd5	., label("p-values") default(0.0005)			// How to make the custom values depend on # stages?
+/*}
+
+if !H(tab2.vl_narms3) {
+ EDIT vl_pvalcust	wd6_n	@	wd5	., label("p-values") default(0.0005 0.0005)			// How to make the custom values depend on # stages?
+ }
+ 
+if !H(tab2.vl_narms4) {
+ EDIT vl_pvalcust	wd6_n	@	wd5	., label("p-values") default(0.0005 0.0005 0.0005)			// How to make the custom values depend on # stages?
+ }
+ 
+ if !H(tab2.vl_narms5) {
+ EDIT vl_pvalcust	wd6_n	@	wd5	., label("p-values") default(0.0005 0.0005 0.0005 0.0005)			// How to make the custom values depend on # stages?
+ }
+*/
+
+ // if nst1 {} etc?
+ CHECKBOX cb_esbstop	25	+30	300	., label("Stop trial once any arm is dropped for efficacy") option(esbstop) onclickon("script esbstop_on") onclickoff("script esbstop_off")
+
+
+END
+
+
+SCRIPT fwer_on					//Additional options when FWER calculated to control FWER
+BEGIN
+  tab1.ck_fwercontrol.enable
+  tab1.vl_fwercontrol.enable
+END
+
+
+SCRIPT fwer_off
+BEGIN
+  tab1.ck_fwercontrol.disable
+  tab1.vl_fwercontrol.disable
+END
+
+
+PROGRAM corr_hr
+BEGIN
+	if tab3.cb_ineqd.iseq(1) & tab3.cor1.iseq(1) {
+		call gaction tab3.tx_corhr.enable
+		call gaction tab3.ed_corhr.enable
+		call gaction tab3.tx_corst.disable
+		call gaction tab3.ed_corst.disable
+ 		call gaction tab3.tx_cor2n.disable
+		call gaction tab3.vl_cor2n.disable
+	}	
+END
+
+PROGRAM corr_st
+BEGIN
+	if tab3.cb_ineqd.iseq(1) & tab3.cor2.iseq(1) {
+		call gaction tab3.tx_corhr.disable
+		call gaction tab3.ed_corhr.disable
+		call gaction tab3.tx_corst.enable
+		call gaction tab3.ed_corst.enable
+ 		call gaction tab3.tx_cor2n.enable
+		call gaction tab3.vl_cor2n.enable
+	}
+END
+
+
+
+SCRIPT ineqd_on
+BEGIN
+  tab3.vl_survpi.enable
+  tab3.vl_survti.enable
+  tab3.vl_hr0i.enable
+  tab3.vl_hr1i.enable
+  tab3.cor1.enable
+  tab3.cor2.enable
+
+  program corr_hr
+  program corr_st
+END
+
+
+SCRIPT ineqd_off
+BEGIN
+  tab3.vl_survpi.disable
+  tab3.vl_survti.disable
+  tab3.vl_hr0i.disable
+  tab3.vl_hr1i.disable
+  tab3.cor1.disable
+  tab3.ed_corhr.disable
+  tab3.tx_corhr.disable
+  tab3.cor2.disable
+  tab3.tx_cor2n.disable
+  tab3.vl_cor2n.disable
+  tab3.ed_corst.disable
+  tab3.tx_corst.disable
+END
+
+* NEW
+SCRIPT esbs_on
+BEGIN
+	tab4.tx_esbrule.enable
+	tab4.cb_esbrule.enable
+	tab4.tx_pval.enable
+	tab4.vl_pvalhp.enable
+	tab4.vl_pvalcust.enable
+	tab4.cb_esbstop.enable
+END
+
+SCRIPT esbs_off
+BEGIN
+	tab4.tx_esbrule.disable
+	tab4.cb_esbrule.disable
+	tab4.tx_pval.disable
+	tab4.vl_pvalhp.disable
+	tab4.vl_pvalcust.disable
+	tab4.cb_esbstop.disable
+END
+
+LIST esb_action
+	BEGIN
+		script hp
+		script obf
+		script custom
+	END
+	
+SCRIPT hp
+BEGIN
+	tab4.vl_pvalhp.show
+	tab4.vl_pvalcust.hide
+	tab4.tx_pval.show
+	tab4.tx_pvalobf.hide
+END
+
+SCRIPT obf
+BEGIN
+	tab4.vl_pvalhp.hide
+	tab4.vl_pvalcust.hide
+	tab4.tx_pval.hide
+	tab4.tx_pvalobf.show
+END
+
+SCRIPT custom
+BEGIN
+	tab4.vl_pvalhp.hide
+	tab4.vl_pvalcust.show
+	tab4.tx_pval.show
+	tab4.tx_pvalobf.hide
+END
+*
+
+COPY copy1, uaction(command) target(cmdwin)
+OK ok1, label("OK")
+CANCEL can1, label("Cancel")
+SUBMIT sub1, label("Submit")
+
+HELP   hlp1, label("Help") view("help nstage")
+RESET  res1
+
+
+
+PROGRAM command
+BEGIN
+	
+	put "nstage "
+
+	beginoptions
+		put "accrue(" /hidden tab2.vl_acc1
+		if tab2.vl_acc2 {
+			put " " /hidden tab2.vl_acc2 
+		}
+		if tab2.vl_acc3 {
+			put " " /hidden tab2.vl_acc3 
+		}
+		if tab2.vl_acc4 {
+			put " " /hidden tab2.vl_acc4 
+		}
+		if tab2.vl_acc5 {
+			put " " /hidden tab2.vl_acc5 
+		}
+		put ") "
+		
+
+		put "arms(" /hidden tab2.vl_narms1
+		if tab2.vl_narms2 {
+			put " " /hidden tab2.vl_narms2 
+		}
+		if tab2.vl_narms3 {
+			put " " /hidden tab2.vl_narms3 
+		}
+		if tab2.vl_narms4 {
+			put " " /hidden tab2.vl_narms4 
+		}
+		if tab2.vl_narms5 {
+			put " " /hidden tab2.vl_narms5
+		}
+		put ") "
+		
+
+		put "hr0("
+		if tab1.cb_nstage.isneq("1") {
+			if tab3.vl_hr0i.isenabled() {
+				put tab3.vl_hr0i " "
+			}
+			else {
+				put tab4.vl_hr0d " "
+			}	 
+		}
+		put tab4.vl_hr0d
+		put ") "
+		
+
+		put "hr1(" 
+		if tab1.cb_nstage.isneq("1") {
+			if tab3.vl_hr1i.isenabled() {
+				put tab3.vl_hr1i " "
+			}
+			else {
+				put tab4.vl_hr1d " "
+			}
+		}
+		put tab4.vl_hr1d
+		put ") "
+		
+
+		put "alpha(" /hidden tab2.vl_alpha1 
+		if tab2.vl_alpha2 {
+			put " " /hidden tab2.vl_alpha2 
+		}
+		if tab2.vl_alpha3 {
+			put " " /hidden tab2.vl_alpha3 
+		}
+		if tab2.vl_alpha4 {
+			put " " /hidden tab2.vl_alpha4 
+		}
+		if tab2.vl_alpha5 {
+			put " " /hidden tab2.vl_alpha5 
+		}
+		put ") "
+		
+
+		put "omega(" /hidden tab2.vl_pow1 
+		if tab2.vl_pow2 {
+			put " " /hidden tab2.vl_pow2 
+		}
+		if tab2.vl_pow3 {
+			put " " /hidden tab2.vl_pow3 
+		}
+		if tab2.vl_pow4 {
+			put " " /hidden tab2.vl_pow4 
+		}
+		if tab2.vl_pow5 {
+			put " " /hidden tab2.vl_pow5 
+		}
+		put ") "
+		
+
+		put "t("
+		if tab1.cb_nstage.isneq("1") {
+			if tab3.vl_survti.isenabled() {
+				put tab3.vl_survti " "
+			}
+			else {
+				put tab4.vl_survtd " "
+			}
+		}
+		put tab4.vl_survtd 
+		put ") " 
+		
+
+		if tab4.vl_survpd {
+			put "s("
+			if tab1.cb_nstage.isneq("1") {
+				if tab3.vl_survpi.isenabled() {
+					put tab3.vl_survpi " "
+				}
+				else {
+					put tab4.vl_survpd " "
+				}
+			}
+			put tab4.vl_survpd  
+			put ") " 
+		}
+		
+		
+		if tab1.vl_allr1 {
+			put "aratio(" tab1.vl_allr1 ") " 
+		}
+
+
+		if tab1.ck_prob {
+			put "probs " 
+		}
+
+		if tab1.ck_nb {
+			put "nonbinding " 
+		}
+
+		if !tab1.ck_fwer {
+			put "nofwer "
+		}		
+		
+		if tab1.ck_fwercontrol {
+			put "fwercontrol(" tab1.vl_fwercontrol ") "
+		}
+
+		if tab1.vl_tsa {
+			put "tstop(" tab1.vl_tsa ") " 
+		}
+		
+
+		
+		if tab3.vl_cor2n {
+			put "simcorr(" tab3.vl_cor2n ") " 
+		}
+				
+		
+		optionarg tab1.cb_nstage
+		
+		optionarg tab1.cb_tunit
+		
+		if tab3.ed_corhr {
+			optionarg tab3.ed_corhr
+		}
+
+		if tab3.ed_corst {
+			optionarg tab3.ed_corst
+		}
+		
+		if tab4.cb_esb {
+			put "esb(" tab4.cb_esbrule
+			if tab4.vl_pvalhp {
+				put "=" tab4.vl_pvalhp
+			}
+			if tab4.vl_pvalcust {
+				put "=" tab4.vl_pvalcust " "
+			}
+			if tab4.cb_esbstop {
+				put ",stop"
+			}
+			put ") "
+		}
+		
+	endoptions
+	
+END

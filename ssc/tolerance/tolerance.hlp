@@ -1,0 +1,50 @@
+{smcl}
+{* 1 October 2004}{...}
+{hline}
+help for {hi:tolerance}  {right:Peter Lachenbruch program}
+{hline}
+
+{title:Generate tolerance intervals from input data}
+{p 8 17 2}
+{cmdab:tolerance}
+{it: varname  }
+[{cmd:if} {it:exp}]
+[{cmd:in} {it:range}] 
+[,{cmd:p(}{it:#}) {cmdab:g:amma(}{it:#})]
+
+{title:Description}
+{p 4 4 2}{cmd:tolerance} generates lower and upper tolerance limits for varname assuming it is normally distributed. It also produces the multiplier for the tolerance interval. The variable name is required.  
+
+{p 4 4 2}
+{hilite: You must have a data set in memory before using this command }
+
+{p 4 4 2}
+{title:Options}
+
+{p 4 4 2} {cmd:p(}{it:#}{cmd:)} Gives the value of the confidence level.  Default=0.95 }
+
+{p 4 4 2} {cmdab:g:amma(}{it:#}{cmd:) }Gives the value of the coverage proportion. Default=0.9 It can be abbreviated by g({it:#})
+
+{p 4 8 2}
+
+{title:Examples} 
+
+{p 4 8 2}{it:95% 95% tolerance interval for price}{p_end}
+
+{p 4 8 2}{cmd: tolerance price, p(.95) g(.95)}
+
+{p 4 8 2}{it:99% 95% tolerance interval for mpg}{p_end}
+
+{p 4 8 2}{cmd: tolerance mpg, p(.99) g(.95)}   
+
+{title:References}
+
+{p 4 4 2}
+Hahn, G. and Meeker, W. Q. {bf:Statistical Intervals} 1991 New York:John Wiley
+& Sons
+
+{title:Author}
+
+{p 4 4 2}Peter A. Lachenbruch FDA/CBER/OBE{break} 
+peter.lachenbruch@fda.hhs.gov
+{p 4 4 2}with thanks to Nick Cox for comments and improvements in the program

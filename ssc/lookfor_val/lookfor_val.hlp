@@ -1,0 +1,203 @@
+{smcl}
+{* version 1.0.4 17nov2012}{...}
+{cmd:help lookfor_val}
+{hline}
+
+{title:Title}
+
+{p 5}
+{cmd:lookfor_val} {hline 2} Search value pattern in current dataset
+
+
+{title:Syntax}
+
+{p 5}
+Basic syntax
+
+{p 8}
+{cmd:lookfor_val} [{cmd:,} 
+{opt p:attern}{cmd:(}{help lookfor_val##pat:{it:pattern}}{cmd:)}] 
+
+{p 5}
+Full syntax
+
+{p 8}
+{cmd:lookfor_val} [{varlist}] {ifin} [{cmd:,} {it:options}]
+
+
+{synoptset 21 tabbed}{...}
+{synopthdr}
+{synoptline}
+{synopt:{opt p:attern}{cmd:(}{help lookfor_val##pat:{it:pattern}}{cmd:)}}search 
+values matching {it:pattern}{p_end}
+
+{syntab:{it:search}}
+{synopt:{opt inse:nsitive}}perform case-insensitive search{p_end}
+{synopt:{opt m:issing}}do not exclude missing values{p_end}
+{synopt:{opt str:ing}}search string variables{p_end}
+{synopt:{opt num:eric}}search numeric variables{p_end}
+{synopt:{opt f:ormat}{cmd:(}{help format:%{it:fmt}{cmd:)}}}use 
+{it:fmt} for numeric values{p_end}
+
+{syntab:{it:results}}
+{synopt:{opt v:alues}}display and save in {cmd:r()} values matching 
+{it:pattern}{p_end}
+{synopt:{opt d:escribe}}{help describe} variables with values matching 
+{it:pattern}{p_end}
+{synopt:{opt l:ist}}{help list} variables with values matching 
+{it:pattern}{p_end}
+{synopt:{opt ta:bulate}}{help tabulate} variables with values matching 
+{it:pattern}{p_end}
+{synopt:{opt sep:arate(str)}}use {it:str} as separator in returned 
+results{p_end}
+{synopt:{opt nop:rint}}do not display results{p_end}
+{synoptline}
+{marker pat}
+{phang}
+{it:pattern} is one string, possibly including the wildcard 
+characters {hi:*} and/or {hi:?}, where the former means 0 or more 
+characters, the latter means exactly 1 character.
+
+
+{title:Description}
+
+{pstd}
+{cmd:lookfor_val} searches the current dataset for values matching a 
+specified {it:pattern}. Variables in which values matching 
+{it:pattern} are found, are listed and their names are returned in 
+{cmd:r(varlist)}. 
+
+{pstd}
+If varlist is not specified, it defaults to {hi:_all}. Not 
+specifying {it:pattern} sets the pattern to {hi:*} meaning all 
+(non-missing) values.
+
+{pstd}
+{cmd:lookfor_val} is typically used to search string variables. 
+However, if not specified otherwise, string and numeric variables 
+are searched. 
+
+
+{title:Options}
+
+{phang}
+{opt p:attern(pattern)} specifies the value pattern to be searched. 
+The wildcards {hi:*} and {hi:?} may be used, where the former means 
+zero or more characters and the latter means exactly one character. 
+Compound double quotes are needed if {it:pattern} contains double 
+quotes. Double quotes are needed if {it:pattern} contains leading or  
+trailing blanks, and are not needed otherwise. If not specified, 
+{it:pattern} defaults to {hi:*}.
+
+{dlgtab:search}
+
+{phang}
+{opt inse:nsitive} performs a case-insensitve search. The option only 
+affects the search in string variables.
+
+{phang}
+{opt m:issing} treats missing values as valid. Default is to exclude 
+missing values. Specify {opt missing} if you specified missing values 
+(i.e. {hi:""} or one of {hi:.},{hi: .a},{hi: .b}, ...,{hi: .z}) in 
+{it:pattern}. Specifying {opt missing} without specifying {it:pattern} 
+sets {it:pattern} to {hi:""}, or {hi:.} if {opt numeric} is also 
+specified.
+
+{phang}
+{opt str:ing} specifies that string variables be searched. Default is 
+to search string and numeric variables. Specify {opt string} to search 
+string variables only.
+
+{phang}
+{opt num:eric} specifies that numeric variables be searched. Default 
+is to search string and numeric variables. Specify {opt numeric} to 
+search numeric variables only.
+
+{phang}
+{opt f:ormat(%fmt)} uses {it:fmt} searching for {it:pattern} in numeric 
+variables. Default is to use variables' output {help format}. This 
+option is seldom used. It may be used to replicate behavior of older 
+versions of the program. If you want to do this, sepcify {it:fmt} as 
+{hi:18.0g}.
+
+{dlgtab:results}
+
+{phang}
+{opt v:alues} lists and saves in {cmd:r(values_{it:varname})} distinct 
+values matching {it:pattern}. If specified, variable names are neither 
+listed nor returned in {cmd:r(varlist)}.
+
+{phang}
+{opt d:escribe} {help describe}s variables with values matching 
+{it:pattern}. This option may not be used with {opt values}.
+
+{phang}
+{opt l:ist} {help list}s values matching {it:pattern}. This option 
+implies {opt values}. Values will be returned in 
+{cmd:r(values_{it:varname})} but will not be displayed.
+
+{phang}
+{opt ta:bulate} {help tabulate oneway:tabulate}s values matching 
+{it:pattern}. This option implies {opt values}. Values will be 
+returned in {cmd:r(values_{it:varname})} but will not be displayed.
+
+{phang}
+{opt sep:arate(str)} uses {it:str} as separator between elements in 
+returned results. Default separator is {hi:" "}. 
+
+{phang}
+{opt nop:rint} does not display returned results. 
+
+
+{title:Remarks}
+
+{pstd}
+{cmd:lookfor_val} returns erroneous results if a value contains an 
+unbalanced compound double quote ({hi:`"} or {hi:"'}), but does not 
+issue an error message. These characters are likely to break other 
+Stata commands (e.g. {help levelsof}), so these commands might be 
+used to check for potential problems. 
+
+
+{title:Examples}
+
+{phang2}{cmd:. sysuse auto}{p_end}
+{phang2}{cmd:. lookfor_val ,pattern(*v*) string}{p_end}
+{phang2}{cmd:. lookfor_val ,pattern(*v*) string values}{p_end}
+{phang2}{cmd:. lookfor_val ,pattern(*v*) string values insensitive}
+{p_end}
+{phang2}{cmd:. lookfor_val make ,pattern(*A*) tabulate}{p_end}
+
+{phang2}{cmd:. lookfor_val ,pattern(*07?) numeric}{p_end}
+
+		  
+{title:Saved results}
+
+{pstd}
+{cmd:lookfor_val} saves one of the following in {cmd:r()}:
+
+{synoptset 20 tabbed}{...}
+{synopt:{cmd:r(varlist)}}variables with values matching 
+{it:pattern} (not with {opt values}){p_end}
+{synopt:{cmd:r(values_{it:varname})}}values in {it:varname} 
+matching {it:pattern} (option {opt values} only)
+
+
+{title:Acknowledgments}
+
+{pstd}
+Bug reports from Matthew White led to fruitful discussions and a major 
+revison of the code.
+
+
+{title:Author}
+
+{pstd}Daniel Klein, University of Kassel, klein.daniel.81@gmail.com
+
+
+{title:Also see}
+
+{psee}
+Online: {helpb ds}, {helpb lookfor}{p_end}
+{psee}
+if installed: {help lookfor_all}, {help findname}{p_end}

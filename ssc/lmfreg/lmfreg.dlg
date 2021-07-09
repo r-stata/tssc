@@ -1,0 +1,45 @@
+/*
+ lmfreg
+*! VERSION 1.0 14/08/2012
+*/
+VERSION 11.0
+INCLUDE _std_large
+DEFINE _dlght 150
+INCLUDE header
+HELP hlp1, view("help lmfreg")
+RESET res1
+
+DIALOG main, label("lmfreg - OLS Linear vs Log-Linear Functional Form Tests") ///
+	tabtitle("Main")
+BEGIN
+ DEFINE _x _xsetbu
+ DEFINE _y _top
+ INCLUDE _bu_tsset
+  
+ TEXT tx_yvar	_lft	+30	120	., ///
+	label("Dependent Variable:")
+ TEXT tx_xvar	_vlx	@	300	., ///
+	label("Independent Variables:")
+
+ VARNAME vn_yvar  _lft	 _ss	120 .,	 ///
+	label("Dependent Variable")
+ VARLIST vl_xvar  _vlx	 @	300 ., ///
+	label("Independent Variables")
+
+  CHECKBOX ck_nocons @         _ms       @         .,	/*
+		*/ label("No Constant")	/*
+		*/ option("noconstant")			/*
+*/
+END
+
+INCLUDE ifin
+
+PROGRAM command
+BEGIN
+ put "lmfreg "
+ varlist main.vn_yvar main.vl_xvar 
+ put " " /program ifin_output
+ beginoptions
+ option main.ck_nocons
+ endoptions
+END

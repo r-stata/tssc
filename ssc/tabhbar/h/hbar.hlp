@@ -1,0 +1,316 @@
+.-
+help for ^hbar^
+.-
+
+Horizontal bar charts
+---------------------
+
+    ^hbar^ varlist [^if^ exp] [^in^ range] [ ^,^
+
+    ^a^xtol^(^#^) b^arfrac^(^#^) c^start^(^#^) gapm^ag^(^#^) gap^s^(^string^)^
+    ^o^penbar^(^string^) sh^ading^(^string^) so^rt^(^string^)^
+
+    ^bo^rder ^f^ormat^(^format^) lap nox^axis ^noy^axis ^tti^ck ^vallbl(^varname^)^ 
+    ^xla^bel^(^string^) xli^ne^(^string^) xsc^ale^(^string^) xti^ck^(^string^)^
+
+    ^bl^ank ^gl^egend^(^string^) gllj glp^os^(^#^) l^egend^(^legendvar^)^
+    ^rl^egend^(^rlegendvar^) rllj rlp^os^(^#^)^ 
+
+    ^flipt nit2 t1m(^#^) t1^title^(^string^) t2m(^#^)^
+    ^t2^title^(^string^) tim(^#^) ti^tle^(^string^)^
+
+    ^vap v^at^(^string^) vatp^os^(^#^) vatf^mt^(^format^)^
+
+    ^fontr(^#^) fontc(^#^) fontrb(^#^) fontcb(^#^)^
+    ^pe^n^(^string^) pent^ext^(^#^) sa^ving^(^graph_filename^)^ ]
+
+Description
+-----------
+
+^hbar^ produces a horizontal bar chart for varlist. Bars for different
+variables are stacked with base at 0, depending on whether values are
+positive or negative. Optionally, bars may be horizontal lines with or
+without vertical lines at either or both ends.
+
+If the data allow it, a different base may be forced using the ^xscale^
+option.
+
+A legend on the left of the data region can be from a specified
+variable. If that variable is not specified, the order in the data will 
+be used; or, if that is not desired, the legend can be blank. The legend 
+is right-justified. The legend should look readable up to about 30 
+observations.
+
+Bars of length 0 are not plotted.
+
+For understanding placement of material on the plot, it helps to know
+that @gph@ draws in a space defined by 23063 rows and 32000 columns
+with origin at top left. See help for @gph@.
+
+Options
+--------
+
+Options controlling size, layout and bar characteristics:
+---------------------------------------------------------
+
+^axtol(^#^)^ controls the space between the x axis or the position of
+    the top border and the nearest data line. Default 600.
+
+^barfrac(^#^)^ is the fraction of vertical space within the data region
+    taken up by bars. The default is 0.6. A value of 1 produces touching
+    bars, so that (e.g.) population pyramids may be produced or groups
+    of bars produced with the use of ^gaps^.
+
+^cstart(^#^)^ controls the column (horizontal position) of the start of
+    the bars.
+
+^gapmag(^#^)^ controls the magnitude of any gaps relative to the spacing
+    between bars. Default 1.
+
+^gaps(^string^)^ places gaps after bars. ^gaps(3,6)^ places gaps after
+    the 3rd and 6th bars as they appear on the graph, counting down from
+    the top. ^0^ means a gap before the first bar.
+
+^openbar(^string^)^ is an option that is relevant if any of the bars is
+    shaded ^.^ (that is, empty). Bars next to the y axis (or its
+    position) may be drawn open on the axis side (left for positive
+    values, right for negative), allowing some special effects. In
+    particular, a bar straddling the y axis (or its position) may be
+    produced by dividing the variable into a negative and a positive
+    part and leaving both bars open, so that they combine to form a
+    single bar. ^y^ specifies an open bar and any other character (say
+    ^n^) specifies the default. For example,
+
+    . ^hbar pos neg, sh(..) o(yy) noy^
+    . ^hbar verysat satis neutpos neutneg diss verydiss, sh(31..13)^
+      ^o(nnyynn) noy^
+
+^shading(^#^)^ controls bar shading. The list is the standard
+    list for @gph@, with the addition of ^.^, ^n^, ^l^, ^L^, ^r^, ^R^,
+    ^b^ and ^B^.
+
+    ^n^  no bar
+    ^.^  no shading (empty bar)
+    ^0^  lightest
+    ...
+    ^4^  darkest
+
+    horizontal lines instead of bars:
+
+    ^-^  no vertical lines at end
+    ^l^  small vertical line at left (half bar height)
+    ^L^  longer vertical line at left (bar height)
+    ^r^  small vertical line at right (half bar height)
+    ^R^  longer vertical line at right (bar height)
+    ^b^  small vertical lines at both ends (half bar height)
+    ^B^  longer vertical lines at both ends (half bar height)
+
+    If you use ^sh(n)^ and ^pen( )^ and/or ^openbar( )^, specify some choice
+    for ^pen( )^ and/or ^openbar( )^, even though it will be ignored. For
+    example, ^hbar y foo x, sh(0n4) pe(345)^ specifies that two variables
+    ^x^ and ^y^ are plotted at shading 0 and 4 and at pens 3 and 5. The
+    space between their bars is given by ^foo^, but the pen choice of 4 is
+    just a dummy, because no bar will be drawn.
+
+^sort(^string^)^ means that observations are to be plotted in the
+    vertical order determined by application of @gsort@. For example,
+    ^sort(^sortvar^)^ indicates sort in ascending order of sortvar
+    (highest values on bottom) and ^sort(- ^sortvar^)^ indicates
+    descending order (highest values on top).
+
+Options controlling axes, lines, labels, ticks, border:
+-------------------------------------------------------
+
+^border^ adds a border.
+
+^format(^format^)^ controls the format with which ^xlabel^s are shown.
+    Default %1.0f.
+
+^lap^ (^l^abels ^a^ll ^p^ositive) makes the labels as shown all
+    positive. ^xla(-40,-20,0,20,40) lap^ will place the labels
+    40, 20, 0, 20, 40 at the axis positions for -40, -20, 0, 20, 40.
+
+^noxaxis^ suppresses the x axis.
+
+^noyaxis^ suppresses the y axis.
+
+^ttick^ produces short unlabelled ticks on the border above the x axis
+    that echo the labelled and unlabelled ticks on the x axis. Note that
+    (unlike the option in @graph@) ^ttick^ with a string is illegal, and
+    that ^ttick^ necessarily implies ^border^, but not conversely.
+
+^vallbl(^varname^)^ specifies that the value labels associated with 
+    varname should be used in labelling the x axis. 
+
+^xlabel(^string^)^ controls the labelled ticks on the x axis. Note that
+    (unlike the option in @graph@) ^xlabel^ without a string is illegal.
+    numlists may be used, such as ^1/5^ for ^1,2,3,4,5^ and ^0(10)50^
+    for ^0,10,20,30,40,50^.
+
+^xline(^string^)^ specifies lines drawn for constant values of x. Note
+    that (unlike the option in @graph@) ^xline^ without a string is
+    illegal. numlists may be used, such as ^1/5^ for ^1,2,3,4,5^ and
+    ^0(10)50^ for ^0,10,20,30,40,50^.
+
+^xscale(^string^)^ controls the scale of the graph, except that (like
+    the option in @graph@) it will not cause values to be omitted (for
+    which purpose use ^if^). ^xscale(^min, max^)^ will force bars to
+    begin at min so long as 0 <= min <= minimum positive total, or at
+    max so long as maximum negative total <= max <= 0.
+
+^xtick(^string^)^ controls the unlabelled ticks on the x axis. Note that
+    (unlike the option in @graph@) ^xtick^ without a string is illegal.
+    numlists may be used, such as ^1/5^ for ^1,2,3,4,5^ and ^0(10)50^
+    for ^0,10,20,30,40,50^.
+
+Options controlling legends to left, right and between gaps:
+------------------------------------------------------------
+
+^blank^ blanks out any legend on the left of the data region.
+
+^glegend(^string^)^ places right-justified legend in the gaps between
+    bars. ^gaps(0,4) glegend(Males!Females)^ places ^Males^ in the gap
+    before bar 1 and ^Females^ in the gap after bar 4. Note that ^!^
+    must be used to separate legends, which thus enables the use of
+    commas within the legend, but has the side-effect of disallowing the
+    use of exclamation marks. ^.^ has the special meaning of blank.
+
+^gllj^ makes ^glegend^ left-justified.
+
+^glpos(^#^)^ controls the horizontal position of ^glegend^ and defaults
+    to an alignment with the main legend.
+
+^legend(^legendvar^)^ specifies a variable to be used for the legend. If
+    legendvar is a numeric variable with labels, the labels will be used
+    in the legend. 
+
+^rlegend(^rlegendvar^)^ specifies a variable to be used for the right 
+    legend. If rlegendvar is a numeric variable with labels, the labels 
+    will be used in the legend. `Right' here is indicative, not 
+    definitive, and refers to the default position, which may be altered 
+    by ^rlpos(^#^)^. By default, the right legend is right-justified. 
+
+^rllj^ makes ^rlegend^ left-justified.     
+
+^rlpos(^#^)^ controls the horizontal position of the right legend. Default
+    ^rlpos(31500)^. 
+
+Options controlling titles (^t1title^, ^t2title^, ^title^):
+-----------------------------------------------------
+
+^flipt^ flips titles: ^title^ will be shown at its (default larger) font
+    size and left-justified at the top of the graph, and ^t1title^ will
+    be shown at default font size and centred below the axis at the
+    bottom of the graph (but closer to the axis than the default).
+
+^nit2^: see ^t2title^ below.
+
+^t1title(^string^)^ controls the ^t1title^, shown at default font size
+    and left-justified at the top of the graph. But see ^flipt^ above.
+
+^t2m(^#^)^ moves the ^t2title^ bodily # to the right. The default is to
+    start hard left to allow plenty of space for several variable labels
+    or names in a key, but that default may seem too far left.
+
+^t2title(^string^)^ controls the ^t2title^, shown at default font size
+    and left-justified at the top of the graph. This defaults to a key
+    of shadings if the number of variables is more than 2: the key,
+    however, is likely to be a mess if the number is more than 5. The
+    key uses variable labels, or variable names if either they do not
+    exist or the further option ^nit2^ is invoked. As with @graph@,
+    ^" "^ blanks out the title.
+
+^tim(^#^)^ moves the ^title^ bodily # to the right. The default is to centre at
+    whatever column would bisect the x axis.
+
+^title(^string^)^ controls the ^title^, shown at its (default larger)
+    font size and centred below the axis at the bottom of the graph. But
+    see ^flipt^ above. As with @graph@, ^" "^ blanks out the title.
+
+Options controlling values shown as text:
+-----------------------------------------
+
+^vap^ (^v^alues ^a^s ^p^ositive) makes the values as shown all positive.
+
+^vat(^string^)^ specifies that numeric values are shown as text with
+    format ^vatfmt^. This reinforces the role of the plot as a graphical
+    table allowing look-up of individual values when desired.
+
+    The string may contain
+
+    ^L^     left of bar and outside it
+    ^l^     left of bar and inside it
+    ^R^     right of bar and outside it
+    ^r^     right of bar and inside it
+    ^N^     at bar-end nearer to y axis and outside it
+    ^n^     at bar-end nearer to y axis and inside it
+    ^F^     at bar-end further from y axis and outside it
+    ^f^     at bar-end further from y axis and inside it
+    ^m^     middle of bar
+    ^e^     elsewhere (precisely, at ^vatpos^)
+    ^.^     do not show values
+
+    The default is ^.^ for all variables.
+
+^vatpos(^#^)^ controls the horizontal position at which values given as
+    text under ^vat(e)^ are shown. The default of 31500 places values at
+    the far right of the display. Note that ^xscale^ can be used to
+    clear enough space.
+
+^vatfmt(^format^)^ controls the format with which values given as text
+    are shown. Default %1.0f.
+
+Other graph options:
+--------------------
+
+^fontr(^#^)^ and ^fontc(^#^)^ control the font used for all but the main
+    title and default to 570 and 290 (which is the default of @gph@).
+    Font sizes should be changed circumspectly.
+
+^fontrb(^#^)^ and ^fontcb(^#^)^ control the font used for the main
+    title and default to 923 and 444.
+
+^pen(^string^)^ controls the pens used for data.
+
+^pentext(^#^)^ controls the pen used for text and other non-data elements.
+
+^saving(^graph_filename^)^ saves the graph in a .gph file.
+
+
+Examples
+--------
+
+        . ^hbar reserves, l(area) xla(0(5)30)^
+          ^t1(percent of total) ti(Oil reserves 1994) flipt border^
+
+        . ^hbar area, l(name) xsc(0,6.2) xla(0/6) t1(million square^
+          ^km) ti(Areas of major drainage basins) flipt fontr(500)^
+          ^fontc(250) border xti(0.5(1)5.5) so(-area)^
+
+
+Remarks
+-------
+
+In addition to the options above, many choices are coded into ^hbar^ as
+parameter values. Users may want to copy ^hbar^ and then edit these
+permanently or temporarily according to taste.
+
+
+Author
+------
+         Nicholas J. Cox, University of Durham, U.K.
+         n.j.cox@@durham.ac.uk
+
+
+Acknowledgments
+---------------
+
+         Arne Kolstad and Fred Wolfe made very helpful comments.
+
+
+Also see
+--------
+
+On-line: help for @graph@, @gph@, @format@, @gsort@,
+         @tabhbar@ (if installed), @hplot@ (if installed), @numlist@
+

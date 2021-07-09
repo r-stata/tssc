@@ -1,0 +1,89 @@
+/*
+multif
+Version 1.15
+*/
+
+VERSION 14.2 /* Should work in lower version as well*/
+INCLUDE _std_large
+*DEFINE _dlght 350 
+*DEFINE _dlwd 400
+*INCLUDE header
+
+POSITION . . 400 350
+
+
+
+DIALOG main, label("multif 1.15 - Multiple If restrictions") tabtitle("Main")
+BEGIN
+	TEXT tx_var 10 10 380 ., label("Variables:")
+	VARLIST vl_var @ +20 @ ., label("Variables") error("Choose at least two variables")
+	
+	TEXT tx_cond @ +30 @ ., label("If restrictions: (expression): ")
+	EXP exp_cond @ +20 @ .,	label("Create...:") option(condition)
+	
+	TEXT tx_con @ +30 @ .,	label("Connection between restrictions:")
+	EDIT ed_con @ +20 @ ., 	label("Connector:") error("Connector between restrictions must be set") option(connection) tooltip("Connectors are either & or |")
+	
+	TEXT tx_res @ +60 @ .,	label("Resulting restriction: (Refresh dialog to see the resulting restriction below)")
+	EDIT ed_res @ +20 @ .,	label("") default(r(multif))
+
+END
+
+
+DIALOG options, label("multif - Multiple If restrictions") tabtitle("Options")
+BEGIN
+	TEXT tx_com 10 10 380 .,	label("Command:")
+	EDIT ed_com @ +20 @ ., 		label("") option(command)
+	
+	TEXT tx_comopt @ +30 @ .,	label("Command options:")
+	EDIT ed_comopt @ +20 @ ., 	label("") option(comoption)
+
+	TEXT tx_varid @ +30 @ .,	label("Variable identifier:")
+	EDIT ed_varid @ +20 @ ., 	label("") default("VAR") option(varid)
+
+	TEXT tx_addif @ +30 @ .,	label("Additional restrictions not applied to varlist:")
+	EXP exp_addif @ +20 @ ., 	label("Create:")  option(addif)
+
+	TEXT tx_addcon @ +30 @ .,	label("Additional restrictions connector:")
+	EDIT ed_addcon @ +20 @ ., 	label("") default("&") option(addcon)
+
+	CHECKBOX chk_test @ +30 @ ., label("Test if the variable identifier is the same in all restrictions") option(test)
+	CHECKBOX chk_disp @ +30 @ ., label("Display generated restriction") option(display)
+
+
+
+END
+
+
+HELP hlp1, view("help multif")
+RESET res1
+COPY copy1
+
+OK ok1, label("OK")
+CANCEL can1, label("Cancel")
+SUBMIT sub1, label("Submit")
+
+
+PROGRAM command
+BEGIN
+	put "multif "
+	require main.vl_var
+	varlist main.vl_var
+	beginoptions
+		require main.exp_cond
+		optionarg main.exp_cond
+		require main.ed_con
+		optionarg main.ed_con
+		if !options.ed_com.isdefault(){
+			optionarg options.ed_com
+			optionarg options.ed_comopt 
+		}
+		optionarg options.ed_varid 
+		if !options.exp_addif.isdefault(){
+			optionarg options.exp_addif 
+			optionarg options.ed_addcon 
+		}
+		option options.chk_test
+		option options.chk_disp
+	endoptions
+END

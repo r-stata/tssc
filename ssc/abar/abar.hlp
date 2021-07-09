@@ -1,0 +1,83 @@
+{smcl}
+{* 09nov2007}{...}
+{hline}
+help for {hi:abar}
+{hline}
+
+{title:Arellano-Bond test for autocorrelation}
+
+{p 8 16 2}{cmd:abar}
+[{cmd:if} {it:exp}] [{cmd:in} {it:range}]
+[{cmd:,} 
+{cmdab:l:ags:(}{it:#}{cmd:)}]{p_end}
+
+{p 4 4 2}
+{cmd:abar} is for use after {help regress}, {help ivreg}, {help ivreg2}, {help ivregress}, {help newey}, and {help newey2}.
+
+{p 4 4 2}{cmd:abar} is for use with cross-section time-series data.
+You must {help tsset} your data before using {cmd:abar}.
+
+{title:Description}
+
+{p 4 4 2}{cmd:abar} performs the Arellano-Bond (1991) test for autocorrelation.
+The test was originally proposed for a particular linear Generalized Method of Moments dynamic panel data estimator, but is quite general in its applicability--more general than {help dwstat}, {help durbina}, {help bgodfrey}, and {help xtserial}.
+It can be applied to linear GMM regressions in general, and thus to the special cases of ordinary least squares (OLS) and two-stage least-squares (2SLS).
+It can also be made consistent in the presence of various patterns of error covariance.
+Specifically, {cmd:abar} will run after {help regress}, {help ivreg}, {help ivreg2}, {help ivreg2, gmm2s}, and {help ivregress 2sls}  in their "plain" (homoskedastic), {help robust}, and {help cluster} variants.
+It will also run after regressions using the Bartlett/Newey-West kernel, whether performed by {help newey}, {help newey2}, {help ivreg2}, or {help ivregress}.{p_end}
+
+{p 4 4 2}{cmd:abar} is not appropriate for fixed-effects regressions for dynamic models, assuming those are done via a mean-deviation transformation.
+This is because the Arellano-Bond AR() test assumes that right-hand-side variables are not "post-determined," i.e., not correlated with future errors.
+In a dynamic setting, future values of regressors can depend on future errors. And after the mean-deviations transformation, future values of the original regressors affect current values of the transformed versions.{p_end}
+
+{p 4 4 2}The optional {cmd:if} and {cmd:in} clauses allow one to test for autocorrelation in a subset of the residuals.{p_end}
+
+{title:Citation}
+{p 4 8 2}{cmd:abar} is not an official Stata command.
+It is a free contribution to the research community.
+Please cite it as such: {p_end}
+{p 8 8 2}Roodman, D. 2006. How to Do xtabond2: An Introduction to "Difference" and "System" GMM in Stata. Working Paper 103. Center for Global Development, Washington.{p_end}
+
+{title:Options}
+
+{p 4 8 2}{cmd:lags(}{it:#}{cmd:)} specifies the maximum number of lags over which to test for AR() autocorrelation.
+{cmd:abar} will perform separate tests for each lag up to the maximum.
+The default is 1.
+
+{title:References}
+
+{p 4 8 2}Arellano, M. and S. Bond. 1991.
+Some tests of specification for panel data: Monte Carlo evidence and an
+application to employment equations. {it:The Review of Economic Studies} 58: 277-97.{p_end}
+{p 4 8 2}Roodman, D. 2006. How to Do xtabond2: An Introduction to "Difference" and "System" GMM in Stata. Working Paper 103. Center for Global Development, Washington.{p_end}
+
+{title:Examples}
+{p 4 8 2}{stata "use http://www.stata-press.com/data/r7/abdata.dta":. use http://www.stata-press.com/data/r7/abdata.dta}{p_end}
+{p 4 8 2}{cmd:. * Make a close match with first regression (OLS) in abest2.out, in http://www.nuff.ox.ac.uk/Users/Doornik/software/dpdox121.zip}{p_end}
+{p 4 8 2}{cmd:. * Differs because Stata's} {help regress} {cmd:does small-sample correction.}{p_end}
+{p 4 8 2}{stata "regress n L(1/2).n L(0/1).w L(0/2).(k ys) yr1979-yr1984, cluster(id)":. regress n L(1/2).n L(0/1).w L(0/2).(k ys) yr1979-yr1984, cluster(id)}{p_end}
+{p 4 8 2}{stata "abar, lags(2)":. abar, lags(2)}{p_end}
+{p 4 8 2}{cmd:. * Now do a perfect match with last regression (2SLS, Anderson-Hsiao) in same file.}{p_end}
+{p 4 8 2}{stata "ivreg2 D.n DL2.n DL(0/1).w DL(0/2).(k ys) yr1980-yr1984 (DL.n = L3.n), cluster(id)":. ivreg2 D.n DL2.n DL(0/1).w DL(0/2).(k ys) yr1980-yr1984 (DL.n = L3.n), cluster(id)}{p_end}
+{p 4 8 2}{stata "abar, lags(2)":. abar, lags(2)}{p_end}
+{p 4 8 2}{cmd:. * Now do same via }{help xtabond2}{p_end}
+{p 4 8 2}
+{stata "xtabond2 D.n DL(1/2).n DL(0/1).w DL(0/2).(k ys) y*98*,iv(L3.n DL2.n DL(0/1).w DL(0/2).(k ys) y*98*,eq(lev)) rob arle":. xtabond2 D.n DL(1/2).n DL(0/1).w DL(0/2).(k ys) y*98*,iv(L3.n DL2.n DL(0/1).w DL(0/2).(k ys) y*98*,eq(lev)) rob arle}
+{p_end}
+
+
+
+{title:Author}
+
+{p 4}David Roodman, Center for Global Development, Washington, DC{p_end}
+{p 4}Center for Global Development {p_end}
+{p 4}Washington, DC{p_end}
+{p 4}droodman@cgdev.org{p_end}
+
+{title:Also see}
+
+{p 4 13 2}
+Online: help for {help regress}, {help ivreg}, {help ivreg2}, {help dwstat}, {help durbina}, {help bgodfrey},
+{help xtserial}, {help xtabond2}.
+
+

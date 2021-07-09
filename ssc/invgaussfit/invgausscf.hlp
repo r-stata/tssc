@@ -1,0 +1,77 @@
+{smcl}
+{* 14dec2006}{...}
+{hline}
+help for {hi:invgausscf}
+{hline}
+
+{title:Fitting a two-parameter inverse Gaussian distribution by maximum likelihood (closed form)}
+
+{p 8 17 2}
+{cmd:invgausscf} 
+{it:varname} 
+[{it:weight}] 
+[{cmd:if} {it:exp}]
+[{cmd:in} {it:range}] 
+
+{p 4 4 2}{cmd:by} {it:...} {cmd::} may be used with 
+{cmd:invgausscf}; see help {help by}. 
+
+{p 4 4 2}{cmd:fweight}s and {cmd:aweight}s are allowed; 
+see help {help weights}.
+
+
+{title:Description}
+
+{p 4 4 2} {cmd:invgausscf} fits by maximum likelihood a two-parameter
+inverse Gaussian distribution to a distribution of a variable
+{it:varname}. The distribution has probability density function for
+variable x > 0, location parameter m > 0 and scale parameter
+l > 0 of {bind:(l / 2 pi x^3)^(1/2) exp((-l (x - m)^2 / 2 m^2 x))}. 
+For a distribution without covariates the maximum likelihood solution
+can be obtained directly from closed form solutions. 
+
+
+{title:Remarks}
+
+{p 4 4 2}This program is provided in case it is interesting or useful. 
+{help invgaussfit} provides a fuller version, including fitting with 
+covariates and inferential results. Its help file also comments on
+other commands available that use inverse Gaussian distributions in 
+some way. 
+
+
+{title:Saved results}
+
+{p 4 4 2}{cmd:r(mu)} and {cmd:r(lambda)} are the estimated inverse 
+Gaussian parameters.
+
+	
+{title:Examples}
+
+{p 4 8 2}{cmd:. invgausscf mpg}
+
+
+{title:Author}
+
+{p 4 4 2}Nicholas J. Cox, Durham University{break}n.j.cox@durham.ac.uk
+
+
+{title:References}
+
+{p 4 8 2}
+Evans, M., Hastings, N. and Peacock, B. 2000. {it:Statistical distributions.}
+New York: John Wiley.
+
+{p 4 8 2} 
+Johnson, N.L., Kotz, S. and Balakrishnan, N. 1994. 
+{it:Continuous univariate distributions: Volume 1.} New York: John Wiley.
+
+
+{title:Also see}
+
+{p 4 13 2}
+Online: help for 
+{help pinvgauss} (if installed), 
+{help qinvgauss} (if installed) 
+{help invgaussfit} (if installed) 
+

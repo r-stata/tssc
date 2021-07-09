@@ -1,0 +1,86 @@
+.-
+help for ^xtmod^            (Version 0.9 20 February 2009)
+.-
+
+Analyze and display interactions based on time-series data
+----------------------------------------------------------
+
+        ^xtmod^ @varlist@ [if] [in] [, Controlvariables(@varlist@) Regopts(string) 
+	ARROWOFFset(#.#) ARROWXLENgth(#.#) ARROWYLENgth(#.#) PRECision(#.#) 
+	GLS NOCONStant MAX Tests]
+
+Description
+-----------
+
+	^xtmod^ helps running multiple moderated regressions. It generates the 
+	necessary interaction variables, calculates the coefficients, optionally 
+	displays tests, and displays the interaction. It is mainly a convenience 
+	script that instrumentalizes individually available commands such as xtgls. 
+
+	Warning: The program has not been tested with categorical variables. Please 
+	notify the author of bugs.
+
+
+Options
+-------
+
+	^controlvariables^(@varlist@) specifies control variables to be included in 
+	the regression
+	
+	^regopts(string)^ allows the user to pass options to the regression command, 
+	e.g., panels(heteroskedastic) in the case of xtgls
+
+	^arrowoffset(#.#)^ specifies how much the arrow head is offset from the 
+	left-most point of the regression line. Ranges from 0.0 to 1.0 
+
+	^arrowxlength(#.#)^ specifies how much the equation text is offset to the 
+	right from the arrow's head. Ranges from 0.0 to 1.0 
+
+	^arrowxlength(#.#)^ specifies how much the equation text is vertically offset 
+	from the arrow's head. Ranges from 0.0 to 1.0 
+	
+	^precision(#.#)^ specifies the precision used to display numbers in the graphic
+
+	^gls^ tells ^xtmod^ to run ^xtgls^ instead of ^xtreg^
+
+	^noconstant^ tells ^xtmod^ that the constant equals zero. Can only be used 
+	when gls has been specified
+	
+	^max^ tells ^xtmod^ to plot the graphic using the minimum and maximum values 
+	of the moderator as opposed to mean +/- standard deviation values (the default)
+
+	^tests^ instructs ^xtmod^ to run post-hoc tests on simple slope differences 
+	(compare Aiken and West, 1991)
+
+
+Examples
+--------
+
+        . ^xtmod roa apcogs salesdiff rf, d(leverage industry?) r(panels(hetero)) arrowylen(0.9) gls nocons tests^
+        . ^xtmod lndroa C_lnapcogs C_sales, tests^
+
+References
+----------
+
+	Aiken, L.S. and S.G. West. "Multiple Regression: Testing and Interpreting Interactions. 
+	1991. Thousand Oaks: Sage Publications.
+
+	Stata FAQ, How can I understand a continuous by continuous interaction? UCLA: 
+	Academic Technology Services, Statistical Consulting Group. 
+	from http://www.ats.ucla.edu/stat/stata/faq/concon.htm (accessed February 20, 2009).
+
+	Stata FAQ, Part 1: How can I understand a 3-way continuous interaction? UCLA: 
+	Academic Technology Services, Statistical Consulting Group. 
+	from http://www.ats.ucla.edu/stat/stata/faq/con3way.htm (accessed February 20, 2009).
+
+Author
+------
+
+        Daniel Seifert, Ecole Polytechnique Fédérale de Lausanne (EPFL), Switzerland
+        daniel.seifert@@epfl.ch
+
+Also see
+--------
+
+ Manual:  ^[R] xtreg^, ^[R] xtgls^, ^[G] schemes intro^
+On-line:  help for @xtreg@, @xtgls@, @schemes@

@@ -1,0 +1,111 @@
+{smcl}
+{* 15jul2001}{...}
+{hline}
+help for {hi:nharvey}{right:(StataList distribution 17 July 2001)}
+{hline}
+
+{title:Nyblom-Harvey panel test of common stochastic trends}
+
+{p 8 14}{cmd:nharvey} {it:varname} 
+[{cmd:if} {it:exp}] [{cmd:in} {it:range}] [ , {cmdab:V:lags({it:numlist})}  {cmdab:t:rend}
+{cmd:nolrv} ]
+
+{p}{cmd:nharvey} is for use with panel data.  You must {cmd:tsset} your
+data before using {cmd:nharvey}, using the panel form of {cmd:tsset}; see help {help tsset}.
+
+{p} {it:varname} may contain time-series operators; see help {help varlist}.
+
+
+{title:Description}
+
+{p}{cmd:nharvey} estimates one form of the test of common stochastic trends developed by 
+Nyblom and Harvey (NH, 2000). The test is of the validity of a specified value of the rank
+of the covariance matrix of the disturbances driving the multivariate random walk. This
+rank is equal to the number of common trends, or levels, in the series. As NH show, "this
+test is very simple insofar as it does not require any models to be estimated, even if
+serial correlation is present." (p.176) The special case calculated by {cmd:nharvey}
+is that of the rank ({cmd:K} in NH' terms) equalling zero, which may be taken as a test 
+that there are no common trends among the variables. NH state that "common trends imply
+cointegration, and vice versa." Thus a failure to reject the null hypothesis of zero
+common trends is also an indication that the variables do not form a cointegrated 
+combination. 
+
+The test may be considered as a generalization of the Nyblom and Makelainen (1983) and
+Kwiatkowski et al. (1992, {help kpss}) univariate tests for stationarity of a series. 
+Those tests are of the null hypothesis that the series is stationary, or stationary
+around a deterministic trend, against the alternative that a random walk component
+is present. {cmd:nharvey} considers the same structure in the context of multiple
+time series. By default the routine calculates the test statistic for both IID errors
+and errors allowed to be serially correlated, using an estimate of the long-run
+variance derived from the spectral density matrix at frequency zero. 
+
+The critical values for {cmd:nharvey} for the constant and trend case are tabulated
+in NH, 2000. They show that the asymptotic distribution of the test statistic depends
+only on the number of series (N) and the hypothesized number of common trends.
+The critical values for ({cmd:K=0}) of NH Tables 1 and 2 have been extended for 
+additional values of N via simulation of the asymptotic distribution (programs 
+available on request).
+ 
+{cmd:nharvey} may be extended to test the hypothesis that the rank of the covariance 
+matrix, ({cmd:K}) takes on a certain value, less than N (the number of series), 
+against the alternative that it has a greater value. That extension is left to future
+development.
+
+{p}
+
+{title:Options}
+
+{p 0 4}{cmd:trend} includes a time trend in the model (NH Table 2 for K=0).
+
+{p 0 4}{cmd:vlags} specifies a list of lags to be used in calculating the long-run
+variance. If this option is not specified, {cmd:m}, the truncation point in NH Eqn. 16,
+is calculated as T^0.25. If a list of lags is  provided (perhaps with a local macro), 
+the long-run variance matrix and resulting test statistic is calculated for each value 
+of vlags.
+
+{p 0 4}{cmd:nolrv} omits the calculation of the statistic using a long-run variance
+estimator. For a large sample size (T), the calculation of this statistic involves
+a very sizable amount of computation, and the routine will be very slow. 
+
+
+{title:Examples}
+
+{p 8 12}{inp:.} {stata "use http://fmwww.bc.edu/ec-p/data/hayashi/sheston91.dta,clear":use http://fmwww.bc.edu/ec-p/data/hayashi/sheston91.dta,clear}
+
+{p 8 12}{inp:.} {stata "nharvey rgdppc if country<11": nharvey rgdppc if country<11}
+
+{p 8 12}{inp:.} {stata "nharvey rgdppc if country<11, vlag(2(2)6)": nharvey rgdppc if country<11, vlag(2(2)6)}
+
+{p 8 12}{inp:.} {stata "nharvey D.rgdppc if country<11, trend": nharvey D.rgdppc if country<11, trend}
+
+{title:References}
+
+Kwiatkowski, D., Phillips, P.C.B., Schmidt, P. and Y. Shin. Testing the
+null hypothesis of stationarity against the alternative of a unit root:
+How sure are we that economic time series have a unit root? Journal of
+Econometrics, 54, 1992, 159-178.
+
+Nyblom, Jukka and Andrew Harvey. Tests of common stochastic trends. Econometric
+Theory, 16, 2000, 176-199.
+
+Nyblom, Jukka, and T. Makelainen. Comparison of tests for the presence of
+random walk coefficients in a simple linear model. Journal of the American
+Statistical Association, 78, 1983, 856-864.  
+
+{title:Acknowledgements}
+
+We thank Jukka Nyblom for clarifications on the calculation of critical 
+values for the routine, and pointing out typographical errors in the article. We are
+also very grateful to Nina Jones for detecting and diagnosing an error in the
+computations and benchmarking our corrected code against her MATLAB code.
+Remaining errors are our own.
+
+{title:Authors}
+
+Christopher F Baum, Boston College, USA, baum@bc.edu
+Fabian Bornhorst, European University Institute, Italy, Fabian.Bornhorst@iue.it
+
+{title:Also see}
+
+{p 0 19}On-line:  {help kpss} (if installed), {help hadrilm} (if installed),
+{help madfuller} (if installed), {help levinlin} (if installed)

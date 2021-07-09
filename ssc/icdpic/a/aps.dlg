@@ -1,0 +1,73 @@
+// Revised 10/24/2010
+// Version 3.0
+
+VERSION 10.0
+POSITION . . 340 330
+
+DIALOG main, label("APS (ANATOMIC PROFILE SCORE)") tabtitle("Main")
+BEGIN
+   GROUPBOX gb_ap_comp_cat_prefix 10 10  320 60,                        ///
+            label("AP Component Category Variable Name Prefix")
+   EDIT     ed_ap_comp_cat_prefix 20 35  50  20,                        ///
+            error("AP Component Category Variable Name Prefix")         ///
+            default("apc_")
+   TEXT     tx_ap_comp_cat_prefix 75 35  245 20,                        ///
+            label("Enter AP component category prefix")
+   GROUPBOX gb_severity_prefix    10 80  320 60,                        ///
+            label("Severity Variable Name Prefix")
+   EDIT     ed_severity_prefix    20 105 50  20,                        ///
+            error("Severity Variable Name Prefix")                      ///
+            default("sev_")
+   TEXT     tx_severity_prefix    75 105 245 20,                        ///
+            label("Enter severity prefix")
+   GROUPBOX gb_max_severity       10 150 320 60,                        ///
+            label("Maximum Severity Variable Name")
+   EDIT     ed_max_severity_prefix   20 175 50  20,                     ///
+            error("Maximum Severity Variable Name")                     ///
+            default("maxais")
+   TEXT     tx_discharge_status   75 175 245 20,                        ///
+            label("Enter maximum severity variable name")
+   GROUPBOX gb_in_out_files       10 220 320 90,                        ///
+            label("Select Input and Output Files")
+   FILE     fn_in                 20 245 300 20,                        ///
+            label("Browse Input File")                                  ///
+            error("Input File Name")                                    ///
+            buttonwidth(100)                                            ///
+            filter("Stata Dataset (*.dta)|*.dta|All Files (*.*)|*.*")    
+   FILE     fn_out                20 275 300 20,                        ///
+            label("Browse Output File")                                 ///
+            error("Output File Name")                                   ///
+			buttonwidth(100)                                            ///
+            save                                                        ///
+            filter("Stata Dataset (*.dta)|*.dta|All Files (*.*)|*.*")
+   END
+
+OK ok1, label("OK")
+CANCEL can1, label("Cancel")
+SUBMIT sub1, label("Submit")
+HELP hlp1, view("help aps")
+RESET res1
+COPY copy1
+
+PROGRAM command
+BEGIN
+   require main.ed_ap_comp_cat_prefix
+   require main.ed_severity_prefix
+   require main.ed_max_severity_prefix
+   require main.fn_in
+   require main.fn_out
+   put "aps "
+   put `"""'
+   put main.fn_in
+   put `"""'
+   put " "
+   put `"""'
+   put main.fn_out
+   put `"""'
+   put " "
+   put main.ed_ap_comp_cat_prefix
+   put " "
+   put main.ed_severity_prefix
+   put " "
+   put main.ed_max_severity_prefix
+END

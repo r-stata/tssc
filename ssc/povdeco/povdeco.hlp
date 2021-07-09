@@ -1,0 +1,244 @@
+{smcl}
+{* 29 August 2006}{...}
+{hline}
+help for {hi:povdeco}{right:Stephen P. Jenkins (August 2006)}
+{hline}
+
+{title:Poverty indices, with optional decomposition by subgroup}
+
+{p 8 17 2} {cmd:povdeco} {it:varname} [{it:weights}] 
+	[{cmd:if} {it:exp}] [{cmd:in} {it:range}]
+	[, {cmdab:pl:ine}{cmd:(}{it:#}{cmd:)}
+	   {cmdab:varpl:ine}{cmd:(}{it:zvar}{cmd:)}
+	   {cmdab:by:group}{cmd:(}{it:groupvar}{cmd:)} 
+	   {cmdab:s:ummarize}]
+		
+{p 4 4 2} {cmd:fweight}s and {cmd:aweights} are allowed; see help {help weights}.
+
+{title:Description}
+
+{p 4 4 2} 
+{cmd:povdeco} estimates three poverty indices from the Foster, Greer and
+Thorbecke (1984) class, FGT(a). FGT(0) is the headcount ratio (the proportion poor); 
+FGT(1) is the average normalised poverty gap; FGT(2) is the
+average squared normalised poverty gap. The larger a is, the greater 
+the degree of `poverty aversion' (sensitivity to large poverty gaps).
+Optionally provided are statistics such as mean income amongst the poor 
+and also decompositions of these indices by population
+subgroup. Poverty decompositions by subgroup are useful for providing
+poverty `profiles' at a point in time, and for analyzing secular trends
+in poverty using shift-share analysis. Unit record (`micro' level) data
+are required. 
+
+{p 4 4 2}
+Typically one's data are in one of two forms. Either (1) the money incomes
+for each unit i, x_i, are equivalised using an equivalence scale factor, m_i,
+so that y_i = x_i / m_i, and the poverty line is a single (common) value, 
+in the same units as equivalised income, z. Or (2) incomes are not 
+equivalised, but there are different poverty lines depending on (for 
+example) household type. Suppose the poverty line for unit i is z_i. 
+Observe that if z_i = z * m_i, FGT poverty index calculations based on {y_i,z} 
+give exactly the same answers as calculations based on {x_i,z_i}, i=1,...,n.
+For the common poverty line case, use {cmd:pline(}{it:#}{cmd:)} to specify 
+the poverty line. For the heterogeneous poverty line case, use 
+{cmd:varpline(}{it:zvar}{cmd:)} to specify the poverty lines.
+
+{p 4 4 2}
+For the characterization of the FGT(a) poverty index, see Foster et al. (1984). 
+Seidl (1988) and Zheng (1997) survey the literature on aggregate poverty indices.
+ 
+{p 4 4 2}
+{it:groupvar} must take non-negative integer values only. To create such a 
+variable from an existing variable, use the {help egen} function {cmd:group}. 
+By default, observations with missing values on {it:groupvar} are excluded 
+from calculations when the {cmd:bygroup} option is specified. If you wish to 
+include them, create a new variable with the {help egen} function {cmd:group} 
+and use its {cmd:missing} option. The {help egen} function {cmd:group} is 
+also useful for multi-way decompositions. E.g. for a decomposition by sex 
+and region, create a new {it:groupvar} defining sex-region combinations by 
+specifying sex and region in {cmd:group(}{it:varlist}{cmd:)}.
+
+{p 4 4 2}
+Bootstrapped standard errors for the estimates of the indices can be
+derived using {help bootstrap}. Standard errors derived using 
+linearization methods can be calculated straightforwardly by first creating for each 
+FGT(a) index, a variable equal to I_i * [ ( z_i - y_i ) / z_i) ] ^ a, where I_i
+= 1 if observation i is poor and 0 otherwise. Then estimate the mean of 
+each of these new variables using {cmd:svy mean} having first appropriately 
+{cmd:svyset} your data. See Jenkins (2006) for examples.
+
+
+{title:Technical details}
+
+{p 4 4 2}
+Consider a population of persons (or households ...), i = 1,...,n, 
+with income y_i, and weight w_i. Let f_i = w_i / N, where N = SUM w_i. 
+(In what follows all sums are over all values of whatever is
+subscripted.) When the data are unweighted, w_i = 1 and N = n. 
+The poverty line is z_i for each i, and the poverty gap for person i is 
+max(0, z_i-y_i). For the common poverty line case (1) above, z_i = z, all i.
+
+{p 4 4 2}
+Suppose there is an exhaustive partition of the population into 
+mutually-exclusive subgroups k = 1,...,K.
+
+{p 4 4 2}
+The FGT class of poverty indices is given by
+		  
+{p 8 8 2}FGT(a) =   SUM f_i * I_i * [ ( z_i - y_i ) / z_i) ] ^ a, 
+{bind:a >= 0,} 
+
+{p 4 4 2}
+where I_i = 1 if y_i < z_i and I_i = 0 otherwise.
+
+{p 4 4 2}
+Each FGT(a) index can be additively decomposed as
+
+{p 8 8 2}FGT(a) =  SUM v_k * FGT_k(a)
+
+{p 4 4 2}
+where v_k = N_k / N is the weighted number of persons in subgroup k 
+divided by the weighted total number of persons (subgroup population share), 
+and FGT_k(a), poverty for subgroup k, is calculated as if each subgroup 
+were a separate population. 
+
+{p 4 4 2}
+Also displayed when subgroup decompositions requested, for each k, are:
+
+{p 8 8 2}subgroup poverty 'share', S_k = v_k * FGT_k(a) / FGT(a), and
+
+{p 8 8 2}subgroup poverty 'risk',  R_k = FGT_k(a) / FGT(a) = S_k / v_k.
+
+
+{title:Options}
+
+{p 4 8 2} 
+{cmd:bygroup(}{it:groupvar}{cmd:)} requests inequality decompositions by population
+subgroup, with subgroup membership summarized by {it:groupvar}.
+
+{p 4 8 2}
+{cmd:summarize} requests presentation of the mean of {it:varname}, the mean among the poor, 
+and the mean poverty gap among the poor.
+
+{p 4 8 2}
+{cmd:pline(}{it:#}{cmd:)} is used to specify the poverty line {it:#} in the common poverty line case.
+
+{p 4 8 2}
+{cmd:varpline(}{it:zvar}{cmd:)} is used to specify the variable {it:zvar} containing the values of 
+poverty line for each observation in the heterogeneous poverty line case.
+
+
+{title:Saved results} 
+
+    r(fgt0), r(fgt1), r(fgt2)	FGT(a), for a = 0, 1, 2 
+     
+    r(mean)			mean
+    r(meanpoor)			mean among the poor
+    r(meangappoor)		mean poverty gap among the poor
+    r(N), r(sumw)		number of observations, sum of weights
+
+{p 4 4 2}If the {cmd:bygroup} option is specified, also saved are:
+
+    r(fgt0_k)			FGT(a), for a = 0, 1, 2, and
+    r(fgt1_k)			each subgroup k, where the values of k
+    r(fgt2_k)			correspond to the values of {it:groupvar}
+				in the estimation sample. See r(levels) below.
+
+    r(mean_k)			mean among subgroup k
+    r(meanpoor_k)		mean among the poor in subgroup k
+    r(meangappoor_k)		mean poverty gap among the poor in subgroup k
+    r(n_k), r(sumw_k)		number of subgroup observations, subgroup sum of weights
+    r(v_k)			subgroup population share, v_k 
+    r(share0_k)			FGT(0) poverty share among subgroup k
+    r(share1_k)			FGT(1) poverty share among subgroup k
+    r(share2_k)			FGT(2) poverty share among subgroup k
+    r(risk0_k)			FGT(0) poverty risk among subgroup k
+    r(risk1_k)			FGT(1) poverty risk among subgroup k
+    r(risk2_k)			FGT(2) poverty risk among subgroup k
+
+    r(levels)			macro containing the set of values of {it:groupvar}
+				(the number of unique values = K)
+
+
+{p 4 4 2}For the convenience of users of earlier versions of these programs,
+a selected set of estimates is also saved in global macros, as follows.
+
+    S_FGT0, S_FGT1, S_FGT2	FGT(a), for a = 0, 1, 2 
+
+	
+{title:Examples}
+
+{p 4 8 2}{cmd:. povdeco x [aw = wgtvar], pline(100) } 
+
+{p 4 8 2}{cmd:. povdeco x [aw = wgtvar], pline(100) by(famtype) } 
+
+{p 4 8 2}{cmd:. povdeco x, varpline(z) }
+
+{p 4 8 2}{cmd:. povdeco x if sex==1, pl(100) summarize}
+
+{p 4 8 2}{cmd:. // bootstrapped standard errors for FGT(2) in Stata version 8}
+
+{p 4 8 2}{cmd:. preserve}
+
+{p 4 8 2}{cmd:. keep if x > 0 & x < .}
+
+{p 4 8 2}{cmd:. version 8: bootstrap "povdeco x, pline(100)" fgt2 = r(fgt2), reps(100)}
+
+{p 4 8 2}{cmd:. restore}
+
+{p 4 8 2}{cmd:. // bootstrapped standard errors for FGT(2) in Stata version 9}
+
+{p 4 8 2}{cmd:. preserve}
+
+{p 4 8 2}{cmd:. keep if x > 0 & x < .}
+
+{p 4 8 2}{cmd:. bootstrap fgt2 = r(fgt2), reps(100): povdeco x, pline(100) }
+
+{p 4 8 2}{cmd:. restore}
+
+{p 4 8 2}{cmd:. // multi-way decomposition}
+
+{p 4 8 2}{cmd:. egen sexXregion = group(sex region) }
+
+{p 4 8 2}{cmd:. povdeco x, pline(100) by(sexXregion) }
+
+
+{title:Author}
+
+{p 4 4 2}Stephen P. Jenkins <stephenj@essex.ac.uk>{break}
+Institute for Social and Economic Research{break} 
+University of Essex, Colchester CO4 3SQ, U.K.
+
+{title:Acknowledgements}
+
+{p 4 4 2}For comments and suggestions, I am grateful to Philippe Van Kerm and Nick Cox.
+
+{title:References}
+
+{p 4 8 2}
+Foster, J.E., Greer, J., and Thorbecke, E. 1984. 
+A class of decomposable poverty indices. 
+{it:Econometrica} 52: 761{c -}766.
+
+{p 4 8 2}
+Jenkins, S.P. 2006. Estimation and interpretation of measures of inequality,
+poverty, and social welfare using Stata. Presentation at North American
+Stata Users' Group Meetings 2006, Boston MA.
+{browse "http://econpapers.repec.org/paper/bocasug06/16.htm"}.
+
+{p 4 8 2}
+Seidl, C. 1988. Poverty measurement: a survey. In: D. B{c o:}s, M. Rose and C. Seidl (eds.), 
+{it:Welfare and Efficiency in Public Economics}. Heidelberg: Springer-Verlag.
+
+{p 4 8 2}
+Zheng, B. 1997. Aggregate poverty indices. 
+{it:Journal of Economic Surveys} 11: 123{c -}162.
+
+{title:Also see}
+
+{p 4 13 2}
+{help poverty} if installed;
+{help ineqdeco} if installed. 
+
+ 
+

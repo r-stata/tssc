@@ -1,0 +1,57 @@
+// Sergiy Radyakin, October 2013 - August 2014	
+
+VERSION 10.0
+MODAL
+SYNCHRONOUS_ONLY
+
+INCLUDE _std_large
+POSITION . . _dlgwd 200
+
+INCLUDE savespss_mains
+INCLUDE savespss_adv
+INCLUDE savespss_about
+
+HELP help1, label("Help") view("help savespss")
+OK ok1 ,label("OK")
+CANCEL cancel1, label("Cancel")
+
+
+PROGRAM POSTINIT_PROGRAM
+BEGIN
+        put "savespss_dlgs, dlg(.savespss_dlg)"
+	    stata hidden
+	
+	    if advanced.cb_mvmethod.iseq("2") {
+	      call script adv_miss_on	  
+		}
+		else {
+		  call script adv_miss_off
+		}
+END
+
+
+PROGRAM command
+BEGIN
+        require main.fi_save
+        put "savespss "
+        put `"""' main.fi_save `"""'
+        put ", codepage("
+        put advanced.cb_codepage
+        put ")"
+        put " strlmax("
+        put /hidden advanced.sp_strlmax 
+        put ")"
+        if main.ck_replace {
+          put " replace"
+        }
+		
+		if advanced.cb_mvmethod.iseq("2") {
+		  put " extmiss(" advanced.ed_missa " " advanced.ed_missb " " advanced.ed_missc ") "
+		}
+		else {
+		  if advanced.cb_mvmethod.iseq(3) {
+		    put " extmiss(off)"
+		  }
+		}
+        stata
+END

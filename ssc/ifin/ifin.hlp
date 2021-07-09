@@ -1,0 +1,40 @@
+{smcl}
+{* 05dec2007}{...}
+{cmd:help ifin}
+{hline}
+
+{title:Title}
+
+{p 4 8 2}
+{bf:ifin -- Generate a local containing an if statement to select multiple values}
+
+
+{title:Syntax}
+
+{p 8 17 2}
+{cmdab:ifin} values, {cmd:variable}({it:varlist}) [{cmd:and}] [{cmd:omitif}]
+
+
+{title:Description}
+
+{p 4 4 2}
+ifin takes the given parameters and defines a local s(ifin) containing a string to select values of that variable.
+
+{cmd:values} should be a space-separated list.
+
+{cmd:variable} should be a varlist containing only one variable.
+
+{cmd:and} if specified, inserts & instead of | into the resulting local.
+
+{cmd:omitif} if specified, the resulting local will not begin with "if" .
+
+{cmd:quote} if specified, the resulting local will quote the values in the if statement.
+
+
+{title:Example}
+
+{p 4 8 2}
+
+{phang2}{cmd:. ifin high low, variable(yhat) quote }{p_end}
+{phang2}{cmd:. keep `s(ifin)' }{p_end}
+

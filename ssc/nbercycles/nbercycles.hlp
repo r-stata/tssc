@@ -1,0 +1,130 @@
+{smcl}
+{* 26jul2006}{...}
+{hline}
+help for {hi:nbercycles}                         SSC distribution 26 July 2006
+{hline}
+
+{title:Generate graph command (and optionally graph) timeseries vs. NBER recession dating}
+
+{p 8 17}{cmd:nbercycles}
+[{it:varname}]
+[{cmd:if} {it:exp}]
+{cmd:,} 
+{cmdab:file(}{it:string}{cmd:)}
+[
+{cmdab:replace}
+{cmdab:from(}{it:string}{cmd:)}
+{cmdab:to(}{it:string}{cmd:)}
+{cmdab:min:val(}{it:#}{cmd:)}
+{cmdab:max:val(}{it:#}{cmd:)}
+]
+
+
+{p 4 4}You must {cmd:tsset} your data before using {cmd:nbercycles}; see help {cmd:tsset}.
+This command requires that you are using a monthly or quarterly time-series calendar,
+and that the variable defining the calendar have a time-series format.{p_end}
+
+{* {p 4 4}{cmd:varlist} may contain time-series operators; see help {cmd:varlist}. {p_end} *}
+
+{p 4 4}{cmd:nbercycles} accesses a copy of the National Bureau of Economic Research (NBER)
+record of economic cycles (see {browse "http://www.nber.org/cycles/cyclesmain.html":http://www.nber.org/cycles/cyclesmain.html}), the official dating
+of U.S. business cycle phases: contractions (recessions) and expansions, defined
+by their peaks and troughs, from 1854-September 2010. The ancillary Stata database distributed in the {cmd:nbercycles}
+package reproduces the data on the NBER web page, and adds quarterly dating 
+information.
+ {p_end}
+
+{p 4 4}{cmd:nbercycles} can operate in two modes. The simpler "automatic" mode involves providing a variable name and, optionally,
+an [{cmd:if} {it:exp}] (usually employing the {cmd:tin()} function). You need
+use no other options beyond the mandatory {cmd:file} option (and perhaps the
+{cmd:replace} option for convenience). The program writes an entire graph command
+to the specified file, but it also produces the graph. You may save
+the graph as displayed. If you wish to further customize the graph, you may edit
+the file (e.g. using the Do-File Editor).
+{p_end}
+
+{p 4 4} In the "manual" mode, if the {cmd:nbercycles} command is given without
+a variable name but with the (then-required) {cmdab:from(}{it:string}{cmd:)} and {cmdab:to(}{it:string}{cmd:)}
+options, the program generates the {cmd:graph twoway} commands required to overlay
+a time-series plot with shaded recession bands. Those commands are written to
+the filename specified. They do not include the specification of the variable
+that you want to graph, nor any graph options. You should also use the 
+{cmdab:min:val(}{it:#}{cmd:)} and {cmdab:max:val(}{it:#}{cmd:)} options to specify
+the lower and upper bounds of the variable that you would like to graph, rounded
+outward: e.g. if the variable has a range of 2.5-9.3, use minimum and maximum
+values of 2 and 10. This mode of the program might be particularly useful if you
+want to graph more than one time-series, or want to use different scaled y-axes
+for multiple series.
+ {p_end}
+ 
+
+
+{title:Options}
+ 
+{p 4 8}[{it:varname}] may be given to specify the name of a variable to be graphed,
+superimposed on the recession dating. You may use [{cmd:if} {it:exp}] to restrict
+the range of dates plotted.
+{p_end}
+
+{p 4 8}{cmdab:file(}{it:string}{cmd:)} is a required option: the name
+of a file to be created in the current working directory. If the file
+already exists, the {cmdab:replace} option must also be given.
+{p_end}
+
+{p 4 8}{cmdab:from(}{it:string}{cmd:)} and {cmdab:to(}{it:string}{cmd:)} are 
+specified in terms of calendar dates: e.g. {cmd:from(1977m1) to(1999m8)}. They
+are only used in the second (manual) form of the command, in which they are required
+options.
+{p_end}
+
+{p 4 8}{cmdab:min:val(}{it:#}{cmd:)} and {cmdab:max:val(}{it:#}{cmd:)} are
+used to specify the range of the Y-axis on the graph. They are only used
+in the second (manual) form of the command.
+{p_end}
+
+{title:Examples}
+
+Note: the examples below with {cmd:freduse} require that the command be installed:
+
+{p 4 8}{stata "ssc install freduse, replace" :. ssc install freduse, replace}{p_end}
+
+{p 4 8}{stata "freduse MPRIME, clear" :. freduse MPRIME, clear}{p_end}
+{p 4 8}{stata "gen ym = mofd(daten)" :. gen ym = mofd(daten)}{p_end}
+{p 4 8}{stata "tsset ym, monthly" :. tsset ym, monthly}{p_end}
+{p 4 8}{stata "nbercycles MPRIME if tin(1970m1,1990m1), file(nber2.do) replace" :. nbercycles MPRIME if tin(1970m1,1990m1), file(nber2.do) replace}{p_end}
+{p 4 8}{stata "type nber2.do" :. type nber2.do}{p_end}
+
+{p 4 8}{stata "freduse GPDIC96, clear" :. freduse GPDIC96, clear}{p_end}
+{p 4 8}{stata "gen yq = qofd(daten)" :. gen yq = qofd(daten)}{p_end}
+{p 4 8}{stata "tsset yq, quarterly" :. tsset yq,quarterly}{p_end}
+{p 4 8}{stata "nbercycles GPDIC96 if tin(1970m1,1984m1), file(nber3.do) replace" :. nbercycles GPDIC96 if tin(1970m1,1984m1), file(nber3.do) replace}{p_end}
+{p 4 8}{stata "type nber3.do" :. type nber3.do}{p_end}
+
+{p 4 8}{stata "nbercycles, file(nber1.do) replace from(1979m9) to(1999m12) min(2) max(21) " :. nbercycles, file(nber1.do) replace from(1979m9) to(1999m12) min(2) max(21) }{p_end}
+{p 4 8}{stata "type nber1.do" :. type nber1.do}{p_end}
+
+{p 4 8}{stata "use http://fmwww.bc.edu/ec-p/data/FFRperUSD, clear" :. use http://fmwww.bc.edu/ec-p/data/FFRperUSD, clear}{p_end}
+{p 4 8}{stata "nbercycles FFRperUSD, file(nber4.do) replace" :. nbercycles FFRperUSD, file(nber4.do) replace}{p_end}
+{p 4 8}{stata "type nber4.do" :. type nber4.do}{p_end}
+
+{title:Author}
+
+{p 4 4}Christopher F. Baum, Boston College, USA{break} 
+       baum@bc.edu
+
+
+
+{title:Acknowledgements} 
+
+{p 4 4}This program was inspired by David Drukker's presentation at the 
+NASUG'2006 meetings in Boston, July 2006. I thank David for his suggestions
+about the routine.
+{p_end}
+
+
+{title:Also see}
+
+{p 4 13}On-line: {help freduse} (if installed), {help tsset}
+{p_end}
+
+

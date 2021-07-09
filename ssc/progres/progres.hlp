@@ -1,0 +1,137 @@
+{smcl}
+{* 04sep2007}{...}
+{hline}
+help for {hi:progres}
+{hline}
+
+{title:Distributive effects of an income tax -- Measures of progressivity, vertical equity and reranking}
+
+{p 8 14 2}
+{cmdab:progres}
+{it:pretaxvar posttaxvar} 
+[{it:weight}] 
+[{cmd:if} {it:exp}] 
+[{cmd:in} {it:range}] 
+[{cmd:,}
+ {cmdab:p:aram(}{it:real 2.0}{cmd:)}
+ {cmdab:f:ormat}{cmd:(%}{it:fmt}{cmd:)}
+ ]
+
+{p 8 8 2}
+{cmd:aweights} and {cmd:fweights} are allowed; see help {help weights:weights}.
+
+
+{title:Description}
+
+{p 4 4 2}
+{cmd:progres} is a module for assessing the distributive effects of an income tax.
+{cmd:progres} takes unit-record data on pre-tax and post-tax income 
+and computes several classic measures of (net) redistributive effects,
+progressivity, vertical equity and reranking (horizontal inequity). All indices
+are derived from (generalized) Gini coefficients of inequality and (generalized)
+concentration coefficients.
+
+{p 4 4 2}
+{it:pretaxvar} is pre-tax income (X) and {it:posttaxvar} is post-tax income (Y).
+Tax payments (T) are determined from the difference between {it:pretaxvar} and {it:posttaxvar}. 
+Measures computed by {cmd:progres} are:
+
+{p 5 5 2}
+- The Kakwani (1977) index of tax progressivity: K =  C(T) - G(X)
+
+{p 5 5 2}
+- The Musgrave-Thin (1948) index of redistributive effect: MT = (1-G(Y))/(1-G(X))
+
+{p 5 5 2}
+- The Reynolds-Smolensky (1977) index of redistributive effect: RS = G(X) - G(Y)
+
+{p 5 5 2}
+- The Vertical Equity measure: VE = G(X) - C(Y) = g/(1-g) * K  , where g is the average tax rate.
+
+{p 5 5 2}
+- The Reranking effect: R = VE - RS = G(Y) - C(Y) 
+
+{p 5 5 2}
+- The Atkinson (1980)-Plotnick (1981) index of horizontal inequity:  AP = 0.5 * R/G(Y)
+
+{p 5 5 2}
+- The Suits' (1977) index if progressivity: S = 1- L/K where K denotes the area below the line of proportionality, and L denotes the area below the Lorenz curve of tax payments against income.
+
+{p 4 4 2}
+{it:pretaxvar} is required to be non-negative. Observations with {it:pretaxvar}<0 are
+automatically discarded in computations.
+    
+
+{title:Options}
+
+{p 4 8 2} 
+{cmdab:p:aram(}{it:real 2.0}{cmd:)} sets the generalized Gini inequality aversion coefficient. Default is 2 leading to the classical Gini and concentration coefficients.
+Greater inequality aversion can be adopted by setting param larger than 2.
+
+{p 4 8 2} 
+{cmdab:f:ormat(%}{it:fmt}{cmd:)} specifies the results display format. Default is %5.4f.
+
+
+{title:Saved results} 
+
+{p 4 8 2} 
+All computed indices listed above are stored in real scalars:  
+
+    r(Kakwani), r(MusThin), r(ReySmol),
+    r(VE), r(R), r(AP), r(AtkPlot), r(Suits).
+    
+{p 4 8 2} 
+Additionally, the average tax rate and the generalized Gini and 
+concentration coefficients of pre-tax income, post-tax income and
+tax are stored in 
+
+    r(ATR), r(G_pre), r(G_post), r(C_post), r(C_tax).
+
+{p 4 8 2} 
+Furthermore, the (weighted) number of observations and the variables used are stored in
+
+    r(N), r(sum_w), r(posttaxvar), r(pretaxvar).
+
+
+{title:Examples}
+
+{p 4 8 2}{cmd:. progres gross_inc std_dispy}
+
+{p 4 8 2}{cmd:. progres gross_inc std_dispy [aw=coweight] , param(3.0)}
+
+
+{title:References}
+
+{p 1 5 2}Atkinson, A. (1980), Horizontal Inequity and the Distribution of the Tax Burden in H. Aaron & M. Boskin (eds.), The Economics of Taxation, pp.3-18.
+
+{p 1 5 2}Kakwani, N.C. (1977). Measurement of Tax Progressivity: An International Comparison, Economic Journal 87: 71-80.
+
+{p 1 5 2}Lambert, P. J. (2001): The distribution and redistribution of income, Manchester University Press, 3rd edition.
+
+{p 1 5 2}Musgrave, R.A. and Thin, T. (1948). Income tax progression 1929-48, Journal of Political Economy 56: 498-514.
+
+{p 1 5 2}Ochmann, R. and Peichl, A. (2006): Measuring Distributional Effects of Fiscal Reforms, Finanzwissenschaftliche Diskussionsbeiträge 06-9, Köln.
+
+{p 1 5 2}Plotnick, R. (1981), A Measure of Horizontal Inequity in Review of Economics and Statistics, vol.63, p.283-288.
+
+{p 1 5 2}Reynolds, M. and Smolensky, E. (1977). Public Expenditures, Taxes, and the Distribution of Income: The United States, 1950, 1961, 1970, Academic Press, New York.
+
+{p 1 5 2}Suits, D. (1977). Measurement of Tax Progressivity, American Economic Review 67: 747-752.
+
+
+{title:Authors}
+
+   Andreas Peichl
+   Cologne Center for Public Economics
+   University of Cologne, Germany
+   a.peichl@uni-koeln.de
+   www.cpe-cologne.de
+
+   Philippe Van Kerm
+   CEPS/INSTEAD
+   Luxembourg
+   philippe.vankerm@ceps.lu
+
+   Useful comments and testing by Christoph Haas are gratefully acknowledged.
+
+{* Version 1.0.0 2007-09-04}

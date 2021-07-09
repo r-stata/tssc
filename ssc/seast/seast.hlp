@@ -1,0 +1,95 @@
+.-
+help for ^seast^                                                  (STB-56: sg149)
+.-
+
+Tests for seasonality with a variable population at risk
+--------------------------------------------------------
+
+^seast^ outcomevar popvar^,^ [ ^ed^wards ^ex^act ^not^ab ^gen(^newvar^)^  ^sec^tor^(^varname^)^ 
+                                ^len^gth^(^varname^)^ ]
+
+If ^edwards^ is used, the population variable need not be specified.
+
+^sector()^ is required when the name of the sector variable is not ^month^.
+
+	   
+Description
+-----------
+
+^seast^ tests for seasonality of a binary outcome with a variable
+population at risk.  Two tests are available, the Edwards test, and
+the Walter and Elwood test.
+
+The default test is the Walter and Elwood test on a sector variable 
+called ^month^. Otherwise the sector variable can be declared, as can its
+length.  Months should be denoted by 1,2,...,12, where month=1 
+corresponds to January, etc. The default model takes no account of 
+the differing lengths of month.  An option is available where the 
+number of days in a standard month (using the Gregorian calendar) is used.
+
+Edwards test takes no account of the variation in the population at 
+risk, and so does not require the population to be necessarily 
+specified.
+
+The Walter and Elwoods test takes account of the population at risk and 
+the fact that it may vary between months.
+
+
+Options for use with ^seast^
+--------------------------
+
+The default for ^seast^ is that there are 12 sectors, the sector
+variable is called ^month^, each month is the same length, and the
+Walter and Elwood test is to be used, which requires population data.
+
+
+^sector(^varname^)^ declares the name of the variable denoting the 
+sector. This should be numbered sequentially from 1,...,n, where n is 
+the total number of sectors. If n=12, the program assumes that the 
+sectors 1,..,12 correspond to January,...,December.
+
+^length(^varname^)^ declares the name of the variable containing the 
+length of each sector. For example if the sectors were the first 6 
+months of the year the length variable should contain the number of 
+days in each of the months, i.e. 31,28,31,30,31,30. If ^length()^ is 
+specified the test will take account of the length of the sectors varying.
+
+^edwards^ specifies that the Edwards test is to be used.  When using 
+this option the population variable does not need to be included as the
+test does not utilise this information.  The default Edwards test makes 
+no adjustment for variable sector length.
+
+^exact^ forces the test to adjust for variable month length.  This is 
+used when the sector has not been specified as the data consists of 12 
+months.  This option sets each month length to be as used by the 
+Gregorian calendar.  ^exact^ does not need to be specified when the
+^length()^ option is used.
+
+^notab^ suppresses the displaying of a table of observed and expected
+number of events by sector.
+
+^gen(^newvar^)^ generates a new variable containing the expected 
+number of events for each month of birth. This may be useful for 
+graphing the data, or for further calculations.
+
+
+Examples of ^seast^
+-----------------
+
+   . ^seast cases births^
+   . ^seast cases births, gen(exp) exact^
+   . ^seast cases births, sector(quarter) length(qlength)^
+   . ^seast cases, edwards^
+
+
+Authors
+-------
+
+   Mark S. Pearce
+   Department of Child Health,University of Newcastle upon Tyne.
+   m.s.pearce@@ncl.ac.uk
+
+   Richard Feltbower
+   Paediatric Epidemiology Group, University of Leeds.
+
+

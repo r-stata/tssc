@@ -1,0 +1,29 @@
+{smcl}
+{title:Help for listmiss - v1.1 - 14 May 2007}
+
+    {hi:Analyse missing values related to an estimation command}
+
+{title:Syntax}
+{p 8 17 2}
+{cmd:listmiss}
+[{varlist}]
+{ifin}
+
+{title:Description}
+{pstd}
+{cmd:listmiss} is a post-estimation command that reports the number of missing values for each independent variable.  For each independent variable a flag is created to indicate when the variable is missing.  The dependent variable is regressed on the missing flag for each independent variable.  The statistical significance of the slope is reported as an indicator of whether the dependent variable is statistically different where an independent variable is missing.  Another test compares the null model to the model with the missing flag and performs a BIC difference test, again as an indication of whether the dependent variable is statistically different when an independent variable is missing.  If the model was specified with robust standard errors, then robust standard errors are used to perform the hypothesis test related to the slope for the missing value flag.
+
+{title:Example}
+{phang}. {cmd: sysuse} auto{p_end}
+{phang}. {cmd: logistic} foreign price mpg rep78{p_end}
+{phang}. {cmd: listmiss} 
+
+
+{title:See Also}
+Online help for {cmd:nmissing}, {cmd:npresent}, {cmd:mvpatterns} (if installed)
+
+{title:Author}
+Paul Millar
+www.paulmillar.ca
+paulmi@nipissingu.ca
+

@@ -1,0 +1,261 @@
+{smcl}
+{* 22jun2019}{...}
+{hline}
+help for {hi:mrgraph}
+{hline}
+
+{title:Graphs of multiple responses}
+
+
+{p 8 15 2}{cmd:mrgraph} {c -(} {cmd:bar} | {cmd:hbar} | {cmd:dot} | {cmd:tab} {c )-}
+ {it:varlist} [{it:weight}] [{cmd:if} {it:exp}] [{cmd:in} {it:range}] [{cmd:,}
+  {bind:{ {cmdab:r:esponse:(}{it:numlist}{cmd:)} | {cmdab:cond:ition:(}{it:exp}{cmd:)} }}
+  {cmdab:p:oly}
+  {cmdab:count:all}
+  {cmdab:in:clude}
+  {cmdab:includem:issing}
+  {cmdab:case:wise}
+  {cmd:sort}[{cmd:(}{it:#}{cmd:)}]
+  {cmdab:des:cending}
+  {bind:{cmd:by(}{it:varname}[{cmd:,} {it:by_subopts}]{cmd:)}}
+  {cmdab:s:tat:(}{it:statname}{cmd:)}
+  {cmdab:rt:otal}
+  {cmdab:ct:otal}
+  {cmdab:nop:ercent}
+  {cmdab:nol:abel}
+  {cmdab:add:val}[{cmd:(}{it:string}{cmd:)}]
+  {cmdab:w:idth:(}{it:#}{cmd:)}
+  {cmd:height(}{it:#}{cmd:)}
+  {cmdab:overs:ubopts:(}{it:over_subopts}{cmd:)}
+  {it:graph_options} ]
+
+
+    where {it:by_subopts} is
+
+{p 8 15 2}{c -(}
+        {cmdab:in:board} |
+        {cmdab:out:board} [ {it:over_subopts} ] |
+        {cmdab:sep:arate} [ {it:suboptions} ]
+        {c )-}
+
+    and {it:statname} is
+
+{p 8 15 2}{c -(}
+        {cmdab:f:req} |
+        {cmdab:co:lumn} |
+        {cmdab:r:ow} |
+        {cmdab:ce:ll} |
+        {cmdab:rcol:umn} |
+        {cmdab:rce:ll}
+        {c )-}
+
+
+{p 4 4 2} {cmd:fweight}s and {cmd:aweight}s are allowed with {cmd:mrgaph}; see
+help {help weights}.
+
+
+{title:Description}
+
+{p 4 4 2} {cmd:mrgraph} may be used to produce graphs of multiple response
+distributions. Please read help {help mrtab} before using
+{cmd:mrgraph}. The syntaxes {bind:{cmd:mrgraph bar}}, {bind:{cmd:mrgraph hbar}}
+and {bind:{cmd:mrgraph dot}} are specified to indicate use of
+{help graph_bar:graph bar}, {help graph_hbar:graph hbar} and
+{help graph_dot:graph dot} respectively. The size (height or length) of the bars
+or position of the dots in the graph corresponds to the frequencies (or,
+optionally, proportions) of the response categories. {bind:{cmd:mrgraph tab}}
+produces table plots in the manner of Nick Cox's {cmd:tabplot}
+(Cox 2004). {cmd:mrgraph} is implemented as a wrapper for {help mrtab}
+followed by {help _mrsvmat} and {help graph}.
+
+
+{title:Options}
+
+{p 4 8 2} {cmd:addval}[{cmd:(}{it:string}{cmd:)}] specifies that labels
+{it:and} values (or variable names in the case of the indicator mode) are used
+to mark the responses in the graph. The values and labels will be separated by
+{it:string} if specified or by a blank otherwise (use quotes, if the desired
+delimiter has leading and/or trailing blanks, i.e. {cmd:addval(": ")}). If the
+{cmd:addval} option is not specified, then labels are used exclusively.
+However, if no labels are available, values are used and {cmd:addval} will have
+no effect. Furthermore, {cmd:addval} will have no effect if the response
+variables are string.
+
+{p 4 8 2} {cmd:by(}{it:varname}[{cmd:,} {it:by_subopts}]{cmd:)}} draws the
+conditional distributions of responses for the categories of {it:varname}. The
+by-variable may be string or numeric. The {it:by_subopts} control the grouping
+of the results in the graph if the graph
+type is {bind:{cmd:mrgraph bar}}, {bind:{cmd:mrgraph hbar}}, or
+{bind:{cmd:mrgraph dot}}. Possible specifications are:
+
+{p 8 8 2}
+    {cmdab:in:board}
+
+{p 12 12 2}
+    The categories of the by-variable are grouped within the
+    categories of the multiple response variables. This is the default.
+
+{p 8 8 2}
+    {cmdab:out:board} [ {it:over_subopts} ]
+
+{p 12 12 2}
+    The categories of the multiple response variables are grouped
+    within the categories of the by-variable. The separation of the by-groups
+    is implemented as an additional {cmd:over} statement in the internal
+    {cmd:graph} call. Thus, {it:over_subopts} may be specified. See help
+    {help graph_bar:graph bar} and help {help graph_dot:graph dot}.
+
+{p 8 8 2}
+    {cmdab:sep:arate} [ {it:suboptions} ]
+
+{p 12 12 2}
+    For each category of the by-variable a separate plot is drawn
+    within a single graph. This conforms to the default behavior of the by
+    option in Stata's graph commands (which, however, is not the default in
+    {cmd:mrgraph}). See help {help by_option} for details on the
+    {it:suboptions}.
+
+{p 4 8 2} {cmd:casewise} specifies that cases with missing values for at least
+one of the response variables should be excluded listwise.
+
+{p 4 8 2} {cmd:condition(}{it:exp}{cmd:)} is an alternative to the
+{cmd:response()} option. See help {help mrtab} for details on this option.
+
+{p 4 8 2} {cmd:countall} requests that repeated identical responses be
+added up.
+
+{p 4 8 2} {cmd:ctotal} specifies that column totals be reported.
+
+{p 4 8 2} {cmd:descending} specifies that the sort order be descending. The
+default is to sort in ascending order. This is only relevant if {cmd:sort} is
+specified.
+
+{p 4 8 2} {cmd:height(}{it:#}{cmd:)} controls the amount of available graph
+space taken up by bars in the table plot. This option is only relevant if the
+graph type is {cmd:mrgraph tab}. The default is 0.8.
+
+{p 4 8 2} {cmd:include} specifies that observations composed of zero responses be
+treated as valid. See help {help mrtab} for details on this option.
+
+{p 4 8 2} {cmd:includemissing} is an enhancement to {cmd:include} and specifies
+that cases be treated as valid even if all response variables are
+missing. See help {help mrtab} for details on this option.
+
+{p 4 8 2} {cmd:nolabel} specifies that labels be ignored.
+
+{p 4 8 2} {cmd:nopercent} specifies that relative frequencies be formatted as
+proportions (.271) instead of percentages (27.1).
+
+{p 4 8 2} {cmd:oversubopts(}{it:over_subopts}{cmd:)} may be used to pass
+suboptions through to the {cmd:over} option which is applied by {cmd:mrgraph}
+in the internal call of the {cmd:graph} command. This is only relevant for the
+graph types {bind:{cmd:mrgraph bar}}, {bind:{cmd:mrgraph hbar}}, and
+{bind:{cmd:mrgraph dot}}. For further explanations on the {cmd:over} option and
+its suboptions see help {help graph_bar:graph bar} and
+{help graph_dot:graph dot}. Do not use the {cmd:sort} suboption;
+use {cmd:mrgraph}'s own {cmd:sort} option instead (see below).
+
+{p 4 8 2} {cmd:poly} specifies that the responses are stored in polytomous
+mode. See help {help mrtab} for details on this option.
+
+{p 4 8 2} {cmd:response(}{it:numlist}{cmd:)} specifies the (range of) response
+values. See help {help mrtab} for details on this option.
+
+{p 4 8 2} {cmd:rtotal} specifies that row totals be reported.
+
+{p 4 8 2} {cmd:sort} draws the categories in ascending order of frequency. If
+{cmd:by} is specified, the sorting will correspond to the totals over all
+groups unless a reference group is specified in parentheses. That
+is, {cmd:sort(1)} will sort in order of the frequencies in the first by-group,
+{cmd:sort(2)} in order of the frequencies in the second by-group, and so on.
+Specify {cmd:descending} to sort in descending order.
+
+{p 4 8 2} {cmd:stat(}{it:statname}{cmd:)} determines the statistic which the
+graph be based on. {it:statname} is either {cmd:freq}, if raw frequencies be
+used, or {cmd:column} (base: column total of observations), {cmd:row} (base: row
+total), {cmd:cell} (base: grand total of valid observations), {cmd:rcolumn} (base:
+column total of responses), or {cmd:rcell} (base: grand total of responses), if
+relative frequencies be used. {cmd:stat(freq)} is the default.
+
+{p 4 8 2} {cmdab:width(}{it:#}{cmd:)} specifies the maximum width (number of
+chars) used to display the labels of the responses. Labels that are too wide
+are wrapped. Note that the single words in the labels will not be broken. If
+no {cmd:width} is specified, labels are not wrapped.
+
+
+{title:Examples}
+
+{p 4 4 2} One-way bar chart:
+
+        {com}. use http://fmwww.bc.edu/RePEc/bocode/d/drugs.dta
+        {txt}(1997 Survey Data on Swiss Drug Addicts)
+
+        {com}. mrgraph bar crime1-crime5, include response(2 3) sort
+           width(15) title(Criminal experiences (as a victim))
+           ylabel(,angle(0))
+        {txt}
+
+{p 4 4 2} Two-way bar chart (inboard):
+
+        {com}. mrgraph bar crime1-crime5, include response(2 3)
+           sort width(15) by(sex) stat(column)
+           title(Criminal experiences (as a victim))
+           ylabel(,angle(0)) legend(bmargin(t+1))
+        {txt}
+
+{p 4 4 2} Two-way bar chart (outboard):
+
+        {com}. mrgraph hbar crime1-crime5, include response(2 3)
+           sort by(sex, outboard) stat(column)
+           title(Criminal experiences (as a victim))
+           ylabel(,angle(0))
+        {txt}
+
+{p 4 4 2} Two-way bar chart (separate):
+
+        {com}. mrgraph hbar crime1-crime5, include response(2 3)
+           sort(1) width(16) stat(column)
+           by(sex, separate title(Criminal experiences (as a victim)))
+        {txt}
+
+{p 4 4 2} Table plot:
+
+        {com}. mrgraph tab crime1-crime5, include response(2 3)
+           sort width(16) stat(column) by(sex) rtotal
+           title(Criminal experiences (as a victim))
+        {txt}
+
+{title:References}
+
+{p 4 8 2}Cox, N. J. 2004. Speaking Stata: Graphing categorical and compositional
+data. The Stata Journal 4(2): 190-215.
+
+
+{title:Author}
+
+{p 4 4 2} Ben Jann, University of Bern, ben.jann@soz.unibe.ch
+
+{p 4 4 2}
+    Thanks for citing this software as
+
+{p 8 8 2}
+    Jann, B. 2005. {browse "http://www.stata-journal.com/article.html?article=st0082":Tabulation of multiple responses}. The
+    Stata Journal 5(1): 92-122.
+
+{p 4 4 2}
+    or
+
+{p 8 8 2}
+    Jann, B., H. Schaeper 2004. MRTAB: Stata module to compute one- and two-way
+    tables of multiple responses. Available from
+    {browse "http://ideas.repec.org/c/boc/bocode/s437201.html"}.
+
+
+{title:Also see}
+
+{p 4 13 2} Manual:  {hi:[G] graph bar}, {hi:[G] graph dot},
+{hi:[G] {it:by_option}}
+
+{p 4 13 2} Online:  help for {help mrtab}, {help _mrsvmat},
+{help graph_bar:graph bar}, {help graph_hbar:graph hbar},
+{help graph_dot:graph dot}, {help tabplot} (if installed)

@@ -1,0 +1,497 @@
+.-
+help for ^gllamm^
+.-
+
+Generalised linear latent and mixed models
+-------------------------------------------
+
+^gllamm^ depvar [varlist] [^if^ exp] [^in^ range] ^,^ ^i(^varlist^)^
+         [  ^nocons^tant ^o^ffset^(^varname^)^ ^nr^f^(^#^,^...^,^#^)^ 
+            ^e^qs^(^eqnames^)^ ^frload^(^#^,^...^,^#^)^
+            ^ip(^string^)^ ^ni^p^(^#^,^...^,^#^)^ ^pe^qs^(^eqname^)^ 
+            ^bmat^rix^(^matrix^)^ ^ge^qs^(^eqnames^)^ ^nocor^rel
+            ^c^onstraints^(^clist^)^ ^we^ight^(^varname^)^ ^pwe^ight^(^varname^)^
+            ^f^amily^(^family^)^ ^fv(^varname^)^ ^de^nom^(^varname^)^ 
+            ^s(^eqname^)^ ^l^ink^(^link^)^ ^lv(^varname^)^
+            ^expa^nded^(^varname varname string^)^ ^b^asecategory^(^#^)^ 
+            ^comp^osite^(^varnames^)^ ^th^resh^(^eqnames^)^ ^eth^resh^(^eqnames^)^  
+            ^fr^om^(^matrix^)^ ^copy^ ^skip^ ^long^ 
+            ^lf0(^#^ ^#^)^ ^ga^teaux^(^#^ ^#^ ^#^)^ ^se^arch^(^#^)^ 
+            ^noe^st ^ev^al ^in^it ^it^erate^(^#^)^ ^adoonly^ ^adapt^ 
+            ^rob^ust ^clu^ster^(^varname^)^
+            ^l^evel^(^#^)^ ^eform^ ^allc^ ^tr^ace ^nolo^g ^nodis^play ^do^ts           
+         ]
+
+where family is                        and link is
+        ^gau^ssian                       ^id^entity 
+        ^poi^sson                        ^log^
+        ^gam^ma                          ^rec^iprocal
+        ^bin^omial                       ^logi^t
+                                       ^pro^bit
+                                       ^cll^ (complementary log-log)
+                                       ^ll^ (log-log)
+                                       ^olo^git (o stands for ordinal)
+                                       ^opr^obit
+                                       ^ocl^l
+                                       ^mlo^git
+                                       ^spr^obit (scaled probit)
+                                       ^sop^robit
+                                               
+
+and clist is of the form   #[^-^#][^,^ #[^-^#] ...]
+
+
+
+^gllamm^ shares the features of all estimation commands; see help @est@.
+
+^gllamm^ typed without arguments redisplays previous results.
+
+Predictions of the latent variables or random effects (and many other
+quantities) can be obtained using @gllapred@ and the models can be 
+simulated using @gllasim@
+
+
+Description
+-----------
+
+^gllamm^ estimates ^G^eneralized ^L^inear ^L^atent ^A^nd ^M^ixed ^M^odels.
+These models include multilevel (hierarchical) regression models
+with an arbitrary number of levels, generalized linear mixed models, 
+multilevel factor models and some types of latent class models. 
+We refer to the random effects (random intercepts, slopes or coefficients), 
+factors, etc. as latent variables or random effects. 
+
+If the latent variables are assumed to be multivariate normal,
+^gllamm^ uses Gauss-Hermite quadrature, or adaptive quadrature
+if the ^adapt^ option is also specified. Adaptive quadrature
+can be considerably more accurate than ordinary quadrature,
+see first reference at the bottom of this help file.
+ 
+With the ^ip(^f^)^  option, the latent variables are specified 
+as discrete with freely estimated probabilities (masses) and locations. 
+
+More information on the models is available from
+
+http://www.gllamm.org
+
+
+
+Options
+--------
+
+(a) Structure of the model
+---------------------------------------------------------------------------
+
+^i(^varlist^)^ gives the variables that define the hierarchical, nested
+    clusters, from the lowest level (finest clusters) to the highest level, 
+    e.g. i(pupil class school).
+
+^noconstant^ omits the constant term from the fixed effects equation.
+
+^offset(^varname^)^ specifies a variable to be added to the linear predictor
+    without estimating a corresponding regression coefficient (e.g. log 
+    exposure for Poisson regression).
+
+^nrf(^#^,^...^,^#^)^ specifies the number of random effects for each level,
+     i.e., for each variable in ^i(^varlist^)^. The default is nrf(1,...,1).
+
+^eqs(^eqnames^)^ specifies equation names (defined before running gllamm) 
+    for the linear predictors multiplying the latent variables; see help @eq_g@.
+    If required, constants should be explicitly included in the equation 
+    definitions using variables equal to 1. If the option is not used, the 
+    latent variables are assumed to be random intercepts and only one random
+    effect is allowed per level. The first lambda coefficient is set to one
+    unless the ^frload()^ option is specified. The other coefficients are 
+    estimated together with the (co)variance(s) of the random effect(s).  
+
+^frload(^#^,^...^,^#^)^ lists the latent variables for which the first
+    factor loading should be freely estimated along with the other
+    factor loadings. It is up to the user to define appropriate constraints
+    to identify the model. Here the latent variables are referred to 
+    as 1 2 3 etc. in the order in which they are defined by the ^eqs()^
+    option.
+
+^ip(^sting^)^ if string is g, Gaussian quadrature points are used and if 
+    string is f, the mass-points are freely estimated. The default is 
+    Gaussian quadrature. The ^ip(^f^)^ option causes nip-1 locations to
+    be estimated, the nipth mass being determined by setting the mean 
+    location to 0 so that an intercept can be included in the fixed
+    effects equation. The ^ip(^fn^)^ option can be used to set the last mass
+    to 0 instead of to the mean. If string is m, spherical quadrature rules
+    are used for multidimensional integrals.
+
+^nip(^#^,^...^,^#^)^ specifies the number of integration points or masses
+    to be used for each integral or summation. When quadrature is used, 
+    a value may be given for each random effect. When freely estimated masses
+    are used, a value may be given for each level of the model. If only one 
+    argument is given, the same number of integration points will be used for 
+    each summation. Combined with the ^ip(m)^ option, ^nip()^ specifies
+    the degree of the approximation instead of the number of points. Only the
+    following degrees are available: for two random effects, 5, 7, 9, 11, 15
+    and for more than two random effects 5, 7.
+
+^peqs(^eqname^)^ can be used with the ^ip(^f^)^ or ^ip(^fn^)^ options
+   to allow the (prior) latent class probabilities to depend on covariates.
+   The model for the latent class probabilities is a multinomial logit model
+   with the last latent class as reference category. A constant is 
+   automatically included in addition to the covariates specified in the
+   equation command; see help @eq_g@.
+
+^geqs(^eqnames^)^ specifies regressions of latent variables on explanatory variables.
+    The second character of the equation name indicates which latent 
+    variable is regressed on the variables used in the equation definition, e.g.
+    eq f1: a b means that the first latent variable is regressed on a and b (without
+    a constant);  see help @eq_g@.
+
+^bmatrix(^matrix^)^ specifies a matrix B of regression coefficients for the 
+    dependence of the latent variables on other latent variables. The matrix 
+    must be upper diagonal and have number of rows and columns equal to the 
+    total number of random effects. 
+
+^nocorrel^ may be used to constrain all correlations to zero
+    if there are several random effects at any of the levels and if these are
+    modeled as multivariate normal.  
+
+^constraint(^clist^)^ specifies the constraint numbers of the constraints to 
+    be applied.  Constraints are defined using the ^constraint^ command; see 
+    help @constraint@. To find out the equation names needed to specify the
+    constraints, run gllamm with the noest option.
+
+^weight(^varname^)^ specifies that variables varname1, varname2, etc. contain
+    frequency weights. The suffixes determine at what level each weight applies.
+    For example, if the level 1 units are subjects, the level 2 units are 
+    families, and the result is binary, we can collapse dataset A into 
+    dataset B as follows:
+
+         A                           B
+         family subject result       family subject result  wt1  wt2
+           1       1      0            1      1       0      2    1
+           1       2      0            2      3       1      1    2
+           2       3      1            2      4       0      1    2 
+           2       4      0
+           3       5      1
+           3       6      0
+
+    The level 1 weight, wt1, indicates that subject 1 in dataset B 
+    represents two subjects within family 1 in dataset A, whereas subjects 
+    3 and 4 in dataset B represent single subjects within family 2 in 
+    dataset A. The level 2 weight wt2 indicates that family 1 in dataset B 
+    represents one family and family 2 represents two families, i.e. all 
+    the data for family 2 are replicated once. Collapsing the data in this 
+    way can make gllamm run considerably faster.
+
+^pweight(^varname^)^ specifies that variables varname1, varname2, etc. contain
+    sampling weights for levels 1, 2, etc. As far as the estimates and
+    log-likelihood are concerned, the effect of specifying these 
+    weights is the same as for frequency weights, but the standard errors
+    will be different. Robust standard errors will automatically be provided. 
+    This should be used with caution if the sampling weights apply 
+    to units at a lower level than the highest level in the multilevel model.
+    The weights are not rescaled; scaling is the responsibility of the user.
+
+(b) Densities, links, etc. for the response model
+------------------------------------------------------------------------------
+
+^family(^families^)^ specifies the families to be used for the conditional 
+    densities. The default is ^family(^gauss^)^. Several families may be given 
+    in which case the variable allocating families to observations must be 
+    given using ^fv(^varname^)^.
+
+^fv(^varname^)^ is required if mixed responses requiring more than a single
+    family of conditional distributions are analyzed. The variable indicates 
+    which family applies to which observation. A value of one refers to the 
+    first family etc.
+
+^denom(^varname^)^ gives the variable containing the binomial denominator for 
+    the responses whose family is specified as binomial. The default 
+    denominator is 1.
+
+^s(^eqname^)^ specifies that the log of the standard deviation (or coefficient
+    of variation) at level 1 for normally (or gamma) distributed responses
+    should be given by the linear predictor defined by eqname. This is 
+    necessary if the level-1 variance is heteroscedastic. For example, if 
+    dummy variables for groups are used, different variances are estimated 
+    for different groups. 
+
+^link(^link^)^ specifies the links to be used for the conditional densities. If 
+    a single family is specified, the default link is the canonical link. 
+    Several links may be given in which case the variable allocating links to 
+    observations must be given using ^lv(^varname^)^. This option is currently
+    not available if the ordinal or mlogit links are used. Numerically 
+    feasible choices of link depend upon the distributions of the covariates 
+    and choice of conditional error and random effects distributions. The
+    sprobit link is only identified in special cases; it may be used for
+    Heckman-type selection models or to model floor or ceiling effects.
+
+^lv(^varname^)^ is the variable whose values indicate which link applies to 
+    which observation. 
+
+^expanded(^varname varname string^)^ is used together with the mlogit 
+    link and specifies that the data have been expanded as illustrated 
+    below:
+
+        A                          B
+        choice                     response altern selected
+           1                           1       1       1
+           2                           1       2       0
+                                       1       3       0
+                                       2       1       0
+                                       2       2       1
+                                       2       3       0   
+
+    where the variable "choice" is the multinomial response 
+    (possible values 1,2,3), the "response" labels the original lines 
+    of data, "altern" gives the possible responses or alternatives 
+    and "selected" is an indicator for the option that was selected.
+    The syntax would be expanded(response selected m) and the variable
+    "altern" would be used as the dependent variable. This expanded 
+    form allows the user to use different random effects etc. for 
+    different categories of the multinomial response. The third 
+    argument is o if one set of coefficients should be estimated 
+    for the explanatory variables and m if one set of coefficients 
+    is to be estimated for each category of the response except the
+    reference category. 
+
+^basecategory^(^#^)^ When the mlogit link is used, this specifies the
+    value of the response to be used as the reference category. This option is
+    ignored if the expanded() option is used with the third argument equal
+    to m.    
+
+^composite^(varname varname varname [more varnames]) specifies that a
+    composite link is used. The first variable is a cluster identifier
+    ("cluster" below) so that linear predictors within the cluster can 
+    be combined into a single composite link. The second variable 
+    ("ind" below) indicates to which response the composite links defined
+    by the susequent weight variables belong. Observations with ind=0
+    have a missing link. The remaining variables ("c1" and "c2" below) 
+    specify weights for the composite links. The composite link based on 
+    the first weight variable will go to where ind=1, etc. 
+    
+    Example:
+    
+    
+    Data setup with form of inverse link        Interpretation of 
+    h_i determined by link() and lv():          composite(cluster ind c1 c2) 
+    
+    cluster ind  c1  c2  inverse link            cluster  composite link
+      1      1    1  0    h_1                       1       h_1 - h_2
+      1      2   -1  1    h_2                       1       n_2 + h_3
+      1      0    0  1    h_3           ==>         1       missing
+      2      1    1  0    h_4                       2       h_4 + h_5
+      2      2    1  1    h_5                       2       h_5 + 2*h_6
+      2      0    0  2    h_6                       2       missing
+      
+
+^thresh(^eqnames^)^ specifies equation(s) for the thresholds for ordinal
+    response(s);  see help @eq_g@. One equation is specified for each 
+    ordinal response. The purpose of this option is to allow the effects of some 
+    covariates to be different for different categories of the ordinal variable 
+    rather than assumming a constant effect - the proportional odds assumption 
+    if the ologit link is used. Variables used in the model for the 
+    thresholds cannot appear in the fixed part of the linear predictor.
+
+^ethresh(^eqnames^)^ is the same as ^thresh(^eqnames^)^ except that
+    a different parameterization is used for the threshold model. To
+    ensure that k_{s-1} <= k_{s}, the model is k_{s} = k_{s-1} + exp(xb),
+    for response categories s=2,...,S.
+
+(c) Starting values
+-----------------------------------------------------------------------------
+
+^from(^matrix^)^ specifies the matrix to be used for the initial values. 
+    Note that the column-names and equation-names have to be correct 
+    (see help @matrname@, @matrix@), unless the ^copy^ option is specified.
+    The matrix may be obtained from a previous estimation command using e(b). 
+    This is useful if the number of quadrature points needs to be increased
+    or of a new explanatory variable is added. Use the ^skip^ option if
+    the matrix of has extra parameters.
+
+^copy^ and ^skip^ see above.
+
+^long^ may be used with the from(matrix) option when constraints are used
+    to indicate that the matrix of initial values has as many elements
+    as would be needed for the unconstrained model, i.e. more elements
+    than will be estimated.
+
+^lf0(^# #^)^ gives the number of parameters and the log-likelihood for a 
+    likelihood ratio test to compare the model to be estimated with a simpler
+    model. A likelihood ratio chi-squared test is only performed if the 
+    ^lf0(^# #^)^ option is used.
+
+^gateaux(^min^,^max^,^n^)^ may  be used with method ip(f) to increase the 
+    number of mass-points by one from a previous solution with parameter 
+    estimates specified using from(matrix) and number of parameters and 
+    log-likelihood specified by lf0(# #). The program searches for the 
+    location of the new mass-point by placing a very small mass at the 
+    location given by the first argument and moving it to the second argument
+    in the number of steps specified by the third argument. (If there are 
+    several random effects, this search is done in each dimension resulting 
+    in a regular grid of search points.) If the maximum increase in likelihood
+    is greater than 0, the location corresponding to this maximum is used as 
+    the initial value of the new location, otherwise the program stops. When
+    this happens, it can be shown that for certain models the current solution
+    represents the non-parametric maximum likelihood estimate.
+
+^search(^#^)^ causes the program to search for initial values for the random
+    effects at level 2 (in range 0 to 3). The argument specifies the number 
+    of random searches. This option may only be used with ^ip(^g^)^ and when
+    ^fr^om^(^matrix^)^ is not used. 
+
+(d) Estimation and output options
+------------------------------------------------------------------------------
+
+^noest^ is used to prevent the program from carrying out the estimation. This 
+    may be used with the trace option to check that the model is correct and
+    get the information needed to set up a matrix of initial values. Global 
+    macros are available that are normally deleted. Particularly useful may 
+    be M_initf and M_initr, matrices for the parameters (fixed part and 
+    random part respectively).
+
+^eval^ causes the program to simply evaluate the loglikelihood for values passed
+   to it using the from(matrix) option.
+
+^init^ causes the program to compute initial estimates of fixed effects 
+   only, setting all latent variables to zero. gllamm will be used for
+   estimating initial values even if a Stata command is available for the
+   model (without the init option, gllamm uses Stata commands for initial values
+   whenever they are available).
+
+^iterate(^#^)^ specifies the (maximum) number of iterations. With the ^adapt^
+   option, use of the ^iterate(^#^)^ option will cause ^gllamm^ to skip the
+   "Newton Raphson" iterations usually performed at the end without updating
+   the quadrature locations. ^iterate(^0^)^ is like ^eval^ except that standard
+   errors are computed.
+
+^adoonly^ causes all gllamm to use only ado-code. Gllamm will be faster if
+   if it uses internalised versions of some of the functions available in
+   Stata 7 if updated on or after 26oct2001
+
+^nip(^#^,^...^,^#^)^ when quadrature is used, this specifies the number 
+    of quadrature points (integration points) to be used. A value may be 
+    given for each random effect. If only one argument is given, the 
+    same number of quadrature points will be used for each summation.
+
+^adapt^ causes adaptive quadrature to be used instead of ordinary quadrature.
+   This option cannot be used with the ^ip(^f^)^ or ^ip(^f0^)^ options.
+
+^robust^ specifies that the Huber/White/sandwich estimator of the covariance
+    matrix of the parameter estimates is to be used. If a model has been
+    estimated without the ^robust^ option, the robust standard errors can be
+    obtained by simply typing ^gllamm, robust^.
+
+^cluster(^varname^)^ specifies that the highest level units of the GLLAMM
+    model are nested in even higher level clusters where ^varname^ contains
+    the cluster identifier. Robust standard errors will be provided that
+    take this clustering into account. If a model has been estimated without
+    this option, the robust standard errors for clustered data can be obtained
+    using the command ^gllamm, cluster(varname)^.
+
+^level(^#^)^ specifies the confidence level in percent for confidence 
+    intervals of the coefficients.
+
+^eform^ causes the expnentiated coefficients and confidence intervals to be 
+    displayed.
+
+^allc^ causes all estimated parameters to be displayed in a regression table
+    (including the raw parameters for the random effects) in addition to the 
+    usual output.
+
+^trace^ causes more output to be displayed. Before estimation begins, 
+    details of the specified model are displayed. In addition, a
+    detailed iteration log is shown including parameter estimates 
+    and log-likelihood values for each iteration.
+
+^nolog^ suppresses output for maximum likelihood iterations.
+
+^nodisplay^ suppresses output of the estimates but still shows iteration log
+   unless ^nolog^ is used.
+
+^dots^ causes a dot to be printed (if used together with trace) every time the
+   likelihood evaluation program is called by ml. This helps to assess how long
+   gllamm is likely to take to run and reassures the user that it is making
+   some progress when it is very slow.
+
+
+
+Examples
+--------
+
+(a) 3-level random intercept model
+----------------------------------
+Some response "resp" and covariate "x" are available for pupils
+in different schools. "id" is the identifier or label for the pupils
+and "school" is the identifier for the schools. A linear model 
+with random intercepts at the pupil and school levels can be specified 
+as follows:
+
+    . ^gllamm resp x, i(id school) adapt trace^
+
+
+(b) 2-level random coefficient model - growth curve model
+---------------------------------------------------------
+subjects identified by "id" have been measured repeatedly over
+time giving responses in "resp". "cons" is a variable equal to 1
+and "time" contains the time-points. A model with a random 
+intercept and slope for time is specified as follows:
+
+    . ^eq int: cons^
+    . ^eq slope: time^
+    . ^gllamm resp time, i(id) nrf(2) eqs(int slope) adapt trace ^
+
+
+(c) two-parameter logistic item-response model 
+----------------------------------------------
+variable "resp" contains responses to 5 items (e.g. 5 test questions)
+for each subject. The subject identifier is "id". There are five
+dummy variables "i1" to "i5" for the items, e.g. "i1" is equal
+to 1 if the item is item 1 and 0 otherwise.
+
+     . ^eq discrim: i1 i2 i3 i4 i5^
+     . ^gllamm resp i1 i2 i3 i4 i5, link(logit) fam(binom) nocons /*^
+          ^*/ i(id) eqs(discrim) adapt trace^
+
+
+Author
+------
+Sophia Rabe-Hesketh (sophiarh@@berkeley.edu)
+as part of joint work with Andrew Pickles and Anders Skrondal.
+We would like to acknowledge Colin Taylor for helping in the
+early stages of gllamm development. We are also very grateful
+to Stata Corporation for helping us to speed up gllamm.
+
+Web-page
+--------
+http://www.gllamm.org
+
+
+References (available from sophiarh@@berkeley.edu)
+----------
+Rabe-Hesketh, S. and Skrondal, A. (2005). Multilevel and Longitudinal 
+Modeling using Stata. College Station, TX: Stata Press.
+
+Rabe-Hesketh, S., Pickles, A. and Skrondal, S. (2004). 
+GLLAMM Manual. U.C. Berkeley Division of Biostatistics Working 
+Paper Series. Working Paper 160.
+see http://www.bepress.com/ucbbiostat/paper160/
+
+Rabe-Hesketh, S., Skrondal, A. and Pickles, A. (2005). Maximum 
+likelihood estimation of limited and discrete dependent variable 
+models with nested random effects. Journal of Econometrics 128, 301-323.
+
+Rabe-Hesketh, S., Skrondal, A. and Pickles, A. (2002). 
+Reliable estimation of generalized linear mixed models 
+using adaptive quadrature. The Stata Journal 2, 1-21.
+
+Rabe-Hesketh, S., Skrondal, A. and Pickles, A. (2004). 
+Generalised multilevel structural equation modelling. 
+Psychometrika 69 , 167-190.
+
+
+Also see
+--------
+
+Manual:   ^[U] 23 Estimation and post-estimation commands^
+          ^[U] 29 Overview of model estimation in Stata^
+
+On-line:  help for @gllapred@, @gllasim@, @ml@, @glm@, @xtreg@, 
+          @xtlogit@, @xtpois@, @quadchk@, @test@ 

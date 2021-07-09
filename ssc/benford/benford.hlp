@@ -1,0 +1,72 @@
+help for ^benford^                             (Nikos Askitas)
+
+Apply Benford's Law to a variable
+---------------------------------------------------
+
+        ^benford^     varname [if] [in] 
+
+
+Description
+-----------
+
+^benford^ reads in the values of a variable and returns a 4 column table:
+Column 1 contains the digits 1 through 9, column 2 contains the total number 
+of values in the variable starting with that digit, Column 3 contains the 
+percentage Column 2 represents and Column 4 is what benfords law expects.
+So the closer Columns 3 and 4 are the more your numbers conform to Benfords 
+law. 
+
+Remarks
+-------
+
+^benford^ just presents the measurements in a form which makes it easy to inspect.
+Both knowing whether your variable should conform to Benford's law or not and whether
+the results suggest your dataset is authentic or rigged is up to you. The author is happy 
+to point the user to N. J. Cox's ^firstdigit^ module for a more comprehensive treatment
+as well as acknowledge a masterful rewrite of the first - a more pedestrian - version.
+
+
+
+
+
+Examples
+--------
+While developing I played with auto.dta which is both too small and contains no 
+variables which should conform to Benford's law. So to just see it work you can do:
+
+
+ . ^sysuse auto.dta^
+ . ^benford price^
+
+
+The dataset http://www.stata-press.com/data/r9/census6.dta contains variables which 
+are suitable for Benford's Law. Although it is too small to get any reliable 
+distribution it still shows a relative conformity.
+
+ 
+ . ^  use http://www.stata-press.com/data/r9/census6.dta^
+ . ^  benford pop^
+
+will return:
+
+Digit     Count   Frequency       Benford
+-----------------------------------------
+1         10      20.00           30.10   
+2         8       16.00           17.60   
+3         5       10.00           12.50   
+4         10      20.00           9.70    
+5         7       14.00           7.90    
+6         2       4.00            6.70    
+7         2       4.00            5.80    
+8         1       2.00            5.10    
+9         6       12.00           4.60    
+------------------------------------------
+
+
+
+
+Author
+------
+Dr Nikos Askitas, IZA, Bonn, Germany.
+Email: ^nikos@@iza.org^
+

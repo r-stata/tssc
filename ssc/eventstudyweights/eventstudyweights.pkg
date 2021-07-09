@@ -1,0 +1,38 @@
+d 'EVENTSTUDYWEIGHTS': module to estimate the implied weights on the cohort-specific average treatment effects on the treated (CATTs) (event study specifications)
+d
+d   eventstudyweights estimate weights underlying two-way fixed
+"d effects regressions with relative time    indicators, It is"
+d optimized for speed in large panel datasets thanks to hdfe.    To
+"d estimate the dynamic effects of an absorbing treatment,"
+d researchers often use two-way fixed    effects regressions that
+d include leads and lags of the treatment (event study
+d specification). Units    are categorized into different cohorts
+d based on their initial treatment timing. Sun and Abraham
+d (2020) show the coefficients in this event study specification
+d can be written as a linear    combination of cohort-specific
+d effects from both its own relative period and other relative
+d periods.  eventstudyweights is a Stata module that estimates
+d these weights for any given event    study specification.    For
+"d each relative time indicator specified in rel_time_list,"
+d eventstudyweights estimates the    weights underlying the linear
+d combination of treatment effects in its associated coefficients
+d using    an auxiliary regression. It provides built-in options to
+d control for fixed effects and covariates    (see Controls).
+d eventstudyweights exports these weights to a spreadsheet that can
+d be analyzed    separately.  This spreadsheet also contains the
+"d cohort and relative time each weight corresponds    to, with"
+d headers as specified in cohort() and rel_time().
+d
+d KW: event study
+d KW: two-way fixed effects
+d KW: treatment effects
+d
+d Requires: Stata version 13 and hdfe from SSC (q.v.)
+d
+d Distribution-Date: 20200904
+d
+"d Author: Liyang Sun, MIT"
+d Support: email lsun20@@mit.edu
+d
+f eventstudyweights.ado
+f eventstudyweights.sthlp

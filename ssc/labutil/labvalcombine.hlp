@@ -1,0 +1,64 @@
+{smcl}
+{* 13 May 2011}{...}
+{hline}
+help for {hi:labvalcombine}
+{hline}
+
+{title:Combine two or more sets of value labels}
+
+{p 4 10 2}
+{cmd:labvalcombine} 
+{it:vallblname1}
+{it:vallblname2}
+[{it:vallblname3} ...]
+[ , {cmd:lblname(}{it:lblname}{cmd:)} ]
+
+
+{title:Description}
+
+{p 4 4 2}{cmd:labvalcombine} combines two or more sets of value labels
+into one. Note that existing definitions may be overwritten by the
+definitions in value label sets named later in the command. Thus if the
+command is {cmd:labvalcombine lbl1 lbl2}, definitions in {cmd:lbl2} will
+overwrite those in {cmd:lbl1} for the same values. Users should specify
+the order of names accordingly. A safe strategy is to use a new name for
+the set, but users can make their own choices. 
+
+{p 4 4 2}By default the first name specified will be used for the new
+set of value labels. 
+
+{p 4 8 2}The combined set of definitions is listed. This display may be
+suppressed with {help quietly}. 
+
+
+{title:Options} 
+
+{p 4 8 2}{cmd:lblname()} supplies a name for the combined set. This may
+be a new name or an existing name. 
+
+
+{title:Examples}
+
+{p 4 8 2}{cmd:. label define lbl1 1 "one" 2 "two" 3 "three"}{p_end}
+{p 4 8 2}{cmd:. label define lbl2 2 "deux" 3 "three" 4 "four"}{p_end}
+{p 4 8 2}{cmd:. labvalcombine lbl1 lbl2, lblname(both)}{p_end}
+{p 4 8 2}{cmd:. labvalcombine lbl1 lbl2, lblname(lbl2)}{p_end}
+{p 4 8 2}{cmd:. labvalcombine lbl1 lbl2}
+
+
+{title:Author} 
+
+{p 4 4 2}Nicholas J. Cox, Durham University, U.K.{break}
+n.j.cox@durham.ac.uk
+
+
+{title:Acknowledgments}  
+
+{p 4 4 2}Jorge Eduardo P{c e'}rez P{c e'}rez suggested this problem on 
+Statalist. 
+
+
+{title:Also see}
+
+{p 4 4 2}On-line: help for {manhelp label D} 
+

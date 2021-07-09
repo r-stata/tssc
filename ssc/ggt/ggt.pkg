@@ -1,0 +1,54 @@
+"d 'GGT': module to implement Geweke, Gowrisankaran, and Town Model Quality Estimator"
+d
+"d    This program estimates the parameters of the Geweke,"
+"d Gowrisankaran, and Town (Econometrica, 2003), GGT model.  The GGT"
+d model estimates the posterior distribution of organizational
+d performance where there are many organizations from which
+"d individuals can choose to receive services. In this framework,"
+"d individuals may select organizations based, in part, on"
+d information that is unobserved to the researcher and is
+"d correlated with the binary outcome. If this is the case, then"
+d standard approaches to inferring organization performance will
+d yield biased estimates. The GGT model corrects for this
+d unobserved selection allowing for flexible correlation in the
+d error structure across the organizational choice and outcome
+"d equations.  The estimation approach is Bayesian. In sum, the"
+d model combines an organization choice multinomial probit model
+"d with an individual outcome binary probit model, allowing for"
+d correlation across equations for each individual. As noted in
+"d GGT, some possible applications for this model include: hospital"
+"d quality based on mortality, school performance based on"
+"d graduation rates, prison rehabilitation programs based on"
+"d recidivism rates, and job training programs based on incidence"
+d of harassment complaints.
+d
+d KW: GGT
+d KW: Geweke
+d KW: Gowrisankaran
+d KW: Town
+d KW: model quality
+d
+d Requires: Stata version 14
+d
+d Distribution-Date: 20191111
+d
+"d Author: Kelli Marquardt, University of Arizona"
+d Support: email marquardtk@@email.arizona.edu
+d
+"d Author: Gautam Gowrisankaran, University of Arizona"
+d Support: email gautamg2@@gmail.com
+d
+"d Author: Robert Town, University of Texas-Austin"
+d Support: email robert.town@@austin.utexas.edu
+d
+f ggt.ado
+f ./c/callCcode.ado
+f ggt.sthlp
+G WIN64  ./b/bayesqual12_win.plugin      bayesqual12.plugin
+G MACINTEL64 ./b/bayesqual12_mac.plugin  bayesqual12.plugin
+G OSX.X8664 ./b/bayesqual12_mac.plugin   bayesqual12.plugin
+h bayesqual12.plugin
+f GGT_test_data.dta
+f GGT_Documentation_Full.pdf
+f GGT_examples.pdf
+f GGT_methods.pdf

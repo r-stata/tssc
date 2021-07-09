@@ -1,0 +1,71 @@
+{smcl}
+{* 21apr2004}{...}
+{hline}
+help for {hi:circkdensity}
+{hline}
+
+{title:Nonparametric density estimation for circular data}
+
+{p 8 17 2}
+{cmd:circkdensity} 
+{it:varname}
+[{cmd:if} {it:exp}] 
+[{cmd:in} {it:range}]
+[
+{cmd:,} 
+{cmd:h(}{it:#}{cmd:)}
+{cmd:genpdf(}{it:newvar1}{cmd:)}
+{cmd:gendeg(}{it:newvar2}{cmd:)}
+{it:line_options} ]
+
+
+{title:Description} 
+
+{p 4 4 2}
+{cmd:circkdensity} produces and graphs nonparametric density estimates for 
+circular variables with scales between 0 and 360 degrees. The kernel is a 
+quartic or biweight kernel with a half-width given by {cmd:h()}. 
+See Fisher (1993) for more details and discussion. The estimate
+is produced for {cmd:min(_N, 360)} equally spaced angles on the circle. 
+Note that {cmd:circkdensity} is not implemented using {help kdensity}. 
+
+
+{title:Options} 
+
+{p 4 8 2}{cmd:h()} specifies the half-width of the kernel in degrees. The 
+default is 30.
+
+{p 4 8 2}{cmd:genpdf()} specifies the name of a new variable in which
+probability density estimates are to be stored.
+
+{p 4 8 2}{cmd:gendeg()} specifies the name of a new variable in which
+equally spaced angles are to be stored.
+
+{p 4 8 2}{it:line_options} are any of the options allowed with 
+{help line}.  
+
+
+{title:Examples}
+
+{p 4 8 2}{cmd:. circkdensity wallasp} 
+
+{p 4 8 2}{cmd:. circkdensity wallasp, h(45) genpdf(wallpdf) gendeg(deg)} 
+
+
+{title:Author} 
+
+{p 4 4 2}Nicholas J. Cox, University of Durham, U.K.{break} 
+         n.j.cox@durham.ac.uk
+
+
+{title:References} 
+
+{p 4 8 2}Fisher, N.I. 1993. {it:Statistical analysis of circular data.}
+Cambridge: Cambridge University Press.
+
+
+{title:Also see} 
+
+{p 4 13 2}
+On-line: help for {help circhistogram}
+

@@ -1,0 +1,120 @@
+{smcl}
+{* 6sept2004/19sept2004}{...}
+{hline}
+help for {hi:scat3}
+{hline}
+
+{title:Crude 3-dimensional graphics}
+
+
+{p 8 17 2}{cmd:scat3} 
+{it:xvar yvar zvar} 
+[{cmd:if} {it:exp}] 
+[{cmd:in} {it:range}]
+[{cmd:,} 
+{cmdab:r:otate(}{it:#}{cmd:)}
+{cmdab:e:levate(}{it:#}{cmd:)}
+{cmd:axistype(}{it:axis_type}{cmd:)}
+{cmd:axes(}{it:line_options}{cmd:)}
+{cmd:shadow}[{cmd:(}{it:scatter_options}{cmd:)}]
+{cmd:spikes(}{it:rspike_options}{cmd:)}
+{cmd:titlex(}[{it:title_text}][{cmd:,} {it:marker_label_options}]{cmd:)}
+{cmd:titley(}[{it:title_text}][{cmd:,} {it:marker_label_options}]{cmd:)}
+{cmd:titlez(}[{it:title_text}][{cmd:,} {it:marker_label_options}]{cmd:)}
+{cmd:variablenames}
+{cmdab:sep:arate(}{it:varname}{cmd:)} 
+{it:graph_options}]
+
+
+{title:Description}
+
+{p 4 4 2}{cmd:scat3} draws (crude) 3-dimensional scatterplots.  It is a port to
+Stata 8 of {cmd:gr3} (Gould, 1991, 1993), itself partially broken since Stata
+3.1 and dependent upon Stage for final editing.  The 3-d graph consists by
+default of data points, spikes drawn from data points to the 
+{bind:({it:x},{it:y})} plane, axes and axis titles. 
+
+
+{title:Options}
+
+{p 4 8 2}{cmd:rotate(}{it:#}{cmd:)} specifies the rotation angle in degrees
+(default 45). 
+
+{p 4 8 2}{cmd:elevate(}{it:#}{cmd:)} specifies the elevation angle in degrees
+(default 45).
+
+{p 8 8 2}These are the angles at which the graph is projected onto your
+two-dimensional screen.  You should try different values: the structure of your
+data may be better revealed by one angle rather than another.  Good choices
+are:
+
+					   Resolution of
+           {cmd:rotate()}   {cmd:elevate()}        x          y         z
+           {hline 54}
+	      30          60         good       good     adequate
+	      45          45       adequate   adequate   adequate
+              60          30         poor       poor    excellent
+
+{p 4 8 2}{cmd:axistype(}{it:axis_type}{cmd:)} specifies the type of axes used.
+Choices are {cmd:table}, the default, "table-top" axes,  {cmd:outside},
+"outside" axes, {cmd:zero}, axes meeting at (0,0,0), and {cmd:minimum}, axes
+with origin the minimum of the data.  The axistype may be specified by any
+abbreviation, down to one letter. 
+
+{p 4 8 2}{cmd:axes()} tunes the representation of the axes (by default drawn
+with {cmd:clp(solid)}).  It should contain options of {help twoway line}. 
+
+{p 4 8 2}{cmd:shadow} specifies that instead of vertical spikes from the data
+points to the {bind:({it:x},{it:y})} plane, each data point is paired with a
+shadow point on the {bind:({it:x},{it:y})} plane. {cmd:shadow()} specified with
+arguments tunes the representation of the shadow points (by default drawn with
+{cmd:msize(*0.5)}).  It should contain options of {help twoway scatter}. 
+ 
+{p 4 8 2}{cmd:spikes()} tunes the representation of the spikes.  It should
+contain options of {help twoway rspike}. 
+
+{p 4 8 2}{cmd:titlex()}, {cmd:titley()} and {cmd:titlez()} tune the
+representation of the x, y and z axis titles, shown as marker labels with
+default {cmd:mlabpos(0) mlabcolor(black)} and (in the case of the z axis title)
+{cmd:mlabang(vertical)}. Each may contain title text and/or 
+{help marker label options}. The titles will be the text supplied; or if none 
+is supplied, the variable labels of the variables concerned; or if those 
+are not defined, the variable names.  
+
+{p 4 8 2}{cmd:variablenames} overrides the option above by specifying the
+use of variable names. 
+
+{p 4 8 2}{cmd:separate()} indicates that observations are to be subdivided into
+classes according to a specified variable.  Each class is plotted as if it
+defined a single variable. 
+
+{p 4 8 2}{it:graph_options} are options of {cmd:twoway}.  
+	
+
+{title:Examples}
+
+{p 4 8 2}{cmd:. scat3 weight length mpg}
+
+{p 4 8 2}{cmd:. scat3 length width wallht, rot(30) elev(60) axistype(z) titlez(, mlabang(0) mlabpos(9) mlabgap(*12)) titley(, mlabpos(7) mlabgap(*7)) title("Height, length and width of Cumbrian cirques", size(medium)) spikes(blw(vvthin)) ms(oh)} 
+
+
+{title:Author}
+
+{p 4 4 2}Nicholas J. Cox, University of Durham, U.K.{break} 
+n.j.cox@durham.ac.uk
+
+
+{title:Acknowledgements}
+
+{p 4 4 2}William Gould kindly condoned this revision of his earlier program. 
+David Airey made a suggestion which led to the {cmd:separate()} option. 
+
+
+{title:References} 
+
+{p 4 8 2}Gould, W. 1991. gr3: Crude 3-dimensional graphics. 
+{it:Stata Technical Bulletin} 2: 6{c -}8. ({it:STB Reprints} 1: 35{c -}38)  
+
+{p 4 8 2}Gould, W. 1993. gr3.1: Crude 3-dimensional graphics revisited. 
+{it:Stata Technical Bulletin} 12: 12. ({it:STB Reprints} 2: 42{c -}43) 
+

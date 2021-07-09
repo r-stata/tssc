@@ -1,0 +1,70 @@
+{smcl}
+{* 208December2005}{...}
+{hline}
+help for {hi:raschfit}{right:Jean-Benoit Hardouin}
+{hline}
+
+{title:The Raschfit procedure}
+
+{p 8 14 2}{cmd:raschfit} {it:varlist} {cmd:,} [{cmdab:ker:nel}({it:#}) {cmdab:nbsc:ales}({it:#}) {cmdab:items:order}({it:keyword}) {cmdab:nofast}]
+
+{title:Description}
+
+{p 4 8 2}{cmd:raschfit} realizes the Raschfit algorithm defined by Hardouin and
+Mesbah (2004). This method selects sub-scales of items which fit a
+Rasch model. The method begin with a kernel of items (two or more items)
+defined by the user. At each step, the method uses a new item and verifies if this
+new item is explained by the same latent trait than the already selected items.
+If not, the items is not selected. The former version of the Raschfit algorithm
+is based on the comparison of two model: A Rasch model and a Multidimensional 
+Marginally Sufficient Rasch Model (MMSRM). These two models are compared by the
+Akaike Information Criterion (AIC). A faster version of the algorithm (Raschfit-Fast)
+compares the Rasch model and an adapted version of this model where the response 
+to the "new" item is not explained by the latent trait. Raschfit-Fast is executed
+by default.
+
+{title:Options}
+
+{p 4 8 2}{cmd:kernel}({it:#}) defines the # first items of {it:varlist} as the kernel 
+of the first sub-scale (by default with {cmd:itemsorder}({it:order}), this number is 
+fixed to 2).
+
+{p 4 8 2}{cmd:nbscales}({it:#}) defines the maximal number of sub-scales (by default,
+only one sub-scale is selected).
+
+{p 4 8 2}{cmd:itemsorder}({it:keyword}) defines the order of the items. If you type 
+{it:order}, the kernel is composed of the first items defined in {it:varlist},
+and the items are tested in the same order than in {it:varlist}. 
+If you type {it:msp} or {it:mspinv}, a Mokken Scale Procedure is run under 
+the items (the {it:msp} and {it:loevH} Stata programs are necessary) and the 
+items are selected from the first order selected by this procedure to the last 
+one (with {it:msp}), or in the inverse order (with {it:mspinv}). The method {it:msp} 
+is generaly more robust, but is longer to run. By default, the program uses {it:msp}.
+
+{p 4 8 2}{cmd:nofast} allows to execute the former version of the algorithm.
+
+{title:Example}
+
+{p 4 8 2}{cmd:. raschfit itemA* , itemsorder(order)}
+
+{p 4 8 2}{cmd:. raschfit itemA1-itemA7 , itemsorder(msp) kernel(4) nofast}
+
+{p 4 8 2}{cmd:. raschfit item* }
+
+{title:References}
+
+{p 4 8 2} Hardouin J.-B. and Mesbah M. {it:Clustering binary variables in subscales using an extended Rasch model and Akaike Information Criterion}, Communication in Statistics – Theory and methods}, {cmd:33}(6), pp. 1277-1294, 2004
+
+{p 4 8 2} Hardouin J.-B. {it:Construction d'échelles d'items unidimensionnelles en qualité de vie (Item selection in unidimensional scale applied to the Quality of Life)}, PhD thesis of the University René Descartes - Paris 5, 
+France, 201 pp, 2005
+
+{p 4 8 2} Hardouin J.-B. and Mesbah M. {it:Fast Clustering of Binary Variables in Subscales}, Unpublished document, 2005.
+
+{title:Author}
+
+{p 4 8 2} Jean-Benoit Hardouin, Regional Health Observatory (ORS) - 1, rue Porte
+Madeleine - BP 2439 - 45032 Orleans Cedex 1 - France. You can contact the
+author at
+{browse "mailto:jean-benoit.hardouin@orscentre.org":jean-benoit.hardouin@orscentre.org}
+and visit the websites {browse "http://anaqol.free.fr":AnaQol}
+and {browse "http://freeirt.free.fr":FreeIRT}

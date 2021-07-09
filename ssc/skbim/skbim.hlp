@@ -1,0 +1,88 @@
+.-
+help for skewed bimodal generator
+.-
+
+Skewed bimodal generator
+------------------------
+
+         ^skbim^ p v1 v2 v3 v4 option [obs] [seednum] [sk1] [ku1] [sk2] [ku2]
+
+
+Description
+-----------
+
+The program generates random numbers from a bimodal distribution. The two unimodal distributions
+that make up the bimodal can be normal or skewed-normal (see sknor for more details). Different
+arguments can be inputted to the function, as specified by 'option'
+
+p: the probability of the 1st unimodal distribution (obviously the prob for the 2nd will be 1-p)
+option: takes values 1, 2 or 3 and defines v1-v4.
+    for option=1: v1 the mean v2 the variance of the 1st unimodal, v3 the mean v4 the variance of the 2nd unimodal
+    for option=2: v1 the mean v2 the variance of the bimodal, v3 & v4 the variances of the unimodals
+    for option=3: v1 the mean v2 the variance of the bimodal, v3 the mean v4 the variance of the 1st unimodal
+[obs]: number of observations to be generated (optional; set to current
+    dataset size if omitted)
+[seednum]: seed number to be used for drawing 'random' numbers - makes a difference if your simulations occur
+    on the same second (i.e. running a batch of simulations)
+[sk1]: skewness of the 1st unimodal (optional; set to 0 if omitted)
+[ku1]: kurtosis of the 1st unimodal (optional; set to 3 if omitted)
+[sk2]: skewness of the 2nd unimodal (optional; set to 0 if omitted)
+[ku2]: kurtosis of the 2nd unimodal (optional; set to 3 if omitted)
+
+
+Remarks
+-------
+
+When using options 2 and 3, parameters of the distribution may not be computed for certain sets of
+inputted values.
+    for option 1 it must hold that: var - p*var(d1) - (1-p)*var(d2)>=0
+    for option 2 it must hold that: var > p*var(d1) + p(1-p)*(m1-m2)^2
+    where var the variance of the bimodal; m1,m2,v1,v2 means and variances of the unimodals
+
+For the default skewness and kurtosis values the generated distributions are normal.
+The program is based on a method described in  "Ramberg et al, A probability Distribution
+and its uses in fitting data, Technometrics, 1979".
+The method uses a formula with 4 parameters and parameter values which generate
+data of various degrees of skewness and kurtosis have been provided in the paper.
+Only a few of those have been included in this program the command, but it can
+easily be updated with more.
+The included pairs of values are (sk,ku): (0,1.75), (0,3), (0,3.2), (0,3.3), (0,3.4),
+(0,3.6), (0,4), (0,4.4), (0,5), (0,6), (0,7), (0,8), (0,9), (0.5,3), (0.5,4), (0.5,5),
+(0.5,6), (0.5,7), (0.5,8), (0.5,9), (1,4), (1,5), (1,6), (1,7), (1,8), (1,9), (1,10),
+(1.5,6), (1.5,7), (1.5,8), (1.5,9), (1.5,10), (1.5,11), (1.5,12), (2,9), (2,10), (2,11),
+(2,12), (2,13), (2,14), (2,15),
+For sk=2 and ku=9 the most extreme distribution is generated.
+Negative skewness values can be inputted for left-skew distributions (the opposite values
+of the ones listed above)
+
+
+Examples
+--------
+
+ . ^skbim 0.5 5 1 7 1.5 1^
+ . ^skbim 0.3 5 2 1.2 1.5 2 10000^
+ . ^skbim 0.3 5 2 1.2 1.5 2 10000 1234^
+ . ^skbim 0.5 9 3.5 8 2 3 10000 1234 1.5 6 -0.5 9^
+
+
+Keywords
+--------
+bimodal, normal, distribution, skewness (skew, skewed), kurtosis
+
+
+Author
+-------
+
+        Evangelos Kontopantelis
+        National Primary Care Reserch and Development Centre
+        University of Manchester
+        M13 9PL
+        e.kontopantelis@manchester.ac.uk
+
+
+Also see
+--------
+    Ramberg et al paper: http://www.jstor.org/view/00401706/ap040083/04a00080/0
+    STB:  STB-41 sg44.1, STB-28 sg44
+
+

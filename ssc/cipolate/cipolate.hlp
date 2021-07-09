@@ -1,0 +1,80 @@
+{smcl}
+{* 28 August 2002/14 October 2005}{...}
+{hline}
+help for {hi:cipolate}
+{hline}
+
+{title:Cubicly interpolate values}
+
+{p 8 17 2}{cmd:cipolate} {it:yvar} {it:xvar} [{cmd:if} {it:exp}] [{cmd:in}
+{it:range}] {cmd:,} {cmdab:g:enerate}{cmd:(}{it:newvar}{cmd:)} 
+
+{p 4 4 2}{cmd:by} {it:...} {cmd::} may be used with {cmd:cipolate}; see help 
+{help by}.
+
+
+{title:Description}
+
+{p 4 4 2}
+{cmd:cipolate} creates {it:newvar} by averaging non-missing values of
+{it:yvar} and cubicly interpolating missing values of
+{it:yvar}, given {it:xvar}. That is, provided that {it:xvar} is not
+missing, 
+
+{p 4 4 2}1. When {it:yvar} is not missing, {it:newvar} is the mean of
+{it:yvar} over observations with the same value of {it:xvar}. If a value of 
+{it:xvar} is unique, then each mean is just the same as the value of
+{it:yvar} at that point. 
+
+{p 4 4 2}2. When {it:yvar} is missing, {it:newvar} is filled in with
+cubicly interpolated values of {it:yvar}.  
+
+{p 4 4 2}Interpolated values are based on exact fitting of a cubic curve 
+to two data points before and two data points after each observation 
+for which {it:yvar} is missing. {cmd:cipolate} will thus produce 
+missing values whenever fewer than two data points are present 
+on either side. Note that this is not a spline method.  
+
+{p 4 4 2}Extrapolation is not provided, mainly because of reservations about 
+the general (and even particular) wisdom of extrapolating cubics into 
+the unknown. Some users may wish to extrapolate any remaining missing values 
+linearly using {help ipolate}. 
+
+
+{title:Options}
+
+{p 4 8 2}{cmd:generate()} is not optional; it specifies the name of the new
+variable to be created.
+
+
+{title:Examples}
+
+{p 4 8 2}{cmd:. cipolate y x, gen(yprime)}{p_end}
+
+{p 4 8 2}{cmd:. by panel : cipolate response year, gen(iresponse)}
+
+
+{title:Author}
+
+{p 4 4 2}Nicholas J. Cox, Durham University, U.K.{break}  
+    n.j.cox@durham.ac.uk
+
+
+{title:References}
+
+{p 4 8 2}Hamming, R.W. 1973. {it:Numerical methods for scientists and engineers.}
+New York: McGraw-Hill. See pp.235-236. 
+
+{p 4 8 2}Morton, B.R. 1964. {it:Numerical approximation}. London: Routledge 
+and Kegan Paul. See p.38. 
+
+{p 4 8 2}Press, W.H., S.A. Teukolsky, W.T. Vetterling, B.P. Flannery. 1992. 
+{it:Numerical recipes in C: the art of scientific computing.} 
+Cambridge: Cambridge University Press. See pp.108-110. 
+
+
+{title:Also see}
+
+{p 4 13 2}Manual:  {hi:[D] ipolate}
+
+{p 4 13 2}On-line:  help for {help ipolate}{p_end}

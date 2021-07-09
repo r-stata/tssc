@@ -1,0 +1,61 @@
+.-
+help for ^pre^ - 1.2 - 21 Feb 2006
+.-
+
+Calculate the Proportional Reduction in Errors achieved by a model
+.-
+
+    ^pre^ [^, ^c^utoff(#) ^ct^type(measure of central tendency) Maxcut]
+
+Description
+-----------
+^pre^ is a post-estimation command that calculates the proportional reduction in 
+errors achieved by the model.  pre is a measure of the precictive power of a model.
+This routine is simpler and is applicable to more models than lstat.
+
+The approach of this procedure has three steps
+1. find the errors when guessing without the model = E1
+   (the guess is a measure of central tendency) 
+2. find the errors when guessing what the model predicts = E2 
+3. PRE = (E1-E2)/E1 
+
+If the central tendency is mode, the errors are the number of cases 
+   not predicted exactly. 
+If the central tendency is median, the errors are the sum of the absolute value of
+   difference between the value and the median.
+If the central tendency is mean, the errors are the sum of the squares of
+   difference between the value and the mean.
+
+
+Options
+-------
+    ^c^utoff(real) is the cutoff probability for logistic regression, i.e. the 
+                   value above which the prediction is 1.  The default is 0.5.
+    ^ct^type(string) is the measure of central tendency (mean, median or mode).
+         The default for logit, probit, mlogit and gologit2 is mode.
+         The default for ologit, plogit, streg is median.
+         The default for all other models is mean.
+    ^m^axcut specifies using a cutoff that maximizes the number
+         of correctly predicted outcomes.  Used with logistic, logit, probit.
+
+
+Examples
+--------
+ . sysuse auto, clear
+ . logit foreign rep78 price turn
+ . ^pre^
+ . ^pre^, maxcut
+
+ . sysuse citytemp, clear
+ . nbreg heatdd tempjan region division cooldd tempjuly
+ . ^pre^
+
+
+Author: Paul Millar
+        www.paulmillar.ca
+        paulmi@@nipissingu.ca
+         
+See also:
+---------
+Online:     help for @lstat@ (if installed)
+

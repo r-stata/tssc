@@ -1,0 +1,213 @@
+{smcl}
+{* version 1.0.7 27nov2011}{...}
+{cmd:help chm}
+{hline}
+
+{title:Title}
+
+{p 5}
+{cmd:chm} {hline 2} Copy hard missings
+
+
+{title:Syntax}
+
+{p 5} Use as prefix
+
+{p 8}
+{cmd:chm} {varlist} [{cmd:, }{it:options}] {cmd::} {it:command}
+
+
+{p 5}
+where {it:command} is one of 
+
+{p 8}
+{help generate} {dtype} {newvar}[{cmd::}{it:lblname}] ={it:{help exp}} 
+{ifin}
+
+{p 8}
+{help egen} {dtype} {newvar} = {it:fcn}({it:arguments}) {ifin} 
+[{cmd:,} {it:egen_options}]
+
+{p 8}
+{help replace} {it:oldvar} ={it:{help exp}} {ifin} [{cmd:,} 
+{opt nop:romote}]
+
+{p 8}
+{help tabulate} {varname} {ifin} {cmd:,} {opt g:enerate}
+{cmd:(}{it:stubname}{cmd:)} [{it:tabulate_options}]
+
+{p 8 8}
+(if installed){break}
+{help center} {varlist} {ifin} {weight} [{cmd:,}{it: center_options}]
+
+
+{p 5}
+Use as command
+
+{p 8}
+{cmd:chm} {varlist} {it:oldvar} {ifin} {cmd:,} {opt replace} 
+[{it:options}]
+
+
+{p 5}
+where {it:oldvar} is the variable to be replaced
+
+
+{synoptset 21 tabbed}{...}
+{synopthdr}
+{synoptline}
+{synopt:{opt mvc(mvc)}}replace values in 
+{it:newvar}/{it:oldvar}/{it:stubname} with {it:mvc}{p_end}
+{synopt:{opt soft}}replace {it:newvar}/{it:oldvar}/{it:stubname} if 
+{it:varname} has soft missings (.){p_end}
+{synopt:{opt replace}}replace values in {it:oldvar}; required option 
+if {cmd:chm} is used as command{p_end}
+{synopt:{opt mi}}replace multiply imputed values with missings in 
+{it:m}>0{p_end}
+{synoptline}
+{p 4}
+{helpb by} is allowed, if {it:command} allows {bf:by}.
+
+{p 4 8}
+Syntax:{break}
+{cmd:by} {it:varlist} [, {it:by_options}] {cmd::} {cmd:chm} 
+{it:varlist} [, {it:chm_options}] {cmd::} {it:command}
+
+
+{title:Description}
+
+{pstd}
+{cmd:chm} copies hard missings (.a, ..., .z) from variables specified in {it:varlist} to 
+{it:newvar}/{it:oldvar}/{it:stubname}. Existing hard missings in {it:newvar} ({it:oldvar} or 
+{it:stubname}, respectively) are not replaced, meaning that if the second variable in 
+{it:varlist} has hard missings, where the first also has hard missings, hard missing values 
+are copied from the latter.
+
+{pstd}
+{bf:Remarks:} {cmd:chm} is useful if multiple imputation is planned. In {help mi} 
+environment, extended missing values (.a, ..., .z) are viewed as "hard missing" and are not 
+imputed. 
+
+
+{title:Options}
+
+{phang}
+{opt mvc(mvc)} replaces values in {it:newvar} ({it:oldvar} or {it:stubname}) with {it:mvc}, 
+where {it:mvc} is one of .a, ..., .z.
+
+{phang}
+{opt soft} additionally replaces values in {it:newvar} ({it:oldvar} or {it:stubname}) with 
+soft missings (.), where variables in {it:varlist} have soft missings. Hard missings in 
+{it:newvar}/{it:oldvar}/{it:stubname} are not replaced by soft missings. 
+If specified with {opt mvc(mvc)}, {it:mvc} is used to replace values.
+
+{phang}
+{opt replace} is required if {cmd:chm} is used as command, because existing 
+variables are altered. It is not allowed if {cmd:chm} is used as a prefix.
+
+{phang}
+{opt mi} copies hard missings from variables in the original dataset 
+after multiple imputation. Each variable in {it:varlist} that has (hard) 
+missing values in {it:m}=0, will be replaced with hard missing values in 
+{it:m}>0. This option might be useful if imputations are done using 
+{help ice} (Royston 2005), since all missing values 
+(i.e. {bf:.}, {bf:.a}, ..., {bf:.z}) will be imputed. The data must be in 
+{cmd:ice} format, or {help mi_styles:{it:flong style}}. The option may not 
+be specified if {cmd:chm} is used as a prefix.
+
+
+{title:Examples}
+
+{pstd}
+{ul:Use as prefix}
+
+	. list
+
+	     +------+
+	     | var1 |
+	     |------|
+	  1. |    1 |
+	  2. |   .a |
+	  3. |    3 |
+	  4. |    . |
+	  5. |    5 |
+	     +------+
+
+	{cmd:. chm var1 : generate newvar = var1 * 10}
+
+	. list
+
+	     +---------------+
+	     | var1   newvar |
+	     |---------------|
+	  1. |    1       10 |
+	  2. |   .a       .a |
+	  3. |    3       30 |
+	  4. |    .        . |
+	  5. |    5       50 |
+	     +---------------+
+
+	{cmd:. chm var1 ,mvc(.m) : tabulate var1 ,generate(stubname)}
+
+	. list var1 stubname?
+
+	     +---------------------------------------+
+	     | var1   stubna~1   stubna~2   stubna~3 |
+	     |---------------------------------------|
+	  1. |    1          1          0          0 |
+	  2. |   .a         .m         .m         .m |
+	  3. |    3          0          1          0 |
+	  4. |    .          .          .          . |
+	  5. |    5          0          0          1 |
+	     +---------------------------------------+
+
+	{cmd:. chm var1 : replace var1 = 1}
+
+	. list var1
+
+	     +------+
+	     | var1 |
+	     |------|
+	  1. |    1 |
+	  2. |   .a |
+	  3. |    1 |
+	  4. |    1 |
+	  5. |    1 |
+	     +------+
+
+{pstd}
+{ul:Use as command}
+
+	{cmd:. chm newvar var1 ,replace soft}
+
+	. list var1 newvar
+
+	     +---------------+
+	     | var1   newvar |
+	     |---------------|
+	  1. |    1       10 |
+	  2. |   .a       .a |
+	  3. |    1       30 |
+	  4. |    .        . |
+	  5. |    1       50 |
+	     +---------------+
+
+
+{title:References}
+
+{pstd}
+Royston, P. (2005) Multiple imputation of missing values: update. Stata 
+Journal 5 (2), 188-201.
+
+		 
+{title:Author}
+
+{pstd}Daniel Klein, University of Bamberg, klein.daniel.81@gmail.com
+
+
+{title:Also see}
+
+{psee}
+Online: {helpb replace}, {help generate}, {help egen}, {help tabulate}, {help mi}{p_end}
+{psee}
+if installed: {help center}, {help ice}{p_end}

@@ -1,0 +1,140 @@
+{smcl}
+{* 22Apr2010}{...}
+{hline}
+help for {hi:mkprofile}{right:manual:  {hi:[U] none}}
+{hline}
+
+{title:Create or edit your profile.do file or just see where Stata searches for a profile.do file}
+
+{p 8 17 2}
+{cmd:mkprofile}
+[{cmd:,}
+    {cmdab:mem:ory(}{it: integer value for number of megabytes of memory} {cmd:)}
+    {cmdab:vl:abel(}{it: integer 8<= # <= 32)}{cmd:}
+    {cmd:list}
+    {cmd:all}
+    {cmdab:nth:dir(}{it: integer 0)}{cmd:}
+    {cmd:edit}
+    {cmd:cwd}
+]
+{p_end}
+
+{pstd}
+{cmd:mkprofile} with no options specified is equivalent to:
+{p_end}
+
+{pstd}
+{cmd:. mkprofile , memory(40) vlabel(12)} 
+{p_end}
+
+{title:Description}
+
+{pstd}
+{cmd:mkprofile} creates or edits your {cmd:profile.do} file.  Your {cmd:profile.do} 
+file contains the settings you would like Stata to have every time you start a Stata 
+session.  By default, {cmd:mkprofile} creates your {cmd:profile.do} file to set your 
+{help varlabelpos:variable label position} to 12 and your {help memory:memory} to 40m.
+{p_end}
+
+
+{title:Options}
+
+{phang}
+{cmdab:mem:ory(}{it: integer }{cmd:)} sets Stata's {help memory:memory} to that number 
+of megabytes.  Be careful not to set it too low or too high as you will get an error 
+message when your {cmd:profile.do} file is run.  
+{p_end}
+
+{phang}
+{cmdab:vl:abel(}{it: integer }{cmd:)} sets the {help varlabelpos:variable label position} 
+in the variable label window.  If you tend not to have variable names 
+longer than 8 or so characters, set it to 10 to allow you to easily see the 
+variable label associated to the variable.
+{p_end}
+
+{phang}
+{cmd:list} specifies {cmd:mkprofile} only to list the directories that your {cmd:profile.do} 
+file will be attempted to be created in rather than attempt to create or edit your 
+{cmd:profile.do} file.  The order of the directories listed will be the reverse order of 
+directories that Stata will search for your {cmd:profile.do} file so that the top listed 
+directories are more likely the directories you have permission to create your 
+{cmd:profile.do} file.  Also specifying the {cmd:all} option will make the order be the order 
+of all the directories that Stata searches for your {cmd:profile.do} file.
+{p_end}
+
+{phang}
+{cmd:all} specifies {cmd:mkprofile} to list all the directories that Stata will look in for your 
+{cmd:profile.do} file and attempt to create your {cmd:profile.do} file in the first of these directories
+in which it can create it.  NOTE: These directories may require administrator directory permissions.  By 
+default {cmd:mkprofile} only tries to attempt to create your {cmd:profile.do} file in a directory you most 
+likely have permission to create the file.
+{p_end}
+
+{phang}
+{cmdab:nth:dir(}{it: integer }{cmd:)} species in which of the directories listed by {cmd:mkprofile} you 
+prefer {cmd:mkprofile} to create your {cmd:profile.do} file.  If not specified, {cmd:mkprofile} 
+will create your {cmd:profile.do} file in the first directory it can create it in.  NOTE: The
+{cmd:all} option affects the order of the directories so the nth directory will be different if
+{cmd:all} is specified or not specified when using the {cmd:nthdir()} option.
+{p_end}
+
+{phang}
+{cmd:edit} will allow you to open your current {cmd:profile.do} file in the do-file editor.  
+{p_end}
+
+{phang}
+{cmd:cwd} tells Stata to change to the directory you are currently in when you invoke {cmd:mkprofile}
+at the beginning of each Stata session.   Note: "cwd" means "current working directory." 
+To use this option, first {help cd} to the directory you normally use, then use the {cmd:cwd} option
+in {cmd:mkprofile}.  The next time you start Stata, you will be in this directory. 
+To start Stata in a different directory in the future, edit your {cmd:profile.do} file.
+{p_end}
+
+{phang}
+NOTE: An example of how to set-up {cmd:F} keys (eg. {cmd:F4}, {cmd:F5}) on your keyboard to be used 
+to change to set directories is implemented in the {cmd:profile.do} file using the 
+current directory in the example.  Use {help macro:macro list} to see what {cmd:F} keys 
+are already being used. 
+{p_end}
+
+{title:Remarks}
+
+{p 8 8 2}
+Since Stata only runs the first {cmd:profile.do} file that it finds in its search path, there 
+is no guarantee that the {cmd:profile.do} file created {cmd:mkprofile} will always be found 
+and run by Stata.  Read more about {help profile}.  {cmd:mkprofile} can be set to have a default 
+location in which to create the {cmd:profile.do} file.  For Windows "C:\ado\" is suggested.  For 
+Unix/Linux and Macintosh "~/ado/" is suggested.  A preferred directory can be set to a specific 
+directory along Stata's search path for the {cmd:profile.do} file by editing the {cmd:mkprofile.ado} file. 
+If a preferred directory is set, then this directory will be the only directory {cmd:mkprofile} will 
+see as an option to try to create the {cmd:profile.do} file even if the {cmd:all} option is specified.
+{p_end}
+
+
+{title:Examples}
+
+{phang}{cmd:. mkprofile }{p_end}
+
+{phang}{cmd:. mkprofile, vlabel(10) }{p_end}
+
+{phang}{cmd:. mkprofile, list }{p_end}
+
+{phang}{cmd:. mkprofile, mem(100) vl(10) cwd nthdir(3)}{p_end}
+
+{phang}{cmd:. mkprofile, edit memory(100) vlab(10) cwd}{p_end}
+
+
+{title:Author}
+
+{pstd}
+Dan Blanchette {break}
+The Carolina Population Center {break}
+University of North Carolina - Chapel Hill, USA {break}
+dan_blanchette@unc.edu{p_end}
+
+{title:Also see}
+
+
+{psee}Online:  help for {help profile:profile}, {help memory:memory}, {help varlabelpos:varlabelpos}
+{p_end}
+

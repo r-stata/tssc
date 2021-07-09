@@ -1,0 +1,147 @@
+{smcl}
+{* 30Jan2007}{...}
+{hline}
+help for {hi:ivactest}
+{hline}
+
+{title:Perform Cumby-Huizinga test for autocorrelation after IV/OLS estimation}
+
+{p 8 14}{cmd:ivactest}
+{bind:[{cmd:,} {cmd:q(}{it:#}{cmd:)}}
+{bind:[{cmd:,} {cmd:s(}{it:#}{cmd:)}}
+]
+
+{p}{cmd:ivactest} is for use after {help ivreg2}, {help ivreg}, {help regress} and {help newey}.
+{cmd:ivactest} is for use with time-series data.  You must {cmd:tsset} your data before 
+using {cmd:ivactest}; see {help tsset}. You may apply {cmd:ivactest} to a single time series 
+of a panel dataset. As of July 2013, we recommend that you use the {cmd:actest} command, available from
+the SSC Archive, rather than {cmd:ivactest}.
+
+
+
+{title:Description}
+
+{p}{cmd:ivactest} performs the general specification test of serial correlation
+proposed by Cumby and Huizinga (1992) after OLS or instrumental variables (IV)
+estimation. In their words, the null hypothesis of the test is that the regression error is a 
+moving average of known order q>=0 against the general alternative that 
+autocorrelations of the regression error are nonzero at lags greater than q.
+The test is general enough to test the hypothesis that the regression error has
+no serial correlation (q=0) or the null hypothesis that serial correlation in 
+the regression error exists, but dies out at a known finite lag (q>0).
+
+{p} The test is especially attractive because it can be used in three frequently 
+encountered cases where alternative such as the Box-Pierce test ({help wntestq}),
+Durbin's h test ({help regress postestimationts##durbinalt}) and the Breusch-Godfrey
+test ({help regress postestimationts##bgodfrey}) are not applicable. One of these
+cases is the presence of endogenous regressors, which renders each of these
+tests invalid. A second case involves the overlapping data commonly encountered
+in financial markets where the observation interval is shorter than the holding
+period, which requires the estimation of the induced moving average (MA) process. The
+Cumby-Huizinga test avoids estimation of the MA process by utilizing only the 
+sample autocorrelations of the residuals and a consistent estimate of their 
+asymptotic covariance matrix. The third case involves conditional heteroskedasticity
+of the regression error term, which is also handled without difficulty by
+the Cumby-Huizinga test.
+
+{p} If the prior estimation command estimated a VCE under the assumption of i.i.d. errors,
+the Cumby-Huizinga statistic becomes the Breusch-Godfrey statistic for the same number
+of autocorrelations, and will return the same result as {cmd:estat bgodfrey}. That special case
+of the test was first derived by Sargan in an unpublished working paper in 1976, cited by
+Cumby and Huizinga (fn. 13).
+
+{p}{cmd:ivactest} can be used after OLS regression
+with {cmd:regress}, {cmd:newey}, {cmd:ivreg} or {cmd:ivreg2} of Baum, Schaffer and Stillman (2003).
+
+
+{title:Options}
+
+{p 0 4}{cmd:q(}{it:#}{cmd:)} specifies the lowest lag order to be tested. By
+default q=0. q>0 cannot be used if the previous command estimated a VCE under the
+assumption of i.i.d. errors.
+
+{p 0 4}{cmd:s(}{it:#}{cmd:)} specifies the number of lag orders to be tested. By
+default s=1.
+
+The default test is a test with the null hypothesis that the residuals are 
+nonautocorrelated versus the alternative that they exhibit AR(1).
+The parameters s and q may be used to test any sequence of autocorrelations. For
+instance, q(4) s(4) tests the null hypothesis that autocorrelations 5-8 of the
+residual process are jointly zero, allowing autocorrelations 1-4 to take on
+any value.
+
+
+{title:Saved results}
+
+{p}{cmd:ivactest} saves the value of the test statistic,
+its p-value,
+and the degrees of freedom of the test. It also saves the minimum and maximum
+lag tested.
+See {cmd:return list}.
+
+
+{title:Examples}
+
+{p 8 12}{stata "use http://www.stata-press.com/data/r9/lutkepohl.dta" : . use http://www.stata-press.com/data/r9/lutkepohl.dta }{p_end}
+
+{p 8 12}(Quarterly SA West German macro data, Bil DM, from Lutkepohl 1993 Table E.1)
+
+{p 8 12}{stata "regress investment income " : . regress investment income }
+
+{p 8 12}{stata "ivactest" : . ivactest}{p_end}
+
+{p 8 12}{stata "regress investment income, robust " : . regress investment income, robust}
+
+{p 8 12}{stata "ivactest, s(4)" : . ivactest, s(4)}{p_end}
+
+{p 8 12}{stata "newey investment income, lag(4) " : . newey investment income, lag(4)}
+
+{p 8 12}{stata "ivactest, s(8)" : . ivactest, s(8)}{p_end}
+
+{p 8 12}{stata "ivreg2 investment ( income= lconsumption lincome) " : . ivreg2 investment ( income= lconsumption lincome)}
+
+{p 8 12}{stata "ivactest, s(2)" : . ivactest, s(2)}{p_end}
+
+{p 8 12}{stata "ivactest, s(4)" : . ivactest, s(4)}{p_end}
+
+{p 8 12}{stata "ivreg2 investment ( income= lconsumption lincome), gmm " : . ivreg2 investment ( income= lconsumption lincome), gmm}
+
+{p 8 12}{stata "ivactest, q(4) s(4)" : . ivactest, q(4) s(4)}{p_end}
+
+
+{title:References}
+
+{p 0 4}Baum, C. F., Schaffer, M. E., Stillman, S., 2003. Instrumental variables and GMM:
+Estimation and testing.  The Stata Journal, Vol. 3, No. 1, pp. 1-31.
+Unpublished working paper version:
+Boston College Department of Economics Working Paper No. 545.
+{browse "http://fmwww.bc.edu/ec-p/WP545.pdf":http://fmwww.bc.edu/ec-p/WP545.pdf}
+
+{p 0 4}Baum, C. F., Schaffer, M. E., and Stillman, S. 2007. Enhanced routines for instrumental variables/GMM
+    estimation and testing. Boston College Department of Economics Working Paper No. 667.
+
+{p 0 4}Cumby, R. E. and Huizinga, J.  1992. Testing the autocorrelation structure
+of disturbances in ordinary least squares and instrumental variables regressions. 
+Econometrica, Vol. 60, No. 1, pp. 185-195.
+
+{p}{cmd:ivactest} is not an official Stata command. It is a free contribution
+to the research community, like a paper. Please cite it as such: {p_end}
+
+{phang}Baum, C.F., Schaffer, M.E.,  2007.
+ivactest: Stata module to perform Cumby-Huizinga test for autocorrelation after IV/OLS estimation.
+{browse "http://ideas.repec.org/c/boc/bocode/s456841.html":http://ideas.repec.org/c/boc/bocode/s456841.html}{p_end}
+
+
+{title:Authors}
+
+{p 0 4}Christopher F Baum, Boston College, USA{p_end}
+{p 0 4}baum@bc.edu{p_end}
+
+{p 0 4}Mark E. Schaffer, Heriot-Watt University, UK{p_end}
+{p 0 4}m.e.schaffer@hw.ac.uk{p_end}
+
+{title:Also see}
+
+{p 1 14}Manual:  {hi:[R] regression postestimation}{p_end}
+{p 0 19}On-line:  help for {help ivactest}, {help ivreg2}, {help ivhettest}, {help ivendog} (if installed)
+{p_end}

@@ -1,0 +1,110 @@
+{smcl}
+{* *! version 1.0.2  01oct2010}{...}
+{cmd:help avg_effect}
+{hline}
+
+{title:Title}
+
+	{p 4 4 2}{hi:avg_effect} {hline 2} Calculate mean (standardized) effect size across multiple outcomes
+
+{title:Syntax}
+
+{p 8 17 2}
+{cmd:avg_effect} {it:{help varname:yvar1}} {it:{help varname:yvar2}} [ {it:{help varname:yvar3}} ... ]
+[{it:{help if:if}}]
+{cmd:,}
+{opth x(varlist)} {opth e:ffectvar(varlist)} {opt c:ontroltest(string)}
+[ {it:{help avg_effect##options:options}} ]
+
+{synoptset 20 tabbed}{...}
+{synopthdr}
+{synoptline}
+{syntab:Main}
+{synopt:{opth x(varlist)}}list of all right-hand-side (independent) variables{p_end}
+{synopt:{opth e:ffectvar(varlist)}}one or more {it:x} variables that constitute outcomes to test{p_end}
+{synopt:{opt c:ontroltest(string)}}{help if:if}-style test for membership in the control group{p_end}
+{synopt:{opt r:obust}}use heteroskedasticity-robust standard errors{p_end}
+{synopt:{opth cl:uster(varname)}}use clustered standard errors{p_end}
+{synopt:{opt keep:missing}}do not drop down to a common sample of observations{p_end}
+{synoptline}
+{p2colreset}{...}
+
+{title:Description}
+
+{pstd}
+{cmd:avg_effect} follows Kling et al. (2004) and Clingingsmith et al. (2009) in calculating
+average (standardized) effect size using the seemingly-unrelated regression framework to
+account for covariance across estimates.
+
+{pstd}
+Call {cmd:avg_effect} with two or more y (outcome) variables and a list of x variables in {opt x}
+(exactly as you would pass them to the regress command).
+
+{pstd}
+Use {opt effectvar} to specify the variable whose coefficient represents the individual
+effect estimates (e.g., {it:effectvar(treated)}). You can specify multiple effect variables,
+separated by spaces.
+
+{pstd}
+Use {opt controltest} to specify the if-style test for membership in the control group
+(e.g., {it:controltest(treated==0)}). The control group is used to calculate the standard
+deviation of each outcome variable, which is then used to standardize the effect sizes.
+
+{pstd}
+{ul:Works cited}:
+
+{pstd}
+Clingingsmith, David, Khwaja, Asim Ijaz and Kremer, Michael (2009) 
+“Estimating the Impact of the Hajj: Religion and Tolerance in Islam's Global Gathering,” 
+Quarterly Journal of Economics, 124(3), pp. 1133-1170.
+
+{pstd}
+Kling, Jeffrey R., Liebman, Jeffrey B., Katz, Lawrence F. and Sanbonmatsu, Lisa (2004) 
+“Moving to Opportunity and Tranquility: Neighborhood Effects on Adult Economic Self-Sufficiency and Health from a Randomized Housing Voucher Experiment,” 
+KSG Working Paper No. RWP04-035,
+Available from: http://papers.ssrn.com/sol3/papers.cfm?abstract_id=588942 (Accessed 25 May 2010).
+
+{marker options}
+{title:Options}
+
+{dlgtab:Main}
+
+{phang}
+{opth x(varlist)} specifies the full list of right-hand-side (independent) variables, as when passed to {help regress:regress}. {it:Required.}
+
+{phang}
+{opth effectvar(varlist)} indicates which of the {opt x} variables corresponds to the effect of interest (i.e., which coefficient constitutes the effect 
+of interest). To simultaneously test multiple effects, list multiple variables separated by spaces. {it:Required.}
+
+{phang}
+{opt controltest(string)} specifies the {help if:if}-style test used to identify the control group (e.g., {it:controltest(treated==0)}). 
+The control group is used to calculate the standard deviations by which effect sizes are standardized. {it:Required.}
+
+{phang}
+{opt robust} uses heteroskedasticity-robust standard errors, using {help suest:suest}'s {opt vce(robust)} option.
+
+{phang}
+{opth cluster(varlist)} uses clustered standard errors, using {help suest:suest}'s {opt vce(cluster varlist)} option.
+
+{phang}
+{opt keepmissing} uses as many observations as possible when calculating each standard deviation and running each individual regression.
+By default, {cmd:avg_effect} considers only observations with non-missing values for the full set of y (outcome) variables; this ensures that
+the results apply to a common sub-sample. For example, observations with missing {it:yvar1} will not be used when considering the standard deviation
+and regression for {it:yvar2}. With {opt keepmissing}, this is no longer the case, and thus the sub-sample can change with each individual regression.
+
+{title:Examples}
+
+{phang}{cmd:. sysuse auto}
+
+{phang}{cmd:. avg_effect price mpg, x(foreign weight) effect(foreign) control(foreign==0)}
+
+{title:Author}
+
+Christopher Robert, Harvard University, chris_robert@hksphd.harvard.edu
+
+{title:Also see}
+
+{psee}
+Online: help for
+ {helpb suest}
+{p_end}

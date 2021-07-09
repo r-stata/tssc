@@ -1,0 +1,98 @@
+{smcl}
+{* 15May2009}{...}
+ 
+{hline}
+help for {cmd:hodgesl}
+{hline}
+  
+{cmd:Hodges-Lehmann aligned rank test}
+{cmd:--------------------------------}
+ 
+{cmd:Syntax}
+{cmd:------}
+{cmd:hodgesl} dataname varname blockname treatname savfile
+
+
+{cmd:Description}
+{cmd:-----------}
+ 
+{cmd:hodgesl} implements Hodges-Lehmann aligned rank test of 
+the null hypothesis of no difference in an outcome variable 
+between treated and control observations over matched or 
+stratified sets. The test is an extension of the Wilcoxon 
+signed rank test to matching with multiple controls. It may 
+be employed in testing treatment effect that stratifies the 
+sample on single or multiple covariates, where the number of 
+strata compared to the number of total sample observations is 
+large, and within a stratum each treated subject has more than 
+one matched control. The test is needed when the analyst 
+evaluates average treatment effect and performs a significance 
+test of such effect after optimal matching.  
+
+{cmd:dataname} specifies the name of data file for the sample being 
+tested after matching or stratification. {cmd:varname} is the name 
+of outcome variable on which the analyst wants to test the 
+difference between treated and control observations. {cmd:blockname} 
+specifies the variable name that identifies matched or stratified 
+sets. {cmd:treatname} specifies the name of the dichotomous variable 
+identifying treatment conditions (i.e., treatname = 1 if the 
+observation receives treatment, and treatname = 0 if the 
+observation is a control). {cmd:savfile} specifies the name of a saved 
+data file for future analysis.
+ 
+ 
+{cmd:Output and Return Values}
+{cmd:------------------------}
+ 
+After running {cmd:hodgesl}, Stata returns the sample average treatment effect 
+in the metric of the outcome variable {cmd:tx_effect}, Hodges-Lehmann mean 
+statistic {cmd:HL_mean}, Hodges-Lehmann standard-error statistic {cmd:HL_se}, 
+the test statistic {cmd:z} that is the ratio of HL_mean and HL_se, and is 
+subject to a standard normal distribution, and the {cmd:p}-value of z via 
+which the analyst can perform a significance test of a nondirectional 
+hypothesis (i.e., perform a two-tailed test) or a directional hypothesis 
+(i.e. perform a one-tailed test). 
+
+After running {cmd:hodgesl}, {cmd:savfile} contains mean of the outcome and number of 
+observations for each treatment condition by matched set. The data file 
+can be used for postestimation analysis. 
+
+The analyst can use {cmd: return list} immediately after running 
+{cmd:hodgesl} to see statistics saved for further analysis. 
+
+ 
+{cmd:Examples}
+{cmd:--------}
+  
+{cmd:. hodgesl cds lwss97 fm kuse fm_results}
+
+{cmd:. hodgesl "C:\PSA\chapter5\cds.dta" lwss97 fm kuse "C:\tmp\fm_results"}
+{cmd:. return list}
+{cmd:. use "C:\tmp\fm_results", clear}
+{cmd:. list}
+
+ 
+{cmd:References}
+{cmd:----------}
+ 
+Guo, S., & Fraser, M. (2009). Propensity score analysis: Statistical 
+methods and applications. Thousand Oaks, CA: Sage Publications, Inc.
+ 
+Lehmann, E. L. (2006). Nonparametrics: Statistical methods based on ranks 
+(Rev. ed., pp.132-141) New York: Springer.  
+
+Rosenbaum, P.R. (2002) Observational Studies. 2nd edition. New York: Springer.
+ 
+ 
+{cmd:Author}
+{cmd:------}
+ 
+        Shenyang Guo
+        University of North Carolina at Chapel Hill
+        sguo@email.unc.edu 
+
+ 
+{cmd:Also see:}
+{cmd:---------}
+ 
+{psee}Online:  help for {helpb imbalance} if installed

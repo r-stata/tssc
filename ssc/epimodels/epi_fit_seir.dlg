@@ -1,0 +1,121 @@
+VERSION 16.0
+
+POSITION . . 410 250
+
+DIALOG params, label("epimodels fit - SEIR model") tabtitle("Model parameters")
+BEGIN
+  TEXT     tx_param       10  10  100 ., label("Parameter")		   
+  TEXT     tx_knvalue    150  10  100 ., label("Value type")
+  TEXT     tx_value0     300  @   100 ., label("Value")
+
+  TEXT     tx_beta        10  +25 390 ., label("Beta:")		   
+  EDIT     ed_beta        150  @  100 .,              ///
+           numonly option(beta) default(0.5) ///
+		   tooltip("BETA")
+  CHECKBOX cb_beta       300  @  100 ., label("Known value") option(betak)
+
+  TEXT     tx_gamma       10  +25 390 ., label("Gamma:")		   
+  EDIT     ed_gamma       150  @  100 ., ///
+           numonly option(gamma) default(0.5) ///
+		   tooltip("GAMMA")
+  CHECKBOX cb_gamma       300  @  100 ., label("Known value") option(gammak)
+
+  TEXT     tx_sigma       10 +25  390 ., label("Sigma:")		   
+  EDIT     ed_sigma       150  @  100 ., ///
+           numonly option(sigma) default(0.5) ///
+           tooltip("SIGMA")
+  CHECKBOX cb_sigma       300  @  100 ., label("Known value") option(sigmak)
+  
+  TEXT     tx_mu       10 +25  390 ., label("Mu:")		   
+  EDIT     ed_mu       150  @  100 ., ///
+           numonly option(mu) default(0.5) ///
+           tooltip("MU")
+  CHECKBOX cb_mu       300  @  100 ., label("Known value") option(muk)
+  
+  TEXT     tx_nu       10 +25  390 ., label("Nu:")
+  EDIT     ed_nu       150  @  100 ., ///
+           numonly option(nu) default(0.5) ///
+           tooltip("NU")
+  CHECKBOX cb_nu       300  @  100 ., label("Known value") option(nuk)
+
+END
+
+OK ok1,      label("OK")
+CANCEL can1, label("Cancel")
+SUBMIT sub1, label("Submit")
+HELP hlp1,   view("help epimodels_fit")
+RESET res1
+COPY copy1
+
+
+DIALOG inicond, tabtitle("Time series")
+BEGIN
+  TEXT     tx_population       10   10  390 ., ///
+           label("Specify population size for each of the groups:")
+  TEXT     tx_popv             10  +20  390 ., ///
+           label("- as a numerical constant (group size on day 0)")
+  TEXT     tx_popv2            10  +20  390 ., ///
+           label("- as a numerical variable (shows dynamics of this population group)")
+	
+  TEXT     tx_susceptible      10  +22 390  ., label("Susceptible:")		   
+  EDIT     vn_susceptible       @  +20 390  ., ///
+           option(vsusceptible) default("0")   ///
+           tooltip("Number of susceptible individuals.")
+
+  TEXT     tx_exposed         10  +22 390  ., label("Exposed:")		   
+  EDIT     vn_exposed          @  +20 390  ., ///
+           option(vexposed) default("0")      ///
+           tooltip("Number of exposed individuals.")		   
+		   
+  TEXT     tx_infected         10  +22 390  ., label("Infected:")		   
+  EDIT     vn_infected          @  +20 390  ., ///
+           option(vinfected) default("0")      ///
+           tooltip("Number of infected individuals.")
+
+  TEXT     tx_recovered       10  +22  390  ., label("Recovered:")		   
+  EDIT     vn_recovered       @   +20  390  ., ///
+           option(vrecovered) default("0")     ///
+           tooltip("Number of recovered individuals.")
+END
+
+
+DIALOG misc, tabtitle("Other")
+BEGIN
+  TEXT     tx_format         10    10  390  .,  ///
+           label("Specify format for reporting:")
+  EDIT	   ed_format          @   +25  390  .,  ///
+           option(format) default("%10.5f")     ///
+           tooltip("Format for output of model parameters in the estimation report.") 
+  HLINK hl_home 10 230 300 ., label("Homepage") onpush(program homepage)
+END
+
+PROGRAM homepage
+BEGIN
+	put "epimodels homepage"
+	stata
+END
+
+PROGRAM command
+BEGIN
+    put "epimodels fitdlgseir "
+	beginoptions
+	   optionarg params.ed_beta
+       optionarg params.cb_beta
+	   optionarg params.ed_gamma
+	   optionarg params.cb_gamma
+	   optionarg params.ed_sigma
+	   optionarg params.cb_sigma
+	   optionarg params.ed_mu
+	   optionarg params.cb_mu
+	   optionarg params.ed_nu
+	   optionarg params.cb_nu
+	   
+	   optionarg inicond.vn_susceptible
+	   optionarg inicond.vn_exposed
+	   optionarg inicond.vn_infected
+	   optionarg inicond.vn_recovered
+	   optionarg misc.ed_format
+	endoptions
+END
+
+// END OF FILE

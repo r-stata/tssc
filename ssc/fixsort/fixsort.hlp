@@ -1,0 +1,125 @@
+{smcl}
+{* 3aug2005/26oct2010}{...}
+{hline}
+help for {hi:fixsort}
+{hline}
+
+{title:Sort variables and align in sorted order, with others fixed in position} 
+
+{p 8 17 2}
+{cmd:fixsort}
+{it:varlist} 
+[{cmd:if} {it:exp}] 
+[{cmd:in} {it:range}]
+{cmd:,} 
+{cmdab:g:enerate(}{it:newvarlist}{cmd:)} 
+[ 
+{cmdab:miss:ing} 
+{cmdab:r:everse} 
+]
+
+
+{title:Description} 
+
+{p 4 4 2} 
+{cmd:fixsort} sorts each variable in {it:varlist} and generates new
+variables so that all new variables are in sorted order, by default
+aligned so that the first value of each is in the first observation, the
+second value of each is in the second observation, and so on. Reverse 
+sorting (last value first, etc.) is also possible. 
+
+{p 4 4 2}
+Any variables not in {it:varlist} retain their current sort order.  
+The sort order of the dataset is unaffected. 
+Variables may be numeric or string. 
+
+
+{title:Remarks} 
+
+{p 4 4 2}
+{cmd:fixsort} is a rarely needed command. Almost all sorting problems
+call for {help sort} or {help gsort}. An example where it may be
+appropriate is in sorting independent batches of random numbers held in
+separate variables. 
+
+{p 4 4 2}
+{cmd:fixsort} is unusual in various ways: 
+
+{p 8 8 2}
+Whatever is stored in any observation for new variables has no necessary
+relationship to values for other variables in the same observation. 
+
+{p 8 8 2}
+By default missing values of any kind (. .a ... .z "") are all ignored.
+Any such missing values are represented in new variables by values of .
+or "", as appropriate to the variable type, all stored in the later
+observations of the dataset. Note that treatment of missing values is
+variable by variable, so that the new variables created by {cmd:fixsort}
+may readily possess different numbers of non-missing values. See also
+the {cmd:missing} option below. 
+
+{p 8 8 2}
+{cmd:if} and {cmd:in} act only to select observations and do not affect
+the storage of new variables in observations 1 up. 
+
+{p 4 4 2}
+By conscious design, there is no {cmd:replace} option to let users overwrite 
+existing variables. Thus no misunderstanding of {cmd:fixsort} should mean that 
+users lose data. 
+
+
+{title:Options} 
+
+{p 4 8 2}{cmd:generate()} specifies the names of new variables to hold the 
+sorted values of {it:varlist}. {cmd:generate()} is a required option.  
+
+{p 4 8 2}{cmd:missing} specifies that missing values of any kind are to
+be included in the sorting. Missing values are treated as is; any other
+missing values (corresponding to observations excluded by {cmd:if}
+and/or {cmd:in}) are created as "" or . (i.e. system missing). 
+
+{p 4 8 2}{cmd:reverse} specifies sorting in reverse order, i.e. highest 
+values first. 
+ 
+
+{title:Examples} 
+
+{p 4 4 2} 
+Suppose we start in each of the following with these data: 
+
+{space 8}{cmd:a   b    c}
+{space 8}3   7   13 
+{space 8}1   8   12
+{space 8}2   9   11 
+
+{p 4 4 2}After {cmd:fixsort a b c, gen(A B C)} we would have 
+
+{space 8}{cmd:a   b    c   A   B    C}
+{space 8}3   7   13   1   7   11  
+{space 8}1   8   12   2   8   12
+{space 8}2   9   11   3   9   13 
+
+{p 4 4 2}After {cmd:fixsort c in 2/3, gen(C23)} we would have 
+
+{space 8}{cmd:a   b    c  C23}
+{space 8}3   7   13   11
+{space 8}1   8   12   12   
+{space 8}2   9   11    . 
+
+
+{title:Acknowledgments} 
+
+{p 4 4 2}
+Philippe Van Kerm provoked a reconsideration and rewriting of this program. 
+
+
+{title:Author}
+
+{p 4 4 2}Nicholas J. Cox, Durham University, U.K.{break} 
+         n.j.cox@durham.ac.uk
+
+
+{title:Also see}
+
+{p 4 13 2}On-line: help for {help sort}, {help gsort}, {help clsort} (if installed) 
+

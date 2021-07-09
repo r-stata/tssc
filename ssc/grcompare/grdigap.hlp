@@ -1,0 +1,70 @@
+{smcl}
+{* 28Feb2011}{...}
+{hline}
+help for {hi:grdigap}{right:- v001 28feb2011 jx}
+{hline}
+
+{title:Difference in group averaged predicted prob in binary regressions}
+
+{p 8 15 2}{cmd:grdigap} [if] [in] [{cmd:,}
+{cmdab:l:evel(}{it:#}{cmd:)}
+{cmdab:r:eps(}{it:#}{cmd:)}
+{cmdab:si:ze(}{it:#}{cmd:)}
+{cmdab:g:roup(}{it:grpvar_g0value_g1value}{cmd:)}
+{cmd:dots}]
+
+
+{title:Description}
+
+{p 4 4 2}
+After estimating a binary regression model, {cmd:grdigap} computes the
+difference in group averaged predicted probabilities with the {help bootstrap} method 
+for statistical inference (only percentile method available as it is programmed now). 
+
+{title:Options}
+
+{p 4 8 2}
+{cmd:level()} sets the {help level} of the confidence interval for differences in
+group average marginal effects. The default is 95.
+
+{p 4 8 2}
+{cmd:reps(}{it:#}{cmd:)} specifies the number of bootstrap replications
+to be performed.  The default is 1000.
+
+{p 4 8 2}
+{cmd: size(}{it:#}{cmd:)} specifies the size of the samples to be drawn.
+The default is e(N), the same size as the estimation sample.
+
+{p 4 8 2}
+{cmd:dots} requests a dot be placed on the screen at the beginning of each
+replication, thus providing entertainment when a large number of reps() are
+requested. It also prints out the percent replications finished.
+
+{p 4 8 2}
+{cmdab:g:roup} identifies a group indicator variable. After the group variable, 
+specify the value for the group 0, then the value for group 1 of the group variable.
+This program takes a difference of (average probability g1- average probability g0). 
+
+{title:Returned Matrices}
+
+{p 4 8 2}
+r(gavgdipmat):   saves differences in group averaged predicted probabilities and their confidence intervals
+
+{title:Examples}
+
+{p 4 4 2}
+To compute the difference in group averaged predicted probabilities between blacks and whites and and its confidence intervals 
+using the bootstrap method after a logit model,
+
+{p 4 8 2}{cmd:.logit vote black educ income}
+
+{p 4 8 2}{cmd:.grdigap, group(black 0 1) reps(1000) dots} 
+
+{p 4 8 2}
+ :::
+
+{hline}
+
+{p 2 4 2}Authors: Jun Xu{p_end}
+
+

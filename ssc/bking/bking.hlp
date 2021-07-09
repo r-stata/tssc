@@ -1,0 +1,103 @@
+{smcl}
+{* 23oct2004}{...}
+{hline}
+help for {hi:bking}
+{hline}
+
+{title:Apply Baxter-King band pass filter to time series}
+
+{p 8 17}{cmd:bking}
+{it:varlist}
+[{cmd:if} {it:exp}]
+[{cmd:in} {it:range}] 
+{cmd:,} {cmdab:plo(}{it:#}{cmd:)}
+{cmdab:phi(}{it:#}{cmd:)}
+{cmdab:stub(}{it:abbrev}{cmd:)}
+[
+{cmdab:k(}{it:#}{cmd:)}
+]
+
+{p 4 4}You must {cmd:tsset} your data before using {cmd:bking}; see help {cmd:tsset}.
+If a panel calendar is in effect, the filter can be applied if a single panel is specified 
+using if or in qualifiers, or with the {cmd:by} prefix. {p_end}
+
+{p 4 4}{cmd:varlist} may contain time-series operators; see help {cmd:varlist}. {p_end}
+
+{p 4 4}{cmd:bking} filters one or more time series using the Baxter-King symmetric band-pass filter described in Baxter and King (1995).
+The {cmd:plo()} and {cmd:phi()} arguments specify the minimum period of oscillation and 
+maximum period of oscillation of the desired component of the time series, where 
+2 < {it:plo} < {it:phi} < infinity. 
+The "Burns-Mitchell" settings for this filter, applied to quarterly data, are 6 and 32 
+quarters, with {it:k}=12.  {p_end}
+
+{title:Options}
+    
+{p 4 8}{cmd:plo(}{it:#}{cmd:)} and {cmd:phi(}{it:#}{cmd:)} specify the minimum and maximum 
+period of oscillation to be retained in the time series, and must be given. For quarterly 
+data, common values are 6 and 32, which preserve the components of the data with period 
+between 1.5 and 8.0 years, with {it:k}=12 (which loses three years' data from each end of the 
+filtered series). For monthly data, 
+common values are 18 and 96, which preserves the component of the data
+with period between 1.5 and 8.0 years. For annual data, common values are 
+2 and 8, with {it:k}=3.
+
+{p 4 8}{cmd:stub(}{it:abbrev}{cmd:)}, which must be provided, specifies the "stub" from 
+which new variable names will be created. Variables created by {cmd:stub} must be new 
+variables. If the {it:varlist} contains time-series 
+operators, the dots in their names are replaced by underscores so that the resulting 
+new variables' names are legal. The first and last {it:k} observations
+of the selected range are lost by {cmd:bking}, and those observations are set
+to missing values in the filtered series.
+
+{p 4 8}{cmd:k(}{it:#}{cmd:)} specifies the lead-lag length of the filter. This many 
+observations will be lost at each end of the filtered series. If not specified, 
+{cmd:k} is set to 12 (Baxter and King's recommended value for quarterly data).
+
+{title:Examples}
+
+{p 4 8}{stata "webuse lutkepohl,clear" :. webuse lutkepohl,clear}{p_end}
+
+{p 4 8}{stata "bking investment, plo(6) phi(32) stub(F)" :. bking investment, plo(6) phi(32) stub(F)}{p_end}
+
+{p 4 8}{stata "bking investment income consumption, plo(6) phi(32) k(8) stub(filt)" :. bking investment income consumption, plo(6) phi(32) k(8) stub(filt)}{p_end}
+
+{p 4 8}{stata "bking D.investment, plo(4) phi(12) stub(fl)" :. bking D.investment, plo(4) phi(12) stub(fl)}{p_end}
+
+{p 4 8}{stata "use http://fmwww.bc.edu/ec-p/data/hayashi/sheston91.dta,clear":. use http://fmwww.bc.edu/ec-p/data/hayashi/sheston91.dta,clear}{p_end}
+
+{p 4 8}{stata "drop if country>4":. drop if country>4}{p_end}
+
+{p 4 8}{stata "tsset":. tsset}{p_end}
+
+{p 4 8}{stata "by country:bking rgdppc, plo(2) phi(8) stub(SBY) k(3)":. by country:bking rgdppc, plo(2) phi(8) stub(SBY) k(3)}{p_end}
+
+
+{title:Authors}
+
+{p 4 4}Christopher F. Baum, Boston College, USA{break} 
+       baum@bc.edu
+       
+{p 4 4}Martha Lopez, Boston College, USA{break} 
+       lopezmo@bc.edu
+
+{title:References}
+
+{p}Marianne Baxter and Robert G. King, Measuring Business Cycles: Approximate
+    Band-Pass Filters for Economic Time Series. Review of Economics and Statistics,
+    1999, 81(4), 575-593. {p_end}
+
+{p}Lawrence J. Christiano and Terry J. Fitzgerald, The Band Pass Filter, International
+Economic Review, 2003, 44(2), 435-465.{p_end}
+    
+{p}Pawel Kowal (2005). MATLAB implementation of commonly used filters,
+http://ideas.repec.org/c/wpa/wuwppr/0507001.html{p_end}
+
+{title:Acknowledgements} 
+
+{p 4 4}The Mata code of this routine was translated from MATLAB code made available by Pawel Kowal (2005).
+
+{title:Also see}
+
+{p 4 13}On-line: {help hprescott} (if installed), {help cfitzrw} (if installed), {help tsset}
+
+

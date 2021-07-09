@@ -1,0 +1,72 @@
+
+{smcl}
+{* 08apr2010}{...}
+{hline}
+help for {hi:r2o}{right:(Michael Lacy)}
+{hline}
+
+{p2colset 5 16 18 2}{...}
+{p2col :{hi:r2o} {hline 2}} r2o ordinal explained variation statistic {p_end}
+{p2colreset}{...}
+
+{title:Syntax}
+
+{p 8 15 2}
+{cmd:r2o}  [,{it:}{cmd:TRustme}] [{it:}{cmd:NOmarg}]   {p_end}
+
+{synoptline}
+{title:Description}
+
+{pstd} {cmd:r2o} calculates the ordinal explained variation statistic (i.e., R²) described by Lacy (2006), which
+is used to summarize the fit of a regression model for an ordinal response. It rests on an ordinal variation
+measure that entails no assumptions about intercategory distances or distributional form.  This measure is valid regardless 
+of the method used to estimate the model, and was shown to outperform various pseudo-R² measures in estimating the value of 
+the true R² for a regression model for an underlying continuous response, even though its sense does not require such. 
+{cmd:r2o} is to be used after a relevant categorical response model has been run, while the e() list is still intact. By default, the program recognizes
+the following as relevant response models: {helpb ologit}, {helpb oprobit}, {helpb mlogit}, and {helpb gologit2}. However, {cmd:r2o}  
+should work after any estimation command for which {helpb predict} {it: p1,..., pk} will calculate predicted probabilities, and
+which follows official Stata's conventions for naming items in the e() list. {p_end}
+
+
+{title:Options}
+{synoptset 16 tabbed}{...}
+{synopthdr}
+{synoptline}
+{synopt:{opt trustme}} will make the program run regardless of whether an estimation command it recognizes has just been run. {p_end}
+{synopt:{opt nomarg}} suppresses the display of the marginal distribution of the response variable. {p_end}
+
+{title:Saved results}
+{pstd}
+
+{cmd:r2o} saves the following in {cmd:r()}:
+{synoptset 15 tabbed}{...}
+{synopt:{cmd:r(vtot)}} total variation in the response variable {p_end}
+{synopt:{cmd:r(verr)}} error variation, i.e., the conditional variation in the response {p_end}
+{synopt:{cmd:r(vmodel)}} variation explained by the model {p_end}
+{synopt:{cmd:r(r2o)}} ordinal explained variation statistic. {p_end}
+{synopt:{cmd:r(ur2o)}} bias adjusted version of r2o. {p_end}
+
+{title:Examples}
+
+{psee}{cmd:}{p_end}
+{psee}{cmd:. sysuse auto}{p_end}
+{psee}{cmd:. ologit rep78 price foreign }{p_end}
+{psee}{cmd:. ologit rep78 price foreign, nomarg }{p_end}
+
+{title:References}
+
+{phang}Lacy, Michael G. 2006. "An Explained Variation Measure for Ordinal Response Models With Comparisons to Other Ordinal R² Measures." 
+Sociological Methods and Research. 34:469-520. 
+
+
+{title:Author}
+
+{phang}Michael G. Lacy{p_end}
+{phang}Colorado State University{p_end}
+{phang}Fort Collins, Colorado{p_end}
+{phang}Michael.Lacy@colostate.edu{p_end}
+{phang} http://central.colostate.edu/author/mglacy/ {p_end}
+
+{title:Acknowledgements}
+
+{phang} My thanks go to Richard Williams for helping me with various programming issues. {p_end}

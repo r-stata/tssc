@@ -1,0 +1,213 @@
+/*
+ xtreghet
+*! VERSION 2.0 04/04/2013
+*/
+VERSION 10.0
+INCLUDE _std_xlarge
+DEFINE _dlght 430
+INCLUDE header
+HELP hlp1, view("help xtreghet")
+RESET res1
+
+SCRIPT PREINIT
+BEGIN
+ program parseMessage
+ script se_createAsGEE
+END
+
+SCRIPT show_xtset
+BEGIN
+ create STRING note
+ note.setvalue `"For a population-averaged model,"'
+ note.append   `" correlation structures other than"'
+ note.append   `" "exchangeable" and "independent""'
+ note.append   `" require that a time variable be specified."'
+ note.withvalue create CHILD xtset, message(`"" " `"@"'"')
+END
+
+SCRIPT svy_is_on
+BEGIN
+ script max_setDefaultNoLog
+END
+SCRIPT svy_is_off
+BEGIN
+ script max_setDefaultLog
+END
+
+DIALOG main, label("xtreghet- MLE Random-Effects with Multiplicative Heteroscedasticity Panel Data Regression")	///
+	tabtitle("Main")
+BEGIN
+ BUTTON   bu_xtset	_xsetbu	_top	_setbuwd .,	///
+ onpush(script show_xtset)				///
+ label("Panel settings...")
+ BUTTON   bu_mi_xtset  _xsetbu	_top	_setbuwd .,	///
+ onpush("view dialog mi_xtset")			 	///
+ label("Panel settings...")
+
+  TEXT  tx_cmd1   _lft      _top  110  .,	///
+	label("Model:")
+
+  TEXT  tx_id   _lft      _top  110 .,	///
+	label("ID Cross Section")
+  TEXT  tx_it 160       @     100 .,	///
+	label("ID Time Series")
+
+  VARNAME vn_id   _lft      _ss  110 .,	///
+	option("id")			///
+	label("ID Cross Section")
+  VARNAME vn_it  160       @     100 ., 	/*
+	*/ label("ID Time Series")		/*
+	*/ option("it")
+
+
+ GROUPBOX gb_group1   _lft     _ss    _iwd    _ht6 , 
+  TEXT     tx_yvar     _ilft   _ss    _vnwd     .,	/*
+		*/ label("Dependent Variable:")		/*
+		*/
+  TEXT     tx_xvar     _vlx      @      _cwd2     .,	/*
+		*/ label("Independent Variables:")	/*
+		*/
+  VARNAME  vn_yvar     _ilft     _ss       _vnwd   .,	/*
+		*/ label("Dependent Variable")		/*
+		*/
+  VARLIST  vl_xvar     _vlx       @         380      .,	/*
+		*/ label("Independent Variables")	/*
+		*/
+ CHECKBOX ck_nocons   @   _ms      @  ., option("noconstant") /*
+*/ label("No Constant") 
+*/
+  GROUPBOX gb_estimator	_lft	_ls	_iwd	_ht3 ,	///
+	label("Estimation Method:")
+  RADIO rb_mln		_indent	_ss	_inwd	.,	///
+	first						///
+	option("model(xtmln)")				///
+	onclickon(script ck_model1_off)			///
+	label("MLE Random-Effects Normal Regression")
+  RADIO rb_mlh	@	_ss	@	.,		///
+	last						///
+	option("model(xtmlh)")				///
+	onclickon(script ck_model1_on) 			///
+	label("MLE Random-Effects Multiplicative Heteroscedasticity Regression")
+  TEXT     tx_het    _ilft      _ls       350      .,	/*
+	*/ label("Heteroscedasticity Variables:")	/*
+	*/
+  VARLIST  vl_het    @         _ss       350         .,	/*
+	*/ label("Heteroscedasticity Variables")	/*
+	*/ option("mhet")				/*
+*/	
+ CHECKBOX ck_mfx  _lft    _ls   _iwd    _ht2 , 	///
+	groupbox				///
+	onclickon(script ck_mfx_on)		///
+	onclickoff(script ck_mfx_off)		///
+label("Marginal Effects - Elasticities:")
+ RADIO rb_lin	_ilft   _ss  80  .,	/*
+	*/ label("Linear")	 	/*
+	*/ first			/*
+	*/ option("mfx(lin)")		/*
+*/
+ RADIO rb_log	100   @  80 .,		/*
+	*/ label("Log-Log") 		/*
+	*/ last				/*
+	*/ option("mfx(log)")		/*
+*/	
+ CHECKBOX ck_tolog 190   @ 200 ., option("tolog") /*
+*/ label("Log Transform Variables") 
+  CHECKBOX ck_model2  _lft  _xls  _ibwd   _ht8 , ///
+	groupbox				 ///
+	onclickon(script ck_model2_on)		 ///
+	onclickoff(script ck_model2_off)	 ///
+	label("Additional Options:")
+ CHECKBOX ck_lmhet _ilft   _ss  200  ., option("lmhet") /*
+*/ label("Heteroscedasticity Tests") 
+ CHECKBOX ck_diag  _ilft2  @   200  ., option("diag") /*
+*/ label("Model Selection Diagnostic Criteria") 
+ CHECKBOX ck_coll  _ilft   _ss  200 ., option("coll") /*
+*/ label("Keep Collinear Variables")
+ CHECKBOX ck_nolog _ilft2  @    200 ., option("nolog") /*
+*/ label("No Iteration of Log Likelihood")
+ TEXT tx_predict _ilft    _ss    200 .,	///
+	label("Predicted Variable")
+ TEXT tx_resid   _ilft2 @     200 .,	///
+	label("Residuals Variable")
+ VARNAME vn_predict _ilft _ss   200  .,	///
+	label("predict") 		///
+	option(predict)
+ VARNAME vn_resid  _ilft2   @   200  .,	///
+	label("resid") 			///
+	option(resid)
+END
+
+SCRIPT ck_mfx_on
+BEGIN
+ main.rb_lin.enable
+ main.rb_log.enable
+END
+SCRIPT ck_mfx_off
+BEGIN
+ main.rb_lin.disable
+ main.rb_log.disable
+END
+
+SCRIPT ck_model1_on
+BEGIN
+ main.vl_het.enable
+END
+
+SCRIPT ck_model1_off
+BEGIN
+main.vl_het.disable
+END
+
+SCRIPT ck_model2_on
+BEGIN
+ main.ck_lmhet.enable
+ main.ck_diag.enable
+ main.ck_coll.enable
+ main.ck_nolog.enable
+ main.vn_predict.enable
+ main.vn_resid.enable
+END
+
+SCRIPT ck_model2_off
+BEGIN
+ main.ck_lmhet.disable
+ main.ck_diag.disable
+ main.ck_coll.disable
+ main.ck_nolog.disable
+ main.vn_predict.disable
+ main.vn_resid.disable
+END
+
+INCLUDE byifin
+INCLUDE se
+INCLUDE max_ml
+
+PROGRAM command
+BEGIN
+ put /program by_output
+ put "xtreghet "
+ varlist main.vn_yvar main.vl_xvar
+ put " " /program ifin_output
+ put /program se_prefix_output
+ require main.vn_id 
+ require main.vn_it 
+beginoptions
+ optionarg main.vn_id
+ optionarg main.vn_it
+
+ option radio(main rb_lin rb_log)
+ option radio(main rb_mln rb_mlh)
+ option main.ck_tolog 
+ optionarg main.vl_het
+ option main.ck_lmhet
+ option main.ck_diag
+ option main.ck_nolog
+ option main.ck_coll
+ option main.ck_nocons
+ optionarg main.vn_predict
+ optionarg main.vn_resid
+ put " " /program se_output
+ put " " /program max_output
+ endoptions
+ END
+

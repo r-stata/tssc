@@ -1,0 +1,312 @@
+{smcl}
+{* version 2.1 12Mar2009}{...}
+{* 09Jul2005 - updated assuming SAS 9 is current version of SAS}{...}
+{* 02Dec2004 - improved smcl code}{...}
+{* 19Oct2004 - minor edits}{...}
+{* 05Nov2003}{...}
+{hline}
+help for {hi:savasas} {right:manual:  {hi:[R] none}}
+{right:dialog:  {hi: none}    }
+
+{hline}
+
+
+{title:Save dataset as a SAS dataset}
+
+{p 8 17 2}{cmd:savasas}
+[{it:varlist}]
+[{cmd:using} {it:filename}]
+{ifin}
+[{cmd:,} {cmdab:t:ype(}{it:version_of_sas_data_file}{cmd:)}
+{cmd:replace} 
+{cmdab:for:mats} 
+{cmdab:ren:ame} 
+{cmdab:me:ssy} 
+{cmdab:ch:eck} 
+{cmd:sascode} 
+{cmd:compress} 
+]{p_end}
+
+
+{title:Description}
+
+{p 4 4 2}{cmd:NOTE:} Before the first use of {cmd:savasas} the {cmd:sasexe.ado}
+file may need to be edited to set the location of your SAS executable file.  Instructions on how
+to do this is at the bottom of this help file.{p_end}
+
+{p 4 4 2}{cmd:savasas} saves the Stata dataset in memory as a SAS file.  By default the output dataset 
+will have the same name and be in the same directory, but with the ".sas7bdat" file name extension
+and contain all observations and every variable in the Stata datafile.
+{cmd:savasas} can save to other versions of SAS:
+Version 8 or 9  (*.sas7bdat), Version 6 (*.sd2/*.ssd01/*.ssd02), SAS 6 Transport/xport (*.xpt).{p_end}
+
+{p 8 8 2}The procedure is as follows:{p_end}
+
+{p 8 8 2}(1) {cmd:savasas} uses {help fdasave:fdasave} to save the dataset in memory temporarily to a 
+SAS xport datafile.{p_end}
+
+{p 8 8 2}(2) {cmd:savasas} writes a SAS input program to load the data into SAS and to assign variable 
+names, labels (and formats).{p_end}
+
+{p 8 8 2}(3) {cmd:savasas} runs the program in SAS in batch mode to load the xport datafile created by 
+{help fdasave:fdasave}.{p_end}
+
+{p 12 12 2 }Note to Windows users:  This is where the Windows operating system will pop-up windows
+that indicate that SAS is running in batch.  Do not try to close these windows as that will
+potentially halt {cmd:savasas}.{p_end}
+
+{p 8 8 2}(4) SAS saves the data as whatever version SAS file type was specified.{p_end}
+
+{p 4 4 2}For Stata SE users: the maximum length for a string variable is 244 characters.
+In such cases, the first 200 characters will be taken and passed on to SAS (this is a limitation of
+the SAS xport dataset used to transfer data from Stata to SAS).{p_end}
+
+{p 4 4 2}{cmd:NOTE: savasas} calls SAS to run the SAS program.  This requires the ability to
+run SAS on your computer.  If you do not have a working copy of SAS, use the {cmd:sascode}
+option and copy the SAS program ({it:myData}_infile.sas) and the SAS xport datafile 
+({it:myData}.xpt) to a machine that has a working copy of SAS.  The SAS program will
+need to be modified to point to the location of the SAS xport datafile.{p_end}
+
+{p 4 4 2}When {cmd:savasas} has successfully saved your data as a SAS dataset it will display 
+a message similar to the following:{p_end}
+
+{p 4}{cmd:savasas} successfully saved the SAS file: *{p_end}
+
+{p 4}c:\myData\MySASdata.sas7bdat  *{p_end}
+
+{p 4}SAS reports that the dataset has 1000 observations and 20 variables. *{p_end}
+
+
+{title:Options}
+
+{p 4 8 2}{cmd:type(}{it:version_of_sas_data_file}{cmd:)} specifies the SAS datafile version 
+desired,  from the following list:
+
+{p 8 8 2}{ul:one of} {space 5}{ul:SAS version datafile}{p_end}
+
+{p 12 8 2}{cmd:sas}{space 9}current version of SAS  * {it:the default if no type specified} *{p_end}
+
+{p 12 8 2}{cmd:sas6}{space 8}SAS version 6{p_end}
+
+{p 12 8 2}{cmd:sasx}{space 8}SAS version 6 transport/xport{p_end}
+
+{p 8 8 2}Hint: If you specify the correct file name extension, you do not have to specify {cmd:type}.  
+Remember that a current version SAS (.sas7bdat) file will be created if no file extension or type specification
+is made.{p_end}
+
+{p 8 8 2}SAS version 6 and Transport/xport file restrictions:{p_end}
+ 
+{p 12 12 2} 1) File names or variable names cannot be longer than 8 characters.  
+{cmd:savasas} checks for names that are longer than 8 characters;
+and, if the {cmd:rename} option is issued, renames them to the first 8 characters or up to 7 plus a number.
+In addition, it displays the list of renamed variables.{p_end}
+
+{p 12 12 2} 2) Variable labels can be a maximum of 40 characters.  {cmd:savasas} saves the first 40
+characters.{p_end}
+    
+{p 4 8 2}{cmd:replace} works like Stata's replace in that it allows you to overwrite the SAS data 
+file if it already exists.{p_end}
+
+{p 4 8 2}{cmd:formats} specifies that value labels are to be saved as SAS formats in a file that will 
+have the same name as the datafile but with the ".sas7bcat" file extension.  This formats catalog 
+file will be created in the same directory as the SAS datafile.  To use this SAS formats catalog 
+file you will need to add code to your program to make SAS aware that this file contains format 
+definitions used by variables in the dataset.  Your code should look something like this:{p_end}
+
+{p 8 8 2}libname in  "c:\myData";{p_end}
+
+{p 8 8 2}options fmtsearch=(in.mySASdataset);{p_end}
+
+{p 8 8 2} NOTE:  SAS user-defined formats for versions prior to SAS version 9 have to be 8 characters or less and cannot end in a number.  
+This is a list of format names that SAS reserves and thus cannot be user-defined format names:{p_end}
+
+{p 8 8 2}
+{cmd:best},
+{cmd:binary},
+{cmd:comma},
+{cmd:commax},
+{cmd:d},
+{cmd:date},
+{cmd:datetime},
+{cmd:dateampm},
+{cmd:day},
+{cmd:ddmmyy},
+{cmd:dollar},
+{cmd:dollarx},
+{cmd:downame},
+{cmd:e},
+{cmd:eurdfdd},
+{cmd:eurdfde},
+{cmd:eurdfdn},
+{cmd:eurdfdt},
+{cmd:eurdfdwn},
+{cmd:eurdfmn},
+{cmd:eurdfmy},
+{cmd:eurdfwdx},
+{cmd:eurdfwkx},
+{cmd:f},
+{cmd:float},
+{cmd:fract},
+{cmd:hex},
+{cmd:hhmm},
+{cmd:hour},
+{cmd:ib},
+{cmd:ibr},
+{cmd:ieee},
+{cmd:julday},
+{cmd:julian},
+{cmd:percent},
+{cmd:minguo},
+{cmd:mmddyy},
+{cmd:mmss},
+{cmd:mmyy},
+{cmd:monname},
+{cmd:month},
+{cmd:monyy},
+{cmd:negparen},
+{cmd:nengo},
+{cmd:numx},
+{cmd:octal},
+{cmd:pd},
+{cmd:pdjulg},
+{cmd:pdjuli},
+{cmd:pib},
+{cmd:pibr},
+{cmd:pk},
+{cmd:pvalue},
+{cmd:qtr},
+{cmd:qtrr},
+{cmd:rb},
+{cmd:roman},
+{cmd:s370ff},
+{cmd:s370fib},
+{cmd:s370fibu},
+{cmd:s370fpd},
+{cmd:s370fpdu},
+{cmd:s370fpib},
+{cmd:s370frb},
+{cmd:s370fzd},
+{cmd:s370fzdl},
+{cmd:s370fzds},
+{cmd:s370fzdt},
+{cmd:s370fzdu},
+{cmd:ssn},
+{cmd:time},
+{cmd:timeampm},
+{cmd:tod},
+{cmd:weekdate},
+{cmd:weekdatx},
+{cmd:weekday},
+{cmd:worddate},
+{cmd:worddatx},
+{cmd:wordf},
+{cmd:words},
+{cmd:year},
+{cmd:yen},
+{cmd:yymm},
+{cmd:yymmdd},
+{cmd:yymon},
+{cmd:yyq},
+{cmd:yyqr},
+{cmd:z},
+{cmd:zd}{p_end}
+
+{p 4 8 2}{cmd:savasas} will make some attempt to rename invalid SAS formats but it would be best for 
+you to rename or drop them yourself before saving to SAS.  Formats will be renamed if needed.{p_end}
+
+{p 4 8 2}{cmd: rename} specifies that any required renaming of file name and/or variable names is
+to be done.  The {cmd:rename} option is only necessary when saving to SAS 6/transport or when 
+variable names are not unique in SAS. When saving to SAS 6/transport {cmd:rename} attempts to rename 
+long variable names (more than 8 characters) to be unique by shortening all long variable names to the 
+first 8 characters or up to the 7 plus a number.  {cmd:savasas} displays the list of renamed variables.  
+{cmd:rename} also renames the SAS file name when the name provided is not a valid SAS file name.{p_end}
+
+{p 4 8 2}{cmd:messy} specifies that all the intermediary files created by {cmd:savasas} during 
+its operation are not to be deleted.  The {cmd:messy} option prevents {cmd:savasas} from 
+cleaning up after it has finished.  This option is mostly useful for debugging purposes in 
+order to find out where something went wrong.  All intermediary files have a name starting 
+with an underscore (_) followed by the process ID and are located in Stata's temp directory.{p_end}
+
+{p 4 8 2}{cmd:check} specifies that basic stats for both datasets are to be generated to compare 
+the Stata input dataset with the SAS output dataset in order to make sure {cmd:savasas} 
+created the files correctly.  This is a comparison that should be done after any datafile 
+is converted to any other type of datafile by any software.  The SAS file is created in the 
+same directory as the output SAS datafile and is named starting with the name of the data 
+file followed by "_SAScheck.lst" (SAS), for example: "{it:mydata}_SAScheck.lst"{p_end}
+
+{p 4 8 2}{cmd:sascode} specifies that only a SAS xport datafile and an input SAS program are 
+to be created.  By default, {cmd:savasas} executes all four steps outlined above.  The 
+{cmd:sascode} option aborts this process after step (2).  The user then needs to read in 
+the data {it:manually} using SAS.  For example: {cmd:savasas} writes a SAS program {it:myData}_infile.sas 
+to read in the xport datafile {it:myData}.xpt.{p_end}
+
+{p 4 8 2}{cmd:compress} specifies that the SAS dataset is to be created with minimum data storage settings
+that still accurately store the data.  This used to be the default for {cmd:savasas}, but the {help compress:compress}
+command can slow down {cmd:savasas} quite a bit when the dataset has many thousands of variables.{p_end}
+
+{title:Examples}
+
+{p 4 4 2}To save the dataset in memory to the same directory with the same name as the dataset in memory 
+as a sas7bdat file, type{p_end}
+
+{p 4 8 2}{cmd:. savasas }{p_end}
+
+{p 4 4 2}To save the dataset in memory to the current directory with the name mySASdata as a sas7bdat file, type{p_end}
+
+{p 4 8 2}{cmd:. savasas using mySASdata}{p_end}
+
+{p 4 4 2}To save the dataset in memory to c:\data\ directory with the name mySASdata as a sas7bdat file 
+and create 2 check files, type{p_end}
+
+{p 4 8 2}{cmd:. savasas using c:\data\mySASdata.sas7bdat, check}{p_end}
+
+{p 4 4 2}To save only variables between var1 and var20 from the dataset in memory to the current directory 
+with the name mySASdata as a sas7bdat file and create a formats.sas7bcat file containing SAS formats
+of any Stata value labels, replacing an existing file if necessary, type{p_end}
+
+{p 4 8 2}{cmd:. savasas gender-q32_b using mySASdata, formats replace}{p_end}
+
+{p 4 4 2}More examples:{p_end}
+
+{p 4 8 2}{cmd:. savasas using mySASdata.sas7bdat, replace }{p_end}
+
+{p 4 8 2}{cmd:. savasas in 1/30 using mySASdata, type(sas6) check}{p_end}
+
+{p 4 8 2}{cmd:. savasas using mySASdata, sascode type(sas6)}{p_end}
+
+{p 4 8 2}{cmd:. savasas using mySASdata, messy type(sasx) rename}{p_end}
+
+
+{title:Setting up savasas}
+
+{p 4 4 2}If you are setting up this program on your computer for
+the first time, please edit {cmd:sasexe.ado} to set the location of your SAS
+executable file (sas.exe).  If you do not, {cmd:savasas} will look in the "usual" locations for it.  
+The {cmd:sasexe.ado} file is an ASCII text file and should
+be saved as such after editing.  Stata's {cmd:do-file} editor will do the trick.{p_end}
+
+{p 4 4 2}{stata quietly adoedit sasexe:edit sasexe.ado} (click, to edit the {cmd:sasexe.ado} file, remember 
+to save when done.){p_end}
+
+
+{title:Author}
+
+{p 4 4 2}
+Dan Blanchette {break}
+The Carolina Population Center {break}
+University of North Carolina - Chapel Hill, USA {break}
+dan_blanchette@unc.edu{p_end}
+
+
+{title:Acknowledgements}     
+
+{p 4 4 2}
+The user-written program {cmd:outdat} inspired this program.{p_end}
+
+
+{title:Also see}
+
+{p 4 13 2}On-line: {help fdasave}, {help save},
+{help outdat} (if installed),
+{help usesas} (if installed){p_end}
+

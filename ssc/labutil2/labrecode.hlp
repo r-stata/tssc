@@ -1,0 +1,132 @@
+{smcl}
+{* version 2.0.0 23aug2012}{...}
+{cmd:help labrecode}
+{hline}
+
+{title:Title}
+
+{p 5}
+{cmd:labrecode} {hline 2} Modify value labels and recode variables 
+they are attached to
+
+
+{title:Syntax}
+
+{p 8}
+{cmd:labrecode} {it:lblname-list} {cmd:(}{it:rule}{cmd:)} 
+[{cmd:(}{it:rule}{cmd:)} {it:...}] [{cmd:,} {it:options}]
+
+
+{p 5}
+where {it:rule} is 
+
+{p 16}
+{it:{help numlist}} {cmd:=} {it:#} [{cmd:"}{it:label}{cmd:"}]
+
+
+{title:Description}
+
+{pstd}
+{cmd:labrecode} modifies value labels and recodes all variables they are 
+attached to accordingly. In value labels, values specified in 
+{it:numlist} are changed to {it:#} and any text associated with 
+values in {it:numlist} is deleted from the value label. A user defined 
+{it:label} is associated with {it:#}. If no {it:label} is specified 
+{cmd:labrecode} combines text associated with values in {it:numlist} and 
+attaches it to {it:#}.
+
+{pstd}
+{hi:Caution:} modifiactions affect all variables that have the same 
+value label as one of the value labels in {it:lblname-list} attached. 
+The program alters existing variables.
+
+
+{title:Options}
+
+{phang}
+{opt nov:ar} recodes value labels but not variables.
+
+{phang}
+{opt nol:abel} prevents {cmd:labrecode} from creating labels if the user 
+does not provide them. Default is to combine text associated with 
+values in {it:numlist} and attach it to {it:#}. Note that specifying 
+{opt nolabel} does not detach text from {it:#}. To do this specify 
+{hi:""} as {it:label} in {it:rules}. 
+
+{phang}
+{opt a:dd} adds text associated with values in {it:numlist} to text 
+associated with {it:#} if no user defined {it:label} is provided. May 
+not be combined with {opt nolabel}.
+
+{phang}
+{opt sep:arate(chars)} specifies the separator between labels. Default 
+is to use space ({hi:" "}). May not be specified with {opt nolabel}.
+
+{phang}
+{opt nodel:ete} does not delete text associated with values in 
+{it:numlist} from value labels. This option is seldom used.
+
+{phang}
+{opt nos:trict} allows variable names in {it:lblname-list}. If 
+specified, any variable that has the same value label as one of 
+the variables in {it:lblname-list} attached is recoded.
+
+
+{title:Examples}
+
+{pstd}
+In the {hi:nlsw88} dataset, change value 2 in {hi:racelbl} and 
+{hi:race} to value 3. Attach text "black" to value 3. Delete the 
+association between value 2 and text "black" from {hi:racelbl}.
+
+{phang2}{cmd:. labrecode racelbl (2 = 3)}{p_end}
+
+{pstd}
+Do the same as above, but keep text "other" attached to value 3.
+
+{phang2}{cmd:. labrecode racelbl (2 = 3) ,nolabel}{p_end}
+
+{pstd}
+Do the same as above, but attach text "other black" to value 3.
+
+{phang2}{cmd:. labrecode racelbl (2 = 3) ,add}{p_end}
+
+{pstd}
+Do the same as above, but delete value 3 from {hi:racelbl}.
+
+{phang2}{cmd:. labrecode racelbl (2 = 3 "")}{p_end}
+
+{pstd}
+In value label {hi:occlbl} change values 1 and 2 to value 14 and 
+attach text "Prof./Managers". Also change value 9 to value 10. 
+Attach text "Farmers Farm laborers" to value 10. 
+
+{phang2}{cmd:. labrecode occupation (1 2 = 14 "Prof./Managers")}
+{cmd:(9/10 = 10) ,nostrict}{p_end}
+
+{pstd}
+Option {opt nostrict} allows variable name {hi:occupation} in 
+{it:lblname-list}. Note that option {opt add} is not needed here, 
+because value 10 is part of {it:numlist}. Variable {hi:occupation} 
+is recoded accordingly as would be any other variable using value 
+label {hi:occlbl}.
+
+{pstd}
+Reverses value label {hi:racelbl} and recode variable {hi:race} 
+accordingly.
+
+{phang2}{cmd:. labrecode racelbl (1=3)(3=1)}{p_end}
+
+
+{title:Author}
+
+{pstd}Daniel Klein, University of Kassel, klein.daniel.81@gmail.com
+
+
+{title:Also see}
+
+{psee}
+Online: {help label}{p_end}
+
+{psee}
+if installed: {help labvalch}, {help rev}, {help labutil2}{p_end}

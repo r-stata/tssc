@@ -1,0 +1,89 @@
+{smcl}
+{* 23apr2007}
+{* 18apr2007}
+help for {hi:indeplist}
+{hline}
+
+{title:Title}
+
+{p2colset 5 18 20 2}{...}
+{p2col :{hi: indeplist} {hline 2}}Returns lists of independent variables from the active estimation command.{p_end}
+{p2colreset}{...}
+
+{title:Syntax}
+
+{p 8 15 2}
+{cmd:indeplist} [{cmd:,} {cmdab:eq:uation(}{it:equation list}{cmd:)} {cmdab:lo:cal} {cmdab:cons:tant} {cmdab:drop:ped}]
+
+
+{title:Description}
+
+{pstd}
+{cmd:indeplist} displays the names of the independent variables of the 
+active estimation command. Separate list will be displayed if the 
+estimation command contains multiple equations, unless the {cmd:equation} 
+option is specified. In that case only lists of independent variables 
+from the equations specified in the {cmd:equation} option will be displayed. 
+By default the constant and all variables that were droped by Stata (due 
+to multicolinearity) are not included in the list. This default can be
+overturned by specifying the the {cmd:constant} and/or the {cmd:dropped}
+option respectively.
+
+{title:Options}
+
+{phang}
+{opt eq:uation(equation list)} Specifies the equations from which the 
+independent variables will be displayed. The equation name needs to be 
+enclosed by quotation marks if the equation name contains spaces.
+
+{phang}
+{opt lo:cal} Specifies that the lists of independent variables are stored 
+in locals within the calling program's space. The locals are caled 
+X{it:eqname}, where {it:eqname} is the name of the equation with the 
+spaces removed. {cmd:indeplist} will now also make a local called 
+{it:locnames} that contains the names of the locals made by 
+{cmd:indeplist}, except the local {it:locnames} itself. This option is 
+primarily useful in combination with {helpb foreach}.
+
+{phang}
+{opt cons:tant} Specifies that the constant is also treated as an 
+independent variable and returned in the lists of independent variables. If 
+this option is not specified the constant (_cons) will be removed from the 
+lists of independent variables.
+
+{phang}
+{opt drop:ped} Specifies that all variables that were dropped by Stata 
+due to multicolinearity are still included in the list of variables.
+
+{title:Saved results}
+
+{phang}
+{cmd: r(X}{it:eqname}{cmd:)} Contains the list of independent variables for 
+equation {it:eqname}. Spaces are removed from {it:eqname} if the equation 
+name constains spaces.
+
+
+{title:Example}
+
+
+{phang}{cmd:. mlogit rep78 price mpg} {p_end}
+{phang}{cmd:. indeplist, eq(5) local} {p_end}
+{phang}{cmd:. di r(X5)} {p_end}
+{phang}{cmd:. di "`X5'"}
+
+
+{title:Author}
+
+{p 4 4}
+Maarten L. Buis{break}
+Vrije Universiteit Amsterdam{break}
+Department of Social Research Methodology{break}
+m.buis@fsw.vu.nl 
+{p_end}
+
+
+{title:Also see}
+
+{psee}
+Online:  {helpb estimates} {helpb foreach} 
+{p_end}

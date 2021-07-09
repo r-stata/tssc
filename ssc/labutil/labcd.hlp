@@ -1,0 +1,83 @@
+.-
+help for ^labcd^
+.-
+
+Define value labels with decimal points and commas interchanged 
+---------------------------------------------------------------
+
+    ^labcd^ valuelabelname ^, v^alues^(^numlist^)^ 
+    [ ^m^ultiply^(^#^) l^ist ^f^ormat^(^format^)^ ] 
+
+Description
+-----------
+
+^labcd^ defines value labels in which decimal points and commas are 
+interchanged compared with the Stata default. 
+
+The ^label define^ ... ^, modify^ command that defines the labels is 
+echoed to the monitor. 
+
+
+Remarks
+-------
+
+Suppose you have a variable which contains numbers. On a graph you wish to 
+have labelling such that 1000 appears as 1.000, 10000 as 10.000, 0.1 as 0,1 
+and so forth. ^labcd^ is designed for this problem. 
+
+^labcd thou, v(1000(1000)6000)^ for example is equivalent to 
+
+^label def thou 1000 "1.000" 2000 "2.000" 3000 "3.000" 4000 "4.000"^ 
+    ^5000 "5.000" 6000 "6.000", modify^ 
+	  
+after which you may attach the value labels in ^thou^ to one or more 
+variables. 
+
+Stata does not permit value labels to be attached to non-integers, so 
+the ^multiply( )^ option is needed for non-integers. See below. 
+
+
+Options
+-------
+
+^values(^numlist^)^ specifies a numlist whose value labels are 
+    to be modified (added or changed). This is a required option. 
+
+^multiply(^#^)^ specifies a multiplier for values. Suppose ^values^ is 
+    the list ^0.001 0.01 0.1^. A multiplier of at least 1000 is needed to 
+    convert all these values to integers. Users should separately multiply 
+    (a copy of) the corresponding variable(s) by the same multiplier. 
+    Determining an appropriate multiplier is the user's responsibility.
+    
+^list^ invokes ^label list^ valuelabelname after the modifications.  
+
+^format^ specifies a format other than ^%12.0gc^ for initial formatting 
+   with commas.  
+    
+    
+Examples
+--------
+
+    . ^labcd salaries, v(10000(5000)50000)^
+    . ^lab val income salaries^ 
+
+    . ^labcd fractions, v(0.001(0.001)0.010) m(1000)^ 
+    . ^lab val x2 fractions^ 
+    . ^gen x2 = 1000 * x^ 
+    . ^_crcslbl x2 x^ 
+    . ^gra y x2, xla(1/10)^ 
+
+
+Author
+------
+
+         Nicholas J. Cox, University of Durham, U.K.
+         n.j.cox@@durham.ac.uk
+
+
+Also see
+--------
+
+On-line: help for @label@, @numlist@ 
+ Manual: ^[U] 15.6^, ^[R] label^
+

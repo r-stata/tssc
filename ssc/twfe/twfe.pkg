@@ -1,0 +1,35 @@
+d 'TWFE': module to perform regressions with two-way fixed effects or match effects for large datasets
+d
+d  twfe fits a linear regression model of depvar on indepvars
+d including fixed effects for the units defined by id1(varname) and
+"d id2(varname).  If matcheffect is specified, fixed effects for the"
+d interaction of the two id variables are included.    In order to
+"d save memory, twfe will change the data in memory. It will replace"
+"d the data in memory with a dataset containing the id variables,"
+"d the estimates of the fixed effects (called ""fe1"", ""fe2"") and the"
+"d match length (""mlength""). If matcheffect is specified additional"
+"d variables for    the match id (""matchid"") and the match fixed"
+"d effect (""matchef"") are created. See options disk and force for"
+d further info.    twfe is intended for estimation in large data
+"d sets, where constraints on memory and matsize make standard"
+d estimation difficult and time consuming.    Instead of solving
+d (X'X)b=X'y by inverting X'X it solves the system by computing the
+"d slopes first, then using the conjugate gradient algorithm to"
+d compute the smaller set of fixed effects and finally solving for
+d the other fixed effects recursively.
+d
+d KW: two-way fixed effects
+d KW: match effects
+d KW: conjugate gradient algorithm
+d
+d Requires: Stata version 10
+d
+d Distribution-Date: 20120404
+d
+"d Author: Nikolas Mittag, University of Chicago"
+d Support: email mittag@@uchicago.edu
+d
+f twfe.ado
+f twfe_p.ado
+f twfe.sthlp
+f ./m/MR_01-12_EN.pdf

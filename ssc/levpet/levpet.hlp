@@ -1,0 +1,116 @@
+{smcl}
+{* 19jan2004}{...}
+{hline}
+help for {hi:levpet}{right:(SJ4-2: st0060)}
+{right:dialogs: {dialog levpet:levpet}}
+{hline}
+
+{title:Production function estimation}
+
+{p 8 16 2}{cmd:levpet} {it:depvar} [{cmd:if} {it:exp}] [{cmd:in} {it:range}]
+{cmd:,} {cmd:free(}{it:varlist}{cmd:)} {cmd:proxy(}{it:varlist}{cmd:)}
+{cmd:capital(}{it:varname}{cmd:)} [ [{cmdab:va:lueadded} |
+{cmdab:rev:enue}] 
+{cmd:justid} 
+{cmd:grid} 
+{cmd:i(}{it:varname}{cmd:)} 
+{cmd:t(}{it:varname}{cmd:)}
+{cmd:reps(}{it:#}{cmd:)} 
+{cmdab:l:evel(}{it:#}{cmd:)} ]
+
+
+{title:Syntax for {help predict} after {hi:levpet}}
+
+{p 8 16 2}
+{cmd:predict} [{it:type}] {it:newvarname} {cmd:, omega}
+
+
+{title:Description}
+
+{p 4 4 2}
+{cmd:levpet} estimates production functions using intermediate inputs to
+control for unobservable productivity shocks.  The methodology is
+described in Levinsohn and Petrin (2003) and Petrin, Poi, and Levinsohn
+(2004).  All variables are assumed to be in logarithms.
+
+
+{title:Options}
+
+{p 4 8 2}
+{cmd:free(}{it:varlist}{cmd:)} specifies the freely variable inputs.
+
+{p 4 8 2}
+{cmd:proxy(}{it:varlist}{cmd:)} specifies one or two intermediate inputs.
+If the dependent variable is value added, one or two variables can be
+specified.  If the dependent variable is revenue, only one can be specified.
+
+{p 4 8 2}
+{cmd:capital(}{it:varname}{cmd:)} specifies the capital variable.
+
+{p 4 8 2}
+{cmd:valueadded} indicates that the dependent variable represents value
+added.  This is the default.
+
+{p 4 8 2}
+{cmd:revenue} indicates that the dependent variable represents gross revenues
+or output.  The GMM estimator will be used.
+
+{p 4 8 2}
+{cmd:justid} requests that the GMM estimator use only present-period
+capital and the first lag of the proxy variable as instruments.  This
+option can only be used with {cmd:revenue}
+
+{p 4 8 2}
+{cmd:grid} requests that the GMM estimator use a grid search to minimize
+the criterion function.  The default is a search method based on the
+{cmd:nl} command.  This option can only be used with {cmd:revenue}.
+
+{p 4 8 2}
+{cmd:i(}{it:varname}{cmd:)} specifies the variable denoting panels.
+
+{p 4 8 2}
+{cmd:t(}{it:varname}{cmd:)} specifies the variable denoting time periods.
+
+{p 4 8 2}
+{cmd:reps(}{it:#}{cmd:)} specifies the number of bootstrap replications
+to perform.  The default is 50.
+
+{p 4 8 2}
+{cmd:level(}{it:#}{cmd:)} specifies the confidence level, as a percentage, for
+confidence intervals of the coefficients; see help {help level}.
+
+
+{title:Examples}
+
+{p 4 4 2}{cmd:. levpet lnva, free(lnb lnw) proxy(lne lnf) capital(lnk)}
+
+{p 4 4 2}{cmd:. levpet lnrev, free(lnb lnw) proxy(lne) capital(lnk) revenue}
+
+
+{title:References}
+
+{p 4 8 2}
+Levinsohn, J. and A. Petrin. 2003. Estimating production functions using
+inputes to control for unobservables. {it:Review of Economic Studies} 70: 
+317-342.
+
+{p 4 8 2}
+Petrin, A., B. P. Poi, and J. Levinsohn. Production function estimation
+in Stata using inputs to control for unobservables. {it:Stata Journal} 4(2):
+113-123.
+
+
+{title:Authors}
+
+      Amil Petrin
+      University of Chicago
+      National Bureau of Economic Research
+
+      Brian Poi
+      StataCorp
+
+      James Levinsohn
+      University of Michigan
+      National Bureau of Economic Research
+
+

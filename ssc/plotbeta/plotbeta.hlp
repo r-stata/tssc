@@ -1,0 +1,137 @@
+{smcl}
+{* 22Jun12}{...}
+{cmd:help plotbeta}
+{hline}
+
+{title:Title}
+
+{hi:Plots the estimates from a series of lincom commands}
+
+{title: Syntax}
+
+{p 8 27 2}
+{cmdab:plotbeta} {it:exp}
+[{cmd:,} {it:options}]
+
+{synoptset 20 tabbed}{...}
+{synopthdr}
+{synoptline}
+{syntab:Main}
+{synopt:{opt p:osition(numlist)} } specifies the position of the confidence intervals. {p_end}
+{synopt:{opt eform} } specifies that the exponentiated form the parameters be plotted. {p_end}
+{synopt:{opt ver:tical} } specifies that the confidence intervals are plotted vertically. {p_end}
+{synopt:{opt l:evel(#)} } specifies the confidence level. {p_end}
+{synopt:{opt labels} } specifies that variable labels are used in the plot. {p_end}
+{synopt:{opt savedata(filename)} } specifies that the data in the final plot should be saved. {p_end}
+{synopt:{opt addplot(graph)} } specifies that an additional twoway graph is added to the plot. {p_end}
+{synopt:{help twoway_options } } {p_end}
+{synoptline}
+{p2colreset}{...}
+
+{p}
+where {it:exp} is defined
+
+         {it:lincom_exp} [|] 
+
+{p}
+and where {it:lincom_exp} may be any linear combination of coefficients that is valid syntax for {help test}. Note, however, that {it:exp} may not contain an equal sign.
+
+
+{title:Description}
+
+{p 0 0}
+This command will plot the parameter estimates and confidence intervals from a series of lincom commands.
+
+{title:Updating this command using SSC}
+
+{p 0 0} 
+To obtain the latest version click the following to install the new version
+
+{stata ssc install plotbeta,replace}
+
+{title:Options}
+
+{phang}
+{cmdab:p:osition}{cmd:(}{it:numlist}{cmd:)} specifies the position of the confidence intervals. The default is that the point estimate and confidence intervals are plotted at points 1 2 3 ... It is possible to group confidence intervals in different parts of the plots e.g.  1 2 3 3.1 3.2, here the last three confidence intervals will be much closer to each other. 
+
+{phang}
+{cmdab:eform} specifies that the exponentiated form the parameters be plotted.
+
+{phang}
+{cmdab:labels} specifies that if the lincom expression is a variable then that variable's label is used instead of the variable name. 
+This option is particularly useful if the linear predictor is made up entirely of main effects.
+
+{phang}
+{cmdab:ver:tical} specifies that the confidence intervals are plotted vertically rather than the default of horizontally.
+
+{phang}
+{cmdab:l:evel}{cmd:(}{it:#}{cmd:)} specifies the confidence level, in percent, for confidence intervals; see {help level}.
+
+{phang}
+{opt savedata(filename)} specifies that the data in the final plot should be saved.
+
+{phang}
+{opt addplot(graph)} specifies that an additional twoway graph is added to the plot. This is particularly useful for adding additional datapoints using
+{help twoway_scatteri}.
+
+{title:Examples}
+
+{p 0 0}
+A linear regression using the auto data, click the highlighted text in order
+
+  {stata sysuse auto, clear}
+  {stata reg price mpg turn length}
+  {stata plotbeta mpg | turn | length}
+  {stata plotbeta mpg | turn | length, labels}
+  {stata plotbeta mpg | turn | length, addplot((scatteri 2.5 2.5, ms(S) msize(*2))) labels}
+
+{p 0 0}
+To remove the green text on the right hand side of the plot you need to add in the following two options
+
+{p 2 2}
+{stata plotbeta mpg | turn | length, addplot((scatteri 2.5 2.5, ms(S) msize(*2))) labels ylab(none, axis(2)) ytitle("", axis(2))}
+
+{p 0 0}
+This is the most basic graphic and using twoway options the look can be improved. 
+The following command puts the confidence intervals
+
+{p 2 2}
+{stata plotbeta mpg | turn | length | mpg-length , xtitle(Parameters) yscale(range(0.7 4.3) axis(1)) yscale(range(0.7 4.3) axis(2)) title(Coefficients and Confidence Intervals) subtitle(from a Simple Linear Regression) xline(0, lp(dash)) }
+
+An example using Survival data, click the highlighted text in order
+
+  {stata sysuse cancer}
+  {stata stset studytime, f(died)}
+  {stata "xi:stcox i.drug age"}
+  {stata plotbeta _Idrug_2 | _Idrug_3}
+  {stata plotbeta _Idrug_2 | _Idrug_3, labels eform savedata(temp,replace)} 
+
+Using the twoway options to solve a problem with labelling
+
+  {stata "plotbeta age | _Idrug_2 | _Idrug_3, eform labels xline(1, lp(dash)) "}
+
+{p 0 0}
+{bf: Note} that by adding {hi:age} into the estimates the ylabels are off the graph. This
+is due to the single quote in the variable label. Either change the label or alter the graphregion size
+
+{p 2 2}
+{stata "plotbeta age | _Idrug_2 | _Idrug_3, eform labels xline(1, lp(dash)) graphregion(margin(l+40 r+15)) "}
+
+{title:Author}
+
+{p}
+Adrian Mander, MRC Biostatistics Unit, Cambridge, UK.
+
+Email {browse "mailto:adrian.mander@mrc-bsu.cam.ac.uk":adrian.mander@mrc-bsu.cam.ac.uk}
+
+{title:Also see}
+
+Related commands
+
+HELP FILES
+{help lincom}
+
+
+
+
+

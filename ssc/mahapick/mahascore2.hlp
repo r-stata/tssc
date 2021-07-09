@@ -1,0 +1,367 @@
+{smcl}
+{* 2012feb17; 2012nov12 deleted one char}
+{hline}
+help for {hi:mahascore2}
+{hline}
+
+{title:Generate a Mahalanobis distance measure between two "points",}
+{title: {c -} either explicitly specified or as the means of specified populations}
+
+{p 8 17 2}
+{cmd:mahascore2}
+{it:varlist} [{it:weight}] {cmd:,}
+[
+{cmd:point1(}{it:point1mat}{cmd:)}
+{cmd:point2(}{it:point2mat}{cmd:)}
+{cmd:pop1(}{it:pop1var}{cmd:)}
+{cmd:pop2(}{it:pop2var}{cmd:)}
+{cmd:covarpop(}{it:covarpopvar}{cmd:)}
+{cmdab:invcov:armat(}{it:invcovarmat}{cmd:)}
+{cmdab:compute:_invcovarmat}
+{cmdab:eucl:idean}
+{cmd:union}
+{cmdab:disp:lay(}{it:display_options}{cmd:)}
+]
+
+{title:Description}
+
+{p 4 4 2}
+{cmd:mahascore2} generates a squared Mahalanobis distance measure between two "points"
+in "data space" {c -} with data space defined by {it:varlist}.
+
+{p 4 4 2}
+In contrast to other programs of the mahapick suite ({cmd:mahascore}, {cmd:mahascores},
+{cmd:mahapick}), which generate multitudes of values, this generates a single value: 
+the squared distance between the two points. The value is returned in {cmd:r(mahascore_sq)}.
+
+{p 4 4 2}
+{it:varlist} (the "covariates") is a list of numeric variables on which to build
+the distance measure.
+These variables should be of numeric significance, not categorical; any
+categorical variables should be replaced by a set of indicator variables.
+
+{p 4 4 2}
+Weights are allowed; they affect only the means computed under the {cmd:pop1}
+and {cmd:pop2} options, and the computation of the inverse covariance matrix, under
+the {cmd:compute_invcovarmat} option.
+
+{p 4 4 2}
+Each point can be specified as either...{p_end}
+{p 8 8 2}{c -} a tuple of values stored in a matrix, using the {cmd:point1} and/or {cmd:point2} options;{p_end}
+{p 8 8 2}{c -} the means of the variables of {it:varlist}, restricted to a specified subset of the
+observations, using the {cmd:pop1} and/or {cmd:pop2} options.{p_end}
+{p 4 4 2}
+Note that either point may be specied by either method.
+
+{p 4 4 2}
+The result is actually the square of the Mahalanobis
+distance measure; both the squared and unsquared values are reported, but only the squared
+value is returned.
+Note that in most usages, the resulting values are used in comparisons
+or sortings; the proportional magnitude is not significant, so the squared
+value is just as good.
+
+{title:Options}
+
+{p 4 4 2}
+In what follows, let {it:p} denote the number of variables in {it:varlist}.
+
+{p 4 4 2}
+{cmd:point1(}{it:point1mat}{cmd:)} specifies the first point in explicit terms.
+{it:point1mat} is the name of a matrix bearing a tuple of values; it must be a
+column vector (a {it:p}-by-1 matrix) whose entries correspond to
+the variables in {it:varlist}, and whose rownames equal the names in
+{it:varlist} in the same order.
+An example of how to do this is given below.
+
+{p 4 4 2}
+{cmd:pop1(}{it:pop1var}{cmd:)} specifies the first point implicitly as the tuple of
+means of {it:varlist}, limited to the set of observations for which {it:pop1var} is
+nonzero. This is also known to as the centroid of {it:varlist}, limited to the
+population indicated by {it:pop1var}.
+Note that the means are computed subject to weighting.
+
+{p 4 4 2}
+It is required to specify {cmd:point1(}{it:point1mat}{cmd:)} or {cmd:pop1(}{it:pop1var}{cmd:)}.
+If both are present, then {cmd:pop1(}{it:pop1var}{cmd:)} takes precedence.
+
+{p 4 4 2}
+{cmd:point2(}{it:point2mat}{cmd:)} specifies the second point in explicit terms,
+in the same manner as {cmd:point1}.
+
+{p 4 4 2}
+{cmd:pop2(}{it:pop2var}{cmd:)} specifies the second point implicitly as the tuple of
+means of {it:varlist}, limited to the set of observations for which {it:pop2var} is
+nonzero. Note that the means are computed subject to weighting.
+
+{p 4 4 2}
+It is required to specify {cmd:point2(}{it:point2mat}{cmd:)} or {cmd:pop2(}{it:pop2var}{cmd:)}.
+If both are present, then {cmd:pop2(}{it:pop2var}{cmd:)} takes precedence.
+
+{p 4 4 2}
+{cmd:invcovarmat(}{it:invcovarmat}{cmd:)} specifies the name of a matrix
+to be used in the computation described under {ul:Remarks}. It is presumably the
+inverse covariance matrix of {it:varlist} (possibly for some subset of the observations),
+but the only requirement is that
+it be a square {it:p}-by-{it:p} matrix, and both the row and column names
+must equal the names in {it:varlist} in the same order as in {it:varlist}.
+
+{p 4 4 2}
+You can use {help covariancemat} to help construct the inverse covariance matrix;
+it should be followed by a {cmd: mat} ... {cmd: = inv()} operation.
+An example is given below, in the {ul:Examples} section.
+See further discussion of the purpose of this option, under {ul:Remarks}.
+
+{p 4 4 2}
+{cmd:compute_invcovarmat} specifies that you want the inverse covariance
+matrix to be computed, rather than passed in (via {cmd:invcovarmat()}).
+This computation is subject to weighting.
+Note that this will call {help covariancemat}, which computes covariances
+limited to observations with all variables of {it:varlist} nonmissing.
+(I.e., it is potentially different from the pairwise computation of covariances.)
+
+{p 4 4 2}
+If {cmd:compute_invcovarmat} is specified, then the set of observations that are used
+for this computation will be determined by {it:pop1var}, {it:pop2var}, or {it:covarpopvar},
+as will be explained below.
+
+{p 4 4 2}
+{cmd:invcovarmat()} and {cmd:compute_invcovarmat} are alternatives; one of
+them must be specified. If both are specified, then {cmd:compute_invcovarmat}
+takes precedence.
+
+{p 4 4 2}
+{cmd:covarpop(}{it:covarpopvar}{cmd:)} takes effect only if {cmd:compute_invcovarmat} is specified.
+This specifies that the inverse covariance matrix is to be computed on the set of observations
+for which {it:covarpopvar} is nonzero.
+If {cmd:compute_invcovarmat} is specified and {cmd:covarpop(}{it:covarpopvar}{cmd:)} is absent,
+then the computation of the inverse covariance matrix is based on the
+sets specified by {it:pop1var} and {it:pop2var}, as will be explained below.
+If you specified {cmd:compute_invcovarmat}, and neither {cmd:pop1(}{it:pop1var}{cmd:)} nor {cmd:pop2(}{it:pop2var}{cmd:)} are
+specified, then {cmd:covarpop(}{it:covarpopvar}{cmd:)} is required.
+
+{col 10}{hline}
+{p 10 10 2}
+{ul:Computation of the Inverse Covariance Matrix}
+
+{p 10 10 2}
+Reiterating and expanding on the foregoing, when {cmd:compute_invcovarmat} is specified, the set of observation used in that
+computation is determined by...{p_end}
+{p 10 10 2}{c -} {it:covarpopvar}, if specified; otherwise...{p_end}
+{p 12 12 2}{c -} {it:pop1var}, if specified and {it:pop2var} is absent{p_end}
+{p 12 12 2}{c -} {it:pop2var}, if specified and {it:pop1var} is absent{p_end}
+{p 12 12 2}{c -} the combination of {it:pop1var} and {it:pop1var}, if both are specified.
+
+{p 10 10 2}
+In the latter scenario ({cmd:compute_invcovarmat} is specified, along with both
+{cmd:pop1(}{it:pop1var}{cmd:)} and {cmd:pop2(}{it:pop2var}{cmd:)}, and in the absence of {cmd:covarpop(}{it:covarpopvar}{cmd:)}),
+there is a choice of how to make use of the "combination of {it:pop1var} and {it:pop1var}".
+The default is a "split population" method, which takes the covariance matrices of each population 
+separately, then forms the weighted
+average of these two matrices, weighting them by the number of observations in {it:pop1var} and {it:pop2var},
+along with an optional {it:weight}. That result is then inverted.
+
+{p 10 10 2}
+By contrast, you can use the {cmd:union} option, which simply uses the union of 
+the two sets specified by {it:pop1var} and {it:pop2var}. See more on this under the {cmd:union} option.{p_end}
+{col 10}{hline}
+
+{p 4 4 2}
+{cmd:euclidean} takes effect only if {cmd:compute_invcovarmat} is specified.
+It specifies that the off-diagonal elements of the covariance
+matrix are to be replaced with zeroes, which yields the normalized Euclidean
+distance measure. (This option applies only with {cmd:compute_invcovarmat}
+because the zeroing of off-diagonal elements is done to the covariance
+matrix {c -} i.e., prior to inversion.
+If you prefer this measure and are providing the matrix via the {cmd:invcovarmat()}
+option, you should zero-out the off-diagonal elements prior to inverting
+{c -} or directly construct a matrix of reciprocal variances.
+Note that if the diagonal elements of a matrix are c1, c2, ..., c{it:p}, and
+all other elements are zero, then its inverse consists of 1/c1, 1/c2, ..., 1/c{it:p}
+on the diagonal and zero elsewhere.)
+See more about this under {ul:Remarks}.
+
+{p 4 4 2}
+{cmd:union} specifies that, when {cmd:compute_invcovarmat} is specified, along with both
+{cmd:pop1(}{it:pop1var}{cmd:)} and {cmd:pop2(}{it:pop2var}{cmd:)}, and in the absence of {cmd:covarpop(}{it:covarpopvar}{cmd:)},
+that the inverse covariance
+matrix is to be computed on the union of the two sets
+specified by {it:pop1var} and {it:pop2var}. By contrast, the default action uses a
+"split population" method, as described under {ul:Computation of the Inverse Covariance Matrix}.
+
+{p 4 4 2}
+It is probably desirable {it:not} to use the {cmd:union} option, as it may overestimate the covariances
+and thereby underestimate inverse covariance matrix and the consequential distance measure.
+This can be understood if you imagine two distinct populations where
+the values of the covariates are somewhat tightly clustered around two distinct centers that are significantly
+separated. Within each population, the covariances are small, but because of the separation of the centers, the
+covariances on the union are larger.
+
+{p 4 4 2}
+{cmd:display(}{it:display_options}{cmd:)} turns on the display of certain
+data structures used in the computation. If {it:display_options} contains
+{cmd:covar} and {cmd:compute_invcovarmat} was specified, then the covariance matrix (matrices) is (are) displayed;
+if it contains {cmd:invcov}, then the inverse covariance matrix is displayed;
+if it contains {cmd:points} then the point(s) ({it:point1mat} or {it:point2mat})
+or the tuple(s) of means for {cmd:pop1} or {cmd:pop2} are displayed;
+if it contains {cmd:diff}, then the difference vector is displayed.
+Any other content is ignored.
+
+{p 4 4 2}
+If the inverse covariance matrix is displayed, it may be either
+{it:invcovarmat} or that which is computed as directed by the
+{cmd:compute_invcovarmat} option.
+This may be useful in debugging or just to assure
+you that the same set of (inverse) covariances are being used in repeated calls.
+
+{title:Remarks}
+
+{p 4 4 2}
+The (squared) distance measure generated is the matrix product d'Xd, where d is a vector
+of differences in the set of variables, and X is either the inverse of the
+covariance matrix of {it:varlist} (computed on a limited set of observations,
+as described above), or is a specified matrix that is provided via
+the {cmd:invcovarmat()} option.
+
+{p 4 4 2}
+The difference vector d is taken between the two points. That is,{p_end}
+{p 6 6 2}d= (pt2_1 - pt1_1 \ pt2_2 - pt1_2 \  ... \ pt2_{it:p} - pt1_{it:p}){p_end}
+{p 4 4 2}where pt1_{it:j} is the {it:j}th element of pt1, corresponding to the
+{it:j}th variable of {it:varlist}, and pt1 is the first point, that is, either
+{it:point1mat} or the vector of means of {it:varlist} computed on the set indicated by
+{it:pop1var}, depending on how the first point was specified. Similarly for
+pt2_{it:j} and the second point.
+
+{p 4 4 2}
+Thus, the generated value is the sum of all the possible products of
+pairs of elements of d, weighted by corresponding elements of X.
+This includes components that are the
+squares of elements of d, weighted by the elements on the diagonal of X, plus
+other products (of differing elements of d), weighted by the off-diagonal
+elements of X.
+
+{p 4 4 2}
+Note that the generated value is a single number, though
+formally it is a 1-by-1 matrix. It is expected to be >=0 if X is truly an
+inverse covariance matrix, as such matrices are known to be positive semi-definite.
+However, if X is an arbitrary matrix, then there is no guarantee that the
+result will be nonnegative.
+
+{p 4 4 2}
+There are two purposes for the {cmd:invcovarmat()} option.
+First, it can save unnecessary repeated calculations whenever
+{cmd:mahascore2} is repeatedly called on the same dataset with the same
+intended covariance population. Secondly,
+you may want to compute the inverse covariance matrix in some way
+not provided for. If these conditions do not apply, then the 
+{cmd:compute_invcovarmat} option is appropriate.
+
+{p 4 4 2}
+The {cmd:euclidean} option, combined with {cmd:compute_invcovarmat}, yields
+the normalized Euclidean distance. It can be considered as a simplified version
+of the true Mahalanobis measure, and is less thorough in that it ignores
+correlations between different variables of {it:varlist}.
+It suffers from the flaw that highly correlated variables can act together
+as one variable but with disproportional weight. Another way to characterize
+it is that it presumes that the data are configured in ellipsoids that are
+oriented parallel to the axes. (In other contexts, it may fail to detect multivariate
+outliers. See {help mahascores} for more on this, as well as other comments about
+the Euclidean measure {c -} normalized or not.)
+
+{p 4 4 2}
+The normalized Euclidean measure is probably less desirable than the true
+Mahalanobis measure; it is provided as
+a comparison measure, and it replicates the behavior of earlier versions of
+{cmd:mahascore} and {cmd:mahapick} programs.
+
+{p 4 4 2}
+If any of these conditions occur, then the resulting measure will be missing.
+
+{p 8 8 2}
+Any element of one of the points is missing (if an elemnt of
+{it:point1mat} or {it:point2mat} is missing, or if a
+covariate is all-missing for one of the sets indicated by {it:pop1var}
+or {it:pop2var}).
+
+{p 8 8 2}
+Any of the inverse covariance elements are missing.
+
+{p 4 4 2}
+If the inverse covariance matrix is computed on a very small set of
+observations, it may not be valid and may yield strange results. It
+might fail to be positive semi-definite, and can yield negative measures.
+
+{title:Examples}
+
+{p 4 8 2} {cmd:. gen byte not_treated = ~treated}{p_end}
+{p 4 8 2} {cmd:. mahascore2 income age numkids, pop1(treated) pop2(not_treated) compute}
+
+{p 4 8 2} {cmd:. mahascore2 income age numkids, pop1(treated) pop2(not_treated) covarpop(treated) compute}
+
+{p 4 8 2} {cmd:. sysuse auto}{p_end}
+{p 4 8 2} {cmd:. gen byte dom = ~foreign}{p_end}
+{p 4 8 2} {cmd:. mahascore2 price mpg rep78 headroom trunk weight length turn displac, pop1(foreign) pop2(dom) compute}
+
+{p 4 4 2}
+Note that the above use of {cmd:treated} and {cmd:not_treated} (or {cmd:foerign} and {cmd:dom}) partitions the observations into two complementary sets.
+This may be a commonly-desired setup, but is not required.
+
+{p 4 4 2}
+To create your own inverse covariance matrix:
+
+{p 4 8 2} {cmd:. local vars "income age numkids"}{p_end}
+{p 4 8 2} {cmd:. covariancemat `vars', covarmat(M)}{p_end}
+{p 4 4 2} {c -} to use all observations, or...{p_end}
+{p 4 8 2} {cmd:. covariancemat `vars' in 1/60, covarmat(M)}{p_end}
+{p 4 4 2} {c -} to use the first 60 observations.{p_end}
+
+{p 4 8 2} {cmd:. mat MINV = inv(M)  // or possibly invsym(M)}{p_end}
+{p 4 8 2} {cmd:. mahascore2 `vars', pop1(treated) pop2(not_treated) invcovarmat(MINV)}{p_end}
+
+{p 4 4 2}
+To create your own reference values:
+
+{p 4 8 2} {cmd:. local vars "income age numkids"}{p_end}
+{p 4 8 2} {cmd:. matrix V1 = (20000 \ 25 \ 2)}{p_end}
+{p 4 8 2} {cmd:. matrix V2 = (26000 \ 29 \ 1)}{p_end}
+{p 4 8 2} {cmd:. matrix rownames V1 = `vars'}{p_end}
+{p 4 8 2} {cmd:. matrix rownames V2 = `vars'}{p_end}
+{p 4 8 2} {cmd:. gen byte one = 1}{p_end}
+{p 4 8 2} {cmd:. mahascore2 `vars', point1(V1) point2(V2) covarpop(all) compute}{p_end}
+{p 4 8 2} {cmd:. mahascore2 `vars', point1(V1) point2(V2) covarpop(treated) compute}{p_end}
+{p 4 8 2} {cmd:. mahascore2 `vars', point1(V1) pop(treated) compute}{p_end}
+
+
+
+{title:Acknowledgement}
+{p 4 4 2}
+The author wishes to thank Evan Kontopantelis of the University of Manchester for suggesting
+this program.
+
+{p 4 4 2}
+Additional thanks goes to 
+Joseph Harkness, formerly of The Institute for Policy Studies
+at Johns Hopkins University for guidance in developing the suite of 
+Mahalanobis distance programs,
+as well as Heiko Giebler of Wissenschaftszentrum Berlin fur Sozialforschung
+GmbH, for suggesting further improvements.
+
+{title:Author}
+{p 4 4 2}
+David Kantor; 
+Email {browse "mailto:kantor.d@att.net":kantor.d@att.net} if you observe any
+problems.
+
+{title:Also See}
+{p 4 4 2}
+{help mahapick}, {help mahascore}, {help mahascores}, {help covariancemat}, {help variancemat},
+{help screenmatches}, {help stackids}, {help hotelling}.
+
+{col 12}{hline}
+{p 12 12 12}
+{hi:Note:} The {help hotelling} program is similar in that it generates a Mahalanobis distance measure; it
+then uses that result to perform a significance test. The author (of mahascore2) believes {c -} though
+is not certain {c -} that hotelling
+does the equivalent of the {cmd:union} option for computing the covariance matrix.
+{p_end}
+{col 12}{hline}

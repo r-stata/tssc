@@ -1,0 +1,166 @@
+{smcl}
+{* MAY 2008}{...}
+{hline}
+help for {hi:strsrcs}
+{hline}
+
+{title:Flexible parametric models for survival-time data with background mortality}
+
+{p 8 16 2}{cmd:strsrcs}{space 2}[{it:varlist}]
+[{cmd:if} {it:exp}] [{cmd:in} {it:range}]
+[{cmd:,} {it:model_complexity}
+{cmdab:bhaz:ard(}{it:varname}{cmd:)}
+{cmdab:sc:ale(}{it:hazard|odds}{cmd:)}
+{cmdab:strata(}{it:strata_varlist}{cmd:)}
+{cmdab:nocons:tant}
+{cmdab:snocons:tant}
+{cmdab:orthog}
+{cmdab:ef:orm}
+{cmd:inits(}{it:name}{cmd:)}
+{it:maximize_options} ]
+
+{p 4 4 2}where {it:model_complexity} is one of
+
+{p 8 8 2}{c -(} {cmdab:df(}{it:#}{cmd:)}} {cmdab:knots(}{it:knotlist}{cmd:)}} {c )-}
+
+
+{p 4 4 2}
+{cmd:strsrcs} is for use with survival-time data; see help {help st}.  You
+must {cmd:stset} your data before using {cmd:strsrcs}; see help {help stset}.
+
+{p 4 4 2}
+{cmd:strsrcs} shares the features of all estimation commands; see help
+{help estcom}. 
+
+
+{p 4 4 2}
+The syntax of {help predict} following {cmd:strsrcs} is
+
+{p 8 16 2}{cmd:predict} {it:newvarname} [{cmd:if} {it:exp}]
+      [{cmd:in} {it:range}] [{cmd:,} {it:statistic} {cmdab:ci} {cmdab:lev:el(}{it:value}{cmd:)}
+
+
+{p 4 4 2}
+where {it:statistic} is
+
+{p 8 28 2}{cmdab:s:urvival} - predicted relative survival
+
+{p 8 28 2}{cmdab:h:azard} - predicted excess hazard rate
+
+{p 8 28 2}{cmdab:hr:atio} - predicted excess hazard rate ratio (NOTE:Only valid when one covariate is modelled)
+
+
+{p 4 4 2}
+These statistics are available both in and out of sample; type
+"{cmd:predict} {it:...} {cmd:if e(sample)} {it:...}" if wanted only for the
+estimation sample.
+
+Predictions are obtained using the delta method implemented using {help predictnl}.
+
+{title:Description}
+
+{p 4 4 2}
+{cmd:strsrcs} fits spline-based distributional models to right censored data taking background mortality into account. varlist is a set of covariates.
+
+
+
+{title:Options for {cmd:strsrcs}}
+
+{p 4 8 2}
+{cmd:df(}{it:#}{cmd:)} specifies the degrees of freedom for the natural spline function. # must be between 2 and 6. The {cmd:knots()} option is not
+        applicable and the knots are placed at the following centiles of the distribution of the uncensored event [i.e. where _d==1] log times:
+
+        ---------------------------
+        df        Centile positions
+        ---------------------------
+         1        (no knots)
+         2        50
+         3        33 67
+         4        25 50 75
+         5        20 40 60 80
+         6        17 33 50 67 83
+        >6        (not allowed)
+        ---------------------------
+
+
+{p 4 8 2}
+{cmd:knots(}{it:knotlist}{cmd:)} knot placement that defines the internal knot positions for the spline. 
+	The values in knotlist are taken to be centile positions in the distribution of the uncensored event [i.e. where _d==1] log times.
+
+
+{p 4 8 2}
+{cmd:bhazard(}{it:varname}{cmd:)} gives the variable name for the baseline hazard at death/censoring.
+This option is compulsary, but a variable containing only zeros can be specified if 'standard' survival models are required as in {help stpm}.
+
+{p 4 8 2}
+{cmd:scale(}{it:hazard|odds}{cmd:)} is not optional and specifies the scale of the model. The hazard and odds options fit models on
+        the scale of the log cumulative hazard or the log cumulative odds of failure, respectively.
+
+{p 4 8 2}
+{cmd:strata(}{it:strata_varlist}{cmd:)} stratifies the spline functions according to the variables in strat_varlist.
+	This allows time-dependant effects for a variety of covariates and and is of particular use in assessing the assumption of proportional excess hazards or proportional odds.
+
+{p 4 8 2}
+{cmd:noconstant} specifies that a constant term is not included in the baseline part of the model.
+
+{p 4 8 2}
+{cmd:snoconstant} specifies that a constant term is not included for the spline terms.
+
+{p 4 8 2}
+{cmd:orthog} creates orthogonalized basis functions. All basis functions higher than the first (linear) function are uncorrelated and have mean 0 and standard deviation 1. The linear function is also uncorrelated with the higher-basis functions.
+
+{p 4 8 2}
+{cmd:eform} displays the exponentiated coefficients and corresponding standard errors and confidence intervals.
+
+{p 4 8 2}
+{cmd:inits(}{it:name}{cmd:)} specifies a user defined set of initial values, where {it:name} is the name of the matrix where these values are stored.
+
+{p 4 8 2}
+{cmd:level(}{it:#}{cmd:)} specifies the confidence level, in percent,
+for confidence intervals.  The default is {cmd:level(95)} or as set by
+{cmd:set level}; see help {help level}.
+
+{p 4 8 2}
+{it:maximize_options} control the maximization process; see help
+{help maximize}.
+
+
+{title:Examples}
+
+{p 4 8 2}{cmd:. strsrcs sex, bhazard(rate) df(2) scale(odds) }{p_end}
+		[assess sex on the odds scale assuming proportional odds]
+{p 4 8 2}{cmd:. strsrcs, bhazard(rate) df(2) scale(odds) strata(sex)}{p_end}
+		[assess sex on the odds scale assuming sex is dependent on time]
+{p 4 8 2}{cmd:. strsrcs age, bhaz(rate) df(6) sc(hazard) strata(sex)}{p_end}
+		[assess age and sex on the hazard scale assuming age has proportional hazards and sex is time dependent]
+{p 4 8 2}{cmd:. predict s, survival ci}{p_end}
+		[output the relative survival estimate (with confidence interval) into new variable {it:s(s_lci & s_uci)}]
+{p 4 8 2}{cmd:. predict haz, h ci level(99)}{p_end}
+		[output the excess hazard (with confidence interval at the 99% level) into new variable {it:haz(haz_lci & haz_uci)}]
+
+
+{title:Auxiliary ado-files}
+
+	rcs strsrcs_mlo strsrcs_mlh strsrcs_pred
+
+{title:Author}
+
+    Chris Nelson, University of Leiceser, UK.  cn46@le.ac.uk
+
+
+{title:References}
+
+    Nelson, C. P., Lambert, P. C., Squire, I. S. and Jones, D. R. 2007. Flexible parametric models for relative survival, with application 
+    in coronary heart disease.  Statistics in Medicine 26: 5486-5498.
+
+    Royston, P. 2001. Flexible alternatives to the Cox model, and more.  Stata Journal 1: 1-28.
+
+    Royston, P. and M. K. B. Parmar. 2002. Flexible proportional-hazards and proportional-odds models for censored survival data, with
+    application to prognostic modelling and estimation of treatment effects.  Statistics in Medicine 21: 2175-2197.
+
+
+{title:Also see}
+
+{p 4 13 2}
+Online:  help for  {help stpm}, {help strs}, {help estcom}, {help postest};
+{help st}, {help stset}

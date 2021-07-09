@@ -1,0 +1,70 @@
+{smcl}
+{* 21feb2003}{...}
+{hline}
+help for {hi:avplots4}
+{hline}
+
+{title:Graph added-variable plots in a single image}
+
+{p 8 15 2}{cmd:avplots4} [{it:varlist}] [{cmd:,}
+{cmd:rlopts(}{it:cline_options}{cmd:)}
+{it:scatter_options}
+{it:combine_options}
+]
+
+
+{p 4 4 2}
+{cmd:avplots4} is for use after {cmd:regress}; see help
+{help regress}.
+
+
+{title:Description}
+
+{p 4 4 2}
+{cmd:avplots4} is a variant on official Stata's {cmd:avplots}
+(see help {help avplot}).  It allows specifying a {it:varlist}.
+
+{p 4 4 2}
+{cmd:avplots4} graphs the added-variable plots for the
+specified variables in a single image.  The variables in {it:varlist} may be
+regressors that are currently in the model or not.  If {it:varlist} is
+omitted, all regressors in the model are used.
+
+
+{title:Options}
+
+{p 4 8 2}
+{cmd:rlopts(}{it:cline_options}{cmd:)} affect the rendition of the reference
+line; see help {help cline_options}.
+
+{p 4 8 2}
+{it:scatter_options} affect the rendition of the plotted points; see help
+{help scatter}.
+
+{p 4 8 2}
+{it:combine_options} are any of the options documented in help
+{help graph_combine}.  These include options for titling the graph (see help
+{help title_options}) and options for saving the graph to disk
+(see help {help saving_option}).
+
+
+{title:Example}
+
+{p 4 8 2}{cmd:. regress price weight mpg forxmpg foreign}{p_end}
+    {cmd:. avplots4 mpg displ}
+
+
+{title:Author}
+
+{p 4 8 2}
+Ben Jann, ETH Zurich, jann@soz.gess.ethz.ch
+
+
+{title:Also see}
+
+{p 4 13 2}
+Manual:  {hi:[R] regress},{break}
+{hi:[R] regression diagnostics}
+
+{p 4 13 2}
+Online:  help for {help avplot}, {help graph}, {help regdiag}, {help regress}

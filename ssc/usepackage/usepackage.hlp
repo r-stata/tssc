@@ -1,0 +1,114 @@
+{smcl}
+{* MAY2011}{...}
+{hline}
+help for {hi:usepackage}
+{hline}
+
+{title: Program to find and install a list of user-written packages needed to run a do-file}
+
+{p 4 8 2} 
+{cmd:usepackage }
+{it:pkgnames} 
+[ {cmd:,}  {cmdab:u:pdate}  {cmdab:near:est}  ] {break} 
+ 
+{title:Description}
+
+{p 4 4 2}
+{cmd:usepackage} finds and installs user-written packages that are needed to run a do-file.
+When sharing a do-file that contains calls to user-written commands from SSC or elsewhere, you can use {cmd: usepackage}
+to include a list of packages rather than writing a series of {help net:net install} or {help ssc:ssc install} commands
+to install a list of user-written packages (or instructing the user to find and install a list of packages via 
+commands like {help findit:findit} or {help search:search}) from net-aware Stata.  
+
+{p 4 4 2}
+Since the do-file will need to first include a command to install {cmd:usepackage}
+from SSC:
+
+{p 12 8 2}{cmd:ssc install usepackage}{p_end}
+
+{p 4 4 2}
+{cmd:usepackage} will only save typing if more than one package is needed to run a do-file.
+
+{p 4 4 2}
+{cmd:usepackage} is particularly useful when user-written packages come from locations other than the
+{browse "http://ideas.repec.org/s/boc/bocode.html":SSC Archives} because {cmd:usepackage}  
+first searches the SSC and then if it does not find a match it searches other internet locations 
+(e.g., those searched by {help net##search_options:net search} by default), including but
+not limited to user-written additions published in the Stata Journal (SJ) and the
+Stata Technical Bulletin (STB).  Otherwise, in order to install user packages, such as 
+{stata ssc describe statplot:statplot} (from SSC) or {stata "net describe dm89_1, from(http://www.stata-journal.com/software/sj8-4)":dropmiss} (from Stata Journal), 
+the user would need to include in the do-file lines:
+
+{p 12 8 2}{cmd:ssc install statplot, replace} {p_end} 
+{p 12 8 2}{cmd:net install dm89_1, from(http://www.stata-journal.com/software/sj8-4)}{p_end} 
+
+{title:Options} 
+
+{p 4 8 2}
+ {cmdab:u:pdate }  forces {cmd:usepackage} to update all user-written commands specified in 
+ {it:pkgnames} if they are already installed.
+
+{p 4 8 2}
+ {cmdab:near:est }  specifies that, after looking for an exact match for each command listed in {it:pkgnames} on 
+ SSC and other internet locations searched by {help net##search_options:net search}, {cmd:usepackage} should install
+ its best match of a similar package name found in a {help net##search_options:net search} (that is, packages with words in the title 
+ or description matching the unmatched command in the {it:pkgnames} list). For example, the command: 
+
+{p 12 8 2}{cmd:{bf:usepackage}} statplo{p_end} 
+{p 8 8 2} would return no matches; however, if you also specified the  
+{cmdab:near:est} option,  {cmd:usepackage} would find and install 
+the user-written package {stata ssc describe statplot:statplot}
+as the nearest match.  
+
+{title:Remarks}
+
+{p 4 4 2}
+If {cmd:usepackage} does not find a match for a command in the {it:pkglist} in the SSC Archives, 
+it next searches other internet locations searched by {help net##search_options:net search}.  In doing 
+so, {cmd:usepackage} produces the full {help net##search_options:net search} output in the {bf:Results}
+window. Currently, this output cannot be surpressed.  The reason for this is that {cmd:usepackage} searches for
+the matching packages and descriptions in a log-file of this output.  Further, this
+output cannot be surpressed by running  {cmd:usepackage} quietly (doing so will produce an
+error).
+
+{p 4 4 2}
+{cmd:usepackage} is partly inspired by the LaTeX command with the same name ({it:\usepackage}{}) and similar functionality.
+
+
+{title:Examples}
+
+// Setup //
+  ** Uninstall user packages {cmd:statplot} and {cmd:bacon}
+{p 4 8 2}{cmd:. cap ado uninstall statplot} //uinstall package {cmd:statplot} {p_end}
+{p 4 8 2}{cmd:. cap ado uninstall st0197} //uninstall package {cmd:bacon}{p_end}
+
+  ** Specify that {cmd:usepackage} is installed from SSC
+{p 4 8 2}{cmd:. cap ssc install usepackage}{p_end}
+	
+// Install a list of user packages from various internet locations //
+{p 4 8 2}{cmd:. usepackage estout dropmiss rtfutil ralpha mac_unab}{p_end}
+
+// Install missing package {stata ssc describe statplot:statplot} (from SSC) //
+{p 4 8 2}{cmd:. usepackage statplot}{p_end}
+
+// Install missing package {stata "net describe st0197, from(http://www.stata-journal.com/software/sj10-3)":bacon} (aka package st0197) (from Stata Journal) // 
+{p 4 8 2}{cmd:. usepackage bacon}{p_end}
+
+   ** Alternatively:
+{p 4 8 2}{cmd:. usepackage st0197, update}{p_end}
+
+// Install and Update packages, including near-matches, from various locations //
+{p 4 8 2}{cmd:. usepackage tabou dropmis num2wor, near up }{p_end}
+
+{title:Author}
+
+{p 4 4 2}Eric A. Booth, Texas A&M University {break} 
+         ebooth@ppri.tamu.edu {break} 
+		 {browse "http://www.eric-a-booth.com"}
+		 
+{title:Also see}
+
+{p 4 8 2}On-line:  help for {help net:net install};
+{help ssc:ssc install}; {help findit:findit}; 
+{help search:search}
+

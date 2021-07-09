@@ -1,0 +1,118 @@
+{smcl}
+{hline}
+help for {hi:swblock}
+{hline}
+
+{title:Stepwise hapipf routine to identify the parsimonious model to describe the Haplotype block pattern}
+
+{p 8 27}
+{cmdab:swblock}
+[{it:varlist}]
+[,
+{cmdab:mv}{cmd:(}{it:string}{cmd:)}
+{cmdab:p:value}{cmd:(}{it:#}{cmd:)}
+{cmdab:s:top}
+{cmdab:n:oise}
+{cmdab:acc:}{cmd:(}{it:#}{cmd:)}
+{cmdab:ipf:acc}{cmd:(}{it:#}{cmd:)}
+{cmdab:store}
+{cmdab:replace}
+]
+
+{p}
+
+{title:Description}
+
+{p 0 0}
+This command systematically fits a series of {hi:hapipf} log-linear models that models the LD structure within a 
+set of loci.
+
+{p 0 0}
+The log-linear model is fitted using iterative proportional fitting which is available using {hi ssc} and is called 
+{hi:ipf} (version 1.36 or later). Additionally, the user will also have to 
+install {hi:hapipf} (version 1.44 or later). This algorithm can handle very large contingency tables and 
+converges to maximum likelihood estimates even when the likelihood is badly behaved. 
+
+If you are connected to the Web you can install the latest version by clicking here 
+{stata ssc install hapipf}
+
+{p 0 0}
+The {hi:varlist} consists of paired variables representing the alleles at each locus. If phase is known then the 
+paired variables are in fact the genotypes. When phase is unknown the algorithm assumes Hardy Weinberg 
+Equilibrium so that models are 
+based on chromosomal data and not genotypic data.
+
+{p 0 0}
+This algorithm can handle missing alleles at the loci by using the {hi:mv()} option.
+
+{title:Options}
+
+{p 0 0}
+{cmdab:mv}{cmd:(}{it:string}{cmd:)} specifies how the missing data will be 
+handled, the default is {hi:mv}. If the {it:string} is {hi:mv}, i.e {hi:mv(mv)}, then 
+the missing 
+data will be assumed to be missing at random (MAR) and the EM algorithm expands
+ the unknown phase to consider all possible values for the missing value.
+ The main assumption of this 
+algorithm is that the missing data can only take the alleles observed for a 
+given loci. Relaxing this assumption would not make any difference because 
+alleles that are never observed usually give expected frequencies that are 
+close to 0, however, it would increase the number of cells and hence reduce 
+power. The only other {hi:string} this option takes is {hi:mvdel}, i.e {hi:mv(mvdel)} 
+here the missing data are assumed 
+to be missing completely at random (MCAR) and subjects are deleted when they 
+contain any missing data at any loci. Under this assumption complete subjects are
+representative of the whole dataset and hence deletion will give unbiased estimates.
+
+{p 0 0}
+{cmdab:s:top} specifies that the search should stop when the inclusion of 
+minimum high order LD terms do not significantly change the log likelihood. 
+For example if none of the third order LD terms included in the model were 
+significant then the algorithm will not fit the fourth order terms.
+
+{cmdab:acc:}{cmd:(}{it:#}{cmd:)} specifies the tolerance of {hi:hapipf} convergence. The default is 0.0001.
+
+{cmdab:ipf:acc}{cmd:(}{it:#}{cmd:)} specifies the tolerance of {hi:hapipf} convergence. The default is 1.000e-07.
+
+{cmdab:p:value}{cmd:(}{it:#}{cmd:)} specifies the significance level for inclusion to the model; terms with p>pvalue() are not eligible for inclusion.
+
+{cmdab:n:oise} specifies that the test statistic values are included in the output
+
+{cmdab:store} specifies that all the model output is saved to a file called {hi:fresults.dta}
+
+{cmdab:replace} specifies that the old {hi:fresults.dta} can be overwritten.
+
+{title:Examples}
+
+{p 0 0}
+Take a dataset with 7 loci, the pairs of alleles at locus i are the variables
+li_1 and li_2.
+
+{inp:.swblock l1_1-l7_2, mv(mvdel)}
+
+{hi:mvdel} was specified as the missing data mechanism and all subjects with any missing data are deleted.
+
+The following command changes the inclusion significance level to 1%
+
+{inp:.swblock l1_1-l7_2, mv(mvdel) pvalue(0.01)}
+
+To store the results in a stata dataset do
+
+{inp:.swblock l1_1-l7_2, mv(mvdel) pvalue(0.01) store replace}
+
+{title:Author}
+
+{p}
+Adrian Mander, Glaxo Smithkline, Harlow, UK.
+Email {browse "mailto:adrian.p.mander@gsk.com":adrian.p.mander@gsk.com}
+
+{title:Also see}
+
+On-line:
+Help for 
+{help hapipf} (MUST be installed),
+{help ipf} (MUST be installed)
+{help hapblock} (if installed). 
+
+
+

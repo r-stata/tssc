@@ -1,0 +1,233 @@
+{smcl}
+{* 31aug2006}{...}
+{hline}
+help for {hi:devcon}
+{hline}
+
+{title:Deviation contrast transformation for estimation results}
+
+{p 8 14 2}{cmd:devcon} [ {cmd:,} {cmdab:g:roups:(}{it:glist}{cmd:)}
+ {cmdab:eq:uations:(}{it:numlist}{cmd:)}
+ {cmd:check}[{cmd:(}{it:#}{cmd:)}] {cmdab:non:oise} {cmdab:l:evel:(}{it:#}{cmd:)} ]
+
+    where {it:glist} is
+
+{p 8 8 2}{it:varlist1} [{cmd:(}{it:varname1}{cmd:)}] [{cmd:,} {it:varlist2}
+[{cmd:(}{it:varname2}{cmd:)}] [{cmd:,} {it:...}] ]
+
+
+{title:Description}
+
+{p 4 4 2} A categorical regressor is usually included in a regression model
+using a set of 0/1 dummies differentiating the effects of the
+separate categories of the variable. A coefficient associated with such a
+dummy variable reflects the expected outcome difference between the
+represented category and some reference category. Since one of the
+categories serves as the reference category,  only {it:k}-1 dummy
+variables are used for a {it:k}-category variable.
+
+{p 4 4 2}{cmd:devcon} may be used to transform the coefficients of such 0/1
+dummy variables so that they reflect deviations from the "grand mean" (in
+other words, the modified coefficients will sum up to zero over all categories)
+rather than deviations from the reference category. The transformed
+coefficients are equivalent to those obtained by using the so called
+"effects coding" for the dummy variables (see the {cmd:e} prefix in
+{cmd:xi3} or the {cmd:dev()} contrast in {cmd:desmat}; both packages are available
+from the SSC Archive). However, {cmd:devcon} reports
+coefficients for {it:all} categories (including the category that was
+used as the reference category in the original model) and modifies the
+model's constant accordingly (with the effects coding, the coefficient of
+one of the categories is "hidden" in the constant). Furthermore, the coding
+of the underlying dummy variables is still 0/1 with {cmd:devcon}.
+
+{p 4 4 2}The deviation contrast transformation is applied to the last
+(i.e. currently active) estimates. Use the {cmd:groups()} option to define
+the group(s) of dummy variables. {cmd:devcon} specified without the
+{cmd:groups()} option may be used to redisplay estimates that have already been
+transformed by {cmd:devcon}. The {cmd:devcon} routine will work after most
+estimation commands (see help
+ {help estcom}). Multiple equation models are
+supported. Use the {cmd:equations()} option to specify the equation(s) to
+be transformed. Note that {cmd:devcon} also transforms the variance-covariance
+matrix of the estimates and that the usual post estimation commands such as
+ {help predict} or
+ {help test} may be used with the transformed estimates.
+
+{p 4 4 2}The {cmd:devcon} command has two main benefits. First, it may be
+very convenient to use {cmd:devcon} to quickly display the deviation
+contrasts without having to change the coding of the variables and without
+having to take further action to make the reference category's coefficient
+visible. Second, the transformed estimates may be valuable for
+use with some post-estimation procedures. In fact, {cmd:devcon} was
+originally developed for use with with the Oaxaca-Blinder decomposition
+(see help
+ {help oaxaca} if installed; the package
+is available from the SSC Archive, type
+ {net "describe http://fmwww.bc.edu/RePEc/bocode/o/oaxaca":{bind:ssc describe oaxaca}}).
+In this decomposition, the results for categorical
+variables depend on the choice of the reference category (see, e.g., Oaxaca
+and Ransom 1999). Applying the deviation contrast transformation to the
+estimates before conducting the decomposition is one solution to this
+problem (see Yun 2003).
+
+{it:Technical note}
+
+{p 4 4 2} The deviation contrast transform can also be applied to the
+variables used to model an interaction between a categorical and a
+continuous variable. The relevant continuous variable must be provided in
+parentheses within the {cmd:groups()} option in such a case.
+
+
+{title:Options}
+
+{p 4 8 2} {cmd:groups(}{it:glist}{cmd:)} defines the dummy-variable groups.
+If more than one group is specified, use commas to separate the groups.
+Note that in each of the groups a variable reflecting the reference
+category must be specified (i.e. the variable must exist in the data). If
+the variables in a group represent interactions with a continuous variable,
+specify the continuous variable in parentheses at the end of the group. The
+usual shorthand conventions apply to the {it:varlist}s specified in
+{it:glist} (see help
+ {help varlist}).
+
+{p 4 8 2}{cmd:equations(}{it:numlist}{cmd:)} is relevant only for
+multiple-equation models. It specifies the equation(s) to be transformed.
+Use numbers to refer to the equations' positions in the model ({cmd:1} for
+the first equation, {cmd:2} for the second, and so on). The usual shorthand
+conventions apply to {it:numlist} (see help
+ {help numlist}). The default is {cmd:equations(1)}.
+
+{p 4 8 2} {cmd:check}[{cmd:(}{it:#}{cmd:)}] checks the integrity of the
+normalized estimates by verifying that the linear predictions from the
+original estimates and the normalized estimates are equal for all
+observations in the estimation sample. If the results do not pass the
+check, an error message is issued and no results are returned. By default,
+the check is performed using the models's first equation. To use another
+equation, specify its number in parentheses. A failed check indicates that
+the dummy variables used are not well defined (i.e. that the indicated
+groups overlap or that at least one group has been omitted). In rare cases,
+however, the results might fail the check even though the dummy variables
+have been correctly defined ({cmd:devcon} uses the information in
+{cmd:e(sample)} and, if available, {cmd:e(subpop)} to determine the sample
+of relevant cases; situations may arise in which the sample would have
+to be narrowed further).
+
+{p 4 8 2} {cmd:nonoise} suppresses the display of the transformed estimates.
+
+{p 4 8 2}{cmd:level(}{it:#}{cmd:)} specifies the confidence level, in percent
+terms, for the confidence intervals of the coefficients; see help
+ {help level}.
+
+
+{title:Example}
+
+{p 4 4 2} Standard application with one categorical variable ...
+
+        {com}. sysuse auto
+        . generate rep1 = rep78 <= 3 if rep78 < .
+        . generate rep2 = rep78 == 4 if rep78 < .
+        . generate rep3 = rep78 == 5 if rep78 < .
+        . logit foreign mpg rep2 rep3, nolog
+        . devcon, groups(rep1 rep2 rep3){txt}
+
+{p 4 4 2} ... and interactions with a continuous variable:
+
+        {com}. generate mpgrep1 = mpg * rep1
+        . generate mpgrep2 = mpg * rep2
+        . generate mpgrep3 = mpg * rep3
+        . logit foreign mpg rep2 rep3 mpgrep2 mpgrep3, nolog
+        . devcon, groups(rep1 rep2 rep3, mpgr* (mpg)){txt}
+
+{p 4 4 2}Transforming OLS estimates for use with the Blinder-Oaxaca
+decomposition ({cmd:oaxaca} is available from the SSC Archive):
+
+        {com}. reg lnwage educ expr expr2 single divorced if female==0
+        . devcon , groups(married single divorced)
+        . estimates store male
+        . reg lnwage educ expr expr2 single divorced if female==1
+        . devcon , groups(married single divorced)
+        . estimates store female
+        . oaxaca male female, detail
+        {txt}
+
+{title:Methods and Formulas}
+
+{p 4 4 2}Consider the model
+
+        y = a + b_1*D_1 + b_2*D_2 + e
+
+{p 4 4 2}where "a" is the constant and "e" is the error. D_1 and D_2
+are two 0/1 dummy variables representing a polytomous variable with three
+categories. Alternatively, the above equation can be formulated as
+
+        y = a + b_1*D_1 + b_2*D_2 + b_3*D_3 + e
+
+{p 4 4 2}with b_3 constrained to zero and D_3 being the indicator for the
+(omitted) reference category. Now define c as
+
+        c = (b_1 + b_2)/3
+
+{p 4 4 2}and let
+
+        a'   = a + c
+        b_1' = b_1 - c
+        b_2' = b_2 - c
+        b_3' = b_3 - c = -c
+
+{p 4 4 2}{cmd:devcon} then reports the equation
+
+        y = a' + b_1'*D_1 + b_2'*D_2 + b_3'*D_3 + e
+
+{p 4 4 2}More generally,
+
+        c = (b_1 + b_2 + ... + b_{k-1}) / k
+
+{p 4 4 2}for a k-category variable.
+
+{p 4 4 2}The transformation can also be applied to interaction terms. Consider
+the model
+
+        y = a + b_1*DX_1 + b_2*DX_2 + d*X + e
+
+{p 4 4 2}where X is a continuous variable and DX_1 and DX_2 are the
+interaction terms, i.e. DX_1 = D_1*X and DX_2 = D_2*X. The deviation
+contrast transformation is then
+
+        y = a + b_1'*DX_1 + b_2'*DX_2 + b_3'*DX_3 + d'*X + e
+
+{p 4 4 2} where
+
+        b_1' = b_1 - c
+        b_2' = b_2 - c
+        b_3' = b_3 - c = -c
+        d'   = d + c
+
+{p 4 4 2}{cmd:devcon} also transforms the variance-covariance matrix of the
+coefficients, applying the general formula for the
+variances and covariances of weighted sums of random variables
+(see Mood et al. 1974:179).
+
+
+{title:References}
+
+{p 4 8 2}
+Mood, A.M., F.A. Graybill, D.C. Boes (1974). Introduction to the Theory
+of Statistics, 3. edn. New York: McGraw-Hill.{p_end}
+{p 4 8 2}Oaxaca, R.L., Ransom, M.R.  (1999). Identification in Detailed Wage Decompositions.
+The Review of Economics and Statistics 81: 154-157.{p_end}
+{p 4 8 2}Yun, M.-S. (2003). A Simple Solution to the Identification
+Problem in Detailed Wage Decompositions. IZA Discussion Paper No. 836.{p_end}
+
+
+{title:Author}
+
+{p 4 4 2}Ben Jann, ETH Zurich, jann@soz.gess.ethz.ch
+
+
+{title:Also see}
+
+{p 4 13 2}
+Online:  help for
+ {help regress},
+ {help estimates},
+ {help oaxaca} (if installed)

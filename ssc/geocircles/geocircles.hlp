@@ -1,0 +1,251 @@
+{smcl}
+{* *! version 1.0.1  15aug2015}{...}
+{cmd:help geocircles}
+{hline}
+
+{title:Title}
+
+{phang}
+{bf:geocircles} {hline 2} Create circles defined by geographic coordinates
+
+
+{title:Syntax}
+
+{p 8 16 2}
+{cmd:geocircles}
+{it:latitude longitude radius} 
+{ifin} 
+{cmd:,} {opt data:base(filename)}
+{opt coor:dinates(filename)}
+[{it:options}]
+
+{synoptset 25 tabbed}{...}
+{synopthdr}
+{synoptline}
+{synopt :{opt replace}}overwrite existing datasets{p_end}
+{synopt :{opt mi:les}}indicates that {it:radius} is expressed in miles{p_end}
+{synopt :{opt n:points(#)}}number of points that form the polygon; default is 200{p_end}
+{synopt :{opt sphere:radius(#)}}custom sphere radius # (in km); default is 6371{p_end}
+{synoptline}
+
+
+{title:Description}
+
+{pstd}
+{cmd:geocircles} creates polygons that approximate the shape of circles.
+Each polygon point is at a great-circle distance {it:radius} from the center point defined
+by {it:latitude} {it:longitude}. A great-circle distance is the 
+shortest distance between two points measured along the surface of a sphere.
+
+{pstd}
+The {it:latitude} and {it:longitude} coordinates 
+may be specified in any combination of variables, scalars, 
+or strings of numerical coordinates. Coordinates must be in signed decimal degrees, 
+positive for north and east, and negative for south and west. Latitudes 
+range from -90 to 90 and longitudes from -180 to 180.
+
+{pstd}
+The {it:radius} may also be specified by a variable, a scalar, or a number
+expressed as a string literal. 
+
+{pstd}
+{cmd:geocircles} generates two datasets that follow the model used by {cmd:shp2dta}
+(from SSC, {it:{stata ssc install shp2dta:click to install}}) for converting shapefiles to Stata datasets.
+The coordinates dataset defines the polygon points and
+contains 3 variables named {it:_ID}, {it:_X}, {it:_Y} (feature identifier, 
+longitude, and latitude respectively).
+The database dataset contains one observation per feature (in this case
+each feature refers to a single polygon) and
+a matching {it:_ID} variable.
+The database dataset also includes the specified {it:latitude longitude radius} variables
+({it:_LAT}, {it:_LON}, or {it:_RADIUS} are created when the arguments 
+are not variables). Finally, the database dataset also includes all
+other variables in memory at the time {cmd:geocircles} is invoked unless none
+of the arguments are variables.
+
+
+{title:Is it a circle? A question of perspective.}
+
+{pstd}
+Say we want to create a map where we show a circle with a radius of 50km
+centered on the University of Michigan. We use 
+{cmd:geodist} (from SSC, {it:{stata ssc install geodist:click to install}})
+to verify that the points are really 50km away. 
+Since we plan to visualize this circle on a map, we use
+{cmd:spmap} (from SSC, {it:{stata ssc install spmap:click to install}}) 
+with the circle polygon as basemap.
+
+        {cmd}. geocircles 42.276916 -83.738218 50, data("data.dta") coor("coor.dta") replace
+		
+        . use "coor.dta", clear
+	
+        . geodist 42.276916 -83.738218 _Y _X, gen(d) sphere
+        . gen diff = abs(50 - d)
+        . summarize
+	
+        . use "data.dta", clear
+        . spmap using "coor.dta", id(_ID) osize(vthin){txt}
+         {it:({stata geocircles_examples geocircles_ex1:click to run})}
+         
+{pstd}
+It's not round! not even close. The example shows that even though the polygon
+accurately describes a circle on a sphere, a map created with unprojected
+latitude and longitude coordinates has the wrong proportions and things 
+get worse as you move towards the poles.
+
+{pstd}
+The solution to this problem is to use a map projection, a mathematical
+transformation of geodetic coordinates (latitude and longitude) to cartesian (x,y)
+coordinates. {cmd:geo2xy} was developed at the same time as {cmd:geocircles}
+to address this issue. To run the following examples, you need to 
+{it:{stata ssc install geo2xy:install geo2xy}} (from SSC)
+and
+{it:{stata net get geo2xy:download the U.S. state boundaries datasets}} 
+distributed with it.
+
+{pstd}         
+By default, {cmd:geo2xy} uses the same projection that Google Maps uses.
+
+        {cmd}. geocircles 42.276916 -83.738218 50, data("data.dta") coor("coor.dta") replace
+        		
+        . use "coor.dta", clear
+        . geo2xy _Y _X, replace
+        . save "coor_xy.dta", replace
+
+        . use "geo2xy_us_coor.dta", clear
+        . geo2xy _Y _X, replace
+        . save "geo2xy_us_coor_xy.dta", replace
+	
+        . use "geo2xy_us_data.dta"
+	
+        . spmap if _ID == 44 using "geo2xy_us_coor_xy.dta", id(_ID) polygon(data("coor_xy.dta") osize(vthin)) osize(vthin){txt}
+         {it:({stata geocircles_examples geocircles_ex1c:click to run})}
+         {it:({stata geocircles_examples geocircles_ex1b:click to run without the map projection})}
+    
+    
+{title:Additional examples}
+
+{pstd}
+You can use the {opt n:points(#)} option to specify the number of points that
+make up the polygons. The following example generates a coarser polygon and also
+plots the first few points (note that the polygon has the correct proportions 
+because we requested a
+plot with an aspect ratio of 1):
+
+        {cmd}. geocircles 42.276916 -83.738218 50, data("data.dta") coor("coor.dta") n(20) replace
+        
+        . use "coor.dta", clear
+        
+        . scatter _Y _X if _n <= 5, msymbol(smx) mcolor(red) || ///
+              line _Y _X , lwidth(vthin) lcolor(eltblue) cmissing(n) ///
+              ylabel(minmax, nogrid) yscale(off) xlabel(minmax, nogrid) xscale(off) ///
+              aspectratio(1) legend(off){txt}
+         {it:({stata geocircles_examples geocircles_ex2:click to run})}
+
+{pstd}
+To run the following examples, you need to 
+{it:{stata ssc install geo2xy:install geo2xy}} (from SSC)
+and
+{it:{stata net get geo2xy:download the U.S. state boundaries datasets}} 
+distributed with it if you haven't done so already.
+
+{pstd}
+Let's say that the current data in memory describes a few attractions
+in Texas with their locations and you want to create concentric circles
+of 30k and 100km around each attraction. To avoid identifier conflicts,
+the example negates the identifiers for the state boundary polygons.
+
+        {cmd}. gen distance = 30
+        . expand 2
+        . bysort attractions: replace distance = 100 if _n == 2
+        . list, sepby(attractions) noobs
+        
+        . geocircles lat lon distance, data("data.dta") coor("coor.dta") replace
+        
+        . use "geo2xy_us_coor.dta", clear
+        . keep if _ID == 51
+        . replace _ID = -_ID
+        . append using "coor.dta"
+        . append using "data.dta"
+
+        . geo2xy lat lon, gen(y0 x0)
+        . geo2xy _Y _X, gen(y x)
+        
+        . scatter y0 x0, msymbol(smplus) mcolor(red) ///
+		|| ///
+		line y x if _ID > 0, lwidth(vthin) lcolor(eltblue) cmissing(n) ///
+		|| ///
+		line y x if _ID < 0, lwidth(vthin) lcolor(gray) cmissing(n) ///
+		ylabel(minmax, nogrid) yscale(off) xlabel(minmax, nogrid) xscale(off) ///
+		aspectratio(`r(aspect)') legend(off){txt}
+         {it:({stata geocircles_examples geocircles_ex3:click to run})}
+
+{pstd}
+Now let's assume that the data in memory contains some locations in Alaska
+and you want circles with a radius of 100km around each location.
+This is interesting because at this latitude,
+the choice of map projection will significantly affect
+the look of the map. 
+Creating a map of the state of Alaska requires shifting longitudes
+because some of the western islands are across the international date line.
+The Google Maps projection shows significant distortions
+as the circles are stretched towards the North.
+The Albers Equal-Area Conic Projection is well suited to show that
+the circles are of the same size.
+
+        {cmd}. list, noobs
+        
+        . geocircles lat lon 100, data("data.dta") coor("coor.dta") replace
+ 
+        . use "geo2xy_us_coor.dta", clear
+        . keep if _ID == 37
+        . replace _ID = -_ID
+        . append using "coor.dta"
+        . append using "data.dta"
+	
+        . replace _Y = lat if !mi(lat)
+        . replace _X = lon if !mi(lon)
+        . replace _ID = 0 if !mi(lon)
+        . gen double _XX = cond(_X > 0, _X - 180, _X + 180)
+	
+        . geo2xy _Y _XX, gen(y x) proj(albers)
+	
+        . scatter y x if _ID == 0, msymbol(smplus) mcolor(red) ///
+		|| ///
+		line y x if _ID < 0, lwidth(vthin) lcolor(eltblue) cmissing(n) ///
+		|| ///
+		line y x if _ID > 0, lwidth(vthin) lcolor(gray) cmissing(n) ///
+		ylabel(minmax, nogrid) yscale(off) xlabel(minmax, nogrid) xscale(off) ///
+		aspectratio(`r(aspect)') legend(off){txt}
+         {it:({stata geocircles_examples geocircles_ex4:click to run with a Google Maps projection})}
+         {it:({stata geocircles_examples geocircles_ex4a:click to run with the Albers projection})}
+
+
+{title:References and acknowledgements}
+
+{pstd}
+The formula for calculating a destination point using an initial bearing and
+distance comes from 
+{it:{browse "http://www.movable-type.co.uk/scripts/latlong.html":Latitude/longitude spherical geodesy formulae & scripts}}
+by Chris Veness.
+        
+{pstd}
+Thanks to Luca Aguzzoni who asked about
+{browse "http://www.statalist.org/forums/forum/general-stata-discussion/general/989012-spmap-guidance-is-it-possible-to-draw-circles-around-dot":drawing circles on a map}
+on Statalist.
+My proof of concept solution evolved into {cmd:geocircles}
+which begs for map projections in Stata so this led to {cmd:geo2xy}.
+
+
+{title:Author}
+
+{pstd}Robert Picard{p_end}
+{pstd}picard@netbox.com{p_end}
+
+
+{title:Also see}
+
+{psee}
+SSC:  {stata "ssc des geo2xy":geo2xy}, {stata "ssc des geodist":geodist}, {stata "ssc des geonear":geonear},
+{stata "ssc des shp2dta":shp2dta}, {stata "ssc des spmap":spmap}
+{p_end}

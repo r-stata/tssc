@@ -1,0 +1,64 @@
+{smcl}
+{* 10sep2003}{...}
+{hline}
+help for {hi:nicedates}
+{hline}
+
+{title:Nice dates, especially for time series graphs}
+
+{p 8 15 2}
+{cmd:nicedates}
+[{it:yvarlist}] 
+{it:timevar}
+[{cmd:if} {it:exp}]
+[{cmd:in} {it:range}]
+[
+{cmd:,}
+{cmd:n(}{it:#}{cmd:)}
+]
+
+
+{title:Description}
+
+{p 4 4 2}
+{cmd:nicedates} shows a {help numlist} of "nice" dates as determined by 
+{help _tsnatscale} for {it:timevar}, which is normally a time variable.
+{cmd:nicedates} examines the display format of {it:timevar} to determine
+whether it includes daily, weekly, monthly, quarterly, half-yearly or yearly
+dates. If in doubt, the guess will be yearly, which implies that
+{cmd:nicedates} will give sensible answers with numeric variables other than
+dates. The list of nice dates is accessible after {cmd:nicedates} as 
+{cmd:r(dates)}. 
+
+{p 4 4 2}
+Other numeric variables {it:yvarlist} may also be specified. This may be useful 
+if a variable includes missing values for early and/or late values of 
+{it:timevar}, so that, for example, the time range of a graph will be less 
+than that of {it:timevar}. 
+
+
+{title:Options}
+
+{p 4 8 2}
+{cmd:n()} suggests a number of "nice" dates to be returned. The 
+default is 5. 
+
+
+{title:Examples}
+
+{p 4 8 2}{cmd:. webuse wpi1}{p_end}
+{p 4 8 2}{cmd:. nicedates wpi t}{p_end}
+{p 4 8 2}{cmd:. scatter wpi t, xla(`r(dates)')}
+
+
+{title:Author}
+
+        Nicholas J. Cox, University of Durham
+        n.j.cox@durham.ac.uk
+
+
+{title:Also see}
+
+{p 4 13 2}
+Online:  help for {help _tsnatscale}
+{p_end}

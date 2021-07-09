@@ -1,0 +1,157 @@
+{smcl}
+{* 31aug2007/7apr2009}{...}
+{hline}
+help for {hi:omninorm}
+{hline}
+
+{title:Omnibus test for univariate or multivariate normality}
+
+{p 8 17 2}{cmd:omninorm}
+{it:varlist}
+[{cmd:if} {it:exp}]
+[{cmd:in} {it:range}] 
+[{cmd:,}
+{cmdab:all:obs}
+{cmd:by(}{it:byvar}{cmd:)}
+{cmdab:miss:ing} 
+{cmdab:marg:inals}
+]
+
+{p 4 4 2}{cmd:by ... :} may also be used with {cmd:omninorm}: see help
+on {help by}. {it:varlist} may contain time-series operators; see help
+on {help varlist}.
+
+
+{title:Description}
+
+{p 4 4 2}{cmd:omninorm} performs an omnibus test for normality on one or
+several variables proposed by Doornik and Hansen (1994, 2008), itself based on
+a test by Shenton and Bowman (1977). The test statistic is based on
+transformations of skewness and kurtosis that are much closer to
+standard normal than the raw moment measures. The test may be applied to
+a set of variables, such as the residuals from a multivariate
+regression. Doornik and Hansen conducted simulations that illustrate
+that this test will generally have better size and power than several
+proposed in the literature, including the multivariate Shapiro-Wilk test
+of Royston (1983). They find that their omnibus test "is simple, has
+correct size and good power properties" (Doornik and Hansen 2008, p.936). 
+
+{p 4 4 2}Under the null hypothesis of normality of the specified k variables, 
+the test statistic is distributed chi-squared with 2 k degrees of
+freedom. An asymptotic form of the test is also provided, which is essentially
+a multivariate equivalent of the Bowman and Shenton (1975) test, which those
+authors consider "unsuitable, except in very large samples" (Doornik 
+and Hansen 2008, p.928).
+
+
+{title:Options}
+
+{p 4 8 2}{cmd:allobs} specifies use of the maximum possible number of
+observations for each variable. The default is to use only those
+observations for which all variables in {it:varlist} are not missing. 
+This option bites only if {cmd:marginals} is also specified. 
+
+{p 4 8 2}{cmd:by()} specifies a variable defining distinct groups for
+which statistics should be calculated. {cmd:by()} is allowed only with a
+single {it:byvar}. The choice between {cmd:by:} and {cmd:by()} is
+partly one of precisely what kind of output display is required. The
+display with {cmd:by:} is clearly structured by groups while that with
+{cmd:by()} is more compact. To show statistics for the marginal
+distributions of several variables and several groups with a single call 
+to {cmd:omninorm}, the display with {cmd:by:} is essential.
+
+{p 4 8 2}{cmd:marginals} specifies that whenever several variables
+are specified, univariate (i.e. marginal) tests are to be carried out for 
+each. 
+
+{p 4 8 2}{cmd:missing} specifies that with the {cmd:by()} option
+observations with missing values of {it:byvar} should be included in
+calculations. The default is to exclude them. 
+
+
+{title:Examples}
+
+{p 4 8 2}{stata "use http://fmwww.bc.edu/ec-p/data/micro/iris,clear": . use http://fmwww.bc.edu/ec-p/data/micro/iris,clear}{p_end}
+{p 4 8 2}{stata "omninorm set_sepl set_sepw set_petw set_petl": . omninorm set_sepl set_sepw set_petw set_petl}{p_end}
+{p 4 8 2}{stata "omninorm set_sepl set_sepw set_petw set_petl, marginals" : . omninorm set_sepl set_sepw set_petw set_petl, marginals}
+
+
+{marker s_citation}{title:Citation of omninorm}
+
+{p 4 4 2}{cmd:omninorm} is not an official Stata command. 
+It is a free contribution
+to the research community, like a paper. Please cite it as such: {p_end}
+
+{phang}Baum, C.F., Cox, N.J. 2007.
+omninorm: Stata module to calculate omnibus test for univariate/multivariate normality.
+{browse "http://ideas.repec.org/c/boc/bocode/s417501.html":http://ideas.repec.org/c/boc/bocode/s417501.html}{p_end}
+
+
+{title:Acknowledgments}
+
+{phang}We are grateful to William Gould for assistance with Mata programming.
+
+
+{title:Authors}
+
+{p 4 4 2}Christopher F. Baum, Boston College, USA{break}
+baum@bc.edu
+
+{p 4 4 2}Nicholas J. Cox, Durham University, U.K.{break} 
+n.j.cox@durham.ac.uk
+
+
+{title:References}
+
+{p 4 8 2}
+Bowman, K.O. and Shenton, L.R. 
+1975. 
+Omnibus test contours for departures from normality based on root-b1 and b2. 
+{it:Biometrika} 62: 243{c -}250.
+
+{p 4 8 2}
+Doornik, Jurgen A. and Hansen, Henrik. 
+1994. 
+An omnibus test for univariate and multivariate normality. 
+Working Paper, Nuffield College, University of Oxford. See
+{browse "http://ideas.repec.org/p/nuf/econwp/9604.html":http://ideas.repec.org/p/nuf/econwp/9604.html}
+or 
+{browse "http://www.doornik.com/research/normal2.pdf":http://www.doornik.com/research/normal2.pdf}
+
+{p 4 8 2}
+Doornik, Jurgen A. and Hansen, Henrik. 
+2008. 
+An omnibus test for univariate and multivariate normality. 
+{it:Oxford Bulletin of Economics and Statistics} 
+70: 927{c -}939. 
+
+{p 4 8 2}
+Royston, J.P.
+1983. 
+Some techniques for assessing multivariate normality based on the Shapiro-Wilk W. 
+{it:Applied Statistics} 32: 121{c -}133.
+
+{p 4 8 2}
+Shenton, L.R. and Bowman, K.O. 
+1977. 
+A bivariate model for the distribution of root-b1 and b2. 
+{it:Journal of the American Statistical Association} 72: 206{c -}211.
+
+
+{title:Saved results} 
+
+{p 4 4 2}(for last-named variable or group only)
+
+        r(df)        degrees of freedom of test 
+        r(k)         number of variables in test 
+        r(dhansen)   Doornik-Hansen test statistic 
+        r(p_dhansen) P-value of above    
+        r(asy)       asymptotic test statistic 
+        r(p_asy)     P-value of above
+
+
+{title:Also see}
+
+{p 4 13 2}
+Online: {help sktest}, {help swilk}  
+

@@ -1,0 +1,95 @@
+{smcl}
+{* 15jul2001}{...}
+{hline}
+help for {hi:levinlin}{right:(StataList distribution 16 July 2001)}
+{hline}
+
+{title:Levin-Lin-Chu panel unit root test}
+
+{p 8 14}{cmd:levinlin} {it:varname} 
+[{cmd:if} {it:exp}] [{cmd:in} {it:range}] {cmd:,lags({it:numlist})} [ {cmdab:noc:onstant}
+{cmdab:t:rend} ]
+
+{p}{cmd:levinlin} is for use with panel data.  You must {cmd:tsset} your
+data before using {cmd:levinlin}, using the panel form of {cmd:tsset}; see help {help tsset}.
+
+{p} {it:varname} may contain time-series operators; see help {help varlist}.
+
+{p} Users of Stata 11+ should use the official {cmd:xtunitroot llc} command.
+
+{title:Description}
+
+{p}{cmd:levinlin} estimates the panel unit root test developed by Levin, Lin and Chu (LLC, 2002). 
+The test assumes that each individual unit in the panel shares the same AR(1) coefficient,
+but allows for individual effects, time effects and possibly a time trend. Lags of the
+dependent variable may be introduced to allow for serial correlation in the errors. The test may
+be viewed as a pooled Dickey-Fuller test, or an Augmented Dickey-Fuller (ADF) test when lags are
+included, with the null hypothesis that of nonstationarity (I(1) behavior). 
+After transformation by factors provided by LLC, the t-star statistic is  
+distributed standard normal under the null hypothesis of nonstationarity.
+
+The test differs from Taylor and Sarno's (1998) multivariate ADF test, 
+{help madfuller}, in that the latter is estimated using the seemingly unrelated 
+regressions (SUR) estimator (that is, with an equation for each individual) under 
+the same constraint of a single autoregressive parameter across individuals. 
+The MADF test cannot be employed on large-N, small-T panels, since T must exceed N 
+in standard SUR. This restriction does not apply to the LLC test.
+
+{p}
+
+
+{title:Options}
+
+{p 0 4}{cmd:lags} must be specified, and may take on any non-negative value. If a single
+value is provided, that lag length is used for all individuals. If a list of lags is 
+provided (perhaps with a local macro), its length must match the number of individuals
+in the panel.
+
+{p 0 4}{cmd:noconstant} omits the constant term from the estimated equation (LLC case 1).
+
+{p 0 4}{cmd:trend} includes a time trend in the estimated equation (LLC case 3).
+
+{title:Examples}
+
+{p 8 12}{inp:.} {stata "use http://fmwww.bc.edu/ec-p/data/hayashi/sheston91.dta,clear":use http://fmwww.bc.edu/ec-p/data/hayashi/sheston91.dta,clear}
+
+{p 8 12}{inp:.} {stata levinlin rgdppc if country<11, lag(2)}
+
+{p 8 12}{inp:.} {stata levinlin rgdppc if country<11, lag(2 2 2 3 3 3 4 4 4 4)}
+
+{p 8 12}{inp:.} {stata levinlin D.rgdppc if country<11, lag(2) trend}
+
+{title:References}
+
+Banerjee, Anindya. Panel Data Unit Roots and Cointegration: An Overview.
+Oxford Bulletin of Economics and Statistics, Special Issue, 607-629, 1999.
+
+Levin, Andrew, Lin, Chien-Fu and Chia-Shang James Chu. Unit Root Tests in 
+Panel Data: Asymptotic and Finite Sample Properties. Journal of Econometrics, 
+108, 1-24, 2002.
+
+Maddala, G.S. and In-Moo Kim. Unit Roots, Cointegration, and Structural Change,
+Cambridge: Cambridge University Press, 1998.
+
+Taylor, Mark P. and Lucio Sarno. The behavior of real exchange rates during
+the post-Bretton Woods period. Journal of International Economics, 46,
+1998, 281-312.
+
+{title:Acknowledgements}
+
+We are very grateful to Gene Liang for pointing out discrepancies in this
+routine and providing detailed output from his routines, to J.J.A. Ewalts for 
+bringing an issue with lag truncation to our attention, to Claudio E. Raddatz
+for pointing out a flaw in our error-checking logic and to Lilin Liang
+for detecting a problem with tempnames. Remaining errors are
+ours.
+
+{title:Authors}
+
+Fabian Bornhorst, European University Institute, Italy, Fabian.Bornhorst@iue.it
+Christopher F Baum, Boston College, USA, baum@bc.edu
+
+
+{title:Also see}
+
+{p 0 19}On-line:  help for {help est}, {help reg3}, {help dfuller}, {help madfuller} (if installed)  {p_end}

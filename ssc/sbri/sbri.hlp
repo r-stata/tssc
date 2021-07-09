@@ -1,0 +1,43 @@
+{smcl}
+{* 25sep2006}{...}
+{hline}
+help for {hi:sbri} 
+{hline}
+
+{title:Spearman-Brown reliability}
+
+{p 8 24 2}
+{cmd:sbri} [{cmd:,} {cmdab:obs(}{it:#}{cmd:)} {cmdab:f:ormat(%}{it:fmt}{cmd:)}  ]   
+
+{title:Description}
+
+{p 4 4 2}
+{cmd:sbri} calculates the Spearman-Brown reliability. It must be used after {cmd:xtreg} with the
+{cmd: mle} (maximum-likelihood random-effects estimator) option. It is an immediate command.
+
+{title:Options}
+
+{p 4 8 2} {cmdab:obs(}{it:#}{cmd:)} specifies the number of repeated measurements. The default is e(g_avg).
+
+{p 4 8 2}{cmdab:f:ormat(%}{it:fmt}{cmd:)} specifies the display format for presenting numbers. The default is %3.2f. {p_end}
+
+{title:Examples}
+
+{p 4 8 2}{stata "use http://www.stata-press.com/data/r9/auto7"}{p_end}
+{p 4 8 2}{stata "loneway mpg manufacturer_grp if nummake == 4"}{p_end}
+{p 4 8 2}{stata " xtreg mpg  if nummake == 4 , i(manufacturer_grp) mle"}{p_end}
+{p 4 8 2}{stata "sbri"}{p_end}
+
+{title:Authors}
+
+{p 4 4 2}Nicola Orsini, Division of Nutritional Epidemiology, IMM, Karolinska Institutet, Sweden
+
+{title:Also see}
+ 
+{p 4 13 2} Manual:  {hi:[U] 23 Estimation and post-estimation commands},{break}
+{hi:[U] 29 Overview of Stata estimation commands},{break}
+{hi:[XT] xtreg}
+  
+{p 4 13 2}
+Online:  help for {help loneway} , {help xtreg}
+ 

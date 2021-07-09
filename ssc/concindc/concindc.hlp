@@ -1,0 +1,118 @@
+{smcl}
+{hline}
+help for {cmd:concindc} {right:Zhuo (Adam) Chen; Centers for Disease Control and Prevention}
+{hline}
+
+{title:Estimating concentration index with grouped and microdata: categorical/actual welfare measure.}
+
+
+{p 4 4 2}{cmd:concindexi} [{it:varlist}] [{it:if}] [{it:in}] [{it:weight}]  {cmd:,}
+ {cmdab:w:elfarevar}{cmd:(}{it:varname}{cmd:)}
+ [ {cmdab:S:igmavar}{cmd:(}{it:varname}{cmd:)}]
+
+
+
+ 
+{p 4 4 2}where:
+
+{p 4 4 2}{it:welfarevar} is the welfare variable to be used (can be categorical or continuous but must be ordered. Midpoints are permissible), required.
+
+{p 4 4 2}{it:Sigmavar} is the provided standard error of group means. The default is to estimate the group means with microdata (the correct way to do when microdata is used) and assume they are zero with grouped data if they are not provided.
+
+
+{title:Description}
+
+{p 4 6 2}{cmd:concindc} computes the concentration index (CI) for micro data with a categorical welfare variable or grouped data. See Kakwani, Wagstaff and van Doorslaer (1997).  Note that although it was originally designed for microdata
+ with a categorical welfare variable, it can handle grouped data and microdata with actual (not categorical) welfare variable. They could be treated as a special case of microdata with categorical welfare measure: 
+ there is only one observation for each category. For grouped data, since the program can handle frequency weight, the group sizes can essentially be treated as frequency weights. The program also can use standard error of group means of the health outcome if supplied.
+ If not, it will be estimated as the standard deviation of health outcomes.
+
+
+{title:Formulas}
+
+{p 4 4 2}The concentration index is computed as:
+
+                  C = 2*Sum[f_t*miu_t*R_t]/miu -1
+
+
+{p 4 4 2}f_t is the population share of the welfare group t the individual belongs to
+
+{p 4 4 2}miu is the overall mean
+
+{p 4 4 2}R_t his fractional rank in the socioeconomic distribution
+
+{p 4 4 2}miu_t is the group mean
+
+{p 4 4 2}Standard errors of C are obtained by a "covariance" or "formula" method:
+
+
+                  Var(C) =  (sum[f_t*(a_t)^2] -(1+C)^2)/n 
+                               + sum(f_t*(sigma_t)^2(2*R_t-1-C))^2/(n*miu^2)
+
+{p 4 4 2}where:
+
+
+
+                  a =  ( 2*R_t- 1 - C)*miu_t/miu + 2 - q_(t-1) - q_t
+
+{p 4 4 2}and:
+                  q_t = sum-(i from 1 to t)-(miu_i*f_i)
+
+{p 4 4 2} is the ordinate of the concentration curve L(p), and q_0 = 0.
+
+{p 4 4 2}and:
+                  sigma_t is the provided or estimated standard error of group means.
+
+
+ 
+{title:Examples}
+{p 4 4 2}   {cmd:. use "http://chenzhuo.org/Documents/concindc.dta"}
+{it:({stata "use http://chenzhuo.org/Documents/concindc.dta": click to run})}
+
+{p 4 4 2}{cmd:. concindc health3w, welf(inc3w)  }{p_end}
+{it:({stata "concindc health3w, welf(inc3w)  ": click to run})}
+
+{p 4 4 2}{cmd:. concindc health3w , welf(inc3w) sig(stdh3w)  }{p_end}
+{it:({stata "concindc health3w , welf(inc3w) sig(stdh3w)  ": click to run})}
+
+{p 4 4 2}{cmd:. concindc health3w [aw=wt3w], welf(inc3w) sig(stdh3w)  }{p_end}
+{it:({stata "concindc health3w [aw=wt3w], welf(inc3w) sig(stdh3w)  ": click to run})}
+
+{p 4 4 2}{cmd:. concindc health3w [aw=wt3w], welf(inc3w) }{p_end}
+{it:({stata "concindc health3w [aw=wt3w], welf(inc3w) ": click to run})}
+
+{ p 4 4 2} The last two commands reproduce the results in the World Bank spread sheet
+ {browse "http://siteresources.worldbank.org/INTPAH/Resources/Publications/Quantitative-Techniques/concentration_index.xls":concentration_index.xls}
+
+{title:Saved Results}
+
+{p 4 4 2}Concentration index: r(concindex);
+
+{p 4 4 2}Standard error of concentration index: r(stdci);
+
+{title:Author}
+
+{p 4 4 2}
+Zhuo (Adam) Chen,
+Economist and Preventive Effectiveness Fellow, Centers for Disease Control and Prevention;
+Visiting Scholar, The Chicago Center of Excellence in Health Promotion Economics, The University of Chicago.
+
+{p 4 4 2}Email: {browse "mailto:zchen1@cdc.gov":zchen1@cdc.gov}, {browse "mailto:chenzhuo@gmail.com":chenzhuo@gmail.com}
+
+
+
+{title:Also see}
+
+{p 4 4 2} Online:   help for {help concindexi}, {help concindexg}, {help ineqdeco}, {help inequal}, {help povdeco}, {help ineqerr} if installed. {p_end}
+
+{title:Disclaimer}
+{ p 4 4 2} This software was written by Zhuo (Adam) Chen in his private capacity. No official support or endorsement by the Department of Health and Human Services, Centers for Disease Control and Prevention is intended, nor should it be inferred.
+ 
+{ p 4 4 2} I am grateful to Kakoli Roy, PhD, Centers for Disease Control and Prevention, for comments and help but I take the full responsibility for any remaining errors.
+
+
+{title:References} 
+
+{p 4 8 2} Kakwani, N., Wagstaff A., & van Doorslaer E. 1997. 
+Socioeconomic inequalities in health: Measurement, computation, and statisical inference. {it:Journal of Econometrics} 77: 87{c -}103.
+{p 4 8 2} Wagstaff et al. Quantitative Techniques for Health Equity Analysis, {it: Technical Notes #7}.

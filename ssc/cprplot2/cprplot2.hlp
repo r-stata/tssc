@@ -1,0 +1,195 @@
+{smcl}
+{* 16sep2008}{...}
+{hline}
+help for {hi:cprplot2}, {hi:cprplots2}
+{hline}
+
+{title:Graph component-plus-residual plots for transformed regressors}
+
+{p 8 16 2}{cmd:cprplot2} {it:varlist} [{cmd:if} {it:exp}]
+ [{cmd:in} {it:range}] [{cmd:,}
+{cmdab:retr:ansform(}{it:exp}{cmd:)}
+{cmdab:yretr:ansform(}{it:exp}{cmd:)}
+{cmd:rlopts(}{it:cline_options}{cmd:)}
+{cmdab:low:ess} {cmd:lsopts(}{it:lowess_options}{cmd:)}
+{cmdab:msp:line} {cmd:msopts(}{it:mspline_options}{cmd:)}
+{cmdab:lp:oly} {cmd:lpopts(}{it:lpoly_options}{cmd:)}
+{cmd:plot(}{it:plot}{cmd:)}
+{it:scatter_options}
+{it:twoway_options}
+]
+
+{p 8 16 2}{cmd:cprplots2}  {it:vargroups} [{cmd:if} {it:exp}]
+ [{cmd:in} {it:range}] [{cmd:,}
+{cmdab:retr:ansform(}{it:explist}{cmd:)}
+{cmdab:yretr:ansform(}{it:explist}{cmd:)}
+{cmd:rlopts(}{it:cline_options}{cmd:)}
+{cmdab:low:ess} {cmd:lsopts(}{it:lowess_options}{cmd:)}
+{cmdab:msp:line} {cmd:msopts(}{it:mspline_options}{cmd:)}
+{cmdab:lp:oly} {cmd:lpopts(}{it:lpoly_options}{cmd:)}
+{it:scatter_options}
+{it:combine_options}
+]
+
+    where {it:vargroups} is
+
+        "{it:varlist}" "{it:varlist}" ...
+
+    and {it:explist} is
+
+        "{it:exp}" "{it:exp}" ...
+
+
+{p 4 4 2}
+{cmd:cprplot2} and {cmd:cprplots2} are for use after {cmd:regress} and
+{cmd:anova}; see help {help regress} and {help anova}.
+
+
+{title:Description}
+
+{p 4 4 2}{cmd:cprplot2} is a variation of official Stata's {cmd:cprplot} (see
+help {help cprplot}) and is used for graphing component-plus-residual plots
+(a.k.a. partial residual plots). There are three main additional features
+(compared to {cmd:cprplot}):
+
+{p 4 8 2}(1) The partial residuals (and the "partial" predictions that are
+used to draw the reference line) can be computed taking into account
+multiple variables (the {it:varlist}). These adjusted values are then
+plotted against the {it:first} variable in {it:varlist}. {cmd:cprplot2} can
+therefore be used to produce a single component-plus-residual plot for a
+variable that enters the model repeatedly via different transformations
+(for example, polynomials). Note that all variables in {it:varlist} must be
+independent variables currently included in the model.
+
+{p 4 8 2}(2) Regressors entering the model via a univariate transformation
+can be re-transformed before drawing the plots using the {cmd:retransform()}
+option. It is thus possible to display the plots using the original units
+of the regressors. Naturally, the reference line (i.e. the line representing
+the predictions from the model being estimated) will be curved in the
+re-transformed plot. Moreover, it is possible to re-transform the-right
+hand side of the equation, i.e. the partial residuals, using the
+{cmd:yretransform()} option. This may be useful for models with a
+transformed dependent variable.
+
+{p 4 8 2}(3) The {cmd:cprplots2} command offers the possibility of quickly
+displaying several component-plus-residual plots in a single image. If
+{it:vargroups} is omitted, component-plus-residual plots are
+graphed for all independent variables in the model. {cmd:cprplots2} is
+implemented as a wrapper for {cmd:cprplot2} and supports features (1)
+and (2) discussed above.
+
+{p 4 4 2}{cmd:cprplot2} only uses observations that are in the estimation 
+sample. Use {cmd:if} and {cmd:in} to further restrict the sample.
+
+
+{title:Options}
+
+{p 4 8 2} {cmd:retransform(}{it:exp}{cmd:)} specifies that the regressor
+used in the graph be transformed through the application of {it:exp} (see
+help {help exp}). Use {cmd:@} as a placeholder for the regressor in
+{it:exp}. For example, assume that the regressor has been centered for the
+purpose of model estimation and that the sample mean of the regressor is
+21.2973. To use the original scale of the regressor in the plot, specify
+{cmd:retransform(@+21.2973)}. If {it:exp} does not contain {cmd:@}, {cmd:@}
+is appended to the end of {it:exp} in parentheses. Thus, say, {cmd:retransform(exp)}
+is equivalent to {cmd:retransform(exp(@))}.
+
+{p 8 8 2}If you use {cmd:retransform()} with {cmd:cprplots2}, specify
+either a single {it:exp} (enclosed in double quotes if containing blanks)
+to be applied to all plots or a list of {it:exp}s to be applied one after
+another to the individual plots. Enclose individual {it:exp}s that contain
+blanks with double quotes. Type {cmd:""} to indicate that no transformation
+be applied to a certain plot. Example: {bind:{cmd:retransform("" "1/@" "")}}.
+
+{p 4 8 2} {cmd:yretransform(}{it:exp}{cmd:)} specifies that the
+partial residuals (and the "partial" predictions which are used to draw the
+reference line) be transformed. See the {cmd:retransform()} option above.
+
+{p 4 8 2}
+{cmd:rlopts(}{it:cline_options}{cmd:)} affect the rendition of the reference
+curve; see help {help cline_options}.
+
+{p 4 8 2}
+{cmd:lowess} adds a lowess smooth of the plotted points in order to assist in
+detecting nonlinearities.
+
+{p 4 8 2}
+{cmd:lsopts(}{it:lowess_options}{cmd:)} affect the rendition of the lowess
+smooth; see help {help twoway_lowess}.  Specifying {cmd:lsopts()} implies the
+{cmd:lowess} option.
+
+{p 4 8 2}
+{cmd:mspline} adds a median spline of the plotted points in order to assist in
+detecting nonlinearities.
+
+{p 4 8 2}
+{cmd:msopts(}{it:mspline_options}{cmd:)} affect the rendition of the median
+spline smooth; see help {help twoway_mspline}.  Specifying {cmd:msopts()}
+implies the {cmd:mspline} option.
+
+{p 4 8 2}
+{cmd:lpoly} adds a local polynomial smooth of the plotted points in order to assist in
+detecting nonlinearities. Stata 10 is required.
+
+{p 4 8 2}
+{cmd:lpopts(}{it:lpoly_options}{cmd:)} affect the rendition of the local polynomial 
+smooth; see help {help twoway_lpoly}.  Specifying {cmd:lpopts()}
+implies the {cmd:lpoly} option.  Stata 10 is required.
+
+{p 4 8 2}
+{cmd:plot(}{it:plot}{cmd:)} provides a way to add other plots to the generated
+graph; see help {help plot_option}.
+
+{p 4 8 2}
+{it:scatter_options} affect the rendition of the plotted points; see help
+{help scatter}.
+
+{p 4 8 2}
+{it:twoway_options} are any of the options documented in help
+{help twoway_options} excluding {cmd:by()}.  These include options for titling
+the graph (see help {help title_options}) and options for saving the graph to
+disk (see help {help saving_option}).
+
+{p 4 8 2}
+{it:combine_options} are any of the options documented in help
+{help graph_combine}.  These include options for titling the graph (see help
+{help title_options}) and options for saving the graph to disk
+(see help {help saving_option}).
+
+
+{title:Examples}
+
+        {inp}. sysuse auto
+        . generate mpg2 = mpg^2
+        . generate mpg3 = mpg^3
+        . regress price weight mpg mpg2 mpg3
+        . cprplot2 mpg mpg2 mpg3
+        . cprplots2 weight "mpg mpg2 mpg3"
+        {txt}
+
+        {inp}. generate lnmpg = ln(mpg)
+        . regress price weight lnmpg
+        . cprplot2 lnmpg, retransform(exp(@))
+        . cprplots2 weight lnmpg, retransform("" "exp(@)")
+        {txt}
+
+        {inp}. gen lnweight = ln(weight)
+        . reg lnweight mpg
+        . cprplots2 mpg mpg , yretransform("" "exp(@)")
+        {txt}
+
+{title:Author}
+
+{p 4 8 2}
+Ben Jann, ETH Zurich, jann@soz.gess.ethz.ch
+
+
+{title:Also see}
+
+{p 4 13 2}
+Manual:  {hi:[R] regress},{break}
+{hi:[R] regression diagnostics}
+
+{p 4 13 2}
+Online:  help for {help graph}, {help regdiag}, {help anova},
+{help regress}, {help functions}

@@ -1,0 +1,126 @@
+{smcl}
+{* 30apr2011/28apr2020}{...}
+{cmd:help favplot/favplots} 
+{hline}
+
+{title:Formatted added-variable plot(s)}
+
+{title:Syntax}
+
+{p 8 18 2}
+{cmd:favplot} {it:{help indepvars:indepvar}} [{cmd:,} {it:favplot_options} {it:formatting_options}]
+
+{p 8 18 2}
+{cmd:favplots} [{cmd:,} {it:favplots_options} {it:formatting_options}]
+
+
+{title:Description}
+
+{pstd}
+{cmd:favplot} graphs an added-variable plot (a.k.a. partial-regression
+leverage plot, partial regression plot, or adjusted partial residual
+plot) after {cmd:regress}.  {it:indepvar} may be an independent variable
+(a.k.a.  predictor, carrier, or covariate) that is currently in the
+model or not.
+
+{pstd}
+{cmd:favplots} graphs all the added-variable plots in a single image.
+
+{pstd}
+These commands differ from official commands {cmd:avplot} and
+{cmd:avplots} only in presentation, including the ability to control the
+formats of coefficient estimates and t statistics. 
+
+{title:Options for favplot}
+
+INCLUDE help gr_markoptf
+
+{phang}
+{opt rlop:ts(cline_options)} affect the rendition of the reference line.  See 
+{it:{help cline_options}}.
+
+{phang}
+{opt addplot(plot)} provides a way to add other plots to the generated graph.
+See {it:{help addplot_option}}.
+
+{phang}
+{it:twoway_options} are any of the options documented in 
+{it:{help twoway_options}}, excluding {opt by()}.  These include the options
+for titling the graph (see {it:{help title_options}}) and options for saving
+the graph to disk (see {it:{help saving_option}}).
+
+
+{title:Options for favplots}
+
+INCLUDE help gr_markoptf
+
+{phang}
+{it:combine_options} are any of the options documented in 
+{helpb graph combine}.  These include options for titling the graph (see 
+{it:{help title_options}}) and options for saving the graph to disk (see 
+{it:{help saving_option}}).
+
+{phang}
+{opt rlop:ts(cline_options)} affect the rendition of the reference line.  See 
+{it:{help cline_options}}.  
+
+
+{title:Formatting options}
+
+{phang}	
+{opt bformat(format)} controls the display format to show coefficient
+(b) estimates. The default is %6.0g. See {it:{help format}}. 
+
+{phang}	
+{opt tformat(format)} controls the display format to show t statistics.
+The default is %3.2f. See {it:{help format}}. 
+
+{phang}
+{opt vartitle(tinfo)} tunes the display of the main title of each
+added-variable plot, which shows the variable label (or if no label has
+been assigned, the variable name} for each {it:indepvar} shown. Example:
+{cmd:vartitle(size(*1.4))}. See {it:{help title_options}}. 
+
+{phang}
+{opt tbtitle(tinfo)} tunes the display of the subtitle of each
+added-variable plot, which shows the t statistic and b estimate for each
+{it:indepvar} shown. Example: {cmd:tbtitle(size(*1.4))}. 
+See {it:{help title_options}}. 
+
+
+{title:Examples}
+
+{phang2}{cmd:. sysuse auto}{p_end}
+{phang2}{cmd:. regress price weight foreign##c.mpg}{p_end}
+
+{pstd}Added-variable plot{p_end}
+{phang2}{cmd:. favplot mpg}{p_end}
+
+{phang2}{cmd:. favplot 1.foreign}{p_end}
+
+{pstd}Added-variable plots for every regressor{p_end}
+{phang2}{cmd:. favplots}{p_end}
+
+{phang2}{cmd:. favplots, ms(Oh) yla(, ang(h))}{p_end}
+
+
+{title:Acknowledgments}
+
+{pstd}David Airey 
+({browse "https://www.stata.com/statalist/archive/2011-05/msg00613.html":https://www.stata.com/statalist/archive/2011-05/msg00613.html})
+and Nikos Kakouros 
+({browse "https://www.statalist.org/forums/forum/general-stata-discussion/general/1544070-graph-for-multiple-regression":https://www.statalist.org/forums/forum/general-stata-discussion/general/1544070-graph-for-multiple-regression}) 
+pointed out that these commands did not support factor variables. 
+
+
+{title:Author} 
+
+{pstd}Nicholas J. Cox, Durham University{break} 
+      n.j.cox@durham.ac.uk 
+
+
+{title:Also see}
+
+{psee}
+Manual:  {bf:[R] regress postestimation}
+

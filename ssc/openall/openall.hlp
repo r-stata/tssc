@@ -1,0 +1,42 @@
+{smcl}
+{* 16nov2006}{...}
+{cmd:help openall}
+{hline}
+
+{title:Title}
+
+{p 4 8 2}
+{bf:openall -- Open many data sets by appending them}
+
+
+{title:Syntax}
+
+{p 8 17 2}
+{cmdab:openall} [files], [{cmd:directory}({it:string})] [{cmd:storefilename}({it:string})] [{cmd:insheet}]
+
+
+{title:Description}
+
+{p 4 4 2}
+{cmdab:openall} clears the currently active dataset, then appends together all the files specified.  
+
+
+{title:Options}
+
+{p 4 8 2}
+
+{cmd:files} specifies the files to append together.  The extension (e.g. ".dta") should not be specified.  Wildcards (e.g. *) are acceptable.  If not present, defaults to all Stata data files (.dta) in the current directory, or all .csv files if insheet is specified.
+
+{cmd:directory} specifies the directory the files are located in.  If not present, defaults to the current directory (see {help pwd}).
+
+{cmd:storefilename} specifies a variable to hold the filename from whence each observation came.
+
+{cmd:insheet} specifies that the files to be read in are in CSV format.
+
+{title:Examples}
+
+{p 4 8 2}
+
+openall pop_US* pop_CA*, directory(c:/data/) storefilename(file)
+
+openall sheet*, directory(c:/data/) insheet

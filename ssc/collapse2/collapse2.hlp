@@ -1,0 +1,97 @@
+{smcl}
+{* 3aug2004}{...}
+{hline}
+help for {hi:collapse2}}
+{hline}
+
+{title:Augmented version of {cmd:collapse} to make dataset of means, medians, etc.}
+
+{p 8 17 2}{cmd:collapse2} {it:clist} [{it:weight}] [{cmd:if} {it:exp}]
+        [{cmd:in} {it:range}] [{cmd:,} {cmd:by(}{it:varlist}{cmd:)}
+        {cmd:cw} {cmd:fast}]
+
+
+{p 4 4 2}where {it:clist} is either
+
+{p 8 17 2}[{cmd:(}{it:stat}{cmd:)}] {it:varlist} [ [{cmd:(}{it:stat}{cmd:)}]
+        {it:...} ]{p_end}
+{p 8 17 2}[{cmd:(}{it:stat}{cmd:)}] {it:target_var}{cmd:=}{it:varname}
+        [{it:target_var}{cmd:=}{it:varname} {it:...}]
+        [ [{cmd:(}{it:stat}{cmd:)}] {it:...}]
+
+{p 4 4 2}or any combination of the {it:varlist} or {it:target_var} forms, and
+{it:stat} is one of
+
+{p 8 20 2}{cmd:first}{space 7}first{p_end}
+{p 8 20 2}{cmd:last}{space 8}last{p_end}
+{p 8 20 2}{cmd:firstnm}{space 5}first non-missing{p_end}
+{p 8 20 2}{cmd:lastnm}{space 6}last non-missing{p_end}
+
+{p 8 20 2}{cmd:sd}{space 10}standard deviations{p_end}
+{p 8 20 2}{cmd:sum}{space 9}sums{p_end}
+{p 8 20 2}{cmd:rawsum}{space 6}sums ignoring optionally specified weight{p_end}
+
+{p 8 20 2}{cmd:count}{space 7}number of nonmissing observations{p_end}
+{p 8 20 2}{cmd:max}{space 9}maximums{p_end}
+{p 8 20 2}{cmd:min}{space 9}minimums{p_end}
+
+{p 8 20 2}{cmd:median}{space 6}medians{p_end}
+{p 8 20 2}{cmd:p1}{space 10}1st percentile{p_end}
+{p 8 20 2}{cmd:p2}{space 10}2nd percentile{p_end}
+{p 8 20 2}{it:...}{space 9}3rd -- 49th percentiles{p_end}
+{p 8 20 2}{cmd:p50}{space 9}50th percentile (same as {cmd:median}){p_end}
+{p 8 20 2}{it:...}{space 9}51st -- 97th percentiles{p_end}
+{p 8 20 2}{cmd:p98}{space 9}98th percentile{p_end}
+{p 8 20 2}{cmd:p99}{space 9}99th percentile{p_end}
+{p 8 20 2}{cmd:iqr}{space 9}interquartile range{p_end}
+
+{p 4 4 2}
+If {it:stat} is not specified, {cmd:mean} is assumed.
+
+{p 4 4 2}
+{cmd:aweight}s, {cmd:fweight}s, {cmd:pweight}s, and {cmd:iweight}s are
+allowed; see help {help weights} and see note concerning weights below.
+Statistic {cmd:sd} (standard deviation) is not allowed with {cmd:pweight}s.
+
+{p 4 4 2}
+{it:varlist} and {it:varname} in {it:clist} may contain time-series operators;
+see help {help varlist}.
+
+
+{title:Description}
+
+{p 4 4 2}
+{cmd:collapse2} is an extension of Stata's built-in {cmd:collapse} command, which converts the data in memory into a dataset of means, sums,
+medians, etc.
+It differs only in offering four additional "aggregation" operators: {cmd:first}, {cmd:last}, {cmd:firstnm}, and {cmd:lastnm}, described above.
+These are useful, for example, if you want to create a cross-section data set from annual data, with {it:initial} population as a variable.
+You must first {cmd:tsset} your data to use these additional operators.
+
+{p 4 4 2}For most details on the command, see help {help collapse}.
+
+{title:Examples}
+
+{p 4 8 2}{cmd:. collapse2 (first) startpop=pop (last) endpop=pop, by(country)}
+
+{p 4 8 2}{cmd:. collapse2 (firstnm) startknownpop=pop (lastnm) endknownpop=pop, by(country)}
+
+{p 4 8 2}{cmd:* Extract first available observation for pop and year it is for.}{p_end}
+{p 4 8 2}{cmd:. gen popdatastart = year if pop < .}{p_end}
+{p 4 8 2}{cmd:. collapse2 (firstnm) popdatastart startpop=pop, by(country)}{p_end}
+
+{title:Author}
+
+{p 4}David Roodman{p_end}
+{p 4}Center for Global Development {p_end}
+{p 4}Washington, DC{p_end}
+{p 4}droodman@cgdev.org{p_end}
+
+{title:Also see}
+
+    Manual:  {hi:[R] collapse}
+
+{p 4 13 2}
+Online:  help for {help collapse}, {help contract}, {help egen},
+{help statsby}, {help summarize},
+{help tabdisp}, {help table}
+

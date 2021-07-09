@@ -1,0 +1,123 @@
+/* 
+
+*! metannt dialog version 1.0.1, 13 May 2003, T. J. Steichen, steichen@triad.rr.com 
+*!    for metannt version 1.0,    9 May 2003, M. J. Bradburn, mike.bradburn@cancer.org.uk 
+
+Metan-based estimates of absolute benefit or risk
+-------------------------------------------------
+
+Syntax:  metannt , baseline(#[,#...#]) [ measure(or|rr|rd) size(#) confint(#,#) ]
+
+To install in User Statistics menu via Stata commands:
+  . window menu append item "stUserStatistics" "Metan-based NNT (metann&t)" "db metannt"
+  . window menu refresh
+To permanently install, place the commands in your -profile.do- file.
+
+*/
+
+VERSION 8.0
+
+INCLUDE _std_small
+INCLUDE header
+
+HELP hlp1, view("help metannt")
+RESET res1, label("Reset")
+
+DIALOG main, label("metannt 1.0 - Metan-based NNT") tabtitle("Main")
+BEGIN
+  TEXT     tx_base  10      10    150    .,                  ///
+     label("Baseline(s): # , # , ...")
+  EDIT     ed_base  10      30    330    .,                  ///
+     label("Baseline value(s)")                              ///
+     option("baseline")
+ 
+  CHECKBOX cb_effect 10     65    310    .,                  ///
+     label("Enter Values (default: use metan values)")       ///
+     onclickon(script main_opts_on)                          ///
+     onclickoff(script main_opts_off)
+
+  FRAME fr_enter     10     90    330   100 
+
+  GROUPBOX gb_stat   20     95     70    _ht5h,              ///
+     label("Measure")
+  RADIO    r_rr      25    115     50    .,                  ///
+     label("RR") first                                       ///
+     onclickon(script main_rr_on)                            ///
+     option("measure(rr)")
+  RADIO    r_or       @    _ss      @    .,                  ///
+     label("OR") middle                                      ///
+     onclickon(script main_or_on)                            ///
+     option("measure(or)")
+  RADIO    r_rd       @    _ss      @    .,                  ///
+     label("RD")   last                                      ///
+     onclickon(script main_rd_on)                            ///
+     option("measure(rd)")
+
+  TEXT     tx_size 180     115    150    .,                  ///
+     label("Effect Size: #")
+  EDIT     ed_size 100       @     40    .,                  ///
+     label("Effect Size")                                    ///
+     numonly                                                 ///
+     option("size")
+
+  TEXT     tx_ci   180     140    150    .,                  ///
+     label("Effect Size CI: # , #")
+  EDIT     ed_ci   100       @     70    .,                  ///
+     label("Effect Size CI")                                 ///
+     option("confint")
+END
+
+SCRIPT main_opts_on
+BEGIN
+  main.gb_stat.enable
+  main.r_rr.enable
+  main.r_or.enable
+  main.r_rd.enable
+  main.tx_ci.enable
+  main.ed_ci.enable
+  main.tx_size.enable
+  main.ed_size.enable
+END
+
+SCRIPT main_opts_off
+BEGIN
+  main.gb_stat.disable
+  main.r_rr.disable
+  main.r_or.disable
+  main.r_rd.disable
+  main.tx_ci.disable
+  main.ed_ci.disable
+  main.tx_size.disable
+  main.ed_size.disable
+END
+
+SCRIPT main_rr_on
+BEGIN
+   main.tx_size.setlabel "Effect Size:      # > 0"
+   main.tx_ci.setlabel   "Effect Size CI: 0 < # , #"
+END
+
+SCRIPT main_or_on
+BEGIN
+   main.tx_size.setlabel "Effect Size:      # > 0"
+   main.tx_ci.setlabel   "Effect Size CI: 0 < # , #"
+END
+
+SCRIPT main_rd_on
+BEGIN
+   main.tx_size.setlabel "Effect Size:      -1 < # < 1"
+   main.tx_ci.setlabel   "Effect Size CI: -1 < # < 1"
+END
+
+PROGRAM command
+BEGIN
+  require main.ed_base
+  require main.ed_size
+  put "metannt "
+  beginoptions
+    option radio(main r_rr r_or r_rd) 
+    optionarg main.ed_base
+    optionarg main.ed_size
+    optionarg main.ed_ci
+  endoptions
+END

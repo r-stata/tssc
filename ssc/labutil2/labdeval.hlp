@@ -1,0 +1,130 @@
+{smcl}
+{* version 1.0.4 26oct2012}{...}
+{cmd:help labdeval}
+{hline}
+
+{title:Title}
+
+{p 5}
+{cmd:labdeval} {hline 2} Define value labels matching variable names
+
+
+{title:Syntax}
+
+{p 5}
+Define new value labels matching variable names 
+
+{p 8}
+{cmd:labdeval} {varlist} {it:#} {bf:"}{it:label}{bf:"} 
+[{it:#} {bf:"}{it:label}{bf:"} {it:...}] 
+[{cmd:,} {opt modify} {opt replace} {opt define(lblname)}]
+
+
+{p 5}
+Copy existing value labels
+
+{p 8}
+{cmd:labdeval} [{varlist}] {cmd:, copy}[{cmd:(}{it:lblname}{cmd:)}] 
+[{opt replace}]
+
+
+{p 5}
+Attach value labels in memory to same-named variables
+
+{p 8}
+{cmd:labdeval} [{varlist}]
+
+
+{title:Description}
+
+{pstd}
+{cmd:labdeval} defines value labels matching variable names. Value 
+labels are attached to same-named variables in the dataset.
+
+{pstd}
+Specifying integer-to-text mappings defines value labels and attaches 
+them to {it:varlist}, using variable names as value label names.
+
+{pstd}
+Omitting integer-to-text mappings (and not specifying option 
+{opt copy}) attaches already defined value labels in memory to 
+same-named variables. If {it:varlist} is not specified it defaults to 
+all numeric variables in the current dataset.
+
+
+{title:Options}
+
+{phang}
+{opt modify} modifies existing value labels. See 
+{help label:label define}.
+
+{phang}
+{opt replace} allows existing value labels to be redefined. See 
+{help label:label define} in Stata 11.0 or higher.
+
+{phang}
+{opt def:ine(lblname)} defines a single value label, {it:lblname}, and 
+attaches it to all variables in {it:varlist}. Specifying {opt define} 
+is the same as combining the {help label:label define} and 
+{help label:label values} commands.
+
+{phang}
+{cmd:copy}[{cmd:(}{it:lblname}{cmd:)}] copies existing value labels. 
+If specified, value label {it:lblname} is copied and attached to 
+variables in {it:varlist} using variables' names as value label names. 
+Omitting {it:lblname} copies each variable's value label and attaches 
+it to the respective variable using its name. Think of {opt copy} as 
+{help labren:renaming} each variable's value label to match the 
+variable name. Old value labels are, however, not dropped from memory.
+
+
+{title:Examples}
+
+{phang2}{cmd:. sysuse nlsw88 ,clear}{p_end}
+
+{pstd}
+Define one value label set (i.e integer-to-text mappings) and attach 
+it to some variables using their names as value label names.
+
+{phang2}{cmd:. labdeval never_married south c_city 1 "yes" 0 "no"}
+{p_end}
+{phang2}{cmd:. describe}{p_end}
+
+{pstd}
+Define one value label, {hi:yesno}, and attach this label to the 
+variables.
+
+{phang2}{cmd:. labdeval never_married south c_city 1 "yes" 0 "no"}
+{cmd: , define(yesno)}{p_end}
+{phang2}{cmd:. describe never_married south c_city}{p_end}
+
+{pstd}
+Now reverse the above. That is, make a copy of value label {hi:yesno} 
+and attach it to variables using their names as value label names.
+
+{phang2}{cmd:. labdeval never_married south c_city ,copy(yesno)}
+{p_end}
+{phang2}{cmd:. describe never_married south c_city}{p_end}
+
+{pstd}
+Attach a copy of each variable's value label to that variable, using 
+its name as value label name.
+
+{phang2}{cmd:. labdeval ,copy replace}{p_end}
+{phang2}{cmd:. describe}{p_end}
+
+
+{title:Author}
+
+{pstd}Daniel Klein, University of Kassel, klein.daniel.81@gmail.com
+
+
+{title:Also see}
+
+{psee}
+Online: {help label}
+{p_end}
+
+{psee}
+if installed: {help labelrename}, {help valtovar}, {help labutil2}
+{p_end}

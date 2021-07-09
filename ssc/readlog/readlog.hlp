@@ -1,0 +1,73 @@
+.-
+help for ^readlog^
+.-
+
+Usage
+-----
+	^readlog^ , logfil(string)  [all(string) start(string) stop(string) 
+                                     spaces del]
+
+
+Description
+-----------
+^readlog^ reads in a file and processes it using some or all of the specified 
+          options.
+
+^readlog^ reads in a file line by line. Only certain lines are output. The 
+processing includes starting and stopping at lines containing certain strings, 
+including all lines with certain strings. ^readlog^ may also try to process 
+files for reading in a spreadsheet program. 
+
+With no options, it echoes all lines. Useful for combining with spaces.
+
+To do anything useful, you need to capture the output with "log using" 
+and "log close" before or after. Please tell me if you want this included as 
+part of the present command.
+
+Options
+-------
+all	Outputs all lines containing this string
+
+start
+stop    Includes all lines starting with "start" and "stop"
+
+spaces	Replaces certain character combinations with a semicolon ;
+	These include double spaces and "| ". These are combinations
+	that makes importing tables into a spreadsheet easier.
+
+del	deletes the original log-file
+
+Remarks
+-------
+
+	The "spaces" option is imperfect as a table processor. 
+	Suggestions for improvements are welcome.
+
+
+Examples
+--------
+
+1.	log using "processed output"
+        readlog , logfil("study.log") start("logistic regression") stop("->")
+	log close
+
+        Gives you the output of only the logistic regression in the logfile
+
+2.      log using "processed output"
+        readlog , logfil("study.log") start("logistic regression") stop("->") spaces
+	log close
+
+        Gives you the output of only the logistic regression in the logfile
+        and processes the outputs so that coefficients and confidence intervals
+        are easier to use
+
+
+Author
+------
+Jan Brogger, jan.brogger@@med.uib.no
+
+Shameless plug :)
+--------------
+ I am looking for internship & residency  in internal 
+ medicine/pulmonary medicine US/EU. Am doing PhD in respiratory 
+ epidemiology now. 

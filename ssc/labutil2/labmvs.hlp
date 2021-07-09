@@ -1,0 +1,136 @@
+{smcl}
+{* version 1.0.4 27mar2013}{...}
+{cmd:help labmvs}
+{hline}
+
+{title:Title}
+
+{p 5}
+{cmd:labmvs} {hline 2} Change numeric values associated with value 
+labels to extended missing values
+
+
+{title:Syntax}
+
+{p 8}
+{cmd:labmvs} [{varlist}] {ifin} 
+{cmd:, mv("}{it:label}{cmd:"}
+[{cmd:"}{it:label}{cmd:"} {it:...}]{cmd:)}
+[ {it:options} ]
+
+
+{title:Description}
+
+{pstd}
+{cmd:labmvs} changes numeric values associated with {it:labels} to 
+extended missing values. Numeric values are changed to successive 
+extended missing value codes, starting with {hi:.a}. Thus, the numeric 
+value associated with the first label specified, will be coded 
+{hi:.a}, the value associated with the second label, {hi:.b} and so 
+on. Value labels are modified accordingly.
+
+{pstd}
+Up to 26 labels may be specified in {opt mv()}. Enclose {it:label} in 
+double quotes if it contains embedded spaces. If {it:varlist} is not 
+specified it defaults to {hi:_all}. 
+
+{pstd}
+Although it is not recommended, the wild cards {hi:*} and {hi:?} may 
+be used in {it:label}, where the fromer means 0 or more characters, 
+the latter exactly one character. Specifying wild cards is discouraged, 
+as it might result in multiple numeric values changed to only one 
+missing value code, with the value label of the last numeric value 
+attached. This will not be reversible.
+
+{pstd}
+{hi:Reminder:} modifiactions in value labels affect all variables that 
+have the same value label as one of the variables in {it:varlist} 
+attached.
+
+
+{title:Remarks}
+
+{pstd}
+As of version 1.0.1 of the program, {cmd:labmvs} is compatiple with 
+Stata 9.2 (or higher). The code for {cmd:labmvs9} will not be removed 
+from the package, but I recommend using {cmd:labmvs} instead.
+
+
+{title:Options}
+
+{phang}
+{opt mv(labels)} specifies text in value labels indicating numeric 
+values to be changed to extended missing value codes. This is a 
+required option.
+
+{phang}
+{opt all:vars} changes numeric values to extended missing values in all 
+variables that have the same value label as one of the variables in 
+{it:varlist} attached.
+
+{phang}
+{opt case:sensitive} performs a case sensitive search for {it:labels} 
+in value labels.
+
+{phang}
+{opt nodel:ete} prevents {cmd:labmvs} from deleting value labels that 
+are changed. If specified, numeric missing values and extended missing 
+value codes will be associated with the same text.
+
+{phang}
+{opt f:mvc(mvc)} specifies the first 
+{help missing:extended missing value} code to be used. Default is 
+{hi:.a}. Note that the maximum number of labels allowed in {opt mv()} 
+will be reduced if {it:mvc} > {hi:.a}
+
+
+{title:Example}
+
+{phang2}{cmd:. sysuse nlsw88}{p_end}
+{phang2}{cmd:. tabulate race}{p_end}
+{phang2}{cmd:. label list racelbl}{p_end}
+
+{phang2}{cmd:. labmvs race ,mv(other)}{p_end}
+{phang2}{cmd:. tabulate race}{p_end}
+{phang2}{cmd:. tabulate race ,missing}{p_end}
+{phang2}{cmd:. label list racelbl}{p_end}
+
+{pstd}
+Decode missing values{p_end}
+{phang2}{cmd:. labmvs occ ,mv("Transport" "Sales")}{p_end}
+
+{pstd}
+Encode missing values using {help labmv}{p_end}
+{phang2}{cmd:. labmv `r(varlist)' ,mv(`r(occupation)') encode}{p_end}
+
+
+{title:Saved results}
+
+{pstd}
+{cmd:labmvs} saves the following in {cmd:r()}:
+
+{pstd}
+Macros{p_end}
+{synoptset 15 tabbed}{...}
+{synopt:{cmd:r(minmvc)}}minimum extended missing value code 
+(if specified){p_end}
+{synopt:{cmd:r(varlist)}}varlist (only variables that are changed){p_end}
+{synopt:{cmd:r(lblnamelist)}}value labels{p_end}
+{synopt:{cmd:r({it:varname})}}numeric values in {it:varname} that are
+changed{p_end}
+
+
+{title:Author}
+
+{pstd}Daniel Klein, University of Kassel, klein.daniel.81@gmail.com
+
+
+{title:Also see}
+
+{psee}
+Online: {help mvdecode}, {help label}
+{p_end}
+
+{psee}
+if installed: {help labelmiss}, {help labutil2}
+{p_end}

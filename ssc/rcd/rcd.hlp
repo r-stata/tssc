@@ -1,0 +1,131 @@
+{smcl}
+{cmd:help rcd}
+{hline}
+
+{title:Title}
+
+    {hi: recursively traverse directories and execute}
+    {hi: any command in or for each one of them}
+
+{title:Syntax}
+
+{p 8 17 2}
+{cmd:rcd}
+[{it:directory_name}], [{cmdab:v:erbose}] [{cmd:depth(}{it:integer >= 1}{cmd:)}] 
+[{cmdab:dir:filter}({it:regular expression})] [: {it:command}]{p_end}
+
+{title:Description}
+
+{pstd}
+{cmd:rcd} expects a directory name otherwise the current working directory is used.  {cmd:rcd}
+proceeds to recursively visit all subdirectories starting there.  {cmd:rcd} will display what directories 
+it goes to in verbose mode, obey a maximum depth if one is specified and it will optionally run a command 
+in each directory if desired.  Which directories the submitted command are run in can be selected by
+using the {cmd:dirfilter()} option.{p_end}
+
+{pstd}
+{cmd:rcd} may be thought of as a recursor.  A typical example of what you can do using it is:{p_end} 
+{pstd}
+{cmd:. rcd . : dir "data" }{p_end}
+
+{pstd}
+which would result in visiting every subdirectory starting where you are wanting to see the Stata datafiles
+in each one of them.{p_end}
+
+{pstd}
+Another way to achieve the same thing would be to use the returned macros that {cmd:rcd} generates:{p_end} 
+{pstd}
+{cmd:. rcd .}{p_end}
+{pstd}
+{cmd:. forvalues i = 1(1)`r(tdirs)'{c -(}}{p_end}
+{pstd}
+{cmd:. dir  "`r(ndir`i')'`c(dirsep)'*dta"}{p_end}
+{pstd}
+{cmd:. {c )-} }{p_end}
+
+
+{title:Options}
+
+{pstd}
+{cmd:verbose} specifies to print the directories that {cmd:rcd} visits.  By default, if {cmd:rcd} is invoked with
+no directory specified or options specified, then {cmd:rcd} runs in verbose mode.{p_end}
+
+{pstd}
+{cmd:depth} specifies an integer value greater than or equal to 1 (one) to limit how far down the directory tree
+{cmd:rcd} will go. {cmd:depth(1)} specifies not to look in subdirectories.{p_end}
+
+{pstd}
+{cmd:dirfilter} specifies {browse "http://www.stata.com/support/faqs/data/regex.html":regular expression} to limit what 
+directories the specified command will be run in.  If you want to see what directories your command will be run
+in, use {cmd:rcd} and specify to run {help pwd:pwd} like so:{p_end} 
+{pstd}{cmd: . rcd  , dirfilter(data) : pwd}
+{p_end}
+
+{title:Remarks}
+{pstd}Since {cmd:rcd} runs whatever Stata command and changes directories in the process, if there is a lot
+printed to the results window and you get tired of clicking {help more:more} to continue and quit, then your 
+current directory may not be where you started.  To quickly get back to the directory you were in when
+you invoked {cmd:rcd} just use the returned local macro {cmd:r(sdir)} like so:{p_end} 
+{pstd}
+{cmd:. cd "`r(sdir)'"}
+{p_end}
+
+{title:Examples}
+
+{pstd}Only look in directories whose names contain the word "data":{p_end} 
+{pstd}
+{cmd:. rcd . , dirfilter(data)}
+{p_end}
+
+{pstd}
+An example from the realm of managing your files and your data can be constructed 
+by using the {browse "http://repec.org/bocode/g/grep.html" :grep} command:{p_end} 
+{pstd}
+{cmd:. rcd . }{p_end}
+{pstd}
+{cmd:. return list }{p_end}
+{pstd}
+{cmd:. forvalues i = 1(1)`r(tdirs)'{c -(}}{p_end}
+{pstd}
+{cmd:. grep Family Children,  path("`r(ndir`i')'`c(dirsep)'data")}{p_end}
+{pstd}
+{cmd:. {c )-} }{p_end}
+
+{pstd}
+The code above locates and lists Stata datafiles to either {help use:use} or {help describe:describe} all or part of 
+each dataset found in the current directory or any of its subdirectories whose variable names or labels
+contain either of the words "Family" or "Children".{p_end} 
+{pstd}
+Another way to do the same thing by listing as you go would be:{p_end} 
+{pstd}
+{cmd:. rcd . : grep Family Children }{p_end}
+
+{title:Saved results}
+
+{p 4 4 2}{cmd:rcd} saves the following in {cmd:r()}:{p_end} 
+
+{synoptset 20 tabbed}{...}
+{p2col 5 20 24 2: Macros}{p_end}
+{synopt:{cmd:r(sdir)}}directory {cmd:rcd} was invoked in{p_end}
+{synopt:{cmd:r(tdirs)}}total number of directories searched{p_end}
+{synopt:{cmd:r(ndir1)}}name of the first directory searched{p_end}
+{synopt:{cmd:r(ndir2)}}name of the second directory searched{p_end}
+
+{title: Author}
+{p 4 4 2}
+Nikos Askitas {break}
+IDSC of IZA{break}
+IZA, Bonn Germany{break}
+nikos@iza.org {p_end}
+
+{p 4 4 2}
+Dan Blanchette {break}
+Center of Entrepreneurship and Innovation {break}
+Duke University's Fuqua School of Business {break}
+Dan.Blanchette@Duke.edu {p_end}
+
+{title:Also see}
+
+{p 4 13 2}
+Online:  help for {help cd:cd}, {help dir:dir}
+

@@ -1,0 +1,54 @@
+.-
+help for ^qexp5^
+.-
+
+Quantile-quantile plot for data vs fitted exponential distribution
+------------------------------------------------------------
+
+    ^qexp5^ varname [^if^ exp] [^in^ range]
+    [ ^, m^ean^(^#^) gr^id graph_options ]
+
+
+Description
+-----------
+
+^qexp5^ plots the quantiles of varname against the quantiles of a
+one-parameter exponential distribution, with distribution function
+1 - exp(-varname / mean). The values of varname should be zero or
+positive.
+
+Note: this is the original version of ^qexp^, written for Stata 5. 
+Users of Stata 8 up should switch to ^qexp^. 
+
+
+Options
+-------
+
+^mean(^#^)^ specifies that the mean of the fitted distribution is to
+    be #. If ^mean()^ is not specified the mean of the data set is
+    used.
+
+^grid^ adds grid lines at the .05, .10, .25, .50, .75, .90, and .95
+    quantiles.
+
+graph_options are any of the options allowed with ^graph, twoway^; see
+    help for ^graph^.
+
+
+Examples
+--------
+
+        . ^qexp5 precip^
+
+
+Author
+------
+
+         Nicholas J. Cox, University of Durham, U.K.
+         n.j.cox@@durham.ac.uk
+
+Also see
+--------
+
+On-line: help for @graph@
+

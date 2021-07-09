@@ -1,0 +1,167 @@
+
+{smcl}
+{* Help for -scdensity- version 1.0.1 16January2013, Joerg Luedicke}{...}
+{hline}
+help {hi:scdensity}
+{hline}
+
+{title:Univariate self-consistent density estimation}
+
+{title:Syntax}
+
+{p 8 17 2}
+{cmd:scdensity} {varname} {ifin} 
+[
+{cmd:,}  
+{opt n(#)} 
+{opt r:ange(# #)}
+{opt ex:pand}
+{opt at(var_x)}
+{opt cor:rection}
+{opt gtd}	
+{opt tol:erance(#)}
+{opt ini:tial(#)}
+{opt inter:val(#)}
+{opt g:enerate(newvar1 [newvar2])}
+{opt nog:raph} 
+{it:{help twoway_options}}
+]  
+
+
+{title:Description}
+
+{p 4 4 2}
+{cmd:scdensity} is an implementation of the self-consistent
+density estimator as described in Bernacchia & Pigolotti (2011).
+The self-consistent method nonparametrically estimates a probability density
+function from a number of data points, without relying on any a-priori fixation of 
+parameters like smoothing parameters in kernel density estimation, for example. 
+
+{title:Options} 
+
+{dlgtab:Estimation}
+
+{p 4 8 2}{cmd:n(}#{cmd:)} Number of grid points to be used at which the density 
+is evaluated. If the number of data points is greater than N=1,000, the number 
+of grid points defaults to n=1,000. If the number of data points is lower than 
+N=1,000, the number of grid points defaults to n=N. If a number larger than the 
+actual sample size is requested, n is set to N.
+  
+{p 4 8 2}{cmdab:r:ange(}# #{cmd:)} Defines the grid range at which the density 
+is to be evaluated. Per default, the endpoints of the evaluation grid are 
+determined by the minimum and maximum value of the actual data points and 
+the {cmdab:r:ange()} option can be used to change this default behavior.
+The input of two numbers is required with the first one being the minimum 
+and the second one being the maximum of the range.
+ 
+{p 4 8 2}{cmdab:ex:pand} Expands the evaluation grid. {cmd:scdensity}'s default is 
+to use the endpoints of the data range as grid end points. If the {cmd:expand}
+option is used, the grid range is expanded at both ends as a function of sample 
+size. Let the width of the data range be w = max(x) - min(x) where x are the data points, 
+then the expanded range r_e is defined by 
+min(r_e) = min(x) - 0.5 * N^-0.3 * w and 
+max(r_e) = max(x) + 0.5 * N^-0.3 * w, with N being the sample size of x.
+ 
+{p 4 8 2}{cmd:at(}{it:var_x}{cmd:)} Evaluates the density at {it:var_x}. Note that if 
+{it:var_x} is not a regular grid of points, densities that contain negative values
+cannot be corrected. 
+
+
+{dlgtab:Density correction}
+
+{p 4 8 2}{cmdab:cor:rection} Correction of the density to be strictly non-negative.
+The unique and well-identified value {it:xi} is found such that the positive part of the 
+density integrates to 1 (plus tolerance) when {it:xi} is subtracted from the density, 
+after which the negative part is set to zero. This approach is described in 
+Glad et al. (2003). The used search algorithm starts with an
+initial ballpark estimate of {it:xi_i} divided by 10 where {it:xi_i} is derived by integrating over the 
+positive part of the density to determine the excess probability mass, divided by the 
+product of the number of grid points with non-negative density values and {it:dx}, the 
+distance between points of the regular grid. The search interval defaults to {it:xi_i}/10/s, 
+where s=1/tolerance/100 and is thus proportional to the specified tolerance to assure a 
+sufficiently small resolution of the interval with respect to the tolerance resolution. 
+The tolerance defaults to 0.0001. All defaults can be changed using the {cmd:tolerance()}, 
+{cmd:initial()}, and {cmd:interval()} options. Changing the {cmd:initial()} and {cmd:interval()}
+options will rarely be needed. 
+
+{p 4 8 2}{cmd:gtd} The default algorithm usually finds {it:xi} fast and reliably. Theoretically, 
+however, it could happen that it does not find {it:xi} in which case an alternative algorithm 
+can be used by specifying the {cmd:gtd} option. With this alternative algorithm, {it:xi} is found
+surely but it can take a substantial amount of time, especially for very small tolerance values.
+
+{p 4 8 2}{cmdab:tol:erance(}#{cmd:)} Change the default tolerance.
+
+{p 4 8 2}{cmdab:ini:tial(}#{cmd:)} Change the initial value of {it:xi} at which the search is started.
+
+{p 4 8 2}{cmdab:inter:val(}#{cmd:)} Change the default search interval.
+
+
+{dlgtab:Storing and graph options}
+
+{p 4 8 2} {cmdab:g:enerate(}{it:d} {it:[x]}{cmd:)} Store the density estimate 
+in {it:{help newvar}} {it:d} and the evaluation grid in {it:{help newvar}} {it:x}. 
+
+{p 4 8 2}{cmdab:nog:raph} Suppress the graph. 
+
+{p 4 8 2}{it:{help twoway_options}} Any options other than {opt by()} 
+documented in {bind:{bf:[G] {it:twoway_options}}}.
+
+
+{title:Saved results} 
+
+{pstd}
+{cmd:scdensity} saves the following in {cmd:r()}:
+
+{synoptset 15 tabbed}{...}
+{p2col 5 15 19 2: Scalars}{p_end}
+{synopt:{cmd:r(n_data)}}Number of data points{p_end}
+{synopt:{cmd:r(n_points)}}Number of evaluation points{p_end}
+{synopt:{cmd:r(range_min)}}Minimum grid point{p_end}
+{synopt:{cmd:r(range_max)}}Maximum grid point{p_end}
+
+{title:Dependencies}
+
+{p 4 8 2}
+{cmd:scdensity} requires {cmd:moremata} (Jann 2005), available from SSC.
+Type -ssc install moremata- in Stata to obtain it. Also, {cmd:scdensity}
+requires Stata version 9.2 or higher.
+
+{title:Examples}
+
+{p 4 8 2}{inp:. webuse head}
+
+{p 4 8 2}{inp:. scdensity jaw}
+
+{p 4 8 2}{inp:. scdensity jaw, correction expand}
+
+{title:References} 
+
+{p 4 4 2}
+Bernacchia, A. & Pigolotti, S. (2011). Self-Consistent Method For Density 
+Estimation {it:Journal of the Royal Statistical Society B, 73(3)}, 407-422.
+
+{p 4 4 2}
+Glad, I.K., Hjort, N.L. & Ushakov, N.G. (2003). Correction of Density Estimators 
+that are not Densities {it: Scandinavian Journal of Statistics, 30}, 415-427.
+
+{p 4 4 2}
+Jann, B. (2005). "MOREMATA: Stata module (Mata) to provide various functions," 
+{it:Statistical Software Components S455001, Boston College Department of Economics},
+revised 19 Feb 2009.
+
+{title:Acknowledgment} 
+
+{p 4 4 2}
+I am thankful to Alberto Bernacchia for helpful discussions and sharing his R code. 
+
+{title:Author}
+
+{p 4 4 2}Joerg Luedicke{break}
+Yale University and University of Florida{break}
+United States{break} 
+email: joerg.luedicke@ufl.edu
+
+
+{title:Also see}
+
+{p 4 13 2}Help {help scdcor}, {help kdensity}, {help kdens} (if installed)

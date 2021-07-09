@@ -1,0 +1,42 @@
+{smcl}
+{* 16feb2007}{...}
+{.-}
+help for {cmd:rcs} 
+{.-}
+
+{title:generate restricted cubic spline basis functions}
+
+{p 4 10 4}
+{cmd:rcs}
+{it:varname}
+[{cmd:if}]
+[{cmd:in}
+,       
+{cmdab:k:nots}{cmd:(}{it:numlist}{cmd:)}
+[{cmdab:g:en}]{cmd:(}{it:stubname}{cmd:)}
+[{cmdab:d:gen}]{cmd:(}{it:stubname}{cmd:)}
+
+{title:Description}
+
+{p}{cmd:rcs} generates basis functions for restricted cubic splines and (optionally) their derivatives. The function is assumed linear beyond the two boundary knots.
+
+{title:Options}
+
+{p 0 4}{cmdab:k:knots}{cmd:(}{it:knots}{cmd:)} list the knots.
+
+{p 0 4}{cmdab:g:en}{cmd:(}{it:stubname}{cmd:)} gives a stubname for the generated cubic splines variables. E.g. {cmd:gen(rcs)} will create variable {it:rcs1, rcs2, ...}
+
+{p 0 4}{cmdab:d:gen}{cmd:(}{it:stubname}{cmd:)} gives a stubname for the  derivatives of the cubic spline variables. If this option is omitted, the 
+derivatives are not calculated.
+
+{title:Example:}
+
+{p 4 8 2}{cmd:. rcs x, knots(10 30 50 70 90) gen(rcs)}
+
+{title:Authors}
+
+{p} Chris Nelson ({browse "mailto:cn46@le.ac.uk":cn46@le.ac.uk}) and Paul Lambert ({browse "mailto:paul.lambert@le.ac.uk":paul.lambert@le.ac.uk})  
+
+{title:Also see}
+
+{p 0 19}On-line:  help for {help splinegen}, {help stcurve}

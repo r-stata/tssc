@@ -1,0 +1,76 @@
+{smcl}
+{* 3may2004}{...}
+{hline}
+help for {hi:circpvm}
+{hline}
+
+{title:Probability plot for von Mises distribution fitted to circular data}
+
+{p 8 17 2}
+{cmd:circpvm}
+{it:varname} 
+[{cmd:if} {it:exp}] 
+[{cmd:in} {it:range}]
+[{cmd:, a(}{it:#}{cmd:)}
+{cmdab:g:rid}
+{cmd:plot(}{it:plot}{cmd:)}
+{it:scatter_options}] 
+
+
+{title:Description}
+
+{p 4 4 2}
+{cmd:circpvm} gives a probability (P-P) plot for the fit of a 
+von Mises (a.k.a. circular normal) distribution to a circular variable 
+on a scale between 0 and 360 degrees. {help circvm} is used 
+to fit the distribution, estimating the two parameters vector mean mu 
+and concentration parameter kappa. 
+
+{p 4 4 2}For discussion, see Jammalamadaka and SenGupta (2001, pp.218-219);  
+but note that some of their discussion of P-P plots applies to 
+quantile-quantile plots (Q-Q plots), not P-P plots.  
+
+
+{title:Options}
+
+{p 4 8 2}{cmd:a()} specifies {it:a} in the formula for plotting position.  The
+plotting positions are ({it:i} - {it:a}) / ({it:n} - 2{it:a} + 1) for values 
+ranked smallest to largest and assigned unique ranks {it:i} = 1, ..., {it:n}. 
+The default is {it:a} = 0.5, giving ({it:i} - 0.5) / {it:n}.  
+Other choices include {it:a} = 0, giving {it:i} /
+({it:n} + 1), and {it:a} = 1/3, giving ({it:i} - 1/3) / ({it:n} + 1/3).
+
+{p 4 8 2}
+{cmd:grid} is equivalent to {cmd:yla(0(.25)1, grid) xla(0(.25)1, grid)}. 
+
+{p 4 8 2}
+{cmd:plot(}{it:plot}{cmd:)} provides a way to add other plots to the generated
+graph; see help {help plot_option}.
+
+{p 4 8 2}
+{it:scatter_options} are options of {help scatter}. 
+
+
+{title:Examples}
+
+{p 4 4 2}{cmd:. circpvm wallasp} 
+
+
+{title:References}
+
+{p 4 8 2}
+Jammalamadaka, S.R. and SenGupta, A. 2001. 
+{it:Topics in circular statistics.} Singapore: World Scientific.
+
+
+{title:Author}
+
+{p 4 4 2}Nicholas J. Cox, University of Durham, U.K.{break} 
+         n.j.cox@durham.ac.uk
+
+
+{title:Also see}
+
+{p 4 13 2}
+On-line: help for {help circvm}, {help circqvm} 
+

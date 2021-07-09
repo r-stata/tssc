@@ -1,0 +1,325 @@
+{smcl}
+{* 4Dec2007}{...}
+{cmd:help samplesize}
+{hline}
+
+{title:Title}
+
+{pstd}
+{hi:Executes sample size/power calculations multiple times and produces graphical results}
+
+{title:Syntax}
+
+{p 8 17 2}
+{cmdab:samplesize}
+[{cmd:,} {it:options}]
+
+{synoptset 20 tabbed}{...}
+{synopthdr}
+{synoptline}
+{syntab:Main}
+{synopt:{opt norestore} } replaces the current dataset with a dataset containing the samplesize calculations. {p_end}
+{synopt:{opt null(numlist)} } specifies the "null value". {p_end}
+{synopt:{opt alt(numlist)} } specifies the "alternative value". {p_end}
+{synopt:{opt n1(numlist)} } specifies the size of sample 1.{p_end}
+{synopt:{opt n2(numlist)} } specifies the size of sample 2.{p_end}
+{synopt:{opt sd1(numlist)} } specifies the standard deviation of sample 1.{p_end}
+{synopt:{opt sd2(numlist)} } specifies the standard deviation of sample 2.{p_end}
+{synopt:{opt a:lpha(numlist)} } specifies the significance level of test. {p_end}
+{synopt:{opt p:ower(numlist)} } specifies the power of the test. {p_end}
+{synopt:{opt rho(numlist)} } {p_end}
+{synopt:{opt s:olve(string)} } specifies whether to solve for the sample size or power. {p_end}
+{synopt:{opt r:atio(numlist)} } specifies the ratio of sample sizes. {p_end}
+{synopt:{opt onesam:ple} } specifies that a one-sample test is assumed. {p_end}
+{synopt:{opt onesided} } specifies that a one-sided test is assumed. {p_end}
+{synopt:{opt me:thod(string)} } specifies which analysis method to use.{p_end}
+{synopt:{opt nocont:inuity} } specifies whether to not use a continuity correction. {p_end}
+{synopt:{opt pre(numlist)} } specifies the number of baseline measurements. {p_end}
+{synopt:{opt post(numlist)} } specifies the number of follow-up measurements. {p_end}
+{synopt:{opt r0(numlist)} } specifies the correlation between baseline measurements. {p_end}
+{synopt:{opt r1(numlist)} } specifies the correlation between follow-up measurements. {p_end}
+{synopt:{opt r01(numlist)} } specifies the correlation between baseline and follow-up measurements. {p_end}
+
+{syntab:{help sampsi_reg} options}
+{synopt:{opt sy(numlist)} } specifies the standard deviation of the Y's. {p_end}
+{synopt:{opt sx(numlist)} } specifies the standard deviation of the X's. {p_end}
+{synopt:{opt yxcorr(numlist)} } specifies the correlation between Y's and X's. {p_end}
+{synopt:{opt var:method(string)} } specifies the method for calculating the residual standard deviation. {p_end}
+
+{syntab:{help sampsi_mcc} options}
+{synopt:{opt m(numlist)} } specifies the number of matched controls per case. {p_end}
+{synopt:{opt phi(numlist)} } specifies the correlation of exposure between pairs of subjects in the case-control matched set. {p_end}
+{synopt:{opt p0(numlist)} } specifies the probability of exposure in the controls. {p_end}
+
+{syntab:General Options}
+{synopt:{opt command(string)} } specifies which sample size command to use. {p_end}
+{synopt:{opt xvar(string)} } specifies the variable to be used as the x-variable in the plots. {p_end}
+{synopt:{opt mlabel} } specifies that the values of each calculation are displayed in the graph.{p_end}
+{synopt:{help twoway_options } } {p_end}
+{synoptline}
+{p2colreset}{...}
+
+{title:Description}
+
+{pstd}
+Most of STATA's sample size calculation programs do not allow {hi:numlists} for the options.
+{hi: samplesize} is designed to allow {hi:numlists} to do multiple calculations using various sample size commands.  
+The resulting sample sizes or power calculations are then drawn using a {hi:twoway} graph.
+
+{pstd}
+At present the following commands are supported (more will be introduced):
+
+Help File                      Examples
+{help sampsi}                {help samplesize##ttest:Two-sample t-test}
+{help sampsi_reg}            {help samplesize##linreg:Linear regression }
+{help sampsi_mcc}            {help samplesize##mcc:Matched Case-Control }
+{help sampsi_rho}            {help samplesize##rho:Pearson Correlation }
+{* help mvsampsi              help samplesize##mv:Multivariate Regression }
+
+{pstd}
+Please email me if you want the introduction of other sample size commands.
+ 
+{title:Updating this command}
+
+{pstd}
+To obtain the latest version click the following to uninstall the old version
+{p_end}
+{stata ssc uninstall samplesize}
+And click here to install the new version
+{stata ssc install samplesize}
+
+{title:Options}
+
+{dlgtab:Main}
+
+{phang}
+{opt norestore} replaces the current dataset with a dataset containing the samplesize calculations.
+
+{phang}
+{opt null(numlist)} specifies the "null value", #1 in {hi:sampsi}.
+
+{phang}
+{opt alt(numlist)} specifies the "alternative value", #2 in {hi:sampsi}.
+
+{phang}
+{opt n1(numlist)} size of sample 1. For {hi:sampsi_mcc} this is the number of cases.
+
+{phang}
+{opt n2(numlist)} size of sample 2.
+
+{phang}
+{opt sd1(numlist)} standard deviation of sample 1.
+
+{phang}
+{opt sd2(numlist)} standard deviation of sample 2.
+
+{phang}
+{opt a:lpha(numlist)} significance level of test; default is {hi:a(0.05)}.
+
+{phang}
+{opt p:ower(numlist)} power of test; default is {hi:p(0.9)}.
+
+{phang}
+{opt s:olve(string)} specifies whether to solve for the sample size or power; default is {hi:s(n)} solves for n and
+the only other choice is {hi:s(power)} solves for power.
+
+{phang}
+{opt r:atio(numlist)} ratio of sample sizes; default is {hi:r(1)}.
+
+{phang}
+{opt onesam:ple} one-sample test; default is two-sample.
+
+{phang}
+{opt onesided} one-sided test; default is two-sided.
+
+{phang}
+{opt m:ethod(string)} analysis method is {hi:post}, {hi:change}, {hi:ancova}; default is {hi:m(all)} 
+although only {hi:ancova} will be plotted.
+
+{phang}
+{opt nocont:inuity} do not use continuity correction for two-sample test on proportions.
+
+{phang}
+{opt pre(numlist)} number of baseline measurements; default is {hi:pre(0)}.
+
+{phang}
+{opt post(numlist)} number of follow-up measurements; default is {hi:post(1)}.
+
+{phang}
+{opt r0(numlist)} correlation between baseline measurements; default is {hi:r0(0)}.
+
+{phang}
+{opt r1(numlist)} correlation between follow-up measurements; default is {hi:r1(0)}.
+
+{phang}
+{opt r01(numlist)} correlation between baseline and follow-up measurements; default is {hi:r01(0)}.
+
+{dlgtab: sampsi_reg options}
+
+{phang}
+[{help sampsi_reg} option] {opt sy(numlist)} the standard deviation of the Y's.
+
+{phang}
+[{help sampsi_reg} option] {opt sx(numlist)} the standard deviation of the X's.
+
+{phang}
+[{help sampsi_reg} option] {opt yxcorr(numlist)} the correlation between Y's and X's.
+
+{phang}
+[{help sampsi_reg} option] {opt var:method(string)} specifies the method for calculating the residual standard deviation. 
+{opt varmethod(r)} uses the Y-X correlation and  {opt varmethod(sdy)} uses the standard deviation of the Y's,
+the default uses a direct estimate of the residual sd {opt sd1(#)}. 
+
+{dlgtab: sampsi_mcc options}
+
+{phang}
+[{help sampsi_mcc} option] {opt m(numlist)} specifies the number of matched controls per case; default is {hi:m(1)}.
+
+{phang}
+[{help sampsi_mcc} option] {opt phi(numlist)} specifies the correlation of exposure between pairs of subjects in the 
+case-control matched set; default is {hi:phi(0.2)}.
+
+{phang}
+[{help sampsi_mcc} option] {opt p0(numlist)} specifies the probability of exposure in the controls; default is {hi:p0(0.5)}.
+
+{dlgtab:General Options}
+
+{phang}
+{opt command(string)}  specifies which sample size command to use, the default is {hi:sampsi}.
+
+{phang}
+{opt mlabel} specifies that the values of each calculation are displayed in the graph.
+
+{phang}
+{opt xvar(string)} specifies the variable to be used as the x-variable in the resulting plots. 
+The default is the variable with the most values, this will work well for the majority of calculations.
+
+{title:Examples}
+
+{p 0 0}
+The full interactive version runs from a dialog box
+{stata db samplesize} (to be distributed in the near future)
+
+{marker ttest}
+{p 0 2}
+Two-sample comparison of mean1 to mean2.  Compute sample sizes with n2/n1 = 2:
+{p_end}
+{p 2 2}
+{stata samplesize, null(132.86) alt(127.44) p(0.8) r(2(2)10) sd1(15.34) sd2(18.23)}
+{break}
+Compute power with n1 = n2, sd1 = sd2, and alpha = 0.01 one-sided:
+{break}
+{stata samplesize, null(5.6) alt(6.1) n1(100) sd1(1.5) a(0.01(0.01)0.05) onesided }
+
+{p 0 2}
+One-sample comparison of mean to hypothesized value = 180.  Compute sample size:
+{p_end}
+{p 2 2}
+{stata samplesize, null(180) alt(211) sd(46(1)60) onesam }
+{break}
+One-sample comparison of mean to hypothesized value = 0.  Compute power:
+{break}
+{stata samplesize, null(0) alt(-2.5) sd(4(0.2)5) n(25(10)55) onesam }
+
+{p 0 2}
+Two-sample comparison of proportions.  Compute sample size with n1 = n2 (i.e., ratio = 1, the
+default) and power = 0.9 (the default):
+{p_end}
+{p 2 2}
+{stata samplesize, null(0.25) alt(0.4(0.01)0.6)}
+{break}
+Compute power with n1 = 500 and ratio = n2/n1 = 0.5:
+{break}
+{stata samplesize, null(0.25) alt(0.4) n1(300) r(0.5(0.1)0.9) }
+
+{p 0 2}
+One-sample comparison of proportion to hypothesized value = 0.5:
+{p_end}
+{p 2 2}
+{stata samplesize, null(0.5) alt(0.75) power(0.8(0.01)0.9) onesample }
+{break}
+Compute power:
+{break}
+{stata samplesize, null(0.5) alt(0.6) n1(200(10)400) onesam s(power)}
+
+{p 0 2}
+Repeated Measures
+{p_end}
+{p 2 2}
+{stata samplesize, null(498) alt(483(0.2)487) sd1(20.2) sd2(19.5) method(change) pre(1) post(3) r1(.1(.1).9) solve(n) }
+{break}
+Compute power:
+{break}
+{stata samplesize, null(498) alt(485) sd1(20.2) sd2(19.5) method(change) pre(1) post(1(1)10) r1(.7) n1(15) n2(15) solve(power)}
+
+{marker linreg}
+{p 0 2}
+Linear Regression
+{p_end}
+{p 2 2}
+{stata samplesize, null(0) alt(0.2(0.1)0.8) solve(n) command(sampsi_reg) }
+{break}
+Compute power:
+{break}
+{stata samplesize, null(0) alt(0.6(0.1)1.6) sx(0.5(0.2)1.5) solve(power) command(sampsi_reg)}
+
+{marker mcc}
+{p 0 2}
+Matched Case-control Study.
+{p_end}
+{p 2 2}
+{stata samplesize, alt(1.2(0.1)1.8) m(1(1)5) solve(n) command(sampsi_mcc) }
+
+{p 2 2}
+How to display the exact sample sizes in the graph
+{break}
+{stata samplesize, alt(1.2(0.1)1.8) m(1(1)5) solve(n) command(sampsi_mcc) mlabel}
+
+{p 2 2}
+Compute power:
+{break}
+{stata samplesize, alt(1.2(0.1)3) phi(0.2(0.2)0.8) n1(100) solve(power) command(sampsi_mcc)}
+
+{marker rho}
+{p 0 2}
+Pearson Correlation
+{p_end}
+{p 2 2}
+{stata samplesize, null(0) alt(0.2(0.1)0.8) solve(n) command(sampsi_rho) }
+{break}
+Compute power:
+{break}
+{stata samplesize, null(0) alt(0.6(0.05)0.9) a(0.05 0.01)  solve(power) command(sampsi_rho)}
+
+{title:Author}
+
+{p}
+Adrian Mander, MRC Human Nutrition Research, Cambridge, UK.
+
+Email {browse "mailto:adrian.mander@mrc-hnr.cam.ac.uk":adrian.mander@mrc-hnr.cam.ac.uk}
+
+{title:See Also}
+Related commands:
+
+{help sampsi}
+{help sampsi_reg} (if installed)
+{help sampsi_mcc} (if installed)
+{help sampsi_rho} (if installed)
+{help sampclus}   (if installed) 
+{help xsampsi}    (if installed) 
+{help artmenu}    (if installed)
+{help mvsampsi}   (if installed)
+{help studysi}    (if installed)
+{help sskapp}     (if installed)
+{help ssizebi}    (if installed)
+{help optfixn}    (if installed)
+{help calcssi}    (if installed)
+{help ggipower}   (if installed)
+{help sampncti}   (if installed)
+
+
+
+
+
+ 
+

@@ -1,0 +1,81 @@
+{smcl}
+{* *! version 1.2  18-Oct-2011}{...}
+{cmd:help save9 (version 1.2, 18-Oct-2011)}
+{hline}
+
+{title:Title}
+
+{pstd}{hi: save9} {hline 1} Save dataset in Stata-9 format regardless of whether Stata 9, 10, 11 or 12 is being run.
+
+{title:Syntax}
+
+{p 8 15 2}
+{opt save9}
+{it:filename}
+[{cmd:,}
+{opt nol:abel}
+{opt replace}
+{opt all}
+]
+
+
+
+{title:Description}
+
+{pstd}
+{opt save9} saves, in the Stata-9 format, the dataset in memory to disk regardless of whether Stata 9, 10, 11 or 12 is being run.
+If {it:filename} is specified without an extension, {cmd:.dta} is assumed.
+If {it:filename} contains embedded spaces, remember to enclose it in double quotes {it:" "}.
+{opt save9} can be useful in situations where authors who are running different editions of Stata
+may wish to share the same .do scripts and the same datasets.
+
+{pstd}
+Note that any attempt to {cmd:exit} Stata after the {cmd:save9} command might result in the warning
+{err: no; data in memory would be lost} if Stata 10, 11 or 12 last saved the data in the Stata-9 format.
+This is a default behaviour of Stata insofar as it expects the data to be saved in the lastest format before {cmd:exit}ing.
+This default behaviour can be overcome by issuing the {cmd:clear} command before issuing the {cmd:exit} command.
+
+{pstd}
+{opt save9} will also work in Stata-8 but it will save the dataset in the Stata-8 format.
+Stata-8 datasets have a limit of 244 characters for their values labels,
+Stata-9 datasets have a limit of 32,000 characters
+but in all other ways the Stata-8 and Stata-9 dataset formats are equivalent.
+{opt save9} will not work in Stata-7 or earlier.
+
+{pstd}
+{opt save9} works by using the {opt creturn} code {opt c(stata_version)} to determine which version of Stata is being run.
+It then uses this to decide if to include the undocumented {opt oldformat} option when calling the {opt save} command.
+
+
+{title:Options}
+
+{phang}
+{opt nol:abel} prevents value labels in the dataset from being saved.
+
+{phang}
+{opt replace} permits overwriting of an existing dataset.
+
+{phang}
+{opt all} saves {opt e(sample)} with the dataset; programmer's option.
+
+{title:Author}
+
+{phang}
+{it:Marco G. Ercolani}
+
+
+{title:Examples}
+
+{phang}{cmd:. save9 MyData, replace}{p_end}
+
+{phang}{cmd:. save9 "My Data"}{p_end}
+
+{phang}{cmd:. save9 "My Data.dta"}{p_end}
+
+{phang}{cmd:. save9 "My Data.dta", nolabel replace}{p_end}
+
+
+{title:Also see}
+
+{p 4 13 2}
+Online:  help for {helpb save}, {helpb saveold}, {helpb creturn}

@@ -1,0 +1,500 @@
+/*
+ dlagif
+*! VERSION 1.0 25/04/2016
+*/
+VERSION 11.0
+INCLUDE _std_large
+DEFINE _dlght 490
+INCLUDE header
+HELP hlp1, view("help dlagif")
+RESET res1
+
+DIALOG main, label("dlagif - Irving Fisher Arithmetic Distributed Lag Model") ///
+	tabtitle("Main")
+BEGIN
+  TEXT tx_dv 		_lft	_top   140  	.,	///
+	label("Dependent Variable:")
+  TEXT tx_iv		160 	@     330 	.,	///
+	label("Independent Variable:")
+  VARNAME vn_dv		_lft 	_ss  	140	.,	///
+	ts						///
+	label("Dependent Variable")
+  VARNAME vn_iv		160	@  	330	.,	///
+	fv ts						///
+	label("Independent Variable")
+  CHECKBOX ck_nocons @   _ms   _cwd1  .,	/*
+		*/ label("No Constant")	/*
+		*/ option("noconstant")		/*
+		*/
+  GROUPBOX gb_estimator	_lft	_ss	_ibwd	_ht9 ,	///
+	label("Model")
+  RADIO rb_m1	_ilft	_ss	_inwd	.,	///
+	first					///
+	option(model(ols))			///
+	label("Ordinary Least Squares (OLS)")	///
+	onclickon(script ck_model1_off)
+  RADIO rb_m2	_ilft2	@	_iwd	.,	///
+	option(model(gls))			///
+	label("Generalized Least Squares (GLS)")	///
+	onclickon(script ck_model1_off)
+  RADIO rb_m3	_ilft	_ss	_inwd	.,	///
+	option(model(bcox))			///
+	label("Box-Cox Regression Model (Box-Cox)")	///
+	onclickon(script ck_model1_off)
+  RADIO rb_m4	_ilft2	@	_iwd	.,	///
+	option(model(als))			///
+	label("Autoregressive Least Squares (ALS)")	///
+	onclickon(script ck_model1_off)
+  RADIO rb_m5	_ilft	_ss	_iwd	.,	///
+	option(model(qreg))			///
+	label("Quantile Regression")	///
+	onclickon(script ck_model1_off)
+  RADIO rb_m6	_ilft2	@	_iwd	.,	///
+	option(model(rreg))			///
+	label("Robust Regression")	///
+	onclickon(script ck_model1_off)
+  RADIO rb_m7	_ilft	_ss	_inwd	.,	///
+	option(model(arch))			///
+	label("Autoregressive Conditional Heteroskedasticity (ARCH)")	///
+	onclickon(script ck_model1_off)
+  RADIO rb_m8	_ilft	_ss	_iwd	.,	///
+	last					///
+	option(model(gmm))			///
+	label("Generalized Method of Moments (GMM)")	///
+	onclickon(script ck_model1_on)
+
+ GROUPBOX gb_optgmm	_lft	_ms	_ibwd	_ht15 ,	///
+	label("GMM - Generalized Method of Moments Options:")
+  RADIO    rb_g0  _ilft           _ss        300    ., 	/*
+	*/ label("White Method") /*
+	*/ first				/*
+	*/ option("hetcov(white)")		/*
+*/
+DEFINE y @y
+  RADIO    rb_g1  _ilft           _ss        300    ., 	/*
+	*/ label("Bartlet Method") /*
+	*/ option("hetcov(bart)")			/*
+*/
+  RADIO    rb_g2  _ilft           _ss        300    ., 	/*
+	*/ label("Cragg Method") /*
+	*/ option("hetcov(crag)")			/*
+*/
+  RADIO    rb_g3  _ilft           _ss        300    ., 	/*
+	*/ label("Daniell Method")	/*
+	*/ option("hetcov(dan)")			/*
+*/
+  RADIO    rb_g4  _ilft           _ss        300    ., 	/*
+	*/ label("Hinkley Method") /*
+	*/ option("hetcov(hink)")			/*
+*/
+  RADIO    rb_g5  _ilft           _ss        300    ., 	/*
+	*/ label("Horn-Duncan Method") /*
+	*/ option("hetcov(hdun)")			/*
+*/
+  RADIO    rb_g6  _ilft           _ss        300    ., 	/*
+	*/ label("Jackknife Mackinnon-White Method") /*
+	*/ option("hetcov(jack)")			/*
+*/
+  RADIO    rb_g7   _ilft           _ss        300    .,	/*
+	*/ label("Newey-West Method")		/*
+	*/ option("hetcov(nwest)")			/*
+*/
+  RADIO    rb_g8   _ilft2           y        300   .,	/*
+	*/ label("Parzen Method")	/*
+	*/ option("hetcov(parzen)")			/*
+*/
+  RADIO    rb_g9   _ilft2           _ss       300    .,	/*
+	*/ label("Quadratic Spectral Method")	/*
+	*/ option("hetcov(quad)")			/*
+*/
+  RADIO    rb_g10  @           _ss   300    .,	/*
+	*/ label("Tent Method")	/*
+	*/ option("hetcov(tent)")			/*
+*/
+  RADIO    rb_g11  @   _ss    300    .,	/*
+	*/ label("Truncated Method")	/*
+	*/ option("hetcov(trunc)")			/*
+*/
+  RADIO    rb_g12  @           _ss        300    .,	/*
+	*/ label("Tukey Method") /*
+	*/ option("hetcov(tukey)")			/*
+*/
+  RADIO    rb_g13  @           _ss        300    .,	/*
+	*/ label("Tukey-Hamming Method")	/*
+	*/ option("hetcov(tukeym)")			/*
+*/
+  RADIO    rb_g14  @           _ss        300    .,	/*
+	*/ label("Tukey-Hanning Method")	/*
+	*/ last					/*
+	*/ option("hetcov(tukeyn)") /*
+*/
+  CHECKBOX ck_ridgero  _lft    _xxls   _ibwd    _ht7 , ///
+	groupbox				 ///
+	onclickon(script ck_ridger_on)		 ///
+	onclickoff(script ck_ridger_off)	 ///
+	label("Ridge Regression:")
+  RADIO rb_orr	_ilft   _ss     _iwd	.,	///
+	option("ridge(orr)")			///
+	first			 ///
+	label("ORR - Ordinary Ridge Regression")	///
+	onclickon(script kridge_on)
+  EDIT ed_ridge  250   @    70   ., 	/*
+	*/ label("Ridge Value")			/*
+	*/ option("kr")
+  TEXT tx_ridge 330  @  100    .,	/*
+	*/ label("Ridge Value")  	/*
+*/
+  RADIO rb_grr1   _ilft  _ss	300	., /*
+	*/ label("GRR1 - Generalized Ridge Regression") /*
+	*/ onclickon(script kridge_off)	 /*
+	*/ option("ridge(grr1)")		/*
+*/
+  RADIO rb_grr2	_ilft	_ss	300 .,	/*
+	*/ label("GRR2 - Iterative Generalized Ridge Regression") /*
+	*/ onclickon(script kridge_off)	 /*
+	*/ option("ridge(grr2)")		/*
+*/
+  RADIO rb_grr3	_ilft	_ss	300 .,	/*
+	*/ label("GRR3 - Adaptive Generalized Ridge Regression") /*
+	*/ onclickon(script kridge_off)	 /*
+	*/ last				 /*
+	*/ option("ridge(grr3)")		/*
+*/
+END
+
+INCLUDE byifin
+
+DIALOG est1, tabtitle("Options")
+BEGIN
+
+  SPINNER  sp_lag    _ilft     _top    _spwd   .,	/*
+	*/ label("Lag Length Order")	/*
+	*/ min(2) max(c(N)) default(3)	/*
+	*/ option("lag")
+  TEXT tx_lag  +70    @  _rbsprb    .,	/*
+	*/ label("Lag Length Order") 
+
+  CHECKBOX ck_model2  _lft    _ls   _iwd    _ht28 , ///
+	groupbox				 ///
+	onclickon(script ck_model2_on)		 ///
+	onclickoff(script ck_model2_off)	 ///
+	label("Options:")
+
+  SPINNER  sp_ord    _ilft     _ss    _spwd   .,	/*
+	*/ label("Autocorrelation and Heteroscedasticity Tests Order")	/*
+	*/ min(1) max(c(N)) default(1)	/*
+	*/ option("ar")
+  TEXT tx_ord  +70    @  _rbsprb    .,	/*
+	*/ label("Autocorrelation and Heteroscedasticity Tests Order") 
+ CHECKBOX ck_nolag _ilft  _ls   370  ., option("nolag") /*
+*/ label("nolag: Use Independent Variables in current period X(t) instead of lag X(t-1)") 
+ CHECKBOX ck_test    _ilft  _ss   @  ., option("tests") /*
+*/ label("test: Display ALL Tests") 
+ CHECKBOX ck_lmauto   @  _ss   @  ., option("lmauto") /*
+*/ label("lmauto: Autocorrelation Tests") 
+ CHECKBOX ck_lmhet   @  _ss   @  ., option("lmhet") /*
+*/ label("lmhet: Heteroscedasticity Tests") 
+ CHECKBOX ck_lmnorm   @   _ss  @  ., option("lmnorm") /*
+*/ label("lmnorm: Non Normality Tests") 
+ CHECKBOX ck_diag   _ilft  _ss   @  ., option("diag") /*
+*/ label("diag: Model Selection Diagnostic Criteria") 
+ CHECKBOX ck_dn  _ilft   _ss   @  ., option("dn") /*
+*/ label("dn: Divisor (N) instead of (N-K) for DF") 
+ CHECKBOX ck_two _ilft  _ss   @  ., option("twostep") /*
+*/ label("twostep: Two-Step Estimation") 
+ CHECKBOX ck_list _ilft  _ss   @  ., option("list") /*
+*/ label("list: Print Converted Variables") 
+ CHECKBOX ck_cond _ilft  _ss   @  ., option("condition") /*
+*/ label("Use Conditional MLE instead of Full MLE") 
+*/
+
+  CHECKBOX ck_quant        _ilft     _ms    _ckwd  ., 	/*
+	*/ clickon("gaction est1.sp_quant.enable")	/*
+	*/ clickoff("gaction est1.sp_quant.disable")		
+  SPINNER  sp_quant      _cksep        @    _spwd   ., /*
+	*/ label("Quantile Value")	/*
+	*/ default(50)			/*
+	*/ min(1)			/*
+	*/ max(100)			/*
+	*/ option("quantile")
+  TEXT     tx_quant      _spsep        @  _rbsprb    ., /*
+	*/ label("Quantile Value")
+
+  CHECKBOX ck_tune       _ilft     _ms    _ckwd  ., 	/*
+	*/ clickon("gaction est1.sp_tune.enable")	/*
+	*/ clickoff("gaction est1.sp_tune.disable")		
+  SPINNER  sp_tune     _cksep        @    _spwd   ., /*
+	*/ label("Tune Value")	/*
+	*/ default(7)			/*
+	*/ min(1)			/*
+	*/ max(100)			/*
+	*/ option("tune")
+  TEXT     tx_tune     _spsep        @  _rbsprb    ., /*
+	*/ label("Tune Value")
+
+ TEXT tx_predict _ilft _xls   200 .,	///
+	label("Predicted Variable")
+ TEXT tx_resid   _ilft2 @     200 .,	///
+	label("Residuals Variable")
+ VARNAME vn_predict _ilft _ss   200  .,	///
+	label("predict") 		///
+	option(predict)
+ VARNAME vn_resid   _ilft2 @     200  .,	///
+	label("resid") 			///
+	option(resid)
+ CHECKBOX ck_mfx  _lft    _ls   _ibwd    _ht2 , 	///
+	groupbox					///
+	onclickon(script ck_mfx_on)			///
+	onclickoff(script ck_mfx_off)		///
+ label("Marginal Effects and Elasticities:")
+ RADIO rb_lin	_ilft  _ss  120  ., /*
+	*/ label("Linear")	 /*
+	*/ first			/*
+	*/ option("mfx(lin)")		/*
+*/
+ DEFINE y @y
+ RADIO rb_log	130   y  120 .,	/*
+	*/ label("Log-Log") /*
+	*/ last				/*
+	*/ option("mfx(log)")		/*
+
+*/
+  CHECKBOX ck_tolog    250   y 250 ., option("tolog") /*
+*/ label("Log Transform Varlist") /*
+*/
+
+END
+
+DIALOG est2, tabtitle("Weight")
+BEGIN
+  CHECKBOX ck_model4  _lft    _top   _ibwd    _ht29 , ///
+	groupbox				 ///
+	onclickon(script ck_model4_on)		 ///
+	onclickoff(script ck_model4_off)	 ///
+	label("Weighted Variable Type:")
+  TEXT tx_wv 		_ilft	_ms    140  	., ///
+	label("Weighted Variable (X)")
+  VARNAME vn_wv		_ilft 	_ss  	140	., ///
+	ts					 ///
+	label("Weighted Variable")		 ///
+	option("wvar")
+  RADIO    rb_w1  _ilft     _ls     300    ., 	/*
+  	*/ onclickon(script vn_off)	 /*
+	*/ label("Yh - Predicted Value (Default)") /*
+	*/ first			/*
+	*/ option("weights(yh)")		/*
+*/
+  RADIO    rb_w2  _ilft     _ms     300    ., 	/*
+  	*/ onclickon(script vn_off)	 /*
+	*/ label("Yh^2 - Predicted Value Squared") /*
+	*/ option("weights(yh2)")			/*
+*/
+  RADIO    rb_w3  _ilft     _ms     300    ., 	/*
+  	*/ onclickon(script vn_off)	 /*
+	*/ label("abs(E) - Residual Absolute Value") /*
+	*/ option("weights(abse)")			/*
+*/
+  RADIO    rb_w4  _ilft     _ms     300    ., 	/*
+  	*/ onclickon(script vn_off)	 /*
+	*/ label("E^2 - Residual Squared") /*
+	*/ option("weights(e2)")			/*
+*/
+  RADIO    rb_w5  _ilft     _ms     300    ., 	/*
+  	*/ onclickon(script vn_off)	 /*
+	*/ label("log(E^2) - Log Residual Squared") /*
+	*/ option("weights(le2)")			/*
+*/
+  RADIO    rb_w6  _ilft     _xls     300    ., 	/*
+  	*/ onclickon(script vn_on)	 /*
+	*/ label("(X) Variable") /*
+	*/ option("weights(x)")			/*
+*/
+  RADIO    rb_w7  _ilft     _ms     300    ., 	/*
+  	*/ onclickon(script vn_on)	 /*
+	*/ label("(1/X) Inverse Variable") /*
+	*/ option("weights(xi)")			/*
+*/
+  RADIO    rb_w8  _ilft     _ms     300    ., 	/*
+  	*/ onclickon(script vn_on)	 /*
+	*/ label("(X^2) Squared Variable") /*
+	*/ option("weights(x2)")			/*
+*/
+  RADIO    rb_w9  _ilft     _ms     300    ., 	/*
+  	*/ onclickon(script vn_on)	 /*
+	*/ label("(1/X^2) Inverse Squared Variable") /*
+	*/ last					/*
+	*/ option("weights(xi2)")		/*
+*/
+END
+
+SCRIPT ck_model1_on
+BEGIN
+ main.rb_g0.enable
+ main.rb_g1.enable
+ main.rb_g2.enable
+ main.rb_g3.enable
+ main.rb_g4.enable
+ main.rb_g5.enable
+ main.rb_g6.enable
+ main.rb_g7.enable
+ main.rb_g8.enable
+ main.rb_g9.enable
+ main.rb_g10.enable
+ main.rb_g11.enable
+ main.rb_g12.enable
+ main.rb_g13.enable
+ main.rb_g14.enable
+END
+
+SCRIPT ck_model1_off
+BEGIN
+ main.rb_g0.disable
+ main.rb_g1.disable
+ main.rb_g2.disable
+ main.rb_g3.disable
+ main.rb_g4.disable
+ main.rb_g5.disable
+ main.rb_g6.disable
+ main.rb_g7.disable
+ main.rb_g8.disable
+ main.rb_g9.disable
+ main.rb_g10.disable
+ main.rb_g11.disable
+ main.rb_g12.disable
+ main.rb_g13.disable
+ main.rb_g14.disable
+END
+
+SCRIPT kridge_on
+BEGIN
+ main.ed_ridge.enable
+END
+SCRIPT kridge_off
+BEGIN
+ main.ed_ridge.disable
+END
+
+SCRIPT ck_ridger_on
+BEGIN
+ main.rb_orr.enable
+ main.rb_grr1.enable
+ main.rb_grr2.enable
+ main.rb_grr3.enable
+END
+
+SCRIPT ck_ridger_off
+BEGIN
+ main.rb_orr.disable
+ main.rb_grr1.disable
+ main.rb_grr2.disable
+ main.rb_grr3.disable
+END
+
+SCRIPT ck_model2_on
+ BEGIN
+ est1.ck_nolag.enable
+ est1.ck_lmauto.enable
+ est1.ck_lmhet.enable
+ est1.ck_lmnorm.enable
+ est1.ck_diag.enable
+ est1.ck_test.enable
+ est1.ck_dn.enable
+ est1.ck_two.enable
+ est1.ck_list.enable
+ est1.ck_quant.enable
+ est1.ck_tune.enable
+ est1.ck_cond.enable
+ est1.vn_predict.enable
+ est1.vn_resid.enable
+ est1.sp_ord.enable
+ END
+
+SCRIPT ck_model2_off
+ BEGIN
+ est1.ck_nolag.disable
+ est1.ck_lmauto.disable
+ est1.ck_lmhet.disable
+ est1.ck_lmnorm.disable
+ est1.ck_diag.disable
+ est1.ck_test.disable
+ est1.ck_dn.disable
+ est1.ck_two.disable
+ est1.ck_list.disable
+ est1.ck_quant.disable
+ est1.ck_tune.disable
+ est1.ck_cond.disable
+ est1.vn_predict.disable
+ est1.vn_resid.disable
+ est1.sp_ord.disable
+ END
+
+SCRIPT ck_model4_on
+BEGIN
+ est2.rb_w1.enable
+ est2.rb_w2.enable
+ est2.rb_w3.enable
+ est2.rb_w4.enable
+ est2.rb_w5.enable
+ est2.rb_w6.enable
+ est2.rb_w7.enable
+ est2.rb_w8.enable
+ est2.rb_w9.enable
+ est2.vn_wv.enable
+END
+
+SCRIPT ck_model4_off
+BEGIN
+ est2.rb_w1.disable
+ est2.rb_w2.disable
+ est2.rb_w3.disable
+ est2.rb_w4.disable
+ est2.rb_w5.disable
+ est2.rb_w6.disable
+ est2.rb_w7.disable
+ est2.rb_w8.disable
+ est2.rb_w9.disable
+ est2.vn_wv.disable
+END
+
+SCRIPT vn_on
+BEGIN
+ est2.vn_wv.enable
+END
+SCRIPT vn_off
+BEGIN
+ est2.vn_wv.disable
+END
+
+
+PROGRAM command
+BEGIN
+ put /program by_output " "
+ put "dlagif "
+ varlist main.vn_dv main.vn_iv
+ put " " /program ifin_output
+ beginoptions
+ option radio(main rb_m1 rb_m2 rb_m3 rb_m4 rb_m5 rb_m6 rb_m7 rb_m8)
+option radio(main rb_g0 rb_g1 rb_g2 rb_g3 rb_g4 rb_g5 rb_g6 rb_g7 rb_g8 rb_g9 rb_g9 rb_g10 rb_g11 rb_g12 rb_g13 rb_g14)
+ option main.ck_nocons
+ option radio(main rb_orr rb_grr1 rb_grr2 rb_grr3)
+ optionarg main.ed_ridge
+ option est1.ck_nolag
+ option est1.ck_lmauto
+ option est1.ck_lmhet
+ option est1.ck_lmnorm
+ option est1.ck_diag
+ option est1.ck_test
+ option est1.ck_dn
+ option est1.ck_two
+ option est1.ck_list
+ option est1.ck_cond
+ optionarg est1.sp_quant
+ optionarg est1.sp_tune
+ optionarg est1.sp_lag
+ optionarg est1.sp_ord 
+ optionarg est1.vn_predict
+ optionarg est1.vn_resid
+ optionarg est2.vn_wv
+ option radio(est2 rb_w1 rb_w2 rb_w3 rb_w4 rb_w5 rb_w6 rb_w7 rb_w8 rb_w9)
+ endoptions
+ END

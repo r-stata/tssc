@@ -1,0 +1,136 @@
+{smcl}
+{* 27oct2004/27sept2005/8jul2009}{...}
+{hline}
+help for {hi:tableplot}
+{hline}
+
+{title:Graphical display in two-way table format} 
+
+{p 8 17 2} 
+{cmd:tableplot}
+{it:plottype}
+{it:showvar}
+{it:rowvar}
+{it:colvar}
+[{cmd:if} {it:exp}] 
+[{cmd:in} {it:range}]
+[
+{cmd:,}
+{cmdab:miss:ing}
+{cmd:yasis xasis}
+{cmdab:h:eight(}{it:#}{cmd:)} 
+{cmdab:show:val}[{cmd:(}{it:options}{cmd:)}] 
+{it:graph_options}
+[{cmd:plot(}{it:plot}{cmd:)} {c |} 
+{cmd:addplot(}{it:plot}{cmd:)}] 
+]
+ 
+{p 4 4 2}{it:plottype} is one of {cmd:rbar}, {cmd:rcap}, {cmd:rcapsym} 
+or {cmd:rspike}. 
+
+
+{title:Description} 
+
+{p 4 4 2}{cmd:tableplot} plots the values of {it:showvar} in a two-way
+table format. The categories of {it:rowvar} define rows from top (low
+values) to bottom (high values) and  the categories of {it:colvar}
+define columns from left (low values) to right (high values).
+{it:showvar} for each combination of row and column is shown according
+to {it:plottype}, with default alignment vertical and, if {it:plottype}
+is {cmd:rbar}, default bar width 0.5.  {it:showvar} must be unique for
+each such combination.  By default both {it:rowvar} and {it:colvar} are
+mapped on the fly in sort order to successive integers from 1 up, but
+original values or value labels are used as value labels: this may be
+varied by use of the {cmd:yasis} or {cmd:xasis} options.
+
+
+{title:Remarks} 
+
+{p 4 4 2}The display is deliberately minimal. No numeric scales are
+shown for reading off numeric values, although optionally numeric values
+may be shown below bars by use of the {cmd:showval} option. Above all,
+there is no facility for any kind of three-dimensional display or
+effect.  
+
+{p 4 4 2}In contrast to a table, in which it is easier to compare values
+down columns, it is usually easier to compare values across rows
+whenever alignment is vertical.  
+
+{p 4 4 2}{cmd:tableplot, by()} is the way to do three-way tables. The
+variable specified in {cmd:by()} is used to produce a set of graphs in
+several panels.
+
+
+{title:Options} 
+
+{p 4 8 2}{cmd:missing} specifies that any missing values of any of the
+variables specified should also be included within their own categories.
+
+{p 4 8 2}{cmd:yasis} and {cmd:xasis} specify respectively that the
+{it:y} (row) variable and the {it:x} (column) variable are to be treated
+literally (that is, numerically). Most commonly, each option will be
+specified if the variable in question is a measured scale or a graded
+variable with gaps. If values 1 to 5 are labelled A to E, but no value
+of 4 (D) is present in the data, {cmd:xasis} or {cmd:yasis} prevents a
+mapping to 1 (A) ... 4 (E).
+
+{p 4 8 2}{cmd:height(}{it:#}{cmd:)} controls the amount of graph space
+taken up by bars. The default is 0.8 if all values of {it:showvar} are
+zero or positive and 0.5 otherwise.  Note that the height may need to be
+much smaller or much larger with {cmd:yasis} or {cmd:yasis}, given that
+the latter take values literally.  
+
+{p 4 8 2}{cmd:showval} specifies that numeric values are be shown
+beneath (or if {cmd:horizontal} is specified to the left of) bars.
+{cmd:showval} may also be specified with options. In particular, 
+
+{p 8 8 2}{cmd:showval(offset(}{it:#}{cmd:))} specifies an offset between
+the base of the bar and the position of the numeric value.  Default is
+0.1. Tweak this if the spacing is too large or too small. 
+
+{p 8 8 2}{cmd:showval(format(}{it:format}{cmd:))} specifies a format
+with which to show numeric values. Specifying a format will usually be
+advisable with non-integers. Example: {cmd:showval(format(%2.1f))}
+specifies rounding to 1 decimal place. 
+
+{p 8 8 2}Otherwise the options of {cmd:showval()} can be options of
+{help scatter}, most usually {help marker label options}. 
+
+{p 4 8 2}{it:graph_options} refers to options of {help twoway_rbar:twoway rbar}, 
+{help twoway_rcap:twoway rcap},  {help twoway_rcapsym:twoway rcapsym} or
+{help twoway_rspike:twoway rspike}, as appropriate.  In particular: 
+
+{p 8 8 2}{cmd:barwidth()} specifies the widths of the bars with
+{cmd:rbar}.  The default is 0.5.  This may need changing, especially
+with option {cmd:xasis} or {cmd:yasis}.
+
+{p 8 8 2}{cmd:by()} specifies another variable used to subdivide the
+display into panels.
+
+{p 4 8 2}{cmd:plot(}{help plot_option:plot}{cmd:)} provides a way to add
+other plots to the generated graph.  Allowed in Stata 8 only. 
+
+{p 4 8 2}{cmd:addplot(}{help addplot option:addplot}{cmd:)} provides a
+way to add other plots to the generated graph. Allowed in Stata 9 upwards.
+ 
+
+{title:Examples}
+
+{p 4 8 2}{cmd:. egen meanprice = mean(price), by(foreign rep78)}{p_end}
+{p 4 8 2}{cmd:. tableplot rbar meanprice for rep78}{p_end}
+{p 4 8 2}{cmd:. tableplot rbar meanprice for rep78, showval(format(%4.0f))}
+
+
+{title:Author} 
+
+{p 4 4 2}Nicholas J. Cox, Durham University, U.K.{break} 
+n.j.cox@durham.ac.uk
+
+
+{title:Also see} 
+
+{p 4 13 2}
+On-line: help for {help twoway}, {help graph_bar:graph bar}, 
+{help graph_bar:graph hbar}, {help graph_dot:graph dot}, 
+{help tabplot} (if installed)
+

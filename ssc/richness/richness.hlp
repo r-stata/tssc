@@ -1,0 +1,136 @@
+{smcl}
+{hline}
+help for {hi:richness}
+{hline}
+
+{title:Command to compute measures of (income) richness as defined by Peichl, Schaefer and Scheicher (2008)}
+
+{p 5 5}Basic syntax:
+
+{p 8 14 2}
+{cmdab:richness}
+{it:varlist} 
+[{cmd:if} {it:exp}] 
+[{cmd:in} {it:range}] 
+[{it:weight}{cmd: = }{it:exp}] 
+[{cmd:,}
+  {cmdab:rl:ine(}{it:rl}{cmd:)} | {cmdab:rv:al(}{it:rv}{cmd:)} {cmdab:rn:umber(}{it:rn}{cmd:)} {cmdab:rlf:ix}]
+{break}{break}
+
+{p 8 8 2}
+{cmd:aweights} and {cmd:fweights} are allowed; see help {help weights:weights}.
+
+{title:Description:}
+
+{p 1 5 2}
+{cmd:richness} computes the following richness measures based on the (income)
+distribution for each {it:varname} of {it:varlist}: 
+
+{p 5 5 2}
+- {it:headcount ratio}: fraction of people above the richness line,
+
+{p 5 5 2}
+- {it:FGTT1(a)}: a series of concave (T1 axiom) FGT richness indices with parameters alpha = 0.1, 0.3 and 1.
+
+{p 5 5 2}
+- {it:Cha(b)}: a series of concave (T1 axiom) Chakravaty richness indices with parameters beta = 0.1, 0.3, 1, 3and 10.
+
+{p 5 5 2}
+- {it:FGTT2(a)}: a series of convex (T2 axiom) FGT richness indices with parameters alpha = 1 and 2.
+
+{p 5 5 2}
+- {it:RMed}: absolute Medeiros (2006) richness index.
+
+{p 1 5 2}
+The richness line is either directly specified by the user or computed relative
+to the median or mean of {it:varname}, see under "options" below.
+
+{p 1 5 2}
+For the calculation of income richness, the income may not be negative. Therefore, cases with {it:varname} less than zero are omitted in the calculation, whereas values of zero are used for the calculation.
+
+
+{title:Options:}
+
+{p 1 5 2} There are two ways of defining the richness line:
+
+{p 5 5 2}
+{cmd:rline(}{it:rl}{cmd:)} manually defines a number {it:rl} as the (absolute) richness line (can be any positive number, macro or scalar).
+{break} 
+If {cmd:rline} is not used, the richness line is computed relatively (see below).
+
+{p 5 5 2}
+The relative calculation of the richness line is based on a multiplier of a parameter of the distribution of {it:varname}. 
+{break}
+{cmd:rnumber(}{it:rn}{cmd:)} defines the multiplier {it:rn}, which can be any positive number and has to be specified 
+in percent but without the "%" symbol (eg. 200, which is the default value, and not "200%" if you want to specify a richness line of 200%).
+{break}
+{cmd:rval(}{it:rv}{cmd:)} defines the distributional parameter {it:rv}, which can be either {cmd:median} (default) or {cmd:mean}. 
+{break}
+{cmd:rlfix} specifies that the richness line of the first {it:variable} of {it:varlist} is fixed and used for all other {it:variables} of {it:varlist}.
+
+{p 1 1 2} If none of the options is specified, a default richness line of 200% of the median is assumed.{break}
+If both ways (absolute and relative) are specified, the (absolute) richness line defined by {cmd:rline} is used.
+
+{title:The output and saved results}
+
+{p 1 5 2} {cmd:richness} displays a matrix of the computed results and stores the following results in {cmd:r()}:
+
+{p 5 8 2}
+{it:RR_{it:varname}} is the matrix with the stored results for {it:varlist},
+
+{p 5 8 2}
+{it:Rline_{it:varname}} is the value of the (computed or specified) richness line for {it:varname},
+
+{p 5 8 2}
+{it:R_HCR_{it:varname}} is the headcount index (as a decimal) for {it:varname},
+
+{p 5 8 2}
+{it:R_FGTT1_x_{it:varname}} is the concave FGT (T1 axiom) index with alpha = 0.1(x=10), 0.3(x=30) and 1(x=100) for {it:varname},
+
+{p 5 8 2}
+{it:R_Cha_x_{it:varname}} is the Chakravaty index with beta = 0.1(x=10), 0.3(x=30), 1(x=100), 3(x=300) and 10(x=1000) for {it:varname},
+
+{p 5 8 2}
+{it:R_FGTT2_alpha_{it:varname}} is the convex FGT (T2 axiom) index with alpha = 1 or 2 for {it:varname}.
+
+{p 5 8 2}
+{it:R_Med_{it:varname}} is the absolute Medeiros index for {it:varname}.
+
+{title:Examples}
+{cmd}
+richness income
+richness income if sex=1 [fw=weight], rline(10000)
+richness income if sex=1 & region = 2 [fw=weight], rval(mean)
+richness income if sex=1 & region = 2 [fw=weight], rval(mean) rnumber(300)
+richness income1 income2, rlfix 
+
+{text}
+
+{title:Acknowledgements}
+
+{p 1 5 2}Thanks to Stephen Jenkins and Joe Newton for useful suggestions and feedback.
+
+{title:References}
+
+{p 1 5 2}Peichl, Andreas, Schaefer, Thilo and Scheicher, Christoph (2006): Measuring Richness and Poverty - 
+A micro data application to Germany and the EU-15, CPE discussion papers No. 06-11, University of Cologne.
+
+{p 1 5 2}Peichl, Andreas, Schaefer, Thilo and Scheicher, Christoph (2008): Measuring Richness and Poverty - 
+A micro data application to Europe and Germany, IZA discussion paper 3790.
+
+{title:Author}
+
+   Andreas Peichl
+   IZA Institute for the Study of Labor, Bonn, Germany
+   peichl@iza.org
+   www.iza.org
+
+{title:Authors previous version}
+
+   Andreas Peichl & Thilo Schaefer
+   Cologne Center for Public Economics
+   University of Cologne, Germany
+   a.peichl@uni-koeln.de, schaefer@fifo-koeln.de
+   www.cpe-cologne.de
+
+Version 2.0.0 2008-11-18

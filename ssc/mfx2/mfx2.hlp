@@ -1,0 +1,242 @@
+{smcl}
+{* Last revised October 3, 2014}{...}
+{hline}
+help for {hi:mfx2}
+{hline}
+
+{title:Enhanced mfx command for obtaining marginal effects or elasticities after estimation}
+
+{p 8 15 2}
+	{cmdab:mfx2} 
+	[{cmd:,} 
+	{opt stub(name)} 
+	{cmdab:r:eplace}
+	{cmdab:m:ultiple} {cmdab:s:ingle}
+	{cmd:trustme}
+	{cmdab:nol:abel}
+	{cmd:nolog}
+	{cmdab:pred:ict}{opt (prediction_option)}
+	{cmdab:nos:e}
+	{cmdab:l:evel:(}{it:#}{cmd:)} 
+	{it:other_mfx_options} ]
+
+{p 4 4 2} If (and only if) the estimates from the marginal effects are
+currently active, {cmd:mfx2} typed without arguments redisplays
+previous results.  Otherwise typing {cmd:mfx2} causes the marginal
+effects for the last estimation command to be computed.
+
+{title:Description}
+
+{p 4 4 2} {cmd:mfx2} obtains marginal effects or elasticities after
+estimation.  It is probably most useful after multiple-outcome
+commands like {cmd:ologit}, {cmd:oprobit}, {cmd:gologit2},
+{cmd:slogit}, {cmd:mlogit}, {cmd:oglm}, and {cmd:mprobit}, but it
+works with other commands as well. {cmd:mfx2} offers two key
+enhancements to Stata's {cmd:mfx compute} command: (a) after multiple-
+outcome commands {cmd:mfx2} automates the calling of {cmd:mfx} and
+saves the marginal effects for all outcomes in a single matrix; and
+(b) marginal effects are stored in a way that makes them easy to
+use with post-estimation table formatting commands like {cmd:outreg2}
+and {cmd:estout}. {cmd:mfx2} is inspired, in part, by Tamas Bartus's
+{cmd:margeff} command. {cmd:margeff} is often quicker than {cmd:mfx2}
+and offers powerful additional options but {cmd:mfx2} works with a
+wider range of commands. Presumably/hopefully, {cmd:mfx2} will work
+whenever {cmd:mfx} will work (and will not work whenever {cmd:mfx}
+doesn't), but not all possible commands have been tested.  In order to
+fully understand {cmd:mfx2} you should also understand {cmd:mfx}; see
+help {help mfx}.
+
+{title:Options}
+
+{p 4 8 2} {cmd:stub(}{it:name}{cmd:)} causes the original estimates to
+be saved as {it:name}_coef and the marginal effects estimates to be
+saved as {it:name}_mfx, e.g. {opt stub(model1)} will cause the saved
+estimates to be named model1_coef and model1_mfx. If {cmd:stub} is not
+specified, the name of the program that produced the estimates is
+used, e.g. if {cmd:mfx2} is run after {cmd:ologit} the stored
+estimates will be named ologit_coef and ologit_mfx. NOTE: Matrices for the
+marginal effects and their standard errors are also added to the original
+estimates.  However, the {it:name}_mfx file may be easier to work with when
+using commands like {cmd:outreg2} and {cmd:estout}.
+
+{p 4 8 2} {cmd:replace} (abbreviated {cmd:r}) causes the marginal
+effects to become the active estimates.  Note that, whether you use
+{cmd:replace} or not, both the marginal effects and the original
+estimates get saved.
+
+{p 4 8 2} {cmd:multiple} and {cmd:single} (abbreviated {cmd:m} and
+{cmd:s}) can be used to specify whether the estimation command is for
+multiple-outcome (e.g. {cmd:ologit}, {cmd:mlogit}) or
+single/binary/count outcome (e.g. {cmd:regress}, {cmd:logit},
+{cmd:poisson}) models.  {cmd:mfx2} often already knows this but
+these options can be helpful if {cmd:mfx2} is guessing wrong.
+
+{p 4 8 2} {cmd:trustme} lets you override {cmd:mfx2}'s default
+preferences. The code includes (incomplete) lists of programs that do
+not work with it. This hard-coding could be wrong, especially if you
+happen to have a different program by the same name as those that are
+hard-coded.  Hence, if you specify {cmd:trustme}, the program will try
+to work with a program it doesn't think is supported.  You may get a
+fatal error later but you can go ahead and try this option if you
+really believe that {cmd:mfx2} should work.
+
+{p 4 8 2} {cmd:predict} specifies the prediction option to be used, e.g.
+{opt predict(pr)}, {opt predict(pu0)}. If not specified, then the default
+prediction option for the estimation command is used.  For multiple outcome
+models you should NOT include the outcome #, e.g. do not specify something
+like {opt predict(pr o(1))}.  Instead, {cmd:mfx2} will internally generate
+the commands for each possible outcome.
+
+{p 4 8 2} {cmd:nolabel} causes the equations in multiple-outcome
+models to be named eq1, eq2, etc. The default is to use the first 32
+characters of the value labels and/or the values of Y as the equation
+labels.  Note that some characters cannot be used in equation names,
+e.g. the space ( ), the period (.), the dollar sign ($), and the
+colon(:), and will be replaced with the underscore (_) character.  The
+default behavior works well when the value labels are short and
+descriptive.  It may not work well when value labels are very long
+and/or include characters that have to be changed to underscores. If
+the printout looks unattractive and/or you are getting strange errors,
+try changing the value labels of Y or else use the {cmd:nolabel}
+option.  If you are estimating a series of models you probably want
+to be consistent in your use or nonuse of {cmd:nolabel}.
+
+{p 4 8 2} {cmd:nose} specifies that standard errors of the marginal
+effects (elasticities) not be computed.  This can result in much
+faster execution.  The variances and covariances will all be set to 0.
+Note that even if you do not use {cmd:nose}, only the standard errors
+of the marginal effects are correct, hence use of commands like
+{cmd:test} may produce incorrect results.  Also, if standard errors are
+estimated, any missing values will be changed to 0 in the _mfx estimates.
+
+{p 4 8 2} {cmd:level(}{it:#}{cmd:)} specifies the confidence level in
+percent for the confidence intervals of the coefficients; see help 
+{help level}.
+
+{p 4 8 2} {cmd:nolog} suppresses the printing of everything but the
+final results.  Otherwise, {cmd:mfx2} prints out the results from each
+intermediate command it runs.  This display can be useful in that it
+can (a) help identify any problems when computing marginal effects,
+and (b) let you know the program really is running, since estimation
+can take a while, especially after multiple-outcome commands like
+{cmd:ologit} and {cmd:mlogit}.  But, if you only want to see the final
+results, use {cmd:nolog}.
+
+{p 4 8 2} {it:other_mfx_options} are the other options allowed by
+Stata's {cmd:mfx compute} command, e.g. {opt at(atlist)}, {opt varlist(varlist)}; 
+see help {help mfx}.  The output from some of these options will be
+hidden if you use the {cmd:nolog} option.
+
+{title:Troubleshooting}
+
+{p 4 4 2} It is important to realize that, if {cmd:mfx} does not work
+for your problem, then {cmd:mfx2} isn't going to work either.
+{cmd:mfx2} simplifies the use of {cmd:mfx} and restructures
+{cmd:mfx}'s output for easier use with table formatting programs. But,
+when it comes to actually estimating the marginal effects {cmd:mfx2}
+has the same limitations that {cmd:mfx} does.  Typing {stata findit marginal effects} 
+may either lead you to a FAQ that addresses your problem or show you
+a program that is better suited for your needs. For example, if you
+have interaction effects in your logit model, you may want to check
+out {cmd:inteff}. Or, if your model includes multiple dummy variables,
+{cmd:margeff} may handle your needs. In general, there are several
+different programs for marginal effects, and if {cmd:mfx2} does not do
+what you want maybe another one will. There is little point in asking
+the author of {cmd:mfx2} how to do something that can't be done with
+{cmd:mfx}, because he probably won't know! (Or at least he won't know
+more than what can be found in the FAQs and other available
+programs.).
+
+{p 4 4 2} Especially if you are having problems with your estimation,
+I recommend NOT using the {cmd:nolog} option.  The output can be a
+little tedious, but you will see all the intermediate calculations and
+any warning messages that are being issued by {cmd:mfx}. For example,
+warning messages like "derivatives not found" will be hidden if you
+use the {cmd:nolog} option.
+
+{p 4 4 2} Sometimes switching to a different estimation program will
+help.  For example, the original {cmd:gologit} does not work with
+either {cmd:mfx} or {cmd:mfx2}, but {cmd:gologit2} does (make sure you
+have version 2.1.3 or later; earlier versions had a problem that kept
+them from working correctly with {cmd:mfx}).  My guess is that user-
+written routines are more likely to be problematic than official Stata
+programs, because they are less likely to follow official Stata's
+standard programming practices.
+
+{p 4 4 2} If you get an "equation not found" error it may be because
+{cmd:mfx2} has incorrectly guessed that the estimation routine is for
+multiple outcomes, similar to {cmd:ologit}.  Try rerunning {cmd:mfx2}
+using the {cmd:single} option.  Conversely, if you get a message like
+"too few variables specified," it may be because {cmd:mfx2} does not
+realize the original estimation command is for multiple outcomes; try
+rerunning {cmd:mfx2} using the {cmd:multiple} option.
+
+{p 4 4 2} In theory, if {cmd:mfx} works fine for a problem, then
+{cmd:mfx2} should too. This has been true for the programs most used
+by {cmd:mfx2}'s author, but there are lots of programs, and lots of
+{cmd:mfx} options, that he has never tried.  If you encounter a
+situation where {cmd:mfx} works but {cmd:mfx2} does not, please email
+the author with the details.
+
+
+{title:Examples}
+
+{p 8 12 2}{cmd:. * Compute marginal effects after ologit, gologit2, mlogit}{p_end}
+{p 8 12 2}{cmd:. * Output and compare results using outreg2 and esttab}{p_end}
+{p 8 12 2}{cmd:. * Be patient, since it can take a painfully long time to compute s.e.'s}{p_end}
+{p 8 12 2}{cmd:. * gologit2 & outreg2 need to be installed for this example}{p_end}
+{p 8 12 2}{cmd:. * If not otherwise specified, the stubname is the name of the command that produced the estimates.}{p_end}
+{p 8 12 2}{cmd:. use http://www.indiana.edu/~jslsoc/stata/spex_data/ordwarm2.dta, clear}{p_end}
+{p 8 12 2}{cmd:. ologit  warm yr89 male white age ed prst}{p_end}
+{p 8 12 2}{cmd:. mfx2}{p_end}
+{p 8 12 2}{cmd:. gologit2 warm yr89 male white age ed prst, npl(yr89 male)}{p_end}
+{p 8 12 2}{cmd:. mfx2}{p_end}
+{p 8 12 2}{cmd:. mlogit warm yr89 male white age ed prst, b(4)}{p_end}
+{p 8 12 2}{cmd:. mfx2}{p_end}
+{p 8 12 2}{cmd:. outreg2 [ologit_mfx gologit2_mfx mlogit_mfx] using mymfx1a, replace long onecol nor2 word}{p_end}
+{p 8 12 2}{cmd:. esttab ologit_mfx gologit2_mfx mlogit_mfx using mymfx1b, mtitle se replace rtf}{p_end}
+
+
+{p 8 12 2}{cmd:. * If you don't need the standard errors, this is much quicker!!!}{p_end}
+{p 8 12 2}{cmd:. * The standard errors will all be reported as equaling zero.}{p_end}
+{p 8 12 2}{cmd:. * The nolog option will reduce the amount of printout}{p_end}
+{p 8 12 2}{cmd:. use http://www.indiana.edu/~jslsoc/stata/spex_data/ordwarm2.dta, clear}{p_end}
+{p 8 12 2}{cmd:. ologit  warm yr89 male white age ed prst}{p_end}
+{p 8 12 2}{cmd:. mfx2, nose nolog}{p_end}
+{p 8 12 2}{cmd:. gologit2 warm yr89 male white age ed prst, npl(yr89 male)}{p_end}
+{p 8 12 2}{cmd:. mfx2, nose nolog}{p_end}
+{p 8 12 2}{cmd:. mlogit warm yr89 male white age ed prst, b(4)}{p_end}
+{p 8 12 2}{cmd:. mfx2, nose nolog}{p_end}
+{p 8 12 2}{cmd:. outreg2 [ologit_mfx gologit2_mfx mlogit_mfx] using mymfx2a, replace word long onecol nor2 noaster nonotes}{p_end}
+{p 8 12 2}{cmd:. esttab ologit_mfx gologit2_mfx mlogit_mfx using mymfx2b, mtitle not replace rtf}{p_end}
+
+
+{p 8 12 2}{cmd:. * oglm needs to be installed for the following, which means you also need Stata 9}{p_end}
+{p 8 12 2}{cmd:. use http://www.indiana.edu/~jslsoc/stata/spex_data/ordwarm2.dta, clear}{p_end}
+{p 8 12 2}{cmd:. oglm warm yr89 male white age ed prst}{p_end}
+{p 8 12 2}{cmd:. mfx2, stub(nonhetero)}{p_end}
+{p 8 12 2}{cmd:. oglm warm yr89 male white age ed prst, het(yr89 male)}{p_end}
+{p 8 12 2}{cmd:. mfx2, stub(hetero)} {p_end}
+{p 8 12 2}{cmd:. outreg2 [nonhetero_mfx hetero_mfx] using mymfx3a, replace long onecol nor2 word}{p_end}
+{p 8 12 2}{cmd:. esttab nonhetero_mfx hetero_mfx using mymfx3b, mtitle se replace rtf}{p_end}
+
+
+{p 8 12 2}{cmd:. * Compare marginal effects at different values}{p_end}
+{p 8 12 2}{cmd:. use http://www.indiana.edu/~jslsoc/stata/spex_data/ordwarm2.dta, clear}{p_end}
+{p 8 12 2}{cmd:. ologit warm yr89 male white age ed prst}{p_end}
+{p 8 12 2}{cmd:. mfx2, at(mean) stub(mean)}{p_end}
+{p 8 12 2}{cmd:. mfx2, at(median) stub(median)}{p_end}
+{p 8 12 2}{cmd:. mfx2, at(zero) stub(zero)} {p_end}
+{p 8 12 2}{cmd:. outreg2 [mean_mfx median_mfx zero_mfx] using mymfx4a, replace long onecol nor2 noaster nonotes word}{p_end}
+{p 8 12 2}{cmd:. esttab mean_mfx median_mfx zero_mfx using mymfx4b, mtitle se replace rtf}{p_end}
+
+
+
+{title:Author}
+
+{p 5 5}
+Richard Williams{break}
+Notre Dame Department of Sociology{break}
+Richard.A.Williams.5@ND.Edu{break}
+{browse "http://www.nd.edu/~rwilliam/"}{p_end}
+

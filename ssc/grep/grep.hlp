@@ -1,0 +1,77 @@
+{smcl}
+{cmd:help grep}
+{hline}
+
+{title:Title}
+
+    {hi: search within your datasets for keywords}
+
+{title:Syntax}
+
+{p 8 17 2}
+{cmd:grep}
+{it:search strings} or {it: "search phrase"}, [{cmdab:p:ath}({it:directory_name})] [{cmdab:f:ilter}({it:dta file secification})]
+ 
+
+{title:Description}
+{pstd}
+{cmd:grep} emulates the unix/linux command by the same name and will of course run on all operating systems. 
+You can use it to parse any list of dta file and find ones with variables whose variable name or variable 
+labels contain strings that interest you. 
+It display the results in smcl format and they are clickable so you can directly {cmd:describe} or {cmd:use}the results.
+Furthermore it returns everything including datasets and variables found so you can program on top of it.
+
+{pstd}
+It is useful when you have produced plenty of files within a project and you are not quite sure where 
+everything is. It is also useful in case master datasets contain large number of files e.g. SOEP.
+
+{pstd}
+If you want to find all datasets in the mydir whose name starts with "a" and whose variable names or labels contain "household"
+then you run {cmd: grep household, path(mydir) filter(a*)}. If you found {cmd: a_1.dta,...,a_n.dta} with variables {cmd: ajv1,....ajvm_j}
+then {cmd: r(no) = n, r(djno) = m_j, r(dj)=a_j.dta r(djvs)=ajvs}.
+
+{pstd}
+If you want to find all datasets whose variable names or labels contain the phrase "Trunk Space" in the Stata install directory then you run
+{cmd: grep "Trunk Space", path(`"`c(sysdir_stata)'"') filter(*)} whereas if you want to find all variables within file.dta in the current directory whose variable names
+or labels contain the Words "Trunk" or "Space" then you run {cmd: grep Trunk Space, path(.) filter(file.dta)}
+
+
+
+{title:Examples}
+The command below
+{phang}
+{cmd:. grep turn,  path(`"`c(sysdir_stata)'"') filter(auto.dta)}{p_end}
+will find 
+{phang}{cmd: "dataset: use,describe.  variables: use,describe: 2 vars in auto.dta"}, {p_end}
+while it returns macros
+
+{phang} {cmd: r(d1v1) : "turn"} {p_end}
+{phang} {cmd: r(d1no) : "1"} {p_end}
+{phang} {cmd: r(d1)   : "auto.dta"} {p_end}
+{phang} {cmd: r(no)   : "1" }{p_end}
+
+The above can be achieved by:
+
+{phang} {cmd: cd `"`c(sysdir_stata)'"'} {p_end}
+{phang} {cmd: grep turn, filter(auto.dta)} {p_end}
+or 
+{phang} {cmd: cd `"`c(sysdir_stata)'"'} {p_end}
+{phang} {cmd: grep turn, filter(a*.dta)} {p_end}
+or 
+{phang} {cmd: cd `"`c(sysdir_stata)'"'} {p_end}
+{phang} {cmd: grep turn} {p_end}
+
+
+since in the absence of a (path,filter) specification the (current directory,*) will be assumed.
+
+
+
+{title:Note} 
+Useful suggestions by Dan Blanchette (dan.blanchette@duke.edu) are gratefully acknowledged.
+
+
+{title: Author}
+Nikos Askitas, IZA, Bonn, Germany.
+Email: nikos@iza.org
+
+

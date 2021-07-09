@@ -1,0 +1,86 @@
+{smcl}
+{hline}
+help for {cmd:crtest}{right:Joao Pedro W. de Azevedo}
+{hline}
+
+
+{title:Cramer-Ridder Test for pooling states in a {cmd:Multinomial Logit}}
+
+
+{p 8 27}{cmdab:crtest}
+
+
+{title:Description}
+
+
+{p 4 4 2}{cmd:crtest} performs the Cramer-Ridder test for pooling states in the 
+Multinomial logit model.{p_end}
+
+                
+{title:Examples}
+
+
+{p 8 12 2}{cmd:.mlogit occup1 female under35 married2}{p_end}
+{p 8 12 2}{cmd:.crtest}{p_end}
+
+
+{title:Technical details}
+
+{p 4 4 2}This test assume a multinomial logit model with (S+1) states and two 
+states that are candidates for pooling, s1 and s2. The null hypothesis is that 
+s1 and s2 have the same regressors coefficient apart from the intercept, or{p_end}
+
+{p 32 0 0}Bs1 = Bs2 = Bs                     (1){p_end}
+                                
+{p 4 4 2}To test this hypothesis the following test statistics can be used:{p_end}
+                             
+{p 32 0 0}LR = 2{lnL - lnLr}                   (2){p_end}
+                             
+{p 4 4 2}where lnL is the maximum log likelihood of the original model and lnLr 
+the maximum log likelihood if the estimates are constrained to satisfy (1).
+LR asymptotically has a chi-square distribution with k degrees of freedom 
+where k is the number of restrictions implied by (1). LnL is readily available
+from the original model, but the lnLr apparently requires constrained estimation 
+which can be quite laborious.{p_end}
+
+{p 4 4 2}Cramer and Ridder (1991) show that the lnLr can be easily derived from 
+an unconstrained estimation of the pooled model with only S states. The following 
+expression to estimate the restricted maximum log likelihood is then presented by 
+the authors,{p_end}
+
+{p 32 0 0}lnLr = ns1*ln(ns1) + ns2*ln(ns2) - ns*ln(ns) + lnLp{p_end}
+
+{p 4 4 2}where lnLp is the unconstrained maximum of the log likelihood of the pooled
+model. ns1 and ns2 are the number of observations on the states s1 and s2, 
+respectively, and ns = ns1 + ns2.{p_end}
+
+
+{title:References}
+
+
+{p 4 8 2}Cramer,J.S. and G.Ridder (1991) "Pooling states in multinomial logit model." 
+{it:Journal of Econometrics}, 47: 267-272.{p_end}
+
+        
+{title:Authors}
+
+	Joao Pedro W. de Azevedo, University of Newcastle, UK
+	j.p.azevedo@ncl.ac.uk
+
+
+{title:Aknowledgements}
+
+{p 4 4 2}This ado file uses the auxiliary ado file _pecats written by J. Scott Long 
+and Jeremy Freese.{p_end} 
+{p 4 4 2}I would like to thank Brian Poi, Christopher Baum and Nick Cox
+for their helpfull suggestions.{p_end}  
+{p 4 4 2}As usual, all mistakes are of my own responsibility.{p_end}
+
+
+{title:Also see}
+
+{p 4 13 2}Manual:  {hi:[R] mlogit}{p_end}
+{p 4 13 2}Online:  help for {help mlogtest}; {help iia}; {help smhsiao} (if installed){p_end}
+
+
+

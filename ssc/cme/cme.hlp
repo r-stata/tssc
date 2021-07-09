@@ -1,0 +1,312 @@
+{smcl}
+{* 16apr2004}{...}
+{hline}
+help for {hi:cme}
+{hline}
+
+{title:Generalized linear covariate measurement error models}
+
+{p 8 12 2}{cmd:cme} {it:depvar} [{it:indepvars}] {cmd:(}{it:label:varlist}{cmd:)} [{it:weight}] [{cmd:if}
+{it:exp}] [{cmd:in} {it:range}] [{cmd:,}  
+{cmdab:mev:ar}{cmd:(}{it:#}{cmd:)} {cmdab:f:amily}{cmd:(}{it:familyname}{cmd:)} 
+{cmdab:de:nom}{cmd:(}{it:varname}{cmd:)} 
+{cmdab:l:ink}{cmd:(}{it:linkname}{cmd:)} 
+{cmdab:nocon:stant} {cmdab:off:set:(}{it:varname}{cmd:)} {cmdab:tc:ovmod:(}{it:varlist}{cmd:)}
+{cmdab:si:mple}
+ {cmdab:ni:p}{cmd:(}{it:#}{cmd:)} {cmdab:noad:apt} 
+{cmdab:rob:ust} 
+{cmdab:cl:uster:(}{it:varname}{cmd:)} 
+{cmdab:com:mands} {cmdab:ind:irect} {cmdab:tot:al} 
+{cmdab:ef:orm} {cmdab:le:vel:(}{it:#}{cmd:)} 
+{cmdab:nolo:g} {cmdab:tr:ace} {cmdab:fr:om:(}{it:matrix}{cmd:)} 
+
+{p 4 4 2} The outcome model is specified by {it:depvar} and [{it:indepvars}], 
+{cmd:family}{cmd:(}{it:familyname}{cmd:)}, {cmd:link}{cmd:(}{it:linkname}{cmd:)}, etc.
+
+{p 4 4 2}  The classical measurement model for the true
+covariate is specified by {cmd:(}{it:label:varlist}{cmd:)}, where
+{it:label} is the name of the true covariate
+(cannot be the same as an existing variable in the data
+set) and {it:varlist} are the fallible (continuous) measurements of the true
+covariate. At least two variables are required unless the {cmd:mevar(}{it:#}{cmd:)}
+option is used.
+
+{p 4 4 2} The true covariate model is a linear regression with explanatory variables
+(observed covariates) 
+[{it:indepvars}] unless the {cmd:tcovmod}{cmd:(}{it:varlist}{cmd:)} option is
+used to specify different explanatory variables.
+
+{p 4 4 2} {it:familyname} is one of
+
+{p 8 8 2}{cmdab:gau:ssian} | {cmdab:bin:omial} | {cmdab:poi:sson} | {cmdab:gam:ma}
+
+{p 4 4 2} {it:linkname} is one of
+
+{p 8 8 2}{cmdab:i:dentity} | {cmdab:log:} | {cmdab:rec:ip} | {cmdab:logi:t} | {cmdab:pro:bit} |
+{cmdab:c:ll} | {cmdab:olo:git} | {cmdab:opr:obit} | {cmdab:ocl:l} |
+
+{p 4 4 2}
+{cmd:fweight}s and {cmd:pweight}s are allowed; see help {help weights}.
+
+{p 4 4 2}
+{cmd:cme} shares the features of all estimation commands; see help
+{help estcom}.
+
+
+{title:Description}
+
+{p 4 4 2}
+{cmd:cme} is a wrapper for {help gllamm} to estimate generalized linear models
+with covariate measurement error by maximum likelihood using
+adaptive quadrature.
+{cmd:cme} interprets a simple syntax, prepares
+the data for {cmd:gllamm}, calls {cmd:gllamm} and produces
+tailor-made output. The {cmd:commands} option causes {cmd:cme}
+to print out all data manipulation commands and the
+{cmd:gllamm} command. {cmd:gllamm} itself should be used to extend
+the model and for prediction and simulation using {help gllapred}
+or {help gllasim).
+ The covariate measurement error model 
+comprises three submodels:
+the outcome model, the measurement model and the true covariate model.
+
+{p 4 4 2}
+The outcome model is a generalized linear model including both observed
+covariates and the true, unobserved or latent covariate.
+
+{p 4 4 2}
+The measurement model assumes that the continuous repeated measurements
+of the true covariate are independently normally distributed
+with mean equal to the true covariate and constant variance
+(classical measurement model).
+
+{p 4 4 2}
+The true covariate model is a linear regression of the true covariate 
+on the observed covariates. Use {cmd:tcovmod}{cmd:(}{it:varlit}{cmd:)}
+to use a different set of observed covariates in the true covariate
+model than in the outcome model.
+
+{p 4 4 2}
+See Rabe-Hesketh, Skrondal, and Pickles (2003). The Stata Journal 3, 386-411
+for full details. 
+
+
+
+{title:Options}
+
+{p 4 8 2}
+{cmd:mevar}{cmd:(}{it:#}{cmd:)} specifies the measurement error variance. This
+option is required if there are no replicate measurements.
+
+{p 4 8 2}
+{cmd:family}{cmd:(}{it:familyname}{cmd:)} specifies the distribution of
+{it:depvar}; {cmd:family(gaussian)} is the default.
+
+{p 4 8 2}
+{cmd:denom}{cmd:(}{it:varname}{cmd:)} specifies the binomial denominator
+for the binomial link when {it:depvar} is the number of successes
+out of a fixed number of trials.
+
+{p 4 8 2}
+{cmd:link}{cmd:(}{it:linkname}{cmd:)} specifies the link function; the
+default is the canonical link for the {cmd:family()} specified.
+
+{p 4 8 2}
+{cmd:noconstant} specifies that the linear predictor has no intercept
+term, thus forcing it through the origin on the scale defined by the link
+function.
+
+{p 4 8 2}
+{cmd:offset}{cmd:(}{it:varname}{cmd:)} specifies an offset to
+be added to the linear predictor:  g(E(y)) = xB + {it:varname}.
+
+{p 4 8 2}
+{cmd:tcovmod}{cmd:(}{it:varlist}{cmd:)} specifies the observed covariates 
+to be used in the true covariate model; a constant will automatically be
+estimated.
+
+{p 4 8 2}
+{cmd:simple} specifies that there are no observed covariates in the true covariate model.
+
+
+{p 4 8 2}
+{cmd:nip}{cmd:(}{it:#}{cmd:)} the number of quadrature points to be
+used.
+
+{p 4 8 2}
+{cmd:noadapt} use ordinary quadrature instead of the default adaptive
+quadrature.
+
+
+{p 4 8 2}
+{cmd:robust} specifies that the Huber/White/sandwich estimator of
+variance is to be used.  
+If you specify {cmd:pweight}s or {cmd:cluster}{cmd:(}{it:varname}{cmd:)}, 
+{cmd:robust} is implied.
+
+{p 4 8 2}
+{cmd:cluster}{cmd:(}{it:varname}{cmd:)} specifies that the observations
+are independent across groups (clusters), but not necessarily within groups.
+{it:varname} specifies to which group each observation belongs; e.g.,
+{cmd:cluster}{cmd:(}{cmd:personid}{cmd:)} in data with repeated observations
+on individuals.  {cmd:cluster}{cmd:(}{cmd:)} affects the estimated standard
+errors and variance-covariance matrix of the estimators (VCE), but not the
+estimated coefficients.  Specifying {cmd:cluster}{cmd:(}{cmd:)} implies
+{cmd:robust}.
+
+{p 4 8 2}
+{cmd:commands} displays the commands necessary to prepare the data
+and estimate the model in {cmd:gllamm} instead of estimating the
+model. These commands can be copied into a do-file and should work
+without further editing. Note that the data will be changed by the
+do-file! 
+
+{p 4 8 2}
+{cmd:indirect} displays the indirect effects of observed covariates on the 
+outcome via the true covariate - this is shown for all covariates in the 
+true covariate model.
+
+{p 4 8 2}
+{cmd:total} displays the total effects (indirect effects plus direct effects)
+of observed covariates on the outcome via the true covariate - this is shown 
+for all covariates in the true covariate model. For observed covariates that 
+have no  direct effects, the total effects equal the indirect effects.
+
+{p 4 8 2}
+{cmd:eform} displays the exponentiated coefficients and corresponding
+standard errors and confidence intervals.  For binomial models with the logit
+link, exponentiation results in odds ratios; for Poisson models with the log
+link, exponentiated coefficients are rate ratios.
+
+{p 4 8 2}
+{cmd:level}{cmd:(}{it:#}{cmd:)} specifies the confidence level, in
+percent, for confidence intervals (default 95); see help {help level}.
+
+{p 4 8 2}
+{cmd:nolog} suppresses the iteration log.
+
+{p 4 8 2}
+{cmd:trace} requests that the estimated coefficient vector be printed
+at each iteration. In addition, all the output produced by {cmd:gllamm}
+with the {cmd:trace} option is also produced.
+
+{p 4 8 2}
+{cmd:from}{cmd:(}{it:matrix}{cmd:)} specifies a matrix of starting values.
+
+
+{p 4 8 2}
+{cmd:skip} combined with the {cmd:from}{cmd:(}{it:matrix}{cmd:)}  option,
+allows the matrix of starting values to contain extra parameters.
+
+{title:Remarks}
+
+{p 4 4 2}
+The allowed link functions are
+
+{center:Link function            {cmd:cme} option     }
+{center:{hline 40}}
+{center:identity                 {cmd:link(identity)} }
+{center:log                      {cmd:link(log)}      }
+{center:reciprocal               {cmd:link(recip)}    }
+{center:logit                    {cmd:link(logit)}    }
+{center:probit                   {cmd:link(probit)}   }
+{center:complementary log-log    {cmd:link(cll)}      }
+{center:ordinal logit            {cmd:link(ologit)}   }
+{center:ordinal probit           {cmd:link(oprobit)}  }
+{center:ord. compl. log-log      {cmd:link(ocll)}     }
+
+
+{p 4 4 2}
+The allowed distribution families are
+
+{center:Family                 {cmd:cme} option       }
+{center:{hline 40}}
+{center:Gaussian(normal)       {cmd:family(gaussian)} }
+{center:Bernoulli/binomial     {cmd:family(binomial)} }
+{center:Poisson                {cmd:family(poisson)}  }
+{center:Gamma                  {cmd:family(gamma)}    }
+
+
+{p 4 4 2}
+If you specify {cmd:family()} but not {cmd:link()}, you obtain the canonical
+link for the family:
+
+{center:{cmd:family()}                default {cmd:link()}}
+{center:{hline 38}}
+{center:{cmd:family(gaussian)}        {cmd:link(identity)}}
+{center:{cmd:family(binomial)}        {cmd:link(logit)}   }
+{center:{cmd:family(poisson)}         {cmd:link(log)}     }
+{center:{cmd:family(gamma)}           {cmd:link(recip)}   }
+
+
+{title:Examples}
+
+{p 4 8 2}{cmd:. * simulate data}{p_end}
+{p 4 8 2}{cmd:. set obs 100}{p_end}
+{p 4 8 2}{cmd:. gen true = invnorm(uniform())}{p_end}
+{p 4 8 2}{cmd:. gen fall1 = true + 0.3*invnorm(uniform())}{p_end}
+{p 4 8 2}{cmd:. gen fall2 = true + 0.3*invnorm(uniform())}{p_end}
+{p 4 8 2}{cmd:. gen fall3 = true + 0.3*invnorm(uniform())}{p_end}
+{p 4 8 2}{cmd:. gen ynorm = 2 + 3*true + invnorm(uniform())}{p_end}
+{p 4 8 2}{cmd:. gen yord = cond(ynorm<-2,1,cond(ynorm<0,2,cond(ynorm<3,3,4)))}{p_end}
+
+{p 4 8 2}{cmd:. * estimate models}{p_end}
+{p 4 8 2}{cmd:. cme ynorm (true: fall1 fall2 fall3)}{p_end}
+{p 4 8 2}{cmd:. cme ynorm (true: fall1 fall2 fall3), mevar(.077)}{p_end}
+{p 4 8 2}{cmd:. cme yord (true: fall1 fall2 fall3), f(binom) l(oprobit)}{p_end}
+
+
+{title:Webpage}
+
+{p 4 13 2}
+http://www.gllamm.org
+
+{title:Author}
+
+{p 4 13 2}
+Sophia Rabe-Hesketh (sophiarh@berkeley.edu)
+as part of joint work with Anders Skrondal and Andrew Pickles.
+We are very grateful to Stata Corporation for helping us to speed up 
+{cmd:gllamm}.
+
+{title:References}
+(available from sophiarh@berkeley.edu)
+
+{p 4 13 2}
+Rabe-Hesketh, S., Skrondal, A. and Pickles, A. (2003). 
+Maximum likelihood estimation of generalized linear models
+with covariate measurement error. The Stata Journal 3, 386-411.
+
+{p 4 13 2}
+Rabe-Hesketh, S., Skrondal, A. and Pickles, A. (2002). 
+Reliable estimation of generalized linear mixed models using adaptive quadrature. 
+The Stata Journal 2, 1-21.
+
+{p 4 13 2}
+Rabe-Hesketh, S., Pickles, A. and Skrondal, S. (2001). 
+Correcting for covariate measurement error in logistic regression using 
+nonparametric maximum likelihood estimation. Statistical Modelling 3, 215-232. 
+
+{p 4 13 2}
+Rabe-Hesketh, S., Skrondal, A. and Pickles, A. (2004).
+Generalized multilevel structural equation modeling.
+Psychometrika, in press.
+
+{p 4 13 2}
+Rabe-Hesketh, S., Pickles, A. and Skrondal, S. (2001). GLLAMM Manual. 
+Technical Report 2001/01, Department of Biostatistics and Computing, 
+Institute of Psychiatry, King's College, London, 
+see http://www.gllamm.org
+
+
+
+{title:Also see}
+
+{p 4 13 2}
+Manual:  {hi:[U] 23 Estimation and post-estimation commands},{break}
+{hi:[U] 29 Overview of Stata estimation commands},{break}
+
+{p 4 13 2}
+Online:  help for {help gllamm}, {help gllapred},
+{help gllasim}; {help estcom}, {help postest}; {help cloglog},
+{help logistic}, {help poisson}, {help regress}

@@ -1,0 +1,434 @@
+{smcl}
+{hline}
+help for {hi:mktab}{right:Nick Winter}
+{hline}
+
+{title:Print table of estimates in delimited or screen-presentation format}
+
+    Basic syntax:
+
+{p 5 11 2 }{cmd:mktab} {cmd:(}{it:depvar1 varlist1}{cmd:)}
+	{cmd:(}{it:depvar2 varlist2}{cmd:)}
+	{it:...} {cmd:(}{it:depvarN varlistN}{cmd:)} [{it:weight}]
+	[{cmd:if} {it:exp}] [{cmd:in} {it:range}] [{cmd:,} {it:options} ]
+
+
+    Full syntax:
+
+{p 5 11 2}{cmd:mktab} {cmd:(}[{it:eqname1}{cmd::}] {it:depvar1a} [{it:depvar1b}
+      {it:...} {cmd:=}] {it:varlist1} [{cmd:,} {cmdab:noc:onstant}]{cmd:)}{p_end}
+{p 11 11 2}{cmd:(}[{it:eqname2}{cmd::}] {it:depvar2a} [{it:depvar2b} {it:...}
+      {cmd:=}] {it:varlist2} [{cmd:,} {cmdab:noc:onstant}]{cmd:)}{p_end}
+{p 11}{it:...}{p_end}
+{p 11 11 2}{cmd:(}[{it:eqnameN}{cmd::}] {it:depvarNa} [{it:depvarNb} {it:...}
+      {cmd:=}] {it:varlistN} [{cmd:,} {cmdab:noc:onstant}]{cmd:)}{p_end}
+{p 11 11 2}[{it:weight}] [{cmd:if} {it:exp}] [{cmd:in} {it:range}] [{cmd:,}
+      {it:options} ]
+
+
+    Options:
+
+{p 11 11 2}{cmdab:p:rint(}{it:varlist}{cmd:)}
+	{cmdab:l:og(}{it:filename}[, {cmd:append} | {cmd:replace}]{cmd:)} 
+	{cmd:cmd(}{it:cmdname}{cmd:)} 
+	{cmdab:a:ux(}{it:name}[{cmd:=}{it:label}][{cmd:,}{it:name}[{cmd:=}{it:label}] {it:...} ]{cmd:)} 
+	{cmdab:e:st(}{it:name}[{cmd:=}{it:label}][{cmd:,}{it:name}[{cmd:=}{it:label}] {it:...} ]{cmd:)}
+	{cmdab:f:lag(}{it:#}{cmd:=}{it:label}[{cmd:,}{it:#}{cmd:=}{it:label ...} ]{cmd:)}
+	{cmdab:t:ag(}{it:string}{cmd:)}
+	{cmdab:d:elimit(}{it:string}{cmd:)}
+	{cmdab:n:oisily}
+	{cmdab:c:ontinue} 
+	{cmdab:xl:abel} {cmdab:yl:abel}
+	{cmdab:t1:title} {cmdab:t2:title} {cmdab:b1:title} {cmdab:b2:title} 
+	{cmdab:notit:le} {cmdab:nobtit:le}
+	{cmd:mif(}{it:conditions}{cmd:)} 
+	{cmdab:mifl:abel(}{it:labels}{cmd:)}
+	{cmdab:pl:evels}
+	{cmdab:nose}
+	{cmdab:bf:mt(%}{it:fmt}{cmd:)}
+	{cmdab:sf:mt(%}{it:fmt}{cmd:)}
+	{cmdab:ef:mt(%}{it:fmt}{cmd:)}
+	{cmdab:pf:mt(%}{it:fmt}{cmd:)}
+	{cmdab:onet:ail} 
+	{cmdab:sc:reen} {cmdab:vsp:ace(}{it:#}{cmd:)}
+	{cmdab:con:nect}
+	{cmd:notags}
+	{cmd:latex} {cmdab:nocap:tion} 
+	{cmd:html}
+	{it:command_options} ]
+
+
+{title:Description}
+
+{p}{cmd:mktab} estimates one or more single-equation models, and 
+prints the results in tab- (or other) delimited format for importation into a 
+spreadsheet or word-processor. This facilitates creating tables in 
+"journal-article" format, i.e. with standard errors in parentheses below
+parameter estimates, significance flagged, and so on.
+
+{p}{cmd:mktab} estimates each model specified. It then produces a delimited 
+table with the dependent variables across the top, the RHS variables (and 
+auxiliary parameter and returned estimates results) down the left, and 
+the coefficients and standard errors in the cells. Each column corresponds 
+to a single model; each row to a single RHS variable.
+
+{p}{cmd:mktab} is similar to John Gallup's exemplary {help outreg}. The primary differences
+are that it estimates all the models and generates the table with a single command,
+and that it does not require preserving and restoring the data. In addition, it
+has an option to display output in space-delimited columns on the screen.
+
+{cmd:if}, {cmd:in} and {help weights} are supported.
+
+{p}This command has been tested with {help regress}, {help probit}, {help logit}, 
+{help oprobit}, and {help ologit}, along with their {help svy:survey} counterparts. 
+It should work with any single-equation 
+estimator. Time series operators are not supported.
+
+
+{title:Specification of Models to Run}
+
+{p}Models may be specified with the "new" Stata 6.0 multi-equation syntax.
+Thus, they can be entered individually, each surrounded by parentheses.
+If several models involve the same RHS variables, they can be specified
+together, with an equal sign separating the LHS and RHS variables, as in 
+{bind:{cmd:(mpg price weight = rep78 foreign)}.}
+
+
+{title:Options}
+
+{p 0 5 2}{cmd:print(}{it:varlist}{cmd:)} specifies the list (and ordering) of 
+	RHS variables to include in the output. The default is to include all variables
+	from all models. Wildcards can be used to refer to variables in this list (and
+	will expand only to include variables in the models).
+
+{p 0 5 2}{cmd:log(}{it:filename}{cmd:)} is the name of a log file for the results. The usual log 
+     options, {cmd:replace} and {cmd:append} are valid. If a log file is open and
+     this option is specified, then the open log file will remain open for
+     any output other than the comma-delimited table (see {cmd:noisily}, below)
+     and will be re-opened after the table printed.
+
+{p 0 5 2}{cmd:cmd(}{it:cmdname}{cmd:)} is the name of the command to run the model. The default 
+	is {help regress}.
+
+{p 0 5 2}{cmd:aux(}{it:string}{cmd:)} is a comma-separated list of auxillary estimates to print
+     immediately after varlist and in the listed order, e.g. {cmd:aux(_cons)},
+     optionally with labels, e.g. {cmd:aux(_cut1=Cut One,_cut2=Cut Two)}.  They 
+     need not exist for all the estimated models.
+
+{p 0 5 2}{cmd:est(}{it:string}{cmd:)} is a comma-separated list of returned estimates to print 
+     with optional labels (e.g. {cmd:est(N,r2=R Squared)}).
+
+{p 0 5 2}{cmd:mif(}{it:conditions}{cmd:)} specifies a set of {help if} 
+	conditions that vary across the
+	multiple equations. They are combined with the {help if} condition, if any,
+	with an &. Conditions should take the form: 
+
+{p 10 10 2}{cmd:mif(} [{it:stub} {cmd::} ] {it:cond1} [{cmd:\} {it:cond2} [{it:...}]]{cmd:)}
+
+{p 5 5 2}where {it:stub} is pre-pended to each of the cond's.  So, for example,
+	{bind:{cmd:mif(rep78== : 1 \ 2 \ 3 \ 4 \ 5 )}} would apply {bind:{cmd:if rep78==1}} to the
+	first equation estimates, {bind:{cmd:if rep78==2}} to the second, and so on.
+	The number of {cmd:mif()} conditions specified must match the number of
+	equations. However, if there is exactly one equation specified, and multiple
+	mif() conditions, then the single equation will be duplicated for each mif()
+	condition.  This means that if you want to run the same model across multiple
+	subgroups, you need only specify the equation once, as in the example below.
+
+{p 0 5 2}{cmd:miflabels(}{it:labels}{cmd:)} specifies a set of labels for the columns,
+to replace those generated by default by the {cmd:mif()} option. For example
+
+{p 10 10 2}{cmd:mktab (mpg = price weight length) , mif(foreign==1\foreign==0) miflabel("Foreign" "Domestic") }
+
+{p 5 5 2}would label the two columns of output "Foreign" and "Domestic", rather than "foreign==1"
+and "foreign==0"
+
+{p 0 5 2}{cmd:flag(}{it:flaglist}{cmd:)} specifies a comma-separated 
+	list of one or more significance (p) 
+     levels, specified as integers, and corresponding symbols. The default is 
+     {bind:{cmd:flag(1=**,5=*,10=^)}}, which labels p<0.01 with **; p<0.05 with *, and
+     p<0.10 with ^. Flag values must be in ascending order. To suppress
+     significance marking, specify {cmd:flag(0=*)}.
+
+{p 0 5 2}{cmd:connect} indicates that the significance level flags (e.g. **) should be
+	connected with the coefficients, rather than separated into their own output columns.
+
+{p 0 5 2}{cmd:tag(}{it:string}{cmd:)} is an identifying name that prints 
+	in the third column of output
+    (e.g. {cmd:tag(Model One)}).
+
+{p 0 5 2}{cmd:notags} indicates that line numbers, line types, and tag information should
+	not be included. This option is selected automatically when screen formatting
+	is requested.
+
+{p 0 5 2}{cmd:delimit(}{it:string}{cmd:)} specifies a delimiter to be used to separate
+	the columns. The default is to tab-delimit the output.
+
+{p 0 5 2}{cmd:noisily} indicates that the individual models should be displayed as they
+     are run.  If a log file is open when {cmd:mktab} is executed, this
+     output will be sent to that log file; the delimited table will
+     be sent to the file indicated in the {cmd:log()} option.
+
+{p 0 5 2}{cmd:continue} indicates that the master row numbers should continue from the
+     last invocation of {cmd:mktab}. This allows creation of a single log
+     file with multiple tables, one after the other.
+
+{p 0 5 2}{cmd:xlabel} uses variable labels (if any) to label the RHS variables.
+
+{p 0 5 2}{cmd:ylabel} uses variable labels (if any) to label the LHS variables.
+
+{p 0 5 2}{cmdab:onet:itle} indicates that all the equations have the same LHS variable,
+and that the column header (i.e., variable name or label) should span all the columns, rather 
+than being repeated for each.
+
+{p 0 5 2}{cmd:t1title}, {cmd:t2title}, {cmd:b1title}, and {cmd:b2title} allow up to two lines of
+     titles at the top and bottom of the table.
+
+{p 0 5 2}{cmd:notitle} and {cmd:nobtitle} suppress printing of the default top and bottom
+	title information. This is helpful in conjunction with the {cmd:continue()}
+	option.
+
+{p 0 5 2}{cmd:plevels} indicates that p-levels should be displayed under the coefficients, 
+	in place of standard errors.
+
+{p 0 5 2}{cmd:nose} suppressed the display of standard errors (and p-levels)
+
+{p 0 5 2}{cmd:bfmt} {cmd:sfmt} {cmd:efmt} and {cmd:pfmt} indicate the display format to use
+	for coefficients, standard errors, returned estimates, and p-values, respectively. The
+	defaults are %4.3f for coefficients and standard errors, %3.2f for estimates, and %5.4
+	for p-values.
+	
+{p 0 5 2}{cmd:onetail} indicates that one-tailed significance levels should be calculated.
+	The default is two-tailed.
+
+{p 0 5 2}{cmd:screen} indicates that the table should be formatted for the screen, rather
+	than delimited. This will produce a space-delimited table that will display appropriately
+	in a fixed-pitch font. It is useful for reading model results during interactive use.
+
+{p 0 5 2}{cmd:vspace} indicates the width of the column for variable names, when results
+	are formatted to the screen. The default is 20.
+	
+{p 0 5 2}{cmd:latex} indicates that the table should be formatted for inclusion in a LaTeX
+	file. See discussion of LaTeX, below.
+	
+{p 0 5 2}{cmd:nocaption} indicates that the table caption (taken from {cmd:t1title()}) 
+	should be omitted from the LaTeX output.	
+	
+{p 0 5 2}{cmd:html} indicates that the table should be formatted as an HTML table.	
+	
+{p 0 5 2}{it:command_options} can include any options appropriate to the command being run
+     (e.g. {help robust}).
+
+
+{title:Output}
+
+{cmd:mktab} outputs the following columns:
+
+{p 0 18 2}{bind:1 row number:     }consecutive numbering of the lines in the table as a whole,
+                    which allow re-sorting into the correct order
+
+{p 0 18 2}{bind:2 line type:      }0 for header/title rows{p_end}
+{p 18 18 2}1 for coefficients{p_end}
+{p 18 18 2}2 for standard errors{p_end}
+{p 18 18 2}3 for estimates, and{p_end}
+{p 18 18 2}4 for footer rows.{p_end}
+{p 18 18 2}These allow re-sorting of the data for formatting
+
+{p 0 18 2}{bind:3 the tag:        }Contents of the {cmd:tag()} option, to identify the table
+
+{p 0 18 2}{bind:4 variable names: }The name of the variable for this row
+			(blank for std error rows)
+
+{p 0 18 2}5+ Alternating columns of coefficients for each model, with significance 
+                    symbols for each coefficient.
+                    Rows alternate between coefficients and their standard errors. Standard
+                    errors are surrounded by parentheses.
+
+
+{title:LaTeX output}
+
+{p 0 0 2}The {cmd:latex} option specifies that the output table should be formatted as
+a LaTeX table (i.e., in a tabular environment).  The table is formatted with 
+coefficient and standard error lines decimal-aligned, and other lines centered.
+Standard errors are printed in a smaller font under the coefficients.
+
+{p 0 0 2}The resulting table makes use of two LaTeX packages: threewaytables and booktabs, so 
+be sure to include \usepackage{threeparttable,booktabs} in your LaTeX preamble.
+
+{p 0 0 2}For example, the following command produces the following LaTeX output, and saves it in 
+the file mylog.tex:
+
+{p 5 10 2}{cmd:. mktab (mpg price rep78 = gratio weight), log(mylog.tex) latex }{p_end}
+
+{p 5 10 2}\begin{table}[ht]{p_end}
+{p 5 10 2}\begin{center}{p_end}
+{p 5 10 2}\begin{threeparttable}{p_end}
+{p 5 10 2}\caption{{\em }}{p_end}
+{p 5 10 2}\begin{tabular}{ l  r@{}l r@{}l r@{}l }{p_end}
+{p 5 10 2}{p_end}
+{p 5 10 2}\toprule{p_end}
+{p 5 10 2} & \multicolumn{2}{c}{{\em mpg}}& \multicolumn{2}{c}{{\em price}}& \multicolumn{2}{c}{{\em rep78}}{p_end}
+{p 5 10 2}\\ {p_end}
+{p 5 10 2} \cmidrule(lr){2-7}{p_end}
+{p 5 10 2}{p_end}
+{p 5 10 2}gear\_ratio&0.&099&1454.&284&0.&535{p_end}
+{p 5 10 2}\\ {p_end}
+{p 5 10 2} {p_end}
+{p 5 10 2}&\raisebox{.7ex}[0pt]{\scriptsize  (1.}&\raisebox{.7ex}[0pt]{\scriptsize 365)}{p_end}
+{p 5 10 2}&\raisebox{.7ex}[0pt]{\scriptsize  (978.}&\raisebox{.7ex}[0pt]{\scriptsize 092)}{p_end}
+{p 5 10 2}&\raisebox{.7ex}[0pt]{\scriptsize  (0.}&\raisebox{.7ex}[0pt]{\scriptsize 389)}{p_end}
+{p 5 10 2}\\ {p_end}
+{p 5 10 2}weight&--0.&006$^{**}$&2.&692$^{**}$&--0.&000{p_end}
+{p 5 10 2}\\ {p_end}
+{p 5 10 2} {p_end}
+{p 5 10 2}&\raisebox{.7ex}[0pt]{\scriptsize  (0.}&\raisebox{.7ex}[0pt]{\scriptsize 001)}{p_end}
+{p 5 10 2}&\raisebox{.7ex}[0pt]{\scriptsize  (0.}&\raisebox{.7ex}[0pt]{\scriptsize 574)}{p_end}
+{p 5 10 2}&\raisebox{.7ex}[0pt]{\scriptsize  (0.}&\raisebox{.7ex}[0pt]{\scriptsize 000)}{p_end}
+{p 5 10 2}\\{p_end}
+{p 5 10 2}\bottomrule{p_end}
+{p 5 10 2}\end{tabular}{p_end}
+{p 5 10 2}\begin{tablenotes}[flushleft]{p_end}
+{p 5 10 2}\item \hspace{-0.2em}$^{**}$ p$<$0.01; $^{*}$ p$<$0.05; \raisebox{.7ex}[0pt]{\tiny $\wedge$} p$<$0.10 two tailed{p_end}
+{p 5 10 2}{p_end}
+{p 5 10 2}\end{tablenotes}{p_end}
+{p 5 10 2}\end{threeparttable}{p_end}
+{p 5 10 2}\end{center}{p_end}
+{p 5 10 2}\end{table}{p_end}
+{p 5 10 2}\clearpage{p_end}
+
+{p 0 0 2}The following example LaTeX document would include this table:{p_end}
+
+{p 5 10 2}\documentclass[8pt]{extarticle}{p_end}
+{p 5 10 2}  \usepackage{threeparttable,booktabs}{p_end}
+
+{p 5 10 2}  \oddsidemargin  0.0in{p_end}
+{p 5 10 2}  \evensidemargin 0.0in{p_end}
+{p 5 10 2}  \textwidth      6.5in{p_end}
+{p 5 10 2}  \topmargin      0.5in{p_end}
+{p 5 10 2}  \textheight     9.0in{p_end}
+
+{p 5 10 2}\begin{document}{p_end}
+{p 5 10 2}  \input{mylog.tex}{p_end}
+{p 5 10 2}\end{document}{p_end}
+
+{p 0 0 2}In fact, this wrapper LaTeX file can be created automatically by mktab, if you issue the
+following command:
+
+{p 5 10 2}{cmd:. mktab wrapper , log(mylog.tex)}
+
+{p 0 0 2}This creates a file _mylog.tex, which contains the wrapper listed above.  This can be handy when
+fine-tuning a table or set of tables.
+
+
+{title:Examples}
+
+{p 5 10 2}{cmd:. mktab (mpg price rep78 = gratio weight), log(mylog)}
+
+{p 5 5 2}This runs three regressions (with DVs mpg, price and rep78), each 
+        with RHS variables gratio and weight (and a constant). It prints the
+        coefficients (and their standard errors) into a file called mylog.log.
+
+
+{p 5 10 2}{cmd:. mktab (vote90 vote92 = dem rep ideology) cmd(probit)}
+       {cmd:aux(_cons=Intercept) est(N,ll=Log Likelihood,r2_p=Pseudo R2)}
+       {cmd:tag(Table One) log(mylog, append) continue}
+
+{p 5 5 2}This runs two probit models (DVs vote90 and vote92), each with three 
+        dependent variables (dem, rep and ideology). The table includes 
+        coefficients and standard errors for the three RHS variables and the
+        constant term (labeled Intercept), as well as estimates N, ll, and r2_p
+        (which are labeled "N", "LnL", and "Pseudo R2", respectively.) 
+        It appends the table to mylog.log, and numbers the rows consecutively
+        with the previous table.
+
+
+{p 5 10 2}{cmd:. mktab (rep78 mpg price) (rep78 mpg price weight), cmd(oprobit)}
+        {cmd:f(.1=**,1=*) pr(5) log(mylog, replace) xlab ylab delimit(,)}
+        {cmd:a(_cut1=Cut One,_cut2=Cut Two,_cut3=Cut Three,_cut4=Cut Four)}
+
+{p 5 5 2}This runs two ordered probit models of rep78, one with independant 
+        variables mpg and price, the other with mpg, price, and weight. It 
+        prints the results with five decimal places, uses the variable labels 
+        from the data set, flags coefficients p<0.001 with ** and 
+        p<0.01 with *, and delimits the output with commas. This produces the following output:
+
+{res}              1,0,,Estimates (using oprobit)
+              2,1,,Variable,Repair Record,,Repair Record,
+              3,1,, ,1978,,1978,
+              4,2,,Mileage (mpg),0.11342,**,0.05978, 
+              5,3,,,(0.02897),,(0.04091),
+              6,2,,Price,0.00010, ,0.00014, 
+              7,3,,,(0.00005),,(0.00005),
+              8,2,,Weight (lbs.),--, ,-0.00055, 
+              9,3,,, ,,(0.00031),
+              10,2,,Cut One,0.96916, ,-1.66922, 
+              11,3,, ,(0.82655),,(1.68018),
+              12,2,,Cut Two,1.83700, ,-0.78752, 
+              13,3,, ,(0.79926),,(1.66034),
+              14,2,,Cut Three,3.22326,**,0.63996, 
+              15,3,, ,(0.82574),,(1.65004),
+              16,2,,Cut Four,4.18628,**,1.65129, 
+              17,3,, ,(0.87507),,(1.65440),
+              18,6,,** p<0.001, * p<0.01, two tailed
+              19,7,,
+{text}
+
+{p 5 10 2}{cmd:. mktab (rep78 mpg price) (rep78 mpg price weight), cmd(oprobit)}
+        {cmd:f(.1=**,1=*) pr(5) log(mylog, replace) xlab ylab screen}
+        {cmd:a(_cut1=Cut One,_cut2=Cut Two,_cut3=Cut Three,_cut4=Cut Four)}
+
+{p 5 5 2}This runs the same models, but formats the output for the screen.
+	This produces the following output:
+
+{text}              Variable               Repair      Repair   
+                                     Record      Record   
+                                      1978        1978    
+
+              Mileage (mpg){res}           0.113{text}**{res}     0.060   
+                                     (0.029)     (0.041)
+              
+              {text}Price{res}                   0.000       0.000   
+                                     (0.000)     (0.000)
+
+              {text}Weight (lbs.){res}              --      -0.000   
+                                                 (0.000)
+
+              {text}Cut One{res}                 0.969      -1.669   
+                                     (0.827)     (1.680)
+              {text}Cut Two{res}                 1.837      -0.788   
+                                     (0.799)     (1.660)
+              {text}Cut Three{res}               3.223{text}**{res}     0.640   
+                                     (0.826)     (1.650)
+              {text}Cut Four{res}                4.186{text}**{res}     1.651   
+                                     (0.875)     (1.654)
+{text}
+              ** p<0.001; * p<0.01; two tailed
+
+        
+{title:Notes}
+
+This program is inspired by (and some programming lifted from) Christopher
+Ferrell's {help esthold} and {help estprt} commands. Code for parsing the multiple
+equation syntax was taken shamelessly from the {help reg3} command - thank you,
+Vince Wiggins and Statacorp.
+
+The tag, row number and row type columns can be used to sort the rows in
+useful ways once inside the spreadsheet.  For example, sorting on row type,
+one would then have blocks of coefficients, standard errors, and results
+grouped together, possibly across a large number of tables (different tags).
+So one can easily set formatting options for each type (block) of row,
+and then resort by tag and row number to return to the orginal output order.  
+
+If you set things up right, however, you should be able to take these results
+directly into a word processor.
+
+The significance calculations are based on e(df_r) containing degrees of 
+freedom for t ratios; for models that do not generate e(df_r) (e.g. {help probit})
+the z ratio is used.
+
+
+{title:Author}
+
+Nicholas Winter
+Department of Political Science
+Cornell University
+nw53@cornell.edu

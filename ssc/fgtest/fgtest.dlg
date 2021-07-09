@@ -1,0 +1,47 @@
+/*
+ fgtest
+*! VERSION 1.0 15jan2012
+*/
+VERSION 10.0
+INCLUDE _std_large
+DEFINE _dlght 250
+INCLUDE header
+HELP hlp1, view("help fgtest")
+RESET res1
+
+DIALOG main, label("fgtest - Farrar-Glauber Multicollinearity Tests") ///
+	tabtitle("Main")
+BEGIN
+ DEFINE _x _xsetbu
+ DEFINE _y _top
+ INCLUDE _bu_tsset
+  
+ TEXT tx_yvar	_lft	+30	120	., ///
+	label("Dependent Variable:")
+ TEXT tx_xvar	_vlx	@	300	., ///
+	label("Independent Variables:")
+
+ VARNAME vn_yvar  _lft	 _ss	120 .,	 ///
+	label("Dependent Variable")
+ VARLIST vl_xvar  _vlx	 @	300 ., ///
+	label("Independent Variables")
+
+  CHECKBOX ck_nocons @         _ms       @         .,	/*
+		*/ label("Suppress constant term")	/*
+		*/ option("noconstant")			/*
+*/  
+END
+
+INCLUDE ifin
+INCLUDE weights
+
+PROGRAM command
+BEGIN
+ put "fgtest "
+ varlist main.vn_yvar main.vl_xvar 
+ put " " /program ifin_output
+ put " " /program weights_output
+ beginoptions
+ option main.ck_nocons
+ endoptions
+END

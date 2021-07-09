@@ -1,0 +1,72 @@
+{smcl}
+{* 3-Aug2004}
+{hline}
+help for {hi:gen_tail}
+{hline}
+
+{title:Generate an indicator variable, indicating which observations are at or after a given observation.}
+
+{p 8 17 2}
+{cmd:gen_tail}
+{it:varname}{cmd:, gen(}{it:newvar}{cmd:)}
+
+
+{title:Description}
+
+{p 4 4 2}
+{cmd:gen_tail} generates an indicator variable (valued 0 or 1), with values of
+1 corresponding to the "tail end" of a series of observations.  The tail starts
+at the first nonzero value (including missing) in {it:varname} and continues
+until the end of the dataset or by-group.
+
+{p 4 4 2}
+Typically, {it:varname} is itself an indicator variable, though any numeric
+variable will suffice.
+
+{p 4 4 2}
+{cmd:by} {it:...} {cmd::} may be used with {cmd:gen_tail}.  Typically, you
+would use it with {cmd:by} and you would include a secondary by-variable
+or set of by-variables; see help {help by} and the example, below.
+
+
+{title:Example}
+
+{p 4 8 2}{cmd:. bysort personid (year): gen_tail incm_mis, gen(incm_mis_tail)}{p_end}
+
+{p 4 4 2}
+In such a usage, it is the user's responsibility to insure that the secondary
+by-variable(s) ({cmd:year}, in this case), in combination with the primary by-variable(s),
+establish a unique sort order.  Otherwise, you will not have meaningful or
+consistent results.
+
+{p 4 4 2}
+A typical usage sequence would be as follows.
+
+{p 4 8 2}{cmd:. gen byte incm_mis = mi(income)}{p_end}
+{p 4 8 2}{cmd:. bysort personid (year): gen_tail incm_mis, gen(incm_mis_tail)}{p_end}
+{p 4 8 2}{cmd:. logit} {it: outcomevar ...} {cmd:income} {it:...} {cmd: if ~incm_mis_tail}{p_end}
+
+
+{title:Remarks}
+
+{p 4 4 2}
+{cmd:gen_tail} was created for use with duration data, though it may be useful
+in other data-construction situations.  With duration data, it is used
+for creating variables that indicate censoring, where censoring begins at the
+first occurrence (within a spell) of a censoring event.  That is, a censoring
+event causes its own observation to be omitted, along with all subsequent
+observations within the spell.
+
+
+{title:Author}
+
+{p 4 4 2}
+David Kantor, Institute for Policy Studies, Johns Hopkins University.
+Email {browse "mailto:dkantor@jhu.edu":dkantor@jhu.edu} if you observe any
+problems.
+
+{title:Also See}
+
+{p 4 4 2}
+{help carryforward}, a related program by the same author.
+

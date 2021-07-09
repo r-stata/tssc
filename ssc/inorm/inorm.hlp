@@ -1,0 +1,210 @@
+{smcl}
+{* 05jul2007}{...}
+{hline}
+help for {hi: inorm}{right:John C. Galati}
+{hline}
+
+{title:Multiple-imputation via data-augmentation under a multivariate normal model}
+
+{p 8 17 2}
+{cmd:inorm em}
+{it:varlist}
+[{cmd:if} {it:exp}]
+[{cmd:in} {it:range}]
+[{cmd:,}
+	{cmdab:x:vars(}{it:varlist}{cmd:)}
+	{cmdab:max:its(}{it:#}{cmd:)}
+	{cmdab:cri:terion(}{it:#}{cmd:)}
+	{cmdab:rid:ge(}{it:#}{cmd:)}
+	{cmd:mu(}{it:string}{cmd:)}
+	{cmdab:sig:ma(}{it:string}{cmd:)}
+	{cmdab:e:cho}
+	{cmd:mata}
+]
+
+{p 8 17 2}
+{cmd:inorm da}
+{it:varlist}
+[{cmd:if} {it:exp}]
+[{cmd:in} {it:range}]
+{cmd:using} {it:filename}
+[{cmd:,}
+	{cmdab:x:vars(}{it:varlist}{cmd:)}
+	{cmd:m(}{it:#}{cmd:)}
+	{cmdab:it:s(}{it:#}{cmd:)}
+	{cmdab:burn:in(}{it:#}{cmd:)}
+	{cmdab:rid:ge(}{it:#}{cmd:)}
+	{cmd:mu(}{it:string}{cmd:)}
+	{cmdab:sig:ma(}{it:string}{cmd:)}
+	{cmd:seed1(}{it:#}{cmd:)}
+	{cmd:seed2(}{it:#}{cmd:)}
+	{cmd:replace}
+	{cmd:mata}
+]
+
+
+{title:Description}
+
+{p 4 4 2}
+{cmd:inorm} is a command for creating multiple imputed copies of an incomplete dataset
+under a multivariate normal model. It consists of two subcommands, {cmd:em} and
+{cmd:da}, which provide initial likelihood estimation (em) and imputation via
+data-augmentation (da), respectively. The {cmd:em} command is used to produce initial
+estimates, returned in matrices {cmd:r(mu)} and {cmd:r(sigma)}, that give a starting
+point for the data-augmentation stage. After imputation with the {cmd:da} command, the
+imputed datasets are stored in a long format, suitable for analysis using the prefix
+command {help mim} (if installed), in a single Stata dataset specified by
+{it:filename}. 
+
+{p 4 4 2}
+This command is a Stata implementation of the Windows freeware NORM, written by Joe Schafer
+(http://www.stat.psu.edu/~jls/misoftwa.html#mi), and is based on original Fortran code
+provided by him. For further details the user is referred to
+JL Schafer, Analysis of Incomplete Multivariate Data, Chapman & Hall 1997.
+
+{p 4 4 2}
+{cmd:inorm} is intended to run in either of two modes, one using a "plug-in" software
+component that requires a Windows environment, and the other using Mata code that should
+be platform-independent. The Mata version appears to be slow and it has not been 
+extensively tested.
+
+
+{title:Options}
+
+{p 4 8 2}
+{cmd:burnin} specifies an initial number of iterations to perform before commencing draws of the
+imputed datasets. The default is zero. In general {cmd:burnin} + {cmd:its} iterations will be
+performed prior to drawing the set of imputations for the first dataset, and {cmd:its} iterations
+will be performed between each subsequent draw of a set of imputated values for the dataset.
+
+{p 4 8 2}
+{cmd:criterion} specifies a convergence criterion for the em algorithm. The default is "0.000001",
+meaning the algorithm terminates when either the maxits number of iterations has been performed,
+or no entry in either the coefficient vector or covariance matrix estimate changes by more
+than 0.000001 times the previous value from one iteration to the next.
+
+{p 4 8 2}
+{cmd:echo} specifies that an estimate of the loglikelihood at each em iteration should be echoed
+to the screen.
+
+{p 4 8 2}
+{cmd:its} specifies the number of iterations between draws of imputed datasets. The default is 50.
+
+{p 4 8 2}
+{cmd:m} specifies the number of imputed copies of the dataset to be created. The default is 2.
+
+{p 4 8 2}
+{cmd:mata} specifies that the mata version of inorm should be used in preference to the plugin
+version (on Windows; on other operating systems the plugin version is not available).
+
+{p 4 8 2}
+{cmd:maxits} specifies the maximum number of iterations of the em algorithm to be performed. The
+default is 1000 iterations.
+
+{p 4 8 2}
+{cmd:mu} specifies the name of a Stata matrix containing an initial estimate for the mean of the
+multivariate normal model.
+
+{p 4 8 2}
+{cmd:replace} specifies that {it:filename} may be overwritten if it exists.
+
+{p 4 8 2}
+{cmd:ridge} specifies a ridge hyperparameter for data-dependant ridge prior as described in
+JL Schafer, Analysis of Incomplete Multivariate Data, Chapman & Hall 1997.
+
+{p 4 8 2}
+{cmd:seed1} specifies a first seed for the random number generator.
+
+{p 4 8 2}
+{cmd:seed2} specifies a second seed for the random number generator.
+
+{p 4 8 2}
+{cmd:sigma} specifies the name of Stata matrix containing an initial estimate of the covariance
+matrix for the multivariate normal model.
+
+{p 4 8 2}
+{cmd:xvars} gives a list of covariates that are completely observed on the estimation subsample
+(defined by the optional if or in clauses). The variables in {it:varlist} are modelled using a
+multivariate normal distribution conditional on the values of the {cmd:xvars} variables.
+
+
+{title:Examples}
+
+{p 4 4 2}
+We provide an example analysis that reproduces results displayed by Paul Allison in his monograph 
+"Missing Data" (Sage Publications, 2002). (The table references below correspond to tables in Chapters
+4 and 5 of the book.) We are grateful to Rodrigo Alfaro of the Central Bank of Chile for suggesting
+the use of this example.
+
+{p 4 4 2}
+{cmd: * Table 4.3}{p_end}
+{p 4 4 2}
+{cmd: use http://www.ats.ucla.edu/stat/examples/md/usnews.dta, clear}{p_end}
+{p 4 4 2}
+{cmd: inorm em _all}{p_end}
+{p 4 4 2}
+{cmd: mat std = diag(vecdiag(r(sigma)))}{p_end}
+{p 4 4 2}
+{cmd: mat std = vecdiag(cholesky(std))}{p_end}
+{p 4 4 2}
+{cmd: mat T4_3 = r(mu)', std'}{p_end}
+{p 4 4 2}
+{cmd: mat list T4_3}{p_end}
+
+{p 4 4 2}
+{cmd: * Table 4.4}{p_end}
+{p 4 4 2}
+{cmd: mat T4_4 =r(rho)}{p_end}
+{p 4 4 2}
+{cmd: mat list T4_4, f(%4.3f)}{p_end}
+
+{p 4 4 2}
+{cmd: * Tables 5.3, 5.4}{p_end}
+{p 4 4 2}
+{cmd: inorm da _all using tmp, m(5) seed1(20081003) replace }{p_end}
+
+{p 4 4 2}
+{cmd: use tmp, clear}{p_end}
+{p 4 4 2}
+{cmd: * first look at regression results in each imputed dataset}{p_end}
+{p 4 4 2}
+{cmd: forvalues k=1/5 {c -(} }{p_end}
+{p 8 4 2}
+{cmd: 	quietly reg gradrat csat lenroll private stufac rmbrd if _mj==`k'}{p_end}
+{p 8 4 2}
+{cmd: est store T`k' }{p_end}
+{p 4 4 2}
+}
+{p_end}
+{p 4 4 2}
+{cmd: est table T*, se b(%6.3f)}{p_end}
+
+{p 4 4 2}
+{cmd: * obtain combined MI estimates cf. Tables 5.3, 5.4}{p_end}
+{p 4 4 2}
+{cmd: mim: reg gradrat csat lenroll private stufac rmbrd}{p_end}
+{p 4 4 2}
+{cmd: mim, mcerror}{p_end}
+
+{p 4 4 2}
+{cmd: * compare with results using larger number of imputations to stabilise MC error}{p_end}
+{p 4 4 2}
+{cmd: use http://www.ats.ucla.edu/stat/examples/md/usnews.dta, clear}{p_end}
+{p 4 4 2}
+{cmd: inorm em _all}{p_end}
+{p 4 4 2}
+{cmd: inorm da _all using tmp, m(20) seed1(20081013) replace}{p_end}
+{p 4 4 2}
+{cmd: use tmp, clear}{p_end}
+{p 4 4 2}
+{cmd: mim: reg gradrat  csat lenroll private stufac rmbrd}{p_end}
+{p 4 4 2}
+{cmd: mim, mcerror}{p_end}
+
+
+{title:Also see}
+
+{p 4 4 2}
+Online:  help for
+{help mim}
+{p_end}

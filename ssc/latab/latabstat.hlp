@@ -1,0 +1,191 @@
+.-
+help for ^latabstat^                                                
+.-
+
+Produce LaTeX output from tabstat
+----------------------------------
+
+   ^latabstat^ varlist [weight] [^if^ exp] [^in^ range] 
+   [, ^s^tatistics(statname   [...]) ^by^(varname) ^not^otal 
+   ^m^issing ^nosep^ ^c^olumns(^v^ariables|^s^tatistics) ^lo^ngstub
+   ^la^belwidth(#) ^va^rwidth(#) ^f^ormat[(%fmt)] ^case^wise save
+
+   ^tf^(string)^replace^ ^app^end ^tx^(string) ^cap^tion(string)
+   ^cl^abel(string) ^hw^idth(#)]
+
+
+^fweights^ and ^aweights^ are allowed by ^latabstat^.
+
+
+Description
+-----------
+
+^latabstat^ is a modification of ^tabstat^ which produces a display 
+with LaTeX code embedded in the output. The user may then copy from 
+this display (or copy from a log file) and paste into a LaTeX document. 
+In addition, the user may also send the output to a file which can be
+read into a LaTeX document when it is compiled.
+
+^latabstat^ is a companion program to ^latab^ which produces LaTeX 
+output from ^tabulate^.
+
+^latabstat^ is used in exactly the same way as ^tabstat^, but with 
+some additional options. See -help ^tabstat^- for information on the 
+usage of ^tabstat^ and its normal options.
+
+Options unique to ^latabstat^ (see also options under ^tabstat^)
+---------------------------
+
+^tf^(filename) indicates the text file to which the output should
+be sent. Path names can be included, but do not include the ".tex"
+file extension. The usual Stata options (replace or append) must be
+used or an error message will result if the file already exists. 
+The ^append^ option adds the code to an already existing file while
+the ^replace^ option overwrites any already existing file which has
+the same name.
+
+The default output produces code for the LaTeX command ^tabular^.
+However, this can be changed with the ^tx^ option to produce
+commands suitable for the extension package ^tabularx^.
+When the ^tx(^#^)^ option is used the width of the table is set to
+the number (in centimetres) specified. If you wish the table
+to be set to the ^{\linewidth}^ command, enter the number 0.
+The user must remember to include a ^\usepackage^
+^{tabularx}^ command in the preamble of the document.
+
+^cap^tion(string) allows you to provide a title for the table. 
+The usual ^tabstat^ title is often complex, and unsuited for 
+publication quality tables, so it has been suppressed from the 
+output. Instead, you employ this option to provide your own title 
+(\caption command in LaTeX). This option may be omitted and 
+the caption later typed into your LaTeX document.
+
+^cl^abel(string) allows you to enter the \caption{\label{  } 
+information which is used by LaTeX for cross-referencing tables.
+This option may be omitted and later typed into your LaTeX document.
+
+^hw^idth(#) allows you to specify the width of the
+column headings. If omitted, the default values from
+^tabstat^ are used.
+
+Note that the stubwidth can be adjusted (as it is with ^tabstat^ 
+normally) using the ^la^belwidth(#) option. ^latabstat^ has 
+increased the maximum value of this width from 32 to 60. This can
+be changed by modifying the code in latabstat.ado.
+
+
+Warnings
+--------
+
+The filename is read and included in the output. If the file
+is located in a different directory to the current directory,
+the pathname will also appear in the code. This may mean further
+editing of the the LaTeX code is required in your text editor to
+remove offending path separators (\) which also signal 
+LaTeX commands. Similarly, if you use underscore characters
+in your filenames, these will also need to be removed. 
+
+For example: 
+
+\footnotesize{\emph{Source:} d:\mymain\mydirectory\my_data.dta}
+
+would need to be edited to become:
+
+\footnotesize{\emph{Source:} mydata.dta}
+
+
+
+Examples with output
+--------------------
+
+^latabstat mpg , by(foreign) s(mean med sd)^
+^cap(Fuel consumption, by origin) label(mpg)^
+^f(%9.2f)^
+
+\begin{table}[htbp]\centering
+\caption{\label{mpg} 
+\textbf{Fuel consumption, by origin} }\begin{tabular} {l r r r} \\ \hline
+\textbf{ foreign } & \textbf{mean} & \textbf{p50} & \textbf{sd} \\
+\hline
+Domestic  &      19.83 &      19.00 &       4.74 \\
+ Foreign  &      24.77 &      24.50 &       6.61 \\
+   Total  &      21.30 &      20.00 &       5.79 \\
+\hline
+\multicolumn{4}{@{}l}{\footnotesize{\emph{Source:} auto.dta}}
+\end{tabular}
+\end{table}
+
+
+
+^latabstat price , by(foreign) s(mean med) tx(8) ^
+^cap(Average price, by origin) clabel(avprice)  f(%9.2fc)^  
+^hw(16) tf(d:\texdocs\avprice) replace ^
+
+\begin{table}[htbp]\centering
+\newcolumntype{Y}{>{\raggedleft\arraybackslash}X}
+\parbox{8cm} {
+\caption{\label{avprice} 
+\textbf{Average price, by origin} }}
+\begin{tabularx} {8cm} {l Y Y} \\ \hline
+\textbf{ foreign } & \textbf{      mean} & \textbf{       p50} \\
+\hline
+Domestic  &   6,072.42 &   4,782.50 \\
+ Foreign  &   6,384.68 &   5,759.00 \\
+   Total  &   6,165.26 &   5,006.50 \\
+\hline
+\multicolumn{3}{@{}l}{\footnotesize{\emph{Source:} auto.dta}}
+\end{tabularx}
+\end{table}
+
+The table has been written to the file:d:\texdocs\avprice.tex
+
+
+Note on LaTeX
+-------------
+
+The source of the table is given as the State data file
+name, though a search and replace in your text editor can
+easily change this to a more meaningful name.
+
+The display produced by ^latabstat^ is in two colours (green and
+yellow) for ease of copying. If you require all the code to 
+produce a table from scratch, copy the lot. If you only require 
+the data itself (you may have already set up your table code 
+in your LaTeX document), copy just the yellow output.
+
+If you are using the file output option, ^tf^, you can include the
+table in your LaTeX document using the \input{filename} command. 
+The \include{filename} command always places the table on a new
+page.
+
+Finally, the code produced by ^latabstat^ may not be
+optimal LaTeX code for tables. Further tweaking of the code
+inside your text editor may be necessary. Any suggestions for 
+improving the LaTeX code would be most welcome.
+
+
+See also
+--------
+
+^latab^ (by Ian Watson), which produces LaTeX output 
+from ^tabulate^.
+^sutex^ (by Antoine Terracol), which produces LaTeX output 
+for summary statistics.
+^outtex^ (by Antoine Terracol), which produces LaTeX output
+for results tables after an estimation command.
+
+For programs which turn files into LaTeX output, 
+see ^maketex^ (by Antoine Terracol) and ^dotex^ (by Roger Newson).
+
+
+Author
+------
+
+   Ian Watson          
+   ACIRRT
+   University of Sydney
+   Australia
+   iangwatson@pnc.com.au
+   
+Date: 18 January 2003
+

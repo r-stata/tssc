@@ -1,0 +1,75 @@
+{smcl}
+{* 29apr2004}{...}
+{hline}
+help for {hi:circdiff}
+{hline}
+
+{title:Difference between circular variables}
+
+{p 8 17 2}
+{cmd:circdiff}
+{it:theta phi}
+[{cmd:if} {it:exp}]
+[{cmd:in} {it:range}]
+[{cmd:,}
+    {cmdab:g:enerate(}{it:newvar}{cmd:)}
+    {cmdab:abs:olute}
+]
+
+
+{title:Description}
+
+{p 4 4 2}{cmd:circdiff} calculates the circular difference between two
+arguments {it:theta} and {it:phi}, and puts it in a new variable {it:newvar}.
+The difference is the shorter of the two rotations taking {it:phi} to
+{it:theta}, increasing azimuth or clockwise being positive.
+
+{p 4 4 2}Either or both arguments may be circular variables between 0 and 360 
+degrees or numeric constants. 
+
+
+{title:Remarks}
+
+{p 4 4 2}Batschelet (1981, p.242) uses the notation |{it:theta}, {it:phi}| for the 
+absolute value of this difference and points out that it is also 
+{bind:arccos(cos({it:theta} - {it:phi}))}. Another scale on which to measure 
+difference is thus {bind:1 - cos({it:theta} - {it:phi}).} Yet another 
+is chord length {bind:2 * sin(({it:theta} - {it:phi}) / 2)}. The latter 
+two scales both yield results which are 0 when {it:theta} = {it:phi} 
+and 2 when {it:theta} and {it:phi} are 180 degrees apart, but results 
+coincide only at those two endpoints. 
+
+
+{title:Options}
+
+{p 4 8 2}{cmd:generate()} specifies the name of the new variable and is not
+    optional.
+
+{p 4 8 2}{cmd:absolute} specifies that {it:newvar} should contain absolute 
+values. By default {it:newvar} is signed. 
+
+
+{title:Examples}
+
+{p 4 8 2}{cmd:. circdiff axisasp wallasp, gen(diffasp)} 
+
+{p 4 8 2}{cmd:. circdiff axisasp 48.25} 
+
+
+{title:Author}
+
+{p 4 4 2}Nicholas J. Cox, University of Durham, U.K.{break} 
+n.j.cox@durham.ac.uk
+
+
+{title:References} 
+
+{p 4 8 2}Batschelet, E. 1981. {it:Circular statistics in biology.} 
+London: Academic Press. 
+
+
+{title:Also see}
+
+{p 4 13 2}
+On-line:  help for {help circcentre} 
+

@@ -1,0 +1,145 @@
+.-
+help for ^gphdt^                                            (STB-34:  gr20)
+.-
+
+Low level graphics in data coordinates
+--------------------------------------
+
+^gphsave^
+
+^gphdt c^lear y_1 x_1  y_2 x_2
+
+^gphdt t^ext y x #_rotation #_alignment  text
+
+^gphdt vt^ext varname_y  varname_x  varname_str [^if^ exp] [^in^ range]
+
+^gphdt l^ine y_1 x_1   y_2 x_2
+
+^gphdt vl^ine varname_y varname_x  [^if^ exp] [^in^ range]
+
+^gphdt vpol^y varname_y_1 varname_x_1 varname_y_2 varname_x_2 ... 
+       varname_y_p varname_x_p  [^if^ exp] [^in^ range]
+
+^gphdt b^ox y_1 x_1  y_2 x_2  #_shade
+
+^gphdt p^oint y x #_delta_c  #_symbol
+
+^gphdt vpoi^nt varname_y varname_x  [varname_delta_c varname_symbol] 
+       [^if^ exp] [^in^ range] [^, size(^#_delta_c^) symbol(^#_symbol^)^]
+
+    
+Description
+-----------
+
+In this section we refer to a data coordinate as (x,y) where x and y are the 
+horizontal and vertical coordinates of the point. In the arguments of the 
+^gphdt^ commands we have preserved Stata's usual practice of putting the 
+vertical position first.
+
+^gphdt clear^ y_1 x_1 y_2 x_2 clears the rectangle having opposite corners 
+     (x_1,y_1) and (x_2,y_2).
+
+^gphdt text^ y x  #_rotation #_alignment text displays text at data coordinate 
+     (x,y). See ^[R] gph^ for information about the rotation and alignment 
+     arguments.
+
+^gphdt vtext^ varname_y  varname_x  varname_str  [^if^ exp] [^in^ range] displays 
+     N centered lines of horizontal text where the location and text for the 
+     lines are contained in the three variables.
+
+^gphdt line^ y_1 x_1  y_2 x_2 draws a line from data coordinate (x_1,y_1) to 
+     (x_2,y_2).
+
+^gphdt vline^ varname_y varname_x  [^if^ exp] [^in^ range] draws a series of 
+     connected lines where the consecutive data coordinates are contained 
+     in the two variables.
+
+^gphdt vpoly^ varname_y_1 varname_x_1 varname_y_2 varname_x_2 ... varname_y_p 
+     varname_x_p  [^if^ exp] [^in^ range] draws a series of connected lines for 
+     each observation in the input variables.
+
+^gphdt box^ y_1 x_1  y_2 x_2  #_shade  draws a rectangle having opposite corners
+     having data coordinates (x_1,y_1) and (x_2,y_2). The shading argument must
+     be between 0 and 5 where the shading gets darker from 0 to 4, and 5 means
+     there is no shading.
+
+^gphdt point^ y x #_delta_c  #_symbol displays a point at data coordinate 
+     (x,y). See ^[R] gph^ for information on the size and symbol arguments.
+
+^gphdt vpoint^ varname_y varname_x [varname_delta_c varname_symbol]  [^if^ exp] 
+     [^in^ range] [^, size(^#_delta_c^) symbol(^#_symbol^)^] displays points at 
+     the data coordinates contained in the variables.  See ^[R] gph^ for 
+     information on the size and symbol arguments.
+
+
+Remarks
+-------
+
+For the ^gphdt^ commands to work properly, one must call ^gphsave^ immediately 
+after calling ^graph^. This puts the elements of ^_result(5)^ through ^_result(8)^
+into the global macros ^GPH_ay^, ^GPH_by^, ^GPH_ax^, and ^GPH_bx^ for the ^gphdt^
+commands to use.
+
+
+Examples
+--------
+
+A standard example of adding graphic components to a plot is to add the least 
+squares regression line to a scatterplot as well as line segments showing 
+vertical deviations of observed points to the line.  Here is a simple program 
+called ^slrplot^ for doing this for a given dependent variable ^y^ and 
+independent variable ^x^. The program uses ^gphdt vpoly^ to draw the line 
+segments and ^gphdt line^ to draw the regression line. 
+
+
+^program define slrplot^
+        ^version 5.0^
+ 
+        ^local y "`1'"^
+        ^local x "`2'"^
+        ^tempvar yhat^
+
+        ^gph open^
+
+        ^graph `y' `x', xlab ylab^
+        ^gphsave^
+
+        ^regress `y' `x'^
+        ^predict `yhat'^
+
+        ^gphdt vpoly `y' `x' `yhat' `x'^
+
+        ^sum `x'^
+        ^local x1 = _result(5)^
+        ^local x2 = _result(6)^
+        ^local y1 = _b[_cons] + _b[`x']*`x1'^
+        ^local y2 = _b[_cons] + _b[`x']*`x2'^
+
+        ^gphdt line `y1' `x1' `y2' `x2'^
+ 
+        ^gph close^
+^end^
+ 
+
+^. slrplot price mpg^
+
+
+Authors
+-------
+
+        H. Joseph Newton
+        Statistics Department
+        Texas A&M University
+        email:  jnewton@@stat.tamu.edu
+
+        James W. Hardin
+        Stata Corp.
+        email:  tech@@stata.com
+
+
+Also see
+--------
+
+    STB:  gr20 (STB-34)
+ Manual:  ^[R] gph^
+On-line:  help @gph@

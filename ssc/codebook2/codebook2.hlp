@@ -1,0 +1,58 @@
+{smcl}
+{hline}
+Help for {hi:codebook2}
+{hline}
+
+{title:Produce a codebook for data in memory}
+
+{p 8 17}{cmd:codebook2} [{it:varlist}] [{cmd:using} {it:filename}] [{cmd:,} {cmdab:t:ype}({it:type}) {cmdab:h:eader}]
+
+	
+{p 8 } Where "type" is one of:{p_end}
+{p 16 }		disc  - discrete{p_end}
+{p 16 }		cont  - continuous{p_end}
+{p 16 }		ord   - ordinal{p_end}
+{p 16 }		date  - elaspsed date{p_end}
+{p 16 }		id    - identification{p_end}
+{p 16 }		appx  - list values in appendix{p_end}
+
+
+{title:Description}
+
+{p}{cmd:codebook2} dislays a codebook for specified variables, or all variables in
+memory.  Based on the {cmd:codebook} command, {cmd:codebook2} takes a different approach
+toward deciding on what information to display for specific variables.  {cmd:codebook2}
+is intended to be used in conjunction with the {cmd:vartyp} command. 
+{p_end}
+
+
+{p}
+The {it:varlist} when using the "{cmd:using} {it:filename}" form of the command must list each variable singly;  common variable lists such as "var1-var12" cannot be used.{p_end}
+
+
+{title:Options}
+
+{p 0 4}{cmd:type()} can be used to set a variable type when one has not been defined
+for the listed variable(s), or to temporarily change the type.{p_end}
+{p 0 4}{cmd:header} is used to display information on the data file as a whole - number
+of variables, number of observations, sort order, etc.  {p_end}
+
+{title:Examples}
+
+{p 8 12}{inp:. codebook2}{p_end}
+{p 8 12}{inp:. codebook2, h}{p_end}
+{p 8 12}{inp:. codebook2 id birth}{p_end}
+{p 8 12}{inp:. codebook2 id, t(id)}{p_end}
+{p 8 12}{inp:. codebook2 birth, t(date) h}{p_end}
+{p 8 12}{inp:. codebook2 birth using mydata, t(date) h}{p_end}
+
+
+{title:Author}
+Paul H. Bern, Syracuse University
+phbern@syr.edu
+
+
+{title:See Also:}
+Manual:  {hi:[R] codebook}
+{p 0 19}On-line:  help for {help describe}, {help inspect}, {help notes}, {help char}{p_end}
+{p 0 19}Net Search: {net search ds3}, {net search codebook2}

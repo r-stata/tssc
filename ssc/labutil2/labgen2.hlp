@@ -1,0 +1,83 @@
+{smcl}
+{* version 1.0.0 01dec2011}{...}
+{cmd:help labgen2}
+{hline}
+
+{title:Title}
+
+{p 5}
+{cmd:labgen2} {hline 2} Create labeled variable
+
+
+{title:Syntax}
+
+{p 8}
+{cmd:labgen2} {dtype} {newvar}[{cmd::}{it:lblname}] 
+[{cmd:"}]{it:{hi:varlabel}}[{cmd:"}]
+{cmd:=}{it:{help exp}} {ifin}
+
+{p 8}
+{cmd:labgen2} {dtype} {newvar}[{cmd::}{it:lblname}] 
+{cmd:=}{it:{help exp}} {ifin} 
+{cmd:,} {opt def:inition} [ {opt eq:ualsign} {opt noby} ]
+
+
+{p 5}
+{helpb by} is allowed
+
+
+{title:Description}
+
+{pstd}
+{cmd:labgen2} creates a new variable and labels it. The syntax is the 
+same as with {help generate} with the exception, that either a variable 
+label, or option {opt definition} is specified additionally.
+
+
+{title:Options}
+
+{phang}
+{opt definition} specifies that anything on the right hand side of the 
+equal sign is used as the variable label. This option is required if 
+no variable label is specified.
+
+{phang}
+{opt equalsign} does not strip the equal sign from the variable label. 
+This option may only be combined with {opt definition}.
+
+{phang}
+{opt noby} does not add "(by {it:byvars})" to the variable label, if a 
+{cmd:by} prefix is used and {opt definition} is specified.
+
+
+{title:Examples}
+
+{phang2}{cmd:. labgen2 byte foo "foobar" = (bar == 1)}{p_end}
+{phang2}{cmd:. labgen2 byte foo = (bar == 1) ,definition}{p_end}
+
+
+{title:Acknowledgments}
+
+{pstd}
+The second syntax replicates the behavior of 
+{stata findit labgen:labgen} by Nick Cox.
+
+{pstd}
+If a definition exceeds the length of 80 characters it is put into 
+{help notes}. This behavior is also borrowed from {cmd:labgen}.
+
+
+{title:Author}
+
+{pstd}Daniel Klein, University of Bamberg, klein.daniel.81@gmail.com
+
+
+{title:Also see}
+
+{psee}
+Online: {help generate}, {help label}
+{p_end}
+
+{psee}
+if installed: {help labgen}, {help vlgen}, {help labutil2}
+{p_end}

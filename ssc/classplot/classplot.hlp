@@ -1,0 +1,97 @@
+{smcl}
+{* 30june2005}{...}
+{hline}
+help for {hi:classplot}
+{hline}
+
+{title:Graphical comparison of predicted probability and empirical values of outcome after a binary response model} 
+
+{p 8 17 2} 
+{cmd:classplot} 
+[ 
+{cmd:,}
+{cmdab:xcat:egories(}{it:integer}{cmd:)} {cmdab:ycat:egories(}{it:integer}{cmd:)}
+{cmdab:plotall} {help twoway_options:twoway_options}
+]
+
+
+{title:Description}
+
+{p 4 4 2}
+{cmd:classplot} draws a comparison of predicted probability and empirical
+values of outcome after a binary response model like {help logit:logit}
+or {help probit:probit}. It is an extension of
+{help logistic_postestimation :estat classification}.
+{cmd:classplot} provides a simple way to search for cut-off values.
+
+{p 4 4 2}
+Users may chose the number of vertical aligned symbols and the number of
+categories of predicted probability. It is possible to change
+{help twoway_options:twoway_options}.
+ 
+{title:Remarks} 
+
+{p 4 4 2}
+The {bf:default graph} plots all cases if the maximum number in a probability-category is
+smaller than {bf:20}. If the number exceeds 20 cases each symbol represents more
+than one case ({it:e.g. no case will be omitted}). In this case the maximum number
+is shown in a {help title_options:note}. In fact the first and the last symbol of a
+probability category may represent 1 to max. no. cases, symbols in between represent
+definitively max. no. cases.
+
+{p 4 4 2}
+{cmd:classplot} may be computationally expensive (e.g. cases*xcat*ycat calculations are performed).
+
+{title:Options} 
+
+{p 4 8 2}{cmdab:xcat:egories(}{it:integer}{cmd:)} 
+Number of categories of predicted probability. {cmdab:xcat:(}{it:integer}{cmd:)} needs an integer
+from 2 to 100 as an argument (default 25). 
+
+{p 4 8 2}{cmdab:ycat:egories(}{it:integer}{cmd:)}
+Number of (vertical aligned) symbols in each category of predicted probability.
+{cmdab:xcat:(}{it:integer}{cmd:)} needs an integer from 1 to 100 as an argument (default 20). 
+
+{p 4 8 2}{cmd:plotall}
+forces classplot to plot all cases as unique symbols. This option is not recommended with large
+(>100 cases) datasets, because one won't be able to disciminate plotsymbols. {cmd:plotall} overrides
+the {cmd:ycat}(#) option.
+
+{p 4 8 2}{it:twoway_options} refers to options of {help twoway_options:twoway}.
+
+{title:Examples}
+
+{it:Default usage:}
+
+{p 4 8 2}{inp:. sysuse auto}
+
+{p 4 8 2}{inp:. logit foreign price weight mpg }{p_end}
+
+{p 4 8 2}{inp:. classplot}{p_end}
+
+{it: To produce a "clean" plot with all cases:}
+
+{p 4 8 2}{inp:. classplot , plotall legend(off) subtitle("") title("") xtitle("") ytitle("")}
+
+{it: Compare two plots (100 vs. 1000 symbols):}
+
+{p 4 8 2}{inp:. classplot, ycat(10) xcat(10) name(cp_10x10) noshow}{p_end}
+
+{p 4 8 2}{inp:. classplot, ycat(100) xcat(100) name(cp_100x100) noshow}{p_end}
+
+{p 4 8 2}{inp:. graph combine  cp_10x10 cp_100x100 , rows(2)}{p_end}
+
+{title:Acknowledgements}
+
+Future versions of {cmd:classplot} may be {help byable:byable} accept {help if:if}-statements and
+{help weight:fweights} if requested.
+
+{title:Author}
+
+{p 4 4 2}Lars E. Kroll, {browse "mailto:mail@lkroll.de": email} {break} 
+          {browse "http://www.lkroll.de": http://www.lkroll.de}
+
+{title:Also see}
+
+{p 4 13 2}On-line:  help for {help graph_twoway}, {help logit}, {help probit},
+{help logit postestimation} {p_end}

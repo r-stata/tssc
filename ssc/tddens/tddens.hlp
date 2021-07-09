@@ -1,0 +1,43 @@
+{smcl}
+{* 16mar2011}{...}
+{hline}
+help for {hi:tddens}
+{hline}
+
+{title:Bivariate kernel density graphs over a grid}
+
+{p 8 14}{cmd:tddens}{bind: [, {cmdab:bw:idth(}{it:proportion}{cmd:)}}
+{cmdab:s:graph} {cmdab:b:graph} {bind:{cmdab:sgo:pt(}{it:string}{cmd:)}} {bind:{cmdab:bgo:pt(}{it:string}{cmd:)}}
+{bind:{cmdab:g:ridpoints(}{it:integer}{cmd:)}} {cmdab:f:ormat(}{help format}{cmd:)} 
+{cmdab:msiz:e(}{help markersizestyle}{cmd:)} {cmdab:ms:ymbol(}{help symbolstyle}{cmd:)} 
+{cmdab:ge:nstub(}{it:stubname}{cmd:)} ]
+
+{p}{cmd:tddens} estimates bivariate density using a symmetric triangle kernel
+with bandwidth given as a proportion of sample range (option {cmd:bwidth}, with default 0.2) and produces several graphs.
+A "heat map" is produced by default; option {cmd:sgraph} shows a surface plot as points, and option
+{cmd:bgraph} shows a bar graph that offers an alternative view of the surface. 
+The options {cmd:sgopt} and {cmd:bgopt} allow passing strings of options to the 
+surface plot and bar graph, respectively.
+The options {cmd:msize} and {cmd:msymbol} apply to the 
+surface plot only.
+Option {cmd:gridpoints} specifies
+how finely the grid of density estimates should be drawn; the default is 40 intervals in each dimension or
+40+1 squared (1681) density estimates. Option {cmd:format} specifies
+formats for axis labels. Option {cmd:genstub} specifies
+a stub name for variable names to be saved on the current dataset, containing kernel density estimates
+and auxiliary variables used in the graphs.
+
+{title:Example}
+
+ sysuse auto, clear
+ tddens price mpg, s b
+ tddens price mpg, ge(dens)
+    
+{title:Author of {cmd:tddens}}
+
+	Austin Nichols
+	<austinnichols@gmail.com>
+
+{title:Also see}
+
+{p 0 19}On-line:  help for {help spkde} (if installed; {stata "findit spkde":findit spkde} to download).{p_end}

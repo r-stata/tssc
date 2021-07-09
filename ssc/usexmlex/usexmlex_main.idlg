@@ -1,0 +1,23 @@
+
+DIALOG main, tabtitle("main") title("Import xml data to Stata (*.xml)")
+BEGIN
+
+        TEXT     tx_var      _lft        _top      _iwd        .,		///
+	label("Variables:  (leave empty for all variables)")
+        //VARLIST  vl_var      @           _ss       @           .,		///
+        EDIT  vl_var      @           _ss       @           .,		///
+	label("Variables")
+
+        TEXT tx_load _lft _ms _iwd ., label("Load file:")
+        FILE fi_load   @  _ss @ ., option(using) error("Filename") label("Browse...") ///
+             defext(xml) filter("XML Data File (*.xml)|*.xml|All (*.*)|*.*")
+             
+        GROUPBOX gb_options  @           _ls       @           80,	///
+	label("Options")
+
+
+        CHECKBOX ck_clear  _indent           _ms       _inwd         .,		///
+	label("Clear data in memory")			///
+	option(clear)
+END
+

@@ -1,0 +1,112 @@
+{smcl}
+{* version 1.0.3 10feb2012}{...}
+{cmd:help labunab}
+{hline}
+
+{title:Title}
+
+{p 5}
+{cmd:labunab} {hline 2} Unabbreviate value label list
+
+
+{title:Syntax}
+
+{p 8}
+{cmd:labunab} {it:lmacname} {cmd::} {it:lblname-list} 
+[{cmd:,} {opt clear} {opt a:ll}]
+
+
+{p 5}
+where {it:lblname-list} is a list of abbreviated value labels. 
+
+
+{title:Description}
+
+{pstd}
+{cmd:labunab} unabbreviates a list of existing value labels and 
+returns the results in {it:lmacname}. The command is intended for use 
+by programmers.
+
+{pstd}
+Like in {it:{help varlist:varlists}} the wildcards {hi:*}, {hi:?} and 
+{hi:~} are allowed in {it:lblname-list}. It is not allowed to specify 
+a range of value labels using the dash character ({hi:-}). The keyword 
+{hi:_all} is allowed but is seldom used. It is best used with option 
+{opt all} because otherwise {it:lmacname} merely conatains a list of 
+all value labels in memory. This list is accessible referring to 
+{cmd:r(names)} anyway. The reason is that {cmd:labunab} uses 
+{help label:label dir} internally.
+
+{pstd}
+In a program that allows an abbreviated list of value label names you 
+would code
+
+	{cmd:program foo}
+		{cmd:version 9.2}
+		{cmd:syntax anything}
+		{cmd:labunab lbllist : `anything'}
+		{it:code referring to} {cmd:`lbllist'}
+		{it:...}
+	{cmd:end}
+
+	
+{title:Options}
+
+{phang}
+{opt clear} clears {it:lmacname} before unabbreviating 
+{it:lblname-list}. This option assures that {it:lmacname} will be empty 
+if one of the labels in {it:lblname-list} is not found, even if the 
+same {it:lmacname} has previously been used.
+
+{phang}
+{opt all} interprets value labels attached to variables as existing 
+even if they are not currently in memory. The option is seldom used.
+
+
+{title:Examples}
+
+{phang2}{cmd:. sysuse nlsw88}{p_end}
+
+{phang2}{cmd:. labunab lbllist : ra mar}{p_end}
+{phang2}{cmd:. label list `lbllist'}{p_end}
+
+{phang2}{cmd:. labunab short : ???lbl}{p_end}
+{phang2}{cmd:. display "`short'"}{p_end}
+
+{phang2}{cmd:. labunab list : some*}{p_end}
+{phang2}(will return error message){p_end}
+
+{phang2}{cmd:. label values south southlbl}{p_end}
+{phang2}(note that {it:southlbl} has never been defined){p_end}
+
+{phang2}{cmd:. labunab list : _all ,all}{p_end}
+{phang2}{cmd:. display "`list'"}{p_end}
+{phang2}{cmd:. display "`r(names)'"}{p_end}
+
+{phang2}{cmd:. labunab empty : occ}{p_end}
+{phang2}{cmd:. labunab empty : some*}{p_end}
+{phang2}{cmd:. display "`empty'"}{p_end}
+{phang2}{cmd:. labunab empty : some* ,clear}{p_end}
+{phang2}{cmd:. display "`empty'"}{p_end}
+
+
+{title:Acknowledgments}
+
+{pstd}
+The code storing results in {it:lmacname} is borrowed from official 
+Stata's {help unab}.
+ 		
+		
+{title:Author}
+
+{pstd}Daniel Klein, University of Bamberg, klein.daniel.81@gmail.com
+
+
+{title:Also see}
+
+{psee}
+Online: {help unab}, {help label}{p_end}
+
+{psee}
+if installed: {help labutil2}
+{p_end}

@@ -1,0 +1,77 @@
+{smcl}
+{* 22 Oct 2001/14 Nov 2005}{...}
+{hline}
+help for {hi:sqr}
+{hline}
+
+{title:Make graphs square {c -} or any other shape} 
+
+{p 8 12}{cmd:sqr}
+{it:graph_command} 
+{it:varlist}
+[{cmd:if} {it:exp}] 
+[{cmd:in} {it:range}]
+[[{it:weight}]] 
+{bind:[ {cmd:,} {cmdab:a:spectratio(}{it:#}{cmd:)}}
+{it:graph_command_options} 
+] 
+
+
+{p}Note: This program requires Stata 7 as a minimum. In Stata 8 and 
+up, it applies only to old-style graphs produced by {cmd:gr7}. The only 
+reason to try to use it in Stata 8 and up is to apply it to such graphs, in 
+which case {cmd:graph} here should be understood as {cmd:gr7}. Otherwise, find
+the {cmd:aspectratio()} option. 
+
+
+{title:Description} 
+
+{p}{cmd:sqr} is a command prefix to place before any graph command to make 
+graphs square. Optionally, other aspect ratios may be specified. 
+For example, many time series plots look better with low aspect ratios 
+such that individual line segments are closer to 45 degrees from horizontal. 
+
+
+{title:Remarks} 
+
+
+{p}{cmd:sqr} works by using the {cmd:bbox()} option of {cmd:graph}. This will be
+possible so long as either (1) {it:graph_command} is itself {cmd:graph} or (2)
+it is set up to call {cmd:graph} with any user-specified options of
+{cmd:graph}, and does not specify {cmd:bbox()} itself. 
+
+{p}{cmd:sqr} does not control the shape of the data region, but the
+shape of the whole graph image. Nor is any adjustment made to (e.g.) 
+size or positioning of lettering. 
+
+
+{title:Options}
+
+{p 0 4}{cmd:aspectratio(}{it:#}{cmd:)} specifies an aspect ratio (height
+/ width) for the total graph image. In practice, aspect ratios between 
+about 0.2 and 2 are possible. The default is 1 (square). 
+
+{p 0 4}{it:graph_command_options} are whatever options apart 
+from {cmd:bbox()} are allowed with {it:graph_command}. 
+
+
+{title:Examples (Stata 7)}
+
+{p 4 8}{inp:. sqr graph mpg, by(foreign) box} 
+
+{p 4 8}{inp:. sqr tsgraph vol, a(0.4)} 
+
+{p 4 8}{inp:. for num 0.2(0.1)2, pause: sqr graph mpg weight, a(X)}
+
+
+{title:Author} 
+
+         Nicholas J. Cox, University of Durham, U.K.
+         n.j.cox@durham.ac.uk
+
+
+{title:Also see}
+
+On-line: help for {help gph} 
+ Manual: {hi:[G] gph} (Stata 7 only) 
+    FAQ: {browse "http://www.stata.com/support/faqs/graphics/sqgraph.html"}

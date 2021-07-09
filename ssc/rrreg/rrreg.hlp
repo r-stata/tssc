@@ -1,0 +1,127 @@
+{smcl}
+{* 29apr2011}{...}
+{cmd:help rrreg}{right:also see:  {helpb regress}}
+{hline}
+
+{title:Title}
+
+{p 4 4 2}{hi:rrreg} {hline 2} Linear probability model for randomized response data
+
+
+{title:Syntax}
+
+{p 8 15 2}
+{opt rrreg} {depvar} [{indepvars}] {ifin} {weight} [{cmd:,} {it:options}]
+
+
+{synoptset 26 tabbed}{...}
+{synopthdr}
+{synoptline}
+{synopt :{opt pw:arner(#|varname)}}probability of the non-negated question 
+    in Warner's model; default is {cmd:pwarner(1)}{p_end}
+{synopt :{opt py:es(#|varname)}}probability of a surrogate "yes"; default is {cmd:pyes(0)}{p_end}
+{synopt :{opt pn:o(#|varname)}}probability of a surrogate "no"; default is {cmd:pno(0)}{p_end}
+{synopt :{it:{help regress:regress_options}}}options as described in help {helpb regress}{p_end}
+{synoptline}
+{p2colreset}{...}
+{p 4 6 2}
+Prefix commands allowed as described in help {helpb regress}.
+{p_end}
+{p 4 6 2}
+{opt aweight}s, {opt fweight}s, {opt iweight}s, and {opt pweight}s are allowed; see {help weight}.
+{p_end}
+
+
+{title:Description}
+
+{pstd} {cmd:rrreg} fits a linear probability model to data collected using the
+randomized response technique (RRT). {it:depvar}=0 indicates a negative
+outcome (a "no" answer); {it:depvar}!=0 & {it:depvar}<. (typically
+{it:depvar}=1) indicates a positive outcome (a "yes" answer).
+
+{pstd}{cmd:rrreg} is suited for the analysis of data from Warner's RRT scheme,
+the forced-response RRT, or the unrelated-question RRT with a known
+distribution for the non-sensitive question (see, e.g., Fox and Tracy 1986).
+
+
+{title:Options}
+
+{phang} {opt pwarner(#|varname)} specifies the probability of the non-negated
+question in Warner's RRT scheme. {it:#} must be in [0,1]
+and may not be 0.5. The default is {cmd:pwarner(1)}. Individually varying
+probabilities may be specified by {opt pwarner(varname)}, where {it:varname}
+holds the individual probabilities.
+
+{phang} {opt pyes(#|varname)} specifies the probability of a surrogate "yes"
+answer. {it:#} must be in [0,1]. The default is {cmd:pyes(0)}. Individually
+varying probabilities may be specified by {opt pyes(varname)}, where
+{it:varname} holds the individual probabilities.
+
+{phang} {opt pno(#|varname)} specifies the probability of a surrogate "no"
+answer. {it:#} must be in [0,1]. The default is {cmd:pno(0)}. Individually
+varying probabilities may be specified by {opt pno(varname)}, where
+{it:varname} holds the individual probabilities.
+
+{phang}
+{it:regress_options} are options as described in help {helpb regress}.
+
+
+{title:Examples}
+
+        {com}. rrreg infidelity male age, pyes(0.5){txt}
+
+
+{title:Methods and formulas}
+
+{pstd}The randomized response regression model is estimated by fitting 
+a linear regression to a transformed dependent variable
+
+            {it:depvar} - (1 - {it:pyes} - {it:pno})*(1 - {it:pwarner}) - {it:pyes} 
+        {it:y} = ----------------------------------------------
+                 (2*{it:pwarner} - 1) * (1 - {it:pyes} - {it:pno})
+        
+{pstd}where {it:pwarner} is the probability of the negated question in
+Warner's scheme and {it:pyes} and {it:pno} are the probabilities of a
+surrogate "yes" and a surrogate "no".
+
+{pstd}{it:pyes} and {it:pno} are unconditional (overall) probabilities. For 
+example, in an unrelated-question RRT where the probability to be directed 
+to the non-sensitive question is 0.4 (i.e. the probability to answer the 
+sensitive question is 60%) and the probability to answer "yes" to the 
+non-sensitive question is known to be, say, 0.75, the overall probability 
+of a surrogate "yes" is {it:pyes} = 0.4*0.75 = 0.3. Likewise, the overall 
+probability of a surrogate "no" is {it:pno} = 0.4*(1-0.75) = 0.1. 
+
+{pstd}{it:pwarner}, however, is conditional, i.e. it only applies to respondents 
+that are not instructed to give a surrogate "yes" or "no". That is, 
+overall (1-{it:pyes}-{it:pno})*{it:pwarner} percent of respondents answer the 
+original sensitive question, (1-{it:pyes}-{it:pno})*(1-{it:pwarner}) percent answer 
+the negated question.
+  
+{pstd}In the unrelated question design, if the distribution of the answers to
+the non-sensitive question is unknown, an estimate has to be used to determine
+the probabilities. {cmd:rrreg}, however, assumes {it:pyes} and {it:pno} to be
+non-stochastic. To account for the additional variance induced by stochastic
+{it:pyes} and {it:pno} you can, for example, apply {helpb bootstrap} to the
+combined procedure of estimating {it:pyes} and {it:pno} and fitting
+{cmd:rrreg}.
+
+
+{title:References}
+
+{phang}Fox, James Alan, and Paul E. Tracy. 1986. Randomized response: A method for sensitive 
+surveys. London: Sage.
+
+
+{title:Author}
+
+{p 4 4 2} Ben Jann, Institute of Sociology, University of Bern, jann@soz.unibe.ch
+
+
+{title:Also see}
+
+{psee}
+Online:
+{helpb regress}, {helpb bootstrap};
+{helpb rrlogit} (if installed)
+

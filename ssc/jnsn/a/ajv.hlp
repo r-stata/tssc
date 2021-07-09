@@ -1,0 +1,97 @@
+{smcl}
+{* 2007-02-26}{...}
+{cmd:help ajv} {right:Version 1.1 2007-02-26}
+{hline}
+
+{title:Title}
+
+{p2colset 5 12 12 2}{...}
+{p2col:{hi:ajv} {hline 2}}Generate a random variate following a Johnson distribution{p_end}
+{p2colreset}{...}
+
+
+{title:Syntax}
+
+{p 8 17 2}
+{cmd:ajv}
+[{varname}]
+{ifin}
+{cmd:,} {cmdab:di:stribution(}{it:SN}|{it:SL}|{it:SU}|{it:SB}{cmd:)} 
+  {cmdab:g:enerate(}{it:newvar}{cmd:)} {cmdab:ga:mma(}{it:#}{cmd:)} {cmdab:de:lta(}{it:#}{cmd:)} [{it:options}]
+
+{synoptset 20 tabbed}{...}
+{synopthdr}
+{synoptline}
+{syntab:Main}
+{synopt:{opt l:ambda(#)}}value for {it:lambda}; defaults to one{p_end}
+{synopt:{opt x:i(#)}}value for {it:xi}; defaults to zero{p_end}
+{synopt:{opt seed(#)}}seed for random number generator{p_end}
+{synopt:{opt n(#)}}set number of observations{p_end}
+{synoptline}
+{p2colreset}{...}
+
+
+{title:Description}
+
+{pstd}
+{cmd:ajv} generates a random variable {newvar} that follows one of the Johnson distributions, SN, SL, SU or SB.  Parameters
+{it:gamma}, {it:delta}, {it:lambda} and {it:xi} are such as those obtained from {help jnsn}.  If {varname} is specified, then
+it will be used as a standard normal deviate and {newvar} will be generated from it and the Johnson distribution 
+parameters.  If no {varname} is specified, then {cmd:ajv} will internally generate a standard normal variate using the 
+{cmd:seed()} if one is specified.  
+
+
+{title:Options}
+
+{dlgtab:Main}
+
+{phang}
+{cmd:distribution} specifies the Johnson distribution; it may be in upper, lower or mixed case.
+
+{phang}
+{cmd:generate} names the new variable.
+
+{phang}
+{cmd:gamma}
+{cmd:delta}
+{cmd:lambda}
+{cmd:xi} specify parameters of the Johnson distribution.
+
+{phang}
+{cmd: seed} sets the seed for random number generation, e.g., when {varname} is not specified.
+
+{phang}
+{cmd: n} specifies the number of observations, e.g., starting from an empty dataset.
+
+
+{title:Remarks}
+
+{pstd}
+{cmd:ajv} is an implementation of {it:Algorithm AS 100.1} (Hill, 1976).
+
+
+{title:References}
+
+{pstd}
+I. D. Hill, Normal-Johnson and Johnson-Normal transformations. {it:Applied Statistics} {bf:25}:190{c 150}92, 1976.
+
+
+{title:Examples}
+
+{phang}{cmd:. ajv snv, distribution(sl) generate(lnv) gamma(1) delta(1)}
+
+{phang}{cmd:. ajv , distribution(su) generate(suv) gamma(1) delta(1) seed(12345) n(100)}
+
+
+{title:Author}
+
+{pstd}
+Joseph Coveney
+jcoveney@bigplanet.com
+
+
+{title:Also see}
+
+
+{psee}
+Online:  {helpb jnsn}, {helpb jnsw}, {helpb generate}

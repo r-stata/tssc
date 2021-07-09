@@ -1,0 +1,250 @@
+/* 
+*! metafunnel dialog version 1.0.1, 20 Aug 2003, T. J. Steichen, steichen@triad.rr.com 
+*!    for metafunnel version 1.0.2, 18 Aug 2003, J.A.C. Sterne, Jonathan.Sterne@bristol.ac.uk 
+
+Graphs funnel plot, with standard error on the vertical axis
+------------------------------------------------------------
+
+Syntax: metafunnel { theta {se|var} | exp(theta) ll ul [cl] } [ if exp ] [ in range ] [, 
+                   BY(varname) Var CI
+                   SUbtitle(str) NOLines FORCEnull REVerse EForm   
+                   XTitle(string) YTitle(string) XScale(string) 
+                   YScale(string) MSymbol(string) * ]
+
+
+Install in User Statistics menu via Stata commands:
+  . window menu append item "stUserStatistics" "metafunn&el (Funnel Graph, vertical)" "db metafunnel"
+  . window menu refresh
+To permanently install, place the commands in your -profile.do- file.
+*/
+
+VERSION 8.0
+
+INCLUDE _std_medium
+INCLUDE header
+
+HELP hlp1, view("help metafunnel")
+RESET res1, label("Reset")
+
+DIALOG main, label("metafunnel 1.0.2 - Funnel Graph, vertical") tabtitle("Main")
+BEGIN
+
+  GROUPBOX gb_data      10    5  390  _ht5h,              ///
+     label("Type of Data:")  
+  RADIO    r_se         15   25  100      .,              ///
+     label("Theta, SE")        first                      ///
+     onclickon(script main_se_on)                         ///
+     onclickoff(script main_se_off)                       ///
+     option(NONE)
+  RADIO    r_var       115   25  100      .,              ///
+     label("Theta, Var")       middle                     ///
+     onclickon(script main_var_on)                        ///
+     onclickoff(script main_var_off)                      ///
+     option("var")
+  RADIO    r_ci        215   25  110      .,              ///
+     label("exp(Theta), CI")   last                       ///
+     onclickon(script main_ci_on)                         ///
+     onclickoff(script main_ci_off)                       ///
+     option("ci")
+
+  TEXT     tx_se        15   45   380     .,              ///
+     label("Vars for theta, se(theta), in that order")
+  VARLIST  vl_se         @   _ss   @      .,              ///
+     label("Vars for theta, se(theta)")
+
+  TEXT     tx_var        @   45   380     .,              ///
+     label("Vars for theta, var(theta), in that order")
+  VARLIST  vl_var        @   _ss   @      .,              ///
+     label("Vars for theta, var(theta)")
+  
+  TEXT     tx_ci         @   45   380     .,              ///
+     label("Vars for exp(theta), CI_LL, CI_UL, in that order")
+  VARLIST  vl_ci         @   _ss   @      .,              ///
+     label("Vars for exp(theta), CI_LL, CI_UL")
+
+  CHECKBOX cb_by        10 100  100       .,              ///
+     label("By Variable:")                                ///
+     onclickon(main.vn_by.enable)                         ///
+     onclickoff(main.vn_by.disable)
+  VARNAME  vn_by       110 100  290       .,              /// 
+     label("By Variable")                                 ///
+     option("by")
+
+  CHECKBOX ck_subtitle    10  130   55       .,           ///
+     label("Title:")                                      ///
+     onclickon(main.ed_subtitle.enable)                   ///
+     onclickoff(main.ed_subtitle.disable)
+  EDIT     ed_subtitle    70    @  330       .,           ///
+     label("Title")                                       ///
+     option("subtitle")
+
+  CHECKBOX ck_xtitle      10  155   55       .,           ///
+     label("X: title")                                    ///
+     onclickon(main.ed_xtitle.enable)                     ///
+     onclickoff(main.ed_xtitle.disable)
+  EDIT     ed_xtitle      70    @  160       .,           ///
+     label("X title")                                     ///
+     option("xtitle")
+
+  CHECKBOX ck_xscale     240    @   60       .,           ///
+     label("scale")                                       ///
+     onclickon(main.ed_xscale.enable)                     ///
+     onclickoff(main.ed_xscale.disable)
+  EDIT     ed_xscale     300    @  100       .,           ///
+     label("X scale")                                     ///
+     option("xscale")
+
+  CHECKBOX ck_ytitle      10  175   55       .,           ///
+     label("Y: title")                                    ///
+     onclickon(main.ed_ytitle.enable)                     ///
+     onclickoff(main.ed_ytitle.disable)
+  EDIT     ed_ytitle      70    @  160       .,           ///
+     label("Y title")                                     ///
+     option("ytitle")
+
+  CHECKBOX ck_yscale     240    @   60       .,           ///
+     label("scale")                                       ///
+     onclickon(main.ed_yscale.enable)                     ///
+     onclickoff(main.ed_yscale.disable)
+  EDIT     ed_yscale     300    @  100       .,           ///
+     label("Y scale")                                     ///
+     option("yscale")
+
+
+  CHECKBOX ck_reverse     10  200  120        .,          ///
+     label("Reverse y-axis")                              ///
+     option("reverse")
+     
+  CHECKBOX ck_nolines     10  220  120        .,          ///
+     label("Suppress lines")                              ///
+     option("nolines")
+     
+  CHECKBOX ck_eform      150  200  120        .,          ///
+     label("Exponential form")                            ///
+     option("eform")
+     
+  CHECKBOX ck_forcenull  150  220  120        .,          ///
+     label("Force null")                                  ///
+     option("forcenull")
+
+
+  CHECKBOX ck_msymbol    290  200  110        .,          ///
+     label("Marker Symb:")                                ///
+     onclickon(main.ed_msymbol.enable)                    ///
+     onclickoff(main.ed_msymbol.disable)
+  EDIT     ed_msymbol    290  220  110        .,          ///
+     label("M Symbol")                                    ///
+     option("msymbol")
+
+
+
+END
+ 
+INCLUDE ifin
+
+SCRIPT main_se_on
+BEGIN
+  main.tx_se.show
+  main.vl_se.show
+  main.tx_se.enable
+  main.vl_se.enable
+
+  main.tx_var.disable
+  main.vl_var.disable
+  main.tx_var.hide
+  main.vl_var.hide
+  
+  main.tx_ci.disable
+  main.vl_ci.disable
+  main.tx_ci.hide
+  main.vl_ci.hide
+END
+
+SCRIPT main_se_off
+BEGIN
+  main.tx_se.disable
+  main.vl_se.disable
+  main.tx_se.hide
+  main.vl_se.hide
+END
+
+SCRIPT main_var_on
+BEGIN
+  main.tx_var.show
+  main.vl_var.show
+  main.tx_var.enable
+  main.vl_var.enable
+
+  main.tx_se.disable
+  main.vl_se.disable
+  main.tx_se.hide
+  main.vl_se.hide
+  
+  main.tx_ci.disable
+  main.vl_ci.disable
+  main.tx_ci.hide
+  main.vl_ci.hide
+END
+
+SCRIPT main_var_off
+BEGIN
+  main.tx_var.disable
+  main.vl_var.disable
+  main.tx_var.hide
+  main.vl_var.hide
+END
+
+SCRIPT main_ci_on
+BEGIN
+  main.tx_ci.show
+  main.vl_ci.show
+  main.tx_ci.enable
+  main.vl_ci.enable
+
+  main.tx_se.disable
+  main.vl_se.disable
+  main.tx_se.hide
+  main.vl_se.hide
+  
+  main.tx_var.disable
+  main.vl_var.disable
+  main.tx_var.hide
+  main.vl_var.hide
+END
+
+SCRIPT main_ci_off
+BEGIN
+  main.tx_ci.disable
+  main.vl_ci.disable
+  main.tx_ci.hide
+  main.vl_ci.hide
+END
+
+PROGRAM command
+BEGIN
+  put "metafunnel "
+  if main.r_se {
+    varlist main.vl_se 
+  }
+  if main.r_var {
+    varlist main.vl_var 
+  }
+  if main.r_ci {
+    varlist main.vl_ci 
+  }
+  INCLUDE _ifin_pr
+  beginoptions
+    option radio(main r_se r_var r_ci)
+    optionarg main.vn_by
+    optionarg main.ed_subtitle
+    optionarg main.ed_xtitle
+    optionarg main.ed_ytitle
+    optionarg main.ed_xscale
+    optionarg main.ed_yscale
+    option main.ck_nolines
+    option main.ck_forcenull
+    option main.ck_eform
+    option main.ck_reverse
+    optionarg main.ed_msymbol
+  endoptions
+END

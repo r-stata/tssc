@@ -1,0 +1,250 @@
+{smcl}
+{* September 2004}{...}
+{hline}
+help for {hi:pgmhaz8}{right:Stephen P. Jenkins (September 2004)}
+{hline}
+
+{title:Discrete time (grouped data) proportional hazards models}
+
+{p 8 17 2}{cmd:pgmhaz8} {it:covariates} [{it:weight}] [{cmd:if} {it:exp}]
+	[{cmd:in} {it:range}] [{cmd:,}
+	{cmdab:i:d(}{it:idvar}{cmd:)} {cmdab:d:ead(}{it:deadvar}{cmd:)} 
+	{cmdab:s:eq(}{it:seqvar}{cmd:)} {cmdab:lnv:ar0(}{it:#}{cmd:)}
+	{cmdab:ef:orm} {cmd:nocons} {cmd:nolog} {cmdab:nob:eta0} 
+	{cmdab:l:evel(}{it:#}{cmd:)} {it:maximize_options}]
+
+{p 4 4 2}{cmd:by} {it:...} {cmd::} may be used with {cmd:pgmhaz8}; see help
+{help by}. 
+
+{p 4 4 2}{cmd:fweight}s and {cmd:iweight}s are allowed; see help {help weights}. 
+
+
+{title:Description}
+
+{p 4 4 2}
+{cmd:pgmhaz8} estimates by ML two discrete time (grouped data) proportional
+hazards regression models, one of which incorporates a gamma mixture 
+distribution to summarize unobserved individual heterogeneity
+(or 'frailty').  Covariates may include regressor variables 
+summarizing observed differences between persons (either 
+fixed or time-varying), and variables summarizing the duration 
+dependence of the hazard rate.  With suitable definition of 
+covariates, models with a fully non-parametric specification 
+for duration dependence may be estimated; so too may parametric 
+specifications.  {cmd:pgmhaz8} thus provides a useful complement to 
+{cmd:stcox} (for continuous survival time data), and related programs.
+For further discussion of hazard regression models with unobserved heterogeneity, 
+see e.g. {browse "http://www.iser.essex.ac.uk/teaching/stephenj/ec968/index.php"},
+espcially `Lesson 8'. The Lesson also shows how to derive predicted hazard 
+and survivor functions from the estimates of the model.
+
+
+{p 4 4 2}
+{cmd:pgmhaz8} estimates two models by maximum likelihood:
+(1) the Prentice-Gloeckler (1978) model; and
+(2) the Prentice-Gloeckler (1978) model incorporating a gamma mixture 
+distribution to summarize unobserved individual heterogeneity, as proposed 
+by Meyer (1990).  Specifically, the Prentice-Gloeckler-Meyer models 
+estimated are those described by Meyer (1990, equations 5 and 7).
+
+{p 4 4 2}
+Suppose there are individuals {it:i} = 1,...,{it:N}, who each enter a state
+(e.g. unemployment) at time {it:t} = 0 and are observed for {it:k_i} time 
+periods, at which point each person either remains in the state 
+(censored duration data) or leaves the state (complete duration data).
+
+{p 4 4 2}
+The log-likelihood function for Model (2) is:
+
+{asis}            _                                                       _
+     i=N   |   _   k_i-1       _             _    k_i        _       |
+     ---   |  |     ---         |-v^-1      |     ---         |-v^-1 |
+     \     |  |     \           |           |     \           |      |
+     /  log|  |1+ v./  exp(I_it)|     - c_i.|1+ v./  exp(I_it)|      |
+     ---   |  |     ---         |           |     ---         |      |
+     i=1   |  |_    t=0        _|           |_    t=0        _|      |
+           |_                                                       _|
+
+{smcl}
+
+{p 4 4 2}
+{it:c_i} is a censoring indicator (= 1 if event, 0 otherwise); 
+{it:I_it} is an index function, {it:X_it*b}, incorporating the impact
+  of covariates {it:X_it}; and {it:v} is the variance of the gamma mixing 
+  distribution (the mean of which is normalized to equal one).
+Model 1 is the limiting case as {it:v} {c -}> 0.
+
+{p 4 4 2}
+For suitably re-organised data, the log-likelihood function for Model 
+(1) is the same as the log-likelihood for a generalized linear model
+of the binomial family with complementary log-log link: see Allison (1982) 
+or Jenkins (1995).  Model (1) is estimated using the {help glm} command 
+({help cloglog} would have produced the same estimates).
+To estimate the discrete time proportional hazards model with normally
+(rather than Gamma) distributed heterogeneity, use {help xtcloglog}
+with the data organized as here.
+
+{p 4 4 2}
+Model (2) is estimated using {cmd:ml d0}, with starting values for the 
+coefficients {it:b} taken from Model (1)'s estimates. The program estimates
+the log of the Gamma variance, with default value equal to -1, i.e. a 
+variance of c. 0.37). Different starting values for the log variance may 
+be set optionally: see below.
+
+{title:Important note about data organization and variables}
+
+{p 4 4 2}
+The data set must be organised beforehand so that there is a 
+data row corresponding to each time period at risk of the event
+for each subject.  (This corresponds to `episode-splitting' at each
+each and every period.) {help expand} is useful for putting the data 
+in this form.  Also see the `data step' discussion in Jenkins (1995).
+
+{title:Options}
+
+{p 4 8 2}The first three options are required:
+
+{p 4 8 2}{cmd:id(}{it:idvar}{cmd:)} specifies the variable uniquely identifying 
+	each subject, {it:i}.
+
+{p 4 8 2}{cmd:seq(}{it:seqvar}{cmd:)} is the variable uniquely identifying each time 
+	period at risk for each subject. For each {it:i}, the variable 
+	is the integer sequence 1, 2, ..., {it:k_i}. 
+
+{p 4 8 2}{cmd:dead(}{it:deadvar}{cmd:)} summarizes censoring status during each time
+	period at risk.  If {it:c_i} = 0, deadvar = 0 for all 
+	{it:t} = 1, 2, ..., {it:k_i}; if {it:c_i} = 1, {it:deadvar} = 0 for all {it:t} = 
+	1,2,...,{it:(k_i)}-1, and {it:deadvar} = 1 for {it:t} = {it:k_i}.
+	
+{p 4 8 2}{cmd:lnvar0(}{it:#}{cmd:)} specifies the value for the log of the Gamma variance
+	that is used as the starting value in the maximization. The default is -1.
+	
+{p 4 8 2}{cmd:eform} reports the coefficients transformed to hazard ratio format,
+	i.e. exp(b) rather than b. Standard errors and confidence 
+	intervals are similarly transformed. {cmd:eform} may be
+	specified at estimation or when redisplaying results.
+
+{p 4 8 2}{cmd:level(}{it:#}{cmd:)} specifies the significance level, in percent, for
+	confidence intervals of the parameters; see help {help level}.
+
+{p 4 8 2}{cmd:nocons} specifies no intercept term in the index function, {it:X_it*b}.
+
+{p 4 8 2}{cmd:nolog} suppresses the iteration logs.
+
+{p 4 8 2}{cmd:nobeta0} suppresses reporting of the estimates from Model (1).
+
+{p 4 8 2}{it:maximize_options} control the maximization process. The options
+available are those available for {cmd:ml d0} as shown by help {help maximize}, 
+with the exception of {cmd:from()}. For difficult maximization problems, 
+using the {cmd:difficult} or {cmd:technique} options may help convergence. 
+So too might different starting values for the Gamma variance parameter.
+
+
+{title:Saved results}
+
+{p 4 4 2}In addition to the usual results saved after {cmd:ml}, {cmd:pgmhaz8} also
+saves the following:
+
+{p 4 4 2}{cmd:e(gammav)} and {cmd:e(se_gammav)} are the estimated Gamma variance and its
+standard error.
+
+{p 4 4 2}{cmd:e(ll_nofr)} is the log-likelihood value from Model (1).
+
+{p 4 4 2}{cmd:e(lltest)} is the likelihood ratio test statistic for the test of Model (1)
+versus Model (2), i.e. for the hypothesis that the Gamma variance is equal to zero, 
+and {cmd:e(lltest_p)} is the associated {it:p}-value.
+
+{p 4 4 2}{cmd:e(depvar)}, {cmd:e(deadvar)}, and {cmd:e(seqvar)} contain the names of
+{it:depvar}, {it:deadvar}, and {it:seqvar}. 
+
+{p 4 4 2}{cmd:e(N_spell)} is the number of spells in the data. (Cf. {cmd:e(N)}, the total
+number of `person-period' observations in the estimation data set.)
+
+
+{title:Examples}
+
+{p 4 8 2}{inp:. sysuse cancer, clear }
+
+{p 4 8 2}{inp:. ge id = _n }
+
+{p 4 8 2}{inp:. recode drug 1=0 2/3=1 }
+
+{p 4 8 2}{inp:. expand studytime }
+
+{p 4 8 2}{inp:. bysort id: ge t = _n // 'survival time', t, is # periods at risk per subject }
+
+{p 4 8 2}{inp:. bysort id: ge dead = died & _n==_N // event indicator }
+
+{p 4 8 2}{inp:. //  duration dependence: log(time) }
+
+{p 4 8 2}{inp:. ge logt = ln(t)   }
+
+{p 4 8 2}{inp:. pgmhaz drug age logt, id(id) seq(t) d(dead) nolog }
+
+{p 4 8 2}{inp:. pgmhaz, eform }
+
+{p 4 8 2}{inp:. // duration dependence: piece-wise constant  }
+
+{p 4 8 2}{inp:. ge byte dur1 = d1+d2+d3+d4+d5+d6 }
+
+{p 4 8 2}{inp:. ge byte dur2 = d7+d8+d9+d10+d11+d12 }
+
+{p 4 8 2}{inp:. ge byte dur3 = d13+d14+d15+d16+d17+d18 }
+
+{p 4 8 2}{inp:. ge byte dur4 = d19+d20+d21+d22+d23+d24 }
+
+{p 4 8 2}{inp:. ge byte dur5 = d25+d26+d27+d28+d29+d30 }
+
+{p 4 8 2}{inp:. ge byte dur6 = d31+d32+d33+d34+d35+d36+d37+d38+d39 }
+
+{p 4 8 2}{inp:. pgmhaz8 drug age dur1-dur6, i(id) s(t) d(dead) nocons }
+
+{p 4 8 2}{inp:. // duration dependence: non-parametric (period-specific) }
+
+{p 4 8 2}{inp:. ta t, ge(d) // Create period-specific dummy variables, d* }
+
+{p 4 8 2}{inp:. ta t dead  // Check whether events in each period; only use periods with events }
+
+{p 4 8 2}{inp:. egen include = eqany(d1-d8 d10-d13 d15-d17 d22-d25 d28 d33), v(1) }
+
+{p 4 8 2}{inp:. pgmhaz8 drug age d1-d8 d10-d13 d15-d17 d22-d25 d28 d33 /// }
+
+{p 12 8 2}{inp:	         if include, i(id) s(t) d(dead) nocons }
+
+
+{title:Author}
+
+{p 4 4 2}Stephen P. Jenkins <stephenj@essex.ac.uk>, Institute for Social
+and Economic Research, University of Essex, Colchester CO4 3SQ, U.K.
+
+{title:Acknowledgements}
+
+{p 4 4 2}Adrienne tenCate found a bug in the handling of fweighted data, and Jeff Pitblado showed me how to fix it.
+
+
+{title:References}
+
+{p 4 8 2}Allison, P.D. (1982). Discrete-time methods for the analysis of event
+	histories. In {it:Sociological Methodology 1982}, ed. S. Leinhardt, 
+	San Francisco: Jossey-Bass Publishers, 61-97.
+
+{p 4 8 2}Jenkins, S.P. (1995). Easy estimation methods for discrete-time
+	duration models. {it:Oxford Bulletin of Economics and Statistics}
+	57 (1): 129-138.
+
+{p 4 8 2}Meyer, B.D. (1990). Unemployment insurance and unemployment spells.
+	{it:Econometrica} 58 (4): 757-782.
+
+{p 4 8 2}Prentice, R. and Gloeckler L. (1978). Regression analysis of grouped
+	survival data with application to breast cancer data.
+	{it:Biometrics} 34: 57-67.
+
+
+{title:Also see}
+
+{p 4 13 2}
+Help for {help stcox}, {help glm}, {help cloglog}, {help xtcloglog}, {help expand}, 
+and {help hshaz} if installed.
+Users of Stata versions 5 to 8.1 may estimate Models (1) and (2) using {cmd:pgmhaz},
+published in STB-39. Install it using {cmd:net stb 39 sbe17}. 
+

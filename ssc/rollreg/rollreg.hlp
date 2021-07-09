@@ -1,0 +1,131 @@
+{smcl}
+{* 07mar2005}{...}
+{hline}
+help for {hi:rollreg} 
+{hline}
+
+{title:{cmd:Rolling regression estimates}}
+
+{p 8 14}{cmdab:rollreg} [{it:depvar varlist}] [{cmd:if} {it:exp}]
+[{cmd:in} {it:range}]{cmd:,} 
+{cmdab:move(}{it:#}{cmd:)} | 
+{cmdab:add(}{it:#}{cmd:)} | 
+{cmdab:dropfirst(}{it:#}{cmd:)} 
+{cmdab:stub(}{it:abbrev}{cmd:)}  [
+{cmdab:robust}  {cmdab:bw(}{it:#}{cmd:)} {cmdab: kernel(}{it:choice}{cmd:)}
+{cmdab: noconstant} {cmdab: graph(}{it:summary|full}{cmd:)} ]
+
+
+{p 8 14}{cmdab:rollreg} is for use with time-series data. You must {cmd:tsset} your data before using these routines. 
+{it:depvar} and {it:varlist} may contain time-series operators. The data may be defined as panel data, in which
+case the rolling regression estimates will be estimated for each time series in the panel. 
+
+{title:Description}
+
+{p}{cmd:rollreg} computes three different varieties of rolling regression estimates. 
+With the {cmd:move()} option, moving-window estimates of the specified window width are computed for the available sample period. 
+With the {cmd:add()} option, that number of periods are initially used for estimation, 
+and the sample is extended one period at a time through the remaining sample. 
+With the {cmd:dropfirst()} option, the regression is estimated for the entire sample, 
+and then repeated, dropping initial observations until that number of observations have been excluded.
+All three forms of the command generate timeseries of R^2s, RMSEs, coefficient estimates and their estimated standard errors for each period.  
+
+{title:Options}
+
+One (and only one) of the options {cmd:move}, {cmd:add}, or {cmd:dropfirst} must be specified.
+
+{p 0 4}{cmd:move(}{it:#}{cmd:)} specifies the width of the moving window for which the regression
+is to be estimated. It must be less than the sample size and greater than the number of regressors 
+(including the constant term). When the {cmd:move} option is used, the generated timeseries are 
+aligned with the last period of the window: e.g. {cmd:move(24)} would define an R^2 series starting in
+observation 24 of the defined sample.
+
+{p 0 4}{cmd:add(}{it:#}{cmd:)} specifies the initial size of the window for which the regression
+is to be estimated. It must be less than the sample size and greater than the number of regressors 
+(including the constant term). The regression will be run over the first {cmd:add()} observations
+of the defined sample, then run again adding the following period, and so on, until the full 
+sample has been employed. When the {cmd:add} option is used, the generated timeseries are 
+aligned with the last period of the window: e.g. {cmd:add(24)} would define an R^2 series starting in
+observation 24 of the defined sample.
+
+{p 0 4}{cmd:dropfirst(}{it:#}{cmd:)} specifies the maximum number of periods to be omitted from
+the regression. It must be less than the sample size. The regression will be run over the entire 
+defined sample, then run again dropping the first period, and so on, until the initial 
+{cmd:dropfirst()} observations have been omitted from the regression. When the {cmd:dropfirst} 
+option is used, the generated timeseries are aligned with the first period of the window: e.g. 
+{cmd:dropfirst(24)} would define an R^2 series of 24 observations starting in
+observation 1 of the defined sample.
+	
+{p 0 4}{cmd:stub(}{it:abbrev}{cmd:)}, which must be provided, specifies the "stub" from which new variable names will be created.
+Three summary variables are created: {cmd:stub}{it:_r2}, {cmd:stub}{it:_RMSE} and {cmd:stub}{it:_N}, containing
+the R^2, RMSE and N for each set of estimates. Two additional variables are created for each regressor:
+{cmd:stub}_{it:varname} and {cmd:stub}{it:_se_varname} for the point estimate and estimated standard
+error, respectively. If {cmd:robust} is employed, the standard errors are labelled {cmd:stub}{it:_Rob_se_varname};
+if the {cmd:bw} option is employed, the standard errors are labelled {cmd:stub}{it:_AC_se_varname};
+and if both {cmd:robust} and {cmd:bw} options are employed, the standard errors are labelled {cmd:stub}{it:_HAC_se_varname}.
+Variables created by {cmd:stub} must be new variables. If the {it:varlist} contains time-series 
+operators, the dots in their names are replaced by underscores so that the resulting new variables' names are legal.
+
+{p 0 4}{cmd:robust} specifies that the rolling regressions are to be estimated with the {cmd:robust} option of 
+{cmd:regress}. That is, the estimated standard errors are to be robust to arbitrary heteroskedasticity in
+the error distribution.
+
+{p 0 4}{cmd:bw(}{it:#}{cmd:)} specifies the bandwidth to be employed in estimating the standard errors of
+the coefficients using autocorrelation-robust techniques. The user-written routine {cmd:ivreg2} must be 
+installed (via {cmd:ssc install ivreg2}) if this option is to be employed. Please see {cmd:help ivreg2} for details of the bandwidth option.
+For the default (Bartlett) kernel, {cmd:bw(}{it:n}{cmd:)} corresponds to {cmd:newey} with {cmd:lag(}{it:n-1}{cmd:)}.
+If both {cmd:robust} and {cmd:bw} options are specified, the estimated standard errors are "HAC": heteroskedasticity-
+and autocorrelation-consistent, per Newey-West ({cmd:help newey}). However, other kernels may be employed (see below),
+and unlike {cmd:newey}, {cmd:ivreg2} can calculate "AC" errors without a correction for heteroskedasticity. However,
+in that case the covariance matrix is not guaranteed to be positive definite.
+
+{p 0 4}{cmd:kernel(}{cmd:)} Selects the kernel to be employed in autocorrelation-consistent standard error estimation
+(requires specification of {cmd:lag()}).
+If not specified, defaults to the Bartlett kernel. For more details, please see {cmd:help ivreg2}.
+
+{p 0 4}{cmd:noconstant} Specifies that no constant term is to be included in the regression.
+
+{p 0 4}{cmd:graph(}{cmd:)} with option value {cmd:summary} specifies that a graph of the R^2 and RMSE values be displayed
+and saved as {cmd:stub}_{it:_summ.gph}. The R^2 and RMSE values resulting from a single regression over the entire sample
+will also be displayed on the graph. Option value {cmd:full} requests this graph, and in addition requests a graph containing each regressor's 
+sequence of coefficient estimates with standard error bands. The width of the confidence interval is that specified as
+the default {cmd:level}. The coefficient estimates, and standard error bands, resulting from a single regression over
+the entire sample will also be displayed on the graph. This additional graph will be displayed and saved as {cmd:stub}_{it:coeff.gph}. Prior graphs 
+with these names will be discarded. Graphics are not available when multiple units of a panel are included in the defined sample.
+
+{title:Examples}
+
+{p 8 12}{stata "webuse wpi1" :. webuse wpi1}{p_end}
+{p 8 12}{stata "g t2 = t^2" :. g t2 = t^2}{p_end}
+
+{p 8 12}{stata "rollreg D.wpi t t2, move(24) stub(wpiM) graph(summary)" :. rollreg D.wpi t t2, move(24) stub(wpiM) graph(summary)} {p_end}
+
+{p 8 12}{stata "rollreg D.wpi t t2, add(24) stub(wpiA)" :. rollreg D.wpi t t2, add(24) stub(wpiA)} {p_end}
+
+{p 8 12}{stata "rollreg D.wpi t t2, dropfirst(48) stub(wpiD) bw(3) graph(summary)" :. rollreg D.wpi t t2, dropfirst(48) stub(wpiD) bw(3) graph(summary)} {p_end}
+
+{p 8 12}{stata "rollreg D2.wpi LD.wpi LD2.wpi t, move(48) stub(wpiM2) robust graph(full)" :. rollreg D2.wpi LD.wpi LD2.wpi t, move(48) stub(wpiM2) robust graph(full)} {p_end}
+
+{p 8 12}{stata "webuse invest2" :. webuse invest2}{p_end}
+{p 8 12}{stata "tsset company time" :. tsset company time}{p_end}
+
+{p 8 12}{stata "rollreg market L(0/1).invest time, move(8) stub(mktM)" :. rollreg market L(0/1).invest time, move(8) stub(mktM)}{p_end}
+
+{title:References}
+
+Amano, Robert, Gable, Jeff and Simon van Norden, 1993. "ROLLREG.SRC: 
+A RATS procedure for rolling OLS regressions." Bank of Canada. 
+http://ideas.repec.org/c/boc/bocode/r852701.html
+
+{title:Author}
+
+{p 0 4} Christopher F. Baum (baum@bc.edu), Boston College
+
+{title:Acknowledgements}
+
+{p 0 4} This module was adapted from RATS code cited above. I thank Nicholas J. Cox and Vince Wiggins
+for their useful suggestions, and Cameron Hooper for pointing out a bug in the code.
+
+
+{title:Also see}
+help for {help ivreg2} (SSC) 

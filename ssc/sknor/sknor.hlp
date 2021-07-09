@@ -1,0 +1,76 @@
+.-
+help for skewed normal generator
+.-
+
+Skewed normal generator
+------------------------
+
+         ^sknor^ [obs] [seednum] [mean] [var] [sk] [ku]
+
+
+Description
+-----------
+
+The program generates random numbers from a skewed normal distribution (right-
+skew being the default).
+[obs]: number of observations to be generated (optional; set to current
+    dataset size if omitted)
+[seednum]: seed number to be used for drawing 'random' numbers - makes a difference if your simulations occur
+    on the same second (i.e. running a batch of simulations)
+[mean]: mean of the simulated distribution (optional; set to 0 if omitted)
+[var]: variance (optional; set to 1 if omitted)
+[sk]: skewness (optional; set to 0 if omitted)
+[ku]: kurtosis (optional; set to 3 if omitted)
+
+
+Remarks
+-------
+
+For sk=0 and ku=3 (the default values) the generated distribution is normal.
+The program is based on a method described in  "Ramberg et al, A probability Distribution
+and its uses in fitting data, Technometrics, 1979".
+The method uses a formula with 4 parameters and parameter values which generate
+data of various degrees of skewness and kurtosis have been provided in the paper.
+Only a few of those have been included in this program the command, but it can
+easily be updated with more.
+The included pairs of values are (sk,ku): (0,1.75), (0,3), (0,3.2), (0,3.3), (0,3.4),
+(0,3.6), (0,4), (0,4.4), (0,5), (0,6), (0,7), (0,8), (0,9), (0.5,3), (0.5,4), (0.5,5),
+(0.5,6), (0.5,7), (0.5,8), (0.5,9), (1,4), (1,5), (1,6), (1,7), (1,8), (1,9), (1,10),
+(1.5,6), (1.5,7), (1.5,8), (1.5,9), (1.5,10), (1.5,11), (1.5,12), (2,9), (2,10), (2,11),
+(2,12), (2,13), (2,14), (2,15),
+For sk=2 and ku=9 the most extreme distribution is generated.
+Negative skewness values can be inputted for left-skew distributions (the opposite values
+of the ones listed above)
+
+
+Examples
+--------
+
+ . ^sknor^
+ . ^sknor 10000^
+  . ^sknor 10000 123^
+ . ^sknor 10000 123 0.5 2 2 9^
+ . ^sknor 5000 123 5 1 -0.5 3^
+
+
+Keywords
+--------
+normal, distribution, skewness (skew, skewed), kurtosis
+
+
+Author
+-------
+
+        Evangelos Kontopantelis
+        National Primary Care Reserch and Development Centre
+        University of Manchester
+        M13 9PL
+        e.kontopantelis@manchester.ac.uk
+
+
+Also see
+--------
+    Ramberg et al paper: http://www.jstor.org/view/00401706/ap040083/04a00080/0
+    STB:  STB-41 sg44.1, STB-28 sg44
+
+

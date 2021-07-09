@@ -1,0 +1,37 @@
+d 'CLUSTPOP': module to estimate population cluster group assignments
+d
+d   clustpop is a routine to estimate population group assignments
+d using the cluster command.  The cluster command groups cases
+"d based on the values of a variable, or the  mean/median of a group"
+"d of variables. However, the group assignments will vary depending"
+d on the random seed that starts off the process.  So if the
+"d -cluster- command is executed many times, it will produce"
+"d different group assignments. In other words, There is population"
+d of group assignments from which the -cluster- command samples a
+d single possibility. Therefore the results from -cluster- are like
+d taking a  sample (N=1) from a population and using that result as
+d an estimate of the  group assignment population. clustpop runs
+d the -cluster- command many times in order to create a larger
+"d sample. For each case, the most frequently occuring group"
+d assignment is taken as an estimate of the most common group
+d assignment in the population.  The case is assigned to  this
+d group only if the lower bound (at a given alpha) of the
+"d population estimate is  greater than half.  In other words, it"
+d must be probable that the most frequently  occuring group
+d assignment is the group assignment more than half the time in the
+"d  population.  If this is not so, the group assignment is set to"
+d missing.
+d
+d KW: cluster
+d KW: population
+d KW: group assignment
+d
+d Requires: Stata version 7
+d
+d Distribution-Date: 20110419
+d
+"d Author: Paul Millar, University of Calgary"
+d Support: email pemillar@@ucalgary.ca
+d
+f clustpop.ado
+f clustpop.hlp

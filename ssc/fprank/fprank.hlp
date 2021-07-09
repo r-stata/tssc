@@ -1,0 +1,64 @@
+{smcl}
+{* 18mar2005}{...}
+{cmd:help fprank}
+{hline}
+
+{title:Title}
+
+{p2colset 5 15 17 2}{...}
+{p2col :{hi:fprank} {hline 2}}Two-Sample Fligner-Policello Robust Rank Order Test {p_end}
+{p2colreset}{...}
+
+{title:Syntax}
+
+{p 8 19 2}
+{cmd:fprank} {varname} {ifin}{cmd:,} {cmd:by(}{it:groupvar}{cmd:)} 
+
+{synoptset 21 tabbed}{...}
+{synopthdr:options}
+{synoptline}
+{syntab:Main}
+{p2coldent:* {opt by(groupvar)}}grouping variable{p_end}
+{synoptline}
+{p2colreset}{...}
+{p 4 6 2}* {opt by(groupvar)} is required.{p_end}
+{p 4 6 2}{opt by} may be used with the above commands;
+see {helpb by}.{p_end}
+
+{title:Description}
+
+{pstd}
+{cmd:fprank} tests the hypothesis that two independent groups are sampled from the same population using the robust rank-order test 
+which is a useful alternative of the Mann-Whitney-Wilcoxon test for non-normal populations with unequal variances. This test assumes 
+neither normality, nor equal variances, nor equal shape. 
+
+{pstd}
+{cmd:fprank} provides the asymptotic p-value  which is based on the standard normal distribution. It should be noted, however, that 
+the asymptotic p-value may not be adequate when both samples are <= 12. To obtain the significance of the statistic U when sample sizes are (<=12),
+refer to the table of critical Values of U for the robust rank order test found in the references below.  
+
+{title:Examples}
+
+{psee}{cmd:. fprank scores, by(group)}{p_end}
+	
+{title:References} 
+
+ {p 4 4 2}Siegel, S. & Castellan, N.J.Jr.(1988). {it}Nonparametric statistics for the behavioral sciences {sf} (2nd ed.). New York: McGraw-Hill.
+
+{p 4 4 2}Hollander, M & Wolfe, DA. (1999). {it}Nonparametric statistical methods {sf} (2nd ed.). New York: Wiley.
+
+{p 4 4 2}Fligner, MA & Policello, GE. (1981). Robust rank procedures for the Behrens-Fisher problem. {it}Journal of the American Statistical Association, 
+{sf} 76(373), 162-168.
+
+{p 4 4 2}The two data files attached to this package are from Siegel & Castellan (1988, pp 138-143).
+
+{title:Author} 
+
+{p 4 4 2}Benmamoun, Mamoun, Saint Louis University , Saint Louis, MO, U.S.A. 
+Email {browse "mailto: vmamoun@yahoo.com": vmamoun@yahoo.com} if you observe any problem or if you have any comment or question.
+
+{title:Also See}
+
+{psee}
+Online:  {helpb ranksum}, {helpb ttest} {p_end}
+

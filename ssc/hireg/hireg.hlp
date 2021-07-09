@@ -1,0 +1,37 @@
+{smcl}
+{hline}
+Help for {hi:hireg}
+{hline}
+
+{title:Hierarchical Regression}
+
+{p 8 17}{cmd:hireg} {it:depvar} {it:(indvar block 1)} {it:(indvar block 2)} {it:(indvar block N)} [if] [in] [wt] {cmd:,}  [{cmdab:r:egopts()} {cmdab:nom:iss} {cmdab:xi:}] 
+
+{title:Description}
+
+{p}{cmd:hireg} performs hierarchical regressions.  You must specify a dependent variable as well as a list 
+of independent variables.  The independent variables are listed in blocks within parentheses (similar to
+the syntax for {cmd:sw}).  You may have as many blocks as you wish and as many variables within the blocks as you wish.  All options available to the {cmd:regress} command are available to {cmd:hireg}.
+{p_end}
+
+{title:Options}
+
+{p 0 4}{cmd:regopts}    Are all of the options available to the {cmd:regress} command.{p_end}
+{p 0 4}{cmd:nomiss}     Will drop any observation having a missing value for any variable specified in the command. Please note that these observations will be dropped before any that may be dropped by using the "if" clause.{p_end}
+{p 0 4}{cmd:xi}         Interaction expansion; indicates using the "xi:" prefix{p_end}
+
+{title:Examples}
+
+{p 8 12}{inp:. hireg income (sex race) (hours rate) (class tenure)}{p_end}
+{p 8 12}{inp:. hireg income (sex race) (hours rate) (class tenure), r(beta robust)}{p_end}
+{p 8 12}{inp:. hireg income (sex race) (hours rate) (class tenure), r(beta robust) nom}{p_end}
+{p 8 12}{inp:. hireg income (sex race) (i.hours i.rate) (class tenure), r(beta robust) nom xi}{p_end}
+
+
+{title:Author}
+Paul H. Bern, Syracuse University
+phbern@syr.edu
+
+{title:See Also}
+Manual: {hi:[R] regress}
+{p 0 19}On-line:  help for {help regress}

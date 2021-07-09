@@ -1,0 +1,108 @@
+{smcl}
+{* June 2007/August 2007}{...}
+{cmd:help descogini}{right:(SJ7-4: st0100_1; SJ6-1: st0100)}
+{hline}
+
+{title:Title}
+
+{p2colset 5 18 20 2}{...}
+{p2col :{hi:descogini} {hline 2}}Gini decomposition by income source{p_end}
+{p2colreset}{...}
+
+
+{title:Syntax}
+
+{p 8 17 2}
+{cmd:descogini} {varlist}  {ifin} [{cmd:,} {opt d(#)} {opt bar}]
+
+
+{title:Description}
+
+{pstd} 
+This command decomposes the Gini coefficient by income source using the
+approach described in Lerman and Yitzhaki (1985) and Stark, Taylor
+and Yitzhaki (1986), which allows calculation of the impact that a
+marginal change in a particular income source will have on inequality.
+
+
+{title:Options}
+
+{phang}
+{opt d(#)} specifies the number of decimal places to be reported in the
+table of results. The default is {cmd:d(4)}.
+
+{phang}
+{cmdab:bar} specifies that a vertical bar should be included before each
+output field. Such output can be pasted into Microsoft Word as text and
+converted into a table using the vertical bars as separators.
+
+
+{title:Remarks}
+
+{pstd} 
+The first variable in {varlist} should always be the variable that
+captures total income. The order in which the income sources are
+included in the syntax does not matter.{p_end}
+
+{pstd} 
+The last column of the table of results (% Change) refers to the impact
+that a 1% change in the respective income source will have on
+inequality. Four additional elements are included in the table of
+results: the share of each income source in total income (Sk), the
+source Gini (Gk), the Gini correlation of income from source k with the
+distribution of total income (Rk), and the share of each income source
+in total inequality.{p_end}
+ 
+{pstd} 
+Bootstrapped standard errors of the estimated impacts on inequality can
+easily be obtained using this command (see examples below).  {p_end}
+ 
+
+{title:Examples}
+
+{phang2}{cmd:. descogini totinc farminc ofarminc transinc}
+
+{phang2}{cmd:. descogini totinc farminc ofarminc transinc, d(5)}
+
+{pstd}To obtain bootstrapped standard errors and confidence intervals:
+
+{phang2}{cmd:. bootstrap "descogini totinc farminc ofarminc transinc" _b} 
+
+{phang2}{cmd:. bootstrap "descogini totinc farminc ofarminc transinc" _b Gini=gtotal} {p_end}
+
+
+{title:Author}
+
+{p 4 8 2}Alejandro Lopez-Feldman{p_end}
+{p 4 8 2}Escuela de Economia{p_end}
+{p 4 8 2}Universidad de Guanajuato{p_end}
+{p 4 8 2}Email: {browse "mailto:lopezfeldman@gmail.com": lopezfeldman@gmail.com}
+
+
+{title:Citation}
+
+{p 4 4 2}{cmd:descogini} is not an official Stata command. It is a free
+contribution to the research community, like a paper. Please cite the
+Lopez-Feldman (2006) paper. {p_end}
+
+
+{title:References}
+
+{phang}Lerman, R.I. and S. Yitzhaki. 1985. Income inequality effects by
+income source: A new approach and applications to the United States.
+{it:Review of Economics and Statistics} 67: 151{c -}156.
+
+{phang}Lopez-Feldman, A. 2006. 
+Decomposing inequality and obtaining marginal effects.
+{it:The Stata Journal} 6(1): 106{c -}111.
+
+{phang}Stark, O., J.E. Taylor and S. Yitzhaki. 1986. Remittances and
+inequality. {it:Economic Journal} 96: 722{c -}740.
+
+
+{title:Also see}
+
+{psee}
+Online: {helpb inequal} (if installed), {helpb ineqdeco} (if installed),
+        {helpb ginidesc} (if installed), {helpb ineqfac} (if installed)
+{p_end}

@@ -1,0 +1,224 @@
+{smcl}
+{* 31mar2005}{...}
+{hline}
+help for {hi:xtlsdvc}
+{hline}
+{title: Bias corrected LSDV dynamic panel data estimator}
+
+{p 8 16 2}{cmd:xtlsdvc}
+{it:depvar}
+[{it:varlist}] [{cmd:if} {it:exp}] 
+{cmd:,}
+{cmdab:i:nitial:(}{it:estimator}{cmd:)}
+[{cmdab:l:evel:(}{it:#}{cmd:)}
+{cmdab:b:ias:(}{it:#}{cmd:)}
+{cmdab:l:sdv} {cmdab:f:irst} {cmdab:v:cov:(}{it:#}{cmd:)}]
+
+{p 4 4 2}
+where {it:estimator} is
+
+{p 12 36 2}{cmd:ah}{space 18}Anderson-Hsiao{p_end}
+{p 12 36 2}{cmd:ab}{space 18}Arellano-Bond{p_end}
+{p 12 36 2}{cmd:bb}{space 18}Blundell-Bond{p_end}
+{p 12 36 2}{cmd:my}{space 18}initial values supplied by the user{p_end}
+
+{p 4 4 2}
+{cmd:xtlsdvc} is for use with time-series data.
+You must {cmd:tsset} your data before using {cmd:xtlsdvc}; see help
+{help tsset}. However, since {cmd:xtlsdvc} calls {cmd:xtreg} {it:varlist}s 
+may not contain time-series operators; see help {help xtreg}.
+
+
+{p 4 4 2}
+{cmd:xtlsdvc} shares the features of all estimation commands; see
+help {help estcom}.
+
+
+{p 4 4 2}
+The syntax of {help predict} following {cmd:xtlsdvc} is
+
+{p 8 16 2}{cmd:predict} [{it:type}] {it:newvarname}
+[{cmd:if} {it:exp}] [{cmd:in} {it:range}] [{cmd:,} {it:statistic} ]
+
+{p 4 4 2}
+where y[i,t] = {bind: y[i,t-1]a} + {bind:x[i,t]b} + u[i] + e[i,t]
+and {it:statistic} is
+
+{p 8 21 2}{cmd:xb} {space 4} y[i,t-1]a + x[i,t]b, fitted values; the default{p_end}
+{p 8 21 2}{cmd:ue} {space 4} u[i] + e[i,t], the combined residual{p_end}
+{p 4 21 2}(*) {cmd:xbu} {space 3} y[i,t-1]a + x[i,t]b + u[i], prediction including fixed effect{p_end}
+{p 4 21 2}(*) {cmd:u} {space 5} u[i], the fixed effect{p_end}
+{p 4 21 2}(*) {cmd:e} {space 5} e[i,t]{p_end}
+
+{p 4 4 2}
+Unstarred statistics are available both in and out of sample; type
+"{cmd:predict} {it:...} {cmd:if e(sample)} {it:...}" if wanted only for the
+estimation sample.  Starred statistics are calculated only for the estimation
+sample even when "{cmd:if e(sample)}" is not specified.
+
+
+{title:Description}
+
+{p 4 4 2}
+{cmd:xtlsdvc} calculates bias corrected LSDV estimators for the standard 
+autoregressive panel data model using the bias approximations in Bruno (2005a), 
+who extends the results by Bun and Kiviet (2003), Kiviet (1999) and 
+Kiviet (1995) to unbalanced panels
+
+{p 4 12 2}y[i,t] = {bind: y[i,t-1]a} + {bind:x[i,t]b} + u[i] + e[i,t]
+{space 4} i={c -(}1,...,N{c )-}; {space 3} t={c -(}1,...,T_i{c )-},
+
+    where
+
+{p 4 12 2}a is a parameter to be estimated{p_end}
+
+{p 4 12 2}x[i,t] is a (1 X (k-1)) vector of strictly exogenous covariates{p_end}
+
+{p 4 12 2}b is a ((k-1) X 1) vector of parameters to be estimated{p_end}
+
+{p 4 12 2}u[i] are the individual effects, for which no distributional assumption is made
+apart being fixed over time,{p_end}
+
+{p 4 12 2}and e[i,t] are iid over the whole sample with variance s_e*s_e.{p_end}
+
+{p 4 4 2}
+It is also assumed that the u[i] and the e[i,t] are independent for each
+i over all t.
+
+{p 4 4 2}
+A more detailed description of {cmd:xtlsdvc} can be found in Bruno (2005b).
+
+
+{title:Options}
+
+{p 4 8 2}{cmd:level(}{it:#}{cmd:)} specifies the confidence level, in percent,
+for confidence intervals of the coefficients; see help {help level}.
+
+{p 4 8 2}{cmd:initial(}{it:estimator}{cmd:)} specifies which consistent estimator   
+among Anderson-Hsiao ({cmd:ah}), Arellano-Bond ({cmd:ab}) and Blundell-Bond ({cmd:bb})
+is to initialize the bias correction. In alternative, users may want to supply 
+their own values, which can be done by creating beforehand the (1 X (k+1)) 
+matrix {cmd:my}, the i.th element of which serves as an initial value 
+for the coefficient on the i.th variable in {it:varlist}, i=1,...,k and the last 
+element as an estimate for the error variance. This may be useful in Monte Carlo 
+simulations or when the user wants to try initial estimators other than {cmd:ah},
+{cmd:ab} or {cmd:bb}.  
+
+{p 4 8 2}{cmd:bias(}{it:#}{cmd:)} determines the accuracy of the approximation: 
+up to O(1/T) ({cmd:1}); up to O(1/NT) ({cmd:2}); up to O(1/NT^2) ({cmd:3}).
+
+{p 4 8 2}{cmd:first} requests that the first-stage regression results be displayed.
+
+{p 4 8 2}{cmd:lsdv} requests that the lsdv regression results be displayed.
+
+{p 4 8 2}{cmd:vcov(}{it:#}{cmd:)} calculates a bootstrap variance-covariance matrix
+for LSDVC using {it:#} repetitions. Normality for errors is assumed. 
+This procedure continues to work also in the presence of gaps in the exogenous 
+variables, although in this case bootstrap samples for each unit are truncated to the
+first missing value encountered. Gaps in the dependent variable, instead, bear no 
+consequence to the bootstrap sample size. 
+
+
+{title:Options for {help predict}}
+
+{p 4 8 2}{cmd:xb} calculates the linear prediction; that is, y[i,t-1]a + x[i,t]b.  This
+is the default. 
+
+{p 4 8 2}{cmd:ue} calculates the prediction of u[i] + e[i,t].
+
+{p 4 8 2}{cmd:xbu} calculates the prediction of y[i,t-1]a + x[i,t]b + u[i], the
+prediction including the fixed component.
+
+{p 4 8 2}{cmd:u} calculates the prediction of u[i], the estimated fixed effect.
+
+{p 4 8 2}{cmd:e} calculates the prediction of e[i,t].
+
+{title:Remarks}
+
+{p 4 4 2}{cmd:xtlsdvc} does not report analytical standard errors. Only bootstrap 
+standard errors are reported, provided that {cmd:vcov(}{it:#}{cmd:)} is given. 
+
+{p 4 4 2}Bootstrap standard errors are downward biased when values for the unknown
+parameters are supplied through the matrix {cmd:my}, since the procedure, 
+keeping {cmd:my} fixed over replications, neglects a source of varibility
+of the bias-corrected LSDV estimator.  
+
+
+{p 4 4 2}{cmd:xtlsdvc} saves the following results in {cmd:e()}:
+
+{col 5}Scalars
+{col 9}{cmd:e(N)}{col 23}Number of observations
+{col 9}{cmd:e(Tbar)}{col 23}Average number of time periods
+{col 9}{cmd:e(sigma)}{col 23}Estimate of s_e through the within 
+{col 23}residuals from the first stage regression 
+{col 9}{cmd:e(N_g)}{col 23}Number of groups
+
+{col 5}Macros
+{col 9}{cmd:e(cmd)}{col 23}xtlsdvc
+{col 9}{cmd:e(depvar)}{col 23}Name of dependent variable
+{col 9}{cmd:e(ivar)}{col 23}Panel variable
+{col 9}{cmd:e(predict)}{col 23}Program used to implement predict
+
+{col 5}Matrices
+{col 9}{cmd:e(b)}{col 23}Coefficient vector
+{col 9}{cmd:e(V)}{col 23}Variance-covariance matrix of the estimators
+{col 9}{cmd:e(b_lsdv)}{col 23}Coefficient vector of the uncorrected LSDV
+{col 9}{cmd:e(V_lsdv)}{col 23}Variance-covariance matrix of the uncorrected LSDV
+ 
+
+{col 5}Functions
+{col 9}{cmd:e(sample)}{col 23}Marks estimation sample
+
+
+{title:Examples}
+
+{p 4 8 2}{cmd:. xtlsdvc n w k ys yr1980-yr1984, initial(ah)}{p_end}
+{p 4 8 2}{cmd:. xtlsdvc n w k ys yr1980-yr1984, initial(ab) bias(3)}{p_end}
+{p 4 8 2}{cmd:. xtlsdvc n w k ys yr1980-yr1984, initial(ab) bias(3) vcov(50)}{p_end}
+
+
+{title:References}
+
+{p 4 8 2}Bruno, G.S.F. 2005a.
+Approximating the bias of the LSDV estimator for
+dynamic unbalanced panel data models.
+{it:Economics Letters,} 87, 361-366.
+
+{p 4 8 2}Bruno, G.S.F. 2005b.
+Estimation and inference in dynamic unbalanced panel data
+models with a small number of individuals.
+{it:CESPRI WP n.165} , Università Bocconi-CESPRI, Milan.
+
+{p 4 8 2}Bun, M.J.G., Kiviet, J.F., 2003. On the diminishing
+returns of higher order terms in asymptotic expansions of bias.
+{it:Economics Letters,} 79, 145-152.
+
+{p 4 8 2}Kiviet, J.F., 1995. On Bias, Inconsistency and
+Efficiency of Various Estimators in Dynamic Panel Data Models.
+{it:Journal of Econometrics,} 68, 53-78.
+
+{p 4 8 2}Kiviet, J.F., 1999. Expectation of Expansions for Estimators
+in a Dynamic Panel Data Model; Some Results for Weakly Exogenous Regressors.
+In: Hsiao, C., Lahiri, K., Lee, L.-F., Pesaran, M.H. (Eds.), 
+{it:Analysis of Panel Data and Limited Dependent Variables.} Cambridge University Press, Cambridge.
+
+{title:Author}
+
+{p 4}Giovanni S.F. Bruno{p_end}
+{p 4}Istituto di Economia Politica, Università Bocconi{p_end}
+{p 4}Milan, Italy{p_end}
+{p 4}giovanni.bruno@unibocconi.it{p_end}
+
+{title:Also see}
+
+{p 4 12 2}
+Manual: {hi:[U] 23 Estimation and post-estimation commands},{break}
+{hi:[U] 29 Overview of Stata estimation commands},{break}
+{hi:[XT] xtabond}
+{hi:[XT] xtivreg}
+{hi:[R] ivreg}
+
+{p 4 13 2}
+Online:  help for {help estcom}, {help ivreg}, {help postest}, 
+{help xtabond}, {help xtdes}, {help xtivreg}, {help xtreg}, {help xtregar},
+{help xtsum}

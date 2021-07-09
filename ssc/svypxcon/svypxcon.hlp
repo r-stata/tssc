@@ -1,0 +1,152 @@
+{smcl}
+{* 15Apr2005}{...}
+{hline}
+help for {cmd:svypxcon}
+{hline}
+
+{title:Predicted means or proportions for a continuous X variable for survey data}   
+
+{p 8 23 2} 
+{cmdab:svypxcon} {it:yvar} [{cmd:if} {it:exp}] [{cmd:in} {it:range}]{cmd:,}
+   {cmdab:x:var(}{it:xvar}{cmd:)}
+   {cmdab:f:rom(}#{cmd:)}
+   {cmdab:t:o(}#{cmd:)}
+   {cmdab:i:nc(}#{cmd:)}
+   [ {cmdab:adj:ust(}{it:covlist}{cmd:)} 
+   {cmdab:p:oly(}#{cmd:)}
+   {cmdab:cl:ass(}{it:classvar}{cmd:)}
+   {cmdab:mod:el}
+   {cmdab:sub:pop(}{it:subpop_spec}{cmd:)} 
+   {cmdab:gr:aph}
+   {cmdab:l:evel(}#{cmd:)}
+   {cmdab:lin:ear} 
+   {cmdab:nol:ist}
+   {cmdab:sav:epred(}{it:filename}{cmd:)}
+   {it:graph_options} ]
+
+
+{title:Description}
+
+{p 4 8 4}
+{cmd:svypxcon} calculates and prints predicted values and 95% confidence intervals
+   for linear or logistic model estimates for a continuous X variable corrected for
+   the survey sampling scheme (weights), adjusted for covariates.  Default prints
+   predicted values and confidence intervals; model estimates and graph can be shown.
+   Optionally a quadradic or a quadratic and cubic term can be added to the model. An
+   interaction between X and a nominal variable can be estimated and graphed. Dummy
+   variables are created for the nominal variable with the lowest category defaulting
+   to the reference group.  (Updated for Version 9)
+
+{p 4 8 4}
+{cmd:svypxcon} requires that the survey design variables be identified using {help svyset}
+
+
+{title:Variables and options required}
+
+{p 4}{it:yvar} is the dependent variable
+
+{p 8 8 2}If {it:yvar} is continuous, defaults to linear regression
+
+{p 8 8 2}If {it:yvar} is binary (0,1), defaults to logistic regression
+
+
+{p 4 8 2}
+{cmd:xvar(}{it:xvar}{cmd:)} -- continuous independent variable (interval or ordinal)
+
+{p 4}{cmd:from(}#{cmd:)} -- bottom value for {it:xvar}
+
+{p 4}{cmd:to(}#{cmd:)} -- top value for {it:xvar}
+
+{p 4 8 2}
+{cmd:inc(}#{cmd:)} -- increment size between bottom and top values (defaults to 1)
+
+
+{title:Options} 
+
+{p 4 8 2}   
+{cmd:adjust(}{it:covlist}{cmd:)} lists any covariates. If none are specified,
+   unadjusted means or proportions are reported. Covariates are set to their mean,
+   based on observations used in the analysis, or can be set to user specified values
+   (e.g., age=50 gender=1). (Note: if an {cmd:adjust} variable is nominal with more than
+   2 categories, it must be defined with dummy variables in the {cmd:adjust} list,
+   whereas dummy variables are created automatically in the {cmd:xvar} option)
+
+{p 4 8 2}   
+{cmd:poly(}2 or 3{cmd:)} -- polynomial terms added: 2=quadratic 3=quadradic and cubic
+
+{p 4 8 2}
+{cmd:class(}{it:classvar}{cmd:)} -- nominal variable for an {it:xvar} by 
+   {it:classvar} interaction
+
+{p 4 8 2}   
+{cmd:model} -- for display purposes only, this option prints the regression table
+
+{p 4 8 2}   
+{cmd:subpop(}{it:subpop_spec}{cmd:)} -- specifies that estimates be computed for
+    the single subpopulation identified in {it:subpop_spec}
+
+{p 4 8 2}   
+{cmd:graph} -- displays graph of predicted values and 95% confidence intervals;
+    if {cmd:class()} is requested, confidence intervals are not displayed
+
+{p 4 8 2}   
+{cmd:level(}#{cmd:)} -- specifies the confidence level, in percent, for
+   calculation of confidence intervals (default=95%)
+
+{p 4 8 2}   
+{cmd:linear} -- requests linear regression when {it:yvar} is binary (0,1); if not 
+    specified, logistic regression is assumed
+
+{p 4 8 2}   
+{cmd:nolist} -- does not print list of predicted values and 95% CIs
+
+{p 4 8 2}   
+{cmd:savepred(}{it:filename}{cmd:)} -- saves adjusted values and CI's to a Stata file
+
+    
+{title:Examples}
+
+{p 4 8 2}
+{cmd:. svypxcon chol, xvar(age) from(20) to(80) inc(5) adjust(sys hra)}
+
+{p 8 8 2}
+Using linear regressin, calculates the predicted cholesterol values for
+5-year increments of age from 20 years to 80 years (i.e., age=20,25,30,...,80)
+adjusted for systolic blood pressure and heart rate; displays predicted values,
+but does not display model or graph
+
+{p 4 8 2}
+{cmd:. svypxcon chol, xvar(sys) f(60) t(280) i(20) adj(hra) graph class(race)}
+
+{p 8 8 2}
+Using linear regression, calculates the predicted cholesterol values for
+systolic blood pressure readings from 60 to 280 in 20mm/hg increments by
+categories of race, adjusted for heart rate; tests for an age by race
+interaction; displays graph and list of predicted values
+
+{p 4 8 2}
+{cmd:. svypxcon htn, xvar(chol) f(100) t(300) i(20) class(race) graph}
+
+{p 8 8 2}
+Using logistic regression, calculates the unadjusted probability of hypertension
+for cholesterol from 100 to 300 in 20-unit increments, by categories of race; 
+displays test for interaction between cholesterol and race; graphs the results
+
+{p 4 8 2}
+{cmd:. svypxcon htn, xvar(age) f(40) t(80) poly(3) adj(chol=250) graph}
+
+{p 8 8 2}
+Using logistic regression, calculates the probabilitity of hypertension for 
+1-yr increments of age; terms for age-squared and age-cubed included in model
+using the poly(3) option; also adjusted to a cholesterol level of 250; displays
+graph
+
+
+{title:Author}
+
+{p 4 8 2}
+{hi:J.M.Garrett}, Professor, School of Medicine, University of North Carolina,
+  Chapel Hill, NC. 
+  Email: {browse "mailto:joanne_garrett@med.unc.edu":joanne_garrett@med.unc.edu}
+      
+

@@ -1,0 +1,65 @@
+.-
+help for ^numids5^
+.-
+
+Generating numeric identifiers for neighbours
+---------------------------------------------
+
+    ^numids5^ locivar locjvar, ^gen(^numid1var numid2var^)^   
+  
+
+Description
+-----------
+
+^nunids5^ converts spatial neighbourhood information of the form 
+
+    locivar  locjvar
+    -------  -------
+      123      456
+      678      901
+
+or of the form 
+
+    "TX"      "OK"
+    "TX"      "NM"
+
+that is, using any numeric or string identifiers, into identifiers 
+that are observation numbers 1, ..., _N. The order will be the sort 
+order of locivar. 
+    
+
+Remarks
+-------
+
+^numids5^ is a utility for users of ^spautoc5^. 
+
+It is assumed that every pair of neighbours is recorded twice, once as
+i and j, once as j and i. If not, use ^dupneigh5^ first. 
+
+
+Options
+-------
+
+^gen(^numid1var numid2var^)^ specifies two new variables to contain
+    numeric identifiers. It is a required option. 
+
+
+Examples
+--------
+
+    . ^numids5 i j , gen(ni nj)^
+
+
+Author
+------
+
+         Nicholas J. Cox, University of Durham, U.K.
+         n.j.cox@@durham.ac.uk
+
+
+Also see
+---------
+
+On-line: help for @spautoc5@, @dupneigh5@, @neigh5@ 
+
+

@@ -1,0 +1,131 @@
+{smcl}
+{* 04apr2007}{...}
+{* 25apr2005}{...}
+{hline}
+help for {hi:ainequal}{right:Joao Pedro Azevedo}
+{hline}
+
+{title:Measures of inequality (revised)}
+
+{p 8 15}
+{cmd:ainequal} 
+{it:varlist} 
+[{it:weight}] 
+[{cmd:if} {it:exp}] 
+[{cmd:in} {it:range}] 
+[{cmd:,}
+{cmdab:f:ormat}{cmd:(%}{it:fmt}{cmd:)}
+{cmd:ATKinson}      
+{cmd:EPSilon(}{it:#[ #[ ...]]}{cmd:)}   
+{cmd:RELSGini}      
+{cmd:Delta(}{it:#[ #[ ...]]}{cmd:)} 
+{cmd:shorrocks}      
+{cmd:alpha(}{it:#[ #[ ...]]}{cmd:)} 
+{cmd:nogini}        
+{cmd:notheil}       
+{cmd:rmd}           
+{cmd:cov}           
+{cmd:sdl}           
+{cmd:mehran}        
+{cmd:piesch}        
+{cmd:kakwani}       
+{cmd:mld}           
+{cmd:ge_1}          
+{cmd:ge2}           
+{cmd:all}            
+{cmd:benchmark}]{p_end}
+
+{p}{cmd:aweight}s and {cmd:fweight}s are allowed; see help {help weights}.{p_end}
+
+
+{title:Description}
+
+{p}{cmd:ainequal} computes a series of inequality measures of the variables in
+{it:varlist}. It is a revised and upgraded version of {cmd:inequal7} and {cmd:inequal}
+published by Edward Whitehouse in STB-23.{p_end}
+
+{p}The inequality measures computed are: the "relative mean deviation",
+the "coefficient of variation", the "standard deviation of logs", the"Gini
+index", the "Mehran index", the "Piesch index", the "Kakwani index", "Theil
+entropy index", the "mean log deviation", the "generalised entropy measure"
+for all sensitivity [see, e.g., Cowell [1995] and Amiel and Cowell [1999] for a
+definition of these measures], the "Atkinson Inequality Index" using the inequality 
+aversion parameter epslon, and the "Donaldson-Weymark relative S-Gini" using the
+distributional sensitivity paramether delta.{p_end}
+
+{p}In addition {cmd:ainequal} also computes the relative poverty line proposed by Hoffmann [2001] 
+and Lambert and Lanza [2006], for the Gini, Theil-T and Theil-L.{p_end}
+
+{p}Up to 5 variables can be specified in {it:varlist}.{p_end}
+
+{title:Option}
+
+{p 0 4}{cmd:format(%}{it:fmt}{cmd:)} specifies the format to be used to
+display the estimated inequality indices. The default is to use a
+{cmd:%6.5f} format.{p_end}
+
+
+{p 0 4}{cmd:delta(}{cmd:)} specifies the distributional sensitivity parameters used in computing
+   the relative S-Gini.{p_end}
+
+{p 0 4}{cmd:epsilon(}{cmd:)} specifies the inequality aversion parameters used in computing
+    Atkinson inequality index.{p_end}
+
+{p 0 4}{cmd:alpha(}{cmd:)} specifies the sensitivity alpha used on the generalised entropy measure.{p_end}
+
+{p 0 4}{cmd:all} requests that all possible measures are computed and reported.
+    By default, no measure is produced. The Gini and Theil are the deafult measures.{p_end}
+
+{p 0 4}{cmd:benchmark} calculates the Relative Poverty Line (Hoffmann, 2001) 
+or Benchmark Income Level (Lambert and Lanza, 2006) for the Gini, Theil-L and Theil-T.{p_end}
+
+The following options specify the measures to be computed and reported.
+
+{p 4 7}{cmd:rmd} contain the "relative mean deviation"{p_end}
+{p 4 7}{cmd:cov} contain the "coefficient of variation"{p_end}
+{p 4 7}{cmd:sdl} contain the "standard deviation of logs"{p_end}
+{p 4 7}{cmd:mehran} contain the "Mehran index"{p_end}
+{p 4 7}{cmd:piesch} contain the "Piesch index"{p_end}
+{p 4 7}{cmd:kakwani} contain the "Kakwani index"{p_end}
+{p 4 7}{cmd:mld} contain the "Mean Log Deviation (or
+generalised entropy measure with sensitivity parameter 0)"{p_end}
+{p 4 7}{cmd:ge_1} contain the "Generalised entropy measure
+with sensitivity parameter -1"{p_end}
+{p 4 7}{cmd:ge2} contain the "Generalised entropy measure
+with sensitivity parameter 2"{p_end}
+
+{title:Saved Results}
+
+{p 5}{cmd:ainequal} returns results in r() format.
+[Important notice: When multiple variables are entered in {it:varlist},
+returned results are for all inequality measures of the variable
+listed.]{p_end}
+
+{title:Author}
+
+{p 5}Joao Pedro Azevedo{p_end}
+{p 5}jazevedo@ipea.gov.br{p_end}
+{p 5}IPEA{p_end}
+
+{p 5}This is a modified version of the ado inequal7 written by Philippe Van Kerm.{p_end}
+
+{title:Reference}
+
+{p 5 10}Amiel, Y. and Cowell, F.A. (1999) Thinking about Inequality. Cambridge University Press. United Kingdom.{p_end}
+
+{p 5 10}Coulter Ph. (1989), Measuring Inequality -A Methodological Handbook-, Westview Press USA.{p_end}
+
+{p 5 10}Cowell, F.A. (1995). Measuring Inequality (second edition). Prentice-Hall/Harvester-Wheatsheaf, Hemel Hempstead.{p_end}
+
+{p 5 10}Hoffmann, R. (2001) Effect of the rise of a person's income on inequality. Brazlian Review of Econometrics
+v.21, no.2, pp.237-262.{p_end}
+
+{p 5 10}Lambert, P.J. and Lanza, G. (2006) The effect on inequalities of changing one or two incomes.
+The Journal of Economic Inequality. 4:253-277.{p_end}
+
+{title:Also see}
+
+ Manual:  {hi:[R] lorenz}
+    STB:  {hi:sg30 (STB-23)}
+{p 0 19}On-line:  help for {help inequal} (if installed), {help inequal7} (if installed), {help ineqdeco}
+(if installed){p_end}

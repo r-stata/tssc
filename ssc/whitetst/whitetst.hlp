@@ -1,0 +1,78 @@
+.-
+help for ^whitetst^            (STB-55, rev. SSC distribution 18 February 2002)
+.-
+
+Calculate the White test for heteroskedasticity after @regress@
+-------------------------------------------------------------
+
+        ^whitetst^  [if] [in]  [, noSample Fitted]
+
+^whitetst^ is for use after ^regress^ or ^cnsreg^; see help @regress@ or
+help @cnsreg@.
+
+
+Description
+-----------
+
+^whitetst^ computes the White (1980) general test for heteroskedasticity 
+in the error distribution by regressing the squared residuals on all
+distinct regressors, cross-products, and squares of regressors.
+The test statistic, a Lagrange multiplier measure, is distributed 
+Chi-squared(p) under the null hypothesis of homoskedasticity. 
+See Greene (2000), pp. 507-511. It is a special case of the Breusch-Pagan
+test for heteroskedasticity, which requires specification of an auxiliary
+variable list.
+
+Alternatively, a special form of the test, described by Wooldridge 
+(2000, pp. 259-260), may be employed by specifying the ^fitted^ option. 
+In this form, the predicted values from the original regression and their 
+squares are used in place of the individual regressors, their squares, and 
+their cross-products. This form of the test imposes constraints on the 
+auxiliary regression, but may be a very attractive alternative if the original 
+regressor list is lengthy. 
+
+The command displays the Lagrange multiplier test statistic, degrees of 
+freedom and P-value, and places values in the return array. ^return list^ 
+for details.
+
+By default the command will use the e(sample) defined in ^regress^ to define
+the observations over which the test is to be computed. This behavior may
+be overridden with the sample option.
+
+
+Examples
+--------
+
+        . ^use http://fmwww.bc.edu/ec-p/data/wooldridge/HPRICE1^
+        . ^reg lprice llotsize lsqrft bdrms^
+        . ^whitetst^
+        . ^whitetst, fitted^
+
+
+References
+----------
+
+Greene, W. Econometric Analysis. 4th ed., 2000. New York: Prentice-Hall.
+
+White, H. "A Heteroskedasticity-Consistent Covariance Matrix Estimator 
+      and a Direct Test for Heteroskedasticity." Econometrica, 48, 1980,
+      817-838.
+
+Wooldridge, J. Introductory Econometrics: A Modern Approach. 1st ed., 
+      2000. New York: South-Western College Publishing.
+
+Authors
+-------
+
+        Christopher F Baum, Boston College, USA
+        baum@@bc.edu
+
+        Nicholas J. Cox, University of Durham, UK
+        N.J.Cox@@durham.ac.uk
+
+Also see
+--------
+
+ Manual:  ^[R] regress^, ^[R] regression diagnostics^, ^[R] cnsreg^
+On-line:  help for @regdiag@, @regress@, @cnsreg@, @bpagan@ (if installed)
+

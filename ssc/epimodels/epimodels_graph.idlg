@@ -1,0 +1,21 @@
+DIALOG graph, tabtitle("Graph")
+BEGIN
+		
+CHECKBOX ck_nogr      10       10     @       .,              ///
+        label("Suppress graph")                      ///
+        option(nograph) ///
+		tooltip("Suppresses plotting the graph.")
+		
+TEXT	tx_scheme	@	+30	120	.,		///
+	label("Scheme")
+COMBOBOX cb_scheme	@	+20	@	.,		///
+	option(scheme) dropdownlist contents(schemes)		///
+	tooltip("Select one of the available Stata coloring schemes. For black and white publications select 's2mono' or similar.")
+
+CHECKBOX ck_colmodel      @       +30     @       .,              ///
+        label("Model colors")                      ///
+        option(colormodel) ///
+		tooltip("If checked uses fixed colors for plotting instead of the selected Stata scheme colors.")
+		
+END
+

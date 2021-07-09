@@ -1,0 +1,292 @@
+{smcl}
+{* *! version 1.5.0  04oct2012}{...}
+{hline}
+{cmd:help paran}
+{hline}
+
+{title:Title}
+
+{p 4 21 2}
+{cmd:paran} {hline 2} Horn’s Test of Principal Components/Factors
+
+
+{title:Syntax}
+
+{pstd}
+Parallel analysis of data
+
+{p 8 17 2}
+{cmd:paran}
+[{it:varlist}]
+[{it:weight}]
+[{cmd:if} {it:exp}]
+[{cmd:in} {it:range}]
+[{cmd:,}
+    {it:options}]
+
+{synoptset 20 tabbed}{...}
+{synopthdr}
+{synoptline}
+{syntab :Model}
+{synopt :{opt ite:rations(#)}}specify the number of iterations{p_end}
+{synopt :{opt cent:ile(#)}}specify using a centile value of instead of the mean{p_end}
+{synopt :{opt factor(factor_type)}}use {help factor:factor} instead of {help pca:pca} 
+(defaults to {cmd:pca} if left blank){p_end}
+{synopt :{opt cit:erate(#)}}communality re-estimation iterations ({help ipf:ipf} only){p_end}
+
+{syntab :Reporting}
+{synopt :{opt q:uietly}}suppresses {help pca:pca} or {help factor:factor} output{p_end}
+{synopt :{opt nost:atus}}suppresses the status indicator{p_end}
+{synopt :{opt all}}report all eigenvalues (default reports only those retained){p_end}
+
+{syntab :Graphing}
+{synopt :{opt gr:aph}}graphs unadjusted, adjusted, and random eigenvalues{p_end}
+{synopt :{opt color}}renders graph in color (default is black and white){p_end}
+{synopt :{opt lcolors(3 x rgb)}}specifies colors using three {help colorstyle:rgb triples} for 
+observed, random, and adjusted eigenvalues (overrides the {cmd:color} option){p_end}
+{synopt :{opt saving(filename)}}saves graph as a {cmd:.gph} file{p_end}
+{synopt :{opt replace}}replaces an existing file when {cmd:saving()}{p_end}
+
+{syntab :Miscellaneous}
+{synopt:{opt pr:otect(#)}}perform {it:#} optimizations and report the best solution 
+({cmd:ml} only with {help factor:factor}){p_end}
+{synopt :{opt seed(#)}}seed the random number generator with the supplied integer{p_end}
+{synopt :{opt mat(matrix name)}}option to provide a correlation matrix instead of the {it:varlist}{p_end}
+{synopt :{opt n(#)}}specifies the required sample size when using the {cmd:mat()} option{p_end}
+{synopt :{opt copyleft}}displays the GPL license for {cmd:paran}{p_end}{synoptline}
+{p2colreset}{...}
+{p 4 4 2}
+{cmd:fweights}, and {cmd:aweights} are allowed when using {it:varlist}. See help {help weights:weights}.
+
+{title:Description}
+
+{p 4 4 2}
+{cmd:paran} is an implementation of Horn’s technique for evaluating the 
+components or common factors retained in a principle component analysis (PCA) 
+or a common factor analysis (FA). According to Horn, a common interpretation of 
+non-correlated data is that they are perfectly non-collinear, and one would 
+expect therefore to see eigenvalues equal to 1 in a PCA of such data (or equal 
+to 0 in the case of a common factor analysis, as with {cmd: pf}). However, Horn 
+notes that multi-colinearity occurs due to sampling error and least-squares 
+"bias," even in uncorrelated data, and therefore actual PCAs of such data will 
+reveal eigenvalues of components greater than and less than 1. His strategy is 
+to contrast eigenvalues produced through a PCA on a random dataset 
+(uncorrelated variables) with the same number of variables and observations as 
+the experimental or observational dataset to produce eigenvalues for components 
+or factors that are adjusted for the sample error-induced inflation. Values 
+greater than zero are retained in the adjustment given by:
+
+
+{pstd}
+For principal component analysis:
+
+{p 8 8}
+Observed Data Eigenvalue_p - (Random Data Eigenvalue_p - 1)
+
+{pstd}
+For common factor analysis:
+
+{p 8 8}
+Observed Data Eigenvalue_p - Random Data Eigenvalue_p
+
+{p 4 4 2}
+{cmd:paran} is used in place of a {cmd:pca} {it:varlist} command (or {cmd:factor}). The user may also 
+specify how many times to make the contrast with a random dataset (default is 30 
+per variable). Values less than 1 will be ignored (or less than 0 for {cmd:factor}), and the 
+default value assumed. Random datasets are generated using the {cmd:uniform()} 
+function. The program returns the estimated mean eigenvalues of random data if the {cmd:centile} 
+option is unspecified, otherwise it returns the specified {cmd:centile}. biases on 
+each eigenvector are also returned. {cmd:paran} may be thus be used to conduct parallel 
+analysis following Glorfeld's suggestions to reduce the likelihood of over-retention. 
+(Glorfeld, 1995)
+
+{p 4 4 2}
+When the {cmd:all} option is not used, {it:unadjusted} eigenvalues greater than 
+1 (for prinicpal components) or 0 (for factors) are reported, with retained 
+adjusted eigenvalues printed in yellow, and unretained adjusted eigenvalues 
+printed in red.
+
+{title:Options}
+
+{phang}
+{cmdab:iter:ation(}{it:#}{cmd:)} sets the number of contrast datasets to evaluate. The 
+default value is 30 * the number of variables, and values less than 1 are 
+ignored. For large datasets with large numbers of variables many iterations may 
+be time consuming. The greater the number of iterations the more 
+accurate the estimates of sample bias will be.
+
+{phang}
+{cmd:centile(}{it:#}{cmd:)} specifies that supplied centile value is to be used instead of 
+the mean (assumed median, since the distribution is symmetrical) in estimating bias. 
+Values above the mean/median, such as the 95th percentile, are more conservative 
+estimates of chance bias in the eigenvalues from a PCA of sample data. This 
+option supercedes the older {cmd:pnf}, which was equivalent to {cmdab:cent:ile(}{inp:95}{cmd:)}. 
+Values of {cmdab:cent:ile()} must be greater than 0 and less than 100. Non-integer values will be 
+rounded to the nearest integer value. Running {cmd:paran} without this option uses
+the mean value (very close to {cmdab:cent:ile(}{inp:50}{cmd:)}). (see Glorfeld, 1995)
+
+{phang}
+{cmdab:q:uietly} suppresses output for the PCA or factor analysis. This option is only used 
+if a {it:varlist} is specified in the {cmd:paran} command.
+
+{phang}
+{cmdab:nost:atus} By default {cmd:paran} indicates when every tenth percent of the computation 
+has been completed. {cmd:nostatus} eliminates this behavior.
+
+{phang}
+{cmd:factor(}{it:factor_type}{cmd:)} selects one of the factor estimation types:
+{cmd:pf}, {cmd:pcf}, {cmd:ipf}, or {cmd:ml} (for principal factors, principal component 
+factors, iterated principal factors, or maximum likelihood factors, 
+respectively). If you specify anything but one of these four abbreviations, you 
+will be warned and the program will halt. CAVEAT: Conducting parallel 
+analysis using factor methods other than {cmd:pf} is unorthodox. Interpret such results 
+at your own risk. If {cmd:factor} is not used, or if one of the factor estimation types 
+is not used {cmd:paran} performs parallel analysis using {help pca:pca} by default.
+
+{phang}
+{cmdab:cit:erate(}{it:#}{cmd:)} sets how many iterations will be used to re-estimate 
+communalities for the iterated principal factor type. (see {help factor:factor})
+
+{phang}
+{cmdab:pr:otect(}{it:#}{cmd:)} sets the number of optimizations for starting values 
+option for the maximum likelihood factor type. (see {help factor:factor})
+
+{phang}
+{cmd:all} reports all components or factors, not just those with unadjusted eigenvalues 
+greater than one (or greater than zero for factor). The default is not to report all 
+components or factors.
+
+{phang}
+{cmdab:gr:aph} draws a graph of the observed eigenvalues, the random eigenvalues, and the 
+adjusted eigenvalues much like the graphs presented by Horn in his 1965 paper.
+
+{phang}
+{cmd:color} renders the graph in color (only with {cmdab:gr:aph}) with unadjusted eigenvalues 
+drawn in red, adjusted eigenvalues drawn in black, and random eigenvalues drawn in 
+blue, and all lines drawn solid. Without the {cmd:color} option, the graph is 
+rendered in black and white, and the line connecting the unadjusted eigenvalues 
+is dashed, the line connecting the random eigenvalues is dotted, and the line 
+connecting the adjusted eigenvalues is solid.
+
+{phang}
+{cmd:lcolors(}{it:# # # # # # # # #}{cmd:)} specifies the colors of each line on the graph
+using three {help colorstyle:rgb triples} (only with {cmdab:gr:aph}). The first triple indicates
+the {cmd:R}, {cmd:G} and {cmd:B} components of the observed eigenvalues, the second triple 
+sets the values for the mean or centile random eigenvalues, and the third 
+triple sets the values for the adjusted eigenvalues. These settings override 
+the default (red, blue, and black) colors of the {cmd:color} option.
+
+{phang}
+{cmd:saving(}{it:filename}{cmd:)} outputs the graph to the specified {it:filename} as a {cmd:.gph} file 
+(only with {cmdab:gr:aph}).
+
+{phang}
+{cmd:replace} overwrites an existing {it:filename} when the {cmd:saving()} option is used with {cmdab:gr:aph}.
+
+{phang}
+{cmd:seed(}{it:#}{cmd:)} specifies an integer seed for the random number generator 
+(see {help generate:set seed}) so that results of {cmd:paran} upon a specific data set can be 
+exactly reproduced. The default behavior of {cmd:paran} is not to specify a seed.
+
+{phang}
+{cmd:mat(}{it:matrix name}{cmd:)} specifies an optional correlation matrix to be used 
+instead of the {it:varlist}; requires the {cmd:n(}{it:#}{cmd:)} option also be specified. This
+option is not compatible with {cmd:aweights} or {cmd:fweights}.
+
+{phang}
+{cmd:n(}{it:#}{cmd:)} specifies the sample size when using the {cmd:mat(}{it:matrix name}{cmd:)}
+option.
+
+{phang}
+{cmd:copyleft} displays the copying permission statement for {cmd:paran}. {cmd:paran} is free 
+software, licensed under the GPL. The full license can be obtained by typing: 
+
+{p 12 8 2}
+{inp: . net describe paran, from (http://www.doyenne.com/stata)} 
+
+{phang}
+and clicking on the {net "describe paran, from (http://www.doyenne.com/stata)":click here to get} link for the ancillary file.
+
+
+{title:Remarks}
+
+{p 4 4 2}
+Hayton, et al. (2004) urge a parameterization of the random data to approximate the 
+distribution of the observed data with respect to the middle ("mid-point") and 
+the observed min and max.  However, the PCA as I understand it is insensitive to 
+standardizing transformations of each variable, and any linear transformation of 
+all variables, and produces the same eigenvalues used in component or factor 
+retention decisions. This is born by the notable lack of difference between 
+analyses conducted using a variety of simulated distributional assumptions 
+(Dinno, 2009). The central limit theorem would seem to make the selection of a 
+distributional form for the random data moot with any sizable number of 
+iterations. Former functionality implementing the recommendation by Hayton et al. 
+(2004) has been removed, since parallel analysis is insensitive to it, and it only 
+adds to the computation time required to conduct parallel analysis.
+
+
+{title:Examples}
+
+{p 4 8}{inp:. paran var1-var16}
+
+{p 4 8}{inp:. paran var1-var26, iter(5000) q centile(95)}
+
+{p 4 8}{inp:. paran var1-var10, iter(1) factor(ipf) cit(50)}
+
+
+{title:Author}
+
+{p 4 8}
+Alexis Dinno{p_end}
+{p 4 8}
+alexis dot dinno at pdx dot edu{p_end}
+
+{p 4 8}
+I am receptive to comments and requests.{p_end}
+
+
+{title:Reference}
+
+{phang}
+Dinno A. 2009 "Exploring the Sensitivity of Horn’s Parallel Analysis to the 
+Distributional Form of Simulated Data" {it:Multivariate Behavioral Research}. 44: 362-388
+
+{phang}
+Glorfeld LW. 1995. "An Improvement on Horn’s Parallel Analysis Methodology for 
+Selecting the Correct Number of Factors to Retain. {it:Educational and Psychological 
+Measurement}. 55: 377-393
+
+{phang}
+Hayton JC, Allen DG, and Scarpello V. 2004. "Factor Retention Decisions in 
+Exploratory Factor Analysis: A Tutorial on Parallel Analysis" 
+{it:Organizational Research Methods}. 7: 191-205 
+
+{phang}
+Horn JL. 1965. "A rationale and a test for the number of factors in 
+factor analysis." {it:Psychometrika}. 30: 179-185
+
+{phang}
+Zwick WR, Velicer WF. 1986. "Comparison of Five Rules for Determining 
+the Number of Components to Retain." {it:Psychological Bulletin}. 99: 432-442
+
+
+{title:Saved results}
+
+{cmd:paran} saves the following 1 by P matrices in {cmd:e()}:
+
+{synoptset 20 tabbed}{...}
+{p2col 5 20 24 2: Matrices}{p_end}
+{synopt:{cmd:e(UnadjustedEv)}}Unadjusted eigenvalues from the {cmd:pca} or {cmd:factor} command{p_end}
+{synopt:{cmd:e(AdjustedEv)}}Eigenvalues from the analysis adjusted by subtracting the estimated bias{p_end}
+{synopt:{cmd:e(MeanRandomEv)}}The mean of the eigenvalues of random data sets of size N by P (only if the {cmd:centile()} option is unspecified){p_end}
+{synopt:{cmd:e(CentRandomEv)}}The centile of the eigenvalues of random data sets of size N by P as given by the {cmd:centile()} option (and only if that option is specified){p_end}
+{synopt:{cmd:e(Bias)}}The estimated bias (which {it:is} the mean of the eigenvalues of random data sets of size N by P when using the {cmd:factor} option{p_end}
+{p2colreset}{...}
+
+
+{title:Also See}
+
+{p 4 8}
+On-line:{space 2}help for: {help pca:pca}, {help factor:factor}
+
+

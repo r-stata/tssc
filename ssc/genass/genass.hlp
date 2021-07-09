@@ -1,0 +1,203 @@
+{smcl}
+{* 19jan2005}
+{hline}
+help for {hi:genass}
+{hline}
+
+{title: Genetic Case-control Association tests}
+
+{p 4 8 2}
+{cmdab:gena:ss} [{it:varlist}] [{cmd:if} {it:exp}] [{cmd:in} {it:range}] {cmd:,} {cmdab:gr:oup(}{it:casevar}{cmd:)} {cmdab:id:(}{it:study_id}{cmd:)} {cmdab:out:put(}{it:filename}{cmd:)} [{cmd:replace} {cmd:text} {cmd:all} {cmd:hw}
+{cmdab:allel:ic} {cmdab:gen:otypic} {cmdab:dom:inant} {cmdab:rec:essive} {cmdab:tr:end} {cmd:pwld(}{it:statistic}{cmd:)} {cmd:map(}{it:marker map}{cmd:)} {cmd:table} {cmd:graph}]
+
+
+{title:Description}
+
+{p 4 8 2}
+{cmd:genass} is a wrapper for various genetic analysis routines which test for Hardy-Weinberg Equilibrium, perform allelic and genotypic tests of association (general, recessive and dominantmodels), and testing for trends across
+genotypes (additive/multiplicative models).  It will carry out the tests selected for the given range of SNPs, and accumulate the results into one Stata formatted data set for subsequent review.
+
+{title:Dependencies}
+
+{p 4 8 2}
+By virtue of being a wrapper command {cmd: genass} has a number of user-written ado-fies that are required for functioning.  These dependencies are {help gencc}, {help genhw}, {help gtab}, {help labmask}, {help listtex}, and {help pwld}.  If you do not have these installed then {cmd: genass} will not work.
+See {help findit} for information on how to locate and install user written commands.
+
+
+{title:IMPORTANT}
+
+
+{p 4 8 2}
+{cmd:genass} assumes that your genotype data is numerically encoded, with the wild-type allele as 1 and the mutant (rarer) allele as 2.  This assumption is erroneos as, in some genes, the mutations (even though they cause disease) are
+selectively neutral (because fecundity is not affected), and the frequency of the alleles are therefore determined under the Neutral Model of Molecular Evolution (Kimura 1985).
+If you believe that the wild-type allele is in fact allele 2 and the mutant allele is 1, then the results under the recessive model become the dominant results, and vice-versa.
+
+
+{title:Options}
+
+{p 4 8 2}
+{cmd:group(}{it:casevar}{cmd:)} specifies the variable that defines case-control status.  Any observations without a case-control status will cause the program to crash.
+
+{p 4 8 2}
+{cmd:id(}{it:study_id}{cmd:)} specifies the variable that uniquely identifies an observatio within your dataset.
+
+{p 4 8 2}
+{cmd:output(}{it:filename}{cmd:)} specifies the variable that uniquely identifies an observatio within your dataset.
+
+{p 4 8 2}
+{cmd:text} specifies that the data is to be written to a tab-delimited text file as well as being saved as a Stata formatted data set.
+
+{p 4 8 2}
+{cmd:replace} will over-write the output dataset if it already exists.
+
+{p 4 8 2}
+{cmd:hw} specifies that Hardy-Weinberg is to be tested in both cases and controls.
+
+{p 4 8 2}
+{cmd:all} specifies that all statistics are to be calculated (the default option).
+
+{p 4 8 2}
+{cmd:allelic} specifies that allelic association tests are to be performed.  Note that the confidence intervals that are reported are exact and will differ from those obtained using the {help gencc} command which uses the Cornfield approximation.
+
+{p 4 8 2}
+{cmd:genotypic} specifies that a general genotypic association tests are to be performed.  This is a Chi-squared test on a 2x3 table.
+
+{p 4 8 2}
+{cmd:dominant} specifies that a dominant test of  genotypic association tests are to be performed.  The Odds-Ratio and 95% CI for the dominant model are also reported.
+
+{p 4 8 2}
+{cmd:recessive} specifies that a recessive genotypic association tests are to be performed.  The Odds-Ratio and 95% CI for the recessive model are also reported.
+
+{p 4 8 2}
+{cmd:trend} specifies that a Trend Test for Proportions is to be performed.  This is similar to the Mantel-Haenszel test for trend in Odds-Ratio across ordered groups, and is a valid test of association even if samples are not in Hardy-Weinberg
+equilibrium (Sassini 1997).
+
+{p 4 8 2}
+{cmd:pwld(}{it:statistic}{cmd:)} specifies that pair-wise linkage disequilibrium is to be calculated.  By default D' is calculated, however it is possible to calculate any measure described in Devlin & Risch (1995).
+For further details of statistics please see {help pwld}.  Results are saved as a Stata formatted data set with the same name as specified for saving results, prefixed with {it:pwld_}.
+
+{p 4 8 2}
+{cmd:map(}{it:filename}{cmd:)} specifies the tab-delimited ASCII text file that contains the map information.  The file should have two columns, the first row should contain a header (this defines the variables that are in the file).
+The column of marker names should be called {hi:locus}, whilst the column containing the markers position in base-pairs should be called {hi:pos}.  Each subsequent row should contain the marker name (as referred to in your data set) followed by the position in base-pairs (the two columns should be seperated by a tab).
+
+{p 4 8 2}
+{cmd:table} specifies that a html page consisting of ten tables (one for each group of tests) is to be generated.  These tables can then be inserted into web-sites or copied into word-processing software for publication (depends upon Roger Newsons {help listtex}).
+
+{p 4 8 2}
+{cmd:graph} specifies graphs of the results are to be plotted.  You MUST specify the marker map which should be a tab-delimited ASCII text file where the first column contains the locus names, and the second column contains their position in base-pairs.  All graphs are generated as Portable Network Graphics format (.png) and are saved in the sub-directory graphs (which if it does not exist is created).
+
+{title:Results}
+
+{p 4 8 2}
+The results data set is saved in the file specified under the {cmd:output} option and is a Stata formatted data set with all specified statistics collated into one data set.  All variables are labelled with a description, to see a description of the statistics that have been calculated use the {help describe} command.
+
+{p 4 8 2}
+If you have specified the {cmd:graph} option then a number of graphs will have been generated and saved as Protable Network Graphics files (.png), and if you have specified the {cmd:pwld()} option then you will have a file containing the
+pair-wise linkage disequilibrium statistics.
+
+{p 4 8 2}
+There are three classes of graphs, one that plots the allele frequencies, a second group which plots the odds-ratios, and a third set which plots the -log10(p-values).  If you are not familiar with interpreting such graphs then the easiest way to do so is to take your calculator and determine what -log10() of the numbers 0.05, 0.1, 0.01, 0.001 0.0001 and 0.00001 and you will see a pattern emerging.
+
+{p 4 8 2}
+The graphs have been saved to the sub-directory graphs, which if it did not already exist has been created.  The table below details the filenames of the graphs that have been generated and what they are displaying.
+
+
+{lalign 110: File               {char |} Description}
+{lalign 110:{hline 20}{char +}{hline 65}}
+{lalign 110: {result:allele_frq.png}     {char |} Allele frequencies in cases and controls}
+{lalign 110: {result:hw_eqm.png}         {char |} P-values for Hardy-Weinberg equilibrium in cases and controls}
+{lalign 110: {result:allele1_or.png}     {char |} Odds-Ratio & 95% CI for allele 1}
+{lalign 110: {result:allele2_or.png}     {char |} Odds-Ratio & 95% CI for allele 1}
+{lalign 110: {result:genotype_ass.png}   {char |} Genotypic, dominant and recessive p-values}
+{lalign 110: {result:dominant_or.png}    {char |} Odds-Ratio & 95% CI for dominant model}
+{lalign 110: {result:recessive_or.png}   {char |} Odds-Ratio & 95% CI for recessive model}
+{lalign 110: {result:trend.png}          {char |} P-values for trend test}
+
+
+{title:Remarks}
+
+{p 4 8 2}
+It should be noted that the p-values that are reported by this program are uncorrected.  The exact p-values reported for Hardy-Weinberg equilibrium are calculated using the method proposed by Guo and Thompson (1992).  All other exact p-values are calculated using Fisher's (1970) method which mitigates against asymptotic test statistics caused by low cell counts, but does
+not correct for multiple testing.  The issue of correcting for multiple testing can be approached in a number of ways, but is particularly problematic when correcting multiple tests of association with SNPs, which because of their syntenic nature will often demonstrate a degree of correlation.
+
+{p 4 8 2}
+One of the appealing features of generating a dataset of your results is that you can merge in details of a genetic map (using the {cmd:map()} option) to aid in the graphing of results.  In fact if you specify the {cmd:graph} option as well the graphs will be generated for you.
+
+{p 4 8 2}
+However, because of a limitation of 80 characters in local macros, it is NOT possible to autmoatically generate the graphs with the x-axis labelled with the marker names.  If you wish to generate such graphs you can used the code within the {cmd:genass} command as a basis, but you will need to explicity speficy the location of each of the marker labels under the {cmd:xlabel()} options.
+
+{p 4 8 2}
+If you are recieving an error message saying {red: no; data in memory would be lost} then it means that you have modified your data set prior to running the genass command.
+To rectify this simply insert a line in your do-file to {cmd:save}{cmd:,} {cmd:replace} your data, and re-run your do-file.
+
+{title:Examples}
+
+{p 4 8 2}
+The example below shows how to run your analysis on a range of SNPs, then load your results and list the Hardy-Weinberg Equilibrium statistics for those markers that show significant deviation from Hardy-Weinberg (at the 5% level of significance).
+
+{p 4 8 2}{cmd:. genass snp*, group(status) id(status) output(gen_res) map(map.txt) graph}
+
+{p 4 8 2}{cmd:. use gen_res}
+
+{p 4 8 2}{cmd:. list hw_* if(hw_controls_p < 0.05 | hw_cases_p < 0.05)}
+
+{p 4 8 2}
+You can of course substitute the conditions and variables that are listed to any of your choice.  This provides a quick and efficent way of determining which markers show association, deviate from Hardy-Weinberge Equilibrium etc.
+
+{p 4 8 2}
+The following example includes the {cmd:pwld()} option and calculates the statistic R^2 (r-squared), the Stata file that contains the pairwise LD statistics that were calculated is then loaded into memory, sorted and listed.
+
+{p 4 8 2}{cmd:. genass snp*, group(status) id(status) output(gen_res) pwld(R2) map(map.txt) graph}
+
+{p 4 8 2}{cmd:. use pwld_gen_res}
+
+{p 4 8 2}{cmd:. order col row}
+
+{p 4 8 2}{cmd:. sort col row}
+
+{p 4 8 2}{cmd:. list}
+
+{title:References}
+
+{p 4 8 2}
+Altman D.G. (1999) {it:Practical Statistics for Medical Research} Chapman & Hall/CRC
+
+{p 4 8 2}
+Armitage P (1955) Tests for Linear Trends in Proportions and Frequencies. {it:Biometrics} 3:375-386
+
+{p 4 8 2}
+Fisher R.A. (1970) {it:Statistical Methods for Research Workers. 14th Edition} Oxford University Press
+
+{p 4 8 2}
+Guo S.W., Thomspon E.A. (1992) Performing the exact test of Hardy-Weinberg proportion for multiple alleles. {it:Biometrics} 48:361-372
+
+{p 4 8 2}
+Hardy G (1908) Mendelian proportions in a mixed population {it:Science} 28:49-50
+
+{p 4 8 2}
+Kimura M (1985) {it:The Neutral Theory of Molecular Evolution} Cambridge University Press
+
+{p 4 8 2}
+Sassini P (1997) From Genotypes to Genes: Doubling the Sample Size. {it:Biometrics} 53:1253-1261
+
+{p 4 8 2}
+Weinberg W (1908) On the demonstration of heredity in man {it:Naturkunde in Wurttemberg, Stuttgart} 64:368-382
+
+{title:Author}
+
+{p 4 4 2}
+Neil Shephard, ARC Epidemiology Unit
+
+{p 4 4 2}
+The University of Manchester
+
+{p 4 4 2}
+{browse "http://slack.ser.man.ac.uk":http://slack.ser.man.ac.uk}
+
+{p 4 4 2}
+Please email {browse "mailto:nshephard@gmail.com":nshephard@gmail.com} if you encounter problems with this program.
+
+{title: Also see}
+
+{p 4 13 2}
+Online: help for {help describe} {help epitab}, {help gencc}, {help genhw}, {help graph bar}, {help graph twoway}, {help gtab}, {help labmask}, {help listtex}, {help nptrend}, {help pwld}, {help tabulate}

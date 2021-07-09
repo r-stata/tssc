@@ -1,0 +1,172 @@
+{smcl}
+{* 23-mar-Jan2005; rev 3-Oct-2005; 4-Jan-2006}
+{hline}
+help for {hi:assertky}
+{hline}
+
+{title:Sort the data and assert that the given varlist is a key for the dataset}
+
+{p 8 17 2}
+{cmd:assertky} {it:varlist} [{cmd:if} {it:exp}] [{cmd:in} {it:range}]
+[{cmd:, stable gen_n(}{it:varname1}{cmd:)} {cmd:gen_N(}{it:varname2}{cmd:)}]
+
+{p 4 4 2}
+Alternative syntax:
+
+{p 8 17 2}
+{cmd:assertky} [{cmd:if} {it:exp}] [{cmd:in} {it:range}] {cmd:, basis(}{it:varlist}{cmd:)}
+[{cmd:stable gen_n(}{it:varname1}{cmd:)} {cmd:gen_N(}{it:varname2}{cmd:)}]
+
+
+{title:Description}
+
+{p 4 4 2}
+{cmd:assertky} will sort the data on {it:varlist} and test whether
+{it:varlist} is a key for the dataset,
+that is, whether the values in {it:varlist} uniquely identify observations.
+This is useful when you wish to
+simultaneously sort the data and test for whether {it:varlist} is a key,
+such as in preparation for a {help merge} or certain {help by} operations.
+If the test fails, {cmd:assertky} exits with an error condition.
+{cmd:assertky} will leave the data sorted on {it:varlist} (regardless of whether the
+test succeeds).
+
+
+{title:Remarks}
+
+{p 4 4 2}
+You must use one of the two syntaxes shown; you may not combine them.  (The
+first syntax may be easier to use; the second syntax is allowed
+for backward-compatibility.)
+
+{p 4 4 2}
+The {cmd:if} and {cmd:in} qualifiers would presumably be rarely used.
+They would be useful when
+the key test fails on the entire set, but might succeed on a specific subset.
+If this feature is used, then the dataset
+is left sorted on {it:varlist}, with the excluded cases appearing
+at the front of each subset of constant values of {it:varlist}.
+
+
+{title:Options}
+
+{p 4 4 2}
+{cmd:stable} specifies that you want a stable sort; cases that have the same
+values in {it:varlist} (i.e., those that violate the key condition) will
+appear, within sets of constant values of {it:varlist}, in the same order as
+they were prior to the sort.  See {help sort}.  {cmd:stable} makes no difference
+if the key test succeeds.
+
+{p 4 4 2}
+{cmd:gen_n(}{it:varname1}{cmd:)} specifies that if the key test fails,
+then a variable will be generated that enumerates the cases within sets having
+the same values in {it:varlist}.  Note that in order to have these values
+set consistently, you should also specify {cmd:stable}.
+
+{p 4 4 2}
+{cmd:gen_N(}{it:varname2}{cmd:)} specifies that if the key test fails,
+then a variable will be generated that reports the numbers of cases having
+the same values in {it:varlist}.
+
+{p 4 4 2}
+Note that both {cmd:gen_n} and {cmd:gen_N} will generate the variables only if
+the key test fails.  These options can be used to identify cases that
+cause the test to fail (the "key violations").  ({cmd:gen_N} may be more
+useful than {cmd:gen_n}.)
+See examples, below.  Also, any cases excluded by an {cmd:if} or {cmd:in}
+qualifier will recieve a missing value.
+
+
+{title:Examples}
+
+{p 4 8 2}
+{cmd:. assertky familyid person_no year}
+
+{p 4 8 2}{cmd:. assertky emplid effdate}{p_end}
+{p 4 8 2}{cmd:. merge emplid effdate using otherdataset}{p_end}
+
+{p 4 8 2}{cmd:. assertky cust_no prod_serial_no}{p_end}
+{p 4 8 2}{err}varlist is not a key{p_end}
+{p 4 8 2}{txt}{search r(459):r(459);}{p_end}
+{p 4 8 2}{cmd:. assertky cust_no prod_serial_no if status=="A"}{p_end}
+
+{p 4 8 2}{cmd:. assertky emplid effdate}{p_end}
+{p 4 8 2}{err}varlist is not a key{p_end}
+{p 4 8 2}{txt}{search r(459):r(459);}{p_end}
+{p 4 8 2}{cmd:. assertky emplid effdate, gen_N(N)}{p_end}
+{p 4 8 2}{err}varlist is not a key{p_end}
+{p 4 8 2}{txt}{search r(459):r(459);}{p_end}
+{p 4 8 2}{cmd:list if N>1, sepby(emplid effdate)}{p_end}
+{p 8 8 2}/* shows all sets of key violations */{p_end}
+
+{p 4 8 2}{cmd:. assertky emplid effdate, gen_n(n) gen_N(N)}{p_end}
+{p 4 8 2}{err}varlist is not a key{p_end}
+{p 4 8 2}{txt}{search r(459):r(459);}{p_end}
+{p 4 8 2}{cmd:list if N>1 & n==1}{p_end}
+{p 8 8 2}/* shows one example from each set of key violations */{p_end}
+
+{p 4 4 2}
+Note that if an {cmd:if} or {cmd:in} qualifier is used in combination with
+{cmd:gen_n} or {cmd:gen_N}, you should accomodate the possibility of missing
+values in the generated variables:
+
+{p 4 8 2}{cmd:. assertky emplid effdate if status=="A", gen_N(N)}{p_end}
+{p 4 8 2}{err}varlist is not a key{p_end}
+{p 4 8 2}{txt}{search r(459):r(459);}{p_end}
+{p 4 8 2}{cmd:list if N>1 & ~mi(N), sepby(emplid effdate)}{p_end}
+
+{p 4 4 2}
+Or you could also code,
+
+{p 4 8 2}{cmd:list if N>1 & status=="A", sepby(emplid effdate)}{p_end}
+
+
+{title:Further Remarks}
+
+{p 4 4 2}
+{cmd:assertky} is useful prior to a {help merge}, though {help sort} is
+just as good, provided that the {cmd:merge} command is used with the {cmd:uniq} or
+{cmd:uniqm} option.  ({cmd:assertky} was initially developed prior to the advent of these
+options in {cmd:merge}, and one of the motivations for its development was
+to facilitate insuring the key condition in a {cmd:merge}.)
+
+{p 4 4 2}
+Another useful application is prior to a {cmd:by:} prefix command, where a
+secondary sort varlist is used.  (The "secondary" variables are those that
+appear in parenthese in a {cmd:by:} prefix command.  See help {help by}.)
+In that case, you will often
+want to be sure that the variables, including the secondaries, put the data
+into a unique sort order.  (In these instances, the primary {cmd:by:} variables
+serve mainly to group the observations; the actual order of the groups is
+unimportant, but the uniquness of the sort on the secondary variable(s)
+may be necessary for the correct functioning of the subsequent command.)  Example:
+
+{p 4 8 2}{cmd:. assertky emplid effdate}{p_end}
+{p 4 8 2}{cmd:. by emplid (effdate):} {cmd:gen int spellno = _n}{p_end}
+
+{p 4 4 2}
+In this situation, {cmd:assertky} is useful because {cmd:sort} (or {cmd:bysort})
+alone is not enough to insure a unique result.
+
+{p 4 4 2}
+{cmd:assertky} (without an {cmd:if} or {cmd:in} or options) is similar to {help isid}
+but users may find it easier to use.  It is ostensibly equivalent to
+
+{p 8 8 2}
+{cmd:isid} {it:varlist}{cmd:, sort missok}
+
+{p 4 4 2}
+though the author has not verified that it is exactly equivalent.
+
+
+
+{title:Author}
+
+{p 4 4 2}
+David Kantor.  Email {browse "mailto:kantor.d@att.net":kantor.d@att.net} if you observe any
+problems.
+
+{title:Also See}
+
+{p 4 4 2}
+{help isid}, {help duplicates}, {help funcdep} (part of the collapseunique package)

@@ -1,0 +1,59 @@
+{smcl}
+{.-}
+help for {cmd:catgraph} {right:Nick Winter}
+{.-}
+
+{title:Plotting Means of a Variable, by Category}
+
+{p 5 15 2}
+{cmdab:catgraph}
+{it:yvar xvar} 
+[{cmd:if} {it:exp}] [{cmd:in} {it:range}] 
+{cmd:,}
+{cmdab:by(}{it:varname}{cmd:)}
+{cmd:stat(}{it:collapse_statistic}{cmd:)}
+{it:graph_options}
+
+
+{title:Description}
+
+{p 0 5 2}
+{cmd:catgraph} plots a summary statistic (means by default) of {it:yvar} against {it:xvar}, separately
+for categories of {it:varname}.
+
+
+{title:Options}
+
+{p 0 5 2}
+{cmd:by(}{it:varname}{cmd:)} specifies the variable that specifies the categories for
+	plotting. {cmd:catgraph} plots one series for each value of {it:varname}. {cmd:by()}
+	may be numeric or string. If {cmd:by} is not specified, one category encompassing all
+	the data is plotted.
+
+{p 0 5 2}
+{cmd:stat()} specifies the statistic to be plotted. The default is to plot the mean of
+	{it:yvar} for each value of {it:xvar}. Any valid statistic for the {help collapse}
+	command may be specified.
+
+
+{title:Examples}
+
+{p 5 10 2}
+{cmd:. catgraph mpg rep78, by(foreign) c(ll) ylab(0,35)}
+
+{p 5 5 2}
+Graphs mean mileage against repair record, separately for 
+foreign and domestic autos.
+
+{p 5 10 2}
+{cmd:. catgraph mpg rep78, by(foreign) c(ll) ylab(0,35) stat(median)} 
+
+{p 5 5 2}
+Graphs median mileage against repair record, separately for 
+foreign and domestic autos.
+
+{title:Author}
+
+     Nick Winter
+     Cornell University
+     nw53@cornell.edu

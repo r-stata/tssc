@@ -1,0 +1,96 @@
+{smcl}
+{* version 1.0.3 05jan2012}{...}
+{cmd:help labdu}
+{hline}
+
+{title:Title}
+
+{p 5}
+{cmd:labdu} {hline 2} Drop unused value labels from memory or delete 
+values from value labels
+
+
+{title:Syntax}
+
+{p 8}
+{cmd:labdu} [{it:lblname-list}] 
+[{cmd:,} {opt del:ete} {opt k:eep} {opt c:urrent} 
+{opt r:eport} {opt d:ryrun}]
+
+
+{title:Description}
+
+{pstd}
+{cmd:labdu} drops unused value labels from memory. Optionally, values 
+that do no occur in the current dataset are deleted from value labels. 
+If {it:lblname-list} is not specified it defaults to all value labels 
+in memory.
+
+
+{title:Options}
+
+{phang}
+{opt delete} deletes values and the associated text from value labels 
+if values do not occur in any variable using the respective value 
+label.
+
+{phang}
+{opt keep} does not drop value labels that are currently not used from 
+memory. May only be specified with {opt delete}.
+
+{phang}
+{opt current} drops value labels not used in the current 
+{help label_language:label language}.
+
+{phang}
+{opt report} displays dropped value label names and values that are 
+deleted from value labels.
+
+{phang}
+{opt dryrun} displays unused value labels and values that do not occur 
+in the dataset. No value labels will be dropped and no values will be 
+deleted. {opt dryrun} implies {opt report}.
+
+
+{title:Examples}
+
+{phang2}{cmd:. sysuse nlsw88}{p_end}
+{phang2}{cmd:. label define unused 1 "something"}{p_end}
+{phang2}{cmd:. drop if race == 1}{p_end}
+{phang2}{cmd:. labdu ,delete report}{p_end}
+
+
+{title:Saved results}
+
+{pstd}
+{cmd:labdu} saves the following in {cmd:r()}:
+
+{pstd}
+Macros{p_end}
+{synoptset 15 tabbed}{...}
+{synopt:{cmd:r(dropped)}}dropped value labels 
+(if {opt dryrun} is not specified){p_end}
+{synopt:{cmd:r(unused)}}unused value labels
+(only if {opt dryrun} is specified){p_end}
+
+
+{title:Acknowledgments}
+
+{pstd}
+Option {opt current} is adopted from Jeroen Weesie's 
+{stata findit labelrename:labelrename}.
+
+
+{title:Author}
+
+{pstd}Daniel Klein, University of Bamberg, klein.daniel.81@gmail.com
+
+
+{title:Also see}
+
+{psee}
+Online: {help label}{p_end}
+
+{psee}
+if installed: {help labdel}, {help labeldup}, {help labutil2}
+{p_end}

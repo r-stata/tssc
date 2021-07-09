@@ -1,0 +1,62 @@
+.-
+help for ^clttest^
+.-
+
+Clustered t-test
+----------------
+
+
+ ^clttest^  outvar [^if^ exp] [^in^ range] , ^cluster(^clustvar^)^ 
+                                             ^by(^byvar^)^
+                                             ^strata(^stratavar^)^
+
+
+Description
+-----------
+This program calculates a cluster-adjusted t-value for comparing
+continous outcomes when the unit of randomization is a cluster. 
+It calculates the adjusted t-value based on the effects of 
+clustering by ^byvar^ group. See reference below for formulae.
+The results include cluster adjusted means and confidence intervals
+for each group; the difference between these; and, for stratified
+data, the variance weighted mean difference. The ICC is calculated
+separately for each group. 
+
+^outvar^ is a continous outcome variable. It must be clustered 
+  within ^clustvar^.
+^clustvar^ is a categorical variable denoting clusters of observations.
+  It is ^not^ optional.
+^byvar^ is a dichomotous variable denoting groups to be compared.
+  It is ^not^ optional.
+
+^stratavar^ is a categorical variable denoting strata of groups.
+
+Note: This program does not yet support comparison of two variables
+analogous to the ttest var1=var2 command.
+
+
+Example
+-------
+
+  . ^clttest score, cluster(school) by(control)^
+
+where observations of ^score^ are clustered within ^school^, and
+the comparison is made between the two groups identified by ^control^. 
+
+Also see
+--------
+    ^clchi2^
+
+
+Author
+------
+
+    Jeph Herrin
+    Yale University
+    email: jeph.herrin@@yale.edu
+
+Reference
+---------
+    Donner A, Klar N. Design and Analysis of Cluster Randomization
+    Trials in Health Research. Arnold, London. 2000
+

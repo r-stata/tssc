@@ -1,0 +1,206 @@
+{smcl}
+{* 11dec2007/17dec2007}{...}
+{hline}
+help for {hi:effcon}
+{hline}
+
+{title:Confidence limits for effect size estimated from one or two samples from normal distribution }
+
+{p 8 17 2}
+{cmd:effcon} 
+[{it:depvars}] 
+[{cmd:if} {it:exp}]
+[{cmd:in} {it:range}] 
+{cmd:,[} 
+{cmd:group(}{it:string}{cmd:)}
+{cmdab:conf:dir(}{it:string}{cmd:)}
+{cmdab:lev:el(}{it:real}{cmd:)} 
+{{cmd:xb1(}{it:real}{cmd:)} 
+{cmd:s(}{it:real}{cmd:)}
+{cmd:n1(}{it:real}{cmd:)}]}
+{[{cmd:xb2(}{it:real}{cmd:)}
+{{cmd:n2(}{it:real}{cmd:)}]}
+
+{title:Description}
+
+{p 4 4 2} {cmd:effcon} estimates lower and upper condifence limits for
+the effect size estimated with a) one sample from a normal distribution or 
+b) two independent samples from normal distributions with the same variance.
+
+{p 4 4 2} In Case a), the data is assumed to come from a {it:N}({it:mu},{it:sigma^2}) distribution
+          Here, the effect size is defined as {it:mu}/{it:sigma}.
+
+{p 4 4 2} In Case b), there are two sets of data coming from {it:N}({it:mu1},{it:sigma^2}) and {it:N}({it:mu2},{it:sigma2}) distributions.
+          Here, the effect size is defined as ({it:mu1} - {it:mu1})/{it:sigma}
+
+{title:Usage}{p 4 4 2}This program calculates 1-sided confidence limits at level 1-alpha, 
+where typically alpha is a small number, say alpha = 0.05. The user may either specify a 
+variable from which to estimate the effect size ("standard" mode), or may interactively provide estimated values of
+the mean(s) and (common) standard deviation along with sample sizes(s) ("interactive" mode). 
+
+{p 4 4 2}A typical application of {cmd:effcon} is to faciliate conservative power calculations
+for 1 and 2-sample t-tests. For these tests, the power is a function of the test level, effect size E and
+a proposed sample size. Rather than use a point estimate of E, perhaps obtained from a small 
+amount of pilot data, it is prudent to calculate power using a lower confidence limit for E instead.
+
+{title:Options}
+
+{p 4 8 2}{cmd:group()} A string containing the name of a two-category variable defining the 
+groups for the 2-sample case in standard mode. Omit this option in the 1-sample case. In the 
+interactive mode, this option is ignored.
+
+{p 4 8 2}{cmd:confdir()} allows the user to specify whether the confidence limit
+is a lower or an upper one. Any string beginning with the letter "U" (regardless of case) will be interpreted
+as a request for an upper limit; any string beginning with the letter "L" (regardless of case) will be interpreted
+as a request for a lower limit. Default option is "lower".
+
+{p 4 8 2}{cmd:level()} the 1-sided confidence level ({it:e.g.} 0.95). Default level is 0.95.
+The level may either be expressed as a decimal fraction (eg. 0.90) or as a percent (e.g. 90).
+If the input value is greater than or equal to 1.0, it will be assumed that the percent mode
+is intended. If the input value is less than 1, it will be assumed that the decimal fracion mode
+is intended.
+
+{p 2 2 2}{title:The following are required in interactive mode:}
+
+{p 4 8 2}Case a) - one sample:
+
+{p 6 8 2}{cmd:xb1()} estimated mean
+
+{p 6 8 2}{cmd:n1()} sample size
+
+{p 6 8 2}{cmd:s()} estimated standard deviation
+
+{p 4 8 2}Case a) - two samples:
+
+{p 6 8 2}{cmd:xb1()} and {cmd:n1()} as above for the first sample
+
+{p 6 8 2}{cmd:xb2()} estimated mean for second sample
+
+{p 6 8 2}{cmd:n2()} size of second sample
+
+{p 6 8 2}{cmd:s()} pooled estimate of common standard deviation
+
+
+{title:Examples}
+
+{p 4 8 2}{cmd:. effcon x}
+
+{p 4 8 2}{cmd:. effcon x,confdir(upper) level(.90)}
+
+{p 4 8 2}{cmd:. effcon x,confdir(upper) level(.90) group(gender)}
+
+{p 4 8 2}{cmd:. effcon ,xb1(2.345) n1(15) s(0.874)}
+
+{p 4 8 2}{cmd:. effcon ,confdir(U) level(90) xb1(2.345) n1(15) xb2(1.123) n2(20) s(1.022)}
+
+{title:Saved results}
+
+{p 4 4 2}The following quantities (if appropriate) are saved:
+
+{p 8 14 2}{hi:scalars:}
+       {hi:r(n1)} =  n1
+
+{p 18 14 2}       {hi:r(n2)} = n2
+
+{p 18 14 2}       {hi:r(xb1)} = xb1
+
+{p 18 14 2}       {hi:r(xb2)} = xb2
+
+{p 18 14 2}       {hi:r(s)}  = s
+
+{p 18 14 2}       {hi:r(R)} = 1/(1/n1 + 1/n2) 
+
+{p 18 14 2}       {hi:r(Z0)} = point estimate of effect size
+
+{p 18 14 2}       {hi:r(Zp)} = lower (upper) confidence limit for effect size
+
+{p 18 14 2}       {hi:r(level)} = confidence level
+
+{title:Method}
+{p 4 8 2}{ul:1-sample case.} 
+ Let xb and s  be estimates of mu and sigma from n observations
+from a N(mu, sig^2) distribution. Then it can be shown that xb/s is distributed as 
+sqrt(n) times a non-central t distribution with n-1 d.f. and non-centrality parameter
+la = mu*sqrt(n)/sig. In other words
+
+{center:P{xb/s {ul:<} (1/sqrt(n))*t'(1-alpha,n-1,la) } = 1-alpha}		(1)
+
+{p 4 4 2}where t'(p,df,la) denotes the 100*p-th percentage point of the non-central t-distribution with 
+df degrees of freedom and non-centrality parameter la.
+
+{p 4 4 2}It also can be shown that as a function of la, G(la) {ul:=} t'(1-alpha,n-1,la) is strictly
+increasing over the whole real line, so that its inverse G-1(t) always exists. multiplying by sqrt(n)
+and taking G-1 of both sides in (1), gives
+
+{center:P{G-1(xb*sqrt(n)/s) {ul:<} la } = 1-alpha}		
+
+{center:=> P{G-1(xb*sqrt(n)/s) {ul:<} mu*sqrt(n)/sig } = 1-alpha}		
+
+{center:=> P{mu/sig {ul:>} (1/sqrt(n))*G-1(xb*sqrt(n)/s) } = 1-alpha}		
+
+{p 4 4 2}In other words, (1/sqt(n))*G-1(xb*sqrt(n)/s) is a 100(1-alpha)% lower confidence limit
+for mu/sig. 
+
+{p 4 4 2}To obtain the upper limit, start with a lower confidence limit of level alpha (not 1 - alpha). Then
+
+{center:=> P{mu/sig {ul:>} (1/sqt(n))*H-1(xb*sqrt(n)/s)  } = alpha}		(2)
+
+{p 4 4 2}where H(la) {ul:=} t'(alpha,n-1,la). Then taking the complentary event in (2), 
+one obtains
+
+{center:=> P{mu/sig < (1/sqt(n))*H-1(xb*sqrt(n)/s) } = 1-alpha}		
+
+{p 4 4 2}In other words, (1/sqt(n))*H-1(xb*sqrt(n)/s) is a 100(1-alpha)% upper confidence limit
+for mu/sig. 
+
+{p 4 8 2}{ul:2-sample case.} 
+ Let xb1, xb2 be estimates of mu1, mu2 and let s be the pooled estimate of a common standard deviation
+sigma from respective samples of n1 and n2 observations of N(mu1,sigma^2) and N(mu2,sigma^2). 
+Then in a similar fashion to the single-sample case, it can be shown that (xb1-xb2)/s is distributed 
+as sqrt({c 241}) times a non-central t distribution with n1 + n2 - 2 d.f. and non-centrality parameter
+la = (mu1-mu2)*sqrt({c 241})/sig, where 
+
+{center:{c 241} = 1/(1/n1 + 1/n2)}
+
+{p 4 4 2}Using the same logic as for the 1-sample case, it then follows that a 100(1-alpha)% 
+lower confidence limit for (mu1 - mu2)/sig is 
+
+{center: (1/sqt({c 241}))*G-1((xb1-xb2)*sqrt({c 241})/s)},
+
+{p 4 8 2}and that the corresponding upper confidence limit is
+
+{center: (1/sqt({c 241}))*H-1((xb1-xb2)*sqrt({c 241})/s)}.
+
+{p 4 4 2}This program uses {cmd:nctncp} and {cmd:ridder} to calculate G-1 and H-1. {cmd:nctncp}
+is one of the programs in the non-central t utility package, written by Tom Steichen
+(ssc describe nct). {cmd:ridder} is a function solver utility, written by Tim McGuire, that may be
+obtained from STB-24 (findit ridder).
+
+{title:Limitations} Numerical problems may arise if xb*sqrt(n)/s or (xb1-xb2)*sqrt({c 241})/s
+{p 4 8 2}is too large in absolute value, depending upon alpha and the degrees of freedom. 
+
+
+{title:Author}
+
+{p 4 4 2}Alan H. Feiveson, NASA Johnson Space Center  alan.h.feiveson@nasa.gov
+
+{title:References}
+
+{p 4 4 2}
+Owen, D. B. (1968), "A Survey of Properties and Applications of the Non-central t-Distribution,"
+{it;Technometrics},10, 445-478.
+
+{p 4 4 2}
+Lawless, J. F. (2002) {it:Statistical Methods and Methods for Lifetime Data} (2nd ed.). 
+New York:John Wiley.
+
+{p 4 4 2}
+Chakraborti,S. and Li, J. (2007). "Confidence Interval Estimation of a Normal Percentile", 
+{it:American Statistician} vol. 61, No. 4, pp. 331-336.
+
+
+{title:Also see}
+
+{p 4 13 2}
+Online: help for {help nct} (if installed), help for {help ridder} (if installed)
+

@@ -1,0 +1,565 @@
+/* 
+  validscale.dlg
+*/ 
+ 
+VERSION 12.1
+
+POSITION . . 800 330
+
+DIALOG main, label("Validscale") tabtitle("General")
+BEGIN
+  TEXT     tx_var       10    10    200     .,               ///
+           label("Items used for computing score")
+  VARLIST  vl_var       @     +20   180       .,                 /// 
+	       label("Variables")
+		
+  TEXT     tx_n      210    -20    200     .,  				///
+           label("Number of items")
+		   
+  EDIT     ed_n      @  +20  40  ., 						 ///
+		   label("number")									///
+		   numonly
+		
+  BUTTON   bt_add 270 -1 32 22, ///
+		   label("Add") ///
+		   onpush(script az) ///
+	
+  GROUPBOX gb_1 5 65 300 140,
+   
+  TEXT     tx_v 10 +10 100 .,                 ///
+           label("Items used")		   
+  VARLIST  ed_v @ +20 250 .,                   ///
+		   label("Items used")
+  
+  TEXT     tx_p @ +20 100 .,                 ///
+           label("Partition")                 
+		   
+  EDIT     ed_p @ +20 150 .,                  ///
+		   label("Partition")                 ///
+           option(partition)                  ///
+		   tooltip("Defines the number of items in each dimension")
+		   
+  TEXT     tx_m @ +20 160 .,                 ///
+           label("Response categories")                 
+		   
+  EDIT     ed_modal @ +20 150 .,                  ///
+	       option(categories)                  ///
+		   tooltip("Precise minimum and maximum response categories")	   
+
+  GROUPBOX gb_11 5 210 300 100, 	   
+		   
+  TEXT     tx_s 10 +10 . .,                 ///
+           label("Define the names of the dimensions")
+  EDIT     ed_s @ +20 250 .,                   ///
+		   label("Names of the dimensions")    ///
+		   option(scorename)
+  
+  TEXT     tx_scores       @    +20    180    .,                 ///
+           label("Or use scores from the dataset")
+  VARLIST  vl_scores       @  +20  250  ., 						///
+		   option(scores)
+		   
+   
+  GROUPBOX gb_calc      360     13   245  90,               ///
+           label("Computation of scores") 
+	 
+  RADIO    rb_mean +10  +20 100 ., first  label("Mean") ///
+           default(1) 
+		   
+		   
+  RADIO    rb_sum @  +20 100 ., label("Sum") 
+          
+		  
+  RADIO    rb_stand @  +20 190 ., last label("Standardize scores from 0 to 100")
+  
+  
+  
+  
+  
+  GROUPBOX gb_md      360     +40   245  110,               ///
+           label("Missing data handling") 
+	 
+  RADIO    rb_noimp +10  +20 100 ., first  label("No imputation") ///
+           default(1) 
+		   
+		   
+  RADIO    rb_pms @  +20 160 ., label("Person Mean Substitution") 
+          
+		  
+  RADIO    rb_mi @  +20 140 ., last label("Multiple Imputation")
+  
+  		   
+  CHECKBOX ck_nor    @  +20 175 .,                ///
+           option(noround)                                       ///
+           label("Do not round imputed values") ///
+  
+     
+	 
+	 
+  GROUPBOX gb_opt      360    +40   245   85,               ///
+           label("Options")
+		   
+  /*CHECKBOX ck_imp      +10   +20   -20     .,                 ///
+		   option(imp)                                       ///
+		   label("Imputing missing data")					 ///
+		   onclickon(main.ck_nor.enable)                  ///
+		   onclickoff(main.ck_nor.disable)                ///
+		   default(1)
+		   
+  CHECKBOX ck_nor     +145   @   -20     .,                 ///
+           option(noround)                                       ///
+           label("Do not round") ///
+		   tooltip("Do not round imputed values")
+*/
+  CHECKBOX ck_desc    +10   +25   -20     .,                 ///
+		   option(descitems)									///
+           label("Descriptive analysis of the items")	///
+		   default(0)		
+	
+  CHECKBOX ck_graphs    @   +25   -20   .,                 ///
+		   option(graphs)									///
+           label("Display graphs")	///
+		   default(0) ///
+		   tooltip("Display histogram of items, biplot of dimensions and biplot of items")
+	
+  
+END
+
+
+DIALOG cfa, tabtitle("Confirmatory factor analysis")
+BEGIN
+  
+  CHECKBOX	ck_cfa 10 10 220 ., label("Perform confirmatory factor analysis") ///
+		    option(cfa) ///
+			onclickon(script cfa_ck_cfa_on) ///
+			onclickoff(script cfa_ck_cfa_off)
+			  
+  GROUPBOX gb_cfa 10 +30 320 110 , ///
+	       label("Estimation method:") 
+ 
+  RADIO    rb_ml +10  +24 130 ., first  label("Maximum likelihood") ///
+           default(1) 
+		   
+  RADIO    rb_mlsb @  +20 310 ., label("Maximum likelihood with Satorra-Bentler adjustment")	  
+  
+  RADIO    rb_mlmv @  +20 230 ., label("Maximum likelihood with missing values") 
+           
+  RADIO    rb_adf @  +20 170 ., last label("Asymptotic distribution free")
+  
+  CHECKBOX	ck_stand 14  +36 140 ., label("Standardize coefficients") ///
+		    option(cfastand) 
+			
+
+			
+			
+			
+			
+     
+  GROUPBOX gb_covs 350 40 370 180 , ///
+	       label("Covariances between measurements errors:")	
+		   
+  CHECKBOX ck_cfacovs +10  +20 350 .,  label("Manually add covariances (ex : item1*item5 item12*item16 ... )") 
+
+  EDIT     ed_cfacovs @  +21 240 ., label("cfacovs") ///
+           option(cfacov)
+		   
+  CHECKBOX    ck_cfarmsea @  +22 330 ., label("Automatically add covariances until RMSEA is less than:") /// 
+              //onclickon(script cfa_ck_cfac_on) ///
+		      //onclickoff(script cfa_ck_cfac_off)
+			  
+  EDIT     ed_cfarmsea @  +21 55 ., label("cfarmsea") ///
+           option(cfarmsea) ///
+		   default(0.07)
+			 
+  CHECKBOX    ck_cfacfi @  +22 330 ., label("Automatically add covariances until CFI is greater than:") /// 
+              //onclickon(script cfa_ck_cfac_on) ///
+			  //onclickoff(script cfa_ck_cfac_off)
+
+  EDIT     ed_cfacfi @  +21 50 ., label("cfacfi") ///
+           option(cfacfi) ///
+		   default(0.95)
+		  
+  CHECKBOX    ck_cfaor @  +22 410 ., label("Stop when one the two criteria is met (default is both)") /// 
+			option(cfaor)
+			
+ 
+  CHECKBOX	ck_covdim 350 +45 290 ., label("Assert covariances between dimensions to be zero") ///
+		    option(cfanocovdim)			  
+			  
+			
+			
+    
+END
+
+
+DIALOG conv, tabtitle("Convergent/divergent validities")
+BEGIN
+
+  CHECKBOX ck_conv_div       10    10    230     .,  				///
+		   label("Display convergent/divergent validities") ///
+		   option(convdiv) ///
+		   onclickon(script conv_ck_conv_on) ///
+		   onclickoff(script conv_ck_conv_off)
+
+  TEXT     tx_conv1       10   +26    250     .,  				///
+		   label("Correlations between item and its own score") 
+  TEXT     tx_conv2       @     +17   @     .,  				///
+		   label("below this value will be highlighted")
+  EDIT     ed_conv       250    42   35  .,					 ///
+		   default(0.4)											///
+		   option(tconvdiv)	  				                         ///
+		   numonly
+		   
+  CHECKBOX ck_conv     10   +42   190     .,                 ///
+		   option(convdivboxplots)									///
+           label("Display boxplots of correlations")	              ///
+		   default(1)
+	
+END
+
+
+DIALOG rel, tabtitle("Reliability")
+BEGIN
+
+  TEXT     tx_rel_a       10    10    350     .,  				///
+		   label("Cronbach's alpha below this value will be highlighted")   
+  EDIT     ed_rel_a       340   @   35  ., 						 ///
+	       default(0.7)												///
+		   option(alpha)	  				                         ///
+		   numonly
+		   
+  TEXT     tx_rel_d       10    +30    350     .,  				///
+		   label("Ferguson's delta below this value will be highlighted")   
+  EDIT     ed_rel_d       340   @   35  ., 						 ///
+           default(0.9)												///
+		   option(delta)	  				                         ///
+		   numonly
+		   
+  TEXT     tx_rel_H       10    +30    380     .,  				///
+		   label("Loevinger's H coefficient below this value will be highlighted")
+  EDIT     ed_rel_H       340   @   35  ., 						 ///
+           default(0.3)												///
+		   option(h)	  				                         ///
+		   numonly
+		   
+  TEXT     tx_rel_h       10    +30    380     .,  				///
+		   label("Loevinger's Hj coefficient below this value will be highlighted")    
+  EDIT     ed_rel_h       340   @   35  ., 						 ///
+		   default(0.3)												///
+		   option(hjmin)	 										///
+		   numonly
+		   
+END
+
+
+DIALOG rep, tabtitle("Reproducibility")
+BEGIN
+
+  TEXT     tx_rep       10    10    250     .,                 ///
+           label("Items used for computing scores at time 2")
+  VARLIST  vl_rep       @     +20   @       .,                 ///
+		   option(repet)										  ///
+           label("Items time 2")
+		   
+  TEXT     tx_reps       300    10    250     .,                 ///
+           label("Use scores from dataset")
+  VARLIST  vl_reps       @     +20   @       .,                 ///
+		   option(scores2)										  ///
+           label("Scores time 2")	   
+	
+  CHECKBOX ck_kappa     10    +35    100     .,                 ///
+           label("Kappa statistic")                     ///
+		   option(kappa)                                   ///
+		   onclickon(script rep_ck_kappa_on)                  ///
+		   onclickoff(script rep_ck_kappa_off)
+		   
+  CHECKBOX ck_ickappa     @    +25   280     .,                 ///
+           label("Confidence interval for kappa")        ///
+		   onclickon(script rep_ck_ickappa_on)                  ///
+		   onclickoff(script rep_ck_ickappa_off)
+
+  TEXT     tx_boot @  +25   250   .,  ///
+           label("Number of bootstrap replications to estimate")
+            
+  TEXT     tx_boot2 @  +15   250   .,  ///
+           label("confidence interval (if items are polytomous):") 
+		   
+  SPINNER  sp_ickappa +250  -7   55   .,  ///
+           label("Number of bootstrap replications") min(1) max(1000) ///
+           default(20) ///
+		   option(ickappa)
+		   
+ 
+END
+
+
+DIALOG kgv, tabtitle("Known-groups validity")
+BEGIN
+  TEXT     tx_kgv       10    10    250     .,                 ///
+           label("Select qualitative variables for known-groups validity")
+  VARLIST  vl_kgv       @     +28   250       .,                 ///
+		   option(kgv)										  ///
+           label("kgv")
+
+  CHECKBOX ck_kgv       @	  +25	 150    .,                     ///
+		   label("Display boxplots")                                       ///
+		   option(kgvboxplots)                                    ///
+		   default(0) ///
+		   onclickon(kgv.ck_kgv_group.enable) ///
+		   onclickoff(kgv.ck_kgv_group.disable)
+		   
+   CHECKBOX ck_kgv_group       @	  +25	 190    .,                     ///
+		   label("Group boxplots in one graph")                                   ///
+		   option(kgvgroupboxplots)                                    ///
+		   default(0)
+		   
+END
+
+
+DIALOG conc, tabtitle("Concurrent validity")
+BEGIN
+  TEXT     tx_conc       10    10    186     .,                 ///
+           label("Select scores from other scales")
+  VARLIST  vl_conc       @     +28   250       .,                 ///
+		   option(conc)										  ///
+           label("conc")
+	
+  TEXT     tx_t_conc       @   +30   410     .,  				///
+		   label("Correlations above this value will be highlighted (absolute value)")   
+	
+  EDIT     ed_t_conc       360   @   35  ., 						 ///
+           default(0.4)												///
+		   option(tconc)	  				                         ///
+		   numonly
+		   
+END
+
+
+PROGRAM az
+BEGIN
+
+	main.vl_var.withvalue main.ed_v.append "@ "
+	main.ed_n.withvalue main.ed_p.append "@ "
+	
+	main.vl_var.setvalue ""
+	main.ed_n.setvalue ""
+		
+END
+
+
+SCRIPT rep_ck_kappa_on
+BEGIN
+   rep.ck_ickappa.enable
+END
+
+SCRIPT rep_ck_kappa_off
+BEGIN
+   rep.ck_ickappa.disable
+   rep.sp_ickappa.disable
+   rep.ck_ickappa.setoff
+END
+
+SCRIPT rep_ck_ickappa_on
+BEGIN
+   rep.sp_ickappa.enable
+   rep.tx_boot.enable
+   rep.tx_boot2.enable
+END
+
+SCRIPT rep_ck_ickappa_off
+BEGIN
+   rep.sp_ickappa.disable
+   rep.sp_ickappa.setdefault 0
+   rep.tx_boot.disable
+   rep.tx_boot2.disable
+END
+
+SCRIPT cfa_ck_cfa_on
+BEGIN
+	cfa.gb_cfa.enable
+	cfa.rb_ml.enable
+	cfa.rb_mlsb.enable
+	cfa.rb_mlmv.enable
+	cfa.rb_adf.enable
+	cfa.ck_stand.enable
+	cfa.gb_covs.enable
+	cfa.ck_cfacovs.enable
+	cfa.ed_cfacovs.enable
+	cfa.ck_cfarmsea.enable
+	cfa.ck_cfacfi.enable
+	cfa.ck_cfaor.enable
+	cfa.ck_covdim.enable
+	cfa.ed_cfarmsea.enable
+	cfa.ed_cfacfi.enable
+END
+
+SCRIPT cfa_ck_cfa_off
+BEGIN
+	cfa.gb_cfa.disable
+	cfa.rb_ml.disable
+	cfa.rb_mlsb.disable
+	cfa.rb_mlmv.disable
+	cfa.rb_adf.disable
+	cfa.ck_stand.disable
+	cfa.gb_covs.disable
+	cfa.ck_cfacovs.disable
+	cfa.ed_cfacovs.disable
+	cfa.ck_cfarmsea.disable
+	cfa.ck_cfacfi.disable
+	cfa.ck_cfaor.disable
+	cfa.ck_covdim.disable
+	cfa.ed_cfarmsea.disable
+	cfa.ed_cfacfi.disable
+END
+
+
+SCRIPT cfa_ck_cfac_on
+BEGIN
+	cfa.ck_cfaor.enable
+END
+
+SCRIPT cfa_ck_cfac_off
+BEGIN
+	cfa.ck_cfaor.disable
+END
+
+
+
+
+SCRIPT conv_ck_conv_on
+BEGIN
+	conv.tx_conv1.enable
+	conv.tx_conv2.enable
+	conv.ed_conv.enable
+	conv.ck_conv.enable
+END
+
+SCRIPT conv_ck_conv_off
+BEGIN
+	conv.tx_conv1.disable
+	conv.tx_conv2.disable
+	conv.ed_conv.disable
+	conv.ck_conv.disable
+END
+
+OK ok1,      label("OK")
+CANCEL can1, label("Cancel")
+SUBMIT sub1, label("Submit")
+HELP hlp1,   view("help validscale")
+RESET res1
+COPY copy1
+
+PROGRAM command
+BEGIN
+	put "validscale "
+	require main.ed_v
+	put main.ed_v
+	require main.ed_p
+		
+	beginoptions
+		optionarg main.ed_p
+		optionarg main.ed_s
+		optionarg main.vl_scores
+		optionarg main.ed_modal
+		option main.ck_desc
+		option main.ck_graphs
+		
+		if main.rb_mean{
+		put " compscore("
+		put "mean"
+		put ")"
+		}
+		
+		if main.rb_sum{
+		put " compscore("
+		put "sum"
+		put ")"
+		}
+		
+		if main.rb_stand{
+		put " compscore("
+		put "stand"
+		put ")"
+		}
+		
+		if main.rb_pms{
+		put " impute("
+		put "pms"
+		put ")"
+		}
+		
+		if main.rb_mi{
+		put " impute("
+		put "mi"
+		put ")"
+		}
+		
+		option main.ck_nor
+		
+		option cfa.ck_cfa
+		
+		if cfa.rb_ml & cfa.ck_cfa{
+		put " cfamethod("
+		put "ml"
+		put ")"
+		}
+		
+		if cfa.rb_mlsb & cfa.ck_cfa{
+		put " cfamethod("
+		put "ml"
+		put ")"
+		put " cfasb"
+		}
+		
+		if cfa.rb_mlmv & cfa.ck_cfa{
+		put " cfamethod("
+		put "mlmv"
+		put ")"
+		}
+		
+		if cfa.rb_adf & cfa.ck_cfa{
+		put " cfamethod("
+		put "adf"
+		put ")"
+		}
+		
+		option cfa.ck_stand
+		
+		
+		if cfa.ed_cfacovs {
+			optionarg cfa.ed_cfacovs
+		}
+		
+		if cfa.ck_cfarmsea {
+			optionarg cfa.ed_cfarmsea
+		}
+		
+		if cfa.ck_cfacfi {
+			optionarg cfa.ed_cfacfi
+		}
+		
+		option cfa.ck_cfaor
+		
+		
+		
+		option conv.ck_conv_div
+		optionarg conv.ed_conv
+		option conv.ck_conv
+		optionarg rel.ed_rel_a
+		optionarg rel.ed_rel_d
+		optionarg rel.ed_rel_H
+		optionarg rel.ed_rel_h
+		optionarg rep.vl_rep
+		optionarg rep.vl_reps
+		option rep.ck_kappa
+		optionarg rep.sp_ickappa
+	    optionarg kgv.vl_kgv
+		option kgv.ck_kgv
+		option kgv.ck_kgv_group
+		optionarg conc.vl_conc
+		optionarg conc.ed_t_conc
+		option cfa.ck_covdim
+		
+	endoptions 
+	
+END

@@ -1,0 +1,77 @@
+{smcl}
+{* 4mar2005}{...}
+{hline}
+help for {hi:variog}
+{hline}
+
+{title:Semi-variogram for regularly spaced data in one dimension}
+
+{p 8 17 2}
+{cmd:variog}
+{it:yvar} 
+[{cmd:if} {it:exp}] 
+[{cmd:in} {it:range}] 
+[, 
+{cmdab:g:enerate(}{it:newvar}{cmd:)}
+{cmdab:l:ags(}{it:#})} 
+{cmd:list} 
+{it:graph_options}
+]
+   
+   
+{title:Description} 
+
+{p 4 4 2} 
+{cmd:variog} calculates, graphs, and optionally lists the first {cmd:lags}
+values of the semi-variogram for a regularly spaced series of observations in
+one spatial or temporal dimension. Data are assumed to be in the correct sort
+order, i.e. to be in spatial or temporal sequence.  
+
+{p 4 4 2} 
+The semi-variogram is a plot of the semi-variance
+
+       1     n - h              2
+    {hline 8}  SUM  (y  - y     )   = gamma(h)
+    2(n - h) i = 1   i    i + h
+
+{p 4 4 2}against the lag h = 1, ... , {cmd:lags}. In words, it shows 
+half the mean difference squared at various lags. 
+Note that the units of the semi-variogram are the units of the response 
+variable, squared. 
+
+{title:Options} 
+
+{p 4 8 2}{cmd:generate(}{it:newvar}{cmd:)} saves the semi-variances in 
+{it:newvar}.
+
+{p 4 8 2} 
+{cmd:lags()} specifies the number of lags.  If not specified, the first
+    int(_N/2) semi-variances are graphed: that is, the number of 
+    lags is about half the number of observations. 
+
+{p 4 8 2}{cmd:list} lists out the semi-variances and the number of 
+pairs of measurements on which they are based. This may help in identifying
+parts of the variogram based on rather few pairs of data. 
+
+{p 4 8 2} 
+{it:graph_options} refers to any of the options of {help line}.
+
+
+{title:Examples} 
+
+{p 4 8 2}{cmd:. variog height}{p_end}
+{p 4 8 2}{cmd:. variog height, list}{p_end}
+{p 4 8 2}{cmd:. variog height, recast(scatter)}
+
+
+{title:Author} 
+
+{p 4 4 2}Nicholas J. Cox, University of Durham, U.K.{break} 
+         n.j.cox@durham.ac.uk
+
+
+{title:Also see} 
+
+{p 4 13 2}
+On-line: help for {help variog2} 
+

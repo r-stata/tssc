@@ -1,0 +1,88 @@
+{smcl}
+{* 29jan2007}{...}
+{hline}
+help for {hi:spec_stand}{right:(Rosa Gini)}
+{hline}
+
+{title:Create dataset of stratum-specific, unadjusted and standardized rates}
+
+{p 8 16 2}{cmd:spec_stand} {it:num} {it:denom} {it:stratavars} [{cmd:if}
+{it:exp}] [{cmd:in} {it:range}]{cmd:,} {cmd:by}{cmd:(}{it:groupvars}{cmd:)}
+{cmdab:us:ing:(}{it:filename}{cmd:)}
+{cmdab:namepop:std:(}{it:varname}{cmd:)}
+[ {cmdab:stand:only} {cmdab:spec:only} {cmdab:unadj:usted} 
+{cmdab:sa:ving}{cmd:(}{it:filename}[{cmd:,replace}]{cmd:)} {cmdab::no}{cmdab:res:tore} 
+{cmdab:f:ormat:(%}{it:fmt}{cmd:)}
+{cmdab:l:evel:(}{it:#}{cmd:)}  
+{cmdab:con:stant:(}{it:#}{cmd:)}  
+ {cmdab:rate:name}{cmd:(}{it:newvarname}{cmd:)}
+ {cmdab:lb:name}{cmd:(}{it:newvarname}{cmd:)}
+ {cmdab:ub:name}{cmd:(}{it:newvarname}{cmd:)}
+ {cmdab:den:tot}{cmd:(}{it:newvarname}{cmd:)}
+ {cmdab:num:tot}{cmd:(}{it:newvarname}{cmd:)}]
+
+{title:Description}
+
+{p 4 4 2}
+{cmd:spec_stand} creates an output dataset of rates (resultsset) for {it:num} in the population defined by {it:pop}, across the strata defined by {it:stratavars}, in order to obtain a comparison across groups identified by {it:groupvars}. Both stratum-specific and standardized rates are computed, the last being defined as a weighted averages of the stratum-specific rates. The standard population providing weights for every single stratum must be specified in a separate file. As an option, unadjusted rates can be computed as well. Standardized rates are computed via the {cmd:dstdize} command, while stratum-specific and unadjusted rates are provided by the {cmd:cii} command, with the {it:exact} option for confidence intervals.  
+
+{p 4 4 2}
+The output data set created by {cmd:spec_stand} may be  saved to a disk file or written to the memory (overwriting any pre-existing data set).
+
+{p 4 4 2}
+{it:num} is the variable name for the study population's number of
+cases.  It must contain integers and each subpopulation
+identified by {it:groupvars} must have the same values or missing.
+
+{p 4 4 2}
+{it:den} identifies the number of subjects represented by each
+observation in the study population.
+
+{p 4 4 2}
+{it:stratavars} define the strata, e.g. age bands and/or sex.
+
+
+{title:Options}
+
+{p 4 8 2}{cmd:by}{cmd:(}{it:groupvars}{cmd:)} is not optional for the
+{cmd:spec_stand} command; it specifies the variables identifying the study
+populations, across wish rate comparisons are to be made.  If you do not have a variable for this
+option, you can generate one by typing "{hi:gen new=1}" and then specifying
+{hi:by(new)}.
+
+{p 4 8 2}{cmd:using}{cmd:(}{it:filename}{cmd:)} must be used to specify the
+standard population for the {cmd:spec_stand} command.  The file {it:filename} must be a Stata dataset, containing the variables {it:stratavars} and the variable specified in the {it:namepopstd} option. The variables {it:stratavars} might not uniquely identify an observation in the dataset: if this is the case, the dataset will be contracted.
+
+{p 4 8 2}{cmd:namepopstd}{cmd:(}{it:varname}{cmd:)} is the variable containing the number of subjects in each stratum and contained in the dataset specified by the {it:using} option. The variables {it:stratavars} might not uniquely identify an observation in the dataset: if this is the case, the dataset will be contracted and the variable identified by the {it:namepopstd} option will be summed up across strata. Keep in mind that only records with non-missing {it:stratavars} will contribute to form the standard population.
+
+{p 4 8 2}{cmd:standonly} or {cmd:speconly} specify that only stardarized, or, respectively, only stratum-specific rates are to be computed and included in the final dataset.
+
+{p 4 8 2} {cmd:unadjusted}, only available if the {it:speconly} option is {it:not} specified, provides also unadjusted rates.
+
+{p 4 8 2}{cmd:saving(}{it:filename}[{cmd:,replace}]{cmd:)} saves the output data set to a disk file. If {cmd:replace} is specified, and a file of that name already exists, then the old file is overwritten.
+
+{p 4 8 2}{cmd:norestore} specifies that the output data set will be written to the memory, overwriting any pre-existing data set.  Otherwise, if {cmd:norestore} is not specified, then the pre-existing data set is restored in the memory after the execution of {cmd:spec_stand}. Either this option or the {cmd:saving()} option should be specified.
+
+{p 4 8 2}{cmd:format(%}{it:fmt}{cmd:)} specifies the format in which to store the computed rates and confidence intervals.  The default is {cmd:%5.1f}.
+
+{p 4 8 2}{cmd:level}{cmd:(}{it:#}{cmd:)} specifies the confidence level, in percent, for the confidence interval of the rates; see help {help level}.
+
+{p 4 8 2} {cmd:constant}{cmd:(}{it:#}{cmd:)}, a multiplicative constant for wich all rates are multiplied. Default is 100.
+
+{p 4 8 2} {cmd:ratename}{cmd:(}{it:newvarname}{cmd:)}, {cmd:lbname}{cmd:(}{it:newvarname}{cmd:)}, {cmd:ubname}{cmd:(}{it:newvarname}{cmd:)} specify names for variables containing rates and lower and upper limits for confidence intervals. Defaults are {cmd:_rate}, {cmd:_lb} and {cmd:_ub}.
+
+{p 4 8 2} {cmd:dentot}{cmd:(}{it:newvarname}{cmd:)} and {cmd:numtot}{cmd:(}{it:newvarname}{cmd:)} specify names for variables containing total denominators and numerators in the same group. 
+Defaults are {cmd:_}{it:den}{cmd:_tot} and {cmd:_}{it:num}{cmd:_tot}.
+
+{title:Examples}
+
+{p 4 8 2}{cmd:. spec_stand num den age_band sex,by(state year) using(standard.dta) namepopstd(population) const(1000)  norest }
+
+{p 4 8 6}{cmd:. use standard_pop.dta,clear}{break}
+{cmd:. egen age_band=cut(age),at(65,75,85,150)}{break}
+{cmd:. tempfile standard}{break}
+{cmd:. save `standard'}{break}
+{cmd:. use indicators.dta,clear}{break}
+{cmd:. spec_stand num den age_band ,by(state year) using(`standard') namepopstd(population) standonly  saving(computed.dta,replace)  rate(rate) low(l) up(u) dentot(den_tot) numtot(num_tot)}
+
+

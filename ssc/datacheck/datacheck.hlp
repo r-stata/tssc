@@ -1,0 +1,109 @@
+{smcl}
+{* 17mar2005/4apr2006}{...}
+{hline}
+help for {hi:datacheck}
+{hline}
+
+{title:Assert with report}
+
+{p 8 17 2}
+{cmdab:datacheck}
+{it:true_or_false_condition} 
+[{cmd:if} {it:condition}]
+[{cmd:in} {it:range}]
+[
+{cmd:,}
+{cmd:by(}{it:byvarlist}{cmd:)}
+{cmdab:m:essage(}{it:string}{cmd:)}
+{cmdab:v:arshow(}{it:varlist}{cmd:)}
+{cmdab:p:revious}
+{cmdab:n:ext}
+{cmdab:f:lag}
+{cmdab:nol:ist}
+{it:list_options}
+]
+
+
+{title:Description}
+
+{p 4 4 2}
+{cmd:datacheck} is a utility that checks for each observation that 
+a specified condition is true and reports on any observations
+for which it is false. 
+
+
+{title:Options}
+
+{p 4 8 2}
+{cmd:by(}{it:byvarlist}{cmd:)} makes the assertion {cmd:by}
+{it:byvarlist}{cmd::}. This allows, for example, conditions referring to _n and
+_N defined within distinct groups of {it:byvarlist}.  The dataset must
+be previously sorted by {it:byvarlist}. If this option is specified,
+{cmd:list} output is by default separated by {it:byvarlist}. 
+
+{p 4 8 2}
+{cmd:message(}{it:string}{cmd:)} displays the given message string 
+if any contradictions are found. 
+
+{p 4 8 2}
+{cmd:varshow(}{it:varlist}{cmd:)} restricts {cmd:list} output to the
+variables in {it:varlist}. If this option is not specified, all
+variables in the dataset are listed. 
+
+{p 4 8 2}
+{cmd:previous} and {cmd:next} list the previous and/or following
+observation as well as any observation contradicting the assertion. This
+can be especially useful when data are in time order. 
+
+{p 4 8 2}
+{cmd:flag} leaves behind a binary flag variable in the dataset named
+{cmd:_contra} taking the value 1 for observations failing the
+check and 0 otherwise.  This flag variable will automatically be
+dropped the next time {cmd:datacheck} is run, and a new variable 
+will be generated the next time {cmd:datacheck} is run 
+with this option. 
+
+{p 4 8 2}
+{cmd:nolist} suppresses output of {help list}. Output is restricted 
+to a brief report on contradictions. 
+
+{p 4 8 2} 
+{it:list_options} are options of {help list}. 
+
+
+{title:Remarks}
+
+{p 4 4 2}
+Unlike {cmd:assert}, a contradiction of the condition will not produce an
+error, but only output which must be displayed for the contradiction to
+be detected.  Thus always use this command {cmd:noisily} if using {cmd:run} to
+run do files. 
+
+
+{title:Examples}
+
+{p 4 8 2}{cmd:. datacheck age < ., varshow(id age) message(Missing age)}
+
+{p 4 8 2}{cmd:. datacheck drug == 3 if arm == 1, varshow(id drug arm) message(Wrong drugs)}
+
+{p 4 8 2}{cmd:. datacheck time > time[_n-1], varshow(id time) message(Dates do not follow) prev}
+
+{p 4 8 2}{cmd:. datacheck time==0 if _n == 1, by(id) varshow(id time) message(Patient's first record is not at time 0)}
+
+
+{title:Author}
+
+{p 4 4 2}
+Krishnan Bhaskaran{break}
+London School of Hygiene and Tropical Medicine{break}
+Keppel Street{break}
+London{break}
+WC1E 7HT{break} 
+{browse "mailto:krishnan.bhaskaran@lshtm.ac.uk":krishnan.bhaskaran@lshtm.ac.uk}
+
+
+{title:Also see}
+
+{p 4 13 2}Manual:  {hi:[D] assert}
+
+{p 4 13 2}Online:  help for {help assert}

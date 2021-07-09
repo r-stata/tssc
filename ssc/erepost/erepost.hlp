@@ -1,0 +1,126 @@
+{smcl}
+{* 15jun2015}{...}
+{cmd:help erepost}
+{hline}
+
+{title:Title}
+
+{p 4 4 2}{hi:erepost} {hline 2} Repost the estimation results
+
+
+{title:Syntax}
+
+{p 8 16 2}{cmd:erepost} [{cmd:b =} {it:b}] [{cmd:V =} {it:V}] [{cmd:,}
+ {cmd:cmd(}{it:string}{cmd:)} 
+ {cmdab:ren:ame}
+ [{ul:{cmd:no}}]{cmdab:e:sample:}[{cmd:(}{it:varname}{cmd:)}]
+ {it:ereturn_post_opts}
+ ]
+
+{p 4 4 2}
+where {it:b} is a 1 x p coefficient vector
+(matrix) and {it:V} is a p x p covariance matrix.
+
+
+{title:Description}
+
+{p 4 4 2}
+{cmd:erepost} changes the {cmd:b} or {cmd:V} matrix  of the current estimation results 
+or changes the declared estimation sample. {cmd:erepost} is similar to
+{helpb ereturn repost}. However, {cmd:erepost} is allowed
+after estimation commands that do not post their results 
+using {cmd:ereturn post} (e.g. {cmd:logit}) and {cmd:erepost} 
+can be used outside of {cmd:eclass} programs (see help {helpb program}).
+
+{p 4 4 2}
+Technical note: After applying {cmd:erepost} the original command (or 
+{cmd:estimates replay}) may not be able to replay the output.
+
+
+{title:Options}
+
+{p 4 8 2}
+{cmd:cmd(}{it:string}{cmd:)} sets the {cmd:e(cmd)} macro.
+
+{p 4 8 2}
+{cmd:rename} causes the names from the coefficient vector to be used
+as the labels for both the coefficient vector and the covariance matrix
+in case of name conflicts.
+
+{p 4 8 2}
+{cmd:esample(}{it:varname}{cmd:)} gives the name of the 0/1 variable 
+indicating the observations involved in the estimation. The variable is 
+removed from the data but is available for use as {hi:e(sample)}. Specify {cmd:noesample}
+if you want to remove {cmd:e(sample)} from the estimation results.
+
+{p 4 8 2}
+{it:ereturn_post_opts} are any other options allowed with {cmd:ereturn post}
+(see help {helpb ereturn}).
+
+
+{title:Examples}
+
+{p 4 4 2}Say, you are estimating a regression model that contains all interactions between the
+regressors and a binary variable and you want to display the main effects and the 
+interaction effects in two columns side by side. One approach is to modify the names 
+in {cmd:e(b)} and {cmd:e(V)} so 
+that there is a "main equation" and an "interaction equation" and then tabulate 
+the model using {cmd:estout} or {cmd:esttab} with the {cmd:unstack} option. Example
+(you will need the {cmd:estout} package to run this example; type 
+{net "describe http://fmwww.bc.edu/repec/bocode/e/estout.pkg":ssc describe estout}):
+
+        {com}. sysuse auto
+        {txt}(1978 Automobile Data)
+        
+        {com}. generate foreign_mpg = foreign*mpg
+        {txt}
+        {com}. generate foreign_weight = foreign*weight
+        {txt}
+        {com}. quietly regress price foreign_mpg foreign_weight foreign mpg weight
+        {txt}
+        {com}. matrix b = e(b)
+        {txt}
+        {com}. matrix coleq b = foreign foreign foreign main main main
+        {txt}
+        {com}. matrix colname b = mpg weight _cons mpg weight _cons
+        {txt}
+        {com}. erepost b=b, rename
+        {txt}
+        {com}. esttab , unstack order(main: foreign:)
+        {res}
+        {txt}{hline 44}
+        {txt}                      (1)                   
+        {txt}                    price                   
+        {txt}                     main         foreign   
+        {txt}{hline 44}
+        {txt}mpg         {res}        237.7          -257.5   {txt}
+                    {res} {ralign 12:{txt:(}1.90{txt:)}}    {ralign 12:{txt:(}-1.66{txt:)}}   {txt}
+        
+        {txt}weight      {res}        4.415***        0.741   {txt}
+                    {res} {ralign 12:{txt:(}5.18{txt:)}}    {ralign 12:{txt:(}0.45{txt:)}}   {txt}
+        
+        {txt}_cons       {res}     -13285.4*         8219.6   {txt}
+                    {res} {ralign 12:{txt:(}-2.58{txt:)}}    {ralign 12:{txt:(}1.13{txt:)}}   {txt}
+        {txt}{hline 44}
+        {txt}N           {res}           74                   {txt}
+        {txt}{hline 44}
+        {txt}t statistics in parentheses
+        {txt}* p<0.05, ** p<0.01, *** p<0.001
+
+
+{title:Author}
+
+{p 4 4 2}Ben Jann, University of Bern, jann@soz.unibe.ch
+
+{p 4 4 2}Thanks for citing this software as follows:
+
+{p 8 8 2}Jann, B. (2007). erepost: Stata module to repost the estimation results. Available from 
+    {browse "http://ideas.repec.org/c/boc/bocode/s456850.html"}.
+
+
+{title:Also see}
+
+{psee}
+Online:  {helpb ereturn}, {help estcom},
+{helpb estimates}
+

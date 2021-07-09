@@ -1,0 +1,67 @@
+{smcl}
+{* 05mar2002}{...}
+{hline}
+help for {hi:varlab}{right:[P.Joly]}
+{hline}
+
+{title:Save and load variable labels}
+
+{p 8 14}
+{cmd:varlab save}
+[{it:varlist}]
+{cmd:using} {it:filename}
+[{cmd:,}
+   {cmd:replace}
+]
+
+{p 8 14}
+{cmd:varlab load}
+[{it:varlist}]
+{cmd:using} {it:filename}
+[{cmd:,}
+   {cmd:replace}
+]
+
+
+{title:Description}
+
+{p}
+{cmd:varlab save} saves the variable labels of variables in {it:varlist} using {it:filename}.
+
+{p}
+{cmd:varlab load} loads the variable labels of variables in {it:varlist} using {it:filename}.
+Extraneous variable labels are ignored.
+
+{p}
+{it:filename} is saved or retrieved from the current directory unless
+the full path and filename is specified in {it:filename} (see help {help cd}).
+If {it:filename} is specified without an extension, {cmd:.lbl} is
+assumed.
+If no varlist is specified, labels are saved or retrieved for all
+variables in the data, if defined.
+
+
+{title:Options}
+
+{p 0 4}
+{cmd:replace} carries a different meaning depending on whether
+it is used in conjucntion with {cmd:varlab save} or {cmd:varlab load}.
+With {cmd:varlab save}, {cmd:replace} specifies that {it:filename} be
+overwritten if it exists.
+When used with {cmd:varlab load}, {cmd:replace} means that labels of
+variables in {it:varlist} be overwritten if they exists.
+By default, existing labels are held inviolate.
+(In this context, its meaning is consistent with that of option
+{hi:replace} in {cmd:merge} (see help {help merge}).)
+
+
+{title:Author}
+
+Patrick Joly, Industry Canada
+pat.joly@utoronto.ca
+
+
+{title:Also see}
+
+{p 0 19}
+On-line:  help for {help label}{p_end}

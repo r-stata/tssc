@@ -1,0 +1,91 @@
+{smcl}
+{* 1sept2003/17oct2007}{...}
+{hline}
+help for {hi:vreverse}
+{hline}
+
+{title:Reverse existing categorical variable}
+
+{p 8 15 2}
+{cmd:vreverse}
+{it:varname} 
+[{cmd:if} {it:exp}]
+[{cmd:in} {it:range}]
+, {cmdab:gen:erate(}{it:newvar}{cmd:)}
+[{cmdab:val:uelabelname(}{it:lblname}{cmd:)} 
+{cmdab:remove:numlabel} 
+{cmdab:m:ask(}{it:str}{cmd:)}]   
+
+
+{title:Description}
+
+{p 4 4 2}
+{cmd:vreverse} generates {it:newvar} as a reversed copy of an existing
+categorical variable {it:varname} which has integer values and (usually) 
+value labels assigned.  Suppose that in the observations specified 
+{it:varname} varies between minimum {it:min} and maximum {it:max}. Then 
+
+{p 8 8 2}{it:newvar} = {it:min} + {it:max} - {it:varname} 
+
+{p 4 4 2}
+and any value labels are mapped accordingly. If no value labels have been 
+assigned, then the values of {it:varname} will become the value labels of 
+{it:newvar}. {it:newvar} will have the same storage
+type and the same display format as {it:varname}.  If {it:varname} possesses a
+variable label or characteristics, these will also be copied. It is the user's
+responsibility to consider whether the copied variable label and
+characteristics also apply to {it:newvar}. 
+
+
+{title:Options}
+
+{p 4 8 2}
+{cmd:generate()} is a required option specifying a new variable name.
+
+{p 4 8 2}
+{cmd:valuelabelname()} specifies a name for the new value labels. By 
+default {it:newvar} is used as the name for the new value labels; any existing 
+value labels under that name for the values of {it:newvar} will be overwritten. 
+ 
+{p 4 8 2}
+{cmd:removenumlabel} specifies that a numeric prefix previously assigned 
+using {help numlabel} to the value labels attached to {it:varname} should be 
+removed from the value labels attached to {it:newvar}. The value labels 
+attached to {it:varname} will not be modified, unless they are the value 
+labels named by {cmd:valuelabelname()}. 
+
+{p 8 8 2}Concretely, suppose you defined value labels for the values 1 to 5 of
+{cmd:rep78} and then used {cmd:numlabel} to add numeric prefixes to those
+labels. By default, without the {cmd:removenumlabel} option, {cmd:vreverse}
+produces value labels attached to {it:newvar} that will start with "5. " "4. "
+"3. " "2. " and "1. ". Specifying the {cmd:removenumlabel} option will strip
+those prefixes. Note that a subsequent {cmd:numlabel} would add prefixes "1. "
+"2. " "3. " "4. " and "5. ". See also {cmd:mask()} below. 
+ 
+{p 4 8 2}{cmd:mask()} is for use with {cmd:removelabel}. If, and only if, 
+some {cmd:mask()} was specified when previously using {cmd:numlabel}, 
+then specify the same {cmd:mask()} now. 
+
+
+{title:Examples}
+
+{p 4 8 2}{cmd:. vreverse foreign, gen(Foreign)}
+
+
+{title:Author}
+
+{p 4 4 2}Nicholas J. Cox, Durham University, U.K.{break} 
+n.j.cox@durham.ac.uk
+
+
+{title:Acknowledgements}
+
+{p 4 4 2}Renzo Comolli pointed out an issue that can arise if {cmd:numlabel} 
+had previously been used. 
+
+ 
+{title:Also see}
+
+{p 4 13 2}
+Online: help for {help label}, {help numlabel} 
+{p_end}

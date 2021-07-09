@@ -1,0 +1,69 @@
+{smcl}
+{* 27apr2004}{...}
+{hline}
+help for {hi:circylowess}
+{hline}
+
+{title:Smoothing including lowess for circular data, y variable circular} 
+
+{p 8 17 2} 
+{cmd:circylowess}
+{it:yvar xvar}
+[{cmd:if} {it:exp}] 
+[{cmd:in} {it:range}]
+[ 
+{cmd:,}
+{cmdab:g:enerate(}{it:newvar}{cmd:)}
+{cmd:lowess(}{it:lowess_options}{cmd:)}
+{cmd:scatter(}{it:scatter_options}{cmd:)}
+{cmd:plot(}{it:plot}{cmd:)}
+] 
+
+
+{title:Description} 
+
+{p 4 4 2} 
+{cmd:circylowess} carries out smoothing (including lowess) of a circular {it:y}
+variable {it:yvar} (specified first in the {it:varlist}) with respect to some
+non-circular {it:x} variable {it:xvar}. {it:yvar} should take on values between
+0 and 360 degrees. The smoothed result is
+
+{p 8 8 2}arctan(smoothed sine of {it:yvar} / smoothed cosine of {it:yvar})
+
+{p 4 4 2}and the kind and degree of smoothing are specified by invoking options
+of {cmd:lowess}. {cmd:circscatter} is used to show the results graphically.
+
+
+{title:Options} 
+
+{p 4 8 2}{cmd:generate()} specifies a new variable to be generated containing
+the results of smoothing.
+
+{p 4 8 2}{cmd:lowess()} specifies options allowed with 
+{help lowess}. The following are relevant: {cmd:mean}, 
+{cmd:noweight}, {cmd:bwidth()}, {cmd:logit} and {cmd:adjust}.  
+
+{p 4 8 2}{cmd:scatter()} specifies options allowed with 
+{help circscatter}.
+
+{p 4 8 2}
+{cmd:plot(}{it:plot}{cmd:)} provides a way to add other plots to the generated
+graph; see help {help plot_option}.
+ 
+
+{title:Examples} 
+
+{p 4 8 2}{cmd:. circylowess wallasp length, gen(lowess) scatter(yla(,ang(h)))} 
+
+
+{title:Author} 
+
+{p 4 4 2}Nicholas J. Cox, University of Durham, U.K.{break} 
+         n.j.cox@durham.ac.uk
+
+
+{title:Also see} 
+
+{p 4 13 2} 
+On-line: help for {help lowess}, {help circscatter}, {help circxlowess} 
+

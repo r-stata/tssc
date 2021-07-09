@@ -1,0 +1,36 @@
+
+
+VERSION 11
+INCLUDE _std_medium
+POSITION . . 420 _dlght
+
+DIALOG main, title("SUBSIM: Package Manager")
+BEGIN
+
+        BUTTON   bt_install      90  20  240  30, ///
+                label("Install/Update SUBSIM Package")    onpush(program install_sub)
+				
+        BUTTON   bt_check @        _xls  @         @,  ///
+                label("Check for Updates") onpush(program check_sub_ver)
+
+        BUTTON   bt_refs      @        _xls  @         @, ///
+                label("Basic SUBSIM References") onpush(view browse "http://www.subsim.org/manuals.htm")
+        BUTTON   bt_www         @        _xls  @         @, label("Go to SUBSIM Website") onpush(view browse "http://www.subsim.org")
+
+END
+
+
+
+		
+PROGRAM check_sub_ver
+BEGIN
+	put "_subsim_vers"
+	stata
+END
+
+		
+PROGRAM install_sub
+BEGIN
+	put "_subsim_inst"
+	stata
+END

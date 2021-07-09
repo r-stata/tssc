@@ -1,0 +1,1050 @@
+/*
+ spregxt
+*! VERSION 1.0 12/07/2016
+*/
+VERSION 11.0
+INCLUDE _std_xlarge
+DEFINE _dlght 475
+INCLUDE header
+HELP hlp1, view("help spregxt")
+RESET res1
+
+SCRIPT PREINIT
+BEGIN
+ program parseMessage
+ script se_createAsGEE
+END
+
+SCRIPT show_xtset
+BEGIN
+ create STRING note
+ note.setvalue `"For a population-averaged model,"'
+ note.append   `" correlation structures other than"'
+ note.append   `" "exchangeable" and "independent""'
+ note.append   `" require that a time variable be specified."'
+ note.withvalue create CHILD xtset, message(`"" " `"@"'"')
+END
+
+SCRIPT svy_is_on
+BEGIN
+ script max_setDefaultNoLog
+END
+SCRIPT svy_is_off
+BEGIN
+ script max_setDefaultLog
+END
+
+DIALOG main, label("spregXT- Spatial Panel Econometric Regression Models: Stata Module Toolkit") ///
+	tabtitle("Main")
+
+BEGIN
+ BUTTON   bu_xtset	_xsetbu	_top	_setbuwd ., ///
+ onpush(script show_xtset)			 ///
+ label("Panel settings...")
+ BUTTON   bu_mi_xtset  _xsetbu	_top	_setbuwd ., ///
+ onpush("view dialog mi_xtset")			 ///
+ label("Panel settings...")
+
+  TEXT  tx_cmd1   _lft    _top  100  ., ///
+	label("Model:")
+  TEXT  tx_cmd2  130      @     100  .,	///
+	label("Run:")
+  TEXT  tx_cmd3  270      @     100  .,	///
+	label("# Cross Section:")
+  COMBOBOX cb_cmd1 _lft  _ss   100   ., ///
+	label("Model")			///
+	contents(cmd1_con )		///
+	value(cmd11_con) option(model)	///
+	onselchangelist(cmd1_sel ) dropdownlist
+  COMBOBOX cb_cmd2    130   @   100  .,	///
+	label("Run")			///
+	contents(cmd2_con )		///
+	value(cmd22_con) option(run)	///
+	onselchangelist(cmd2_sel ) dropdownlist
+ EDIT ed_cmd3   270      @    100 .,	///
+	option("nc")		///
+	label("Cross Section")
+
+ TEXT tx_fn1	_lft	_ls	530 	.,	///
+ label("Spatial Cross Section Weight Matrix File Name (dta)") 
+ FILE fi_fn1   _lft    _ss	530 	.,	///
+ label("Brows...")				///
+ option("wmfile")					///
+ filter("Stata dta File (*.dta)|*.dta|All (*.*)|*.*") ///
+ defext(dta)
+
+ GROUPBOX gb_group1   _lft     _ss       _iwd     _ht9 , 
+  TEXT     tx_yvar     _ilft   +15    _vnwd     .,	/*
+		*/ label("Dependent Variable:")		/*
+		*/
+  TEXT     tx_xvar     _vlx      @      _cwd2     .,	/*
+		*/ label("Independent Variables:")	/*
+		*/
+  VARNAME  vn_yvar     _ilft    _ss       _vnwd   .,	/*
+		*/ label("Dependent Variable")		/*
+		*/
+  VARLIST  vl_xvar     _vlx      @         380      .,	/*
+		*/ label("Independent Variables")	/*
+		*/
+ CHECKBOX ck_nocons   @   _ss      @  ., option("noconstant") /*
+*/ label("No Constant") 
+
+  TEXT     tx_vary2  _ilft   _ss   170      .,	///
+		label("Endogenous Variables (GS2SLS)")
+  TEXT     tx_varz2  200    @     250      .,	///
+		label("Instrumental Variables (GS2SLS):")
+  VARLIST  vl_vary2  _ilft   _ss   170      .,	///
+		label("Endogenous Variables (GS2SLS)")	///
+		option(endogs)
+  VARLIST  vl_varz2  200    @     330      .,	///
+		label("Instrumental Variables (GS2SLS)")	///
+		option(insts)
+
+ TEXT tx_aux     _ilft   _ls   250   .,	///
+	label("Auxiliary Variables")
+ TEXT tx_mhet	280 	@	250 .,	///
+	label("Heteroscedasticity Variables")
+ VARLIST vl_aux  _ilft   _ss  250    ., ///
+	label("Auxiliary Variables") ///
+	option(aux)
+ VARLIST vl_mhet 280	@	250 .,	///
+	label("Heteroscedasticity Variables") ///
+	option(mhet)
+*/	
+  CHECKBOX ck_optdst  _lft    _ls   _iwd    _ht1 , 	///
+	groupbox					///
+	onclickon(script ck_dist_on)			///
+	onclickoff(script ck_dist_off)		///
+	label("Distribution:")
+  RADIO rb_norm	_ilft   _ss     100  ., /*
+	*/ label("Normal")	 /*
+	*/ clickon(program main_gmm_on)	/*
+	*/ first			/*
+	*/ option("dist(norm)")		/*
+*/
+  RADIO rb_exp   120  @	100	., /*
+	*/ label("Exponential") /*
+	*/ clickon(program main_gmm_on)	/*
+	*/ option("dist(exp)")		/*
+*/
+  RADIO rb_weib	220	@	100 .,	/*
+	*/ label("Weibull") /*
+	*/ clickon(program main_gmm_on)	/*
+	*/ last				/*
+	*/ option("dist(weib)")		/*
+*/
+  CHECKBOX ck_mfx  _lft    _ls   _iwd    _ht2 , 	///
+	groupbox					///
+	onclickon(script ck_mfx_on)			///
+	onclickoff(script ck_mfx_off)		///
+label("Spatial Autocorrelation Coef. Type:   " " " " " " Total, Direct, and Indirect Marginal Effects - Elasticities:")
+
+ RADIO rb_sprho	_ilft  _ss  80  ., /*
+	*/ label("Rho")	 /*
+	*/ first			/*
+	*/ option("spar(rho)")		/*
+*/
+DEFINE y @y
+ RADIO rb_splam	100   y  @ .,	/*
+	*/ label("Lambda") /*
+	*/ clickon(program main_gmm_on)	/*
+	*/ last				/*
+	*/ option("spar(lam)")		/*
+*/	
+ RADIO rb_lin	230   y  100  ., /*
+	*/ label("Linear")	 /*
+	*/ first			/*
+	*/ option("mfx(lin)")		/*
+*/
+ RADIO rb_log	300   y  @ .,	/*
+	*/ label("Log-Log") /*
+	*/ last				/*
+	*/ option("mfx(log)")		/*
+*/	
+  CHECKBOX ck_tolog    390   y 120 ., option("tolog") /*
+*/ label("Log Transform Varlist") /*
+*/
+  
+  CHECKBOX ck_mod32 _lft    _xls   _iwd    _ht5 , ///
+	groupbox				 ///
+	onclickon(script ck_mod32_on)		 ///
+	onclickoff(script ck_mod32_off)	 ///
+	label("Standardized Weight Matrix Type:")
+  RADIO    rb_ws1  _ilft     _ss     300    ., 	/*
+	*/ label("Standardized Weight Matrix - (W)") /*
+	*/ first			/*
+	*/ option("stand")		/*
+*/
+  RADIO    rb_ws2  _ilft     _ss     300    ., 	/*
+	*/ label("Inverse Standardized Weight Matrix - (1/W)") /*
+	*/ option("stand inv")		/*
+*/
+  RADIO    rb_ws3  _ilft     _ss     300    ., 	/*
+	*/ label("Inverse Squared Standardized Weight Matrix - (1/W^2)") /*
+	*/ last					/*
+	*/ option("stand inv2")			/*
+*/
+END
+
+DIALOG est1, tabtitle("Tests")
+BEGIN
+ CHECKBOX ck_option1  _lft    _top   _ibwd    _ht30 , 	///
+	groupbox			///
+	onclickon(script ck_mod1_on)		///
+	onclickoff(script ck_mod1_off)		///
+	label("Tests:") 
+ CHECKBOX ck_tests    _ilft  _ss   350  ., option("tests") /*
+*/ label("Display ALL Tests") 
+ CHECKBOX ck_lmspac    _ilft  _ss   350  ., option("lmspac") /*
+*/ label("Spatial Autocorrelation Tests") 
+ CHECKBOX ck_lmauto    _ilft  _ss   350  ., option("lmauto") /*
+*/ label("Serial Autocorrelation Tests") 
+ CHECKBOX ck_lmhet    _ilft  _ss   350  ., option("lmhet") /*
+*/ label("Heteroscedasticity Tests") 
+ CHECKBOX ck_lmnorm    _ilft  _ss   350  ., option("lmnorm") /*
+*/ label("Non Normality Tests") 
+ CHECKBOX ck_lmec    _ilft  _ss   350  ., option("lmec") /*
+*/ label("Error Component Tests") 
+ CHECKBOX ck_lmunit    _ilft  _ss   350  ., option("lmunit") /*
+*/ label("Unit Root Tests") 
+ CHECKBOX ck_reset    _ilft  _ss   350  ., option("reset") /*
+*/ label("REgression Specification Error Tests (RESET)") 
+ CHECKBOX ck_diag _ilft  _ss   350  ., option("diag") /*
+*/ label("Model Selection Diagnostic Criteria") 
+ CHECKBOX ck_lmiden    _ilft  _ss   350  ., option("lmiden") /*
+*/ label("Identification Restrictions LM Tests") 
+ CHECKBOX ck_hausman    _ilft  _ss   350  ., option("hausman") /*
+*/ label("Hausman Fixed-Effects Tests") 
+ CHECKBOX ck_lmform _ilft  _ss 350  ., option("lmform") /*
+*/ label("Linear vs Log-Linear Functional Form Tests")
+ CHECKBOX ck_lmcl _ilft  _ss 350  ., option("lmcl") /*
+*/ label("Multicollinearity Diagnostic Tests") 
+ CHECKBOX ck_dn _ilft  _ss   350  ., option("dn") /*
+*/ label("dn: Use (N) divisor instead of (N-K) for Degrees of Freedom (DF)") 
+ CHECKBOX ck_pmfx _ilft  _ss   350  ., option("pmfx") /*
+*/ label("pmfx: Print Marginal Effects P-Values") 
+
+  CHECKBOX ck_lagw  _lft    _xls   _ibwd    _ht6 , 	///
+	groupbox					///
+	onclickon(script ck_lagw_on)			///
+	onclickoff(script ck_lagw_off)		///
+label("Initial Values:")
+  CHECKBOX ck_inrho   _ilft    _ms    100    ., /*
+	*/ clickon("gaction est1.sp_inrho.enable") /*
+	*/ clickoff("gaction est1.sp_inrho.disable")
+  SPINNER  sp_inrho   _cksep        @    50  .,	/*
+	*/ min(0) max(1) default(0.1)		/*
+	*/ option("inrho")			/*
+	*/ label("inrho")
+  TEXT     tx_inrho   95    @     _sprb  .,	/*
+	*/ label("Rho")
+DEFINE y @y
+  CHECKBOX ck_inlam   140   y    100  ., 	/*
+	*/ clickon("gaction est1.sp_inlam.enable") /*
+	*/ clickoff("gaction est1.sp_inlam.disable")		
+  SPINNER  sp_inlam   _cksep        @    50  .,	/*
+	*/ min(0) max(1) default(0.1)		/*
+	*/ option("inlambda")			/*
+	*/ label("inlambda")
+  TEXT     tx_inlam   215    @     _sprb  .,	/*
+	*/ label("Lambda")
+*/
+  CHECKBOX ck_lag  310     @    100    ., 	/*
+	*/ clickon("gaction est1.sp_lag.enable") /*
+	*/ clickoff("gaction est1.sp_lag.disable")		
+  SPINNER  sp_lag   _cksep        @    50  .,	/*
+	*/ min(1) max(7) default(1)		/*
+	*/ option("lag")			/*
+	*/ label("Lag")
+  TEXT     tx_lag   390    @      _sprb  .,	/*
+	*/ label("Lag")
+*/
+  CHECKBOX ck_ord  _ilft     _ls    100    ., 	/*
+	*/ clickon("gaction est1.sp_ord.enable") /*
+	*/ clickoff("gaction est1.sp_ord.disable")		
+  SPINNER  sp_ord   _cksep        @    50  .,	/*
+	*/ min(1) max(4) default(1)		/*
+	*/ option("order")			/*
+	*/ label("Order")
+  TEXT     tx_ord   95    @      _sprb  .,	/*
+	*/ label("Order")
+DEFINE y @y
+  CHECKBOX ck_gmm   140   y    100  ., 	/*
+	*/ clickon("gaction est1.sp_gmm.enable") /*
+	*/ clickoff("gaction est1.sp_gmm.disable")		
+  SPINNER  sp_gmm   _cksep        @    50  .,	/*
+	*/ min(1) max(3) default(1)		/*
+	*/ option("gmm")			/*
+	*/ label("GMM")
+  TEXT     tx_wlag   215    @      _sprb  .,	/*
+	*/ label("GMM")
+  CHECKBOX ck_nw   310   @    100     ., 	/*
+	*/ clickon("gaction est1.sp_nw.enable")	/*
+	*/ clickoff("gaction est1.sp_nw.disable")		
+  SPINNER  sp_nw   _cksep        @    50  .,	/*
+	*/ min(1) max(4) default(1)		/*
+	*/ option("nwmat")			/*
+	*/ label("nwmat")
+  TEXT     tx_nw   390    @       _sprb  .,	/*
+	*/ label("NWmat")
+*/
+END
+
+DIALOG est2, tabtitle("Option1")
+BEGIN
+ CHECKBOX ck_model21  5    _top   _ibwd    _ht1 , 	///
+	groupbox					///
+	onclickon(script ck_mod21_on)			///
+	onclickoff(script ck_mod21_off)		///
+	label("Effects Type: model(gs2sls, gs2slsar) run(xtregar)")
+  RADIO rb_re       _ilft   _ss   170     .,		///
+	label("Random-Effects (RE)")		///
+	onclickon(script re_opts)			///
+	first						///
+	option(re)
+  RADIO rb_be       _ilft3_2    @         @       .,	///
+	label("Between-Effects (BE)")			///
+	onclickon(script be_opts)			///
+	option(be)
+  RADIO rb_fe       _ilft3_3    @         @       .,	///
+	label("Fixed-Effects (FE)")			///
+	onclickon(script fe_opts)			///
+	last						///
+	option(fe)
+
+ CHECKBOX ck_model22  5    _ls   _ibwd    _ht6 , 	///
+	groupbox					///
+	onclickon(script ck_mod22_on)			///
+	onclickoff(script ck_mod22_off)		///
+	label("Panels: Error Structure Across Panels - run(xtgls, xtpcse, xtregar):")
+  RADIO rb_piid    _ilft     _ss   _ibwd     .,	/*
+*/ label("iid: Homoscedastic Error with No Cross-Sections Correlation") /*
+	*/ first					/*
+	*/ option("panels(iid)")			/*
+	*/
+  RADIO rb_phet @         _ss       @         .,	/*
+*/ label("het: Heteroscedastic Error with No Cross-Sections Correlation") /*
+	*/ option("panels(het)")		/*
+	*/
+  RADIO rb_pcorr   @         _ss       @         .,	/*
+*/ label("cor: Heteroskedastic Error with Cross-Sections Correlation") /*
+	*/ last						/*
+	*/ option("panels(corr)")
+
+ CHECKBOX ck_model23  5    _xls   _ibwd    _ht8 , 	///
+	groupbox					///
+	onclickon(script ck_mod23_on)			///
+	onclickoff(script ck_mod23_off)		///
+	label("corr: Autocorrelation within Panels - run(xtgls, xtpcse, xtregar):")
+  RADIO    rb_cind    _ilft   _ss    _iwd  .,		/*
+*/ label("Independent: No Autocorrelation within Panels") /*
+	*/ first					/*
+	*/ option("corr(independent)")			/*
+	*/
+  RADIO    rb_car1    @         _ss       @   .,		/*
+	*/ label("ar1: Common AR(1) Autocorrelation within Panels") /*
+	*/ option("corr(ar1)")
+  RADIO    rb_cpsar1  @         _ss       @   .,		/*
+*/ label("psar1: AR(1) Autocorrelation within Panels, and in each Panel") /*
+	*/ option("corr(psar1)")
+  RADIO    rb_ccorr  @         _ss       @   .,		/*
+*/ label("corr: Autocorrelation within Panels run(xtpa)") /*
+	*/ last						/*
+	*/ option("corr(corr)")
+
+ CHECKBOX ck_model24  5    _xls   _ibwd    _ht6 , 	///
+	groupbox					///
+	onclickon(script ck_mod24_on)			///
+	onclickoff(script ck_mod24_off)		///
+	label("Rho Method - run(xtpcse, xtregar):")
+  RADIO rb_reg    _indent   _ss       _cwd1  .,	/*
+	*/ label("none: Single Lag OLS Residuals (default)") /*
+	*/ first					/*
+	*/ option(NONE)					/*
+	*/
+DEFINE y @y
+  RADIO rb_freg   @         _ss       @         .,	/*
+	*/ label("freg: Single Lead OLS Residuals")	/*
+	*/ option("rhotype(freg)")			/*
+	*/
+  RADIO rb_dw     @         _ss       @         .,	/*
+	*/ label("dw: Durbin-Watson")		/*
+	*/ option("rhotype(dw)")			/*
+	*/
+  RADIO rb_nagar  _lft2     y         _cwd2     .,	/*
+	*/ label("nagar - Adjusted Durbin-Watson")	/*
+	*/ option("rhotype(nagar)")			/*
+	*/
+  RADIO rb_theil  @         _ss       @         .,	/*
+	*/ label("theil - Adjusted Autocorrelation")	/*
+	*/ option("rhotype(theil)")			/*
+	*/
+  RADIO rb_tscorr @         _ss       @         .,	/*
+	*/ label("tscorr: Residuals Autocorrelation") /*
+	*/ last						/*
+	*/ option("rhotype(tscorr)")			/*
+	*/
+ CHECKBOX ck_gmm2  5    _xls   _ibwd    _ht2 , 	///
+	groupbox					///
+	onclickon(script ck_gmm2_on)			///
+	onclickoff(script ck_gmm2_off)		///
+	label("GMM-Type Instruments for Difference Equation - run(xtdpd):")
+ TEXT tx_dgmm _ilft    _ss 450 ., ///
+	label("dgmm")
+ VARLIST vl_dgmm _ilft @   450  ., ///
+	label("dgmm") 		///
+	option(dgmmiv)
+END
+
+DIALOG est3, tabtitle("Option2")
+BEGIN
+ CHECKBOX ck_option2  _lft    _top   400 ., 	///
+	onclickon(script ck_mod31_on)			///
+	onclickoff(script ck_mod31_off)		///
+	label("OLSXT/LAGXT/DURXT/GS2SLS Additional Options:")
+ CHECKBOX ck_igls  _ilft     _ss    400 ., option("igls") /*
+*/ label("igls:  run(xtgls) iterated GLS instead of Two-Step GLS")	
+ CHECKBOX ck_twostep _ilft     _ss    400 ., option("twostep") /*
+*/ label("twostep: run(xtregar, xtdpd) Two-Step Estimates")
+ CHECKBOX ck_ec2sls _ilft     _ss    400 ., option("ec2sls") /*
+*/ label("ec2sls: model(gs2sls, gs2slsar) Baltagi EC2SLS Random-Effects (RE) Model")
+ CHECKBOX ck_nosa _ilft     _ss    400 ., option("nosa") /*
+*/ label("nosa: model(gs2sls, gs2slsar) Baltagi-Chang VC instead of Swamy-Arora")
+ CHECKBOX ck_coll _ilft     _ss    400 ., option("coll") /*
+*/ label("coll: Keep Collinear Variables")
+ CHECKBOX ck_cost _ilft     _ss    400 ., option("cost") /*
+*/ label("cost: run(xtfrontier) Cost Frontier instead of Production Function")
+ CHECKBOX ck_te _ilft     _ss    400 ., option("te") /*
+*/ label("te: run(xtfrontier) List Confidence Intervals for Technical Efficiency Estimates")
+ CHECKBOX ck_ti _ilft     _ss    400 ., option("ti") /*
+*/ label("ti:   run(xtfrontier) Time-Invariant Model")
+ CHECKBOX ck_tvd _ilft     _ss    400 ., option("tvd") /*
+*/ label("tvd:  run(xtfrontier) Time-Varying Decay Model")
+ CHECKBOX ck_hetonly _ilft     _ss    400 ., option("hetonly") /*
+*/ label("hetonly: run(xtpcse) assume Panel-Level Heteroscedastic Errors")
+ CHECKBOX ck_nolog _ilft     _ss    400 ., option("nolog") /*
+*/ label("nolog: Suppress Iteration of Log Likelihood")
+ CHECKBOX ck_robust _ilft     _ss    400 ., option("robust") /*
+*/ label("robust: model(sar, sdm, spgmm, gs2sls) Huber-White Standard Errors")
+ CHECKBOX ck_tobit _ilft     _ss    400 ., option("tobit") /*
+*/ label("tobit: run(xttobit) LR Test comparing against Pooled Tobit")
+ CHECKBOX ck_noskip _ilft     _ss    400 ., option("noskip") /*
+*/ label("noskip: run(xttobit) Likelihood-Ratio test")
+ CHECKBOX ck_zero _ilft     _ss    400 ., option("zero") /*
+*/ label("zero: Convert Missing Values Observations to Zero")
+
+ TEXT tx_predict _ilft    _ls    90 .,	///
+	label("Predicted Variable")
+ TEXT tx_resid   130      @      90 .,	///
+	label("Residuals Variable")
+ TEXT tx_inst 230    @    150 .,	///
+	label("Instrumental Variables")
+ TEXT tx_diff   390      @      130 .,	///
+	label("Differenced Variables")
+ VARNAME vn_predict _ilft _ss  90  .,	///
+	label("predict") 		///
+	option(predict)
+ VARNAME vn_resid  130   @     90  .,	///
+	label("resid") 			///
+	option(resid)
+ VARLIST vl_inst 230  @   150  .,	///
+	label("inst") 		///
+	option(inst)
+ VARLIST vl_diff  390   @     130  .,	///
+	label("diff") 			///
+	option(diff)
+	
+  GROUPBOX gb_opt1	_lft	_ls	_ibwd	_ht4 ,	///
+	label("Create Cross Section/Time Series Dummy Variables (Prefix)")
+  EDIT ed_dumcs  _ilft        _ss    100  ., 	/*
+	*/ label("dumcs")			/*
+	*/ option("dumcs")
+  TEXT     tx_dumcs     130     @  300    .,	/*
+	*/ label("Cross Section Dummy Variables Prefix")
+  EDIT ed_dumts  _ilft       _ms    100  ., 	/*
+	*/ label("dumts")			/*
+	*/ option("dumts")
+  TEXT     tx_dumts     130    @  300    .,	/*
+	*/ label("Time Series Dummy Variables Prefix")
+*/
+END
+
+DIALOG est4, tabtitle("Ridge/Weight")
+BEGIN
+  CHECKBOX ck_ridgero  _lft    _top   _ibwd    _ht8 , ///
+	groupbox				 ///
+	onclickon(script ck_ridger_on)		 ///
+	onclickoff(script ck_ridger_off)	 ///
+	label("Ridge Regression Panel Data:")
+  RADIO rb_orr	_ilft   _ss     _iwd	.,	///
+	option("ridge(orr)")			///
+	first			 ///
+	label("ORR - Ordinary Ridge Regression")	///
+	onclickon(script kridge_on)
+  EDIT ed_ridge  250   @    70   ., 	/*
+	*/ label("Ridge Value")			/*
+	*/ option("kr")
+  TEXT tx_ridge 330  @  100    .,	/*
+	*/ label("Ridge Value")  	/*
+*/
+  RADIO rb_grr1   _ilft  _ss	300	., /*
+	*/ label("GRR1 - Generalized Ridge Regression") /*
+	*/ onclickon(script kridge_off)	 /*
+	*/ option("ridge(grr1)")		/*
+*/
+  RADIO rb_grr2	_ilft	_ss	300 .,	/*
+	*/ label("GRR2 - Iterative Generalized Ridge Regression") /*
+	*/ onclickon(script kridge_off)	 /*
+	*/ option("ridge(grr2)")		/*
+*/
+  RADIO rb_grr3	_ilft	_ss	300 .,	/*
+	*/ label("GRR3 - Adaptive Generalized Ridge Regression") /*
+	*/ onclickon(script kridge_off)	 /*
+	*/ last				 /*
+	*/ option("ridge(grr3)")		/*
+*/
+  CHECKBOX ck_model4  _lft    _xls   _ibwd    _ht24 , ///
+	groupbox				 ///
+	onclickon(script ck_model4_on)		 ///
+	onclickoff(script ck_model4_off)	 ///
+	label("Weighted Variable Type:")
+  TEXT tx_wv 		_ilft	_ss    140  	., ///
+	label("Weighted Variable (X)")
+  VARNAME vn_wv		_ilft 	_ss  	140	., ///
+	ts					 ///
+	label("Weighted Variable")		 ///
+	option("wvar")
+  RADIO    rb_w1  _ilft     _ls     300    ., 	/*
+  	*/ onclickon(script vn_off)	 /*
+	*/ label("Yh - Predicted Value (Default)") /*
+	*/ first			/*
+	*/ option("weights(yh)")		/*
+*/
+  RADIO    rb_w2  _ilft     _ss     300    ., 	/*
+  	*/ onclickon(script vn_off)	 /*
+	*/ label("Yh^2 - Predicted Value Squared") /*
+	*/ option("weights(yh2)")			/*
+*/
+  RADIO    rb_w3  _ilft     _ss     300    ., 	/*
+  	*/ onclickon(script vn_off)	 /*
+	*/ label("abs(E) - Residual Absolute Value") /*
+	*/ option("weights(abse)")			/*
+*/
+  RADIO    rb_w4  _ilft     _ss     300    ., 	/*
+  	*/ onclickon(script vn_off)	 /*
+	*/ label("E^2 - Residual Squared") /*
+	*/ option("weights(e2)")			/*
+*/
+  RADIO    rb_w5  _ilft     _ss     300    ., 	/*
+  	*/ onclickon(script vn_off)	 /*
+	*/ label("log(E^2) - Log Residual Squared") /*
+	*/ option("weights(le2)")			/*
+*/
+  RADIO    rb_w6  _ilft     _ls     300    ., 	/*
+  	*/ onclickon(script vn_on)	 /*
+	*/ label("(X) Variable") /*
+	*/ option("weights(x)")			/*
+*/
+  RADIO    rb_w7  _ilft     _ss     300    ., 	/*
+  	*/ onclickon(script vn_on)	 /*
+	*/ label("(1/X) Inverse Variable") /*
+	*/ option("weights(xi)")			/*
+*/
+  RADIO    rb_w8  _ilft     _ss     300    ., 	/*
+  	*/ onclickon(script vn_on)	 /*
+	*/ label("(X^2) Squared Variable") /*
+	*/ option("weights(x2)")			/*
+*/
+  RADIO    rb_w9  _ilft     _ss     300    ., 	/*
+  	*/ onclickon(script vn_on)	 /*
+	*/ label("(1/X^2) Inverse Squared Variable") /*
+	*/ last					/*
+	*/ option("weights(xi2)")			/*
+*/
+END
+
+LIST cmd1_con
+BEGIN
+" "
+ sar
+ sem
+ sdm
+ sac
+--------------
+ mstar
+ mstard
+--------------
+ gwr
+--------------
+ spgmm
+--------------
+ gs2sls
+ gs2slsar
+--------------
+ olsxt
+ lagxt
+ durxt
+END
+
+LIST cmd11_sel
+BEGIN
+ sar
+ sem
+ sdm
+ sac
+ mstar
+ mstard
+ gwr
+ spgmm
+ gs2sls
+ gs2slsar
+ olsxt
+ lagxt
+ durxt
+END
+
+LIST cmd2_con
+BEGIN
+" "
+ols
+--------------
+xtbe
+xtbem
+xtfe
+xtfem
+xtwe
+xtpa
+--------------
+xtam
+xtbn
+xthh
+xtmle
+xtrc
+xtre
+xtrem
+xtsa
+xttb
+xtwh
+--------------
+xtmln
+xtmlh
+--------------
+xtfm
+xtgls
+xtkmhomo
+xtkmhet1
+xtkmhet2
+xtparks
+--------------
+xtmg
+xtpcse
+xtregar
+--------------
+xtabond
+xtdhp
+xtdpd
+xtdpdsys
+--------------
+xtfrontier
+xttobit
+END
+
+LIST cmd22_sel
+BEGIN
+" "
+ols
+xtbe
+xtbem
+xtfe
+xtfem
+xtwe
+xtpa
+xtam
+xtbn
+xthh
+xtmle
+xtrc
+xtre
+xtrem
+xtsa
+xttb
+xtwh
+xtmln
+xtmlh
+xtfm
+xtgls
+xtkmhomo
+xtkmhet1
+xtkmhet2
+xtparks
+xtmg
+xtpcse
+xtregar
+xtabond
+xtdhp
+xtdpd
+xtdpdsys
+xtfrontier
+xttobit
+END
+
+SCRIPT ck_dist_on
+BEGIN
+ main.rb_norm.enable
+ main.rb_exp.enable
+ main.rb_weib.enable
+END
+
+SCRIPT ck_dist_off
+BEGIN
+ main.rb_norm.disable
+ main.rb_exp.disable
+ main.rb_weib.disable
+END
+
+SCRIPT ck_mfx_on
+BEGIN
+ main.rb_sprho.enable
+ main.rb_splam.enable
+ main.rb_lin.enable
+ main.rb_log.enable
+END
+SCRIPT ck_mfx_off
+BEGIN
+ main.rb_sprho.disable
+ main.rb_splam.disable
+ main.rb_lin.disable
+ main.rb_log.disable
+END
+
+SCRIPT ck_lagw_on
+BEGIN
+ est1.ck_inrho.enable
+ est1.ck_inlam.enable
+ est1.ck_lag.enable
+ est1.ck_ord.enable
+ est1.ck_gmm.enable
+ est1.ck_nw.enable
+END
+SCRIPT ck_lagw_off
+BEGIN
+ est1.ck_inrho.disable
+ est1.ck_inlam.disable
+ est1.ck_lag.disable
+ est1.ck_ord.disable
+ est1.ck_gmm.disable
+ est1.ck_nw.disable
+END
+
+SCRIPT ck_mod1_on
+BEGIN
+ est1.ck_lmspac.enable
+ est1.ck_lmauto.enable
+ est1.ck_lmhet.enable
+ est1.ck_lmnorm.enable
+ est1.ck_lmform.enable
+ est1.ck_lmcl.enable
+ est1.ck_lmec.enable
+ est1.ck_lmunit.enable
+ est1.ck_reset.enable
+ est1.ck_diag.enable
+ est1.ck_lmiden.enable
+ est1.ck_hausman.enable
+ est1.ck_tests.enable
+ est1.ck_dn.enable
+ est1.ck_pmfx.enable
+END
+
+SCRIPT ck_mod1_off
+BEGIN
+ est1.ck_lmspac.disable
+ est1.ck_lmauto.disable
+ est1.ck_lmhet.disable
+ est1.ck_lmnorm.disable
+ est1.ck_lmec.disable
+ est1.ck_lmform.disable
+ est1.ck_lmcl.disable
+ est1.ck_lmunit.disable
+ est1.ck_reset.disable
+ est1.ck_diag.disable
+ est1.ck_lmiden.disable
+ est1.ck_hausman.disable
+ est1.ck_tests.disable
+ est1.ck_dn.disable
+ est1.ck_pmfx.disable
+END
+
+SCRIPT ck_mod21_on
+BEGIN
+ est2.rb_re.enable
+ est2.rb_be.enable
+ est2.rb_fe.enable
+END
+SCRIPT ck_mod21_off
+BEGIN
+ est2.rb_re.disable
+ est2.rb_be.disable
+ est2.rb_fe.disable
+END
+
+SCRIPT ck_mod22_on
+BEGIN
+ est2.rb_piid.enable
+ est2.rb_phet.enable
+ est2.rb_pcorr.enable
+END
+SCRIPT ck_mod22_off
+BEGIN
+ est2.rb_piid.disable
+ est2.rb_phet.disable
+ est2.rb_pcorr.disable
+END
+
+SCRIPT ck_mod23_on
+BEGIN
+ est2.rb_cind.enable
+ est2.rb_car1.enable
+ est2.rb_cpsar1.enable
+ est2.rb_ccorr.enable
+END
+SCRIPT ck_mod23_off
+BEGIN
+ est2.rb_cind.disable
+ est2.rb_car1.disable
+ est2.rb_cpsar1.disable
+ est2.rb_ccorr.disable
+END
+
+SCRIPT ck_mod24_on
+BEGIN
+ est2.rb_reg.enable
+ est2.rb_freg.enable
+ est2.rb_dw.enable
+ est2.rb_nagar.enable
+ est2.rb_theil.enable
+ est2.rb_tscorr.enable
+END
+SCRIPT ck_mod24_off
+BEGIN
+ est2.rb_reg.disable
+ est2.rb_freg.disable
+ est2.rb_dw.disable
+ est2.rb_nagar.disable
+ est2.rb_theil.disable
+ est2.rb_tscorr.disable
+END
+SCRIPT ck_gmm2_on
+BEGIN
+ est2.vl_dgmm.enable
+END
+SCRIPT ck_gmm2_off
+BEGIN
+ est2.vl_dgmm.disable
+END
+SCRIPT ck_mod31_on
+BEGIN
+ est3.ck_igls.enable
+ est3.ck_twostep.enable
+ est3.ck_ec2sls.enable
+ est3.ck_nosa.enable
+ est3.ck_coll.enable
+ est3.ck_cost.enable
+ est3.ck_te.enable
+ est3.ck_ti.enable
+ est3.ck_tvd.enable
+ est3.ck_hetonly.enable
+ est3.ck_nolog.enable
+ est3.ck_robust.enable
+ est3.ck_tobit.enable
+ est3.ck_noskip.enable
+ est3.ck_zero.enable
+ est3.vn_predict.enable
+ est3.vn_resid.enable
+ est3.vl_inst.enable
+ est3.vl_diff.enable
+ est3.ed_dumcs.enable
+ est3.ed_dumts.enable
+END
+SCRIPT ck_mod31_off
+BEGIN
+ est3.ck_igls.disable
+ est3.ck_twostep.disable
+ est3.ck_ec2sls.disable
+ est3.ck_nosa.disable
+ est3.ck_coll.disable
+ est3.ck_cost.disable
+ est3.ck_te.disable
+ est3.ck_ti.disable
+ est3.ck_tvd.disable
+ est3.ck_hetonly.disable
+ est3.ck_nolog.disable
+ est3.ck_robust.disable
+ est3.ck_tobit.disable
+ est3.ck_noskip.disable
+ est3.ck_zero.disable
+ est3.vn_predict.disable
+ est3.vn_resid.disable
+ est3.vl_inst.disable
+ est3.vl_diff.disable
+ est3.ed_dumcs.disable
+ est3.ed_dumts.disable
+END
+
+SCRIPT ck_mod32_on
+BEGIN
+ main.rb_ws1.enable
+ main.rb_ws2.enable
+ main.rb_ws3.enable
+END
+SCRIPT ck_mod32_off
+BEGIN
+ main.rb_ws1.disable
+ main.rb_ws2.disable
+ main.rb_ws3.disable
+END
+
+SCRIPT ck_model4_on
+BEGIN
+ est4.rb_w1.enable
+ est4.rb_w2.enable
+ est4.rb_w3.enable
+ est4.rb_w4.enable
+ est4.rb_w5.enable
+ est4.rb_w6.enable
+ est4.rb_w7.enable
+ est4.rb_w8.enable
+ est4.rb_w9.enable
+ est4.vn_wv.enable
+ 
+END
+SCRIPT ck_model4_off
+BEGIN
+ est4.rb_w1.disable
+ est4.rb_w2.disable
+ est4.rb_w3.disable
+ est4.rb_w4.disable
+ est4.rb_w5.disable
+ est4.rb_w6.disable
+ est4.rb_w7.disable
+ est4.rb_w8.disable
+ est4.rb_w9.disable
+ est4.vn_wv.disable
+END
+
+SCRIPT kridge_on
+BEGIN
+ est4.ed_ridge.enable
+END
+SCRIPT kridge_off
+BEGIN
+ est4.ed_ridge.disable
+END
+
+SCRIPT ck_ridger_on
+BEGIN
+ est4.rb_orr.enable
+ est4.rb_grr1.enable
+ est4.rb_grr2.enable
+ est4.rb_grr3.enable
+END
+SCRIPT ck_ridger_off
+BEGIN
+ est4.rb_orr.disable
+ est4.rb_grr1.disable
+ est4.rb_grr2.disable
+ est4.rb_grr3.disable
+END
+
+SCRIPT vn_on
+BEGIN
+ est4.vn_wv.enable
+END
+SCRIPT vn_off
+BEGIN
+ est4.vn_wv.disable
+END
+
+INCLUDE byifin
+INCLUDE se
+INCLUDE max_ml
+
+PROGRAM command
+BEGIN
+ put /program by_output
+ put "spregxt "
+ varlist [main.vn_yvar]
+ varlist [main.vl_xvar]
+ put " " /program ifin_output
+ put /program se_prefix_output
+ require main.ed_cmd3
+beginoptions
+ optionarg main.fi_fn1
+ optionarg main.cb_cmd1
+ optionarg main.cb_cmd2
+ optionarg main.ed_cmd3
+ option radio(main rb_norm rb_exp rb_weib)
+ optionarg main.vl_vary2
+ optionarg main.vl_varz2
+ optionarg main.vl_mhet
+ optionarg main.vl_aux
+ option radio(main rb_lin rb_log)
+ option radio(main rb_sprho rb_splam)
+ option radio(main rb_ws1 rb_ws2 rb_ws3)
+ option main.ck_tolog 
+ option main.ck_nocons
+ option est1.ck_lmspac
+ option est1.ck_lmauto
+ option est1.ck_lmhet
+ option est1.ck_lmnorm
+ option est1.ck_lmec
+ option est1.ck_lmform
+ option est1.ck_lmcl
+ option est1.ck_lmunit
+ option est1.ck_reset
+ option est1.ck_diag
+ option est1.ck_lmiden
+ option est1.ck_hausman
+ option est1.ck_tests
+ option est1.ck_dn
+ option est1.ck_pmfx
+ optionarg est1.sp_inrho
+ optionarg est1.sp_inlam
+ optionarg est1.sp_ord
+ optionarg est1.sp_nw
+ optionarg est1.sp_gmm
+ optionarg est1.sp_lag
+ option radio(est2 rb_re rb_be rb_fe)
+ option radio(est2 rb_piid rb_phet rb_pcorr)
+ option radio(est2 rb_cind rb_car1 rb_cpsar1 rb_ccorr)
+ option radio(est2 rb_reg rb_freg rb_dw rb_nagar rb_theil rb_tscorr)
+ optionarg est2.vl_dgmm
+ option est3.ck_igls
+ option est3.ck_twostep
+ option est3.ck_ec2sls
+ option est3.ck_nosa
+ option est3.ck_coll
+ option est3.ck_cost
+ option est3.ck_te
+ option est3.ck_ti
+ option est3.ck_tvd
+ option est3.ck_hetonly
+ option est3.ck_nolog
+ option est3.ck_robust
+ option est3.ck_tobit
+ option est3.ck_noskip
+ option est3.ck_zero
+ optionarg est3.vn_predict
+ optionarg est3.vn_resid
+ optionarg est3.vl_inst
+ optionarg est3.vl_diff
+ optionarg est3.ed_dumcs
+ optionarg est3.ed_dumts
+ optionarg est4.vn_wv
+ optionarg est4.ed_ridge
+ option radio(est4 rb_w1 rb_w2 rb_w3 rb_w4 rb_w5 rb_w6 rb_w7 rb_w8 rb_w9)
+ option radio(est4 rb_orr rb_grr1 rb_grr2 rb_grr3)
+ put " " /program se_output
+ put " " /program max_output
+ endoptions
+ END
+

@@ -1,0 +1,55 @@
+{smcl}
+{* 29 Nov 2005}{...}
+{hline}
+{cmd:help varsearch}
+{hline}
+
+{title:Title}
+
+{p2colset 5 19 21 2}{...}
+{p2col:{cmd:varsearch} {hline 2}}Search variable names and labels{p_end}
+{p2colreset}{...}
+
+
+{title:Syntax}
+
+{p 8 15 2}
+{cmd:varsearch}
+[{varlist}], 
+{opt find(string)}
+[{opt label}]
+
+{title:Description}
+
+{pstd}
+{opt varsearch} searches either variable names or labels for a specified
+regular expression, displaying all the variables that match and returning the
+list of those variables in {cmd:r(varlist)}.
+
+{title:Options}
+
+{phang}
+{opt find(string)} specifies the string the search for.  The specified {it:string}
+supports the use of {helpb regex:regular expressions} in the search.
+
+{phang}
+{opt label} specifies that {help label:variable labels} are to be searched.
+By default, {cmd:varsearch} searches variable names.
+
+{title:Examples: varsearch}
+
+{p 4 8 2}{cmd:. sysuse auto}{p_end}
+{p 4 8 2}{cmd:. varsearch, find(Car type) label}{p_end}
+{p 4 8 2}{cmd:. varsearch, find(rep[0-9][0-9])}{p_end}
+
+{title:Author}
+
+{p 4 4 2}Jeffrey Arnold {p_end}
+{p 4 4 2}Payments Studies Function, Federal Reserve Bank of New York {p_end}
+{p 4 4 2}{browse "mailto:jeffrey.arnold@ny.frb.org":jeffrey.arnold@ny.frb.org} 
+
+{title:Also see}
+
+{psee}
+Online:  {helpb regex}, {helpb varlist}
+{p_end}

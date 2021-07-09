@@ -1,0 +1,244 @@
+{smcl}
+{* 13.06.2005}{...}
+{hline}
+help for {hi:ssm}
+{hline}
+
+{title:Endogenous-Switch & Sample Selection Count, Binary & Ordinal Response Regression}
+
+{p 8 12 2}{cmd:ssm} {it:depvar} [{it:indepvars}] [{it:weight}] [{cmd:if}
+{it:exp}] [{cmd:in} {it:range}] {cmd:,}  
+{cmdab:s:witch}{cmd:(}{it:varname} = {it:varlist}{cmd:)}
+{cmdab:f:amily}{cmd:(}{it:familyname}{cmd:)} 
+{cmdab:l:ink}{cmd:(}{it:linkname}{cmd:)}
+[{cmdab:q:uadrature}{cmd:(}{it:#}{cmd:)}
+{cmdab:fr:om:(}{it:matrix}{cmd:)} 
+{cmdab:sel:ection} {cmdab:nocon:stant} {cmdab:adapt:} 
+{cmdab:nolo:g} {cmdab:tr:ace}]   
+
+{p 4 4 2} The outcome model is specified by {it:depvar} and [{it:indepvars}], 
+{cmd:family}{cmd:(}{it:familyname}{cmd:)}, {cmd:link}{cmd:(}{it:linkname}{cmd:)}, etc.
+
+{p 4 4 2}  The endogenous switching equation is specified 
+by {cmdab:s:witch}{cmd:(}{it:varname} = {it:varlist}{cmd:)}, where
+{it:varname} is the name of the endogenous dummy variable and {it:varlist} are 
+a set of explanatory variables. Endogenous switching models are the default 
+specification. Sample selection models are obtained if the {cmd:selection} option
+is used.
+
+{p 4 4 2} {it:familyname} is one of
+
+{p 8 8 2}{cmdab:bin:omial} | {cmdab:poi:sson}
+
+{p 4 4 2} {it:linkname} is one of
+
+{p 8 8 2}{cmdab:log:} | {cmdab:logi:t} | {cmdab:pro:bit} |
+{cmdab:olo:git} | {cmdab:opr:obit}
+
+{p 4 4 2}
+{cmd:fweight}s and {cmd:pweight}s are allowed; see help {help weights}.
+
+{p 4 4 2}
+{cmd:ssm} shares the features of all estimation commands; see help
+{help estcom}.
+
+
+{title:Description}
+
+{p 4 4 2}
+{cmd:ssm} is a wrapper for {help gllamm} to estimate Endogenous-Switch 
+& Sample Selection Count, Binary & Ordinal Response Regression by 
+maximum likelihood using adaptive quadrature.
+{cmd:ssm} interprets a simple syntax, prepares
+the data for {cmd:gllamm}, calls {cmd:gllamm} and produces
+tailor-made output. The {cmd:commands} option causes {cmd:ssm}
+to print out all data manipulation commands and the
+{cmd:gllamm} command. {cmd:gllamm} itself should be used to extend
+the model and for prediction and simulation using {help gllapred}
+or {help gllasim}.
+The Endogenous-Switch (Sample Selection) model 
+comprises two submodels: the outcome model and the Switch (Selection)
+model.
+
+{p 4 4 2}
+The outcome model is a generalized linear model that contains an 
+endogenous dummy variable among its observed covariates, and a unobserved 
+or latent random term.
+
+{p 4 4 2}
+The Switch model is a binary variable model that determines the 
+outcome of the endogenous dummy included in the outcome model. 
+The Switch model contains an unobserved random (latent) term that is 
+correlated with the unobserved random term included in the outcome model. 
+
+{p 4 4 2}
+The Selection model is obtained when the outcome variable is only observed 
+if a particular condition is met (selection = 1) and the selection dummy does
+not enter the outcome model.
+
+
+{title:Options}
+
+{p 4 8 2}
+{cmd:family}{cmd:(}{it:familyname}{cmd:)} specifies the distribution of
+{it:depvar}; {cmd:family(}{it:binomial}{cmd:)} is the default.
+
+{p 4 8 2}
+{cmd:link}{cmd:(}{it:linkname}{cmd:)} specifies the link function; the
+default is the canonical link for the {cmd:family()} specified.
+
+{p 4 8 2}
+{cmd:selection} Sample selection models are estimated, substituting the  
+default endogenous switching specification.
+
+{p 4 8 2}
+{cmd:quadrature}{cmd:(}{it:#}{cmd:)} specifies the number of quadrature 
+points to be used.
+
+{p 4 8 2}
+{cmd:noconstant} specifies that the linear predictor has no intercept
+term, thus forcing it through the origin on the scale defined by the link
+function.
+
+{p 4 8 2}
+{cmd:adapt} Use adaptive quadrature instead of the default ordinary quadrature.
+
+{p 4 8 2}
+{cmd:robust} specifies that the Huber/White/sandwich estimator of
+variance is to be used.  
+If you specify {cmd:pweight}s,{cmd:robust} is implied.
+
+{p 4 8 2}
+{cmd:commands} displays the commands necessary to prepare the data
+and estimate the model in {cmd:gllamm} instead of estimating the
+model. These commands can be copied into a do-file and should work
+without further editing. Note that the data will be changed by the
+do-file! 
+
+{p 4 8 2}
+{cmd:nolog} suppresses the iteration log.
+
+{p 4 8 2}
+{cmd:trace} requests that the estimated coefficient vector be printed
+at each iteration. In addition, all the output produced by {cmd:gllamm}
+with the {cmd:trace} option is also produced.
+
+{p 4 8 2}
+{cmd:from}{cmd:(}{it:matrix}{cmd:)} specifies a matrix of starting values.
+
+
+{title:Remarks}
+
+{p 4 4 2}
+The allowed link functions are
+
+{center:Link function            {cmd:ssm} option     }
+{center:{hline 40}}
+{center:log                      {cmd:link(log)}      }
+{center:logit                    {cmd:link(logit)}    }
+{center:probit                   {cmd:link(probit)}   }
+{center:ordinal logit            {cmd:link(ologit)}   }
+{center:ordinal probit           {cmd:link(oprobit)}  }
+
+
+{p 4 4 2}
+The allowed distribution families are
+
+{center:Family                 {cmd:ssm} option       }
+{center:{hline 40}}
+{center:Bernoulli/binomial     {cmd:family(binomial)} }
+{center:Poisson                {cmd:family(poisson)}  }
+
+{p 4 4 2}
+If you specify {cmd:family()} but not {cmd:link()}, you obtain the canonical
+link for the family:
+
+{center:{cmd:family()}                default {cmd:link()}}
+{center:{hline 38}}
+{center:{cmd:family(binomial)}        {cmd:link(logit)}   }
+{center:{cmd:family(poisson)}         {cmd:link(log)}     }
+
+{title:Examples}
+
+{p 4 8 2}{cmd:* simulate data}{p_end}
+{p 4 8 2}set seed 12345678{p_end}
+{p 4 8 2}set obs 3500{p_end}
+{p 4 8 2}local lambda = 0.4{p_end}
+{p 4 8 2}gen double ve = invnormal(uniform()){p_end}
+{p 4 8 2}gen double zeta = invnormal(uniform()){p_end}
+{p 4 8 2}gen double tau = invnormal(uniform()){p_end}
+{p 4 8 2}gen double x1=invnormal(uniform()){p_end}
+{p 4 8 2}gen double x2=invnormal(uniform()){p_end}
+{p 4 8 2}gen double x3=invnormal(uniform()){p_end}
+{p 4 8 2}gen double x4=invnormal(uniform()){p_end}
+{p 4 8 2}replace x3 = (x3>0){p_end}
+{p 4 8 2}replace x4 = (x4>0){p_end}
+{p 4 8 2}gen double selstar = 0.58 + 0.93*x1 + 0.45*x2 - 0.64*x3 + 0.6*x4 + ///{p_end}
+{p 4 8 2}(ve + zeta)/sqrt(2){p_end}
+{p 4 8 2}gen sel = (selstar>0){p_end}
+{p 4 8 2}gen double ystar = 0.17 + 0.30*x1 + 0.11*x2 + ///{p_end}
+{p 4 8 2}(‘lambda’*ve + tau)/sqrt(1+‘lambda’^2){p_end}
+{p 4 8 2}gen y = (ystar>0){p_end}
+{p 4 8 2}replace y =. if sel==0{p_end}
+
+{p 4 8 2}{cmd:* estimate model}{p_end}
+{p 4 8 2}. ssm y x1 x2, s(sel = x1 x2 x3 x4) q(16) family(binom) link(probit) sel adapt{p_end}
+
+{title:Webpage}
+
+{p 4 13 2}
+http://www.gllamm.org
+
+{title:Authors}
+
+{p 4 13 2}
+Alfonso Miranda (A.Miranda@econ.keele.ac.uk) & Sophia Rabe-Hesketh (sophiarh@berkeley.edu).
+
+{title:References}
+(available from the authors)
+
+{p 4 13 2}
+Miranda and Rabe-Hesketh (2006). 
+Maximum likelihood estimation of 
+endogenous switching and sample selection models for binary, count, and 
+ordinal variables. The Stata Journal 6 (3), 285-308.
+
+
+{p 4 13 2}
+Rabe-Hesketh, S., Skrondal, A. and Pickles, A. (2003). 
+Maximum likelihood estimation of generalized linear models
+with covariate measurement error. The Stata Journal 3, 386-411.
+
+{p 4 13 2}
+Rabe-Hesketh, S., Skrondal, A. and Pickles, A. (2005). 
+Maximum likelihood estimation of limited and discrete dependent variable models 
+with nested random effects. Journal of Econometrics 128 (2), 301-323.
+
+
+{p 4 13 2}
+Rabe-Hesketh, S., Pickles, A. and Skrondal, S. (2001). 
+Correcting for covariate measurement error in logistic regression using 
+nonparametric maximum likelihood estimation. Statistical Modelling 3, 215-232. 
+
+{p 4 13 2}
+Rabe-Hesketh, S., Skrondal, A. and Pickles, A. (2002). 
+Reliable estimation of generalized linear mixed models using adaptive quadrature. 
+The Stata Journal 2 (1), 1-21.
+
+
+{p 4 13 2}
+Rabe-Hesketh, S., Skrondal, A. and Pickles, A. (2004). 
+GLLAMM Manual. U.C. Berkeley Division of Biostatistics Working Paper Series. Working 
+Paper 160.
+
+
+{title:Also see}
+
+{p 4 13 2}
+Manual:  {hi:[U] 23 Estimation and post-estimation commands},{break}
+{hi:[U] 29 Overview of Stata estimation commands},{break}
+
+{p 4 13 2}
+Online:  help for {help cme}; {help gllamm}, {help gllapred},
+{help gllasim}; {help estcom}, {help postest}; {help cloglog},
+{help logistic}, {help poisson}, {help regress}

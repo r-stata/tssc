@@ -1,0 +1,183 @@
+{smcl}
+{* *! version 1.0.1  31aug2008}{...}
+{cmd:help use10}
+{hline}
+
+{title:Title}
+
+{p2colset 5 16 18 2}{...}
+{p2col:{hi: use10} {hline 2}}Use Stata 10 format dataset in Stata 9{p_end}
+{p2colreset}{...}
+
+
+{title:Syntax}
+
+{phang}
+Load Stata-10 format dataset in Stata 9
+
+{p 8 12 2}
+{opt use10}
+{it:filename}
+[{cmd:,}
+{opt clear}
+{opt nol:abel}
+{opt saving(filename)}
+{opt replace}]
+
+
+{phang}
+Load subset of Stata-10 format dataset
+
+{p 8 12 2}
+{opt use10}
+[{varlist}]
+{ifin}
+{helpb using}
+{it:filename}
+[{cmd:,}
+{opt clear}
+{opt nol:abel}]
+
+
+{title:Description}
+
+{pstd}
+{opt use10} loads into memory a dataset previously saved by Stata 10 or compatible software.
+If {it:filename} is specified without an extension, {cmd:.dta} is
+assumed. If your {it:filename} contains embedded spaces, remember to enclose it in double quotes.
+
+{pstd}
+In the second syntax for {opt use10}, a subset of the data may be read.
+
+{pstd}
+{opt use10} is written in Mata and requires Stata 9. Datasets written with {opt save} in Stata 9
+can be loaded in Stata 8 with standard {opt use} command.
+
+{pstd}
+{opt use10} will automatically call standard Stata's {opt use} command if it determines that the
+file is not in Stata 10 format. Hence it is safe to always open data with {opt use10} rather than
+{opt use}.
+
+{pstd}
+Stata 10 files may contain more formatting then Stata 9 format can accomodate.
+This applies to {ul:date and time formats} only. It does not apply to {ul:data types}.
+This program will automatically replace formats that are potentially incompatible with
+Stata 9 with a default format (in this version it is %15.0g). Although some date and time
+formats can be accomodated in Stata 9 without a loss, the exact rules for validation were
+not known at the time this program was written. Replacement of potentially incompatible
+formats with a default format is also a preferred strategy of Stata 10 when saving data in
+Stata 9 format with {opt saveold}. {opt use10} lists original data types and formats for each
+variable. Skilled users can change file {opt use10reformat.ado} to accomodate any changes in
+formats they demand. Corresponding instructions are located in the {opt use10reformat.ado} file.
+Deleting this file is not recommended (but it is possible: {opt use10} will still work).
+
+{title:Performance}
+{pstd}
+{opt use10} loads ~420MB file slightly slower (<10%) than it takes Stata to {opt saveold}
+and {opt use} the same file (48.75 seconds vs 32.17+12.34 seconds). Conversion is always
+done for the whole dataset and only after that particular data is selected based on the specified
+if- and in-restrictions and variables list.
+
+{title:Compatibility}
+{pstd}
+{opt use10} is tested in 32-bit Stata for Windows. It is written in Mata and should
+be compatible with all OSes that Stata runs on, supports HILO and LOHI Stata datasets and should also be
+compatible with large datasets (>2GB, from Stata 64-bit).
+
+{title:Error messages}
+{pstd}
+{opt use10} will attempt to detect if the file is ill-formed and issue standard Stata
+error messages in such a case, but (as it is the case with Stata's {opt use}) loading corrupt datasets is
+unlikely to succeed. Non-standard messages of {opt use10} include:
+
+{phang}{it:"Warning: file does not conform to Stata-10 specification (file signature 114)"}{p_end}
+
+{phang}This message is issued when file signature is different from what is expected according to Stata 10 file
+format. This is just a warning, it is most often a signal that the file is originating from an earlier Stata
+ - the program will attempt to load the dataset with standard {opt use} command and all further messages (if any)
+are coming from Stata itself.{p_end}
+
+{phang}{it:"Warning! NNN variable(s) have different format after conversion"}{p_end}
+
+{phang}This message is a signal that some incompatible formats were detected in the dataset and the user must verify (and
+if necessary manually redefine formats for some variables). It is the responsibility of {opt use10reformat.ado} to find
+an appropriate new format for an incompatible format and inform the user of any such replacement. By default, all variables
+are listed with their respective data storage types, and formats. If the format is changed, this is indicated by a red star
+preceding variable name and the new format displayed in brackets after the original format. {p_end}
+
+{title:Options}
+
+{phang}
+{opt clear} specifies that it is okay to replace the data in memory,
+even though the current data have not been saved to disk.
+
+{phang}
+{opt nolabel} prevents value labels in the saved data from being loaded.
+It is unlikely that you will ever want to specify this option.
+
+{opt saving(filename)} specifies where the converted file should be saved. If this option is not specified - a temporary
+location is used.
+
+{opt replace} (makes sense only with option {opt saving(filename)} allows the file specified in {opt saving(filename)} to be replaced.
+
+{title:Some technical details}
+{phang}{opt use10} is an rclass command{p_end}
+{phang}{opt use10} uses global variable {it:use10_newformat} during it's work{p_end}
+{phang}{opt use10} sets {opt r(fn)} to the original (Stata-10 format) dataset unless the
+option {opt saving} is specified. In that case {opt r(fn)} will be set to the name specified in {opt saving}{p_end}
+{phang}When option {opt saving(filename)} is specified with an if- or in-qualifiers (or both) the dataset is converted in full,
+saved to the specified file, and a portion of it is subsequently loaded.{p_end}
+{phang}If option {opt replace} was specified, file with the name specified in option {opt saving(filename)} is deleted regardless of
+whether {opt use10} succeedes or not.
+
+{title:Author}
+
+{phang}
+{opt use10} was written by {it:Sergiy Radyakin}, sradyakin(at)worldbank.org{p_end}
+
+
+{title:Examples}
+
+The following example will copy a Stata 10 format demo dataset from Stata Corp website and load it in Stata 9.
+
+{phang}{cmd:. tempfile auto10}{p_end}
+{phang}{cmd:. copy http://www.stata-press.com/data/r10/auto.dta `auto10'}{p_end}
+{phang}{cmd:. use10 `auto10'}{p_end}
+{hline}
+ Variable name                      Type   Format[New Format]
+{hline}
+ make                               str18   %-18s
+ price                              int     %8.0gc
+ mpg                                int     %8.0g
+ rep78                              int     %8.0g
+ headroom                           float   %6.1f
+ trunk                              int     %8.0g
+ weight                             int     %8.0gc
+ length                             int     %8.0g
+ turn                               int     %8.0g
+ displacement                       int     %8.0g
+ gear_ratio                         float   %6.2f
+ foreign                            byte    %8.0g
+{hline}
+(1978 Automobile Data)
+
+
+{phang}{cmd:. use10 make rep78 foreign using `auto10', clear}{p_end}
+
+
+For local files use command {opt use10} in the same fashion you use {opt use}, e.g.:
+
+{phang}{cmd:. use10 var1 var2 using dataset10.dta if (var1>0) & (var2<.), clear}{p_end}
+
+
+{title:Also see}
+
+{psee}
+Manual:  {bf:[D] use}
+
+{psee}
+Online:  
+{manhelp use D},
+{manhelp sysuse D},
+{manhelp webuse D}
+{p_end}

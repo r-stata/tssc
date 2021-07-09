@@ -1,0 +1,156 @@
+/*                                 twoway_kdens_parse
+
+   A parser for kdens -- Kernel density estimator.  Works with twoway.ado.
+
+*/
+*! version 1.0.2  18sep2007  Ben Jann
+*! based on official twoway_kdensity_parse.ado  version 1.0.13  13mar2007
+
+version 8
+
+class {
+    kde_varname = ""
+    kde_n       = 512   // default value only
+    kde_y       = "density"
+    kde_x       = "x"
+    kde_at      = ""
+    kde_opts    = ""
+    yxswitch    = 0
+} , inherit(twoway_yxview_parse)
+
+// ---------------------------------------------------------------------------
+
+program parse
+    .must_create_serset = 1
+    .viewtype = "line"
+    .n = 1                      // number of plots
+    .varcheck = 0                   // side signal
+
+    .Super.parse `0'
+
+    _clsarr2list mlablist : labvars         // allow marker labels
+    local vlist `.varlist'
+    local vlist : list vlist - mlablist
+
+    local options `"`vlist' [`.wtype'`.wtexp'], `.options'"'
+    _parse expand loc glob : options
+    if `loc_n' != 1 {
+        error 198
+    }
+    local 0 `"`loc_1'"'
+    
+    syntax varname(numeric) [fw aw pw] [,  ///
+        Kernel(passthru)        ///
+        N(integer `.kde_n')     ///
+        n2(passthru)            ///
+        AT(varname numeric)     ///
+        RAnge(passthru)         ///
+        HORizontal              ///
+        exact                   ///
+        bw(passthru)            ///
+        ADJust(passthru)        ///
+        Adaptive                /// 
+        Adaptive2(passthru)     ///
+        LL(passthru)            ///
+        UL(passthru)            ///
+        REFLection              ///
+        lc                      ///
+        *               /// other opts
+    ]
+
+    .kde_varname = "`varlist'"
+    
+    if "`at'"!="" {
+        .kde_at = "`at'"
+        local at "at(`at')"
+    }
+    
+    local opts `kernel' n(`n') `n2' `at' `range' `exact' `bw' `adjust' ///
+        `adaptive' `adaptive2' `ll' `ul' `reflection' `lc' 
+    .kde_opts = `"`:list retok opts'"'
+
+    .yxswitch   = ("`horizontal'" != "")
+    .options    = `"`options'"'
+
+end
+
+/* -------------------------------------------------------------------------*/
+/*
+    Creates a new serset and the view and returns its reference.
+    Assumes that the data in memory is the same as when parse was called.
+
+    Allows a touse(varname) option that further restricts the sample, 
+    restricts beyond the held .if and .in
+
+    Additional options to the .serset.new command may be specified, but
+    this is unlikely to be necessary.
+
+    If must_create_serset == 1, then this command MUST be used, 
+    otherwise the serset may be created by other means.
+*/ 
+
+program log_create_serset
+
+    syntax , LOG(name) SERSETNAME(string) [ TOUSE(name) * ]
+
+    .log_touse , log(`log') touse(`touse')
+
+    tempname touse2
+    mark `touse2' `.if' `.in'
+    qui replace `touse2' = 0 if `touse'==0
+
+    local nolog  .`log'.Arrpush __NOLOG__
+
+    // compute the density estimates
+    `nolog' tempvar dhat
+    if "`.kde_at'" != "" {
+        `nolog' local x "`.kde_at'"
+        `nolog' _kdens        ///
+            `.kde_varname'          ///
+            [`.wtype'`.wtexp']      ///
+            if \`touse1',           ///
+            `.kde_opts'             ///
+            generate(\`dhat')  ///
+            // blank
+    }
+    else {        
+        `nolog' tempvar x
+        `nolog' _kdens        ///
+        `.kde_varname'          ///
+        [`.wtype'`.wtexp']      ///
+        if \`touse1',           ///
+        `.kde_opts'             ///
+        generate(\`dhat' \`x')  ///
+        // blank
+    }
+
+    `nolog' label variable \`dhat' "kdensity `.kde_varname'`area'"
+
+    // remove weights, they are not needed for the serset
+    .wtype = ""
+    .wtexp = ""
+
+    /* note: do not use `touse1' to generate the serset; -kdens-
+     * generates values outside the supplied -if- condition.
+     */
+
+    .`log'.Arrpush              ///
+        .`sersetname' = .serset.new ///
+            \`dhat' \`x' `.varlist' ///
+            ,           ///
+            nocount         ///
+            `.omitmethod'       ///
+            `options'
+
+    `nolog' .`sersetname'.sort \`x'
+    `nolog' .`sersetname'.sers[1].name = "`.kde_y'" // dhat
+    `nolog' .`sersetname'.sers[2].name = "`.kde_x'" // x
+
+    if ! `.yxswitch' {
+        .varlist = "`.kde_y' `.kde_x'"
+    }
+    else    .varlist = "`.kde_x' `.kde_y'"
+
+end
+
+exit

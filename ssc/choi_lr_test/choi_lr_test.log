@@ -1,0 +1,920 @@
+---------------------------------------------------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  C:\Users\dupontwd.VANDERBILT\Documents\Dropbox\OFFICE_desktop\ChoiFisherTest\Stata Program\ado\ForSubmission\c
+> hoi_lr_test\test.log
+  log type:  text
+ opened on:  31 May 2016, 14:08:46
+
+. * test.log
+. 
+. * This program tests choi_lr_test.ado and choi_lr_testi.ado
+. * Ancillary files that are needed by these programs are
+. * nl_choi_support_interval.ado, choi_lr_support_interval.ado
+. * choi_lr_hypergeom.ado and choi_lr_hyperg_prog.ado.
+. 
+. * These programs calculate statistics described in 
+. * Choi et al. 2015. Elucidating the Foundations of Statistical Inference with 2 x 2 Tables. 
+. * PLoS ONE 10(4): e0121263. doi:10.1371/journal.pone.0121263
+. 
+. * Output from this program may be checked against the Shiny app posted at
+. * http://statcomp2.vanderbilt.edu:37212/ProfileLikelihood/ 
+. * or against the R program posted at
+. * https://cran.r-project.org/web/packages/ProfileLikelihood/index.html 
+. 
+. set more off
+
+. use testdata.dta
+
+. 
+. * Test choi_lr_test program
+. choi_lr_test case exposed [fweight=patients]
+                                                         Proportion
+                 |   Exposed   Unexposed  |      Total     Exposed
+-----------------+------------------------+------------------------
+           Cases |         6           2  |          8       0.7500
+        Controls |         3           5  |          8       0.3750
+-----------------+------------------------+------------------------
+           Total |         9           7  |         16       0.5625
+                 |                        |
+                 |      Point estimate    |    [95% Conf. Interval]
+                 |------------------------+------------------------
+      Odds ratio |                5       |    .4086586    75.97119 (exact)
+ Attr. frac. ex. |               .8       |    -1.44703    .9868371 (exact)
+ Attr. frac. pop |               .6       |
+                 +-------------------------------------------------
+                               chi2(1) =     2.29  Pr>chi2 = 0.1306
+ 
+ 
+Likelihood ratio statistics conditioned on the marginal exposure rate
+ 
+Maximum likelihood estimate (MLE) of odds ratio      = 4.4742438
+Likelihood ratio under the null hypothesis           = 2.9944571
+Likelihood ratio chi-squared statistic               = 2.1935259
+P value for the null hypothesis that the OR equals 1 = .13859174
+1/6.825936  LSI for the OR = [.62397643, 42.991698]
+
+. 
+. * Check scalars returned by the cc program
+. di r(p)       
+.13057002
+
+. di r(or)      
+5
+
+. di r(lb_or)   
+.40865859
+
+. di r(ub_or)   
+75.971185
+
+. di r(afe)     
+.8
+
+. di r(lb_afe)  
+-1.4470304
+
+. di r(ub_afe)  
+.98683711
+
+. di r(afp)     
+.6
+
+. di r(chi2) 
+2.2857143
+
+. 
+. * Check scalars calculated by the choi_lr_test program
+. di r(or_cond)            
+4.4742438
+
+. di r(clr)            
+2.9944571
+
+. di r(chi2_clr)      
+2.1935259
+
+. di r(p_choi)        
+.13859174
+
+. di r(lr6pt8lsi_lb)  
+.62397643
+
+. di r(lr6pt8lsi_ub)  
+42.991698
+
+. 
+. choi_lr_test case exposed [fweight=patients], exact k(32)
+                                                         Proportion
+                 |   Exposed   Unexposed  |      Total     Exposed
+-----------------+------------------------+------------------------
+           Cases |         6           2  |          8       0.7500
+        Controls |         3           5  |          8       0.3750
+-----------------+------------------------+------------------------
+           Total |         9           7  |         16       0.5625
+                 |                        |
+                 |      Point estimate    |    [95% Conf. Interval]
+                 |------------------------+------------------------
+      Odds ratio |                5       |    .4086586    75.97119 (exact)
+ Attr. frac. ex. |               .8       |    -1.44703    .9868371 (exact)
+ Attr. frac. pop |               .6       |
+                 +-------------------------------------------------
+                                  1-sided Fisher's exact P = 0.1573
+                                  2-sided Fisher's exact P = 0.3147
+ 
+ 
+Likelihood ratio statistics conditioned on the marginal exposure rate
+ 
+Maximum likelihood estimate (MLE) of odds ratio      = 4.4742438
+Likelihood ratio under the null hypothesis           = 2.9944571
+Likelihood ratio chi-squared statistic               = 2.1935259
+P value for the null hypothesis that the OR equals 1 = .13859174
+1/6.825936  LSI for the OR = [.62397643, 42.991698]
+1/32        LSI for the OR = [.32148657, 109.60039]
+
+. * Check scalars returned by the cc program
+. di r(p1_exact)
+.15734266
+
+. di r(p_exact) 
+.31468531
+
+. 
+. * Check that extra LSIs are returned
+. di r(lrklsi_lb)     
+.32148657
+
+. di r(lrklsi_ub)     
+109.60039
+
+. 
+. choi_lr_test case exposed [fweight=patients], corn
+
+                 | exposed                |             Proportion
+                 |   Exposed   Unexposed  |      Total     Exposed
+-----------------+------------------------+------------------------
+           Cases |         6           2  |          8       0.7500
+        Controls |         3           5  |          8       0.3750
+-----------------+------------------------+------------------------
+           Total |         9           7  |         16       0.5625
+                 |                        |
+                 |      Point estimate    |    [95% Conf. Interval]
+                 |------------------------+------------------------
+      Odds ratio |                5       |    .6433784    38.07362 (Cornfield)
+ Attr. frac. ex. |               .8       |   -.5542952    .9737351 (Cornfield)
+ Attr. frac. pop |               .6       |
+                 +-------------------------------------------------
+                               chi2(1) =     2.29  Pr>chi2 = 0.1306
+ 
+ 
+Likelihood ratio statistics conditioned on the marginal exposure rate
+ 
+Maximum likelihood estimate (MLE) of odds ratio      = 4.4742438
+Likelihood ratio under the null hypothesis           = 2.9944571
+Likelihood ratio chi-squared statistic               = 2.1935259
+P value for the null hypothesis that the OR equals 1 = .13859174
+1/6.825936  LSI for the OR = [.62397643, 42.991698]
+
+. choi_lr_test case exposed [fweight=patients], woolf
+
+                 | exposed                |             Proportion
+                 |   Exposed   Unexposed  |      Total     Exposed
+-----------------+------------------------+------------------------
+           Cases |         6           2  |          8       0.7500
+        Controls |         3           5  |          8       0.3750
+-----------------+------------------------+------------------------
+           Total |         9           7  |         16       0.5625
+                 |                        |
+                 |      Point estimate    |    [95% Conf. Interval]
+                 |------------------------+------------------------
+      Odds ratio |                5       |    .5841514    42.79712 (Woolf)
+ Attr. frac. ex. |               .8       |   -.7118849    .9766339 (Woolf)
+ Attr. frac. pop |               .6       |
+                 +-------------------------------------------------
+                               chi2(1) =     2.29  Pr>chi2 = 0.1306
+ 
+ 
+Likelihood ratio statistics conditioned on the marginal exposure rate
+ 
+Maximum likelihood estimate (MLE) of odds ratio      = 4.4742438
+Likelihood ratio under the null hypothesis           = 2.9944571
+Likelihood ratio chi-squared statistic               = 2.1935259
+P value for the null hypothesis that the OR equals 1 = .13859174
+1/6.825936  LSI for the OR = [.62397643, 42.991698]
+
+. 
+. * Check behavior for tables with larger sample sizes
+. replace patients = patients*12  
+(4 real changes made)
+
+. choi_lr_test case exposed [fweight=patients], woolf k(16)
+
+                 | exposed                |             Proportion
+                 |   Exposed   Unexposed  |      Total     Exposed
+-----------------+------------------------+------------------------
+           Cases |        72          24  |         96       0.7500
+        Controls |        36          60  |         96       0.3750
+-----------------+------------------------+------------------------
+           Total |       108          84  |        192       0.5625
+                 |                        |
+                 |      Point estimate    |    [95% Conf. Interval]
+                 |------------------------+------------------------
+      Odds ratio |                5       |    2.690274    9.292735 (Woolf)
+ Attr. frac. ex. |               .8       |    .6282906    .8923891 (Woolf)
+ Attr. frac. pop |               .6       |
+                 +-------------------------------------------------
+                               chi2(1) =    27.43  Pr>chi2 = 0.0000
+ 
+ 
+Likelihood ratio statistics conditioned on the marginal exposure rate
+ 
+Maximum likelihood estimate (MLE) of odds ratio      = 4.9539211
+Likelihood ratio under the null hypothesis           = 1213489.1
+Likelihood ratio chi-squared statistic               = 28.018021
+P value for the null hypothesis that the OR equals 1 = 1.202e-07
+1/6.825936  LSI for the OR = [2.7020791, 9.3208557]
+1/16        LSI for the OR = [2.3971936, 10.628488]
+
+. 
+. use testdata.dta, clear
+
+. replace patients = patients*30
+(4 real changes made)
+
+. choi_lr_test case exposed [fweight=patients], woolf k(32)
+
+                 | exposed                |             Proportion
+                 |   Exposed   Unexposed  |      Total     Exposed
+-----------------+------------------------+------------------------
+           Cases |       180          60  |        240       0.7500
+        Controls |        90         150  |        240       0.3750
+-----------------+------------------------+------------------------
+           Total |       270         210  |        480       0.5625
+                 |                        |
+                 |      Point estimate    |    [95% Conf. Interval]
+                 |------------------------+------------------------
+      Odds ratio |                5       |    3.378545    7.399635 (Woolf)
+ Attr. frac. ex. |               .8       |    .7040146    .8648582 (Woolf)
+ Attr. frac. pop |               .6       |
+                 +-------------------------------------------------
+                               chi2(1) =    68.57  Pr>chi2 = 0.0000
+ 
+ 
+Likelihood ratio statistics conditioned on the marginal exposure rate
+ 
+Maximum likelihood estimate (MLE) of odds ratio      = 4.9815164
+Likelihood ratio under the null hypothesis           = 1.821e+15
+Likelihood ratio chi-squared statistic               = 70.276267
+P value for the null hypothesis that the OR equals 1 = 5.155e-17
+1/6.825936  LSI for the OR = [3.384192, 7.409481]
+1/32        LSI for the OR = [2.9695546, 8.5152491]
+
+. 
+. use testdata.dta, clear
+
+. replace patients = patients*100
+(4 real changes made)
+
+. choi_lr_test case exposed [fweight=patients], woolf k(8)
+
+                 | exposed                |             Proportion
+                 |   Exposed   Unexposed  |      Total     Exposed
+-----------------+------------------------+------------------------
+           Cases |       600         200  |        800       0.7500
+        Controls |       300         500  |        800       0.3750
+-----------------+------------------------+------------------------
+           Total |       900         700  |       1600       0.5625
+                 |                        |
+                 |      Point estimate    |    [95% Conf. Interval]
+                 |------------------------+------------------------
+      Odds ratio |                5       |    4.033904     6.19747 (Woolf)
+ Attr. frac. ex. |               .8       |    .7521012    .8386438 (Woolf)
+ Attr. frac. pop |               .6       |
+                 +-------------------------------------------------
+                               chi2(1) =   228.57  Pr>chi2 = 0.0000
+ 
+ 
+Likelihood ratio statistics conditioned on the marginal exposure rate
+ 
+Maximum likelihood estimate (MLE) of odds ratio      = 4.9944476
+Likelihood ratio under the null hypothesis           = 8.826e+50
+Likelihood ratio chi-squared statistic               = 234.6139
+P value for the null hypothesis that the OR equals 1 = 5.877e-53
+1/6.825936  LSI for the OR = [4.035843, 6.2001042]
+1/8         LSI for the OR = [4.0014063, 6.2550805]
+
+. 
+. use testdata.dta, clear
+
+. replace patients = patients*200
+(4 real changes made)
+
+. choi_lr_test case exposed [fweight=patients], woolf k(8)
+
+                 | exposed                |             Proportion
+                 |   Exposed   Unexposed  |      Total     Exposed
+-----------------+------------------------+------------------------
+           Cases |      1200         400  |       1600       0.7500
+        Controls |       600        1000  |       1600       0.3750
+-----------------+------------------------+------------------------
+           Total |      1800        1400  |       3200       0.5625
+                 |                        |
+                 |      Point estimate    |    [95% Conf. Interval]
+                 |------------------------+------------------------
+      Odds ratio |                5       |    4.295722    5.819743 (Woolf)
+ Attr. frac. ex. |               .8       |    .7672103    .8281711 (Woolf)
+ Attr. frac. pop |               .6       |
+                 +-------------------------------------------------
+                               chi2(1) =   457.14  Pr>chi2 = 0.0000
+ 
+ 
+Likelihood ratio statistics conditioned on the marginal exposure rate
+ 
+Maximum likelihood estimate (MLE) of odds ratio      = 4.9972227
+Likelihood ratio under the null hypothesis           = 8.41e+101
+Likelihood ratio chi-squared statistic               = 469.38195
+P value for the null hypothesis that the OR equals 1 = 4.37e-104
+1/6.825936  LSI for the OR = [4.2967386, 5.8210048]
+1/8         LSI for the OR = [4.2706733, 5.8572896]
+
+. 
+. * Check if program handles 1 record per patient properly
+. use testdata.dta, clear
+
+. expand patients
+(12 observations created)
+
+. choi_lr_test case exposed 
+                                                         Proportion
+                 |   Exposed   Unexposed  |      Total     Exposed
+-----------------+------------------------+------------------------
+           Cases |         6           2  |          8       0.7500
+        Controls |         3           5  |          8       0.3750
+-----------------+------------------------+------------------------
+           Total |         9           7  |         16       0.5625
+                 |                        |
+                 |      Point estimate    |    [95% Conf. Interval]
+                 |------------------------+------------------------
+      Odds ratio |                5       |    .4086586    75.97119 (exact)
+ Attr. frac. ex. |               .8       |    -1.44703    .9868371 (exact)
+ Attr. frac. pop |               .6       |
+                 +-------------------------------------------------
+                               chi2(1) =     2.29  Pr>chi2 = 0.1306
+ 
+ 
+Likelihood ratio statistics conditioned on the marginal exposure rate
+ 
+Maximum likelihood estimate (MLE) of odds ratio      = 4.4742438
+Likelihood ratio under the null hypothesis           = 2.9944571
+Likelihood ratio chi-squared statistic               = 2.1935259
+P value for the null hypothesis that the OR equals 1 = .13859174
+1/6.825936  LSI for the OR = [.62397643, 42.991698]
+
+. 
+. * Check behavior for tables with 0 patients in some cells
+. use testdata.dta,clear
+
+. list
+
+     +---------------------------+
+     | case   exposed   patients |
+     |---------------------------|
+  1. |    0         0          5 |
+  2. |    0         1          3 |
+  3. |    1         0          2 |
+  4. |    1         1          6 |
+     +---------------------------+
+
+. replace patients =0 if _n==3
+(1 real change made)
+
+. replace patients =0 if _n==4
+(1 real change made)
+
+. choi_lr_test case exposed [fweight=patients]
+Too many empty cells to estimate OR
+Bad data input
+
+. replace patients =2 if _n==3
+(1 real change made)
+
+. choi_lr_test case exposed [fweight=patients] , k(16)
+
+                 | exposed                |             Proportion
+                 |   Exposed   Unexposed  |      Total     Exposed
+-----------------+------------------------+------------------------
+           Cases |         0           2  |          2       0.0000
+        Controls |         3           5  |          8       0.3750
+-----------------+------------------------+------------------------
+           Total |         3           7  |         10       0.3000
+                 |                        |
+                 |      Point estimate    |    [95% Conf. Interval]
+                 |------------------------+------------------------
+      Odds ratio |                0       |           0    4.841502 (Cornfield)
+ Prev. frac. ex. |                1       |   -3.841502           1 (Cornfield)
+ Prev. frac. pop |                .       |
+                 +-------------------------------------------------
+                               chi2(1) =     1.07  Pr>chi2 = 0.3006
+
+ Note: Exact confidence levels not possible with zero count cells.
+ 
+ 
+Likelihood ratio statistics conditioned on the marginal exposure rate
+ 
+Maximum likelihood estimate (MLE) of odds ratio      = 0
+Likelihood ratio under the null hypothesis           = 2.1428571
+Likelihood ratio chi-squared statistic               = 1.5242801
+P value for the null hypothesis that the OR equals 1 = .21697293
+1/6.825936  LSI for the OR = [0, 3.7822765]
+1/16        LSI for the OR = [0, 7.3282039]
+
+. replace patients =2 if _n==1
+(1 real change made)
+
+. replace patients =0 if _n==2
+(1 real change made)
+
+. replace patients =5 if _n==3
+(1 real change made)
+
+. replace patients =3 if _n==4
+(1 real change made)
+
+. choi_lr_test case exposed [fweight=patients] , k(16)
+
+                 | exposed                |             Proportion
+                 |   Exposed   Unexposed  |      Total     Exposed
+-----------------+------------------------+------------------------
+           Cases |         3           5  |          8       0.3750
+        Controls |         0           2  |          2       0.0000
+-----------------+------------------------+------------------------
+           Total |         3           7  |         10       0.3000
+                 |                        |
+                 |      Point estimate    |    [95% Conf. Interval]
+                 |------------------------+------------------------
+      Odds ratio |                .       |    .2065475           . (Cornfield)
+ Attr. frac. ex. |                1       |   -3.841502           . (Cornfield)
+ Attr. frac. pop |             .375       |
+                 +-------------------------------------------------
+                               chi2(1) =     1.07  Pr>chi2 = 0.3006
+
+ Note: Exact confidence levels not possible with zero count cells.
+ 
+ 
+Likelihood ratio statistics conditioned on the marginal exposure rate
+ 
+Maximum likelihood estimate (MLE) of odds ratio      = infinity
+Likelihood ratio under the null hypothesis           = 2.1428571
+Likelihood ratio chi-squared statistic               = 1.5242801
+P value for the null hypothesis that the OR equals 1 = .21697293
+1/6.825936  LSI for the OR = [.26439104, infinity]
+1/16        LSI for the OR = [.13645908, infinity]
+
+. replace patients = patients*100
+(3 real changes made)
+
+. choi_lr_test case exposed [fweight=patients] , k(8)
+
+                 | exposed                |             Proportion
+                 |   Exposed   Unexposed  |      Total     Exposed
+-----------------+------------------------+------------------------
+           Cases |       300         500  |        800       0.3750
+        Controls |         0         200  |        200       0.0000
+-----------------+------------------------+------------------------
+           Total |       300         700  |       1000       0.3000
+                 |                        |
+                 |      Point estimate    |    [95% Conf. Interval]
+                 |------------------------+------------------------
+      Odds ratio |                .       |     31.2292           . (Cornfield)
+ Attr. frac. ex. |                1       |    .9679787           . (Cornfield)
+ Attr. frac. pop |             .375       |
+                 +-------------------------------------------------
+                               chi2(1) =   107.14  Pr>chi2 = 0.0000
+
+ Note: Exact confidence levels not possible with zero count cells.
+ 
+ 
+Likelihood ratio statistics conditioned on the marginal exposure rate
+ 
+Maximum likelihood estimate (MLE) of odds ratio      = infinity
+Likelihood ratio under the null hypothesis           = 2.629e+35
+Likelihood ratio chi-squared statistic               = 163.11415
+P value for the null hypothesis that the OR equals 1 = 2.362e-37
+1/6.825936  LSI for the OR = [61.74006, infinity]
+1/8         LSI for the OR = [56.981507, infinity]
+
+. * Test choi_lr_testi program
+. choi_lr_testi 6 2 3 5
+                                                         Proportion
+                 |   Exposed   Unexposed  |      Total     Exposed
+-----------------+------------------------+------------------------
+           Cases |         6           2  |          8       0.7500
+        Controls |         3           5  |          8       0.3750
+-----------------+------------------------+------------------------
+           Total |         9           7  |         16       0.5625
+                 |                        |
+                 |      Point estimate    |    [95% Conf. Interval]
+                 |------------------------+------------------------
+      Odds ratio |                5       |    .4086586    75.97119 (exact)
+ Attr. frac. ex. |               .8       |    -1.44703    .9868371 (exact)
+ Attr. frac. pop |               .6       |
+                 +-------------------------------------------------
+                               chi2(1) =     2.29  Pr>chi2 = 0.1306
+ 
+ 
+Likelihood ratio statistics conditioned on the marginal exposure rate
+ 
+Maximum likelihood estimate (MLE) of odds ratio      = 4.4742438
+Likelihood ratio under the null hypothesis           = 2.9944571
+Likelihood ratio chi-squared statistic               = 2.1935259
+P value for the null hypothesis that the OR equals 1 = .13859174
+1/6.825936  LSI for the OR = [.62397643, 42.991698]
+
+. 
+. * Check scalars returned by the cci program
+. di r(p)       
+.13057002
+
+. di r(or)      
+5
+
+. di r(lb_or)   
+.40865859
+
+. di r(ub_or)   
+75.971185
+
+. di r(afe)     
+.8
+
+. di r(lb_afe)  
+-1.4470304
+
+. di r(ub_afe)  
+.98683711
+
+. di r(afp)     
+.6
+
+. di r(chi2) 
+2.2857143
+
+. 
+. * Check scalars calculated and returned by the choi_lr_testi program
+. di r(or_cond)            
+4.4742438
+
+. di r(clr)            
+2.9944571
+
+. di r(chi2_clr)      
+2.1935259
+
+. di r(p_choi)        
+.13859174
+
+. di r(lr6pt8lsi_lb)  
+.62397643
+
+. di r(lr6pt8lsi_ub)  
+42.991698
+
+. 
+. choi_lr_testi 6 2 3 5, exact k(8)
+                                                         Proportion
+                 |   Exposed   Unexposed  |      Total     Exposed
+-----------------+------------------------+------------------------
+           Cases |         6           2  |          8       0.7500
+        Controls |         3           5  |          8       0.3750
+-----------------+------------------------+------------------------
+           Total |         9           7  |         16       0.5625
+                 |                        |
+                 |      Point estimate    |    [95% Conf. Interval]
+                 |------------------------+------------------------
+      Odds ratio |                5       |    .4086586    75.97119 (exact)
+ Attr. frac. ex. |               .8       |    -1.44703    .9868371 (exact)
+ Attr. frac. pop |               .6       |
+                 +-------------------------------------------------
+                                  1-sided Fisher's exact P = 0.1573
+                                  2-sided Fisher's exact P = 0.3147
+ 
+ 
+Likelihood ratio statistics conditioned on the marginal exposure rate
+ 
+Maximum likelihood estimate (MLE) of odds ratio      = 4.4742438
+Likelihood ratio under the null hypothesis           = 2.9944571
+Likelihood ratio chi-squared statistic               = 2.1935259
+P value for the null hypothesis that the OR equals 1 = .13859174
+1/6.825936  LSI for the OR = [.62397643, 42.991698]
+1/8         LSI for the OR = [.57712034, 47.72445]
+
+. 
+. * Check scalars returned by the cci program
+. di r(p1_exact)
+.15734266
+
+. di r(p_exact) 
+.31468531
+
+. 
+. * Check that extra LSIs are returned
+. di r(lrklsi_lb)     
+.57712034
+
+. di r(lrklsi_ub)     
+47.72445
+
+. 
+. choi_lr_testi 6 2 3 5, corn
+
+                                                         Proportion
+                 |   Exposed   Unexposed  |      Total     Exposed
+-----------------+------------------------+------------------------
+           Cases |         6           2  |          8       0.7500
+        Controls |         3           5  |          8       0.3750
+-----------------+------------------------+------------------------
+           Total |         9           7  |         16       0.5625
+                 |                        |
+                 |      Point estimate    |    [95% Conf. Interval]
+                 |------------------------+------------------------
+      Odds ratio |                5       |    .6433784    38.07362 (Cornfield)
+ Attr. frac. ex. |               .8       |   -.5542952    .9737351 (Cornfield)
+ Attr. frac. pop |               .6       |
+                 +-------------------------------------------------
+                               chi2(1) =     2.29  Pr>chi2 = 0.1306
+ 
+ 
+Likelihood ratio statistics conditioned on the marginal exposure rate
+ 
+Maximum likelihood estimate (MLE) of odds ratio      = 4.4742438
+Likelihood ratio under the null hypothesis           = 2.9944571
+Likelihood ratio chi-squared statistic               = 2.1935259
+P value for the null hypothesis that the OR equals 1 = .13859174
+1/6.825936  LSI for the OR = [.62397643, 42.991698]
+
+. choi_lr_testi 6 2 3 5, woolf k(16)
+
+                                                         Proportion
+                 |   Exposed   Unexposed  |      Total     Exposed
+-----------------+------------------------+------------------------
+           Cases |         6           2  |          8       0.7500
+        Controls |         3           5  |          8       0.3750
+-----------------+------------------------+------------------------
+           Total |         9           7  |         16       0.5625
+                 |                        |
+                 |      Point estimate    |    [95% Conf. Interval]
+                 |------------------------+------------------------
+      Odds ratio |                5       |    .5841514    42.79712 (Woolf)
+ Attr. frac. ex. |               .8       |   -.7118849    .9766339 (Woolf)
+ Attr. frac. pop |               .6       |
+                 +-------------------------------------------------
+                               chi2(1) =     2.29  Pr>chi2 = 0.1306
+ 
+ 
+Likelihood ratio statistics conditioned on the marginal exposure rate
+ 
+Maximum likelihood estimate (MLE) of odds ratio      = 4.4742438
+Likelihood ratio under the null hypothesis           = 2.9944571
+Likelihood ratio chi-squared statistic               = 2.1935259
+P value for the null hypothesis that the OR equals 1 = .13859174
+1/6.825936  LSI for the OR = [.62397643, 42.991698]
+1/16        LSI for the OR = [.42305043, 73.372846]
+
+. choi_lr_testi 6 2 3 5, exact k(8)
+                                                         Proportion
+                 |   Exposed   Unexposed  |      Total     Exposed
+-----------------+------------------------+------------------------
+           Cases |         6           2  |          8       0.7500
+        Controls |         3           5  |          8       0.3750
+-----------------+------------------------+------------------------
+           Total |         9           7  |         16       0.5625
+                 |                        |
+                 |      Point estimate    |    [95% Conf. Interval]
+                 |------------------------+------------------------
+      Odds ratio |                5       |    .4086586    75.97119 (exact)
+ Attr. frac. ex. |               .8       |    -1.44703    .9868371 (exact)
+ Attr. frac. pop |               .6       |
+                 +-------------------------------------------------
+                                  1-sided Fisher's exact P = 0.1573
+                                  2-sided Fisher's exact P = 0.3147
+ 
+ 
+Likelihood ratio statistics conditioned on the marginal exposure rate
+ 
+Maximum likelihood estimate (MLE) of odds ratio      = 4.4742438
+Likelihood ratio under the null hypothesis           = 2.9944571
+Likelihood ratio chi-squared statistic               = 2.1935259
+P value for the null hypothesis that the OR equals 1 = .13859174
+1/6.825936  LSI for the OR = [.62397643, 42.991698]
+1/8         LSI for the OR = [.57712034, 47.72445]
+
+. 
+. * Check larger sample sizes
+. choi_lr_testi 72 24 36 60, k(8)
+                                                         Proportion
+                 |   Exposed   Unexposed  |      Total     Exposed
+-----------------+------------------------+------------------------
+           Cases |        72          24  |         96       0.7500
+        Controls |        36          60  |         96       0.3750
+-----------------+------------------------+------------------------
+           Total |       108          84  |        192       0.5625
+                 |                        |
+                 |      Point estimate    |    [95% Conf. Interval]
+                 |------------------------+------------------------
+      Odds ratio |                5       |    2.576879    9.768128 (exact)
+ Attr. frac. ex. |               .8       |    .6119337    .8976262 (exact)
+ Attr. frac. pop |               .6       |
+                 +-------------------------------------------------
+                               chi2(1) =    27.43  Pr>chi2 = 0.0000
+ 
+ 
+Likelihood ratio statistics conditioned on the marginal exposure rate
+ 
+Maximum likelihood estimate (MLE) of odds ratio      = 4.9539211
+Likelihood ratio under the null hypothesis           = 1213489.1
+Likelihood ratio chi-squared statistic               = 28.018021
+P value for the null hypothesis that the OR equals 1 = 1.202e-07
+1/6.825936  LSI for the OR = [2.7020791, 9.3208557]
+1/8         LSI for the OR = [2.6376818, 9.5689775]
+
+. choi_lr_testi 180 60 90 150, k(16)
+                                                         Proportion
+                 |   Exposed   Unexposed  |      Total     Exposed
+-----------------+------------------------+------------------------
+           Cases |       180          60  |        240       0.7500
+        Controls |        90         150  |        240       0.3750
+-----------------+------------------------+------------------------
+           Total |       270         210  |        480       0.5625
+                 |                        |
+                 |      Point estimate    |    [95% Conf. Interval]
+                 |------------------------+------------------------
+      Odds ratio |                5       |    3.317747     7.54922 (exact)
+ Attr. frac. ex. |               .8       |    .6985906     .867536 (exact)
+ Attr. frac. pop |               .6       |
+                 +-------------------------------------------------
+                               chi2(1) =    68.57  Pr>chi2 = 0.0000
+ 
+ 
+Likelihood ratio statistics conditioned on the marginal exposure rate
+ 
+Maximum likelihood estimate (MLE) of odds ratio      = 4.9815164
+Likelihood ratio under the null hypothesis           = 1.821e+15
+Likelihood ratio chi-squared statistic               = 70.276267
+P value for the null hypothesis that the OR equals 1 = 5.155e-17
+1/6.825936  LSI for the OR = [3.384192, 7.409481]
+1/16        LSI for the OR = [3.1339526, 8.0382116]
+
+. choi_lr_testi 600 200 300 500, woolf k(32)
+
+                                                         Proportion
+                 |   Exposed   Unexposed  |      Total     Exposed
+-----------------+------------------------+------------------------
+           Cases |       600         200  |        800       0.7500
+        Controls |       300         500  |        800       0.3750
+-----------------+------------------------+------------------------
+           Total |       900         700  |       1600       0.5625
+                 |                        |
+                 |      Point estimate    |    [95% Conf. Interval]
+                 |------------------------+------------------------
+      Odds ratio |                5       |    4.033904     6.19747 (Woolf)
+ Attr. frac. ex. |               .8       |    .7521012    .8386438 (Woolf)
+ Attr. frac. pop |               .6       |
+                 +-------------------------------------------------
+                               chi2(1) =   228.57  Pr>chi2 = 0.0000
+ 
+ 
+Likelihood ratio statistics conditioned on the marginal exposure rate
+ 
+Maximum likelihood estimate (MLE) of odds ratio      = 4.9944476
+Likelihood ratio under the null hypothesis           = 8.826e+50
+Likelihood ratio chi-squared statistic               = 234.6139
+P value for the null hypothesis that the OR equals 1 = 5.877e-53
+1/6.825936  LSI for the OR = [4.035843, 6.2001042]
+1/32        LSI for the OR = [3.7536033, 6.6831072]
+
+. choi_lr_testi 1200 400 600 1000, woolf k(32)
+
+                                                         Proportion
+                 |   Exposed   Unexposed  |      Total     Exposed
+-----------------+------------------------+------------------------
+           Cases |      1200         400  |       1600       0.7500
+        Controls |       600        1000  |       1600       0.3750
+-----------------+------------------------+------------------------
+           Total |      1800        1400  |       3200       0.5625
+                 |                        |
+                 |      Point estimate    |    [95% Conf. Interval]
+                 |------------------------+------------------------
+      Odds ratio |                5       |    4.295722    5.819743 (Woolf)
+ Attr. frac. ex. |               .8       |    .7672103    .8281711 (Woolf)
+ Attr. frac. pop |               .6       |
+                 +-------------------------------------------------
+                               chi2(1) =   457.14  Pr>chi2 = 0.0000
+ 
+ 
+Likelihood ratio statistics conditioned on the marginal exposure rate
+ 
+Maximum likelihood estimate (MLE) of odds ratio      = 4.9972227
+Likelihood ratio under the null hypothesis           = 8.41e+101
+Likelihood ratio chi-squared statistic               = 469.38195
+P value for the null hypothesis that the OR equals 1 = 4.37e-104
+1/6.825936  LSI for the OR = [4.2967386, 5.8210048]
+1/32        LSI for the OR = [4.0810354, 6.1363946]
+
+. 
+. * Check behavior with empty cells
+. choi_lr_testi 0 2 3 5
+
+                                                         Proportion
+                 |   Exposed   Unexposed  |      Total     Exposed
+-----------------+------------------------+------------------------
+           Cases |         0           2  |          2       0.0000
+        Controls |         3           5  |          8       0.3750
+-----------------+------------------------+------------------------
+           Total |         3           7  |         10       0.3000
+                 |                        |
+                 |      Point estimate    |    [95% Conf. Interval]
+                 |------------------------+------------------------
+      Odds ratio |                0       |           0    4.841502 (Cornfield)
+ Prev. frac. ex. |                1       |   -3.841502           1 (Cornfield)
+ Prev. frac. pop |                .       |
+                 +-------------------------------------------------
+                               chi2(1) =     1.07  Pr>chi2 = 0.3006
+
+ Note: Exact confidence levels not possible with zero count cells.
+ 
+ 
+Likelihood ratio statistics conditioned on the marginal exposure rate
+ 
+Maximum likelihood estimate (MLE) of odds ratio      = 0
+Likelihood ratio under the null hypothesis           = 2.1428571
+Likelihood ratio chi-squared statistic               = 1.5242801
+P value for the null hypothesis that the OR equals 1 = .21697293
+1/6.825936  LSI for the OR = [0, 3.7822765]
+
+. choi_lr_testi 3 5 0 2, k(8)
+
+                                                         Proportion
+                 |   Exposed   Unexposed  |      Total     Exposed
+-----------------+------------------------+------------------------
+           Cases |         3           5  |          8       0.3750
+        Controls |         0           2  |          2       0.0000
+-----------------+------------------------+------------------------
+           Total |         3           7  |         10       0.3000
+                 |                        |
+                 |      Point estimate    |    [95% Conf. Interval]
+                 |------------------------+------------------------
+      Odds ratio |                .       |    .2065475           . (Cornfield)
+ Attr. frac. ex. |                1       |   -3.841502           . (Cornfield)
+ Attr. frac. pop |             .375       |
+                 +-------------------------------------------------
+                               chi2(1) =     1.07  Pr>chi2 = 0.3006
+
+ Note: Exact confidence levels not possible with zero count cells.
+ 
+ 
+Likelihood ratio statistics conditioned on the marginal exposure rate
+ 
+Maximum likelihood estimate (MLE) of odds ratio      = infinity
+Likelihood ratio under the null hypothesis           = 2.1428571
+Likelihood ratio chi-squared statistic               = 1.5242801
+P value for the null hypothesis that the OR equals 1 = .21697293
+1/6.825936  LSI for the OR = [.26439104, infinity]
+1/8         LSI for the OR = [.23114771, infinity]
+
+. choi_lr_testi 300 500 0 200, k(16)
+
+                                                         Proportion
+                 |   Exposed   Unexposed  |      Total     Exposed
+-----------------+------------------------+------------------------
+           Cases |       300         500  |        800       0.3750
+        Controls |         0         200  |        200       0.0000
+-----------------+------------------------+------------------------
+           Total |       300         700  |       1000       0.3000
+                 |                        |
+                 |      Point estimate    |    [95% Conf. Interval]
+                 |------------------------+------------------------
+      Odds ratio |                .       |     31.2292           . (Cornfield)
+ Attr. frac. ex. |                1       |    .9679787           . (Cornfield)
+ Attr. frac. pop |             .375       |
+                 +-------------------------------------------------
+                               chi2(1) =   107.14  Pr>chi2 = 0.0000
+
+ Note: Exact confidence levels not possible with zero count cells.
+ 
+ 
+Likelihood ratio statistics conditioned on the marginal exposure rate
+ 
+Maximum likelihood estimate (MLE) of odds ratio      = infinity
+Likelihood ratio under the null hypothesis           = 2.629e+35
+Likelihood ratio chi-squared statistic               = 163.11415
+P value for the null hypothesis that the OR equals 1 = 2.362e-37
+1/6.825936  LSI for the OR = [61.74006, infinity]
+1/16        LSI for the OR = [42.585057, infinity]
+
+. 
+. log close
+      name:  <unnamed>
+       log:  C:\Users\dupontwd.VANDERBILT\Documents\Dropbox\OFFICE_desktop\ChoiFisherTest\Stata Program\ado\ForSubmission\c
+> hoi_lr_test\test.log
+  log type:  text
+ closed on:  31 May 2016, 14:09:09
+---------------------------------------------------------------------------------------------------------------------------

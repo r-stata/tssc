@@ -1,0 +1,87 @@
+{smcl}
+{* 26 Feb 2003/25sep2001}{...}
+{hline}
+help for {hi:ovfplot7}
+{hline}
+
+{title:Plots of observed vs fitted} 
+
+{p 8 16}{cmd:ovfplot7} [{cmd:,} {it:graph_options} 
+{cmdab:sep:arate(}{it:varname}{cmd:)} ]   
+
+{title:Description}
+
+{p}{cmd:ovfplot7} plots observed vs fitted or predicted values for the response
+from an immediately previous {cmd:regress} or similar command, with by
+default a line of equality superimposed. 
+
+
+{title:Remarks} 
+
+{p}In more technical detail: {cmd:ovfplot7} plots a single dependent or response
+variable as specified in {cmd:e(depvar)} on the y axis and whatever single
+variable is calculated by the default of {cmd:predict} on the x axis, which
+makes sense whenever those variables are on the same scale. 
+
+{p}If your estimation results do not meet these specifications, you are likely 
+to get either bizarre results or an error message. 
+
+{p}The plot is restricted to the estimation sample.  
+
+{p}{cmd:ovfplot7} is a renamed clone of {cmd:ovfplot} 2.0.0 which is for 
+Stata 7. Stata 8 users should use {cmd:ovfplot} 3.0.0 or later. 
+
+
+{title:Options}
+
+{p 0 4} 
+{it:graph_options} are options of {cmd:graph, twoway}.
+
+{p 4 4} 
+The equality line is specified by the first symbol, by default {cmd:i}, of
+{cmd:symbol()}, and by the first connect specification, by default {cmd:l[-]},
+of {cmd:connect()}. Data points for one or more classes of the response are
+shown according to subsequent arguments of these options. 
+
+{p 0 4}
+{cmd:separate(}{it:varname}{cmd:)} specifies that predictions are to be 
+shown separately for different categories of {it:varname}. 
+
+{p 0 4}
+Note that {cmd:by(}{it:varname}{cmd:)} may be employed as usual 
+with {cmd:ovfplot7} and it also may be combined with {cmd:separate()}.
+
+
+{title:Examples}
+
+{p 4 8}{inp:. use auto}
+
+{p 4 8}{inp:. regress mpg weight}
+
+{p 4 8}{inp:. ovfplot7}
+
+{p 4 8}{inp:. gen weightsq = weight^2}
+
+{p 4 8}{inp:. regress mpg weight weightsq}
+
+{p 4 8}{inp:. ovfplot7}
+
+{p 4 8}{inp:. glm mpg weight foreign, link(log)} 
+
+{p 4 8}{inp:. ovfplot7, sep(foreign) tr(1)}
+
+{p 4 8}{inp:. ovfplot7, sep(foreign) sy(iop)} 
+
+
+{title:Author}
+
+    Nicholas J. Cox, University of Durham, U.K.
+    n.j.cox@durham.ac.uk
+    
+
+{title:Also see}
+
+{p 0 19}On-line:  help for {help graph}, {help regdiag},
+{help regplot} (if installed), {help anovaplot} (if installed), {help sparl} 
+(if installed)  
+{p_end}

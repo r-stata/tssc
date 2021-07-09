@@ -1,0 +1,68 @@
+{smcl}
+{* 27feb2007}{...}
+{hline}
+help for {hi:xtpqml}
+{hline}
+
+{title: Fixed-effects Poisson (Quasi-ML) regression with Robust Standard Errors}
+
+{p 8 22 2}{cmdab:xtpqml} {it:depvar} [{it:indepvars}] [{cmd:if}
+{it:exp}] [{cmd:in} {it:range}]{cmd:,} {cmd:fe} {cmdab:i:(}{it:varname}{cmd:)}
+{cmdab:ir}{cmd:r} {cmdab:cluster:(}{it:varname}{cmd:)}]
+
+
+{p 4 4 2}
+{cmd:by} {it:...} {cmd::} may be used with {cmd:xtpqml}; see help {help by}.
+
+{p 4 4 2}
+Weights are not allowed.
+
+
+{title:Description}
+
+{p 4 4 2}
+{cmd:xtpqml} is simply a wrapper for the {cmd:xtpoisson} command that 
+computes robust standard errors. 
+
+{p 4 4 2}
+Persons interested in this regression model should also see help
+{help xtpoisson}, and help {help poisson}.
+
+
+{title:Options}
+
+{p 4 8 2}{cmd:i(}{it:varname}{cmd:)} is not optional; it specifies the
+(numeric) identifier variable for groups in the panel data. This option can be set 
+using {help iis}.
+
+{p 4 8 2}{cmd:irr} reports the estimated coefficients transformed to incident 
+rate ratios, i.e., exp(b) rather than b.  Standard errors and confidence intervals 
+are similarly transformed.  This option affects how results are displayed, not how
+they are estimated.
+
+{p 4 8 2}{cmd:cluster} allows for cross-sectional clustering of residuals at a
+more aggregated level than the individual fixed effect. This is an unusual assumption
+and users are responsible for providing their own interpretation of the results 
+obtained by specifiying this option
+
+
+{title:Examples}
+
+{p 4 8 2}{cmd:. xtpqml y x, i(id)}
+
+{p 4 8 2}{cmd:. xtpqml y x, fe i(id)}
+
+{p 4 8 2}{cmd:. xtpqml y x, i(id) irr}
+
+{p 4 8 2}{cmd:. xtpqml y x, i(id) cluster(group)}
+
+
+
+{title:Also see}
+
+{p 4 13 2}
+Manual:  {hi:[U] 23 Estimation and post-estimation commands},{break}
+{hi:[XT] xtpoisson}
+
+{p 4 13 2}
+Online:  help for {help poisson}, {help xtpoisson}; {help xtnbreg}

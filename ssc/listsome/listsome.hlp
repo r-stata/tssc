@@ -1,0 +1,137 @@
+{smcl}
+{* revised 30aug2014}{...}
+{cmd:help listsome}
+{hline}
+
+{title:Title}
+
+{phang}
+{bf:listsome} {hline 2} List values of variables for some observations
+
+
+{title:Syntax}
+
+{p 4 16 2}
+{cmd:listsome}  
+	[{it:{help varlist}}] 
+	{ifin}
+	{cmd:,}
+	[{opt max:imum(#)}
+	{opt rand:om} 
+	{it:list_options}]
+	
+
+{title:Description}
+
+{pstd}
+{cmd:listsome} is a simple wrapper around the built-in {cmd:list}
+command. Its purpose is to limit the number of observations listed
+to 20 (the default), or to the number specified in the {opt max:imum(#)} option. 
+
+{pstd}
+You can add any valid {it:list_options} and they will be passed along
+to the {cmd:list} command.
+
+{pstd}
+With no option specified, {stata listsome} simply lists the first 20
+observations in the data. It is therefore equivalent to
+
+        {cmd:.} {stata sysuse auto, clear}
+        {cmd:.} {stata list in 1/20}
+
+{pstd}
+{cmd:listsome} is more useful if the {ifin} qualifiers are used. In that
+case, {stata listsome if price < 10000 & mpg > 25, max(5)} is equivalent to
+
+        {cmd:.} {stata gen ifin = price < 10000 & mpg > 25}
+        {cmd:.} {stata list if ifin & sum(ifin) <= 5}
+
+{pstd}
+{cmd:listsome} is even more useful if you need to list a random sample of the
+observations in memory. For example, 
+
+        {cmd:.} {stata set seed 1651651}
+        {cmd:.} {stata listsome make-headroom if price < 10000 & mpg > 25, max(5) random}
+
+{pstd}
+is the equivalent of
+
+        {cmd:.} {stata preserve}
+        {cmd:.} {stata set seed 1651651}
+        {cmd:.} {stata gen sortorder = _n}
+        {cmd:.} {stata keep if price < 10000 & mpg > 25}
+        {cmd:.} {stata sample 5, count}
+        {cmd:.} {stata sort sortorder}
+        {cmd:.} {stata list make-headroom}
+        {cmd:.} {stata restore}
+
+{pstd}
+The sampling code for {cmd:listsome} is written in Mata and
+does not require a preserve/restore cycle and does not sort or otherwise
+change the data in memory. It is therefore very fast, even with millions
+of observations. The standalone version is called {stata "ssc des randomtag":randomtag}
+and is also available from {help SSC}.
+
+{pstd}
+Remember to set the random-number {help seed} in order to make the listings reproducible.
+
+{pstd}
+{cmd:listsome} requires Stata version 9 or newer.
+
+
+{title:Examples}
+
+{pstd}
+The {opt rand:om} option can be very useful to check the effects of
+data cleaning steps on random samples when there's too many 
+observations to visually inspect all changes. Including such listings
+in your log files adds transparency to the record. For example, if
+you are trying to split first and second occupation (note that this
+would be better handled using {help split}):
+
+        {cmd:.} {stata sysuse nlsw88.dta, clear}
+        {cmd:.} {stata decode occupation, gen(stemp)}
+        {cmd:.} {stata gen occup1 = regexr(stemp,"/.+","")}
+        {cmd:.} {stata listsome occup* if occup1 != stemp, random}
+        {cmd:.} {stata gen occup2 = regexr(stemp,".+/","") if occup1 != stemp}
+        {cmd:.} {stata listsome occup* if occup1 != stemp, random}
+
+{pstd}
+Valid {cmd:list} options can also be used
+
+        {cmd:.} {stata listsome idcode-grade, random noobs clean}
+
+
+{title:References}
+
+{pstd}
+Gould, W. W. 2012a. Using Stata's random-number generators, part 2: 
+	Drawing without replacement. The Stata Blog: Not Elsewhere Classified.
+{browse "http://blog.stata.com/2012/08/03/using-statas-random-number-generators-part-2-drawing-without-replacement/":http://blog.stata.com/2012/08/03/using-statas-random-number-generators-part-2-drawing-without-replacement/}
+
+
+{title:Also see}
+
+{psee}
+SSC:  {stata "ssc des randomtag":randomtag} is a standalone version of the
+Mata routines that {cmd:listsome} uses to draw a random sample of observations.
+{p_end}
+
+{psee}
+Help: {manhelp sample D}, {manhelp codebook D}
+{p_end}
+
+{psee}
+FAQs:  {browse "http://www.stata.com/support/faqs/statistics/random-samples/":How can I take random samples from an existing dataset?}
+{p_end}
+
+{psee}
+Statalist: {cmd:listsome} is not the first of its kind, see
+this {browse "http://www.stata.com/statalist/archive/2008-04/msg00448.html":effort} by Nick Cox.
+{p_end}
+
+
+{title:Author}
+
+{pstd}Robert Picard{p_end}
+{pstd}picard@netbox.com{p_end}

@@ -1,0 +1,152 @@
+{smcl}
+{cmd:help xtmrho}
+{hline}
+
+{title:Title}
+
+{phang}{hi:xtmrho} {hline 1} Computes intraclass correlations, median odds ratios and median incidence rate ratios after xtmixed, xtmelogit, xtmepoisson {p_end}
+
+{title:Syntax}
+
+{phang}{it:(xtmixed, xtmelogit or xtmepoisson regression)}
+
+{phang}{cmd:. xtmrho}
+
+{title:Description}
+
+{pstd}
+{cmd:xtmrho} is a convenient way to compute intra class correlations (ICC), median odds ratios (MOR) and median incidence rate ratios (MIRR) after {helpb xtmixed}, {helpb xtmepoisson} and {helpb xtmelogit}.
+
+{pstd}
+It uses the most recently fitted modell to compute intra correlations for all levels automatically. For each level it stores scalars (help {helpb scalar}, {helpb ereturn}) for {hi:ICC e(rho'{it:level}')}, {hi:MOR e(mor'{it:level}')} or {hi:MIRR e(mirr'{it:level}')} as well as a scalar for the total variance on the level  {hi:e(u'{it:level}')}.
+
+{pstd}
+Its results can be used for {helpb estimates table} or {helpb estout} (if installed).
+
+{title:Options}
+
+{it:(no options are supported)}
+
+{title:Example}
+
+{cmd:. use http://www.stata-press.com/data/r9/productivity.dta}
+
+{cmd:. xtmixed  gsp private emp hwy water other unemp ||  region: ||  state:}
+
+{txt}{it: (output omitted)}
+
+{txt}{cmd:. xtmrho}
+
+{txt}Levels: {res}region state
+
+{txt}Intra class correlation on level {res}1{txt} rho = {res}.19561036
+{txt}Intra class correlation on level {res}2{txt} rho = {res}.66469224
+
+{cmd:. gen gsp_l9 = gsp<9}
+
+{cmd:. xtmelogit gsp_l9 private emp hwy water other unemp ||  region: ||  state:}
+
+{txt}{it: (output omitted)}
+
+{cmd}. xtmrho
+
+{txt}Levels: {res}region state
+
+{txt}level {res}1{txt}:
+{txt}Intraclass correlation  (ICC):  {res}rho1{txt} = {res}0.00000
+{txt}Median Odds Ratio (MOR):        {res}mor1{txt} = {res}1.00000
+
+{txt}level {res}2{txt}:
+{txt}Intraclass correlation  (ICC):  {res}rho2{txt} = {res}0.71714
+{txt}Median Odds Ratio (MOR):        {res}mor2{txt} = {res}15.71828
+
+ {cmd:. xtile gsp_nq4 = gsp, nq(4)}
+
+{cmd:. xtmepoisson gsp_nq4 private emp hwy water other unemp ||  region: ||  state:}
+
+{txt}{it: (output omitted)}
+
+{cmd}. xtmrho
+
+{txt}Levels: {res}region state
+
+{txt}level {res}1{txt}:
+Median Incidence Rate Ratio (MIRR):        {res}MIRR1{txt} = {res}1.00000
+
+{txt}level {res}2{txt}:
+Median Incidence Rate Ratio (MIRR):        {res}MIRR2{txt} = {res}1.03960
+
+{cmd:. est tab , stat(mirr1 mirr2) stfmt(%4.3f) b(%3.2f) eform}
+
+{res}
+{txt}{hline 12}{c -}{c TT}{c -}{hline 7}{c -}{c -}
+{ralign 12:Variable} {c |} {center 7:active} {space 1}
+{hline 12}{c -}{c +}{c -}{hline 7}{c -}{c -}
+{res}eq1          {txt}{c |}
+{res}{txt}{space 5}private {c |}{res} {ralign 7:1.12}{txt} {space 1}
+{res}{txt}{space 9}emp {c |}{res} {ralign 7:1.50}{txt} {space 1}
+{res}{txt}{space 9}hwy {c |}{res} {ralign 7:0.90}{txt} {space 1}
+{res}{txt}{space 7}water {c |}{res} {ralign 7:1.04}{txt} {space 1}
+{res}{txt}{space 7}other {c |}{res} {ralign 7:0.97}{txt} {space 1}
+{res}{txt}{space 7}unemp {c |}{res} {ralign 7:1.00}{txt} {space 1}
+{res}{txt}{space 7}_cons {c |}{res} {ralign 7:0.10}{txt} {space 1}
+{hline 12}{c -}{c +}{c -}{hline 7}{c -}{c -}
+{res}lns1_1_1     {txt}{c |}
+{res}{txt}{space 7}_cons {c |}{res} {ralign 7:0.00}{txt} {space 1}
+{hline 12}{c -}{c +}{c -}{hline 7}{c -}{c -}
+{res}lns2_1_1     {txt}{c |}
+{res}{txt}{space 7}_cons {c |}{res} {ralign 7:0.04}{txt} {space 1}
+{hline 12}{c -}{c +}{c -}{hline 7}{c -}{c -}
+{res}{lalign 12:Statistics}{txt} {c |} {center 7:} {space 1}
+{ralign 12:mirr1} {c |}{res} {ralign 7:1.000}{txt} {space 1}
+{ralign 12:mirr2} {c |}{res} {ralign 7:1.040}{txt} {space 1}
+{hline 12}{c -}{c BT}{c -}{hline 7}{c -}{c -}
+
+{txt}{it: (end)}
+
+{title:References}
+{txt}
+Hox J (2002) Multilevel Analyses. Techniques and Applications.
+   Lawrence Erlbaum Associates, New Jersey. pp.31.
+
+Larsen K and Merlo J (2005). Appropriate Assessment of Neighborhood Effects on
+   Individual Health: Integrating Random and Fixed Effects in Multilevel Logistic
+   Regression. American Journal of Epidemiology 161 (1). p.81-88.
+
+Rabe-Hesketh S, Skrondal A (2008). Multilevel and Longitudinal Modeling using Stata. 2nd Edition.
+   College Station, TX: Stata Press Publication.
+
+Snijders TAB, Bosker RJ (1999). Multilevel analysis: an introduction to basic and advanced
+   multilevel modeling, 1st ed. Thousand Oaks, CA: Sage.
+
+{title:Methods and formulas}
+
+{text}Intraclass-Correlation after xtmixed (cf. Snijders 1999):
+
+{phang2}{text}{hi: ICC = AREA LEVEL VARIANCE / TOTAL VARIANCE }
+
+{text}Intraclass-Correlation after xtmelogit (cf. Snijders 1999):
+
+{phang2}{text}{hi: ICC =  AREA LEVEL VARIANCE / (SUM OF AREA LEVEL VARIANCES + (c(pi)^2)/3) }
+
+{text} Median Odds Ratio after xtmelogit (cf. Larsen and Merlo 2002):
+
+{phang2}{text}{hi: MOR =  exp(sqrt(2*AREA LEVEL VARIANCE))*invnormal(0.75))}
+
+{text} Median Incedence Rate Ratio after xtmepoisson (cf. Rabe-Hesketh and Skrondal 2008):
+
+{phang2}{text}{hi: MIRR = exp(sqrt(2*AREA LEVEL VARIANCE))*invnormal(0.75))}
+
+{title:Author}
+
+{p 4 4 2}Lars E. Kroll, {browse "mailto:mail@lkroll.de": email} {break}
+ {browse "http://www.lkroll.de": http://www.lkroll.de}
+
+{title:Also see}
+
+{psee}
+Manual:  {bf:[XT] xtmixed}, {bf:[XT] xtmelogit}, {bf:[XT] xtmepoisson}
+
+{psee}
+Online:  {helpb xtmixed}, {helpb xtmelogit}, {helpb xtmepoisson}, {helpb estimates}
+{p_end}

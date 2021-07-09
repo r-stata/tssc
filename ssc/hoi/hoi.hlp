@@ -1,0 +1,188 @@
+{smcl}
+{hline}
+{cmd:help hoi} {right:Joao Pedro Azevedo}
+{right:Samuel Franco}
+{right:Eliana Rubiano}
+{right:Alejandro Hoyos}
+{hline}
+
+{title:{cmd:hoi} - Human Opportunity Index}
+
+{p 8 12}
+{cmd:hoi}
+{it:{help depvar}}
+{it:[{help indepvars}]}
+[{cmd:{help if}}]
+[{cmd:{help in}}]
+[{cmd:{help weight}}]
+[,
+{cmd:geometric}
+{cmd:by}{cmd:(}{it:varname}{cmd:)}
+{cmd:base}{cmd:(}{it:refcat}{cmd:)}
+{cmd:estimates}
+{cmd:format}{cmd:(}{it:string}{cmd:)}
+{cmd:adjust1(}{it:[var[= #] ...]}{cmd:)}
+{cmd:keep}
+{cmd:nose}
+{cmd:level(}{it:confidence interval}{cmd:)}
+{cmd:mixcoef(}{it:string}{cmd:)}
+{cmd:coef(}{it:string}{cmd:)}
+{cmd:decomp1}
+{cmd:decomp2}
+{cmd:nowarning}
+{cmd:asis}
+]{p_end}
+
+{p 4 4 2}{cmd:fweights} and {cmd:aweights} are allowed; see help weights. See help {help weight}.{p_end}
+
+{title:Description}
+
+{p 4 4 2}{cmd:hoi} computes the Human Opportunity Index proposed by Barros et al (2008), including the Coverage
+of Basic Opportunities (C), the Dissemilarity Index (D), and the Human Opportunity Index (HOI). Analytical standard errors
+are reported for the C, D, and HOI. The program also computes two decompositions of changes of the HOI: (i) the scale and distribution decomposition 
+Barros et al (2008); and, (ii) the composition, equalization and scale decomposition presented in  (Molinas et al, 2010 and Velez et al, 2010).{p_end}
+
+{p 4 4 2}If the {cmd:by} option is specified the command will automatically produce a counterfactual using the coefficients from an alternative period in time or palce.{p_end}
+
+{p 4 4 2}If the coverage rate of a selected outcome is equal to 100 or 0, hoi will produce the respective HOI withough
+relying on the logit.{p_end}
+
+{title:Options}
+
+{p 4 4 2}{cmd:by}{cmd:(}groupvar{cmd:)} repeats the command for the two groups of observations for which the values of the variables
+ in varlist are the same. Groupvar must be an integer variable with labels.{p_end}
+
+{p 4 4 2}{cmd:base}{cmd:(}{it:refcat}{cmd:)} sets the value of the comparation categoric group that defided
+the base group. If the base category was not defined {cmdab:hoi} will use the first category.{p_end}
+
+{p 4 4 2}{cmd:format} specify the display format for variables. Default format %9.3f.{p_end}
+
+{p 4 4 2}{cmd:estimates} shows the coefficients of the logit model used on the calculation of the index.{p_end}
+
+{p 4 4 2}{cmd:level} sets the level of the confidence interval. Default value 95%.{p_end}
+
+{p 4 4 2}{cmd:adjust1}{cmd:(}[var[= #] ...]{cmd:)} provides the specifications of the first adjusted predictions. The estimate is computed for each variables, setting the variables specified in [var[= #] ...] to their mean or to the specified number if the = # part is specified.
+Variables used for the estimation but not included in adjust variable list are left at their current values, observation by observation.{p_end}
+
+{p 4 4 2}{cmd:keep} preserve the predicted values used in the computation of the index.{p_end}
+
+{p 4 4 2}{cmd:nose} omit the standard errors and respective confidence intervals.{p_end}
+
+{p 4 4 2}{cmd:coef(}{it:string}{cmd:)} this option allows to choice of the coeeficients used in the estimation of the HOI.
+Three options are allowed: all - uses the cofficient the full sample will be used; value of by - analysist can also chose a particular 
+reference category by selecting a specific value of the by variable, to be used in all estimations of the index; blank - the default
+option is to estimate a seperate logit of each category of the by variable.{p_end}
+
+{p 4 4 2}{cmd:decomp1} reports the scale and distribution decomposition (Paes de Barros et al, 2008). If not specifically determined through the base option, 
+the first category in the list is used as reference.{p_end}
+
+{p 4 4 2}{cmd:decomp2} reports the composition, equalization and scale decomposition (Molinas et al, 2010). If not specifically determined through the base option, 
+the first category in the list is used as reference. It is important to note that the scale effect reported in decomp2 is not the same as the scale effect reported in decomp1.{p_end}
+
+{p 4 4 2}{cmd:mixcoef(}{it:string}{cmd:)} this option allows one to chose the coefficient from which population will be used on the composition, equalization and scale decomposition (decomp2).
+Three options are allowed: all - uses the cofficient a pooled regression; value of by - analysist can also chose a particular 
+reference category by selecting a specific value of the by variable, to be used in all estimations of the index; blank - the default
+option is to estimate a seperate logit of each category of the by variable.{p_end}
+
+{p 4 4 2}{cmd:simple} reports only the C, D, and HOI. Omits summary statistics regarding the logit, dataset used and information lost, 
+and the share of the vulnerable population.{p_end}
+
+{p 4 4 2}{cmd:nowarning} omitts warning messages.{p_end}
+
+{p 4 4 2}{cmd:asis} forces retention of perfect predictor variables and their associated perfectly predicted
+        observations and may produce instabilities in maximization; see {manhelp probit R}.{p_end}
+
+{title:Output}
+
+{p 4 4 2}{cmd:Converage (C)} Coverage of Basic Opportunities{p_end}
+ 
+{p 4 4 2}{cmd:Dissemilarity (D) } Dissemilarity Index{p_end}
+
+{p 4 4 2}{cmd:Human Opportunity Index (HOI)} Human Opportunity Index{p_end}
+
+{p 4 4 2}{cmd:Pseudo R2} from the logit model{p_end}
+
+{p 4 4 2}{cmd:Obs Logit} number of observations used in the logit model{p_end}
+
+{p 4 4 2}{cmd:Obs} number of observations of the dependent variable{p_end}
+
+{p 4 4 2}{cmd:Wtg Pop} weighted population{p_end}
+
+{p 4 4 2}{cmd:Vulnerable Pop} number of vulnerable populations (pi <= pBar){p_end}
+
+{p 4 4 2}{cmd:Vulnerable (%)} share of vulnerable population{p_end}
+
+{p 4 4 2}{cmd:Obs 1} number of observations used in the logit model{p_end}
+
+{p 4 4 2}{cmd:Obs 2} number of observations of the dependet variable{p_end}
+
+{p 4 4 2}{cmd:Loss (%)} share of observations loss given the set of circunstances{p_end}
+
+{title:Examples}
+
+{p 8 12}{inp:. hoi agua id13 id14 id15 id16 sexo educac educac2 lrdpc casal scr area [fw=peso], adjust1(id13=1 id14=0 id15=0 id16=0) format(%9.3f)}{p_end}
+
+{p 8 12}{inp:. hoi agua id13 id14 id15 id16 sexo educac educac2 lrdpc casal scr area [fw=peso], if idade >= 10 & idade <= 14 adjust1(id13=1 id14=0 id15=0 id16=0) format(%9.3f)}{p_end}
+
+{p 8 12}{inp:. hoi agua id13 id14 id15 id16 sexo educac educac2 lrdpc casal scr area [fw=peso], if idade >= 10 & idade <= 14 adjust1(id13=1 id14=0 id15=0 id16=0) format(%9.3f) estimates}{p_end}
+
+{p 8 12}{inp:. hoi agua id13 id14 id15 id16 sexo educac educac2 lrdpc casal scr area [fw=peso], format(%9.3f) adjust1(id13=1 id14=0 id15=0 id16=0)  by(subregion)}{p_end}
+
+{p 8 12}{inp:. hoi agua id13 id14 id15 id16 sexo educac educac2 lrdpc casal scr area [fw=peso], if idade >= 10 & idade <= 14 adjust1(id13=1 id14=0 id15=0 id16=0)  by(subregion) simple}{p_end}
+
+{p 8 12}{inp:. bootstrap hoi=r(hoi_1): hoi agua id13 id14 id15 id16 sexo educac educac2 lrdpc casal scr area, if idade >= 10 & idade <= 14 adjust1(id13=1 id14=0 id15=0 id16=0) simple}{p_end}
+
+{title:Saved Results}
+
+{p 5}{cmd:hoi} return results in r() format. Type {help return list} after estimation.
+{p_end}
+
+{title:Thanks for citing hoi as follows}
+
+{p 8 12 2}J.P. Azevedo, S. Franco, E. Rubiano, A. Hoyos, 2010.
+"HOI: Stata module to compute Human Opportunity Index," Statistical Software Components
+S457191, Boston College Department of Economics.{browse "http://ideas.repec.org/c/boc/bocode/s457191.html"}. This
+    version INSERT_VERSION_HERE.{p_end}
+
+{p 4 4 2}where you can check your version as follows:{p_end}
+
+{p 8 12}{stata "which hoi" :. which hoi}{p_end}
+   
+    
+{title:References}
+
+{p 4 4 2}Carlos Eduardo Velez, Joao Pedro Azevedo, and Christian Posso. Oportunidades para los niños colombianos: 
+cuánto avanzamos en esta década. Banco Mundial, Bando de la Republica, Departamento Nacional de Planeacion: 
+Bogota, Colombia.  {browse "http://go.worldbank.org/KNSYMOAU10"}{p_end}
+
+{p 4 4 2}Jose Molinas Vega, Ricardo Paes de Barros, Jaime Saavedra Chanduvi, et all, 2010. "Do Our Children Have a Chance? The 2010 Human Opportunity Report for Latin 
+America and the Caribbean - Conference Edition", World Bank: Washington, DC.
+{browse "http://www.worldbank.org/lacopportunity/"}{p_end}
+
+{p 4 4 2}Ricardo Paes de Barros, Francisco H.G. Ferreira, Jose Molinas Vega, Jaime Saavedra Chanduvi, et all, 2008. "Measuring Inequality
+of Opportunities in Latin America and the Caribbean", World Bank: Washington, DC.
+{browse "http://go.worldbank.org/A9Z0NUV620"}{p_end}
+
+{title:Acknowledgements}
+
+    {p 4 4 2}Numerous people have provided feedback and advice and the author's are very grateful for their comments. In
+    particular we'd like to thank: Jose R. Molinas Vega, Jaime Saavedra, Ricardo Paes de Barros, Carolina Diaz-Bonilla,
+    Samuel Freije-Rodriguez, Georgina Pizzolitto, Amer Hassan, and Christian Manuel Posso Suárez. The usual disclaimer
+    applies.{p_end}
+
+{title:Authors}
+
+    Joao Pedro Azevedo
+    jazevedo@worldbank.org
+
+    Samuel Franco
+
+    Eliana Rubiano
+    
+    Alejandro Hoyos
+
+{title:Remark}
+
+{p 4 4 2}Please note that {cmd:hoi} uses the user written packages indeplist from Maarten L. Buis, and 
+_pecats produced by J. Scott Long and Jeremy Freese on its calculations. 
+User's can download them from {help ssc}.{p_end}

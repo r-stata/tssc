@@ -1,0 +1,75 @@
+.-
+help for ^smhsiao^                                                    Nick Winter
+.-
+
+Small-Hsiao Test for IIA in multinomial logit
+---------------------------------------------
+
+	^smhsiao^ ^,^ ^e^lim(yvalue) [ ^s^amp(sampvar) ^d^etail mlogit_options
+
+
+Description
+-----------
+
+^smhsiao^ conducts the Small-Hsiao test for Independence of Irrelevant
+Alternatives after a multinomial logit model.
+
+The command displays the test statistic, degrees of freedom and P-value,
+and places values in the return array. ^return list^ for details.
+
+The command uses the e(sample) defined in ^mlogit^ to define the 
+observations over which the test is to be computed.
+
+
+Options
+-------
+
+^elim(^#^)^ specifies the value of the dependent variable that should be
+   excluded from the second-stage estimation. This is a required.
+   Note that different test results can occur when different categories
+   are excluded.
+
+^samp(^varname^)^ specifies a variable that divides the data set into two
+   half samples for estimation. This variable must take on two (and only
+   two values). If it is not specified, the sample is divided randomly 
+   roughly in half.
+
+^detail^ indicated that the various intermediate estimations should be
+   displayed. By default they are not.
+
+^mlogit_options^: any other valid options for the mlogit command, such as
+   ^robust^, may be specified as well.
+
+Examples
+--------
+
+   . ^smhsiao, elim(3) samp(sampvar)^
+
+        Estimates a multinomial logit model of pid, race and gender on
+        vote, and then calculates the Small-Hsiao test of IIA using 
+        vote==3 as the eliminated category. The variable sampvar
+        indicates the two half-samples.
+
+References
+----------
+
+Small, K. A. and C. Hsiao. 1985. "Multinomial Logit Specification Tests."
+	_International Economic Review_ 26:619-27.
+
+Zhang, Junsen and Saul D. Hoffman. 1993. "Discrete-Choice Logit Models."
+	_Sociological Methods and Research_ 22(2):193-213.
+
+Author
+------
+
+      Nick Winter
+      Cornell University
+      nwinter@@umich.edu
+
+
+Also see
+--------
+
+ Manual:  [R] mlogit, hausman
+On-line:  help for @mlogit@, @hausman@
+

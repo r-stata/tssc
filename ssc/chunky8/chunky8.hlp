@@ -1,0 +1,159 @@
+{smcl}
+{* *! version 1.0.1  January 2009}{...}
+{cmd:help chunky8}
+{hline}
+
+{title:Title}
+
+{pstd}
+{hi:chunky8} {hline 2} Text file chunking utility
+
+
+{title:Syntax}
+
+{p 8 16 2}
+{cmd:chunky8}
+{helpb using}
+{it:filename}
+ [{cmd:,}{it:options}]
+
+{synoptset 21 tabbed}{...}
+{synopthdr}
+{synoptline}
+{synopt:{opt i:ndex(#)}} Starting line in file{p_end}
+{synopt:{opt c:hunk(#)}} Size of chunk in lines{p_end}
+{synopt:{opt keep:first}} Keep the first line (e.g. with variable names) of the file with each chunk{p_end}
+{synopt:{opt l:ist}} List the lines as they are being processed
+(used for peeking at the first couple of lines or in debugging){p_end}
+{synoptline}
+{syntab:saving options}
+{synopt:{opt s:aving}} Filename to save html {p_end}
+{synopt:{opt replace:}} Replace previously saved file {p_end}
+
+{p 4 6 2}
+Note that if your {it:filename} contains embedded spaces, remember to enclose
+it in double quotes.{p_end}
+
+
+{title:Description}
+
+{pstd}
+{cmd:chunky8} is typically used in one of two ways:{p_end}
+
+{phang}(1) When a text file is too large for {helpb infiling}, it can be broken into
+chunks that can be imported individually.{p_end}
+
+{phang}(2) Sometimes one needs to get a sense of what the variable names and structure
+of a text file are by pulling off just the first few lines.{p_end}
+
+{title:Options}
+
+{dlgtab:Main}
+
+{phang}
+{opt i:ndex(#)} Thinking of a text file as having lines numbered 1 to N, index indicates the
+starting line number for the chunk
+
+{phang}
+{opt c:hunk(#)} The chunk is the number of lines to be returned.  Ideally the chunksize would
+be the largest that could be used in the subsequent {helpb infiling} process.
+
+{phang}
+{opt keep:first} Comma Separated Value (CSV) files frequently come with the variable names in
+the first line of the file.  For this type of file, the first line of names should be retained
+for all file chunks.  {cmd:keepfirst} writes out the first line of the {helpb using} file at the
+beginning of each chunk.  This allows a subsequent {helpb insheet} to be done easily on each chunk.
+
+{phang}
+{opt l:ist} Listing the first few lines of a text file can be useful. You can use the {helpb type}
+command but the {cmd:list} option is an alternative and can be set to display a single line.
+
+{dlgtab:saving}
+
+{phang}
+{opt s:aving("path & filename")} Filename to save chunk
+
+{phang}
+{opt replace:} Replace previously saved file
+
+
+{title:Examples}
+
+   .{cmd:chunky8 using ReallyBig.csv, index(1) chunk(10000) saving(chunk1.csv, replace)}
+   .{cmd:chunky8 using ReallyBig.csv, list}
+   .{cmd:chunky8 using ReallyBig.csv, index(100001) chunk(100000) keepfirst saving(chunk2.csv, replace)}
+
+
+{title:Saved results}
+
+{pstd}
+{cmd:chunky8} saves the following in {cmd:r()}:
+
+{synoptset 15 tabbed}{...}
+{p2col 5 15 19 2: Scalars}{p_end}
+{synopt:{cmd:r(eof)}}{cmd:e}nd {cmd:o}f {cmd:f}ile indicator r(eof)=1 if end of file reached{p_end}
+{synopt:{cmd:r(index)}}line number of the next line after the last line read,
+i.e. the starting index for the next chunk{p_end}
+
+
+{title:Notes}
+
+{pstd}When used on a very large file, {cmd:chunky8} would normally be employed in a loop
+that reads in and saves chunks as serially numbered files.  The program listing below
+demonstrates a typical way in which {cmd:chunky8} would be employed.{p_end}
+
+{pstd}{cmd:chunky8} is a deprecated version of {cmd:chunky} maintained for users who are using pre-Mata
+releases of Stata or users who require a line-indexed method of extracting part of a test file. The current version of {cmd:chunky} for Stata releases 9 and above uses a different logic,
+syntax and has the file I/O written utilizing highly efficient Mata routines. See {help chunky} if installed
+or {net "describe chunky, from(http://fmwww.bc.edu/RePEc/bocode/c/)":read description} from net.{p_end}
+
+// chunky8.ado demo
+// Make sure you have a minimum of 50M of memory to run this demo
+
+// Set up a test comma separated value file
+{help sysuse} auto, clear
+{help expand} 10000
+describe
+{help outsheet} using test.csv, names comma replace
+
+// If you want to look at an example of the file's
+//  variables and first few lines:
+chunky8 using test.csv, list
+
+// Set up chunksize and locals for the loop
+local part 0			 // Counter for parts
+local index 1			 // Keeps running line index
+local chunksize 250000		 // # of lines in each chunk
+{help tempfile} chunkfile		// Temporary filename for chunks
+
+// Loop until end of file is reached
+while r(eof)!=1{
+    chunky8 using test.csv, ///
+      index(`index') chunk(`chunksize') ///
+      saving("`chunkfile'", replace) keepfirst
+    if r(eof) { // break out when end of file reached
+        {help continue}, break
+        }
+        else {  // get starting index for next chunk
+            local index `r(index)'
+            }
+       {help insheet} using "`chunkfile'", clear comma names
+       // keep fields you want
+       {help keep} make mpg headroom weight length displacement
+       // save part of file and increment chunk count
+       save test_`++part', replace
+       }
+
+// Append parts together
+use test_1, clear
+forvalues i=2/`part' {
+    {help append} using test_`i'
+    {help erase} test_`i'.dta
+    }
+describe
+
+{title:Author}
+
+{pstd}David C. Elliott, {break}
+Nova Scotia Department of Health, Halifax, Nova Scotia, Canada{break}
+DCElliott@gmail.com

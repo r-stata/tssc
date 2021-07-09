@@ -1,0 +1,125 @@
+{smcl}
+{* 01Sept2006}{...}
+help for {hi:gdecomp}
+{hline}
+
+{title:Decomposition of outcome differentials after nonlinear models}
+
+{title:Syntax} 
+
+{p 8 16 2}
+{cmd:gdecomp} {it:groupvar} [, {it: options} ]  {cmd: :} {it:estimation_command}
+{p_end}
+
+{p 4 4 2} where
+
+{p 8 16 2} {it:groupvar} specifies a binary (numeric) variable identifying the two groups;
+
+{p 8 16 2} {it:estimation_command} (see help {help estcom}) should begin with the
+{it:logit}, {it:logistit}, {it:logistit}, {it:probit}, {it:poisson}, or {it:nbreg}; 
+
+{p 8 16 2}
+{it:options} are
+{p_end}
+{p 16 16 2}
+{cmdab:dxw:eight}{cmd:(}{it:high}|{it:low}{cmd:)}   {cmdab:rev:erse}   {cmd:eform}
+{cmdab:l:evel:(}{it:#}{cmd:)}   {cmdab:nohead:er}   {cmd:nocoef}
+{p_end}
+{p 16 16 2}
+{cmdab:d:ummies(}{it:varlist_1} [{cmd:\} {it:varlist_2} ..]{cmd:)} 
+{p_end}
+
+{title:Description}
+
+{p 4 4 2}  {cmd:gdecomp} implements a generalized Blinder-Oaxaca decomposition which applies to categorical
+and count outcomes (and parallel to this, to nonlinear regression models). First, {it: estimation_command} is
+estimated in the two groups of {it: groupvar}. Then	the observed difference in the
+dependent variable of {it: estimation_command} between the groups defined by {it:groupvar} is decomposed
+into three parts: (1) a part due to differences in endowments (labeled by E),
+and (2)	a part due to differences in {it: marginal effects} and finally
+(3)	a part due to difference in baseline predictions or constants (labeled by U).
+See the {cmd: Methods and formulas} section below.
+
+{p 4 4 2}  Typed without arguments, {cmd:gdecomp} replays the estimation results.
+{cmd:gdecomp} shares all features of estimation commands; see help {help estcom} for details.
+
+{p 4 4 2}	Before using {cmd:gdecomp}, please install the latest version of {help margeff}.
+(The latest version is 2.0.1, dated 15 Septermber 2006).
+See other packages carrying out Blinder-Oaxaca decompositions at the bottom of this help file.
+
+{title:Options}
+
+
+{p 4 8 2}{cmdab:dxw:eight}{cmd:(}{it:high}|{it:low}{cmd:)} affects the calculation of the endowment effect.
+If {cmdab:dxw:eight}{cmd:(}{it:high}{cmd:)} is specified then differences in endowments are evaluated at the
+high-outcome regression line. If {cmdab:dxw:eight}{cmd:(}{it:low}{cmd:)} is specified
+then differences in endowments are weighted	with the marginal effects from the low-outome group.
+The default is {cmdab:dxw:eight}{cmd:(}{it:high}{cmd:)}.
+
+{p 4 8 2} {cmdab:rev:erse} tells {cmd:gdecomp} that the group with the lower average of the outcome variable
+should be treated as the high-outcome group. By default, {cmd:gdecomp} defines the low-outcome group to be
+the group with the largest observed mean of the outcome variable. The default behavior generalizes the idea
+that average earnings are higher in the high-outcome group. The {cmdab:rev:erse} option makes sense	and should be used
+only if high value of the outcome variable indicate outcomes that are "negatively" valued (or, outcomes decreasing
+subjective utility). Do not use this option if large categories of the outcome variable record high salaries or
+being in the labor force; use this option if large categories of the outcome variable record being unemployed.
+
+{p 4 8 2}{cmd:eform} tells {cmd:gdecomp} that the dependent variable is the natural logarithm of the outcome variable,
+so that correct marginal effects (changes in the exponential of the linear prediction) can be calculated.
+This option is useful if the dependent variable is the logarithm of wage.
+{cmd: Warning:} with this option, you do not request the results to be displayed in exponentiated form.
+
+{p 4 8 2}{cmd:level(}{it:#}{cmd:)} specifies the confidence level, in
+percent terms, for the confidence intervals of the computed statistics;
+see help {help level}.
+
+{p 4 8 2} {cmd:noheader} suppresses the display of overall and variable-level decomposition results.
+
+{p 4 8 2}{cmd:nocoef} suppresses the display of the decomposition results for the variables,
+and forces {cmd:gdecomp} to display the E, C and U components (without respective standard errors).
+.
+
+{p 4 8 2}
+{cmd:dummies(}{it:varlist_1} [{cmd:\} {it:varlist_2} ... ]{cmd:)}
+modifies the calculation of marginal effects for dummy variables. Here,
+{it:varlist_1} [{cmd:\} {it:varlist_2} ... ] are lists of dummy variables, where all dummies of a list indicate
+  different categories of the same underlying categorical variable. Let {it:xvar} be a categorical variables
+   with {it:K}+1 ({it:K}>1) categories. In this case, not xvar, but {it:K} dummies - say, D1, ..., DK - are included
+   in the regression model. The estimated marginal effects for these {it:K} dummies
+   may be misleading (see an example in the help file {help margeff}). The correct result is obtained if
+   one specifies the {cmd:dummies(}D*{cmd:)} option.
+{p_end}
+
+
+{title:Methods and Formulas}
+
+{p 4 4 2} Let y1 and y0 be the means of the dependent variable Y in the high-outcome
+and the low-outcome groups, respectively (thus y1>y0). Let {bf:x}1 and {bf:x}0 the
+row vectors of the means of the explanatory variables X1,...,Xk, and {bf:m}1 and
+{bf:m}0 the column vectors of the marginal effects in groups 1 and 0, and {it:a}1 and {it:a}0
+the baseline predictions in groups 1 and 0.
+
+{p 4 4 2} If the {cmdab:dxw:eight(}{it:high}|{it:low}{cmd:)} option is omitted
+or {cmdab:dxw:eight(}{it:high}{cmd:)} is specified, then the raw differential
+y1-y2 is approximated as
+
+{p 8 8 2} y1-y0 = ({bf:x}1-{bf:x}0){bf:m}1 + {bf:x}0({bf:m}1-{bf:m}0) + {it:a}1-{it:a}0
+
+{p 4 4 2} If, however, the {cmdab:dxw:eight(}{it:low}{cmd:)} option is specified, then the raw differential
+y1-y2 is approximated as
+
+{p 8 8 2} y1-y0 = ({bf:x}1-{bf:x}0){bf:m}0 + {bf:x}0({bf:m}1-{bf:m}0) + {it:a}1-{it:a}0
+
+{p 4 4 2} Whatever method is chosen, the first part on the right-hand side is the endowments effect (E),
+and the second part on the right-hand side is the coefficient effect (C), and the third part is the difference
+due to differences in "constants" (unexplained part, U).
+
+
+{title:Author}
+
+{p}Tamás Bartus, Corvinus University, Budapest, tamas.bartus@uni-corvinus.hu
+
+
+{title:Also see}
+
+{p 0 19}On-line:  help for {help gdecomp} {help decompose} {help oaxaca} if installed {p_end}

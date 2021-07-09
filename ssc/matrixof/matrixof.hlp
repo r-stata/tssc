@@ -1,0 +1,170 @@
+{smcl}
+{* 30oct2002}{...}
+{hline}
+help for {hi:matrixof}, {hi:vectorof}
+{hline}
+
+{title:Matrix or vector of results for paired or single variables}
+
+{p 8 16}{cmd:matrixof} 
+{it:cmd} 
+{it:varlist} 
+[{cmd:if} {it:exp}] 
+[{cmd:in} {it:range}] 
+[{it:weight}]
+[ 
+, 
+{c -(} 
+{cmdab:e:class(}{it:result}{cmd:)}
+{c |} 
+{cmdab:r:class(}{it:result}{cmd:)}
+{c |} 
+{cmdab:g:lobal(}{it:result}{cmd:)}
+{c )-} 
+{cmd:cols(}{it:column_varlist}{cmd:)} 
+{cmd:listwise}
+{cmdab:mat:name(}{it:matrix_name}{cmd:)} 
+{it:cmd_options} 
+{it:matrix_list_options}
+] 
+
+{p 8 16}{cmd:vectorof} 
+{it:cmd} 
+{it:varlist} 
+[{cmd:if} {it:exp}] 
+[{cmd:in} {it:range}] 
+[{it:weight}]
+[ 
+, 
+{c -(} 
+{cmdab:e:class(}{it:result}{cmd:)}
+{c |} 
+{cmdab:r:class(}{it:result}{cmd:)}
+{c |} 
+{cmdab:g:lobal(}{it:result}{cmd:)}
+{c )-} 
+{cmd:y(}{it:yvarlist}{cmd:)} 
+{cmd:x(}{it:xvarlist}{cmd:)} 
+{cmd:listwise}
+{cmdab:mat:name(}{it:matrix_name}{cmd:)} 
+{it:cmd_options} 
+{it:matrix_list_options}
+] 
+
+
+{title:Description}
+
+{p}{cmd:matrixof} by default computes a matrix of results containing one 
+result for {it:cmd} for each pair of variables in {it:varlist}. Alternatively, 
+with the {cmd:cols()} option, it computes a matrix of results containing
+one result for {it:cmd} for each pair of variables containing one 
+variable from {it:varlist} and one variable from {it:column_varlist}. 
+
+{p}{cmd:vectorof} computes a vector of results containing one result for 
+{it:cmd} for each variable in {it:varlist}. 
+
+{p}In essence, the matrix or vector may be literally that, containing 
+numeric values, or it may be a matrix or vector of graphs. Compare the 
+established meaning of a scatter plot matrix. However, the graph matrix 
+or vector will be wrapped around left to right and top to bottom. 
+
+{p}Any weights allowed by {it:cmd} may be specified. 
+
+
+{title:Remarks}
+
+{p}As the names imply, some results may be obtained by using either 
+{cmd:matrixof} with {cmd:cols(}{it:varname}{cmd:)} or {cmd:vectorof} with 
+{cmd:x(}{it:varname}{cmd:)}. 
+
+
+{title:Options}
+
+{p 0 4}{cmd:eclass()} specifies an eclass result produced by 
+{it:cmd}. See the manual entry for {it:cmd} or inspect the 
+results of {cmd:estimates list} after {it:cmd}. 
+
+{p 0 4}{cmd:rclass()} specifies an rclass result produced by 
+{it:cmd}. See the manual entry for {it:cmd} or inspect the 
+results of {cmd:return list} after {it:cmd}.
+
+{p 0 4}{cmd:global()} specifies a global result produced by 
+{it:cmd}. See the manual entry for {it:cmd} or inspect the 
+results of {cmd:macro list} after {it:cmd}. 
+
+{p 0 4}At most one of {cmd:eclass()}, {cmd:rclass()} or {cmd:global()}
+may be specified. If none is specified, {it:cmd} should be 
+a graph command. 
+
+{p 0 4}{cmd:listwise} specifies that the results of {it:cmd} 
+should be determined for as many observations as possible. 
+Note that as a consequence the number of observations 
+used in each calculation may differ. By default casewise deletion 
+is used to ensure consistency in observations selected.  
+
+{p 0 4}{cmd:matname()} specifies a name to be used for a matrix 
+to store results, which will remain in memory after {cmd:matrixof} 
+or {cmd:vectorof} has executed.  
+
+{p 0 4}{cmd:y()} and {cmd:x()} are options of 
+{cmd:vectorof}. The names are suggested by the conventions 
+of {cmd:regress} and {cmd:graph}: {cmd:y()} specifies one or more
+variable names to be specified before each variable from {it:varlist}, 
+and {cmd:x()} specifies one or more variable names to be specified after 
+each variable from {it:varlist}.
+
+{p 0 4}{cmd:cols()} is an option of {cmd:matrixof}. The name is suggested by
+the usual matrix convention.  {cmd:cols()} specifies one or more variable names
+defining columns of the matrix to be produced. That is, {it:varlist} defines
+rows of the matrix and {it:column_varlist} defines columns. With a graph
+command, however, this option specifies the second variables (e.g. the {it:x}
+axis variables) of {it:cmd}.
+
+{p 0 4}{it:cmd_options} are options of {it:cmd}. Note that these apply to each
+separate execution of {it:cmd}, except that {cmd:saving()} and {cmd:margin()}
+are taken to refer to any composite graph shown. 
+
+{p 0 4}{it:matrix_list_options} are options of {cmd:matrix list}. 
+See help on {help matutil}. Note that if {cmd:matname()} is not 
+specified, the header is suppressed. 
+
+
+{title:Examples}
+
+{p 4 8}{inp:. matrixof ktau price-foreign, r(tau_b) format(%4.3f)}
+
+{p 4 8}{inp:. matrixof correlate price-foreign, r(rho) format(%3.2f)}{p_end}
+{p 4 8}{inp:. matrixof correlate price-foreign, r(rho) format(%3.2f) listwise}{p_end}
+{p 4 8}{inp:. matrixof correlate price-foreign, r(N) listwise}
+
+{p 4 8}{inp:. vectorof correlate price-foreign, r(rho) y(mpg) format(%4.3f)}
+
+{p 4 8}{inp:. set textsize 140}{p_end}
+{p 4 8}{inp:. vectorof dotplot price-displacement}{p_end}
+{p 4 8}{inp:. vectorof quantile price-displacement}
+
+{p 4 8}{inp:. vectorof graph arithmetic algebra geometry calculus, x(age)}
+
+{p 4 8}{inp:. factor x1-x6, pc}{p_end}
+{p 4 8}{inp:. score pc1-pc6}{p_end}
+{p 4 8}{inp:. matrixof correlate x1-x6, cols(pc1-pc6) r(rho) format(%4.3f)}
+
+
+{title:Author}
+
+    Nicholas J. Cox, University of Durham, U.K.  
+    n.j.cox@durham.ac.uk
+
+
+{title:Acknowledgements} 
+
+    {p 4 4}Ronan Conroy alerted me to a bug biting on Macintosh platforms. 
+    Roger Newson made helpful comments on the helpfile.
+
+
+{title:Also see}
+
+{p}On-line:  help for {help foreach}, {help forvalues}, {help return}, 
+{help tabstat}, {help cpcorr} (if installed), {help cpspear} (if installed), 
+{help cpyxplot} (if installed), {help statsmat} (if installed) 
+

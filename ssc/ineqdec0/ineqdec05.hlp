@@ -1,0 +1,61 @@
+.-
+help for ^ineqdec05^
+.-
+
+Inequality indices, with decomposition by subgroup
+--------------------------------------------------
+
+^ineqdec05^ varname [^[^fweights aweights^]^ ^if^ exp ^in^ range], 
+		[^by^group^(^groupvar^)^ ^w^ ^s^umm]
+
+^ineqdec05^ is a stripped-down version of ^ineqdeco5^. Unlike the latter,
+it will provide estimates using samples containing zero or negative
+values for varname.  But as a result the portfolio of indices estimated
+is reduced to the p90:p10 ratio, GE(2) = half the squared coefficient of 
+variation, and the Gini coefficient, and Sen's welfare index. (The 
+other indices estimated by ^ineqdeco5^ are not defined for zero and negative 
+values of varname.)
+
+^ineqdec05^ is for use with Stata versions 5 to 8.1. For versions 8.2 onwards,
+use ^ineqdec0^.
+
+Options
+-------
+^by^group^(^groupvar^)^ requests inequality decompositions by population
+	subgroup, with subgroup membership summarized by groupvar.
+^w^ requests calculation of Sen's welfare index in addition to the 
+	inequality index calculations.
+^s^umm requests presentation of ^summary, detail^ output for varname.
+
+Saved results
+-------------
+S_9010, S_7525		Percentile ratios p90/p10, p75/p25
+S_i2				GE(2)
+	
+Examples
+--------
+. ^ineqdec05 x [w=wgtvar]^
+. ^ineqdec05 x, by(famtype) w^
+. ^ineqdec05 x if sex==1, w s^
+
+Author
+------
+Stephen P. Jenkins <stephenj@@essex.ac.uk>
+Institute for Social and Economic Research
+University of Essex, Colchester CO4 3SQ, U.K.
+
+
+NB minor fixes in February 2001: 
+   (i) Made compatible with Stata 7
+       (NB still runs with Stata 5 and Stata 6.)
+   (ii) bug fix for Gini with fweights (minor).
+
+
+Also see
+--------
+^ineqdeco^ if installed.
+
+^inequal^ (sg30: STB-23) if installed; ^rspread^ (sg31: STB23) if installed
+^povdeco^ if installed; ^sumdist^ if installed
+^inequal2^ (http://fmwww.bc.edu/RePEc/bocode/i)  if installed; 
+^ineqerr^ [STB-51: sg115] if installed

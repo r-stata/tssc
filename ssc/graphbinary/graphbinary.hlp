@@ -1,0 +1,97 @@
+{smcl}
+{hline}
+help for {hi:graphbinary}
+{hline}
+
+{title:An exploratory graphic investigating a binary endpoint}
+
+{p 8 27}
+{cmdab:graphbinary}
+{it:varlist}
+,
+[
+{cmdab:s:ort}{cmd:(}{it:graph_options}{cmd:)}
+{cmdab:l:egend}{cmd:(}{it:string}{cmd:)}
+{cmdab:or}
+{cmdab:rr}
+{cmdab:size}{cmd:(}{it:{help relativesize}}{cmd:)}
+{cmdab:l:evel}{cmd:(}{it:#}{cmd:)}
+{it:graph_combine_options}
+]
+
+{p}
+
+{title:Description}
+
+{p 0 0}
+This command creates an exploratory graphic looking at relationships between a binary dependent variable against several explanatory variables. 
+Explanatory variables that have more than 2 values will be dichotomised by its median. When the median is equal to the minimum value this variable will be excluded from the graphic. 
+
+{p 0 0}
+The graphic consists of two panels, the percentage of people that are coded 1 for the dependent variable for each level of the explanatory variable.
+The second panel plots the relative risk and confidence intervals against the variable name. 
+
+{p 0 0}
+There are very few built-in options for this graphic and relies on the use of graph_combine options.
+
+{p 0 0}
+Make sure you have the latest version of this command {stata ssc install graphbinary, replace}
+
+{title:Options}
+
+{p 0 0}
+{cmdab:s:ort}{cmd:(}{it:graph_options}{cmd:)} specifies the order in which the explanatory variables are specified on the y-axis. There are only a handful of choices sorting by variable name {hi:name}, by relative risk magnitude {hi:effect}, by the relative risk's upper/lower confidence limit {hi: upper / lower} or by the percentage of people with outcome 1 and high/yes or low/no for the explanatory variable {hi: yes} or {hi: low}.
+
+{p 0 0}
+{cmdab:l:egend}{cmd:(}{it:string}{cmd:)} specifies the legend for the graphic in panel 1.
+
+{p 0 0}
+{cmdab:or} specify that the odds ratio rather than risk ratio be plotted in panel 2.
+
+{p 0 0}
+{cmdab:rr} specifies that the risk ratio be plotted in panel 2.
+
+{p 0 0}
+{cmdab:size}{cmd:(}{it:relative size percentage}{cmd:)} specifies the percent of width available for panel 2. 50% means that panel 2 covers half the space in the final graphic, the default is 40%. 
+
+{p 0 0}
+{cmdab:l:evel}{cmd:(}{it:#}{cmd:)} specifies the confidence level, in percent, for confidence intervals; see help {help level}.
+
+{title:Examples}
+
+{p 0 0}
+The examples are all the analysis of the low birth weight data that can be obtained by the {hi:webuse} command.
+
+** {stata webuse lbw}  (MUST load data first) **
+
+
+{stata graphbinary low age lwt race smoke ht ui }
+{stata graphbinary low age lwt smoke ht ui, or }
+{stata graphbinary low age lwt smoke ht ui, sort(effect)}
+{stata graphbinary low age lwt smoke ht ui, sort(lower) title(Risk Factors)}
+{stata graphbinary low age lwt smoke ht ui, sort(upper) legend(lab(1 "Unexposed") lab(2 "Exposed"))}
+{p 0 0}
+{stata graphbinary low age lwt smoke ht ui, sort(name) title(Risk Factors) subtitle(sorted by variable name)}
+{p_end}
+{stata graphbinary low age lwt smoke ht ui, sort(yes)}
+
+The last graph is a little more complicated by changing the size of panel 2.
+
+{p 0 0}
+{stata graphbinary low age lwt smoke ht ui, sort(no) size(16) subtitle(sorted by unexposed risk) legend(lab(1 "Unexposed") lab(2 "Exposed")) l(99)}
+
+
+{title:Author}
+
+{p}
+Adrian Mander, MRC HNR Unit, Cambridge, UK.
+Email {browse "mailto:adrian.mander@mrc-hnr.cam.ac.uk":adrian.mander@mrc-hnr.cam.ac.uk}
+
+{title:Also see}
+
+Related commands
+
+{help graph_combine}.
+
+
+

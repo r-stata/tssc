@@ -1,0 +1,33 @@
+d 'TWOFOLD': module to perform multiple imputation using the two-fold fully conditional specification algorithm to impute missing values in longitudinal data
+d
+d      twofold imputes missing values at each time point
+d conditional on observed measurements within a small time window
+d using FCS (or chained equations). Missing values at time point t
+"d are imputed by cycling around the specified imputation models,"
+"d performing 'within-time iterations'. Once these are complete, the"
+d variables at time point t+1 are imputed. Each time point is
+d chronologically updated. Once missing values at the last time
+"d point are imputed, the first 'among-time iteration' is complete."
+"d Further 'among-time iterations' are performed, each one starting"
+"d from the first time point.  At each step of the procedure, the"
+d most recent imputations of missing values are carried forward to
+d the next step. When the pre-specified among-time iterations are
+"d complete, the current imputations of missing values, together"
+"d with the originally observed values, form the first imputed"
+d dataset. The whole process is repeated to create as many imputed
+"d dataset as desired, using the previous imputed dataset as"
+d starting values.
+d
+d KW: multiple imputation
+d KW: two-fold specification
+d KW: chained equations
+d
+d Requires: Stata version 12
+d
+d Distribution-Date: 20191002
+d
+"d Author: Cathy Welch, Division of Population Health, UCL Medical School"
+d Support: email catherine.welch@@ucl.ac.uk
+d
+f twofold.ado
+f twofold.sthlp

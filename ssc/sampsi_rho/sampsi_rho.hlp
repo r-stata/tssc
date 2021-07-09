@@ -1,0 +1,96 @@
+
+{smcl}
+{* 11 Apr 2011}{...}
+{cmd:help sampsi_rho}
+{hline}
+
+{title:Title}
+
+    {hi: Calculates Sample Size or Power for Pearson Correlation}
+
+{title:Syntax}
+
+{p 8 17 2}
+{cmdab:sampsi_rho}
+[{cmd:,} {it:options}]
+
+{synoptset 20 tabbed}{...}
+{synopthdr}
+{synoptline}
+{syntab:Main}
+{synopt:{opt null(#)}} specifies the null value of the Pearson correlation, the default is 0.{p_end}
+{synopt:{opt alt(#)}} specifies the alternative value of the correlation, the default is 0.5.{p_end}
+{synopt:{opt n:1(#)}} specifies the sample size, the default is 100.{p_end}
+{synopt:{opt a:lpha(#)}} specifies the significance level, the default is 0.05.{p_end}
+{synopt:{opt p:ower(#)}} specifies the power, the default is 0.9.{p_end}
+{synopt:{opt s:olve()}} specifies whether to calculate the sample size or the power, the default is n.{p_end}
+{synopt:{opt onesided:}} specifies whether the alternative hypothesis is onesided, the default is a two-sided test.{p_end}
+{synoptline}
+{p2colreset}{...}
+
+{title:Description}
+
+{pstd}
+{cmd:sampsi_rho} calculates either the sample size or power for a Pearson correlation. The formula
+for sample size is ((Za+Zb)/(delta))^2 + 3 where delta is the difference between test value and
+the null value, Za is the signficance Z-value and Zb is the power Z-value. The correlations are transformed
+using the Fisher z transformation  1/2ln((1+rho)/(1-rho)) this z is normally distributed with a standard deviation
+of 1/sqrt(N-3).
+
+{title:Options}
+
+{dlgtab:Main}
+
+{phang}
+{opt null(#)} specifies the null value of the Pearson correlation, the default is 0.
+
+{phang}
+{opt alt(#)} specifies the alternative value of the correlation, the default is 0.5.
+
+{phang}
+{opt n:1(#)} specifies the sample size, the default is 100.
+
+{phang}
+{opt a:lpha(#)} specifies the significance level, the default is 0.05.
+
+{phang}
+{opt p:ower(#)} specifies the power, the default is 0.9.
+
+{phang}
+{opt s:olve()} specifies whether to calculate the sample size or the power, the default is n.
+
+{phang}
+{opt onesided:} specifies whether the alternative hypothesis is onesided, the default is a two-sided test.
+
+
+{title:Examples}
+
+{phang}
+{stata sampsi_rho}
+
+{phang}
+{stata sampsi_rho, solve(power)}
+
+{phang}
+{stata sampsi_rho, solve(power) n(10) alt(0.2)}
+
+{phang}
+{stata sampsi_rho, p(0.8) onesided}
+
+
+{title:Author}
+
+Adrian Mander, MRC Biostatistics Unit, Cambridge, UK.
+
+Email {browse "mailto:adrian.mander@mrc-bsu.cam.ac.uk":adrian.mander@mrc-bsu.cam.ac.uk}
+
+{title:See Also}
+
+Related commands:
+
+{help sampsi} (if installed)
+{help samplesize} (if installed)   {stata ssc install samplesize} (to install this command)
+{help sampsi_reg} (if installed)   {stata ssc install sampsi_reg} (to install this command)
+{help sampsi_mcc} (if installed)   {stata ssc install sampsi_mcc} (to install this command)
+
+

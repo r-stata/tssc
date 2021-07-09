@@ -1,0 +1,270 @@
+{smcl}
+{* *! version 1.0.32  04June2012}{...}
+{cmd:help gsa}
+{hline}
+
+{title:Title}
+
+{p2colset 9 19 21 2}{...}
+{p2col: {cmd:gsa} {hline 2}} Generalized sensitivity analysis{p_end}
+{p2colreset}{...}
+
+
+{title:Syntax}
+
+{p 8 15 2}
+{cmd:gsa}
+{depvar}
+{it:treatmentvar}
+[{indepvars}]
+{ifin}
+{cmd:,} {opt tau(real)} {opt tstat(real)} [{it:options}]
+
+{synoptset 26 tabbed}{...}
+{synopthdr}
+{synoptline}
+{syntab:Model}
+{p2coldent:* {opth tau(real)}}the target size of the coefficient of the treatment variable.{p_end}
+{p2coldent:* {opth tstat(real)}}the target size of the t-value of the treatment variable.{p_end}
+{synopt:{opth maxc1(real)}}the parameter that affects the partial correlation between pseudo unobservables and the treatment variable; default is {cmd: maxc1(2)}.{p_end}
+{synopt:{opth maxc2(real)}}the parameter that affects the partial correlation between pseudo unobservables and the outcome variable; default is {cmd: maxc2(.5)}.{p_end}
+{synopt:{opth precision (real)}}the percentage error from {opt tau} or {opt tstat} acceptable for pseudo unobservables; default is {cmd: precision(5)}.{p_end}
+{synopt:{opth res:olution(int)}}the maximum number of iterations of pseudo unobservable generation for each fixed value of {opt c1}(step 5) and {opt c2}(step 8); default is {cmd: resolution(100)}.{p_end}
+{synopt:{opth obs:ervation(int)}}the maximum number of values at which the values of {opt c1}(step 5) and {opt c2}(step 8) are fixed; default is {cmd: observation(200)}.{p_end}
+{synopt:{opt binu}}generates binary pseudo unobservables instead of the default continuous ones.{p_end}
+{synopt:{opt cor:relation}}declares that the partial correlations are used as the axes of the contour plot.{p_end}
+{synopt:{opt ylogit}}declares that the outcome equation is estimated with {opt logit}.{p_end}
+{synopt:{opt yprobit}}declares that the outcome equation is estimated with {opt probit}.{p_end}
+{synopt:{opt ylpm}}declares that the outcome equation is estimated with linear probability model (See remark).{p_end}
+{synopt:{opt ycont:inuous}}declares that the outcome variable is continuous, and the outcome equation is estimated with {opt regression}.{p_end}
+{synopt:{opt logit}}declares that the treatment assignment equation is estimated with {opt logit}.{p_end}
+{synopt:{opt probit}}declares that the treatment assignment equation is estimated with {opt probit}.{p_end}
+{synopt:{opt lpm}}declares that the treatment assignment equation is estimated with linear probability model (See remark).{p_end}
+{synopt:{opt cont:inuous}}declares that the treatment variable is continuous, and the outcome equation is estimated with {opt regression}.{p_end}
+{synopt:{opt nodots}}suppresses display of iteration dots.{p_end}
+{synopt:{opth seed(int)}}sets random-number seed; default is {opt seed(1)}.{p_end}
+
+{syntab:SE/Robust}
+{synopt :{opth vce(vcetype)}}{it:vcetype} may be {opt oim},{opt r:obust}, {opt cl:uster} {it:clustvar}, or {opt opg}{p_end}
+
+{syntab:Graph}
+{synopt:{opt noprint}}suppresses the figure.{p_end}
+{synopt:{opt nplots(int)}}specifies the number of control variables plotted on the graph; default is {cmd: nplots(5)}. The first {it:n} variables in {it:indepvars} are selected.{p_end}
+{synopt:{opt fractional}}declares the contour is estimated with fractional polynomial (default.){p_end}
+{synopt:{opt quadratic}}declares the contour is estimated with quadratic prediction.{p_end}
+{synopt:{opt lowess}}declares the contour is estimated with lowess smoothing.{p_end}
+{synopt:{opt scatter}} adds the scatter plots on the figure.{p_end}
+
+{syntab:Advanced}
+{synopt:{opt gsa_pu_precision}} the accuracy of the orthogonality condition between a pseudo unobservable and other control variables when a pseudo unobservable is continuous; default is {cmd: gsa_pu_precision(.99)}.{p_end}
+{synopt:{opt gsa_binpu_precision}} the accuracy of the orthogonality condition between pseudo unobservable and other control variables when a pseudo unobservable is binary; default is {cmd: gsa_binpu_precision(.99)}.{p_end}
+{synopt:{opt gsa_range_res}} the maximum number of iterations in determining the maximum size of {opt c1}(step 4) and {opt c2}(step 7); default is {cmd: gsa_range_res(2000)}.{p_end}
+{synopt:{opt iter_tolerance}} the number of failed iterations in step 5 and step 8 tolerated before moving to the next step; default is {cmd: iter_tolerance(10)}.{p_end}
+{synoptline}
+{p2colreset}{...}
+{p 4 6 2}* Either {opt tau(real)} or {opt tstat(real)} is required.{p_end}
+{p 4 6 2}At least one {indepvars} is required.{p_end}
+{p 4 6 2}The treatment effect needs to be positive.{p_end}
+{p 4 6 2}The size of {opt tau(real)} or {opt tstat(real)} must be smaller than the original treatment effect.{p_end}
+{p 4 6 2}Weights are not allowed.{p_end}
+{p 4 6 2}When {opt ylpm} or {opt lpm} is selected, the user needs to choose robust/clustered standard errors.{p_end}
+
+
+{title:Description}
+
+{pstd}
+-{opt gsa}- produces a figure for the sensitivity analysis similar to Imbens (2003).
+Observational studies cannot control for the bias due to the omission of unobservables.
+The sensitivity analysis provides a graphical benchmark about how strong assumption about unobservables researchers need to make to maintain the causal interpretation of the result.
+Among various sensitivity analyses, -{opt gsa}- often serves as the most accessible option because it minimizes the changes that researchers need to make in their models to conduct a sensitivity analysis.
+
+{pstd}
+The difference between -{opt gsa}- and Imbens (2003) is that while Imbens (2003) set up the likelihood function to produce the contour plot,
+-{opt gsa}- produces the contour computationally by generating pseudo unobservables.
+As such, -{opt gsa}- is the most helpful when {it:a la} Imbens (2003) likelihood function is difficult to set up and/or hard to achieve convergence.
+Another advantage for -{opt gsa}- is dits ability to draw contour based on test statistics, which Imbens' sensitivity analysis cannot (Harada 2012).
+Thus, -{opt gsa}- is particularly useful when the treatment variable is a continuous variable, when the outcome variable is binary,
+or when the quantity of interest is defined in terms of test statistics.
+
+
+{title:Options}
+
+{dlgtab:Model}
+
+{phang}
+{opt tau} specifies the target size of the coefficient of the treatment variable.
+For example, if a researcher finds the treatment effect of 1.7 and wants to know the strength of the confounding by an unobservable that halves the coefficient, s/he should set {opt tau(0.85)}.
+The contour in the figure represents the set of partial effects of an unobservable that changes the coefficient to 0.85.
+
+{phang}
+{opt tstat} specifies the target size of the t-statistics of the treatment variable.
+For example, if a researcher finds a statistically sifnificant and positive treatment effect and wants to know the strength of the confounding by an unobservable that makes the treatment effect statistically insignificant at 5% level,
+s/he should set {opt tstat(1.96)}.
+The contour in the figure represents the set of partial effects of an unobservable that makes the treatment effect statistically insignificant.
+
+{phang}
+{opt maxc1(real)} specifies the maximum value of {opt c1} that affects the partial correlation between pseudo unobservables and the treatment variable. In Imbens' (2003) framework, {opt c1} affects the size of alpha.
+In the iterations where {opt c1} is fixed and {opt c2} is changed, {opt maxc1(real)} defines the maximum value at which {opt c1} is fixed.
+When {opt c2} is fixed and {opt c1} is changed, a new maximum value of {opt c1} is set to the smaller value for computational efficiency.
+This new maximum is smaller than {opt maxc1(real)}.  
+
+{phang}
+{opt maxc2(real)} specifies the maximum value of {opt c2} that affects the partial correlation between pseudo unobservables and the outcome variable. In Imbens' (2003) framework, {opt c2} affects the size of delta.
+See the above explanation for the detail by exchanging {opt c1} and {opt c2}.  
+
+{phang}
+{opt precision(real)} the percentage error from {opt tau} or {opt tstat} acceptable for pseudo unobservables.
+The default is {cmd: precision(5)}, which means that when a researcher sets {opt tstat(1.96)}, -{opt gsa}- will accept a pseudo unobservable if it changes the t-statistics of the treatment effect to any value that falls in (1.862, 2.058).
+(1.862 = 1.96*0.95 = {opt tstat(1.96)}*(1-{opt precision(5)}/100) and 2.058 = 1.96*1.05 = {opt tstat(1.96)}*(1+{opt precision(5S)}/100)).
+There is a trade of between computational time and accuracy.
+Particularly, with {opt binu} option, a researcher should not set {opt precision (real)} too small. 
+
+{phang}
+{opt resolution(int)} specifies the maximum number of iterations for each fixed value of {opt c1}(step 5) and {opt c2}(step 8).
+The default is {cmd: resolution(100)}, which means that -{opt gsa}- generates up to 100 pseudo unobservables until a pseudo variable changes the treatmen effect to {opt tau} or {opt tstat}. 
+In doing so, -{opt gsa}- gradually incrases the size of {opt c2}(step 5) or {opt c1}(step 8) from 0 to the value found in the preceeding step.
+Each dot in step 5 and step 8 indicates that -{opt gsa}- successfully generates a pseudo unobservable that satisfies the condition.
+Each x in red indicates that -{opt gsa}- could not find a pseudo unobservable in {opt resolution(int)} times of iterations. 
+Typically -gsa- shows a number of dots initially and increasing number of x later, which is normal.
+When you see only x from the beginning (particularly with {opt binu} option), you might want to increase {opt resolution(int)}.
+
+{phang}
+{opt observation} specifies the number of values at which the values of {opt c1}(step 5) and {opt c2}(step 8) are fixed.
+The default is {cmd: observation(200)}, which means that when a researcher set {opt maxc1(2)}, -{opt gsa}- run the iterations of generating pseudo unobservables at up to 200 different fixed values of {opt c1}.
+In this example, -{opt gsa}- starts the iteration by setting {opt c1} at {opt maxc1(2)} and gradually decreases {opt c1} by 0.01 (={opt maxc1(2)}/{cmd: observation(200)}).
+When -{opt gsa}- could not find an appropriate pseudo unobservable for 10 consecutive times (in default), -{opt gsa}- proceeds to the next step in which it fixes {opt c2} and changes {opt c1}.
+A larger value of {opt observation(int)} might be useful when the scatter plots have large variations.
+
+{phang}
+{opt binu} generates binary pseudo unobservables instead of the default continuous ones.
+An assumption of a binary unobservable mainly serves for the following two purposes.
+First, if a researcher wants to compare the performance of -{opt gsa}- with that of -{opt isa}-, s/he must set {opt binu} because Imbens (2003) assumes a binary unobservable.
+Second case is obviously when a researcher thinks a binary unobservable is a reasonable assumption, which can be the case when a major unobserved confounder is, say, gene.
+Otherwise, a researcher may not want to use this option because it takes more computational time.
+
+{phang}
+{opt cor:relation} declares that the partial correlations are used as the axes of the contour plot.
+Specifically, the vertical axis is defined by the partial correlation between an unobservable and the outcome variable.
+The horizontal axis is defined by the partial correlation between an unobservable and the treatment variable.
+An unobservable, the outcome variable and the treatment variable are all residualized by the other control variables before calculating partial correlation.
+If either {opt yprobit} or {opt probit} is specified, {opt cor:relation} is altomatically selected.
+
+{phang}
+{opt ylogit}, {opt yprobit}, {opt ylpm}, {opt ycontinuous}, {opt logit}, {opt probit}, {opt lpm}, and {opt continuous} all specify the way model is estimated.
+The default for a binary outcome varaible is {opt ylogit}.
+The default for a continuous outcome varaible is {opt ycontinuous}.
+The default for a binary treatment varaible is {opt logit}.
+The default for a continuous treatment varaible is {opt continuous}.
+If either {opt yprobit} or {opt probit} is specified, {opt cor:relation} is altomatically selected.
+
+{dlgtab:SE/Robust}
+
+{phang}
+{opt vce(vcetype)} specifies the type of standard error reported, which includes types that are derived from asymptotic theory, that are robust to some kinds of misspecification that allow for intragroup correlation; see [R] vce_option. 
+{helpb vce_option:[R] vce_option}
+
+
+{title:Example}
+
+{pstd}
+The first example below evaluates the effect of union membership on hourly wage assuming that union membership is a treatment variable.
+Because this example is the same as that appears in -{opt isa}-, this manual focuses on the issues specific to -{opt gsa}-.
+
+{phang}. {stata sysuse nlsw88:sysuse nlsw88}{p_end}
+{phang}. {stata xi i.race:xi i.race}{p_end}
+{phang}. {stata rename _Irace_2 black:rename _Irace_2 black}{p_end}
+{phang}. {stata rename _Irace_3 other:rename _Irace_3 other}{p_end}
+{phang}. {stata xi i.industry:xi i.industry}{p_end}
+{phang}. {stata rename _Iindustry_5 mnfctr:rename _Iindustry_5 mnfctr}{p_end}
+{phang}. {stata gsa wage union age black other grade married south c_city mnfctr, tau(.314) logit binu scatter nplots(8):gsa wage union age black other grade married south c_city mnfctr, tau(.314) logit binu scatter nplots(8)}{p_end}
+
+{pstd}
+In several minutes or so, -{cmd:gsa}- produces the figure similar to Imbens (2003), or -{cmd:isa}-. 
+The blue horrow circles are the scatter plots that represent the estimates of partial R-squares for each pseudo unobservable.
+The contour curve is drawn based on these plots with fractional polynomial function.
+It would be interesting to run the following code from -{cmd:isa}- and see how closely -{cmd:gsa}- replicates the outputs of Imbens (2003).
+
+{phang}. {stata isa wage union age black other grade married south c_city mnfctr, tau(.314):isa wage union age black other grade married south c_city mnfctr, tau(.314)}{p_end}
+
+{pstd}
+The second example uses the continous treatment variable, namely the years of education.
+The following code asks how much strong assumption about an unobservable a researcher needs to make to discount 10% of the effect of education on income.
+
+{phang}. {stata gsa wage grade age black other south c_city, tau(.633) maxc1(.1) maxc2(.1) scatter nplots(5):gsa wage grade age black other south c_city, tau(.633) maxc1(.1) maxc2(.1) scatter nplots(5)}{p_end}
+
+{pstd}
+Some control variables are dropped from the right hand side to avoid post-treatment bias.
+In this example, an unobservable is continous, which produces more conservative contour (i.e. it's harder to prove robustness).
+Nevertheless, the figure shows that all covariates are plotted far below the contour.
+Suppose only unobservable we need to worry in this model is intelligence (IQ).
+Then, this result shows that a researcher needs to assume that the effect of IQ on income must be more than several times stronger than that of age, race and locations to discount the education effect by 10%.
+If a researcher prefers partial correlation to partial R-square as axes, the following command does the job.
+
+{phang}. {stata gsagraph wage grade age black other south c_city, tau(.633) nplots(5) scatter cor:gsagraph wage grade age black other south c_city, tau(.633) nplots(5) scatter cor}{p_end}
+
+
+{title:Tips}
+
+{pstd}
+1. The treatment effect must be positive for the program to work properly.
+
+{pstd}
+2. The mean of variables should not be too large or too small.
+Ideally, the mean of the variables should be 1 digit.
+This will help finding appropriate values of {opt maxc1} and {opt maxc2}.
+
+{pstd}
+3. Do not set the values of {opt maxc1} and {opt maxc2} too large.
+Usually, {opt maxc1} and {opt maxc2} are smaller than 5 and often do not exceed 2.
+
+{pstd}
+4. If the contour ends too short in the right edge, increase the values of {opt maxc1}.
+On the other hand, if the contour ends too short in the top edge, increase the values of {opt maxc2}.
+Also, if the contour is too far from the plots of covariates, decrease {opt maxc1} and {opt maxc2}.
+
+{pstd}
+5. If outcome and/or treatment variable(s) are/is binary and the number of observation is small, linear probability model ({opt ylpm} and {opt lpm}) tends to produce a nice contour.
+
+
+{title:Saved results}
+
+{pstd}
+-{cmd:gsa}- saves the following variables.
+The graph can be reproduced using these saved variables.
+The results of {it: _n} th successful generation of a pseudo unobservable are recorded in the {it: _n} th row:
+
+
+{synoptset 20 tabbed}{...}
+{synopt:{cmd:gsa_c1}}the value of c1.{p_end}
+{synopt:{cmd:gsa_c2}}the value of c2.{p_end}
+{synopt:{cmd:gsa_alpha}}the value of alpha.{p_end}
+{synopt:{cmd:gsa_delta}}the value of delta.{p_end}
+{synopt:{cmd:gsa_partial_rsq_y}}the partial r-square of an unobservable in the outcome equation{p_end}
+{synopt:{cmd:gsa_partial_rsq_t}}the partial r-square of an unobservable in the treatment assignment equation{p_end}
+{synopt:{cmd:gsa_rho_res_yu}}the partial correlation between an unobservable and the outcome variable. Not available with {opt yprobit} and {opt probit}.{p_end}
+{synopt:{cmd:gsa_rho_res_tu}}the partial correlation between an unobservable and the treatment variable. Not available with {opt yprobit} and {opt probit}.{p_end}
+{synopt:{cmd:gsa_partial_rsq_yx}}the partial r-square of the {it: k} th covariate in the outcome equation{p_end}
+{synopt:{cmd:gsa_partial_rsq_tx}}the partial r-square of the {it: k} th covariate in the treatment assignment equation{p_end}
+{synopt:{cmd:gsa_rho_res_yx}}the partial correlation between the {it: k} th covariate and the outcome variable.{p_end}
+{synopt:{cmd:gsa_rho_res_tx}}the partial correlation between the {it: k} th covariate and the treatment variable.{p_end}
+
+
+{title:Reference}
+
+{pstd}
+{browse "https://files.nyu.edu/mh166/public/docs/quick_guide_gsa.pdf":Here} is the link for the quick guide of -{cmd:gsa}- by the author of the program. This provides the idea about what alpha, delta, c1 and c2 mean.
+
+{pstd}
+If you use this program, please cite:
+
+{pstd}
+Harada, Masataka "Generalized Sensitivity Analysis." {it:Working paper}.
+
+{pstd}
+Imbens, Guido W. 2003. "Sensitivity to Exogeneity Assumptions in Program Evaluation." {it:The American Economic Review} 93(2):126-132.
+
+
+{title:Contact}
+
+{pstd}
+Please feel free to contact Masataka Harada(masatakaharada@nyu.edu) for any feedback or comments.

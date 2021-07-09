@@ -1,0 +1,143 @@
+{smcl}
+{* Last modified 11th October 2005}{...}
+{hline}
+help for {hi:intcens}
+{hline}
+
+{title:Interval-censored survival analysis} 
+
+{p 8 16 2}{cmd:intcens}{space 2}{it:depvar1} {it:depvar2} [{it:indepvars}]
+[{it:weight}] [{cmd:if} {it:exp}] [{cmd:in} {it:range}] 
+, {cmdab:d:istribution:(}{it:distname}{cmd:)} 
+[{cmd:time} {cmd:odds} {cmd:eform}
+{cmdab:r:obust} {cmdab:cl:uster:(}{it:varname}{cmd:)}
+{cmd:cwien(}{it:varlist}{cmd:)} {cmd:small(}{it:#}{cmd:)}
+{cmdab:l:evel:(}{it:#}{cmd:)} 
+{cmd:init(}{it:matname}{cmd:)} {it:maximize_options}]
+{title:Description}
+
+{p 4 4 2}
+{cmd:intcens} fits various distributions to a non-negative outcome {it:y} which is known to be in the interval 
+[{it:depvar1},{it:depvar2}] and which depends on {it:indepvars}. {it:y} for each observation is either point data,
+interval-censored, left-censored or right-censored.  {it:depvar1} and
+{it:depvar2} should have the following form: {p_end}
+
+{col 12}Type of data {col 42} {it:depvar1} {it:depvar2}
+{col 12}{hline 46}
+{col 12}point data {col 32}{it:a} = [{it:a},{it:a}]{col 46}{it:a}{space 7}{it:a}    
+{col 12}interval-censored{col 36}[{it:a},{it:b}]{col 46}{it:a}{space 3}<{space 3}{it:b}    
+{col 12}left-censored{col 36}(0,{it:b}]{col 46}{cmd:.}{space 7}{it:b}{space 5}or
+{col 12}{col 46}{cmd:0}{space 7}{it:b}
+{col 12}right-censored{col 36}[{it:a},inf){col 46}{it:a}{space 7}{cmd:.}    
+{col 12}{hline 46}
+
+{p 4 4 2}Any {cmd:st} settings are ignored.{p_end}
+
+{title:Options}
+
+{p 4 8 2}{cmd:distribution(}{it:distname}{cmd:)} is not optional. Available distributions are:{p_end}
+
+{col 12}Distribution{col 33}syntax{col 45}remarks
+{col 12}{hline 40}
+{col 12}Exponential{col 33}{cmd:exp}{col 45}
+{col 12}Weibull{col 33}{cmd:weib}{col 45}
+{col 12}Gompertz{col 33}{cmd:gomp}{col 45}
+{col 12}Log-logistic{col 33}{cmd:logl} or {cmd:llo}{col 45}
+{col 12}Log-normal{col 33}{cmd:logn} or {cmd:ln}{col 45}
+{col 12}2 parameter gamma{col 33}{cmd:gam}{col 45}note difference from {cmd:streg}
+{col 12}Generalized gamma{col 33}{cmd:gen}{col 45}3 parameter gamma
+{col 12}Inverse Gaussian{col 33}{cmd:invg}{col 45}
+{col 12}Inverse Gaussian{col 33}{cmd:wien}{col 45}Alternative parameterisation
+{col 12}Time to endpoint of{col 33}{cmd:wienran}{col 45}See below for parameterisations
+{col 14}Wiener process 
+{col 14}with random drift
+
+
+
+{p 4 8 2}{cmd:time} requests that exponential or Weibull results be reported in accelerated failure form.{p_end}
+
+{p 4 8 2}{cmd:odds} requests that log-logistic estimates be presented as log odds ratios. The default is accelerated failure form.{p_end}
+
+{p 4 8 2}If {cmd:eform} is specified then exponentiated coefficients are reported. The default is to report log hazard ratios etc.{p_end}
+
+{p 4 8 2}{cmd:cwien(}{it:varlist}{cmd:)} is only valid with distributions {cmd:wien} or {cmd:wienran}. It allows the initial distance from 
+the endpoint of the Wiener process to be modelled as a function of covariates (see below).{p_end}
+
+{p 4 8 2}{cmd:robust} specifies that the sandwich estimator of variance 
+is to be used in place of the conventional MLE variance estimator. {cmd:robust} combined with
+{cmd:cluster()} further allows observations which are not independent within
+cluster (although they must be independent between clusters).{p_end}
+
+{p 4 8 2}{cmd:cluster(}{it:varname}{cmd:)} specifies that
+the observations are independent across groups (clusters) but not necessarily
+independent within groups.  {it:varname} specifies to which group each
+observation belongs. {cmd:cluster()} implies {cmd:robust}; that is, specifying
+{cmd:robust cluster()} is equivalent to typing {cmd:cluster()} by itself.
+
+{p 4 8 2}{cmd:small(}{it:#}{cmd:)} specifies a tolerance within which interval-censored observations are treated as point data. The default is 1E-6.{p_end}
+ 
+{p 4 8 2}{cmd:level(}{it:#}{cmd:)} specifies the confidence level, in percent,
+for the confidence intervals of the coefficients; see help {help level}.{p_end}
+
+{p 4 8 2}{it:maximize_options} control the maximization process; see help
+{help maximize}.{p_end}
+
+{p 4 8 2}{cmd:init(}{it:matname}{cmd:)} supplies a matrix of inital values. They must be in the correct order but the columns
+do not need to be labelled. Use this option rather than from(), which is one of the {it:maximize_options}.{p_end}
+
+{title:Parameterisations}
+
+{p 4 4 2}The exponential, Weibull, Gompertz, log-logistic, log-normal and generalized gamma distributions are
+ parameterised as in {cmd:streg}.{break}
+The log-likelihoods reported for the distributions which are special cases of the generalized gamma are calculated so as to be 
+comparable to the generalized gamma using likelihood ratio tests.{p_end}
+
+{p 4 4 2}The log-logistic results can also be shown as odds ratios, in which case the survivor function is:{break}
+S(t) = 1/(1+lambda*t^(1/gamma)), lambda=exp(X*B){p_end}
+ 
+{p 4 4 2}The other densities are:{p_end}
+
+{p 4 4 2}Two parameter gamma {cmd:gam}{break}
+f(t) = (lambda*alpha)^alpha*t^(alpha-1)*exp(-lambda*alpha*t)/gamma(alpha),  lambda = exp(-X*B){p_end}
+
+{p 4 4 2}Inverse Gaussian {cmd:invg}{break}
+f(t) = 1/sqrt(2*pi*phi*t^3)*exp(-(t-eta)^2/(2*eta^2*phi*t)),  eta = exp(X*B){p_end}
+
+{p 4 4 2}Inverse Gaussian {cmd:wien}{break}
+f(t) = c/sqrt(2*pi*t^3)*exp(-(mu*t-c)^2/(2*t)),  mu = exp(X*B),  c = exp(X1*B1){p_end}
+
+{p 4 4 2}This is the time to first reach a distance c from the starting point for a Wiener process with drift rate mu 
+and variance parameter 1.{break}
+The two parameterisations are related by eta = c/mu, phi = 1/c^2.{p_end}
+
+{p 4 4 2}Allowing the drift rate to have a normal distribution between subjects with mean mu and standard deviation tau gives
+ the following density for time to reach c (not a proper density because the event may never happen). There may be convergence problems with this model:{p_end}
+{p 4 4 2}{cmd:wienran}{break}
+f(t) = c/(sqrt(2*pi)*t*sqrt(t^2*tau^2+t))*exp(-(mu*t-c)^2/(2*(t^2*tau^2+t))),  mu = exp(X*B),  c = exp(X1*B1){p_end}
+
+{p 4 4 2}With the distributions {cmd:wien} or {cmd:wienran}, X is {it:indepvars}, the covariates listed before the comma, and 
+X1 is the covariates in the option {cmd:cwien( )}. X would be factors which affect the rate of movement towards the endpoint, 
+while X1 would be factors which reflect the initial distance from the endpoint.{p_end}
+
+{p 4 9 2}See: Aalen O.O. & Gjessing H.K. (2001) Understanding the shape of the hazard rate: A process point of view. Statistical Science, 16, 1.{p_end}
+
+{title:Examples}
+
+{p 4 8 2}{cmd:. intcens t0 t1 age trt, dist(weib)} {p_end} 
+{p 4 8 2}{cmd:. intcens t0 t1 age trt, dist(weib) time} {p_end} 
+{p 4 8 2}{cmd:. intcens t0 t1 age trt, dist(logl) odds}{p_end} 
+{p 4 8 2}{cmd:. intcens t0 t1 age trt, dist(invg)}{p_end} 
+{p 4 8 2}{cmd:. intcens t0 t1 trt, dist(wien) cwien(age) }{p_end} 
+
+
+{title:Author}
+    {p 12 12 2}Jamie Griffin{break}
+	Infectious Disease Epidemiology Unit{break}
+	London School of Hygiene and Tropical Medicine{break}
+	jamie.griffin@lshtm.ac.uk{p_end}
+	 {p 12 12 2}Updated 11th October 2005{p_end}
+  
+
+{p 4 4 2}Manual:  {hi:[ST] streg}{break}
+Online:  help for {help streg} {p_end}
+

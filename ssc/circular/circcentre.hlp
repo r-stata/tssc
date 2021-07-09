@@ -1,0 +1,71 @@
+{smcl}
+{* 6may2004}{...}
+{hline}
+help for {hi:circcentre}
+{hline}
+
+{title:Centring circular data}
+
+{p 8 17 2}
+{cmd:circcentre}
+{it:varname}
+[{cmd:if} {it:exp}]
+[{cmd:in} {it:range}]
+{cmd:,}
+{cmdab:g:enerate(}{it:newvar}{cmd:)}
+[{cmdab:c:entre(}{it:centre}{cmd:)}
+{cmd:sine} 
+]
+
+
+{title:Description}
+
+{p 4 4 2}{cmd:circcentre} takes {it:varname}, a circular variable between 0 and
+360 degrees, and produces a new variable {it:newvar} centring {it:varname} on
+the direction(s) given by {cmd:centre()}. If {cmd:centre()} is not specified,
+{cmd:circcentre} looks for a vector mean left behind by {help circsummarize} as
+{cmd:r(vecmean)}.  {it:newvar} varies from -180 degrees to 180 degrees, with
+centre at 0 degrees.
+
+
+{title:Options}
+
+{p 4 8 2}{cmd:generate()} specifies the name of the new variable and is not
+optional.
+
+{p 4 8 2}{cmd:centre()} specifies the direction(s) which correspond to the
+centre(s) of {it:newvar}. Possibilities are various constants or the name of a
+variable containing one or more directions.
+
+{p 4 8 2}{cmd:sine} specifies that the new variable be expressed on a sine 
+scale, precisely as sine of ({it:varname} - centre) / 2. This transformation 
+pulls in the tails and pushes out the middle of the distribution. For examples
+of this transformation, see Fisher (1993). 
+
+
+{title:Examples}
+
+{p 4 8 2}{cmd:. circsummarize wallasp}{p_end}
+{p 4 8 2}{cmd:. circcentre wallasp, gen(wallasp2)}{p_end}
+{p 4 8 2}{cmd:. circcentre wallasp, gen(wallasp3) centre(45)}
+
+{p 4 8 2}{cmd:. circcentre orient, gen(relflow) centre(iceflow)} 
+
+
+{title:Author}
+
+{p 4 4 2}Nicholas J. Cox, University of Durham, U.K.{break} 
+n.j.cox@durham.ac.uk
+
+
+{title:References}
+
+{p 4 8 2}Fisher, N.I. 1993. {it:Statistical analysis of circular data.} 
+Cambridge: Cambridge University Press.
+
+
+{title:Also see}
+
+{p 4 13 2}
+On-line:  help for {help circdiff}, {help circsummarize}  
+

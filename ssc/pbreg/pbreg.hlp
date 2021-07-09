@@ -1,0 +1,214 @@
+{smcl}
+{* *! pbreg.sthlp, Adrian Sayers, Mike Baines, and Kate Tilling, Nov2012}{...}
+{bf:help pbreg}
+{hline}
+
+{title:Title}
+
+    {cmd:pbreg} 	- Run the Preece & Baines Non linear growth models from within Stata
+    {cmd:pbpredict} 	- Is a post-estimation command which calculates fitted values, first derivatives & second derivatives.
+    {cmd:pbpoint} 	- Calculates point estimates of age, height and velocity at the point of maximum velocity and take off.
+
+
+
+{marker syntax}{...}
+{title:Syntax}
+
+	{cmd:pbreg} {depvar} {indepvars} {ifin} {cmd:,} [{it:{help pbreg##pbreg_options:pbreg_options}}]
+	{cmd:pbpredict} {indepvars} {ifin} {cmd:,} [{it:{help pbreg##pbpredict_options:pbpredict_options}}]
+	{cmd:pbpoint} {depvar} {indepvars} {ifin} {cmd:,} [{it:{help pbreg##pbpoint_options:pbpoint_options}}]
+
+
+{marker pbreg_options}{...}
+{title:pbreg_options}
+
+{synoptset 30 tabbed}{...}
+{synopthdr}
+{synoptline}
+{syntab:Model}
+{synopt :{opt m:odel(#)}}Model type , default {bf:model(1)}{p_end}
+
+{syntab:Model Optimization}
+{synopt :{opt cdif}}Calculate the first central difference derivatives for starting values  {p_end}
+{synopt :{opt grid}}Perform a grid search to find starting values  {p_end}
+{synopt :{opt gridsp:ace(#)}}Define the spacing of the grid search, default is {bf:gridspace(5)}  {p_end}
+{synopt :{opt bestvals(#)}}Define the number of sets of best starting values to take forward to maximisation following the grid search, default is {bf:bestvals(5)}  {p_end}
+{synopt :{opt iterate(#)}}Specifies the maximum number of iterations, default is {bf:itertate(10000)}    {p_end}
+{synopt :{opt [no]log}}Log/nolog specifies whether to show the iteration log {p_end}
+{synopt :{opt trace}}Trace specifies that the iteration log should include the current parameter vector {p_end}
+{synopt :{opt eps(#)}}Specify # for convergence criterion; default is {bf:eps(1e-5)} {p_end}
+
+{syntab:Starting Values}
+{synopt :{opt h1(#)}}Parameter starting value, default is {bf:h1(0)} {p_end}
+{synopt :{opt ht:heta(#)}}Parameter starting value, default is {bf:htheta(0)} {p_end}
+{synopt :{opt th:eta(#)}}Parameter starting value, default is {bf:theta(0)} {p_end}
+{synopt :{opt s0(#)}}Parameter starting value, default is {bf:s0(0)} {p_end}
+{synopt :{opt s1(#)}}Parameter starting value, default is {bf:s1(0)} {p_end}
+{synopt :{opt ga:mma(#)}}Parameter starting value, default is {bf:gamma(1)} {p_end}
+{synopt :{opt p0(#)}}Parameter starting value, default is {bf:p0(0)} {p_end}
+{synopt :{opt p1(#)}}Parameter starting value, default is {bf:p1(0)} {p_end}
+{synopt :{opt q1(#)}}Parameter starting value, default is {bf:q1(0)} {p_end}
+
+{syntab:Reporting}
+{synopt :{opt l:evel(#)}}Set confidence level; default is {cmd:level(95)}{p_end}
+
+{marker pbpredict_options}{...}
+{title:pbpredict options}
+
+{synoptset 30 tabbed}{...}
+{synopthdr}
+{synoptline}
+{syntab:Diagnostics}
+{synopt :{opth fit:ted(newvar:newvar)}}Generate fitted values according to the model {p_end}
+{synopt :{opth res:iduals(newvar:newvar)}}Generate normal residuals (observed-fitted){p_end}
+
+{syntab:Derivatives}
+{synopt :{opth vel:ocity(newvar:newvar)}}Generate first derivative estimate, i.e. growth velocity{p_end}
+{synopt :{opth acc:eleration(newvar:newvar)}}Generate second derivative estimate, i.e. growth acceleration{p_end}
+
+{syntab:Model Optimization}
+{synopt :{opt iterate(#)}}Specifies the maximum number of iterations, default is {bf:itertate(10000)}    {p_end}
+
+{marker pbpoint_options}{...}
+{title:pbpoint options}
+{synoptset 30 tabbed}{...}
+{synopthdr}
+{synoptline}
+
+{synopt :{opt m:odel(#)}}Model type , default {bf:model(1)}{p_end}
+{synopt :{opt iterate(#)}}Specifies the maximum number of iterations, default is {bf:itertate(10000)}    {p_end}
+
+
+{marker description}{...}
+{title:Description}
+
+{pstd}
+{cmd:pbreg} fits the Preece Baines 1978 family of models of height on age using the non-linear
+regression command {helpb nl}. 	{p_end}
+{pstd}
+{cmd:pbpredict} additionally estimates fitted values, residuals, first and second derivatives for the fitted model using
+the prediction command {helpb predictnl}. {cmd:pbpredict} must be run immediately after {cmd:pbreg}, as it uses e(b) and e(V) matrices. {p_end}
+{pstd}
+{cmd:pbpoint} directly calculates the following estimates for model 1 and model 2;
+{bf: age at take off} ; {bf:height at take off}; {bf:velocity at take off}; {bf:age at peak height velocity};
+{bf:height at peak height velocity} and {bf:peak height velocity} using results from the erratum by Sayers et al. 2012
+, standard errors and parameter estimates are calculated using {helpb nlcom} routine. {p_end}
+
+{pstd}
+The three commands are simply wrappers for conducting the Preece Baines growth curve analysis using STATA underlying non-linear
+modelling routines.
+
+
+
+{marker options}{...}
+{title:pbreg Options}
+
+{dlgtab:Model}
+{phang}
+{opt model(#)} Specifies the growth models described in the original 1978 manuscript.
+
+{dlgtab:Model Optimization}
+{phang}
+{opt cdif} Calulates the first central derivative of observed heights, the time and height of the peak first central derivative is used as a starting value for {bf: theta}
+ and {bf: htheta} respectively, maximum observed height is used as a starting value for {bf: h1},value of {bf: s0} and {bf: s1} are 1 and 0.1 respectively, the default model is 1.{p_end}
+
+{phang}
+{opt grid} Conducts a grid search over a three dimensional matrix of values for 1 iteration ranging between minimum and maxium height for parameters {bf:h1}  {bf:htheta},
+ and minimum and maximum age for {bf: theta}, value of {bf: s0} and {bf: s1} are 1 and 0.1 respectively, the default model is 1. {p_end}
+
+{phang}
+{opt gridpace(#)} Defines the number of values to be tried in each dimension of the grid search, larger numbers increase grid search time quickly.{p_end}
+
+{phang}
+{opt bestvals(#)} Defines the number of sets of starting values to take to complete convergence.{p_end}
+
+
+{dlgtab:Starting Values}
+{phang}
+{opt h1(#)} {opt htheta(#)} {opt theta(#)} {opt s0(#)} {opt s1(#)} {opt gamma(#)} {opt p0(#)} {opt p1(#)} {opt q1(#)} Inputs starting values into nonlinear estimation command to ensure local minimum residual sum of squares are not found
+
+{dlgtab:Reporting}
+{phang}
+{opt level(#)}; see {helpb estimation options##level():[R] estimation options}.
+
+
+{title:pbpredict Options}
+
+{dlgtab:Diagnostics}
+{phang}
+{opt fitted(newvar)} Calculates fitted values according to model based parameters; see {helpb predictnl} {p_end}
+
+{phang}
+{opt residuals(newvar)} Calculates residuals values according to model based parameters; see {helpb predict} {p_end}
+
+{dlgtab:Derivatives}
+{phang}
+{opt velocity(newvar)} Calculates first derivative velocity according to results of the 1978 manuscript {p_end}
+
+{phang}
+{opt acceleration(newvar)} Calculates second derivative acceleration according to results of the 1978 manuscript {p_end}
+
+{title:pbpoint Options}
+{phang}
+{opt model(#)} Specifies the growth model, described in the original 1978 manuscript, to caclulate point estimates and intervals, this is only applicable to model 1 and model 2.
+
+
+
+{title:Examples}
+
+{phang2}{cmd:. pbreg height age }{p_end}
+{phang2}{cmd:. pbreg height age, model(1) h1(180) htheta(163) s0(2) s1(0.1) theta(13.5) }{p_end}
+{phang2}{cmd:. pbreg height age, model(2) h1(180) htheta(163) s0(2) s1(0.1)  theta(13.5) ga(1) }{p_end}
+{phang2}{cmd:. pbreg height age, model(3) }{p_end}
+
+{phang2}{cmd:. pbpredict age , model(1) fitted(fitted) velocity(vel) acceleration(accel) iterate(1000) }{p_end}
+{phang2}{cmd:. pbpredict age , model(2) fit(fitted) res(res) vel(vel) acc(accel) iterate(1000) }{p_end}
+
+{phang2}{cmd:. pbpoint obs_ht age , model(1) iterate(1000) } {p_end}
+{phang2}{cmd:. pbpoint obs_ht age , model(2) iterate(1000) } {p_end}
+
+{title:Tricks}
+{phang} Non-linear models can have difficulty reaching convergence, therefore fitting a simple model (e.g. model 1) and utilising parameter estimates for starting
+values for more complex models (e.g model 2)  may facilitate convergence.
+
+{marker references}{...}
+{title:References}
+{phang}
+Preece, M.A., Baines, M.., (1978) A new family of mathematical models describing the human growth curve, Annals of Human Biology 5(1) pg 1-24. {p_end}
+
+{phang}
+Sayers, A , Baines, M.J., Tilling, K. (2013) A new family of mathematical models describing the human growth curve - erratum
+Direct calculation of peak height velocity, age at take off, and associated quantities, Annals of Human Biology, Early Online: 1–2. {p_end}
+
+
+{title:Disclaimer}
+{phang}
+pbreg pbpredict and pbpoint comes with no warranty.  We recommend that users check their results with those obtained through
+other non-linear regression commands. We also acknowledge STATA and the original programmers of the nl, nlcom and predictnl commands who did most of the hard work.
+
+{title:Authors}
+
+{p 4}Adrian Sayers{p_end}
+{p 4}School of Social and Community Medicine{p_end}
+{p 4}University of Bristol{p_end}
+{p 4}{browse "mailto:adrian.sayers@bristol.ac.uk":adrian.sayers@bristol.ac.uk}{p_end}
+
+{p 4}Mike Baines{p_end}
+{p 4}Department of Mathematics and Statistics{p_end}
+{p 4}University of Reading{p_end}
+
+{p 4}Kate Tilling{p_end}
+{p 4}School of Social and Community Medicine{p_end}
+{p 4}University of Bristol{p_end}
+
+
+{title:Also see}
+
+{psee}
+Manual:  {bf:[R] nl} {bf:[R] nlcom} {bf:[R] predictnl} {bf:[R] predict}
+
+{psee}
+Online:  {manhelp nl R}, {manhelp nlcom R}, {manhelp predictnl R}, {manhelp predict R}
+{p_end}
+
+* END

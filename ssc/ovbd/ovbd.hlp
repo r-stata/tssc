@@ -1,0 +1,135 @@
+{smcl}
+{* 2007-02-27}{...}
+{cmd:help ovbd} {right:Version 1.0 2007-02-27}
+{hline}
+
+{title:Title}
+
+    {hi:ovbd}
+
+
+{title:Generate correlated random binomial variables}
+
+
+{title:Syntax}
+
+{p 8 17 2}
+{cmd:ovbd}
+[{it:{help newvarlist}}]
+{cmd:,} {cmdab:m:eans(}{it:name}{cmd:)} {cmdab:c:orr(}{it:name}{cmd:)} {cmd:n(#)} [{it:options}] {cmd:clear}
+
+{synoptset 20 tabbed}{...}
+{synopthdr}
+{synoptline}
+{syntab:Main}
+{synopt:{opth m:eans(name)}}row vector of mean values (proportions){p_end}
+{synopt:{opth c:orr(name)}}correlation coefficient matrix{p_end}
+{synopt:{opt n(#)}}# of observations to be generated{p_end}
+{synopt:{opt clear}}mandatory reminder that the dataset will be overwritten
+
+{syntab :Options}
+{synopt:{opth st:ub(string)}}stub for new variable names{p_end}
+{synopt :{opt seed(#)}}seed for random-number generator{p_end}
+{synopt:{opt v:erbose}}verbose root-finder output{p_end}
+{synoptline}
+{p2colreset}{...}
+
+
+{title:Description}
+
+{pstd}
+{cmd:ovbd} generates correlated random binomial variables using the algorithm of Ahn and 
+Chen (1995) as described by Gregori, Di Consiglio and Carmeci (1995).
+
+
+{title:Options}
+
+{dlgtab:Main}
+
+
+{phang}
+{cmd:means} the name of a row vector containing the desired proportions in the variables
+containing the resulting correlated random binomial variables;
+proportions the row vector must be in the same order as the the corresponding variables in 
+{it:{help newvarlist}}, if used.
+
+{phang}
+{cmd:corr} the name of a symmetric matrix containing the desired correlation coefficients.
+
+{phang}
+{opt n} an integer specifying the desired number of observations.
+
+{phang}
+{opt stub} stub for new variable names if {it:{help newvarlist}} is not specified.  
+At least one of {it:{opt stub()}} or {it:{help newvarlist}} must be specified.  If 
+{it:{help newvarlist}} is specified, then {it:{opt stub()}} is ignored.
+
+{phang}
+{opt seed} seed for random number generator; a seed value of zero is ignored.
+
+{phang}
+{opt verbose} requests diplay of output from {cmd:ridder}, which is called by {cmd:ovbd}; 
+primarily for diagnostic purposes when Ridder's method fails.
+
+{phang}
+{cmd:clear} not optional; the user's acknowledgment the dataset will be 
+cleared, as will any global macro {it:S_1} that the user has defined.  Despite this forced 
+option, none of the {it:{help newvarlist}} may be present in the dataset.  ({opt clear} 
+might become truly optional in a later version of {cmd:ovbd}.)
+
+{title:Remarks}
+
+{pstd}
+{cmd:ovbd} follows the algorithm of Ahn and Chen (1995), and is roughly modeled after the 
+implementation described by Gregori, Di Consiglio and Carmeci (1995), from whose Fortran-77 
+subroutine the Stata command's name derives.
+
+{pstd}
+{cmd:ovbd} calls {cmd:ridder}, which, in turn, calls the Stata function {cmd:binormal()}, in 
+order to find the bivariate normal correlation coefficients that will give rise to the desired 
+correlations between the end-result pairs of binomial variables.  Finding this correlation 
+coefficient for each pair is not guaranteed to be successful; {opt verbose} will show the 
+pair (matrix elements) where the root-finding exercise fails first.  This might aid in finding a 
+more judicious construction of the mean vector and correlation matrix to feed to {cmd:ovbd}.
+
+{pstd}
+The command also calls {cmd:drawnorm} in order to generate the correlated normal variables 
+used in creating the corresponding correlated binomial variables.  The option to use {it:{help newvarlist}} 
+follows the convention of the latter, and allows greater flexibility in naming the new variables, 
+but the use of {it:stub()} might be more convenient for workaday use.
+
+
+{title:References}
+
+{pstd}
+H. Ahn and J. J. Chen, Generation of overdispersed and underdispersed binomial 
+variables. {it:Journal of Computational and Graphical Statistics} {bf:4}:55{c 150}64, 1995.
+
+{pstd}
+D. Gregori, L. Di Consiglio and G. Carmeci, A Fortran77 routine for overdispersed binary 
+data generation. Presented at the {it:1st Conference of the Biometric Society, Italian Region} June 16 and 17, 1995.
+http://lib.stat.cmu.edu/general/corbin
+
+
+{title:Examples}
+
+{phang}{cmd:. ovbd a b c, means(A) corr(B) n(250) clear}
+
+{phang}{cmd:. ovbd , st(response_) means(A) corr(B) n(200) seed(12345) clear}
+
+
+{title:Author}
+
+{pstd}
+Joseph Coveney
+jcoveney@bigplanet.com
+
+
+{title:Also see}
+
+{psee}
+Manual:  {bf:[D] drawnorm}, {bf:[P] matrix}
+
+{psee}
+Online:  {helpb ridder}, {helpb drawnorm}, {helpb matrix}, {helpb nbreg}, 
+{helpb rnd} (if installed), {helpb ebb} (if installed)

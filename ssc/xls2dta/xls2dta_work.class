@@ -1,0 +1,1505 @@
+*! version 1.3.0 01dec2016 daniel klein
+
+vers 12
+if (c(stata_version) > 12) {
+	vers 12.1
+}
+
+class xls2dta_work {
+
+	classwide :
+	
+		double call 		= 0
+			/* xls2dta may not call itself */
+		
+	instancespecific :
+		
+		string u 			= "" 	// "u" or "" (unicode)
+		double is_rclass 	= 0 	// return in r()
+		
+		string cmdline 		= "" 	// user input 0
+		string toparse 		= "" 	// left to parse
+		string toparse2 	= "" 	// left to parse (copy)
+		
+		string options 		= "" 	// ", <options> or ""
+		string command 		= ""	// xls2dta subcommand
+		
+		double is_combine 	= 0 	// append, merge or joinby
+		
+		string using 		= "" 	// user <filename> (no quotes)
+		
+		string cmd_options 	= "" 	// (sub)command options
+		string cmd_options2 = "" 	// (sub)command options (copy)
+		
+		double clear_note 	= 0 	// "clear ignored" message ?
+		double is_describe 	= 0 	// describe option specified
+		
+		string using_dir 	= "" 	// user <dir>
+		string using_fn 	= ""	// user <filename>
+		string using_ext 	= ""	// user <extension>
+		
+		double is_clear 	= 0 	// clear dataset (combine)
+		
+		string save 		= "" 	// <filename> from save()
+		string replace 		= "" 	// "replace" or ""
+		string public 		= "" 	// "public" or "" (for copy)
+		double is_emptyok 	= 0		// save empty datasets
+		string save_options = "" 	// <options> from save()
+		
+		string generate 	= "" 	// "name1 [name2]" or ""
+		
+		string sheets 		= "" 	// "<pattern>", <numlist> or ""
+		double sheets_isnot = 0 	// 1 or 0 (do not import sheets)
+		double sheets_isnum	= 0 	// whether <sheets> is numeric
+		double is_allsheets = 0 	// allsheets option specified
+		double is_sheetsopt = 0 	// any of the above specified
+		
+		double is_recursive = 0 	// recursive search
+		string maxdeep_opt 	= "" 	// "maxdeep(#)" or ""
+		
+		string respectcase 	= "" 	// "respectcase" or ""
+		
+		double is_nostop 	= 0 	// nostop option specified
+		
+		string dta_opt 		= "" 	// <numlist> or ""
+		
+		double is_verbose 	= 0 	// more output
+		
+		double n_xls 		= 0 	// number of xls files
+		array xls 			= {} 	// xls files (<dir>/<filename>)
+		
+		double i_sheet 		= 0
+		array n_sheets 		= {} 	// numer of sheets per xls[#]
+		array sheetname 	= {} 	// all worksheet names
+		array sheetnum 		= {} 	// number of worksheet in xls[#]
+		
+		array tmp_dta 		= {} 	// temporary dta file names
+		
+		/* s results */
+		string s_cmd 		= "" 	// "xls2dta" or ""
+		double s_n_dta 		= 0		// number of dta files converted
+		string append_dta 	= "" 	// <filename> or  ""
+		string merge_dta 	= "" 	// <filename> or  ""
+		string joinby_dta 	= "" 	// <filename> or  ""
+		array s_dta 		= {} 	// dta file names
+}
+
+pr .new
+	if (c(stata_version) >= 14) {
+		.u = "u"
+	}
+	
+	.call = `.call' + 1
+	if (`.call' > 1) {
+		.xls2dta_err 119 "{bf}xls2dta {sf}may not call itself"
+	}
+end
+
+
+	/* main */
+pr .main
+	
+	gettoken dump 0 : 0
+	
+	.cmdline = `"`macval(0)'"'
+	
+	.xls2dta_parse_zero
+	
+	tempname rr
+	_ret hold `rr'
+	_ret res `rr' , h
+	
+	nobreak {
+		cap n break .xls2dta_execute
+		loc Rc = _rc
+		
+		if (!(`Rc') & (`.is_rclass')) {
+			m : xls2dta_s_to_r()
+		}
+		else {
+			cap _ret res `rr'
+		}
+		
+		.call = `.call' - 1
+	}
+	
+	e `Rc'
+end
+
+
+/* parse user input */
+
+	/* parse xls2dta call */
+pr .xls2dta_parse_zero
+	.toparse = `"`macval(.cmdline)'"'
+	.get_options
+	
+	/*
+		the call to .is_oldsyntax is vital
+		we strip the colon (:) from .toparse
+	*/
+	
+	if (`.is_oldsyntax') {
+		.old_syntax
+	}
+	
+ 	.parse_command
+end
+
+pr .get_options
+	
+	/*
+		expected is
+		
+			[ , <options> ] : <cmd> <...>
+			
+		we do not strip the colon from .toparse
+		we strip the colon below in .is_oldsyntax
+	*/
+	
+	loc 0 `"`macval(.toparse)'"'
+	gettoken coln 0 : 0 , p(":") q bind
+	if (`"`macval(coln)'"' != ":") {
+		.options = `"`macval(coln)'"'
+		.toparse = `"`macval(0)'"'
+	}
+end
+
+pr .is_oldsyntax
+	
+	/*
+		new syntax starts with a colon (:)
+		
+		we strip the colon from .toparse here
+	*/
+	
+	loc 0 `"`macval(.toparse)'"'
+	gettoken coln 0 : 0 , p(":") q
+	loc isold = (`"`macval(coln)'"' != ":")
+	if !(`isold') {
+		
+		/*
+			might be <filename> in old syntax
+			
+				:/<...> or :\<...>
+		*/
+		
+		loc nxt  	= `.u'substr(`"`macval(0)'"', 1, 1)
+		loc isold 	= inlist(`"`macval(nxt)'"', "/", "\")
+	}
+	
+	.toparse = `"`macval(0)'"'
+	
+	class exit `isold'
+end
+
+	/* map old syntax to new syntax */
+pr .old_syntax
+	di as txt "(note: you are using old {bf:xls2dta} " ///
+	"syntax; see {help xls2dta:{bf:xls2dta}} for new syntax)"
+	
+	/*
+		we parse .cmdline here, not .toparse
+		
+		we set
+			.is_rclass 	:= 1
+			.options 	:= , <old_options>
+			.toparse 	:= import <old_cmdline>
+	*/
+	
+	loc 0 `"`macval(.cmdline)'"'
+	syntax [ anything(id = "extvarlist" equalok) ] [ using ] ///
+	[ , ///
+		SAve(str) 				///
+		REPLACE 				///
+		MKDIR 					///
+		MKDIR_p(str) 			///
+		ALLSHeets_p(passthru) 	///
+		ALLSHeets 				///
+		RESPECTcase 			///
+		noSTOP 					///
+		NOReturn 				/// not documented
+		* 	///
+	]
+	
+	if mi(`"`macval(using)'"') {
+		loc using using "`c(pwd)'"
+	}
+	
+	if (`"`mkdir_p'"' != "") {
+		loc mkdir mkdir(`mkdir_p')
+	}
+	
+	if (`"`replace'`mkdir'"' != "") {
+		loc saveopts , `replace' `mkdir'
+	}
+	if ("`save'`saveopts'" != "") {
+		if ("`save'" != "") {
+			loc save `""`macval(save)'""'
+		}
+		loc save save(`save'`saveopts')
+	}
+	
+	loc sheets = substr("`allsheets_p'", 4, .)
+	
+	if ("`stop'" != "") {
+		loc nostop nostop
+	}
+	
+	loc old_cmdline import excel `anything' `using' , `options'
+	loc old_options `save' `allsheets' `sheets' `repectcase' `nostop'
+	
+	.is_rclass 	= mi("`noreturn'")
+	.options 	= `", `macval(old_options)'"'
+	.toparse 	= `"`macval(old_cmdline)'"'
+end
+/* done parsing xls2dta call */
+
+	/* parse command (initial) */
+pr .parse_command
+	.get_command
+	
+	if !(`.is_combine') {
+		if ("`.command'" != "import") {
+			
+			/* 
+				neither import nor combine
+				these have their own parser
+			*/
+			
+			class exit
+				/* done */
+		}
+		/* is import */
+		loc id extvarlist
+		loc equalok equalok
+		loc CLEAR CLEAR
+		loc DESCribe DESCribe
+	}
+	else {
+		/* is append, merge, joinby */
+		if ("`.command'" == "merge") {
+			loc id merge type
+		}
+		else if ("`.command'" == "joinby") {
+			loc id varlist
+		}
+		// else loc id = ""
+	}
+	
+	if ("`.command'" != "append") {
+		loc Anything [ anything(id = "`id'" `equalok') ]
+	}
+	
+	/*
+		below we only split the elements
+		we do not do any further parsing
+	*/
+	
+	loc 0 `"`macval(.toparse)'"'
+	syntax `Anything' [ using/ ] [ , `CLEAR' `DESCribe' * ]
+	
+	if ("`describe'" != "") {
+		if (`"`macval(anything)'`macval(options)'"' != "") {
+			.xls2dta_err 198 "option describe not allowed"
+		}
+	}
+	
+	.toparse 		= `"`macval(anything)'"'
+	.using 			= "`using'"
+	.cmd_options 	= `"`macval(options)'"'
+	.clear_note  	= ("`clear'" != "")
+	.is_describe 	= ("`describe'" != "")
+end
+
+pr .get_command
+	loc 0 `"`macval(.toparse)'"'
+	gettoken cmd 0 : 0 , p(" ,") q
+	.toparse = `"`macval(0)'"'
+	
+	loc 0 , `cmd'
+	syntax ///
+	[ , ///
+		IMPORT 	///
+		APpend 	///
+		MERge 	///
+		JOINBY 	///
+		XEQ 	///
+		DO 		///
+		RUn 	///
+		ERASE 	///
+		* ///
+	]
+	
+	.command = "`import'`append'`merge'`joinby'`xeq'`do'`run'`erase'"
+		
+	if mi("`.command'") {
+		if mi(`"`macval(cmd)'"') {
+			.xls2dta_err 198 "command required"
+		}
+		else {
+			.xls2dta_err 198 `"command {bf:`macval(cmd)'} "' ///
+				"is not supported by {bf:xls2dta}"
+		}
+	}
+	
+	if ("`.command'" == "import") {
+		.strip_excel
+	}
+	
+	.is_combine = inlist("`.command'", "append", "merge", "joinby")
+end
+
+pr .strip_excel
+	loc zero `"`macval(.toparse)'"'
+	gettoken excel zero : zero , p(" =")
+	gettoken eqs : zero , p("=")
+	
+	if (`"`macval(eqs)'"' == "=") {
+		/* is <extvarlist> */		
+		e 0
+	}
+	
+	loc 0 , `excel'
+	cap syntax [ , EXCel ]
+	if !(_rc) {
+		.toparse = `"`macval(zero)'"'
+	}
+end
+/* done with initial parsing */
+
+
+/* excecute command */
+
+pr .xls2dta_execute
+	if inlist("`.command'", "do", "run") {
+		.xls2dta_do
+	}
+	else if (`.is_combine') {
+		.xls2dta_combine 
+		// .xls2dta_set_s
+	}
+	else {
+		.xls2dta_`.command'
+	}
+end
+
+
+	/* import */
+pr .xls2dta_import
+	
+	.xls2dta_import_parse_options
+	
+	.xls2dta_import_parse_using
+	
+	.xls2dta_import_get_xls
+	
+	.xls2dta_import_convert 
+	// .xls2dta_set_s
+end
+
+pr .xls2dta_import_parse_options
+	loc 0 `.options'
+	syntax ///
+	[ , ///
+		SAve(passthru) 		///
+		REPLACE 			/// not documented
+		SHeets(passthru) 	///
+		ALLSHeets 			///
+		RECURsive 			///
+		RECURsive1(numlist int max = 1 > 0) ///
+		Generate(passthru) 	///
+		RESPECTcase 		///
+		noSTOP 				///
+		RETURN 				/// not documented
+		VERBOSE 			/// not documented
+	]
+	
+	.xls2dta_import_parse_recursive `recursive' `recursive1'
+	
+	if mi("`.save'") { // .command == combine
+		.replace = "`replace'"
+		.parse_save_option , `save'
+	}
+	
+	.xls2dta_import_parse_generate , `generate'
+	
+	.xls2dta_import_parse_sheets , `sheets' `allsheets'
+	
+	.respectcase = "`respectcase'"
+	
+	.is_nostop = ("`stop'" != "")	
+	
+	if !(`.is_rclass') {
+		.is_rclass = ("`return'" != "")
+	}
+	
+	.is_verbose = ("`verbose'" != "")
+end
+
+pr .xls2dta_import_parse_recursive
+	args recursive maxdeep
+	if ("`recursive'" != "") {
+		cap which filelist
+		if (_rc) {
+			.xls2dta_err 199 "option recursive requires " ///
+				"{stata findit filelist:{bf:filelist}}"
+		}
+		if mi("`maxdeep'") {
+			cap conf n `recursive'
+			if !(_rc) {
+				loc maxdeep `recursive'
+			}
+		}
+		if ("`maxdeep'" != "") {
+			loc maxdeep maxdeep(`maxdeep')
+		}
+	}
+	.is_recursive = ("`recursive'" != "")
+	.maxdeep_opt = ("`maxdeep'")
+end
+
+pr .parse_save_option
+	syntax [ , SAVE(str asis) CLEAR ]
+	
+	if mi(`"`macval(save)'"') {
+		if (`.is_combine') {
+			class exit
+				/* done */
+		}
+	}
+	else {
+		if ("`clear'" != "") {
+			.err 198 "option clear not allowed"
+		}
+	}
+	
+	loc 0 : copy loc save
+	
+	if !(`.is_combine') {
+		loc lb "["
+		loc rb "]"
+	}
+	
+	loc specs id = "filename" name = save everything
+	
+	cap n syntax `lb' anything(`specs') `rb' ///
+	[ , ///
+		REPLACE 	///
+		MKDIR 		///
+		MKDIR2(str) ///
+		PUBlic 		/// not documented
+		noLabel 	///
+		ALL 		///
+		Orphans 	///
+		EMPTYok 	///
+	]
+	
+	loc Rc = (_rc)
+	
+	gettoken save void : save
+	loc Rc = `Rc' + (`"`macval(void)'"' != "")
+	
+	if (`Rc') {
+		.xls2dta_err 198 "option save() incorrectly specified"
+	}
+	
+	if mi(`"`macval(save)'"') {
+		loc save `c(pwd)'
+	}
+	else {
+		if ("`.replace'" != "") {
+			.xls2dta_err 198 "option replace not allowed"
+		}
+	}
+	
+	m : xls2dta_parse_path("`save'", "dir", "fn", "ext")
+	
+	if (`.is_combine') {
+		if ("`ext'" != ".dta") {
+			loc bad {it:filename}{bf:.dta}
+		}
+		if mi("`bad'") {
+			if mi("`replace'") {
+				conf new f "`save'"
+			}
+		}
+	}
+	else if ("`ext'" != "") {
+		loc bad {it:directory}
+	}
+	
+	if ("`bad'" != "") {
+		.xls2dta_err 198 "invalid option save()" _n "`bad' expected"
+	}
+	
+	if ("`mkdir'`mkdir2'" != "") {
+		mkdir "`dir'" , `mkdir2'
+		if mi("`public'") {
+			.public = "`mkdir2'"
+		}
+	}
+	
+	m : xls2dta_confirm_dir_exists("dir")
+	
+	.save = "`save'"
+	if mi("`.replace'") {
+		.replace = "`replace'"
+	}
+	if ("`label'" != "") {
+		loc nolabel nolabel
+	}
+	.is_emptyok = ("`emptyok'" != "")
+	.save_options = "`nolabel' `all' `orphans' `emptyok'"
+end
+
+pr .xls2dta_import_parse_generate
+	syntax [ , GENERATE(namelist max = 2) ]
+	loc dup : list dups namelist
+	if ("`dup'" != "") {
+		.xls2dta_err 198 "invalid option generate();" ///
+			"`dup' mentioned more than once"
+	}
+	.generate = "`generate'"
+end
+
+pr .xls2dta_import_parse_sheets
+	
+	syntax [ , SHEETS(str asis) ALLSHEETS ]
+	
+	cap conf e `sheets' `allsheets'
+	.is_sheetsopt = !(_rc)
+	
+	if !(`.is_sheetsopt') {
+		class exit
+			/* done */
+	}
+	
+	if ("`allsheets'" != "") {
+		if mi(`"`macval(sheets)'"') {
+			.is_allsheets = 1
+		}
+		else {
+			.xls2dta_err 198 "option allsheets not allowed"
+		}
+	}
+	else {
+		loc 0 `"`macval(sheets)'"'
+		syntax [ anything(id = "sheetsspec" name =  sheets) ] ///
+			[ , NOT ]
+		
+		.sheets_isnot = ("`not'" != "")
+		if (`.sheets_isnot') {
+			if mi(`"`macval(sheets)'"') {
+				.xls2dta_err 198 "option not not allowed"
+			}
+		}
+		
+		cap numlist `"`macval(sheets)'"' , int min(0) r(>0)
+		.sheets_isnum = !(_rc)
+		if (`.sheets_isnum') {
+			loc sheets `r(numlist)'
+		}
+		else if (_rc != 121) {
+			.xls2dta_err `= _rc' "option sheets(): invalid numlist"
+		}
+		.sheets = `"`macval(sheets)'"'
+	}
+end
+
+pr .xls2dta_import_parse_using
+	if mi("`.using'") {
+		loc 0 `"`macval(.toparse)'"'
+		gettoken using 0 : 0 , q
+		gettoken is_void : 0 , q
+		if (`"`macval(is_void)'"' != "") {
+			.xls2dta_err 198 `"invalid `macval(is_void)'"'
+		}
+		.toparse = `"`macval(0)'"'
+		loc 0 using `using'
+		syntax using/
+		.using = "`using'"
+	}
+	
+	loc using "`.using'"
+	m : xls2dta_parse_path("`using'", "dir", "fn", "ext")
+	m : xls2dta_confirm_dir_exists("dir")
+	
+	.using_fn 	= "`fn'"
+	.using_dir 	= "`dir'"
+	.using_ext 	= "`ext'"
+end
+
+pr .xls2dta_import_get_xls
+	if (c(os) == "Windows") {
+		m : st_local("ulc", `.u'strlower("`.using'"))
+		if ("`ulc'" != "`.using'") {
+			.respectcase = "respectcase"
+		}
+	}
+	
+	if mi("`.using_fn'") {
+		.using_fn = "*.xls"
+		.xls2dta_import_get_xls_collect
+		.using_fn = "*.xlsx"
+		.xls2dta_import_get_xls_collect
+		.using_fn = ""
+	}
+	else {
+		.xls2dta_import_get_xls_collect
+	}
+	
+	if !(`.n_xls') {
+		.xls2dta_err 601 "no files found"
+	}
+	
+	if (`.is_verbose') {
+		if (`.n_xls' > 1) {
+			loc s s
+		}
+		di as txt "`.n_xls' file`s' found"
+	}
+end
+
+pr .xls2dta_import_get_xls_collect
+	loc n_xls = `.n_xls'
+	
+	if !(`.is_recursive') {
+		loc files : dir "`.using_dir'" file "`.using_fn'" ///
+			, `.respectcase'
+			
+		foreach f of loc files {
+			loc ++n_xls
+			m : xls2dta_build_fn("f", "`.using_dir'", "`f'")
+			.xls[`n_xls'] = "`f'"
+		}
+	}
+	else {
+		/* recursive search */		
+		tempfile xlsfiles
+		
+		qui filelist , ///
+			d("`.using_dir'") 	///
+			p("`.using_fn'") 	///
+			sa("`xlsfiles'") 	///
+			replace `.maxdeep_opt'
+		
+		preserve
+		
+		qui u "`xlsfiles'" , clear
+		m : xls2dta_get_xls_fl()
+		
+		restore
+	}
+	
+	.n_xls = `n_xls'
+end
+
+pr .xls2dta_import_convert
+	if (`.clear_note') {
+		di as txt "(note: option clear ignored)"
+	}
+	
+	forv i_xls = 1/`.n_xls' {
+		.xls2dta_import_get_sheets `i_xls'
+	}
+	
+	if (`.is_describe') {
+		loc describe describe
+	}
+	else {
+		loc clear clear
+	}
+	
+	preserve
+	
+	loc i_dta 	0
+	loc i_fail 	0
+	loc c_sheet 0
+	
+	forv i_xls = 1/`.n_xls' {
+		if (`.is_verbose') {
+			di as txt "processing file `.xls[`i_xls']'"
+		}
+		
+		forv i_sheet = 1/`.n_sheets[`i_xls']' {
+			if (`.is_verbose') {
+				di as txt "processing sheet " ///
+				"`i_sheet'/`.n_sheets[`i_xls']'"
+			}
+			
+			loc ++i_fail // in case we fail
+			loc ++c_sheet // cumulative sheet count 
+			
+			if (`"`macval(.sheetname[`c_sheet'])'"' != "") {
+				loc sheet `"`macval(.sheetname[`c_sheet'])'"'
+				loc dump : subinstr loc sheet `"""' "" , c(loc dq)
+				if (`dq') {
+					loc sheet sheet(`"`macval(sheet)'"')
+				}
+				else {
+					loc sheet sheet("`macval(sheet)'")
+				}
+			}
+			
+			cap n import excel `.toparse' using "`.xls[`i_xls']'" ///
+				, `describe' `clear' `sheet' `.cmd_options'
+				
+			if (_rc) {
+				if !(`.is_nostop') {
+					e _rc
+						/* error */
+				}
+				continue
+			}
+			
+			if ("`.generate'" != "") {
+				loc name1 = word("`.generate'", 1)
+				loc name2 = word("`.generate'", 2)
+				qui g `name1' = "`.xls[`i_xls']'"
+				if ("`name2'" != "") {
+					qui g `name2' = ///
+						`"`macval(.sheetname[`c_sheet'])'"'
+				}
+			}
+			
+			if ((`.is_describe') | (!(c(k)) & !(`.is_emptyok'))) {
+				continue
+			}
+			
+			loc --i_fail // we did not fail
+			loc ++i_dta
+			
+			.s_dta[`i_dta'] = "`.tmp_dta[`= `i_dta' + `i_fail'']'"
+			
+			/*
+				we overwrite tmp_dta[] here
+				this works because 
+					tmp_dta[<max>] = .i_sheet
+					i_dta <= .i_sheet
+				
+				!!!	
+					any loops following must
+					run from >= 1/<= .s_n_dta
+				!!!
+			*/
+			
+			tempfile tmp_dta_`i_dta'
+			.tmp_dta[`i_dta'] = "`tmp_dta_`i_dta''"
+			
+			cap n qui sa "`.tmp_dta[`i_dta']'" , `.save_options'
+			if (_rc) {
+				.xls2dta_err `= _rc' "an error occured converting " ///
+				`"worksheet `i_sheet' in file `macval(.xls[`i_xls'])'"'
+			}
+		}
+	}
+	
+	restore
+	
+	if !(`i_dta') {
+		if (`.is_clear') {
+			di as txt "nothing to `.command'"
+		}
+		else {
+			di as txt "no files saved"
+		}
+		e 0 
+			/* done */
+	}
+	
+	nobreak {
+		.s_cmd = "xls2dta"
+		.s_n_dta = `i_dta'
+		
+		if !(`.is_combine') {
+			.xls2dta_import_convert_save
+		}
+		else {
+			.toparse 		= `"`macval(.toparse2)'"'
+			.cmd_options 	= `"`.cmd_options2'"'
+			.xls2dta_combine_util
+		}
+		
+		.xls2dta_set_s , clear
+	}
+end
+
+pr .xls2dta_import_get_sheets
+	args i_xls
+	
+	loc i_sheet_was `.i_sheet'
+	if !(`.is_sheetsopt') {
+		.i_sheet = `.i_sheet' + 1
+		.sheetname[`.i_sheet'] = ""
+		.sheetnum[`.i_sheet'] = 1
+		m : st_local("fn", xls2dta_fn_xls_dta())
+		.tmp_dta[`.i_sheet'] = "`fn'"
+	}
+	else {
+		qui import excel "`.xls[`i_xls']'" , desc
+		m : xls2dta_select_sheets()
+	}
+	
+	.n_sheets[`i_xls'] = (`.i_sheet' - `i_sheet_was')
+	
+	if (!(`.is_combine') & mi("`.replace'")) {
+		loc ++i_sheet_was
+		forv i = `i_sheet_was'/`.i_sheet' {
+			conf new f "`.tmp_dta[`i']'"
+		}
+	}
+end
+
+pr .xls2dta_import_convert_save
+	forv j = 1/`.s_n_dta' {
+		qui copy "`.tmp_dta[`j']'" "`.s_dta[`j']'" ///
+			, `.replace' `.public'
+		di as txt `"file `macval(.s_dta[`j'])' saved"'
+	}
+end
+
+
+	/* combine */
+pr .xls2dta_combine
+	.xls2dta_combine_parse_options
+	
+	if ("`.using'" != "") {
+		/* combine on-the-fly */
+		loc 0 , `.cmd_options'
+		syntax [ , IMPORTopts(str asis) * ]
+		.cmd_options 	= `"`macval(importopts)'"'
+		.cmd_options2 	= `"`macval(options)'"'
+		.toparse2 		= `"`macval(.toparse)'"'
+		.toparse 		= ""
+		.xls2dta_import
+	}
+	else {
+		.xls2dta_combine_util
+		.xls2dta_set_s
+	}
+end
+
+pr .xls2dta_combine_parse_options
+	if mi("`.using'") {
+		loc DTA DTA(numlist int > 0)
+	}
+	else {
+		loc IMPORTopts IMPORTopts(passthru)
+	}
+	
+	loc 0 `"`macval(.options)'"'
+	syntax [ , CLEAR SAve(passthru) `DTA' `IMPORTopts' * ]
+	
+	if mi(`"`clear'`macval(save)'"') {
+		.xls2dta_err 198 "must specify either clear or save() option"
+	}
+	
+	if mi("`.using'") {
+		if (`"`macval(options)'"' != "") {
+			loc 0 , `options'
+			syntax [ , VERBOSE ]
+			.is_verbose = ("`verbose'" != "")
+		}
+		.parse_dta_option `dta'
+	}
+	else {
+		.cmd_options = `"`macval(.cmd_options)' `macval(importopts)'"'
+	}
+	
+	.no_save_option , `options'
+		/* save() may only be specified once */
+	
+	.parse_save_option , `save' `clear'
+	
+	.is_clear = ("`clear'" != "")
+	.options = `", `macval(options)'"'
+end
+
+pr .parse_dta_option
+	
+	/*
+		in case dta() is specified we
+			- remove dups from <numlist>
+			- verify <numlist> is ok
+		
+		otherwise we fill in dta()
+		with numlist 1/s(n_dta)
+		
+		in any case we verify s()
+		
+		we fill <numlist> into .dta_opt
+	*/
+	
+	m : xls2dta_confirm_s()
+	
+	syntax [ anything(name = dta_opt id = "numlist") ]
+	
+	if mi("`dta_opt'") {
+		m : xls2dta_fill_dta_opt("dta_opt")
+	}
+	else {
+		loc dta_opt : list uniq dta_opt
+		m : xls2dta_confirm_dta_opt("dta_opt")
+	}
+	
+	.dta_opt = "`dta_opt'"
+end
+
+pr .no_save_option
+	syntax [ , SAve(passthru) * ]
+	if (`"`macval(save)'"' != "") {
+		.xls2dta_err 198 "option save() not allowed"
+	}
+end
+
+pr .xls2dta_combine_util
+	
+	/* we handle append, merge and joinby here */
+	
+	if ("`.command'" == "joinby") {
+		loc _MERge _MERGE(name)
+	}
+	else {
+		loc GENerate GENerate(name)
+		if ("`.command'" == "merge") {
+			loc NOGENerate NOGENerate
+		}
+	}
+	
+	loc 0 , `.cmd_options'
+	syntax [ , `_MERge' `GENerate' `NOGENerate' * ]
+	
+	if ("`.command'" == "merge") {
+		if mi("`generate'`nogenerate'") {
+			loc generate _merge
+		}
+		loc goptname generate
+	}
+	else if ("`.command'" == "joinby") {
+		loc generate : copy loc _merge
+		loc goptname _merge
+	}
+	
+	.cmd_options = `"`macval(options)'"'
+	
+	if mi("`.using'") {
+		.xls2dta_get_s
+		loc files s_dta
+	}
+	else {
+		loc files tmp_dta
+	}
+	
+	loc dta `.dta_opt'
+	if mi("`dta'") {
+		numlist "1/`.s_n_dta'" , r(>0)
+		loc dta `r(numlist)'
+	}
+	loc n_dta : word count `dta'
+	
+	if !(`.is_verbose') {
+		loc qui qui
+	}
+	
+	/* combine the datasets */
+	preserve
+	
+	clear
+	
+	gettoken first dta : dta
+	qui u "`.`files'[`first']'"
+	
+	tempvar source
+	if ("`.command'" == "append") {
+		qui g `source' = 0
+	}
+	
+	loc i 0
+	foreach j of loc dta {
+		loc ++i
+		
+		if ("`.command'" != "append") {
+			if ("`generate'" != "") {
+				loc gen `goptname'(`generate'`i')
+			}
+		}
+		
+		if (`.is_verbose') {
+			di as txt "combining file `= `i' + 1'/`n_dta'"
+		}
+			
+		`qui' `.command' `.toparse' using "`.`files'[`j']'" ///
+			, `gen' `nogenerate' `.cmd_options'
+			
+		if ("`.command'" == "append") {
+			qui replace `source' = `i' if mi(`source') 
+		}
+	}
+	
+	if ("`.command'" == "append") {
+		if (("`generate'" != "") & (`i')) {
+			ren `source' `generate'
+		}
+		else {
+			drop `source'
+		}
+	}
+	
+	if !(`i') {
+		di as txt "nothing to `.command'"
+	}
+		
+		/* load or save the complete file */
+	if (`.is_clear') {
+		restore , not
+	}
+	else {
+		sa "`.save'" , `.replace' `.save_options'
+		.`.command'_dta = "`.save'"
+	}
+	
+	if ("`.using'" != "") {
+		.s_dta = {}
+		.s_n_dta = !(`.is_clear')
+		.s_dta[1] = "`.`command'_dta'"
+	}
+end
+
+
+	/* xeq */
+pr .xls2dta_xeq
+	
+	/*
+		we write a (temporary) do-file
+		and pass this to the .xls2dta_do routine
+	*/
+	
+	loc 0 `.options'
+	syntax [ , NOIsily DTA(passthru) SAVE ]
+	
+	loc cmd `"`macval(.toparse)'"'
+	if mi(`"`macval(cmd)'"') {
+		.xls2dta_err 198 "command required"
+	}
+	
+	if mi("`noisily'") {
+		.command = "run"
+	}
+	else {
+		.command = "do"
+	}
+	
+	.options = ", `dta' `save'"
+	
+	tempfile tmp_do
+	tempname fh
+	
+	file open `fh' using "`tmp_do'" , w
+	
+	file w `fh' "#delimit ;" _n
+	file w `fh' `"`macval(cmd)'"' _n
+	
+	m : st_local("semicolon", `.u'substr(st_local("cmd"), -1, .))
+	if ("`semicolon'" != ";") {
+		file w `fh' ";"
+	}
+	file w `fh' _n "#delimit cr" _n
+	
+	file close `fh'
+	
+	.toparse = "`tmp_do'"
+	.xls2dta_do
+end
+
+
+	/* do | run */
+pr .xls2dta_do
+	loc 0 `.options'
+	syntax [ , DTA(numlist int > 0) SAVE ]
+	
+	.parse_dta_option `dta'
+	loc dta `.dta_opt'
+	
+	if ("`.command'" == "run") {
+		loc qui qui
+	}
+	
+	/*
+		we collect current contents in s() 
+		in case any program in <dofile> modifies s()
+	*/
+	
+	m : stata(".toparse = " + `"""' + ///
+	strtrim(st_macroexpand("`" + ".toparse" + "'")) + `"""')
+	
+	.xls2dta_get_s
+	
+	preserve
+	
+	foreach j of loc dta {
+		loc fn "`.s_dta[`j']'"
+		if mi("`qui'") {
+			di as res _n ". use `fn' , clear"
+		}
+		`qui' u "`fn'" , clear
+		
+		cap n `.command' "`.toparse'"
+		
+		if (_rc) {
+			continue , br
+		}
+		
+		loc changed_`j' = c(changed)
+		
+		tempfile tmp_dta_`j'
+		qui sa "`tmp_dta_`j''" , empty
+	}
+	
+	restore
+	
+	.xls2dta_set_s // unmodified
+	
+	if (_rc) {
+		.xls2dta_err `= _rc' ///
+		"an error occured while processing `macval(fn)'"
+			/* error */
+	}
+	// else
+		
+		/* make the changes final */
+	foreach j of loc dta {
+		if ((`changed_`j'') | ("`save'" != "")) {
+			if mi("`qui'") {
+				di as res `". save `macval(.s_dta[`j'])' , replace"'
+			}
+			qui copy "`tmp_dta_`j''" "`.s_dta[`j']'" , replace
+			di as txt `"file `macval(.s_dta[`j'])' saved"' _n
+		}
+		else if mi("`qui'") {
+			di as txt `"note: file `macval(.s_dta[`j'])' not changed"'
+		}
+	}
+end
+
+
+	/* erase */
+pr .xls2dta_erase
+	loc 0 `.options'
+	syntax , ERASEok [ DTA(numlist int > 0) ]
+		/* dta() is not documented; renumbers s() */
+	
+	loc 0 `"`macval(.toparse)'"'
+	syntax
+	
+	.parse_dta_option `dta'
+	loc dta `.dta_opt'
+	
+	.xls2dta_get_s
+	
+	loc j_new 0
+	forv j = 1/`.s_n_dta' {
+		loc fn `.s_dta[`j']'
+		.s_dta[`j'] = ""
+		if (`: list j in dta') {
+			cap n erase "`fn'"
+			if (_rc) {
+				/* this should not happen */
+				.s_dta[`j'] = "`fn'"
+				.xls2dta_set_s
+				.xls2dta_err `=_rc' "xls2dta internal error"
+			}
+		}
+		else {
+			loc ++j_new 
+			.s_dta[`j_new'] = "`fn'"
+		}
+	}
+	
+	.s_n_dta = `j_new'
+	
+	.xls2dta_set_s , clear
+end
+/* done with commands */
+
+
+/* utility routines */
+
+pr .xls2dta_set_s , sclass
+	nobreak {
+		syntax [ , CLEAR ]
+		if ("`clear'" != "") {
+			sret clear
+		}
+		foreach c in append merge joinby {
+			sret loc `c'_dta "`.`c'_dta'"
+		}
+		forv j = 1/`.s_n_dta' {
+			sret loc dta_`j' "`.s_dta[`j']'"
+		}
+		sret loc n_dta 	`.s_n_dta'
+		sret loc cmd `.s_cmd'
+	}
+end
+
+pr .xls2dta_get_s
+	.s_cmd 		= (`"`s(cmd)'"')
+	.s_n_dta 	= `s(n_dta)'
+	
+	foreach c in append merge joinby {
+		.`c'_dta = s(`c'_dta)
+	}
+	
+	forv j = 1/`.s_n_dta' {
+		.s_dta[`j'] = s(dta_`j')
+	}
+end
+
+	/* error messages routine */
+pr .xls2dta_err
+	gettoken rc 0 : 0
+	if mi(`"`macval(0)'"') {
+		loc rr rr
+	}
+	else {
+		di as err `0'
+	}
+	e`rr' `rc'
+end
+/* done with Stata */
+
+
+/* Mata routines */
+
+m :
+
+void xls2dta_s_to_r()
+{
+	real scalar n_dta
+	string scalar s_i
+	
+	st_rclear()
+	
+	n_dta = strtoreal(st_global("s(n_dta)"))
+	for (i = 1; i <= n_dta; ++i) {
+		s_i = strofreal(i)
+		st_global("r(dta_" + s_i + ")", ///
+		st_global("s(dta_" + s_i + ")"))
+	}
+	st_global("r(n_dta)", strofreal(n_dta))
+}
+
+void xls2dta_parse_path(string scalar Path,
+						string scalar Dir,
+						string scalar Fn,
+						string scalar Ext)
+{
+	string scalar dir, fn, ext
+	
+	ext = pathsuffix(Path)
+	if (ext != "") {
+		pathsplit(Path, dir = "", fn = "")
+	}
+	else {	
+		dir = Path
+	}
+	
+	st_local(Dir, dir)
+	st_local(Fn, fn)
+	st_local(Ext, ext)
+}
+
+void xls2dta_confirm_dir_exists(string scalar dir)
+{
+	if (!direxists(st_local(dir))) {
+		errprintf("diretory %s not found\n", st_local(dir))
+		exit(698)
+	}
+}
+
+void xls2dta_build_fn(string scalar fout, 
+					string scalar dir,
+					string scalar fn, 
+					| string scalar ext)
+{
+	/*
+		input is
+			<fout> 	lmacname to pass result
+			<dir> 	<directory>
+			<fn> 	<filename>.<ext>
+			<ext> 	"" or .<new_ext>
+	*/
+	
+	if (ext != "") {
+		fn = pathrmsuffix(fn) + ext
+	}
+	
+	st_local(fout, pathjoin(dir, fn))
+}
+
+void xls2dta_get_xls_fl()
+{
+	/*
+		we get filenames from file by -filelist- 
+		*! version 2.0.7  08jun2015 Robert Picard
+	*/
+	
+	string matrix X
+	string scalar st_tmp
+	real scalar c
+	
+	X = st_sdata(., (1, 2))
+	st_tmp = st_local("st_tmp")
+	
+	c = strtoreal(st_local("n_xls"))
+	for (i = 1; i <= rows(X); ++i) {
+		c = c + 1
+		st_local("st_tmp", pathjoin(X[i, 1], X[i, 2]))
+		stata(".xls[" + strofreal(c) + "] = " + ///
+		char((34, 96)) + "macval(st_tmp)" +  char((39, 34)))
+	}
+	st_local("st_tmp", st_tmp)
+	
+	st_local("n_xls", strofreal(c))
+}
+
+void xls2dta_select_sheets()
+{
+	transmorphic rowvector sheets
+	real scalar isnum, isnot, N_worksheet, i_sheet, OK
+	string scalar str_n, sname
+	
+	sheets = tokens(st_macroexpand("`" + ".sheets" + "'"))
+	isnum = strtoreal(st_macroexpand("`" + ".sheets_isnum" + "'"))
+	isnot = strtoreal(st_macroexpand("`" + ".sheets_isnot" + "'"))
+	isall = strtoreal(st_macroexpand("`" + ".is_allsheets" + "'"))
+	
+	N_worksheet = st_numscalar("r(N_worksheet)")
+	assert(N_worksheet < .)
+	
+	i_sheet = strtoreal(st_macroexpand("`" + ".i_sheet" + "'"))
+	
+	if (isnum) {
+		sheets = strtoreal(sheets)
+	}
+	
+	for (n = 1; n <= N_worksheet; ++n) {
+		str_n = strofreal(n)
+		sname = st_global("r(worksheet_" + str_n + ")")
+		if (isnum) {
+			OK = (anyof(sheets, n) - (isnot))
+		}
+		else if (!isall) {
+			OK = (any(strmatch(sname, sheets)) - (isnot))
+		}
+		else {
+			OK = (1 - (isnot))
+		}
+		if (OK) {
+			i_sheet = i_sheet + 1
+			xls2dta_select_sheets_addsheet(i_sheet, sname, str_n)
+		}
+	}
+	
+	stata(".i_sheet = " + strofreal(i_sheet))
+}
+
+void xls2dta_select_sheets_addsheet(real scalar i_sheet, 
+									string scalar sname,
+									string scalar str_n)
+{
+	string scalar str_i, fn
+	
+	str_i = strofreal(i_sheet)
+	
+	if (strpos(sname, `"""')) {
+		sname = "`" + `"""' + sname + `"""' + "'"
+	}
+	else sname = `"""' + sname + `"""'
+	stata(".sheetname[" + str_i + "] = " + sname)
+	stata(".sheetnum[" + str_i + "] = " + str_n)
+	stata(".tmp_dta[" + str_i + "] = " + ///
+	`"""' + xls2dta_fn_xls_dta(str_n) + `"""')
+}
+
+string scalar xls2dta_fn_xls_dta(| string scalar str_n)
+{
+	string scalar fn, dump	
+	
+	fn = st_macroexpand("`" + ".xls[" + st_local("i_xls") + "]'")
+	pathsplit(fn, dump = "", fn)
+	if (str_n != "") {
+		str_n = "_" + str_n
+	}
+	fn = pathrmsuffix(fn) + str_n + ".dta"
+	
+	return(pathjoin(st_macroexpand("`" + ".save" + "'"), fn))
+}
+
+void xls2dta_fill_dta_opt(string scalar dta_opt)
+{
+	real scalar n_dta
+	string scalar dta
+	
+	n_dta = strtoreal(st_global("s(n_dta)"))
+	dta = invtokens(strofreal((1..n_dta)))
+	st_local(dta_opt, dta)
+}
+
+void xls2dta_confirm_dta_opt(string scalar dta_opt)
+{
+	real rowvector dta
+	real scalar n_dta
+	
+	dta = strtoreal(tokens(st_local(dta_opt)))
+	n_dta = strtoreal(st_global("s(n_dta)"))
+	
+	if (any(dta :> n_dta)) {
+		errprintf("invalid option dta(); ")
+		errprintf("only " + strofreal(n_dta) + " ")
+		errprintf("converted files found\n")
+		exit(125)
+	}
+}
+
+void xls2dta_confirm_s()
+{
+	real scalar n_dta
+	string scalar fn
+	
+	if (st_global("s(cmd)") != "xls2dta") {
+		errprintf("previous command was ")
+		errprintf("not {bf}xls2dta{sf}\n")
+		exit(398)
+	}
+	
+	n_dta = strtoreal(st_global("s(n_dta)"))
+	if (anyof((0, .), n_dta)) {
+		errprintf("no converted files found\n")
+		exit(398)
+	}
+	
+	for (i = 1; i <= n_dta; ++i) {
+		fn = st_global("s(dta_" + strofreal(i) + ")")
+		if (!fileexists(fn)) {
+			errprintf("file %s not found\n", fn)
+			exit(601)
+		}
+	}
+}
+
+end
+e
+
+1.3.0	01dec2016	new option -save- for subcommands -xeq-/-do-
+					new message for unchanged files with -xeq-/-do-
+1.2.1	26aug2016	minor code polish (not released)
+1.2.0	19apr2016	fix bug -import- without "excel"
+					new -recursive(<maxdeep>)- option
+1.1.0	08dec2015	-importopts()- now -xls2dta- option
+					-importopts()- still works as -combine_options-
+					version 12 declared
+					fix bug: -append- kept temporary variable
+1.0.1	15oct2015	fix bug with old options (allsheets)
+					fix bug with option [all]sheets[()]
+1.0.0	06oct2015	release on SSC

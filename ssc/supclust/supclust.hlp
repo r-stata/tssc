@@ -1,0 +1,180 @@
+{smcl}
+{* 02jul2005}{...}
+{hline}
+{cmd:help supclust}
+{hline}
+
+{title:Build superordinate categories from classification variables}
+
+{p 8 17 2}
+{cmd:supclust} {vars} {ifin} {cmd:,}
+{cmdab:g:enerate(}{newvar}{cmd:)}
+[ {opt alt:ernating} {opt m:issing} ]
+
+
+{title:Description}
+
+{pstd} {cmd:supclust} may be used to build superordinate categories based
+on the values of two or more classification variables. This would be a
+useful procedure if, for example, you want to identify distinct clusters in
+a trading network based on the identification codes of sellers and buyers.
+Another application would be the identification of related entries in a
+telephone register, based on a common telephone number or address.
+
+{pstd} Note that {vars} must specify at least two classification variables.
+The variables may be numeric or string. However, if the
+{opt alternating} option is specified, all variables must be numeric.
+
+{pstd} {cmd:supclust} has to do quite a bit of iterating and sorting,
+depending on the maximum length of the paths by which the observations are
+connected within the clusters. {cmd:supclust} may therefore take a while
+to finish if it is applied to a large and complex dataset.
+
+
+{title:Options}
+
+{phang} {cmd:generate(}{newvar}{cmd:)} is required and stores unique
+identifiers for the superordinate clusters in {it:newvar}. {it:newvar} will
+identify the clusters using consecutive integers starting at 1.
+
+{phang} {opt alternating} causes {cmd:supclust} to match values across
+classification variables. The default is to treat the classification
+variables as representing independent classifications. If the
+{opt alternating} option is specified, all variables in {vars}
+must be numeric.
+
+{pmore} Suppose, for example, you have a dataset in which each observation
+represents an economic transaction between a seller and a buyer. If the
+sellers and the buyers are from two distinct populations, then use the default
+algorithm to identify the clusters. If, however, sellers
+and buyers are drawn from the same population, that is, if specific actors can
+appear both as sellers {it:and} buyers, then the {opt alternating} option
+should be specified. Note that in this case it is important to use unique
+identification numbers for the actors, independent of their appearance as
+sellers or as buyers.
+
+{phang} {opt missing} specifies that observations with missing values
+be included in the computations. The default is to exclude such cases. If
+included, missing values are treated being different from one another, that
+is, cases with missing values are not necessarily interpreted as belonging
+to the same cluster.
+
+
+{title:Examples}
+
+        {com}. input id1 id2
+
+             {txt}      id1        id2
+          1{com}. 1  1
+        {txt}  2{com}. 2  1
+        {txt}  3{com}. 2  2
+        {txt}  4{com}. 3  2
+        {txt}  5{com}. 3  4
+        {txt}  6{com}. 4  5
+        {txt}  7{com}. 5  3
+        {txt}  8{com}. 6  6
+        {txt}  9{com}. 6  .
+        {txt} 10{com}. .  .
+        {txt} 11{com}. end
+        {txt}
+        {com}. supclust id1 id2, generate(a)
+        {txt}4 clusters in 8 observations
+
+        {com}. list id1 id2 a, clean
+        {txt}
+               {res}id1   id2   a {txt}
+          1.   {res}  1     1   1 {txt}
+          2.   {res}  2     1   1 {txt}
+          3.   {res}  2     2   1 {txt}
+          4.   {res}  3     2   1 {txt}
+          5.   {res}  3     4   1 {txt}
+          6.   {res}  4     5   2 {txt}
+          7.   {res}  5     3   3 {txt}
+          8.   {res}  6     6   4 {txt}
+          9.   {res}  6     .   . {txt}
+         10.   {res}  .     .   . {txt}
+
+        {com}. supclust id1 id2, generate(b) alternating
+        {res}{txt}2 clusters in 8 observations
+
+        {com}. list id1 id2 b, clean
+        {txt}
+               {res}id1   id2   b {txt}
+          1.   {res}  1     1   1 {txt}
+          2.   {res}  2     1   1 {txt}
+          3.   {res}  2     2   1 {txt}
+          4.   {res}  3     2   1 {txt}
+          5.   {res}  3     4   1 {txt}
+          6.   {res}  4     5   1 {txt}
+          7.   {res}  5     3   1 {txt}
+          8.   {res}  6     6   2 {txt}
+          9.   {res}  6     .   . {txt}
+         10.   {res}  .     .   . {txt}
+
+        {com}. supclust id1 id2, generate(c) missing
+        {txt}5 clusters in 10 observations
+
+        {com}. list id1 id2 c, clean
+        {txt}
+               {res}id1   id2   c {txt}
+          1.   {res}  1     1   1 {txt}
+          2.   {res}  2     1   1 {txt}
+          3.   {res}  2     2   1 {txt}
+          4.   {res}  3     2   1 {txt}
+          5.   {res}  3     4   1 {txt}
+          6.   {res}  4     5   2 {txt}
+          7.   {res}  5     3   3 {txt}
+          8.   {res}  6     6   4 {txt}
+          9.   {res}  6     .   4 {txt}
+         10.   {res}  .     .   5 {txt}
+
+        {com}. clear
+        {txt}
+        {com}. input id1 id2 id3
+
+             {txt}      id1        id2        id3
+          1{com}. 1  1  1
+        {txt}  2{com}. 2  1  2
+        {txt}  3{com}. 3  2  2
+        {txt}  4{com}. 4  3  3
+        {txt}  5{com}. end
+        {txt}
+        {com}. supclust id1 id2, generate(a)
+        {txt}3 clusters in 4 observations
+
+        {com}. list id1 id2 id3 a, clean
+        {txt}
+               {res}id1   id2   id3   a {txt}
+          1.   {res}  1     1     1   1 {txt}
+          2.   {res}  2     1     2   1 {txt}
+          3.   {res}  3     2     2   2 {txt}
+          4.   {res}  4     3     3   3 {txt}
+
+        {com}. supclust id1 id2 id3, generate(b)
+        {txt}2 clusters in 4 observations
+
+        {com}. list id1 id2 id3 b, clean
+        {txt}
+               {res}id1   id2   id3   b {txt}
+          1.   {res}  1     1     1   1 {txt}
+          2.   {res}  2     1     2   1 {txt}
+          3.   {res}  3     2     2   1 {txt}
+          4.   {res}  4     3     3   2 {txt}
+
+
+{title:Saved Results}
+
+{pstd} Scalars:
+
+    {cmd:r(N)}        number of observations
+    {cmd:r(N_clust)}  number of clusters
+
+
+{title:Author}
+
+{pstd} Ben Jann, ETH Zurich, jann@soz.gess.ethz.ch
+
+
+{title:Also see}
+
+{psee} Online:  help for {help egen}, {help sort}

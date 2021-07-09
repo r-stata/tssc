@@ -1,0 +1,88 @@
+{smcl}
+{* 23JUN2005}{...}
+{cmd:help nlabel}
+{hline}
+
+{title:Make various labels}
+
+
+{title:Syntax}
+
+{p 8 17 2}
+{cmd:nlabel}
+[{varname}]
+[{cmd:,} {it:options}]
+
+{synoptset 20 tabbed}{...}
+{synopthdr}
+{synoptline}
+{syntab:Main}
+{synopt:{opth l:abel(string)}}specify variable label {p_end}
+{synopt:{opth a:dd(string)}}text to add to label to make tlabel {p_end}
+{synopt:{opth v:label(string)}}value label name {p_end}
+{synopt:{opth n:ote(string)}}variable note {p_end}
+{synopt:{opth s:hortlabel(string)}}specify clabel {p_end}
+{synopt:{opth t:label(string)}}specify tlabel {p_end}
+{synopt:{opt ct:label}}copies label to tlabel without other changes {p_end} 
+{synopt:{opt cl:ear}}clears tlabel and clabel {p_end} 
+{synopt:{opt u:selabel}}imports label in order to allow simple tlabel formation {p_end} 
+{synoptline}
+{p2colreset}{...}
+
+{title:Description}
+
+{pstd}
+{cmd:nalabel} allows multiple label and note entry for a varname. If entered without options 
+{cmd:nlabel} displays all available labels and notes.
+
+
+{title:Options}
+
+{dlgtab:Main}
+
+{phang}
+{cmd:label} specifies variable label.
+
+{phang}
+{cmd:add} creates a {cmd:tlabel} from the label + add(string).
+
+{phang}
+{cmd:tlabel} specifies the {cmd:tlabel} directly.
+
+{phang}
+{cmd:shortlabel} specifies the {cmd:clabel}.
+
+{phang}
+{cmd:vlabel} specifies the value label name.
+
+{phang}
+{cmd:ctlabel} copies label entered to tlabel without any other changes.
+
+{phang}
+{cmd:clear} clears the existing {cmd:clabel} and {cmdvlabel}.
+
+{phang}
+{cmd:note} specifies notes for the variable.
+
+{phang}
+{cmd:uselabel} sets {cmd:label} to existing label. Used to make {cmd:add} and {cmd:ctlabel} work 
+without keyboard entry of  {cmd:label}.
+
+{title:Examples}
+
+. nlabel sex,l(Gender) a((% male)) n(Male =1)  v(sexlabel) s(sex)
+
+. nlabel sex
+sex: label: Gender tlabel: Gender (% male) clabel: sex value label: sexlabel
+Notes on
+sex:
+  1.  Male =1
+
+
+{pstd}
+F. Wolfe
+
+{title:Also see}
+
+{psee}
+Online:  {helpb label}

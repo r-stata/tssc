@@ -1,0 +1,72 @@
+.-
+help for ^tablecol^                                            Nicholas Winter
+.-
+
+Column percentages with ^table^
+-----------------------------
+
+	^tablecol^ rowvar [colvar [supercolvar]]  [weight] [^if^ exp] [^in^ range]
+		     [^,^ ^c^ontents^(^clist^)^ ^by(^superrow_varlist^)^ ^cw^ ^row^ ^col^ ^sc^ol
+			^colpct^ ^rowpct^ ^nof^req ^o^verall
+			^f^ormat^(%^fmt^)^ ^cen^ter ^l^eft ^con^cise ^m^issing ^replace^
+			^n^ame^(^string^)^ ^cell^width^(^#^)^ ^csep^width^(^#^)^ ^scsep^width^(^#^)^
+			^stub^width^(^#^)^ ]
+
+rowvar, colvar, and supercolvar may be numeric or string variables.
+
+Elements of clist may only be ^freq^; ^contents(freq)^ is assumed if ^contents()^ 
+is not specified. Specify ^nofreq^ to suppress frequencies.
+
+^fweight^s, ^pweight^s, ^aweight^s, and ^iweight^s are allowed; see help @weights@.
+
+
+Description
+-----------
+
+^tablecol^ is a wrapper program for ^table^ which adds column percentages 
+	to the output.  Essentially this provides the functionality of the 
+	^column^ option of the ^tabulate^ command, along with the ability to 
+	specify supercolumns in table.
+
+
+Options
+-------
+
+^colpct^ specifies that column percentages are to be displayed.
+
+^rowpct^ specifies that row percentages are to be displayed.
+
+^nofreq^ suppresses display of cell frequencies.
+
+^contents(^clist^)^ is assumed to be ^contents(freq)^ if ^contents()^ is not specified.
+    ^contents(freq)^ is the only valid use for this option.
+
+^overall^ indicates that column percentages are to be calculated in terms
+	of the table as a whole. By default, percentages are calculated within
+	super-rows. If by(varlist) is not specified, this option has no effect.
+
+
+All other options are the same as for ^table^. See help @table@.
+
+
+Examples
+--------
+
+	. ^tablecol rep78 foreign, colpct^
+	. ^tablecol rep78 foreign, colpct row col^
+	. ^tablecol mpg rep78 foreign, colpct row^
+
+
+Author
+------
+
+      Nicholas J. G. Winter
+      University of Virginia
+      nwinter@@virginia.edu
+
+
+Also see
+--------
+
+ Manual:  ^[R] table^
+On-line:  help for @table@, @tabulate@

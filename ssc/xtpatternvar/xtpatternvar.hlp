@@ -1,0 +1,77 @@
+{smcl}
+{* 4oct2011}{...}
+{cmd:help xtpatternvar} 
+{hline}
+
+{title:Generate string variable describing panel patterns}
+
+
+{title:Syntax}
+
+{p 8 18 2}
+{cmd:xtpatternvar} 
+{ifin} 
+{cmd:,}
+{cmdab:gen:erate(}{it:newvar}{cmd:)} 
+
+
+{title:Description}
+
+{pstd}
+{cmd:xtpatternvar} generates a string variable holding information on panel
+patterns in a style similar to the output of {help xtdescribe}.  The pattern is
+a character string, "1" for every time unit that is present in the panel in
+which each observation is included and "." for every time unit that is not
+present in that panel. Note that the symbol "." has here nothing to do with
+missing values. 
+
+
+{title:Remarks}
+
+{pstd}
+A panel variable and a time variable must have been previously
+specified; use {help xtset}.
+
+{pstd}
+{cmd:xtpatternvar} will not perform if the maximum length of panel
+exceeds 244, as then the resulting pattern can not be held in a
+Stata string variable. 
+
+{pstd}
+The resulting string variable could impose substantial storage
+requirements in a large dataset.  
+
+
+{title:Options}
+
+{phang}
+{cmd:generate()} specifies the name of a new variable to be generated.
+This is a required option.  
+
+
+{title:Examples} 
+
+{phang}{cmd:. webuse abdata}{p_end}
+{phang}{cmd:. xtset}{p_end}
+{phang}{cmd:. xtpatternvar, gen(pattern)}{p_end}
+{phang}{cmd:. tab pattern}{p_end}
+{phang}{cmd:. {it:whatever} if strpos(pattern, "11111111")}
+
+
+{title:Author} 
+
+{pstd}Nicholas J. Cox, Durham University{break} 
+      n.j.cox@durham.ac.uk 
+
+
+{title:Acknowledgments}
+
+{pstd}This program grew from a Statalist question by Abdul Ber{c a^}. 
+Stephen Jenkins provided encouragement.                        
+
+
+{title:Also see}
+
+{psee}
+Manual:  {bf:[XT] xtdescribe}
+

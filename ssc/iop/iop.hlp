@@ -1,0 +1,228 @@
+{smcl}
+{hline}
+help for {hi:iop}: module to compute ex-ante inequality of opportunity {right:{browse "http://www.econ.chavezjuarez.com/vcheck.php?i=iop&v=2.6":[Version 2.6]}}
+{hline}
+
+
+{ul:Content}
+{help iop##syntax:1. Syntax}
+{help iop##description:2. Description of the routine and methods}
+{help iop##options:3. Options}
+{help iop##bootstrap:4. Estimating standard errors}
+{help iop##examples:5. Examples}
+{help iop##alternatives:6. Alternative routines}
+{help iop##developments:7. Future developments & bugs}
+{help iop##authors:8. Authors}
+{help iop##references:9. References}
+{help iop##thanks:10. Acknowledgements}
+
+{dlgtab 0 0:Syntax}{marker syntax}
+
+The current syntax of the {cmd:iop} is:
+
+{p 4 8 2}{cmd:iop}
+{depvar} {indepvars} {ifin} {weight} [,{cmdab:d:etails} {cmdab:t:ype(}{it:str}{cmd:)} {cmdab:s:hapley(}{it:str}{cmd:)} {cmdab:sgr:oups(}{it:str}{cmd:)} {cmdab:o:axaca(}{it:groupvar stat}{cmd:)} 
+{cmdab:l:ogit} {cmdab:boot:strap}{cmd:(}{it:int}{cmd:)} {cmdab:no:loglin} ]
+
+{hi:fweights} and {hi:iweights} are allowed, see help {help weights}
+
+
+{marker oldsyntax}Syntax of version 1.0 (still working, but not recommended): 
+{p 4 4 2}{cmd:iop}
+{depvar} {indepvars} {ifin} [,{cmdab:boot:strap}{cmd:(}{it:int}{cmd:)}
+{cmdab:decomp:osition}
+{cmdab:gr:oups}{cmd:(}{it:varname (max=1)}{cmd:)}
+{cmdab:pr:opt}{cmd:(}{it:str}{cmd:)}
+{cmdab:bootopt}{cmd:(}{it:str}{cmd:)}]
+
+
+{dlgtab 0 0:Description}{marker description}
+
+{p 0 0 2} This routine computes different measures of ex-ante inequality of opportunity for continuous, binary and ordered 
+variables proposed in the literature. The general idea behind these methods is to explain an outcome by people's circumstances
+for which they cannot be held responsible. The general approach has two (sometimes three) steps: {break}
+
+{p 2 5} 1. First the expected outcome, conditional on circumstances, is computed. All variation is exclusively due to circumstances. This is done
+by the means of an OLS or a probit, depending on the type of variable. {break}
+
+{p 2 5} 2. An inequality measure is applied to this conditional expectation. {break}
+
+{p 2 7}(3.) Sometimes a third step is performed where the inequality measure is divided by the same inequality measure computed on the 
+original outcome in order to get a relative measure of inequality. 
+
+{p 0 0}For more details, see for instance Wendelspiess Ch{c a'}vez Ju{c a'}rez (2013).
+
+{p 0 4 0} {marker fg1} {hi:{help iop##ref_fg1:Ferreira & Gignoux  - Continuous variables with inherent scale}} (abbreviation: fg1)
+Ferreira & Gignoux (2011) propose to estimate first an OLS regression of the continuous outcome (positive values) on a set of circumstances. 
+The log mean deviation (MLD) is then applied to the predicted values (conditional expectation}. By dividing this measure by the mean log 
+deviation of the original outcome variable, a relative measure of inequality of opportunity is obtained. These measures are scale, but not 
+translation invariant. 
+
+{p 0 4 5}{marker fg2}{hi:{help iop##ref_fg2:Ferreira & Gignoux  - Continuous variables without inherent scale}} (abbreviation: fg2)
+Ferreira & Gignoux (2011b) is very similar to Ferreira & Gignoux (2011) but is particularly suited for continuous variables without 
+inherent scale (e.g. test scores). For such variables, a measure that is both, translation and scale invariant is needed. They propose to use the 
+relative measure only and as inequality indicator the variance. The resulting relative inequality of opportunity measure is equal to the 
+R squared of a simple OLS regression. This measure is translation and scale invariant. 
+
+{p 0 4 5}{marker pdb}{hi:{help iop##ref_pdb:Paes de Barros (2008) - Dichotomous and ordered variables}} (abbreviation: pdb)
+Paes de Barros et al (2008) propose to estimate first a probit on the dummy variable (for ordered variable a threshold must be chosen and dummy 
+constructed). The predicted probability (conditional probability) is then used to compute the dissimilarity index, which is an absolute measure 
+of inequality in opportunity. The measure is scale but not translation invariant. 
+
+{p 0 4 5}{marker ws}{hi:{help iop##ref_ws:Wendelspiess Ch{c a'}vez Ju{c a'}rez (2013) - Dichotomous and ordered variables}} (abbreviation: ws)
+This method is basically the same as Paes de Barros et al (2008) but uses a modified dissimilarity index that is translation 
+invariant but not scale invariant. 
+
+
+{hi:OVERVIEW}
+{ul:Abbrev} {col 10}{ul:Variable type}	{col 31}{ul:Inequality measure} {col 60}{ul:Absolute} {col 73}{ul:Relative}
+fg1*  {col 10}cont. (with scale) {col 31}mean log deviation {col 60}yes {col 73}yes
+fg2  {col 10}cont. (no scale) 	{col 31}variance {col 60}no {col 73}yes
+pdb  {col 10}dummy/ordered 	{col 31}dissimilarity index (DI) {col 60}yes {col 73}no
+ws {col 10}dummy/ordered 	{col 31}modified DI {col 60}yes {col 73}no
+
+{p 0 3 3}*= fg1 is used for the method in general, while we use {hi:fg1a} and {hi:fg1r} to distinguish between the absolute and the relative measure respectively. 
+
+Alternative Stata routines are mentioned {help iop##alternatives:below}. 
+
+
+
+{dlgtab 0 0:Options}{marker options}
+
+{p 4 8 2}{marker type}{cmdab:t:ype(}{it:str}{hi:)} can be used to specify the type of the variable. It is optional because {hi:iop} tries to figure out on
+its own the type of the dependent variable. If {hi:iop} fail at identifying the type, you can specify it here. The possible values are: 
+{break}
+{hi:c}   continuous variables{break}
+{hi:o}   ordered variables{break}
+{hi:d}   dummy variables
+
+{p 4 8 2}{cmdab:d:etail} allows you to display the OLS regression or the probit model estimated by {hi:iop}. By default, these models are not displayed.
+
+{marker optshapley}
+{p 4 8 2}{cmdab:s:hapley(}{it:str}{hi:)} allows you to decompose the inequality of opportunity measure in the relative contribution of each
+circumstance variable based on the Shapley value. Note that due to possibly omitted circumstances, these values cannot be seen as causal (see 
+{help iop##ref_fg1:Ferreira & Gignoux (2011)}) for a discussion on this issue). 
+
+{p 4 8 2}{cmdab:sgr:oups(}{it:str}{hi:)} allows you to group some variables for the shapley decomposition. This is especially useful when you have too many circumstance 
+variables or if two variables must not be separated (e.g. age and age squared). Simply write the variable names and separate the groups by a comma. For example, assume we have the 
+variables a1, a2, b1, c1 and c2 and would like to group them. You can simply indicate sgroups(a1 a2,b1,c1 c2) to create three groups.  
+
+{marker optgroup}
+{p 4 8 2}{cmdab:o:axaca(}{it:groupvar stat}{hi:)} Using this option, {cmd:iop} performs a Oaxaca-like decomposition according to the group variable. This group 
+variable should be numeric and contain a finite number of different values. No upper limit is given, but for a proper display, you should not exceed 10 values.
+This option is only available for dichotomous and continuous variables. If you would like to use if for an ordered variable, first dichotomize it and then use the 
+syntax for dummy variables. The option uses two arguments, the first {it:groupvar} is the variable indicating the groups and {it:stat} is the statistic you 
+want to decompose. For dummy variables the possible values are {it:pdb} and {it:ws}, while for continuous variables only {it:fg1a} is available, since the
+relative measures should not be decomposed in this way.  
+
+{p 4 8 2}{cmdab:l:ogit} changes the default probit model to a logit model for dichotomous and ordered variables.
+
+{p 4 8 2}{cmdab:boot:strap}{cmd:(}{it:int}{cmd:)} Use this option to estimate bootstrap standard deviations of the different measures. The argument is simply the number of 
+replications. 
+
+{p 4 8 2}{cmdab:no:loglin} Use this option to avoid the log-lineralization of the dependent variable. Is only relevant for the {help iop##ref_fg1:Ferreira & Gignoux (2011)}) method.
+
+{ul:Options of the {help iop##oldsyntax:old syntax} (Version 1.0)}
+
+{p 4 8 2}{cmdab:boot:strap}{cmd:(}{it:int}{cmd:)} Use this option to include bootstrap confidence intervals of the dissimilarity index by indicating the desired 
+amount of repetitions. The default value is 0, resulting in no computation of bootstrap confidence intervals. 
+
+{p 4 8 2}{cmdab:decomp:osition} This option includes a decomposition of the computed dissimilarity index. The same method is used and all but one variable is set 
+to the average when computing the predicted values. Beware of the fact that the sum of these estimates does not necessarily yield to the total effect. 
+
+{p 4 8 2}{cmdab:gr:oups}{cmd:(}{it:varname (max=1)}{cmd:)} By activating this option, the decomposition across groups is performed. Indicate the categorical
+ variable containing a definition of the groups.
+
+{p 4 8 2}{cmdab:pr:opt}{cmd:(}{it:str}{cmd:)} Use this option to include special options in the probit estimation. Just write your probit options normally
+ and they are transmitted to the probit estimation in the script.
+
+{p 4 8 2}{cmdab:bootopt}{cmd:(}{it:str}{cmd:)} Use this option to include special options in the bootstrap sampling. Just write your bootstrap options
+ normally and they are transmitted to the {it:bsample} command in the script.
+
+ 
+ 
+{dlgtab 0 0:Estimating standard errors}{marker bootstrap}
+
+{p}We offer a built in estimation for bootstrap standard errors. The options are relatively limited and we encourage users who would like to change
+parameters of the bootstrap method to use the Stata command. Look at the {help iop##examples:last example} hereafter to find out how you can perform the bootstrap standard errors. 
+Moreover, including analytical standard errors is planned for {help iop##developments:future developments}.
+ 
+ 
+ 
+{dlgtab 0 0:Examples}{marker examples}
+
+{p 0 8 2}{cmd:iop} access_school education_father family_income indigenous, shapley(pdb)
+
+{p  4  4}This example calculates the inequality of opportunity in the access to schooling based on three explanatory variables: father's education,
+ the family income and a dummy for indigenous people. Additionally, a shapley decomposition of the {help iop##pdb:Paes de Barros et al (2008)} method is performed.
+
+{p 0 8 2}{cmd:iop} access_school education_father family_income indigenous, oaxaca(gender ws)
+
+{p  4  4}This example performs the same estimation as the first example but adds the Oaxaca-like decomposition by gender, meaning that the 
+adapted dissimilarity index is computed for women and men individually and for the counterfactual combinations as well. This is for example the dissimilarity 
+index of women if they had the estimated coefficients of men or vice versa. 
+
+{p 0 8 2}{cmd:iop} income education_father family_income indigenous, detail
+
+{p  4  4} This method estimates inequality of opportunity in income based on the same three circumstances as in the first example. The option {it:detail}
+allows seeing the underlying OLS estimation as well. Both methods proposed by Ferreira & Gignoux are applied. 
+
+{p 0 8 2}{cmd:iop} income education_father family_income indigenous, boot(200)
+
+{p  4  4} This example estimates exactly the same model as the example before, but computes in addition to the point estimates the 
+bootstrap standard errors for 200 replications. You should not perform the bootstrap together with the shapley-decomposition, 
+or the oaxaca-like decomposition since this would be extremely computation intensive.  
+
+
+{marker alternatives}
+{dlgtab 0 0:Alternative routines}
+
+{p 0 0 2} For the case of binary variables, an alternative routine to estimate the dissimilarity index is {stata ssc desc hoi:hoi}. Differences between the two routines include the estimation of the conditional probability (hoi uses
+logit instead of probit) and mainly the options the routine offers to the user. For inference, {cmd:hoi} should be preferred, since it computes not only 
+the bootstrap standard errors but also the analytical standard errors. 
+
+If we forgot to mention another routine here, please let us know. 
+
+
+{dlgtab 0 0:Future developments}{marker developments}
+
+{p 0 0 2} The routine {cmd:iop} will be developed further. If you have particular suggestions, 
+please let us know. {break} We tested the routine extensively before publication. However, we cannot exclude all errors. We appreciate a lot if you could indicate us remaining bugs in the 
+program. {break}To update the routine type {stata ssc install iop, replace:scc install iop, replace}
+ 
+ 
+{dlgtab 0 0:Authors}{marker authors}
+
+
+Florian Wendelspiess Ch{c a'}vez Ju{c a'}rez, CIDE Mexico City ({browse "mailto:florian@chavezjuarez.com?subject=Stata routine iop:":florian@chavezjuarez.com})
+Isidro Soloaga, Universidad Iberoamericana, Ciudad de M{c e'}xico
+
+
+{dlgtab 0 0:References}{marker references}
+
+{p 0 4 2}{marker ref_fg1} Ferreira, Francisco H.G. and J{c e'}r{c e'}mie Gignoux (2011), "The Measurement of Inequality of Opportunity: Theory and an Application to
+Latin America", The Review of Income and Wealth, 2011, 57 (4), pp. 622-657 {browse "http://onlinelibrary.wiley.com/doi/10.1111/j.1475-4991.2011.00467.x/abstract":[Direct link to paper]}
+
+{p 0 4 2}{marker ref_fg2} Ferreira, Francisco H.G. and J{c e'}r{c e'}mie Gignoux (2011b), "The Measurement of Educational Inequality:
+Achievement and Opportunity" World Bank Policy Research Working Paper 5873
+
+{p 0 4 2}{marker ref_pdb}Paes de Barros, R and M. de Carvalho (2008). Measuring Inequality of Opportunity in Latin America and the Caribbean"
+
+{p 0 4 2}Paes de Barros, R and M. de Carvalho and S. Franco (2007). Preliminary Notes on the Measurement of Socially-Determined Inequality of
+ Opportunity when the Outcome is Discrete". IPEA, Rio de Janeiro
+ 
+{p 0 4 2} Paes de Barros, Ricardo and Francisco H. G. Ferreira and Jos{c e'} R. Molinas Vega and Jaime Saavedra Chanduvi. 
+Measuring Inequality of Opportunities in Latin America and the Caribbean-Inequality. The World Bank. 2009
+
+{p 0 4 2}Soloaga, Isidro and Florian Wendelspiess Ch{c a'}vez Ju{c a'}rez. Desigualdad de Oportunidades: aplicaciones al caso de M{c e'}xico. IN: Movilidad
+ Social en M{c e'}xico: Poblaci{c o'}n, desarrollo y crecimiento, edited by Julio Serrano Espinosa and Florencia Torche. Centro de Estudios Espinosa Yglesias. Mexico City. 2010.
+
+{p 0 4 2}Soloaga, Isidro and Florian Wendelspiess Ch{c a'}vez Ju{c a'}rez (2012). El comando iop para estimar desigualdad cuando el indicador es binario.
+ Forthcoming in: Aplicaciones en Econom{c i'}a y Ciencias Sociales con Stata. Stata Press.
+
+{p 0 4 2}{marker ref_ws}Wendelspiess Ch{c a'}vez Ju{c a'}rez, Florian and Soloaga, Isidro (2013). Scale vs. Translation Invariant Measures of Inequality of Opportunity when the Outcome is Binary 
+(February 27, 2013). Available at SSRN: {browse "http://ssrn.com/abstract=2226822"}
+
+
+{dlgtab 0 0:Acknoledgements}{marker thanks}
+We would like to thank Paul Hufe for pointing to a bug regarding the log-linearization in the Ferreira & Gignoux (2011) methodology. 

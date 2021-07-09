@@ -1,0 +1,113 @@
+/* 
+
+*! metareg dialog version 1.0.1, 13 May 2003, T. J. Steichen, steichen@triad.rr.com 
+*!    for metareg version 1.06,     Jan 1998, Stephen Sharp, stephen.j.sharp@gsk.com
+
+Meta-analysis regression
+------------------------
+
+Syntax:  metareg y varlist [if exp] [in range] , { wsse(varname)| wsvar(varname) }
+             [ bsest(string) toleran(#) level(#) noiter ]
+
+To install in User Statistics menu via Stata commands:
+  . window menu append item "stUserStatistics" "Meta-analysis Regression (meta&reg)" "db metareg"
+  . window menu refresh
+To permanently install, place the commands in your -profile.do- file.
+*/
+
+VERSION 8.0
+
+INCLUDE _std_small
+INCLUDE header
+
+HELP hlp1, view("help metareg")
+RESET res1, label("Reset")
+
+DIALOG main, label("metareg 1.06 - Meta-analysis Regression") tabtitle("Main")
+BEGIN
+  TEXT     tx_theta     10    5   110      .,           ///
+     label("Dependent (y):")
+  VARNAME  vn_theta    110    5   230      .,           ///
+     label("Var for theta")
+
+  CHECKBOX cb_id        10   35   100      .,           ///
+     label("Covariates:")                               ///
+     onclickon(main.vl_covar.enable)                    ///
+     onclickoff(main.vl_covar.disable)
+  VARLIST  vl_covar    110   35   230      .,           ///
+     label("Vars for covariates")
+
+  GROUPBOX gb_ws         5   60   340  _ht3h,           ///
+     label("Within-study Varibility:")
+  RADIO    r_se         15   80    85      .,           ///
+     label("Std. Error")      first                     ///
+     option("wsse")
+  RADIO    r_var       155   80    75      .,           ///
+     label("Variance")        last                      ///
+     option("wsvar")
+  TEXT     tx_ws        10  100   110      .,           ///
+     label("Variable name:")
+  VARNAME  vn_ws       110  100   230      .,           ///
+     label("WS Variable")
+
+
+  GROUPBOX gb_bsest      5  130   175  _ht3h,           ///
+     label("BS Method")
+  RADIO    r_reml       15  150    55      .,           ///
+     label("ReML")          first                       ///
+     option("bsest(reml)")
+  RADIO    r_ml         15  170    55      .,           ///
+     label("ML")            middle                      ///
+     option("bsest(ml)")
+  RADIO    r_eb         85  150    85      .,           ///
+     label("EmBayes")       middle                      ///
+     option("bsest(eb)")
+  RADIO    r_mm         85  170    85      .,           ///
+     label("Moments")       last                        ///
+     option("bsest(mm)")
+
+  CHECKBOX cb_noiter   210  135    95      .,           ///
+     label("No Iteration")                              ///
+     option("noiter")
+
+  CHECKBOX cb_level    210  155    85      .,           ///
+     label("CI Level:")                                 ///
+     onclickon(main.ed_level.enable)                    ///
+     onclickoff(main.ed_level.disable)
+  EDIT     ed_level    300    @    40      .,           ///
+     label("Level")                                     ///
+     numonly default(95)                                ///
+     option("level")
+
+  CHECKBOX cb_tol      210  175    85      .,           ///
+     label("Tolerance:")                                ///
+     onclickon(main.ed_tol.enable)                      ///
+     onclickoff(main.ed_tol.disable)
+  EDIT     ed_tol      300    @    40      .,           ///
+     label("Tolerance")                                 ///
+     numonly default(4)                                 ///
+     option("toleran")
+END
+
+INCLUDE ifin
+
+PROGRAM command
+BEGIN
+  put "metareg "
+  varlist main.vn_theta [main.vl_covar]
+  INCLUDE _ifin_pr
+  beginoptions
+    if main.r_se {
+      put "wsse("
+    }  
+    if main.r_var {
+      put "wsvar("
+    }
+    put main.vn_ws
+    put ")"
+    option radio(main r_reml r_ml r_eb r_mm)
+    option main.cb_noiter
+    optionarg main.ed_level
+    optionarg main.ed_tol
+  endoptions
+END

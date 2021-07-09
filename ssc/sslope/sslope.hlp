@@ -1,0 +1,116 @@
+{smcl}
+{.-}
+help for {cmd:sslope}
+{.-}
+
+{title:Simple Slope Calculation for Linear Regression}
+
+{p 8 8}
+{cmd:sslope}
+{it:varlist}
+[{cmd:if} {it:exp}] [{cmd:in} {it:range}] 
+{cmd:,}
+[{cmd:i}{cmd:(}{it:x z xz}{cmd:)}]
+[{cmd:i}{cmd:(}{it:x z w xz xw zw xzw}{cmd:)}]
+[{cmd:i}{cmd:(}{it:x x-squared}{cmd:)}]
+[{cmd:i}{cmd:(}{it:x z x-squared xz}{cmd:)}]
+[{cmd:i}{cmd:(}{it:z x x-squared xz}{cmd:)}]
+[{cmd:sd}{cmd:(}{it:#}{cmd:)}]
+[{cmd:Graph}] or [{cmd:go(}{cmd:}graph options{cmd:)}]
+[{cmd:Fits}]
+
+
+
+{p 8 27}
+{it:varlist} = regression equation with {ul:centered variables} including all interactions
+
+{p 8 8}
+option {cmd:i} must include either
+{cmd:(x z xz)}  (2-way interaction), gives slope of criterion variable on x at levels of z 
+(x z xz are variable names)
+
+{p 8 8}
+OR
+
+{p 8 8}
+{cmd:(x z w xz xw zw xzw)}  (3-way interaction), gives slope of criterion variable on x 
+at levels of z and w
+
+{p 8 8}
+OR
+
+{p 8 8}
+{cmd:(x x-squared)}  (quadratic), gives slope of criterion variable on x 
+at levels of x. Also calculates the minimum or maximum of the curve.
+
+{p 8 8}
+OR
+
+{p 8 8}
+{cmd:(x z x-squared xz)}  (quadratic plus linear interaction), gives slope of criterion variable on x 
+at levels of x and z. Also calculates the minumum or maximum of the curves. 
+
+{p 8 8}
+OR
+
+{p 8 8}
+{cmd:(z x x-squared xz)}  (quadratic plus linear interaction), gives slope of criterion variable on z 
+at levels of x. 
+
+{title:Description}
+
+{p}
+This calculates simple slopes for interactions between continuous variables in linear regression analysis. 
+For example, the slope of the criterion on x conditional upon z. All continuous variables in the regression 
+must be centered at the mean. The simple slope of interest must be specified in {cmd:i}. This must be of the 
+form x(slope of interest) z(moderating variable) xz(the interaction between the two). Hence, {cmd:i}(x z xz) 
+provides a different result than {cmd:i}(z x xz). Both are correct, one is the slope of y on x conditional upon z
+and the other, the slope of y on z conditional upon x. However, {cmd:i}(x xz z) will produce incorrect results. 
+Similarly, for a three-way interaction, {cmd:i} must be in the form of (x z w xz xw zw xzw) for the slope of x 
+conditional upon z and w. {ul:Important}, the order i(x z w xz {it:wz} xw xzw) will not produce the correct 
+results. The order is x (slope of interest) z w (first order terms of the moderators) x^2 (x quadratic term) xz xw (2-way interactions 
+with x) zw (the 2-way interaction of the moderators without x) xzw (the three way interaction). The order 
+of variables in varlist does not matter but calculations of the simple slopes depend upon the specified order 
+in {cmd:i}. Simple slopes associated with both an interaction and a quadratic term 
+(i.e., y on x when there are both xz and x-squared terms) are not supported at this time. 
+The calculations are based upon the formulas provided in Aiken & West (1991).
+
+
+{title:Options}
+
+{p}
+{cmd:sd}{cmd:(#)} specifies the conditional levels of interest of z and/or w, in sd units, default = 1.0.
+
+{p}
+{cmd:Graph} requests a graph of the conditional slopes. Continuous variables not included in the interaction 
+are held constant at mean=0, if there are dichotomous variables in the model, this option creates graphs
+for a category=0, if there is not a category=0, the intercepts will be invalid. 
+
+{p}
+{cmd:go} requests a graph as above, but accepts all standard graph options for {cmd:scatter}. 
+Choose either {cmd:Graph} for the default graph OR {cmd:go} and define graph options.
+
+{p}
+{cmd:Fits} requests the conditional fitted values be saved. This is included to facilitate making additional graphs.
+
+{p}
+{title:Examples}
+
+sslope y x z xz, i(x z xz)
+sslope y x z xz, i(x z xz) sd(2)
+sslope y x z w xz xw zw xzw, i(x z w xz xw zw xzw)
+sslope y q x z w xz, i(x z xz)
+sslope y x x-squared, i(x x-squared) graph
+sslope y x z x-squared, i(x x-squared) graph fits
+sslope y x q z  xz x-squared, i(x z x-squared xz) go(sort c(. l l l) m(o i i i) mlabel(id)) fits
+
+{bf}
+{dialog sslope:sslope dialog box}
+
+{bf}Author
+
+{sf}Jeffrey S. Simons - jsimons@usd.edu
+
+{bf}Also see
+
+{help mcenter}

@@ -1,0 +1,240 @@
+{smcl}
+{* may 26, 2017 @ 19:27:51}{...}
+{hi:help imperfectiv}{right:see also: {helpb ivregress}, {help plausexog} (if installed)}
+{hline}
+
+{title:Title}
+
+{p 4 4 2}{hi:imperfectiv} {hline 2} Estimation of bounds with "Imperfect Instrumental Variables" (Nevo and Rosen, 2012)
+
+
+{title:Syntax}
+
+{p 8 14 2}
+{cmd:imperfectiv}  {it:depvar}  [{it:{help varlist:varlist1}}]
+{cmd:(}{it:{help varlist:varlist2}} {cmd:=}
+         {it:{help varlist:varlist_iv}}{cmd:)} 
+[{cmd:,} {it:options}]
+
+
+{synoptset 21 tabbed}{...}
+{synopthdr}
+{synoptline}
+{synopt :{opt ncorr}}Specifies that the correlation between the endogenous variable and the unobservable error is assumed negative; by default this correlation is assumed to be positive. {p_end}
+{synopt :{opt noas:sumption4}}Specifies that assumption 4 of Nevo and Rosen (2012) does not hold; by default this assumed to hold.  Additional details are provided below. {p_end}
+{synopt :{opt prop5}}Specifies that proposition 5 of Nevo and Rosen (2012) should be used in the estimation of bounds.  Requires multiple imperfect instrumental variables.  Additional details are provided below. {p_end}
+{synopt :{opt level(#)}}Set confidence level; default is {cmd:level(0.95)}{p_end}
+{synopt :{opth vce(vcetype)}}{it:vcetype} may be {opt un:adjusted},
+ {opt r:obust}, {opt cl:uster} {it:clustvar}, {opt bootstrap} or {opt jackknife}{p_end}
+{synopt :{opth exogvars(varlist)}}Indicates that bounds should also be returned for exogenous variables in the model included in exogvars().  These variables must also be included in {it:varlist1} in model syntax.{p_end}
+{synopt :{opt bootstraps(#)}}Define number of bootstrap replications in cases where multiple bounds are available, and bootstrapping must be used in inference.  More bootstraps should be preferred where possible. Default is {cmd:bootstraps(50)}.
+{p_end}
+{synopt :{opt seed(#)}}Optionally sets the {help seed}.  This is only relevant when bootstrapping must be used in inference.
+{p_end}
+{synopt :{opt verbose}}Provides more verbose output to indicate the degree of completion of the procedure.  This may be relevant when multiple bounds are available, and a large number of bootstraps are requested. {p_end}
+
+{title: Description}
+
+{pstd}
+{cmd:imperfectiv} estimates bounds using "Imperfect Instrumental Variables" (IIV) as developed by Nevo and Rosen (2012).  This allows for inference based on instrumental variable estimates,
+however, with weaker assumptions than instrumental exogeneity.  Namely, the exogeneity assumption of typical IV estimates is replaced with an assumption about the sign of the correlation between the
+instrument and unobservables.  A comprehensive description of this method of
+inference is provided in
+{browse "http://www.mitpressjournals.org/doi/abs/10.1162/REST_a_00171":{it:Nevo and Rosen (2012)}}.
+
+{pstd}
+Briefly, consider a standard linear IV model with a {help depvar:dependent variable} {it:y}, a set of
+exogenous variables {it:X1}, an endogenous variable {it:X2} (together referred to as
+{it:X}), a set of instrumental variables {it:Z}, and an unobserved stochastic error term {it:u}.
+Nevo and Rosen's Imperfect Instrumetal Variables (IIV) bounds replace the traditional zero
+covariance assumption required for IV validity, cov({it:Z},{it:u})=0, with the following two
+assumptions:
+
+{p 8 12 2}  (1) The correlation between the instrument and the unobserved error term is of the same direction as the correlation between the original endogenous regressor and the error term (Nevo and Rosen, (2012) assumption 3).
+
+{p 8 12 2}  (2) The instruments is less correlated with the error term than the original endogenous variable (Nevo and Rosen, (2012) assumption 4).
+
+{pstd}
+Given the above two assumptions, two-sided bounds for the parameter on the endogenous variable
+can be produced if the conditional correlation between the IIV and the endogenous variable is
+negative.  If, however, this correlation is positive, only one-sided bounds can be produced.
+When only assumption 3 above is imposed, the bounds consist of OLS and IV estimators, while
+if assumption 4 is also imposed, tighter bounds can be constructed using a compound instrument
+(additional details in {browse "http://www.mitpressjournals.org/doi/abs/10.1162/REST_a_00171":{it:Nevo and Rosen (2012)}}).
+
+{pstd}
+If the correlation between the IIV and the endogenous variable is positive, but two instruments
+are available, Nevo and Rosen show that two-sided bounds can be produced under certain circumstances.
+In particular, if one instrument is both less correlated with {it:u} and more correlated with the
+endogenous variable {it:X2}, a new instrument can be formed, resulting in two-sided bounds.  This
+is Nevo and Rosen's "proposition 5".
+
+{pstd}
+{cmd:imperfectiv} returns bounds on the parameter on the endogenous variable, as well
+as bounds on each other exogenous variable included in the linear IV model if requested.
+When returning bounds, two sets are reported.  The first are the parameter estimates
+corresponding to the upper and lower bounds.  The second are the complete bounds in
+which the parameter estimates are accompanied by their confidence intervals.  
+All calculated bounds are returned in the matrix e(LRbounds).
+
+{pstd}
+When calculating the confidence intervals associated with the bounds, the procedure
+described on {browse "http://www.mitpressjournals.org/doi/abs/10.1162/REST_a_00171":{it:Nevo and Rosen (2012, p. 666)}})
+is followed.  In this case the Omega matrices are calculated by bootstrap replications.
+As discussed on p. 666, if returned lower and upper bounds cross (ie if reported lower
+bounds are higher than reported upper bounds), this suggests that the maintained assumptions
+in the IIV procedure are not consistent, and the model should be rejected.  Note that
+by default the {cmd:imperfectiv} command assumes that the endogenous variable (and the IV)
+are positively correlated with the unobserved error term.  If instead it is assumed that
+the endogenous variable and IV are {it:negatively} correlated with the unobserved
+error term, this must be indicated using the {it:ncorr} option.
+
+
+
+{title:Options}
+
+{dlgtab:General options}
+
+
+{phang}
+{opth vce(vcetype)} specifies the type of standard error reported, which includes types that are robust
+to some kinds of misspecification, that allow for intragroup correlation, and that use
+    bootstrap or jackknife methods; see {helpb vce_option:[R] vce_option}.
+
+{phang}
+{opt level(#)}; see
+{helpb estimation options##level():[R] estimation options}. By default bounds return 95% confidence intervals. 
+
+{phang}
+{opt verbose}; When verbose is specified, additional output is produced during the running
+of the command.  This is relevant when large datasets are used and multiple bounds are
+considered, as the bootstrap procedure may take some time to complete.
+
+{dlgtab:ncorr}
+
+{phang}
+The direction of correlation between the endogenous variable and the unobservable is an assumption
+made by the user. Under Nevo and Rosen's assumption 3, the correlation between the IIV and the
+unobservable and the endogenous variable and the unobservable are assumed to be of the same
+direction.  However, the direction of correlation must be assumed.  The default in
+{cmd:imperfectiv} is to assume a positive correlation, and so {opt ncorr} should be specified if
+this is not the case.
+
+{dlgtab: noassumption4}
+
+{phang}
+Assumption 4 states that the correlation between the imperfect instrument and the unobserved error
+term is
+less than the correlation between the endogenous variable and the unobservable. If this assumption
+is not desired {opt:noassumption4}, should be specified.
+
+{dlgtab: prop5}
+
+{phang}
+If the correlation between the endegenous varible and each imperfect instrument is positive, the result of the estimation is an interval with only one-sided bounds.  If there is more than one imperfect
+instrument available and if one is better than the other in terms of both endogeneity and relevance,
+then proposition 5 of Nevo and Rosen can be used to find two-sided bounds.  If {opt prop5} is
+specified, the first two instruments specified in {it:{help varlist:varlist_iv}} are used, and it is assumed that the "better" instrument is listed first.  If the better instrument is not listed first,
+the calculated bounds will not be correct.
+
+{dlgtab:Bootstrap options}
+
+{phang}
+{opt bootstraps(#)}; In the case the multiple candidates exist for upper or lower bounds,
+inference related to the upper or lower bound considers uncertainty in each estimate that
+is close to binding (refer to {browse "http://www.mitpressjournals.org/doi/abs/10.1162/REST_a_00171":{it:Nevo and Rosen (2012, p. 666)}}
+for full details).  In order to calculate the variance-covariance matrix between different
+estimates, a bootstrap procedure is followed.  The number of bootstrap replications can
+be controlled using this option, and whenever plausible, a larger number of bootstraps
+should be specified.
+
+{phang}
+{opt seed(#)}; Refer to {help set seed}. Setting the seed ensures that bootstrapped
+estimates are replicable.  This is only relevant when multiple candidates for upper
+or lower bounds exist.
+
+{dlgtab: exogvars}
+
+{phang}
+By default, only bounds on the endogenous variable of interest in the model
+are printed.  If additionally bounds are desired on the exogenous variables
+included in the model (as the optional {it:{help varlist:varlist1}} in the
+command syntax), these should be specified in {opt exogvars(varlist)}.  Bounds
+on each variable specified in {opt exogvars()} will be returned.  Any
+variable indicated in {opt exogvars()} must be included in the original model
+in {it:varlist1}.
+
+
+
+{marker examples}{...}
+{title: Examples}
+
+{pstd}A Simple example assuming assuming identical (positive) correlations between the endogenous variable and the error term and the instument and the error term {p_end}
+{phang2}{cmd:. webuse hsng2}{p_end}
+{phang2}{cmd:. imperfectiv rent pcturban (hsngval = faminc)}{p_end}
+
+{pstd}Replicate the demand for cereal example from Nevo and Rosen (2012) using Proposition 5{p_end}
+{pstd}Setup{p_end}
+{phang2}{cmd:. webuse set http://www.damianclarke.net/data/}{p_end}
+{phang2}{cmd:. webuse NevoRosen2012}{p_end}
+{phang2}{cmd:. local w addv bd1 bd2 bd3 bd4 bd5 bd6 bd7 bd8 bd9 bd10 bd11 bd12 bd13 bd14 bd15 bd16 bd17 bd18 bd19 bd20 bd21 bd22 bd23 bd24  bd25 dd2 dd3 dd4 dd5 dd6 dd7 dd8 dd9 dd10 dd11 dd12 dd13 dd14 dd15 dd16 dd17 dd18 dd19 dd20 sfdum}{p_end}
+{phang2}{cmd:. replace addv=addv/10}{p_end}
+{phang2}{cmd:. gen qavgpo=p_bs}{p_end}
+{phang2}{cmd:. replace qavgpo=p_sf if city==7}{p_end}
+
+{pstd}Estimation (Without Assumption 4){p_end}
+{phang2}{cmd:. imperfectiv y `w' (price=qavgp qavgpo), prop5 noassumption4}{p_end}
+
+{pstd}Estimation (With Assumption 4){p_end}
+{phang2}{cmd:. imperfectiv y `w' (price=qavgp qavgpo), prop5 exogvars(addv)}{p_end}
+
+
+
+{title: Saved results}
+
+{pstd}
+{cmd:imperfectiv} saves the following in {cmd:e()}:
+
+{synoptset 20 tabbed}{...}
+{p2col 5 20 24 2: Scalars}{p_end}
+{synopt:{cmd:e(lb_endogname)}}Lower bound point estimate for the endogenous instrumented variable{p_end}
+{synopt:{cmd:e(ub_endogname)}}Upper bound point estimate for the endogenous instrumented variable{p_end}
+{synopt:{cmd:e(CIlb_endogname)}}Lower bound confidence interval for the endogenous variable{p_end}
+{synopt:{cmd:e(CIub_endogname)}}Upper bound confidence interval for the endogenous variable{p_end}
+
+{synoptset 20 tabbed}{...}
+{p2col 5 20 24 2: Matrices}{p_end}
+{synopt:{cmd:e(LRbounds)}}Matrix of bounds on endogenous variable and all exogenous covariates{p_end}
+{p2colreset}{...}
+
+
+
+{title:References}
+{marker NevoRosen}{...}
+{phang}
+Nevo, A., & Rosen, A. M. (2012). Identification with imperfect instruments.
+{it:The Review of Economics and Statistics} 94(3): 659-671.
+
+
+{title:Acknowledgements}
+{marker acknowledge}{...}
+{phang}
+We are grateful to Adam Rosen for his extensive comments and many helpful suggestions
+related to this code.
+
+
+{title:Also see}
+
+{psee}
+Online:  {manhelp ivregress R: ivregress}, {help plausexog} (if installed)
+
+
+{title:Authors}
+
+{pstd}
+Benjam{c i'}n Matta, Department of Economics, Universidad de Santiago de Chile. {browse "mailto:benjamin.matta@usach.cl":benjamin.matta@usach.cl}
+{p_end}
+{pstd}
+Damian Clarke, Department of Economics, Universidad de Santiago de Chile. {browse "mailto:damian.clarke@usach.cl":damian.clarke@usach.cl}
+{p_end}
+

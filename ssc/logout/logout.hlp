@@ -1,0 +1,193 @@
+{smcl}
+{* 05ov2009}{...}
+{cmd:help logout}
+
+{hline}
+
+{title:Title}
+
+{p2colset 5 15 22 2}{...}
+{p2col :{hi:  logout} {hline 2}}Converts log or ASCII files into various output formats{p_end}
+
+{marker s_Syntax}
+{title:Syntax}
+
+{p 4 10 6}
+{cmdab:logout}, [{it:options} : {it:command}]
+
+{marker s_Description}
+{title:Description}
+
+{p 4 4 6}
+{cmd:logout} provides a fast and easy way to convert log or ASCII files into various output 
+formats compatible with Word, Excel, LaTex, or Stata datafile. Can be used as a prefix or by itself
+after a log file has been created.
+
+{p 4 4 6}
+More specifically, {cmd:logout} will import plain-text files into tab-delimited format,
+which is then converted into the output format of choice. The default method is tab/space-delimited, 
+along with a list of usual suspects. Alternatively, infix method can be used when the column position is meaningful.
+
+{p 4 4 6}
+Can also be used to chew through dirty files such as html, etc. Will also chew through any ASCII log files, 
+including those produced SAS, SPSS, etc. In Stata, you can use {cmd:{help caplog}} to create log files on 
+the fly. 
+
+{p 4 4 6}
+{cmd:table} and {cmd:tabstat} are automatically handled by {opt fix} method.
+
+
+{marker s_Options}
+{title:Command}
+
+{p 4 12 6}Any command accepted, i.e. { help estimation commands}, tabulation, summary, descrition, etc.
+
+{marker s_Options}
+{title:Options}
+
+{dlgtab:Main}
+
+{p 4 12 6}{opt clear} Replace the current data in memory, then manipulate the file as a Stata data. {p_end}
+
+{p 4 12 6}{opt save( )} The name of output file. logout.txt is assigned if {opt clear} or temporary file is not used. {p_end}
+
+{p 4 12 6}{opt use( )} The name of input file to be converted. {p_end}
+
+{p 4 12 6}{opt raw} Raw file is diplayed in the first column (up to 244 character limit). {p_end}
+
+
+{p 4 12 6}{opt fix} Use automatic fixed method (i.e. infix) to read the file. {p_end}
+
+{p 4 12 6}{opt fix(#)} Adjust the sensitivity of {opt fix} method. Default is 5. Try 1 for narrower 
+parsings.{p_end}
+
+{p 4 12 6}{opt fixcut(# # ...)} Use manual fixed method (i.e. infix) to read the file. Something like fixcut(3 5 10 15). Drop a number 
+if you want to merge columns there. A suggestion is displayed whenever fixed method is run{p_end}
+
+
+{p 4 12 6}{opt auto( )} The number of automatically formatted decimals to be reported. Default is 3. {p_end}
+
+{p 4 12 6}{opt noauto} Turns off the automatic formatting of decimals.{p_end}
+
+{p 4 12 6}{opt dec( )} Fixed number of decimals. Turns off automatic formating.{p_end}
+
+{p 4 12 6}{opt word} Convert into Word compatible file. {p_end}
+
+{p 4 12 6}{opt excel} Convert into Excel compatible file. {p_end}
+
+{p 4 12 6}{opt tex} Convert into Latex or tex compatible file. {p_end}
+
+{p 4 12 6}{opt dta} Convert into .dta file for Stata. {p_end}
+
+
+{p 4 12 6}{opt nowipe} Do not apply minimal cleaning, which are: {p_end}
+
+{p 8 12 6} .drop if t1=="-----" | t1=="opened" | t1=="log" | t1=="." | t1=="closed" {p_end}
+
+
+{marker s_0}
+{title:Examples}
+
+{p 4 10 6}{cmd:* summary}{p_end}
+{p 4 10 6}{stata sysuse auto, clear}{p_end}
+{p 4 10 6}{stata `"logout, save(myfile) excel replace: sum"'}{p_end}
+
+
+{p 4 10 6}{cmd:* summary, MANUALLY clean it}{p_end}
+{p 4 10 6}{stata sysuse auto, clear}{p_end}
+{p 4 10 6}{stata `"logout, clear: sum"'}{p_end}
+{p 4 10 6}{stata drop t2 t5 t6}{p_end}
+{p 4 10 6}{stata logout, save(myfile) excel replace}{p_end}
+
+
+{p 4 10 6}{cmd:* summary, detail}{p_end}
+{p 4 10 6}{stata sysuse auto, clear}{p_end}
+{p 4 10 6}{stata `"logout, save(mystuff) excel word replace: sum, detail"'}{p_end}
+
+
+{p 4 10 6}{cmd:* one-way tabulation with value labels}{p_end}
+{p 4 10 6}{stata sysuse auto, clear}{p_end}
+{p 4 10 6}{stata `"logout, clear excel dta tex save(myfile) replace: tab foreign rep78"'}{p_end}
+
+
+{p 4 10 6}{cmd:* one-way tabulation}{p_end}
+{p 4 10 6}{stata sysuse auto, clear}{p_end}
+{p 4 10 6}{stata `"caplog using mystuff.txt, replace: tabulate price [aweight=turn], summarize(headroom)"'}{p_end}
+{p 4 10 6}{stata logout, use(mystuff.txt) save(mytable) clear  excel tex dta replace}{p_end}
+
+
+{p 4 10 6}{cmd:* two-way tabulation}{p_end}
+{p 4 10 6}{stata sysuse auto, clear}{p_end}
+{p 4 10 6}{stata `"logout, clear: tab mpg foreign"'}{p_end}
+{p 4 10 6}{stata logout, save(mytable) clear excel tex dta replace}{p_end}
+
+
+{p 4 10 6}{cmd:* table, combined it with -fix- method}{p_end}
+{p 4 10 6}{stata sysuse auto, clear}{p_end}
+{p 4 10 6}{stata `"logout, save(mystuff) excel fix replace: table trunk rep78, c(n mpg mean mpg sd mpg median mpg) stubwidth(25)"'}{p_end}
+
+
+{p 4 10 6}{cmd:* table, MANUALLY clean it after using -fix- or -fix(1)-}{p_end}
+{p 4 10 6}{stata sysuse auto, clear}{p_end}
+{p 4 10 6}{stata `"caplog using mystuff.txt, replace: table trunk rep78 , c(n mpg mean mpg sd mpg median mpg)"'}{p_end}
+{p 4 10 6}{stata logout, use(mystuff.txt) fix(1) replace clear}{p_end}
+{p 4 10 6}{stata drop in 1/2}{p_end}
+{p 4 10 6}{stata logout, save(mystuff.txt) excel replace clear}{p_end}
+
+
+{p 4 10 6}{cmd:* regress}{p_end}
+{p 4 10 6}{stata sysuse auto, clear}{p_end}
+{p 4 10 6}{stata `"logout, save(myfile) excel dec(3) replace: reg price mpg rep78 headroom"'}{p_end}
+
+
+{p 4 10 6}{cmd:* tabstat}{p_end}
+{p 4 10 6}{stata sysuse auto, clear}{p_end}
+{p 4 10 6}{stata `"logout, save(mytable) excel replace: tabstat price mpg rep78, stats( max p1 mean)"'}{p_end}
+
+
+{p 4 10 6}{cmd:* The following three are more or less equivalent:}{p_end}
+{p 4 10 6}{stata webuse dose, clear}{p_end}
+{p 4 10 6}{stata `"caplog using mylog.txt, replace: tab dose function, col"'}{p_end}
+{p 4 10 6}{stata chewfile using mylog.txt, begin(10) end(.) save(chewed.txt) replace}{p_end}
+{p 4 10 6}{stata `"logout, use(chewed.txt) clear fix"'}{p_end}
+{p 4 10 6}{stata `"logout, save(C:\mytable) tex excel replace"'}{p_end}
+
+{p 4 10 6}{stata `"logout, save(C:\mytable) tex excel replace range(10/.) fix: tab dose function, col"'}{p_end}
+
+{p 4 10 6}{stata `"logout, save(C:\mytable) tex excel replace range(10/.) fixcut(11 16 27 38 45 50 67): tab dose function, col"'}{p_end}
+
+{p 4 10 6}{cmd:** Merging two columns by skipping a fixcut number:}{p_end}
+{p 4 10 6}{stata `"logout, save(C:\mytable) tex excel replace range(10/.) fixcut(11    27 38 45 50 67): tab dose function, col"'}{p_end}
+
+
+{title:Hints}
+
+{p 4 10 6}The default is space/tab-delimited.{p_end}
+{p 4 10 6}For semi-ordered file, try using {opt fix} and values less than 5 for {opt fix( )}.{p_end}
+
+
+{title:Remarks}
+
+{p 4 10 6}"Detailed" suggestions should be sent to the email address below.{p_end}
+{p 4 10 6}{opt fix} erases rows with many dashes as a horizontal line{p_end}
+{p 4 10 6}May not handle an exceptionally large log file.{p_end}
+{p 4 10 6}Small Stata may have a problem with the column limits.{p_end}
+{p 4 10 6}ASCII character "_" is used to handle space delimited value labels.{p_end}
+{p 4 10 6}version 7: do not include colon characters (:) in the file path. Use {helpb cd} instead.{p_end}
+{p 4 10 6}version 7: range( ) option not available.{p_end}
+
+
+{title:Acknowledgements}
+
+{p 4 10 6}The codes for {opt word} and {opt tex} are traced back to John Gallup's 
+{cmd:outreg} through {cmd:outreg2}.{p_end}
+{p 4 10 6}{opt excel} is implemented as a facsimile of {cmd:xmlsave}.{p_end}
+{p 4 10 6}Value labels are handled as proposed by Karl Keesman at sales@survey-design.com.au{p_end}
+
+
+{title:Author}
+
+{p 4 10 6}Roy Wada{p_end}
+{p 4 10 6}roywada@hotmail.com{p_end}
+
+

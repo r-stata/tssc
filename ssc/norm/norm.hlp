@@ -1,0 +1,101 @@
+TITLE
+      `Norm' module to normalize variables
+
+DESCRIPTION/AUTHOR(S)
+Norm module generates normalize variables using z-score, min-max, softmax and sigmoid techniques. The module supports multiple variables and panel dataset.
+
+KW: Normalize
+KW: Z-score
+KW: Min-Max
+KW: Softmax
+KW: Sigmoid
+
+Authors: 
+Muhammad Rashid Ansari, INSEAD Business School
+Support: email rashid.ansari@insead.edu
+
+Chiara Mussida, Università Cattolica del Sacro Cuore
+Support: email chiara.mussida@unicatt.it
+
+Requires: Stata version 9
+Distribution-Date: 20130917
+
+
+*Version September 2013
+-------------------------
+
+TITLE
+ 'norm': module to normalize variable
+
+basic syntax:
+norm var, by(varlist) method(#) [if in]
+
+Description:
+Norm module generates normalize variables using z-score, min-max, softmax and sigmoid techniques. The module supports multiple variables and panel dataset.
+
+Options:
+zee     :calculates normalize score also called z-score. 
+mmx     :calculates normalize scores using minimum & maximum observations
+softmax :calculates normalize score using exponential function and mean and standard deviation. 
+sigmoid :calculates normalize score using double sigmoid function
+by(varlist): allows multiple groups defined by `varlist'
+
+----------------------
+Standardized Z-score
+----------------------
+Zee= Xi- X(mean)/ sigma
+
+where,
+X(mean)=group average
+sigma  =standard deviation
+
+--------------------
+Min-Max Normalization
+--------------------
+
+mmx= [Xi - X(min)]/ [X(max)-X(min)]
+
+where,
+X(mins)=minimum data point
+X(max) =maximum data point
+
+mmx=normalize score ranges between 0 & 1
+
+---------------------
+Softmax Normalization
+---------------------
+
+softmax= 1 / 1+exp^(-V)
+
+where,
+V      =[Xi-(x)mean)]/sigma
+sigma  =standard deviation
+
+---------------------
+Sigmoid Normalization
+---------------------
+
+softmax= 1-exp^(-V) / 1+exp^(-V)
+
+where,
+V=[Xi-(x)mean)]/sigma
+sigma = standard deviation
+
+
+Examples:
+----------
+norm x1 x2 x3, by(year) method(zee)
+norm x1 x2 x3, by(year) method(mmx)
+norm x1 x2 x3, by(year) method(softmax)
+norm x1 x2 x3, by(year) method(sigmoid)
+
+Authors:
+Muhammad Rashid Ansari						
+INSEAD Business School						
+1 Ayer Rajah Avenue, Singapore 138676						
+rashid.ansari@insead.edu
+
+Chiara Mussida
+Università Cattolica del Sacro Cuore
+vai Emilia Parmense, 84, 29122 Piacenza, Italy						
+chiara.mussida@unicatt.it

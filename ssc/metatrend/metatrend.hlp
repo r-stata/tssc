@@ -1,0 +1,75 @@
+
+
+    Methods for assesing trends in cumulative meta-analysis 
+---------------------------------------------------------------
+
+    ^metatrend^ logor_var se_var  
+    
+    logor_var is the variable containing the logarithm of the OR 
+    		(or any other measure of association)
+    se_var is the variable containing the standard error of the 
+    		logarithm of OR
+    
+
+Description
+-----------
+
+^metatrend^ performs tests for estimating the trend over time in 
+a cumulative meta analysis
+
+
+^metatrend^ performs a cumulative meta-analysis (Lau et al, 1995) 
+using the DerSimonian and Laird random-effects method and afterwards, 
+performs two tests for assesing the "Proteus" phenomenon (i.e. 
+the appearence of an early extreme estimate that is refuted by 
+subsequent research). The first method is the so-called "first 
+vs. subsequent" approach (Ioannidis and Trikalinos, 2005). The 
+second method, consists of performing a GLS regression of the 
+cumulative logOR on the rank of the studies using an AR(1) 
+process to handle the serial correlation. The GLS regression 
+is performed using the ^xtgls^ command.
+
+The method is described in detail in (Bagos and Nikolopoulos, 2007).
+
+It is the user's responsibility to ensure that data are in the 
+appropriate format when ^metatrend^ is been called. In particular, 
+the studies should be sorted according to the publication time, 
+prior to running the command.
+
+        
+Authors 
+------- 
+        
+         Pantelis G. Bagos, University of Athens, GR
+         pbagos@biol.uoa.gr
+         and,
+         Georgios K. Nikolopoulos, Hellenic Centre for Diseases Control, GR
+         nikolopoulos@keelpno.gr
+
+
+References
+----------
+
+1) Lau J, Schmid CH, Chalmers TC. 
+   Cumulative meta-analysis of clinical trials builds evidence for exemplary medical care. 
+   J Clin Epidemiol 1995;48(1): 45-57
+
+2) Ioannidis JP, Trikalinos TA. 
+   Early extreme contradictory estimates may appear in published research: 
+   the Proteus phenomenon in molecular genetics research and randomized trials. 
+   J Clin Epidemiol 2005;58(6): 543-9.
+
+3) Bagos PG, Nikolopoulos GK. 
+   Generalized least squares for assessing trends in cumulative meta-analysis: 
+   applications in genetic epidemiology
+   J Clin Epidemiol, 2009, in press  
+
+   
+
+
+Also see
+--------
+        
+ On-line:  help for @xtgls@
+        
+        

@@ -1,0 +1,146 @@
+.-
+help for ^venndiag^(STB-47 gr34 to STB-49: gr34.2; STB-54: gr34.3)
+.-
+
+
+Draw Venn diagram
+-----------------
+
+ ^venndiag^ varlist [^if^] [^in^] [, ^c1()^ ^c2()^ ^c3()^ ^c4()^ ^ca()^ ^SQ^uare ^CIR^cle ^EL^lipse
+    ^la^bel^()^ ^nof^rame ^nog^raph ^nol^abel  ^g^en^()^ ^mis^sing ^sh^ow^()^ ^xoff()^ ^yoff()^
+    ^t1^itle^()^ ^t2^title^()^ ^t3^title^()^ ^pr^int ^sa^ving^()^ ^pen()^ ^thick()^
+    ^r1^itle^()^ ^r2^title^()^ ^r3^title^()^  ^r4^itle^()^ ^r5^title^()^ ^r6^title^()^]
+
+
+Description
+------------
+
+^venndiag^ produces a so-called ^Venn diagram^ of the variables in varlist
+
+The ^Venn diagram^ consists of a number of rectangles each corresponding
+to one of the variables in varlist. The rectangles are arranged such that
+they overlap and delimit areas. In each area the counts of records is
+shown for the relevant combination of ^varlist^
+
+With two variables A and B, the counts of records (A== 1 & B== 1) is
+placed in the overlapping area of A and B. In area A (non A+B) the count
+(A== 1 & B!= 1) is placed and in area B (non A+B) the count (A!=1 & B==1).
+
+Note: ^-^ Information retrievable in S_* variables after execution
+     ^-^ Size of text can be set with ^Set textsize^ (<120 recommended)
+     ^-^ Some options changed from version 1 to 2.
+     ^-^ For Stata version 5 get gr34_2 from STB49
+     ^-^ Some options changed from version 1 to 2 (moved from label to show).
+---------
+
+^venndiag^ could be used, for example, to
+
+ ^-^ show how many persons have different symptoms indicated in the
+          variables in varlist. E.g astma, hayfever and eczema
+ ^-^ show in a household survey the numbers of having cats, dogs and birds
+ ^-^ count specific diagnoses placed in one or several variables
+ ^-^ combine variables and achieve frequency counts in logfile
+    and in a new variable
+ ^-^ create combined variable of 2-4 variables (with or without missing)
+
+Options
+--------
+
+^square^   Show rectangles as in stb version of venndiag
+
+^ellipse^  Show ellipses with two-four variables (default: 4 variables)
+
+^circle^   Show circles with two and three variables (default)
+
+^nograph^  Do not show graph, regardless of contents of ^show^
+
+^show()^  Show in diagram:   (rectangle: ^cpdtf^) (ellip+circ: ^cpdtfl^)
+      ^l^ variable lables (circle and ellipses only)
+      ^p^ percent of area (area/total)
+      ^c^ Count in each area
+      ^t^ Percent of each variable (variable/total) (! SUM > 100 %)
+      ^v^ Add variable name
+      ^d^ Add date of creation
+      ^f^ Add footnote explaining percentages and filename
+      ^n^ Display Nill (= 0) counts and percentages
+      ^x^ Leave out counts and percentages in the nonABCD area
+
+^nolabel^ Disregards all labelling, regardless of contents of ^label^
+
+^label()^ Show to the right of diagram:   (rectangle: ^ad^) (ellip+circ: ^t^)
+      ^c^ variable names and value ^c^ounted in each variable
+      ^d^ overall description
+      ^m^ indicates counts of missing in each variable
+      ^t^ titles are shown
+      ^i^ information of number of records
+      ^x^ show e^x^tra titles in r1title....r6title (do not use with ^mic^)
+
+^t1title(^string^)^ ^t2title(^string^)^ ^t3title(^string^)^ titles shown on graph
+          Default t1(Venn Diagram) t2() t3(N = #observations)
+
+^r1title()^ ^r2title()^ ^r3title()^  ^r4itle()^ ^r5title()^ ^r6title()^
+          Titles to show if ^x^ is included in ^label()^
+
+^xoff()^ Defines top "margin": From top to r1title (default 6000)
+^yoff()^ Defines left "margin": From left to r1title (default 22000)
+
+^saving(^file^)^ Save graph to file named as string (replacing file)
+        On Win-95/MAC also saved as wmf file (see @gphprint@)
+
+^gen()^  Add variable named in () to dataset. Must be non existing. The user
+          must save the dataset after running venndiag to keep the generated
+          variable. A note describing if/in or missing values is created for
+          the generated variable. Can be redisplayed with @note@
+
+^c1(^integer^)^ ^c2(^integer^)^ ^c3(^integer^)^ ^c4(^integer^)^
+          Specifies which value to regard as outcome in v1...v4 (default 1)
+
+^ca(^int^)^   Count on specified value for all variables. E.g. ^ca(2)^ to use
+          2 as outcome.
+
+^noframe^  Exclude frame with square design
+
+^missing^  Include all records regardless of missing variables in ^varlist^
+
+^pen()^    which pens to use in the graph.  E.g. pen(257): Pen 2 for texts
+          pen 5 for rectangles, pen 7 for frame. Default pen(123)
+
+^print^    print graph immediately (Win-95 & MAC only)
+
+^thick()^  thickness of pens on ^printing^ (Win-95 & Mac), default ^thick(995)^.
+          Note link to ^pen()^. Eg. ^thick(112)^ when ^pen(234)^.
+          Thickness on screen can vary depending on the local setup. Some
+          experimentation might be necessary. See @help grcolor@
+
+
+Examples
+---------
+
+. ^venndiag astma eczema hayfever^
+. ^venndiag astma eczema hayfever, ellipse missing^
+. ^venndiag cat dog bird, square label(tv) pen(246) thick(191714) print^
+. ^venndiag astma eczema hayfever, show(pf)                /*^
+      ^*/ t1(Selfreported Allergic Outcomes in Youngsters) /*^
+      ^*/ t2(The Odense Adolescence Cohort) t3(Study. Denmark,1996) la(dt)^
+
+Counting on different outcome values
+. ^venndiag d1 d2 d3, c1(812) c2(2) c3(830) gen(vdvar) r1(Example title) xoff(1000)^
+
+Applying if or in
+. ^venndiag d1 d2 if r > 0, saving(diagnose,replace)^
+. ^venndiag d1 d2 in 1/400, label(ma) show(fpn) ^
+
+
+Author
+-------
+
+        Jens M.Lauritsen
+        County of Funen, Odense Denmark. jm.lauritsen@@dadlnet.dk
+        Martin Willumsen sorted out the mathematics of drawing ellipses
+
+
+Also see
+---------
+
+  STB: STB-54 gr34.3 STB-49 gr34.2 STB-48 gr34.1, STB-47 gr34
+  On-line: help for @stb@, @gphprint@, @set textsize@, @gph@, @note@

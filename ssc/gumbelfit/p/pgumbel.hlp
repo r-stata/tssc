@@ -1,0 +1,121 @@
+{smcl}
+{* 17nov2003}{...}
+{hline}
+help for {hi:pgumbel}
+{hline}
+
+{title:Probability plot for data versus fitted Gumbel distribution}
+
+{p 8 25 2}{cmd:pgumbel}{space 1}{it:varname} [{cmd:if} {it:exp}]
+[{cmd:in} {it:range}] [{it:weight}] [{cmd:,} {cmdab:g:rid} 
+{cmd:param(}{it:# #}{cmd:)} {cmd:show(}{it:condition}{cmd:)} 
+{cmdab:gen:erate(}{it:newvar1 newvar2}{cmd:)} 
+{it:graph_options} ]
+
+{p 4 4 2}
+where {it:graph_options} are
+
+{p 8 8 2}
+{cmd:rlopts(}{it:cline_options}{cmd:)}
+{cmd:plot(}{it:plot}{cmd:)}
+{it:scatter_options}
+{it:twoway_options}
+
+{p 4 4 2}{cmd:fweight}s and {cmd:aweight}s are allowed; see help {help weights}. 
+
+
+{title:Description}
+
+{p 4 4 2}
+{cmd:pgumbel} produces a probability plot for {it:varname} compared with a
+two-parameter Gumbel distribution with probability density function
+for variable {it:x}, scale parameter {it:a} > 0 and location parameter {it:m} 
+of  (1 / {it:a}) exp[-({it:x} - {it:m}) / {it:a}] 
+exp[-exp(-({it:x} - {it:m}) / {it:a})].  
+By default, maximum likelihood estimation is carried out, using 
+{help gumbelfit}, which should be installed separately. 
+
+
+{title:Remarks} 
+
+{p 4 4 2}In the majority of cases, {cmd:pgumbel} will be used to fit an
+Gumbel distribution on the fly and to assess that fit. In some cases, it
+may be of interest to compare data with a Gumbel distribution with 
+known or hypothesised parameters, which may be specified using the {cmd:param()}
+option. In all cases it is important not only to specify any {cmd:if} or
+{cmd:in} restrictions, but also to specify relevant weights, which will (unless
+constant) affect the configuration of the plot. 
+
+
+{title:Options}
+
+{p 4 8 2}{cmd:grid} is equivalent to {cmd:yla(0(.25)1, grid) xla(0(.25)1, grid)}.
+
+{p 4 8 2}{cmd:param()} may be used to supply parameter values (namely, scale 
+and location parameters) directly for use in estimation of fitted quantiles. 
+{it:a} and {it:m} should be provided as separate values in precisely that order.
+
+{p 4 8 2}{cmd:show()} may be used to specify 
+that you wish to restrict the graph according to some condition, say 
+looking at one tail of the distribution only. Note that {cmd:if} 
+and {cmd:in} should not be used for this purpose. 
+
+{p 4 8 2}{cmd:generate()} specifies the names of two new variables, 
+the first to hold Gumbel probabilities and the second to hold 
+empirical probabilities. 
+
+{p 4 8 2}{it:graph_options} are
+{cmd:rlopts(}{it:cline_options}{cmd:)},
+{cmd:plot(}{it:plot}{cmd:)},
+{it:scatter_options}, and
+{it:twoway_options}.
+
+{p 4 8 2}
+{cmd:rlopts(}{it:cline_options}{cmd:)} affect the rendition of the reference
+line; see help {help cline_options}.
+
+{p 4 8 2}
+{cmd:plot(}{it:plot}{cmd:)} provides a way to add other plots to the generated
+graph; see help {help plot_option}.
+
+{p 4 8 2}
+{it:scatter_options} affect the rendition of the plotted points; see help
+{help scatter}.
+
+{p 4 8 2}
+{it:twoway_options} are any of the options documented in help
+{help twoway_options} excluding {cmd:by()}.  These include options for titling
+the graph (see help {help title_options}) and options for saving the graph to
+disk (see help {help saving_option}).
+
+
+{title:Examples}
+
+{p 4 8 2}{cmd:. pgumbel spacing}
+
+{p 4 8 2}{cmd:. pgumbel spacing, param(20 3)}
+
+{p 4 8 2}{cmd:. pgumbel spacing, gen(spacing_gum spacing_emp)} 
+
+
+{title:Author}
+
+{p 4 4 2}Nicholas J. Cox, University of Durham, U.K.{break} 
+n.j.cox@durham.ac.uk
+
+
+{title:References}
+
+{p 4 4 2}
+Evans, M., Hastings, N. and Peacock, B. 2000. {it:Statistical distributions.}
+New York: John Wiley.
+
+{p 4 4 2} 
+Johnson, N.L., Kotz, S. and Balakrishnan, N. 1995. 
+{it:Continuous univariate distributions: Volume 2.} New York: John Wiley.
+
+
+{title:Also see}
+
+{p 4 13 2}
+Online:  help for {help gumbelfit}, {help qgumbel} (if installed), {help graph}, {help diagplots}

@@ -1,0 +1,281 @@
+.-
+help for ^spell^  
+.-
+
+Identification of spells or runs of similar values
+--------------------------------------------------
+
+    ^spell^ [varname] [^if^ exp] [^in^ range]
+    [ ^,^ { ^f^cond^(^fcondstr^)^ | ^c^ond^(^condstr^)^ | ^p^cond^(^pcondstr^)^ } 
+    ^by(^byvarlist^) ce^nsor^(^censorvarlist^) e^nd^(^endvar^)^
+    ^s^eq^(^seqvar^) sp^ell^(^spellvar^) replace resort^ ]
+
+Description
+-----------
+
+^spell^ examines the data, treated as sequences or series, to identify
+spells or runs, and generates new variables: 
+
+(1) indicating distinct spells (0 for not in spell, or integers 1 up); 
+
+(2) giving sequence in spell (0 for not in spell, or integers 1 up); and 
+
+(3) indicating whether observations occur at the end of spells (0 or 1). 
+
+By default, these variables will be called ^_spell^, ^_seq^ and ^_end^. 
+
+
+Remarks 
+-------
+
+There are four ways of defining spells in ^spell^. 
+
+.- 
+
+First, given 
+
+^spell^ varname 
+
+a new spell starts whenever varname changes. 
+
+Second, a new spell starts whenever some condition defining the first
+observation in a spell is true. A spell ends just before a new spell 
+starts. Such a condition may be specified by the ^fcond( )^ option. 
+ 
+observation        time 
+  1                  1
+  2                  2
+  3                  3
+  4                  7 
+  5                  8 
+  6                  9 
+
+Suppose we wish to divide ^time^ into spells of consecutive values, 
+in this case observations 1-3 and 4-6. A new spell starts when 
+
+^(time - time[_n - 1]) > 1^
+
+which works for ^_n == 1^ as well because ^time[0]^ is treated as missing. 
+Spells started by earthquakes, eruptions, accidents or other traumatic 
+events may often be defined in this way. 
+
+Third, spells are defined by some condition being true for every observation
+in the spell. A spell ends when that condition becomes false. Such a 
+condition may be specified by the ^cond( )^ option. 
+
+observation         varname
+  1                    0
+  2                   10
+  3                   11
+  4                   12
+  5                    0
+  6                   13
+  7                    0
+  8                   14
+
+Observations 2, 3, 4; 6; and 8 form 3 spells for the condition
+"varname > 0".
+
+Observations 4; 6; and 8 form 3 spells for the condition
+"varname >= 12".
+
+Fourth, a special but useful case of the previous kind is 
+^cond(^varname > 0 & varname < .^)^, that is, values of varname are 
+positive (but not missing). Given daily data, spells of rain are 
+defined by there being some rainfall every day. As a convenience, 
+such conditions may be specified by ^pcond(^varname^)^, or 
+more generally, ^pcond(^expression^)^. 
+
+.-
+
+The order of the data when ^spell^ is called is taken to define position
+in the sequence. No explicit time or other ordering variable is
+required, but if any such exist, the user should ensure that data are in
+correct order before ^spell^ is called.
+
+Spells are deemed to end at the last observation (under ^by( )^, at the 
+last of each distinct group of observations).  
+
+Under ^if^ or ^in^, for identifying spells, observations are sorted so
+that all specified observations are placed together. See also ^resort^
+below.
+
+Missing values may be ignored by using ^if^ to exclude them. They are
+not ignored by default, as a convenience to users wishing to explore
+patterns of missing values. Recall that numeric missing ^.^ is treated 
+as larger than any positive number. Thus be careful to exclude missing 
+values where appropriate.
+
+Conditions in terms of ^_n^ and ^_N^ are interpreted as follows. First, 
+if ^if^ and/or ^in^ is specified, only those observations satisfying those 
+conditions are considered, so that for example ^_N^ refers to the last such 
+observation. Second, if ^by( )^ is specified, ^_n^ and ^_N^ refer to distinct 
+groups defined by byvarlist. Third, ^spell^ respects the sort order of 
+observations when it is invoked. These rules may operate together, in this 
+order. 
+
+Two situations require particular care, because ^spell^ works 
+best when the appropriate order of observations is defined unambiguously 
+by a single criterion. The natural order of observations may depend on two 
+or more variables, as when there are separate variables for year and month. 
+The desired output may be sometimes best achieved by working with a 
+combined variable which contains, say, year + (month - 0.5) / 12 or 
+^ym(^year^,^month^)^. 
+
+In some problems with tied values, ^spell^ may or may not place them in 
+the same spell. The sequence variable will differ and the end variable 
+may differ. There may be insufficient information to determine a unique 
+sort order.  
+
+Given the earlier example, modified here, 
+
+observation        time 
+  1                  1
+  2                  2
+  3                  2 <--- value changed from 3 
+  4                  7 
+  5                  8 
+  6                  9
+
+and the same ^fcond( )^, which observations are put in positions 2 and 3 
+is arbitrary. By default, they will be assigned ^_seq^ of 2 and 3 and 
+^_end^ of 0 and 1, even though they are identical. 
+
+
+Options
+-------
+
+^fcond(^fcondstr^)^ specifies a true or false condition that defines the 
+    start of a spell: to be precise, the first observation in a spell. 
+    A new spell starts whenever this condition is true.
+    
+    If varname is specified, and neither ^fcond( )^ nor ^cond( )^ is 
+    specified, ^fcond( )^ defaults to "varname != varname[_n-1]".
+
+^cond(^condstr^)^ specifies a true or false condition that defines the
+    spell. 
+
+^pcond(^pcondstr^)^ is equivalent to 
+
+    ^cond(^(pcondstr) > 0 & (pcondstr) < .)^)^     
+
+    That is, some expression pcondstr evaluates to a positive number 
+    (but not missing).  Commonly, the expression is just the name of 
+    a numeric variable. 
+
+Only one of ^fcond( )^, ^cond( )^ and ^pcond( )^ may be specified.     
+
+^by(^byvarlist^)^ specifies one or more variables that subdivide the
+    data into groups. For example, the byvarlist could specify
+    individual people. A further condition on a spell is then that 
+    the variable or variables in a byvarlist remain constant.
+
+    With ^by( )^, ^spell^ sorts data first by byvarlist and then by the
+    order of the data when called. It then identifies spells. See also
+    ^resort^ below.
+
+^censor(^censorvarlist^)^ defines two new variables that are 1 if the
+    spell is left- or right-censored and 0 otherwise. A left-censored
+    spell starts at the first relevant observation (so it might have
+    started earlier, except that we have no data to determine that). A
+    right-censored spell ends at the last relevant observation (so it
+    might have ended later, except that we have no data to determine
+    that). ^censor( )^ should specify two new variable names, separated
+    by white space (e.g. ^censor(cl cr)^), for indicating left-censored
+    and right-censoring. As a special case, ^censor(.)^ indicates that
+    _cl and _cr should be tried as new variable names.
+
+^end(^endvar^)^ defines a new variable that is 1 at the end of each
+    spell and 0 otherwise. ^_end^ is tried as a variable name if this
+    option is not specified.
+
+^seq(^seqvar^)^ defines a new variable that is the number of
+    observations so far in the spell. ^_seq^ is tried as a variable name
+    if this option is not specified.
+
+^spell(^spellvar^)^ defines a new variable that is the number of spells
+    so far. All observations in the first spell are tagged with 1, all
+    in the second with 2, and so on. ^_spell^ is tried as a variable name
+    if this option is not specified. Under ^by( )^, a separate count is
+    kept for distinct values of byvarlist.
+
+^replace^ indicates that any variables created by ^spell^ may overwrite 
+    existing variables with the same names. 
+
+^resort^ restores the original sort order of the observations after
+    identifying spells. (The default if ^by( )^, ^if^ or ^in^ is invoked
+    is to sort the data so that comparable and relevant observations are
+    put together.)
+
+
+Examples
+--------
+
+    . ^spell party^
+    
+    Spells are distinct jobs (panel data): 
+
+    . ^spell job, by(id)^ 
+
+    Number of spells (panel data): 
+
+    . ^egen nspells = max(_spell), by(id)^  
+
+    To define spells of consecutive values of ^time^: 
+    
+    . ^spell, f(_n == 1 | (time - time[_n - 1]) > 1) by(id)^
+
+    Rainfall spells: 
+    
+    . ^spell, p(rain)^
+
+    For spells in which rainfall was at least 10 mm every day: 
+    
+    . ^spell, c(rain >= 10) e(hrend) s(hrseq)^
+
+    To get information on spell lengths (# observations):
+
+    . ^su hrseq if hrend^
+    . ^tab hrseq if hrend^
+
+    Length of each spell in a new variable:
+
+    . ^spell^ ... 
+    . ^egen length = max(_seq), by(_spell)^
+    
+    . ^spell^ ... ^, by(id)^ 
+    . ^egen length = max(_seq), by(id _spell)^ 
+
+    Duration (length in time) of each spell in a new variable: 
+    
+    . ^egen _tmax = max(time), by(_spell)^ 
+    . ^egen _tmin = min(time), by(_spell)^ 
+    . ^gen duration = _tmax - _tmin^ 
+
+    Cumulative totals of varname: 
+    
+    . ^sort _spell _seq^ 
+    . ^qui by _spell : gen _tot = sum(^varname^) if _seq^ 
+
+    Sums of varname: 
+
+    . ^egen total = sum(^varname^), by(_spell)^  
+    
+    
+Authors
+-------
+
+         Nicholas J. Cox, University of Durham, U.K.
+         n.j.cox@@durham.ac.uk
+
+         Richard Goldstein
+         richgold@@ix.netcom.com
+
+
+Acknowledgements
+----------------
+
+         Kit Baum, Stephen Jenkins and Fred Wolfe made very helpful 
+	 comments. Philippe Van Kerm spotted a bug, which is fixed in 1.4.1. 
+	 A question by Jan Dehn provoked some of the extensions in 1.5.0. 
+

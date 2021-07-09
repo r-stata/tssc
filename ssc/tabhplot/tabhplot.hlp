@@ -1,0 +1,97 @@
+.-
+help for ^tabhplot^
+.-
+
+Table of frequencies as horizontal plot
+---------------------------------------
+
+    ^tabhplot^ rowvar [colvar] [^if^ exp] [^in^ range] [weight]
+    [^, fs^ort ^rfs^ort ^w^ide ^z^ero ^rowpc rowpr rowfr colpc colpr colfr^
+    hplot_options ]
+
+Description
+-----------
+
+^tabhplot^ is a driver for ^hplot^ that produces a horizontal plot of
+the frequencies of the distinct values of either one or two categorical
+variables.
+
+With one variable, its values define the `rows' of the plot.
+
+With two variables, their values define the `rows' and `columns' of the
+plot, best explained by example.
+
+Given the following frequencies (from ^tab for rep78^)
+
+           |                   Repair Record 1978
+  Car type |         1          2          3          4          5 |     Total
+-----------+-------------------------------------------------------+----------
+  Domestic |         2          8         27          9          2 |        48
+   Foreign |         0          0          3          9          9 |        21
+-----------+-------------------------------------------------------+----------
+     Total |         2          8         30         18         11 |        69
+
+in the default `long' form  given by ^tabhplot for rep78^, data lines are in the
+following order:
+
+Domestic  1          2
+          2          8
+          3         27
+          4          9
+          5          2
+Foreign   3          3
+          4          9
+          5          9
+
+while in the `wide' form given by ^tabhbar for rep78, wide^, lines
+carry symbols for:
+
+Domestic       2 2 8 9 27
+Foreign        3 9 9
+
+
+Options
+-------
+
+^fsort^ specifies that lines are to be sorted by frequency, the line with
+     the lowest frequency being placed at the top of the chart. This
+     applies only with one variable.
+
+^rfsort^ specifies that lines are to be sorted by frequency, the line with
+     the highest frequency being placed at the top of the chart. This
+     applies only with one variable.
+
+^zero^ specifies that combinations with frequency zero are wanted.
+
+^rowpc^, ^rowpr^, ^rowfr^, ^colpc^, ^colpr^, ^colfr^ scale frequencies
+     to be percents, adding to 100, or proportions (fractions), adding to 1,
+     of the total of the row or column variable. ^rowpr^ and ^rowfr^
+     are equivalent, as are ^colpr^ and ^colfr^. The ^col^*
+     options are useful only when two variables are plotted.
+
+^wide^ gives a stacked form of the plot. See above.
+
+hplot_options are options of ^hplot^.
+
+
+Examples
+--------
+
+    . ^tabhplot rep78^
+    . ^tabhplot rep78, fsort^
+    . ^tabhplot foreign rep78, z gap(5) gapm(2)^
+      ^ti(Report record, domestic and foreign cars) xla(0(5)30) xsc(-1,30)^
+
+
+Author
+------
+
+         Nicholas J. Cox, University of Durham, U.K.
+         n.j.cox@@durham.ac.uk
+
+
+Also see
+--------
+
+On-line: help for @hplot@
+

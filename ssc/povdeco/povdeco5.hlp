@@ -1,0 +1,118 @@
+.-
+help for ^povdeco5^
+.-
+
+Poverty indices, with decomposition by subgroup
+--------------------------------------------------
+
+^povdeco5^ varname [ [^fw^eights ^aw^eights] ^if^ exp ^in^ range], 
+	^pl^ine^(^#^)^ ^varpl^(^zvar^) [^by^group^(^groupvar^)^]
+
+Mandatory
+---------
+The user must supply the poverty line value(s), 
+either as a single number # in ^pl^ine^(^#^)^, 
+or provide the variable name containing the values as
+zvar in  ^varpl^(^zvar^).  See Note below for details.
+The Description implicitly discusses the first case.
+
+Options
+-------
+^by^group^(^groupvar^)^ requests poverty decompositions by population
+	subgroup, with subgroup membership summarized by groupvar.
+
+Saved results
+-------------
+S_FGT0  FGT(0), defined below
+S_FGT1  FGT(1), defined below
+S_FGT2  FGT(2), defined below
+
+Examples
+--------
+. ^povdeco5 y [w=wgtvar], pl(100)^
+. ^povdeco5 y, by(famtype)  pl(100)^
+. ^povdeco5 x, by(famtype)  varpl(z)^
+. ^povdeco5 y if sex==1, pl(100)^
+
+Description
+-----------
+
+^povdeco5^ estimates three poverty indices from the Foster, Greer and
+Thorbecke (1984) class, FGT(a), plus related statistics (such as mean
+income amongst the poor). FGT(0) is the headcount ratio (the proportion
+poor); FGT(1) is the average normalised poverty gap; FGT(2) is the
+average squared normalised poverty gap. The larger a is, the greater the
+degree of `poverty aversion' (sensitivity to large poverty gaps).
+Optionally provided are decompositions of these indices by population
+subgroup. Poverty decompositions by subgroup are useful for providing
+poverty `profiles' at a point in time, and for analyzing secular trends
+in poverty using shift-share analysis. Unit record (`micro' level) data
+are required. 
+
+^povdeco5^ is for use with Stata versions 5 to 8.1. Use ^povdeco^ 
+with Stata versions 8.2 onwards.
+
+Detailed description
+--------------------
+
+Consider a population of persons (or households ...), i = 1,...,n, 
+with income y_i, and weight w_i. Let f_i = w_i/N, where 
+    i=n
+N = SUM(w_i). When the data are unweighted, w_i = 1 and N = n. 
+    i=1
+The poverty line is z, and the poverty gap for person i is max(0, z-y_i). 
+Suppose there is an exhaustive partition of the population into 
+mutually-exclusive subgroups k = 1,...,K.
+
+The FGT class of poverty indices is given by
+		  
+		   i=n             
+	FGT(a) =   SUM (f_i).(I_i).[(z-y_i)/z)]^^a
+		   i=1             
+
+where I_i = 1 if y_i < z and I_i = 0 otherwise.
+
+Each FGT(a) index can be additively decomposed as
+
+		  k=K
+	FGT(a) =  SUM (v_k).[FGT_k(a)]
+		  k=1
+
+where v_k = N_k/N is the number of persons in subgroup k divided by the 
+total number of persons (subgroup population share), and FGT_k(a), poverty 
+for subgroup k, is calculated as if each subgroup were a separate population.
+Also displayed when subgroup decompositions requested, for each k, are:
+	subgroup poverty 'share', S_k = v_k.FGT_k(a)/FGT(a), and
+	subgroup poverty 'risk',  R_k = FGT_k(a)/FGT(a) = S_k/v_k.
+
+Note on poverty line specification
+----------------------------------
+Typically one's data are in one of two forms. Either (1) the money incomes
+for each unit i, x_i, are equivalised using an equivalence scale factor, m_i,
+so that y_i = x_i/m_i, and the poverty line is a single (common) value, 
+in the same units as equivalised income, z. Or (2) incomes are not 
+equivalised, but there are different poverty lines depending on (for 
+example) household type. Suppose the line for unit i is z_i. 
+Observe that if z_i = z.m_i, FGT poverty index calculations based on {y_i,z} 
+give exactly the same answers as calculations based on {x_i,z_i}, i=1,...,n.
+For case (1), use pl(#) to specify the poverty line. For case (2), use
+varpl(zvar) to specify the poverty lines.
+
+Author
+------
+Stephen P. Jenkins <stephenj@@essex.ac.uk>
+Institute for Social and Economic Research
+University of Essex, Colchester CO4 3SQ, U.K.
+
+NB minor fix in February 2001 so that compatible with Stata 7.
+[Still runs with Stata 5 and Stata 6.]
+
+Reference
+----------
+Foster, J.E., Greer, J., and Thorbecke, E., (1984). "A class of 
+	decomposable poverty indices", Econometrica, 52, 761-766.
+	
+Also see
+--------
+^inequal^ (sg30: STB-23) if installed; ^rspread^ (sg31: STB23) if installed
+^ineqdeco^ if installed; ^sumdist^ if installed; ^poverty^ if installed

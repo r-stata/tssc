@@ -1,0 +1,67 @@
+{smcl}
+{* *! version 2.0  17Jan2008}{...}
+{* 24Aug2006}{...}
+{* 19nov2003}{...}
+{hline}
+help for {hi:lookforit}{right:manual:  {none}}
+{hline}
+
+{title:Search variable names and labels for some string or strings (an enhancement of lookfor)}
+
+{p 8 17 2}
+{cmd:lookforit}
+{it: string [string [...]]}
+{p_end}
+
+{title:Description}
+
+{p 4 4 2}
+{cmd:lookforit} is an enhancement of the base Stata command {help lookfor:lookfor}.  It searches all variable
+names and variable labels just as {help lookfor:lookfor} does.  Like {help lookfor:lookfor} {cmd:lookforit} can search
+for multiple strings but can only do a simple search, i.e. no &'s, |'s, or enclosing 
+strings in quotes.  The ways that {cmd:lookforit} differs are as follows:{p_end}
+
+{p 4 4 2}
+1) {cmd:lookforit} does a case sensitive search if the user types any upper case
+   characters, otherwise, it performs a case insensitive search{p_end}
+
+{p 4 8 2}{cmd:. lookforit female} {p_end}
+
+{p 4 4 2}
+   finds "Female", "FEMALE", "feMale", or even "FemalePatient"{p_end}
+
+{p 4 4 2}{cmd:. lookforit Female}{p_end}
+
+{p 4 4 2}
+   only finds "Female"{p_end}
+
+{p 4 4 2}
+2) {cmd:lookforit} lists variables alphabetically{p_end}
+
+{p 4 4 2}
+3) The variable names are clickable links to the data editor that
+   opens Stata's data editor to that variable column.{p_end}
+
+
+{title:Examples}
+
+{p 4 8 2}{cmd:. lookforit job}{p_end}
+
+{p 4 8 2}{cmd:. lookforit employment Salary}{p_end}
+
+{p 4 8 2}{cmd:. lookforit inc}{p_end}
+
+
+{title:Author}
+
+{p 4 4 2}
+Dan Blanchette {break}
+The Carolina Population Center {break}
+University of North Carolina - Chapel Hill, USA {break}
+dan_blanchette@unc.edu{p_end}
+
+{title:Also see}
+
+{p 4 13 2}
+Online:  help for {help lookfor}, {help ds}
+{p_end}

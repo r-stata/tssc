@@ -1,0 +1,278 @@
+{smcl}
+{* October 25, 2010}
+{* Version 3.0}
+help for {hi:icd9tmpm}
+{hline}
+
+{title:Title}
+
+{p 4 8 2}
+{cmd:icd9tmpm} -- Trauma Mortality Prediction Model (ICD-9-CM version)
+
+
+{title:Version}
+
+{p 4 4 2}
+Version 3.0.
+
+{p 4 4 2}
+ICDPIC Version 3.0 requires STATA 8.0 or higher.  ICDPIC Version 3.0 has been tested in STATA 10 and STATA 11, but the authors believe it
+should also work without incident in STATA 8 and STATA 9.  If you have any problems using ICDPIC Version 3.0 in STATA 8 or STATA 9, please
+inform the authors.
+
+{p 4 4 2}
+ICDPIC Version 3.0 may be installed from within STATA using the {bf:ssc} command.  If you installed a previous version of ICDPIC from the SSC
+archives website using the {bf:ssc} command, we suggest that you first delete it by typing {bf:ssc uninstall icdpic} followed by
+{bf:ssc install icdpic}.  Alternatively, you may use {bf:ssc install icdpic, replace}.  See help for {help ssc}.
+
+{p 4 4 2}
+If you installed any previous ICDPIC files obtained directly from the authors, please delete them {bf:ALL} (.ado, .hlp and .dta files) to avoid
+any conflicts with ICDPIC 3.0 files.
+
+{p 4 4 2}
+Please enter complete variable names in the ICDPIC Version 3.0 dialog boxes.  Do not use abbreviations.
+
+{p 4 4 2}
+New to Version 3.0 is the addition of a dialog box (.dlg) file associated with each individual ICDPIC Version 3.0 program (.ado) file.  To access
+the ICDPIC dialog box, and all the ICDPIC programs, type: {cmd:db icdpic}.  Typing {cmd:icdpic}, as in earlier versions, will still work, but
+{bf:ONLY} with {bf:icdpic}.  For example, to access the ICD-9-CM TMPM program directly, type: {bf:db icd9tmpm}.  Typing {bf:icd9tmpm}, as in
+previous versions, will produce an error.
+
+{p 4 4 2}
+Fixed in ICDPIC Version 3.0 is the ability to use path\file names containing spaces.
+
+{p 4 4 2}
+Fixed in ICDPIC Version 3.0 is the ability to run in STATA 11.0.
+
+{p 4 4 2}
+Fixed in ICDPIC Version 3.0 is a bug that caused the {bf:triss} program to crash if the {it:rts} variable was named anything other than "rts".
+
+{p 4 4 2}
+New in ICDPIC Version 3.0 ({bf:trauma} program only) is the ability to choose whether an AIS value of 6 automatically forces an ISS of
+75 or to automatically have all AIS values of 6 changed to an AIS value of 5 and then have the ISS calculated normally.
+
+{p 4 4 2}
+All dialog boxes in ICDPIC Version 3.0 have memory.  Each time a dialog box is opened within the same STATA session, it will remember the values
+last entered.
+
+{p 4 4 2}
+All dialog boxes in ICDPIC Version 3.0 have the following buttons:
+
+{p 6 9 2}
+{it:OK} executes the program and removes the dialog box from the screen.
+
+{p 6 13 2}
+{it:SUBMIT} executes the program and leaves the dialog box on the screen.  Note that if an error message is generated the dialog box may
+be minimized.
+
+{p 6 13 2}
+{it:CANCEL} removes the dialog box from the screen and does nothing.  Clicking on the close icon of the dialog box does the same thing.
+
+{p 6 11 2}
+{it:HELP} leaves the dialog box on the screen and presents the program help file.  The {it:HELP} button has a question mark on it.
+
+{p 6 11 2}
+{it:COPY} leaves the dialog box on the screen and copies the program command to the clipboard.
+
+{p 6 12 2}
+{it:RESET} resets the values of the controls in the dialog box to their initial state, just as if the dialog box were invoked
+for the first time.  Each time a user invokes a dialog box, its controls will be filled in with the values the user last entered.
+{it:RESET} restores the control values to their defaults.  The {it:RESET} button has an R on it.
+
+
+{title:Syntax}
+
+{p 8 17 2}
+{cmd:db icd9tmpm}
+
+{p 4 4 2}
+The {it:ICD-9-CM TMPM (ICD-9-CM Trauma Mortality Prediction Model)} dialog box will open.  Follow the instructions.  
+
+{center:{bf:{it:OR}}}
+
+{p 8 17 2}
+{cmd:db icdpic}
+
+{p 4 4 2}
+The {it:ICDPIC} dialog box will open.  Choose {it:ICD-9-CM TMPM} and click {it:OK} or {it:Submit}.  The
+{it:ICD-9-CM TMPM (ICD-9-CM Trauma Mortality Prediction Model)} dialog box will open.  Follow the instructions.  
+
+
+{title:Description}
+
+{p 4 4 2}
+{cmd:icd9tmpm} estimates patient probability of death,
+
+
+{center: Pd = normal(TMPM)}
+
+
+{p 4}
+where 
+
+
+{center: TMPM = (C0 + (C1 X I1) + (C2 X I2) + (C3 X I3) + (C4 X I4) + (C5 X I5) + (C6 X S) + (C7 X I1 X I2)}
+
+
+{p 4 4 2}
+Pd is the mortality predicted by TMPM and normal is the standard normal distribution function.  I1 through I5 are the MARC
+values ordered with the greatest MARC value (worst injury) first, second greatest MARC value second, up to the fifth worst
+injury.  S is a Boolean value set to 1 if the two worst injuries occur in the same body region and 0 otherwise.  I1 X I2
+represents the interaction of the worst and second worst injuries a patient has sustained.  C0 through C7 are coefficients.
+
+{p 4 4 2}
+See also the {bf:Options} and {bf:Remarks} sections for {bf:IMPORTANT} information on, and requirements for, {cmd:icd9tmpm}.
+
+
+{title:Options}
+
+{p 4 4 2}
+ICD-9-CM diagnosis codes in the user's data may, or may not, contain a decimal point.  Simply choose the option that
+applies to your data in the {it:ICD-9-CM TMPM} dialog box. 
+
+
+{title:Remarks}
+
+{p 4 4 2}
+The user's data must contain ICD-9-CM diagnosis codes.  Diagnosis codes in the user's data must be of type string.  A
+decimal point in the diagnosis codes is optional.  Diagnosis codes should have a width of 5 (6 if a decimal point is
+present).  The diagnosis code prefix must be the same for all diagnosis codes and numbered sequentially starting with 1, 
+for example, dx1...dxN.
+
+{p 4 4 2}
+{cmd:icd9tmpm} adds the following variables to a new copy of the user's data stored on disk:
+
+
+{p 8 12 2}
+{it:marc_1-marc_n}: MARC value for Nature of Injury codes (N-Codes) 1..n {p_end}
+{p 8 12 2}
+{it:inj1-inj5}: injuries (N-Codes) associated with the top 5 MARC values (5 worst injuries) {p_end}
+{p 8 12 2}
+{it:marc1-marc5}: top 5 MARC values (5 worst injuries) {p_end}
+{p 8 12 2}
+{it:high1-high2}: ISS body region of the two worst injuries (top two MARC values) respectively {p_end}
+{p 8 12 2}
+{it:same_reg}: Boolean variable to indicate if top two injuries occurred in the same body region {p_end}
+{p 8 12 2}
+{it:ICD9TMPM}: Trauma Mortality Prediction Model value {p_end}
+{p 8 12 2}
+{it:ICD9_POD}: probability of death {p_end}
+
+
+{p 4 4 2}
+Variables {it:ICD9TMPM} and {it:ICD9_POD} are rounded to the nearest 0.000001.
+
+{p 4 4 2}
+{cmd:icd9tmpm} requires the use of lookup tables {bf:micd9_s1.dta} and {bf:micd9_s2.dta}.  These data tables are supplied.
+_s1 tables are for use with data without the decimal point in ICD-9-CM codes and _s2 tables are for data that include the
+decimal point.  See help for {help icdpic}, specifically the LOOKUP TABLES part of the {bf:Remarks} section.
+
+
+{p 4}
+{bf:{ul:NOTES ON METHODOLOGY AND VALIDATION}}
+
+{p 4 4 2}
+The Trauma Mortality Prediction Model (ICD-9-CM TMPM) has the same goal as the ISS.  Both provide a single number summary
+of a patient's injuries when those injuries are described in the ICD-9-CM lexicon.  However ISS considers only at most three
+of a patient's injuries, and provides only a relative measure of injury severity (0 to 75).  ICD-9-CM TMPM, by contrast,
+considers as many as 5 of a patient's injuries and results in an actual prediction of that patient's mortality (0% to 100%)
+based upon the injuries sustained.
+
+{p 4 4 2}	
+Although ISS and ICD-9-CM TMPM have similar goals, the models upon which they are based are quite different: ISS is simply
+the sum of the squared values of the worst AIS severities in each of the three most severely injured body regions.
+ICD-9-CM TMPM, by contrast, is based upon a probit model that includes the five worst injuries (regardless of where they
+occur in the body), as well as terms that describe interactions and whether the two worst injuries are in the same body
+region.  A further difference is the source of information that ISS and ICD-9-CM TMPM use to assign severity to individual
+injuries: ISS uses the AIS severity created by panels of experts over the years while ICD-9-CM TMPM uses empirically derived
+values for each ICD-9-CM trauma code.  The precise details of this derivation are somewhat mathematical, but the process is
+basically a regression model that provides a predicted survival for each injury in the ICD-9-CM lexicon expressed as its
+probit transformation.  These "Model Adjusted Regression Coefficients" (MARC values) were derived from 702,229 patients
+injured between 2001 and 2005 and cared for at trauma centers that provided information to the National Trauma Data Bank.
+
+{p 4 4 2}  
+The details of the mathematics behind the derivation of MARC values and construction and validation of ICD-9-CM TMPM are
+available.  (TMPM-ICD9: A Trauma Mortality Prediction Model Based on ICD-9-CM Codes Glance, LG, Annals of Surgery, in
+press.)  In this study ICD-9-CM TMPM provided predictions that were substantially more accurate, both in terms of
+discrimination and calibration, than did ISS.
+
+{p 4 4 2}
+Perhaps adding to the appeal of ICD-9-CM TMPM is the fact that the original version of this model that uses injuries
+described in the AIS lexicon is also available (AIS TMPM).  Because administrative data often describe patient injuries
+in either the ICD-9-CM or AIS lexicon, but not both, we anticipate the two TMPM programs (ICD-9-CM TMPM and AIS TMPM) will
+be useful to researchers who perhaps are confronted with data sets in which patients are described in the AIS lexicon
+in some and described in the ICD-9-CM lexicon in others.
+
+{p 4 4 2}
+Note that, although ICD-9-CM TMPM uses only anatomic injuries in its predictions, there in nothing precluding the addition
+of other information (age, GCS, etc.) to outcome predictions.  A logistic model predicting outcome for any patient data set
+can easily be constructed with the anatomic injury component of the model encapsulated in the ICD-9-CM TMPM value.  Note,
+however, that if ICD-9-CM TMPM is to be incorporated into a larger logistic model it should enter such a model as its logit
+(log(Ps /(1-Ps))) transformation.
+
+
+{title:Examples}
+
+{p 4 8 2}
+None
+
+
+{title:Authors}
+
+{p 4}
+David E. Clark, M.D.
+
+{p 8 12 2}
+Maine Medical Center, Portland, Maine, USA {p_end}
+{p 8 12 2}
+University of Vermont College of Medicine, Burlington, Vermont, USA {p_end}
+{p 8 12 2}
+Harvard Injury Control Research Center, Harvard School of Public Health, Boston, Massachusetts, USA {p_end}
+
+{p 4}
+Turner M. Osler, M.D.
+
+{p 8 12 2}
+University of Vermont College of Medicine, Burlington, Vermont, USA {p_end}
+
+{p 8}
+Correspondence to Dr. Osler, {p_end}
+{p 8}
+Department of Surgery {p_end}
+{p 8}
+University of Vermont {p_end}
+{p 8}
+789 Orchard Shore Road {p_end}
+{p 8}
+Colchester, VT 05446 {p_end}
+{p 8} 
+Email:  tosler@uvm.edu {p_end}
+
+{p 4}
+David R. Hahn
+
+{p 8 12 2}
+Maine Medical Center, Portland, Maine, USA {p_end}
+
+
+{title:References}
+
+{p 4 8 2}
+Osler T, Glance L, Buzas JS, Mukamel D, Wagner J, Dick A.  A Trauma Mortality Prediction Model Based on the Anatomic Injury
+Scale.  {it:Ann Surg} 2008;247:1041-1048.
+
+{p 4 8 2}
+Glance L, Osler T, Mukamel D, Meredith W, Wagner J, Dick A.  TMPM-ICD9: A Trauma Mortality Prediction Model Based on 
+ICD-9-CM Codes.  {it:Ann Surg} In Press.
+
+
+{title:Also see}
+
+{p 4}
+help for {help ais_tmpm}
+
+{p 4}
+help for {help icdpic}
+
+{p 4}
+help for {help icd9tmpm}

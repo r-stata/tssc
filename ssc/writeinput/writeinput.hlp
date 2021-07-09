@@ -1,0 +1,94 @@
+{smcl}
+{* Mar2011}{...}
+{hline}
+help for {hi:writeinput}
+{hline}
+
+{title:Write dataset in memory to new do-file as an {cmd:input} command}
+
+{p 4 8 2} 
+{cmd:writeinput}
+{it:varlist} 
+[{cmd:if} {it:exp}] 
+[{cmd:in} {it:range}] 
+{cmd:using} {it:newfile.do}
+[
+{cmd:,} 
+{cmdab:n:ote(}{it:string}{cmd:)}
+{cmdab:rep:lace} 
+{cmdab:nocl:ear} ]
+{break} 
+ 
+{title:Description}
+
+{p 2 2 2}
+{cmd:writeinput} writes data (or a subset of data) in memory to a do-file (.do) as an
+{help input} statement.  This is useful for creating self-contained data examples that
+can be distributed with code in a do-file. Since Stata 11, the do-file editor has 
+larger file size capacity, so large example datasets can be included in do-files (see: http://www.stata.com/stata11/doedit.html).
+
+{p 2 2 2}
+  When creating an example dataset or snippet to include in 
+something like a homework example, lecture slide, email to Stata Technical Support, 
+or a posting on Statalist, one might want to create an {cmd: input} (see {help input}) 
+command, allowing the recipient to directly write the example data into memory, 
+rather than relying on copied/pasted free-form data (which might not 
+format or wrap properly for the 
+recipient and lead to miscommunication).  
+
+{p 2 2 2}
+Additionally, {cmd:input} requires formats of
+string variables be included in the varlist as well as double quotes around string variable
+data where there is an embedded space. 
+{cmd:writepinput} eases the process of creating 
+a {cmd: input} version of the example data by adding this additional formatting automatically.  
+
+{title: Required} 
+
+{p 4 8 2}
+{cmd:using} specifies {it:newfile.do} to be created and must have a .do file extension.
+
+{p 4 8 2}
+{cmd:{it:varlist}} is the list of variables to be included in the {cmd: input} command created in {it:newfile.do}
+
+{title: Options} 
+
+{p 4 8 2}
+{cmdab:rep:lace} option to replace existing do-file with the same name.
+
+{p 4 8 2}
+{cmdab:n:ote(}{it:string}{cmd:)} option to include a note (marked as a comment with
+asterisks) placed at the bottom of the {cmd: input} command written the the new do-file.  
+
+{p 4 8 2}
+{cmdab:nocl:ear} specifies that no {help clear} command is to be written to the top of
+the new do-file.  This is useful for {cmd: input}ing data horizontally (as new variables)
+to a dataset already in memory (assuming the extant dataset has equal or more observations).
+
+{p 4 8 2}
+{cmd:if} and {cmd:in} are allowed.
+
+
+{title: Examples}
+
+{p 4 8 2}{cmd:. sysuse auto, clear}{p_end}
+{p 4 8 2}{cmd:. writeinput make mpg price for in 1/5  using "test1.do", repl}{p_end}
+{p 4 8 2}{cmd:. writeinput make mpg price for if for==0 in 20/60 using "test2.do",  /// } {p_end}
+{p 8 8 2}{cmd:  replace n(Here's some notes)}{p_end}
+{p 4 8 2}{cmd:. writeinput make   if for==1 & pri>200 in 1/50 using "test3.do",  ///} {p_end}
+{p 8 8 2}{cmd:replace n(write some notes here)}{p_end}
+{p 4 8 2}{cmd:. type "test3.do" }{p_end}
+
+// {cmd:input} data from "test3.do" as new variables in the existing dataset //
+{p 4 8 2}{cmd:. rename make make2 }{p_end}
+{p 4 8 2}{cmd:. do "test3.do" }{p_end}
+
+{title:Author}
+
+{p 4 4 2}Eric A. Booth, Texas A&M University{break} 
+         ebooth@ppri.tamu.edu
+
+{title:Also see}
+
+{p 4 8 2}On-line:  help for {help input:input}; {help file:file write}; {help doedit: doedit}
+

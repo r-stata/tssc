@@ -1,0 +1,83 @@
+{smcl}
+{* March 11,2004}{...}
+{hline}
+help for {hi:rocss} 
+{hline}
+
+{title:ROC curve and other statistics for any classification method}
+
+{p 8 24}{cmd:rocss} {it:dep_var}  {it: prob_var} [{cmd:if} {it:exp}]
+		[{cmd:in} {it:range}]  [{cmd:,} {cmdab:nc:ut(}{it:#}{cmd:)} {cmdab:saved:ata(}{it:filename}{cmd:)} 
+  {cmdab:gr:aph} {cmdab:rep:lace}]   
+
+{title:Description}
+
+   {cmd:rocss} calculates sensitivity, specificity, cumulative area under the ROC curve and percentage 
+         of subjects correctly classified at user-specified probability cutoffs.
+
+{p 4 4}{it:dep_var} is the binary outcome variable coded 0, 1.
+
+{p 4 8}{it:prob_var} contains the estimated probabilities that {it:dep_var}==1.
+
+{p 4 8} An example with four observations:
+
+          {it:id}      {it:dep_var}    {it:prob_var}
+           1         0          0.2
+           2         1          0.8
+           3         1          0.9
+           4         0          0.3
+
+{title:Remarks}
+
+      Unlike {help lsens}, {cmd:rocss} is not a post-estimation command and allows the user to set arbitrary probability cutoffs.
+      However, if used on predicted probabilities derived by {help logistic}, {help logit} or {help probit}, {cmd:rocss} 
+      represents a flexible alternative to {help lsens}.
+
+{title:Options}
+
+    {cmdab:nc:ut(}{it:#}{cmd:)} specifies the number equally spaced probability intervals in the range 0, 1. The number of corresponding 
+            probability cutoffs will be ({it:#} + 1), at values 0, 1/#, 2/#, ..., 1. 
+            The default is 10 equally spaced intervals.
+    
+    {cmdab:saved:ata(}{it:filename}{cmd:)} specifies the name of a new dataset created to contain the probability cutoffs 
+            and corresponding sensitivity, specificity, cumulative area under the ROC curve and the percentage of 
+            subjects correctly classified. The dataset is saved in the current directory.
+
+    {cmdab:gr:aph} graphs sensitivity versus 1-specificity (help for {help lroc}) calculated at each probability cutoff.
+    
+    {cmdab:rep:lace} requests that if the dataset specified in {cmdab:saved:ata(}{it:filename}{cmd:)} already exists, it should be overwritten.
+
+{title:Examples}
+
+{p 4 8 2} {cmd:. webuse lbw, clear}{p_end}
+    {cmd:. logistic low age lwt smoke ptl ht ui}
+    {cmd:. lstat}
+    {cmd:. lroc, nograph}
+    {cmd:. lstat, cutoff(0.30)}
+    {cmd:. predict p}
+
+    {cmd:. rocss low p  // compare the results}
+    {cmd:. rocss low p, ncut(20) gr}
+    {cmd:. rocss low p, saved(allsens)}
+    {cmd:. rocss low p, ncut(80) gr saved(allsens) rep}
+ 
+{title:Authors}
+
+{p 4 4 2} Nicola Orsini,
+Institute of Environmental Medicine, Karolinska Institutet, Stockholm, Sweden 
+and Institute of Information Science and Technology, National Research Council of Italy, Pisa, Italy. {p_end}
+
+{p 4 4 2}Matteo Bottai, Arnold School of Public Health,
+ University of South Carolina, Columbia, USA and Institute of Information Science and Technology, 
+ National Research Council of Italy, Pisa, Italy. {p_end}
+
+{title:Support}
+
+{p 8 12}Nicola Orsini, {browse "http://nicolaorsini.altervista.org"}, Karolinska Institutet, Sweden{p_end}
+{p 8 12}{browse "mailto:nicola.orsini@imm.ki.se?subject=rocss":nicola.orsini@imm.ki.se}
+
+{title:Also see}
+
+{p 10 14}{hi:[R] logistic}{p_end}
+
+{p 0 19}On-line:  help for {help lroc}, {help lstat}, {help lsens}, {help roc} {p_end}

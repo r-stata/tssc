@@ -1,0 +1,83 @@
+{smcl}
+{* *! version 1.0.2  21apr2010}{...}
+{cmd:help group_id}{right:dialog:  {bf:{dialog group_id}}}
+{hline}
+
+{title:Title}
+
+{phang}
+{bf:group_id} {hline 2} Groups identifiers when values for specified variables match 
+
+
+{title:Syntax}
+
+	{cmd:group_id} {it:id_var} {cmd:,} {opt match:by(match_vars)}
+
+
+{title:Description}
+
+{pstd}
+{cmd:group_id} consolidates values of identifier variable {it:id_var} 
+when observations are matched by {it:match_vars}. When a match is
+found between two observations with different {it:id_var} values,
+all records with those {it:id_var} values are updated to the new
+consolidated value, even if they do not match by {it:match_vars}.
+
+{pstd}
+If there is a missing value in any variable in {it:match_vars},
+the observation is ignored in terms of the matching. 
+
+
+{title:Example}
+
+{pstd}
+Suppose we have the following dataset,
+
+{col 11}{c TLC}{hline 59}{c TRC}
+{col 11}{c |} id          contact      phone    loc               email {c |}
+{col 11}{c LT}{hline 59}{c RT}
+{col 11}{c |}  1   Picard, Michel   555-2222   home                     {c |}
+{col 11}{c |}  1   Picard, Michel   555-3333   work                     {c |}
+{col 11}{c |}  2   Picard, Robert   555-0001   home                     {c |}
+{col 11}{c |}  2   Picard, Robert   555-1234   work                     {c |}
+{col 11}{c |}  2   Picard, Robert                     picard@netbox.com {c |}
+{col 11}{c |}  3    Pickard, John   555-5555   home                     {c |}
+{col 11}{c |}  3    Pickard, John                      Pickard@here.com {c |}
+{col 11}{c |}  4    Robert Picard   555-9999   cell                     {c |}
+{col 11}{c |}  4    Robert Picard                     picard@netbox.com {c |}
+{col 11}{c BLC}{hline 59}{c BRC}
+  
+
+{pstd}
+Each contact has a unique id but values 2 and 4 appear to refer to the same
+contact because the email is identical. Consolidating id values 2 and 4 is a
+bit tricky because there are observations with those id values that are not
+part of the email match. However,
+
+{phang}{cmd:. group_id id, matchby(email)}
+
+{phang}{cmd:. list, noobs sep(0)}
+
+{col 11}{c TLC}{hline 59}{c TRC}
+{col 11}{c |} id          contact      phone    loc               email {c |}
+{col 11}{c LT}{hline 59}{c RT}
+{col 11}{c |}  1   Picard, Michel   555-2222   home                     {c |}
+{col 11}{c |}  1   Picard, Michel   555-3333   work                     {c |}
+{col 11}{c |}  2   Picard, Robert   555-0001   home                     {c |}
+{col 11}{c |}  2   Picard, Robert   555-1234   work                     {c |}
+{col 11}{c |}  2   Picard, Robert                     picard@netbox.com {c |}
+{col 11}{c |}  3    Pickard, John   555-5555   home                     {c |}
+{col 11}{c |}  3    Pickard, John                      Pickard@here.com {c |}
+{col 11}{c |}  2    Robert Picard   555-9999   cell                     {c |}
+{col 11}{c |}  2    Robert Picard                     picard@netbox.com {c |}
+{col 11}{c BLC}{hline 59}{c BRC}
+
+{pstd}
+The listing shows that {cmd:group_id} has grouped the original id values 2 and 4.
+Other id values are unaffected. 
+
+
+{title:Author}
+
+{pstd}Robert Picard{p_end}
+{pstd}picard@netbox.com{p_end}

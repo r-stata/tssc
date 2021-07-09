@@ -1,0 +1,453 @@
+.-
+help for ^ordplot^
+.-
+
+Cumulative distribution plot of ordinal variable 
+------------------------------------------------
+
+    ^ordplot^ ordvar [^if^ exp] [^in^ range] [fweight] 
+    [ ^, by(^catvar^) miss^ing ^rev^erse ^sc^ale^(^scale^) pow^er^(^#^)^
+    ^assc^ores^(^numlist^) le lt ge gt f^raction ^pla^bel^(^numlist^)^
+    ^pli^ne^(^numlist^) pti^ck^(^numlist^)^ keyplot_options ]
+
+Description
+-----------
+
+^ordplot^ produces a cumulative distribution plot for an ordinal numeric
+variable ordvar. The cumulative probability is plotted on the y axis and 
+ordvar is plotted on the x axis.                 
+
+^ordplot^ is designed primarily for data which are, or can be collapsed to, 
+a contingency table with frequencies for an ordinal response and an ordinal 
+or nominal covariate. 
+
+^ordplot^ may also be used with variables on interval or ratio scales. 
+
+^ordplot^ requires ^keyplot^ to be installed. 
+
+Remarks
+-------
+
+The cumulative probability P is here defined by default as 
+
+   SUM counts in categories below + (1/2) count in this category
+   -------------------------------------------------------------.
+                   SUM counts in all categories
+		   
+With terminology from Tukey (1977, pp.496-497), this could be called a 
+`split fraction below'. It is also a `ridit' as defined by Bross (1958): 
+see also Fleiss (1981, pp.150-7) or Flora (1988). The numerator is a 
+`split count'. Using this numerator, rather than 
+
+	SUM counts in categories below 
+
+or 
+
+	SUM counts in categories below + count in this category, 
+	
+means that more use is made of the information in the data. Either 
+alternative would always mean that some fractions are identically 0 
+or 1, which tells us nothing about the data. In addition, there are 
+fewer problems in showing the cumulative distribution on any 
+transformed scale (e.g. logit) for which the transform of 0 or 1 is 
+not plottable. If desired, these alternatives are available through 
+the ^lt^ and ^le^ options, respectively. 
+
+A plot of the complement of this cumulative probability, 1 - P, may be 
+obtained through the ^reverse^ option, in which case the pertinent 
+alternatives are available through the ^ge^ or ^gt^ options. 
+
+Further information on working with counted fractions and folded 
+transformations for probability scales is available in Tukey (1960, 
+1961, 1977), Atkinson (1985), Cox and Snell (1989) and Emerson (1991).
+Some of the transformations used here appear as link functions in 
+the literature on generalized linear models (e.g. McCullagh and Nelder 
+1989; Aitkin et al. 1989). 
+
+
+Options
+-------
+
+^by( )^ specifies a categorical variable catvar, with 10 or fewer categories. 
+    Cumulative distributions will be shown for each category of catvar. 
+
+^missing^ specifies that observations for which catvar is missing will 
+    be included in the plot if ^by( )^ is specified. The default is to 
+    exclude them. 
+
+^reverse^ specifies the use of reverse cumulative probabilities (1 - P    
+    in notation above), a.k.a. the complementary distribution, reliability, 
+    survival or survivor function. 
+
+^scale( )^ indicates a scale for plotting cumulative distributions. 
+    ^logit^ (synonym ^flog^ for `folded logarithm'), ^froot^, ^folded^, 
+    ^loglog^, ^cloglog^, ^normal^ or ^Gaussian^, ^percent^ and ^raw^ are 
+    allowed. 
+    
+    ^raw^ is the default. 
+
+    Given cumulative probabilities P, defined as above, and using log 
+    to denote natural logarithm (base e),  
+
+    ^logit^ or ^flog^ means log (P / (1 - P)) = log P - log (1 - P). 
+
+    ^froot^ for `folded root' means sqrt(P) - sqrt(1 - P). 
+
+    ^folded^ means `folded power' or P^^power - (1 - P)^^power. 
+    The power to be used must be specified through the ^power( )^ option 
+    and should be non-zero. For reference, note that, apart from scaling 
+    constants, good emulations of the angular (arcsine square root) 
+    transformation and of the probit transformation are obtained by 
+    powers of 0.41 and 0.14 respectively. As power approaches 0, the 
+    folded power tends to the logit. 
+
+    ^loglog^ means -log(-log P). 
+
+    ^cloglog^ means log(-log (1 - P)). 
+
+    ^normal^ or ^Gaussian^ means ^invnorm(^P^)^. See help on @functions@. 
+
+    ^percent^ means 100 P. 
+
+    Under ^reverse^ P is replaced by 1 - P, and vice versa, in these 
+    operations. 
+
+^power( )^ specifies a power for folded power transformation. See above.
+
+^asscores( )^ specifies an ascending numlist to use as alternative scores in 
+    plotting values on the x axis. The elements of the numlist must match 
+    one-to-one with the distinct values of ordvar occurring in the 
+    observations used and put into ascending order.  
+    
+    For example, if ordvar takes on values 1 2 3 4 5, ^asscores(1 4 5 6 9)^
+    will map 1 to 1, 2 to 4, etc. 
+
+^le^ (think "^l^ess than or ^e^qual to") specifies that probabilities are 
+    to be calculated from counts for ordvar <= this category. 
+         
+^lt^ (think "^l^ess ^t^han") specifies that probabilities are to be 
+    calculated from counts for ordvar < this category.
+    
+^ge^ (think "^g^reater than or ^e^qual to") specifies that probabilities are 
+    to be calculated from counts for ordvar >= this category. This 
+    is allowed only with ^reverse^. 
+         
+^gt^ (think "^g^reater ^t^han") specifies that probabilities are to be 
+    calculated from counts for ordvar > this category. This is allowed 
+    only with ^reverse^. 
+
+^fraction^ specifies use of the term "fraction" rather than "probability" 
+    by the vertical axis of the plot. This option is cosmetic only
+    and not allowed with ^scale(percent)^. 
+
+^plabel(^numlist^)^, ^pline(^numlist^)^ and ^ptick(^numlist^)^ are for use if 
+    the ^scale^ is ^logit^, ^flog^, ^froot^, ^folded^ with ^power^, ^loglog^,  
+    ^cloglog^, ^normal^ or ^Gaussian^. They specify labels, lines or ticks on the 
+    y axis on a probability or percent scale. Typically these will be more 
+    intelligible and useful than labels, lines or ticks on the transformed 
+    scales which are being plotted. 
+
+    If the largest number in one or more of these numlists is >1, numbers 
+    are treated as percents. Otherwise, numbers are treated as probabilities. 
+    Numbers which are not plottable on the chosen scale, such as logit of 
+    0 or 1, are ignored. 
+    
+    For ^scale^ of ^raw^ or ^percent^, use ^ylabel( )^, ^yline( )^ or ^ytick( )^
+    instead. 
+
+    ^plabel( )^, ^pline( )^ or ^ptick( )^ may not be combined with the 
+    corresponding ^ylabel( )^, ^yline( )^ or ^ytick( )^. 
+
+keyplot_options are options allowed with ^keyplot^.
+
+
+Examples
+--------
+
+	^. ordplot rep78^ 
+	^. ordplot rep78, by(foreign)^ 
+	^. ordplot rep78, by(foreign) yrev^ 
+	^. ordplot rep78, by(foreign) scale(logit)^  
+          ^pla(0.02 0.05 0.1(0.1)0.9 0.95 0.98)^ 
+	^. ordplot rep78, by(foreign) scale(logit) pla(2 5 10(10)90 95 98)^ 
+
+Aitkin et al. (1989, p.242) reported data from a survey of student opinion 
+on the Vietnam War taken at the University of North Carolina in Chapel 
+Hill in May 1967. Students were classified by sex, year of study and 
+the policy they supported, given choices of 
+
+A The US should defeat the power of North Vietnam by widespread bombing 
+  of its industries, ports and harbours and by land invasion. 
+
+B The US should follow the present policy in Vietnam. 
+
+C The US should de-escalate its military activity, stop bombing North 
+  Vietnam, and intensify its efforts to begin negotiation. 
+
+D The US should withdraw its military forces from Vietnam immediately. 
+
+(They also report response rates (p.243), averaging 26% for males and 17% 
+for females.) 
+
+Suppose that, underneath the labels below, the value labels of ^sex^ 
+are also called ^sex^ and ^policy^ runs 1/4. 
+
+	^. l^ 
+
+	           sex      year    policy          freq 
+	  1.      male         1         A           175  
+	  2.      male         1         B           116  
+	  3.      male         1         C           131  
+	  4.      male         1         D            17  
+	  5.      male         2         A           160  
+	  6.      male         2         B           126  
+	  7.      male         2         C           135  
+	  8.      male         2         D            21  
+	  9.      male         3         A           132  
+	 10.      male         3         B           120  
+	 11.      male         3         C           154  
+	 12.      male         3         D            29  
+	 13.      male         4         A           145  
+	 14.      male         4         B            95  
+	 15.      male         4         C           185  
+	 16.      male         4         D            44  
+	 17.      male  Graduate         A           118  
+	 18.      male  Graduate         B           176  
+	 19.      male  Graduate         C           345  
+	 20.      male  Graduate         D           141  
+	 21.    female         1         A            13  
+	 22.    female         1         B            19  
+	 23.    female         1         C            40  
+	 24.    female         1         D             5  
+	 25.    female         2         A             5  
+	 26.    female         2         B             9  
+	 27.    female         2         C            33  
+	 28.    female         2         D             3  
+	 29.    female         3         A            22  
+	 30.    female         3         B            29  
+	 31.    female         3         C           110  
+	 32.    female         3         D             6  
+	 33.    female         4         A            12  
+	 34.    female         4         B            21  
+	 35.    female         4         C            58  
+	 36.    female         4         D            10  
+	 37.    female  Graduate         A            19  
+	 38.    female  Graduate         B            27  
+	 39.    female  Graduate         C           128  
+	 40.    female  Graduate         D            13  
+
+	^. ordplot policy [w=freq] if sex=="male":sex,^ 
+	   ^by(year) xla(1/4) yla(0(0.2)1) gap(3)^
+	   
+	^. ordplot policy [w=freq] if sex=="female":sex,^ 
+	   ^by(year) xla(1/4) yla(0(0.2)1) gap(3)^
+
+Fienberg (1980, pp.54-55) reports data from Duncan, Schuman and Duncan 
+(1973) from 1959 and 1971 surveys of a large American city asking "Are 
+the radio and TV networks doing a good job, just a fair job, or a poor job?"
+
+Suppose that, underneath the labels below, ^opinion^ runs 1/3. 
+
+	^. l^ 
+
+	          group    opinion      freq 
+	  1. 1959 Black       Good        81  
+	  2. 1959 Black       Fair        23  
+	  3. 1959 Black       Poor         4  
+	  4. 1959 White       Good       325  
+	  5. 1959 White       Fair       253  
+	  6. 1959 White       Poor        54  
+	  7. 1971 Black       Good       224  
+	  8. 1971 Black       Fair       144  
+	  9. 1971 Black       Poor        24  
+	 10. 1971 White       Good       600  
+	 11. 1971 White       Fair       636  
+	 12. 1971 White       Poor       158 
+
+	 . ^tab group opinion [w=freq], row^ 
+
+	 ^. ordplot opinion [w=freq], by(group) sc(logit) xla(1/3)^ 
+	    ^pla(20(10)90 95 98 99)^
+
+This shows a clear shift of opinion towards Poor from 1959 to 1971, and 
+a narrowing gap between Black and White.
+
+Clogg and Shihadeh (1994, p.156) give data from the 1988 General 
+Social Survey on answers to the question "When a marriage is troubled 
+and unhappy, do you think it is generally better for the children if 
+the couple stays together or gets divorced?". Responses "much better to 
+divorce", "better to divorce", "don't know", "worse to divorce" and 
+"much worse to divorce" were coded here as 1/5 with short value labels 
+"BETTER", "better", "?", "worse" and "WORSE", because ^graph^ in Stata 6.0 
+truncates value labels to the first 8 characters when shown as ^xlabel^s
+or ^ylabel^s. 
+
+	^. l^ 
+
+	          sex      opinion          freq 
+	  1.     male       BETTER            84  
+	  2.     male       better           205  
+	  3.     male            ?           135  
+	  4.     male        worse           121  
+	  5.     male        WORSE            56  
+	  6.   female       BETTER           154  
+	  7.   female       better           330  
+	  8.   female            ?           178  
+	  9.   female        worse            72  
+	 10.   female        WORSE            49 
+
+It is not clear that the "don't know"s belong in the middle of the 
+scale. The point can be explored by graphs with and without those 
+values. The second uses scores 1 2 3 4 for 1 2 4 5. Either way, there 
+is a distinct separation between males and females, and logit gives 
+a more nearly linear pattern. 
+
+	^. ordplot opinion [w=freq], by(sex) xla(1/5)^ 
+
+	^. ordplot opinion [w=freq], by(sex) xla(1/5) sc(logit)^ 
+	   ^pla(2 5 10(10)90 95 98)^  
+	
+	^. ordplot opinion [w=freq] if opinion != 3,^  
+	   ^by(sex) xla(1/4) asscores(1/4)^ 
+	
+	^. ordplot opinion [w=freq] if opinion != 3,^  
+	   ^by(sex) xla(1/4) sc(logit) asscores(1/4)^  
+	   ^pla(5 10(10)90 95)^
+
+Knoke and Burke (1980, p.68) gave data from the 1972 General Social Survey 
+on church attendance. Suppose that, underneath the labels below, ^attend^ 
+runs 1/3. 
+
+	^. l^ 
+
+	                  group    attend          freq 
+	  1. young non-Catholic       low           322  
+	  2. young non-Catholic    medium           122  
+	  3. young non-Catholic      high           141  
+	  4.   old non-Catholic       low           250  
+	  5.   old non-Catholic    medium           152  
+	  6.   old non-Catholic      high           194  
+	  7.     young Catholic       low            88  
+	  8.     young Catholic    medium            45  
+	  9.     young Catholic      high           106  
+	 10.       old Catholic       low            28  
+	 11.       old Catholic    medium            24  
+	 12.       old Catholic      high           119 
+
+The ^reverse^ option ensures that higher attendance groups plot higher 
+on the graph. There are clear age and denomination effects and an indication 
+of an interaction between the two. 
+
+	^. ordplot attend [w=freq], by(group) sc(logit) reverse^
+	^pla(0.1(0.1)0.9) xla(1/3)^  
+
+Box, Hunter and Hunter (1978, pp.145-9) gave data on five hospitals 
+on the degree of restoration (no improvement, partial functional 
+restoration, complete functional restoration) of certain joints impaired 
+by disease effected by a certain surgical procedure. (It is not clear 
+whether these data are real.) Hospital E is a referral hospital. Box 
+et al. carry out chi-square analyses, focusing on the difference between 
+Hospital E and the others. 
+
+Suppose that, underneath the labels below, ^restore^ runs 1/3.
+
+	^. l^ 
+
+	      hospital    restore      freq 
+	  1.         A       none        13  
+	  2.         B       none         5  
+	  3.         C       none         8  
+	  4.         D       none        21  
+	  5.         E       none        43  
+	  6.         A    partial        18  
+	  7.         B    partial        10  
+	  8.         C    partial        36  
+	  9.         D    partial        56  
+	 10.         E    partial        29  
+	 11.         A   complete        16  
+	 12.         B   complete        16  
+	 13.         C   complete        35  
+	 14.         D   complete        51  
+	 15.         E   complete        10  
+
+	^. ordplot restore [w=freq] , by(hospital)^  
+	^pla(5 10(10)90 95) sc(logit) xla(1/3)^  
+
+
+References
+----------
+
+Aitkin, M., Anderson, D., Francis, B. and Hinde, J. 1989. Statistical 
+modelling in GLIM. Oxford: Oxford University Press. 
+
+Atkinson, A.C. 1985. Plots, transformations, and regression. Oxford: 
+Oxford University Press. 
+
+Box, G.E.P., Hunter, W.G. and Hunter, J.S. 1978. Statistics for 
+experimenters: an introduction to design, data analysis, and model 
+building. New York: John Wiley. 
+
+Bross, I.D.J. 1958. How to use ridit analysis. Biometrics 14, 38-58.
+
+Clogg, C.C. and Shihadeh, E. 1994. Statistical models for ordinal 
+variables. Thousand Oaks, CA: Sage. 
+
+Cox, D.R. and Snell, E.J. 1989. Analysis of binary data. London: 
+Chapman and Hall.
+
+Duncan, O.D., Schuman, H. and Duncan, B. 1973. Social change in a 
+metropolitan community. New York: Russell Sage Foundation. 
+
+Emerson, J.D. 1991. Introduction to transformation. In Hoaglin, D.C., 
+Mosteller, F. and Tukey, J.W. (eds) Fundamentals of exploratory analysis 
+of variance. New York: John Wiley, 365-400. 
+
+Fienberg, S.E. 1980. The analysis of cross-classified categorical data. 
+Cambridge, MA: MIT Press. 
+
+Fleiss, J.L. 1981. Statistical methods for rates and proportions. 
+New York: John Wiley.
+
+Flora, J.D. 1988. Ridit analysis. In Kotz, S. and Johnson, N.L. (eds) 
+Encyclopedia of statistical sciences. Wiley, New York, 8, 136-139. 
+
+Knoke, D. and Burke, P.J. 1980. Log-linear models. Beverly Hills, CA: 
+Sage. 
+
+McCullagh, P. and Nelder, J.A. 1989. Generalized linear models. London: 
+Chapman and Hall. 
+
+Tukey, J.W. 1960. The practical relationship between the common 
+transformations of percentages or fractions and of amounts. Reprinted in 
+Mallows, C.L. (ed.) 1990. The collected works of John W. Tukey. Volume VI: 
+More mathematical. Pacific Grove, CA: Wadsworth & Brooks-Cole, 211-219.
+
+Tukey, J.W. 1961. Data analysis and behavioral science or learning to bear 
+the quantitative man's burden by shunning badmandments. Reprinted in 
+Jones, L.V. (ed.) 1986. The collected works of John W. Tukey. Volume III: 
+Philosophy and principles of data analysis: 1949-1964. Monterey, CA: 
+Wadsworth & Brooks-Cole, 187-389. 
+
+Tukey, J.W. 1977. Exploratory data analysis. Reading, MA: Addison-Wesley. 
+
+
+Author
+------
+
+         Nicholas J. Cox, University of Durham, U.K.
+         n.j.cox@@durham.ac.uk
+	 
+	 
+Acknowledgments
+---------------
+
+         Elizabeth Allred and Ronan Conroy made very helpful comments. 
+	 The implementation of ^plabel^, ^pline^ and ^ptick^ is based on 
+	 an idea of Patrick Royston. 
+
+ 
+Also see
+--------
+
+On-line: help for @graph@, @functions@, @keyplot@, @distplot@ (if installed)  
+

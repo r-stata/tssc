@@ -1,0 +1,99 @@
+{smcl}
+{* 13feb2003/3nov2004}{...}
+{hline}
+help for {hi:indexplot}
+{hline}
+
+{title:Index plots of estimation results} 
+
+{p 8 17 2}{cmd:indexplot}
+[{cmd:if} {it:exp}] 
+[{cmd:in} {it:range}]
+[ 
+{cmd:, show(}[{cmdab:o:bserved}{c |}{it:predict_options}]{cmd:)} 
+{cmdab:hi:gh(}{it:#}{cmd:)} 
+{cmdab:lo:w(}{it:#}{cmd:)}
+{cmd:base(}{it:str}{cmd:)} 
+{cmd:recast(}{it:plottype}{cmd:)} 
+{it:graph_options}] 
+
+
+{title:Description}
+
+{p 4 4 2}{cmd:indexplot} plots estimation results (by default whatever
+{cmd:predict} produces by default) from an immediately previous {cmd:regress}
+or similar command versus observation number (i.e. {cmd:_n}). Values are shown,
+by default, as dropped lines starting {bind:at 0}. Note that the base need
+not be visible by default. 
+ 
+{p 4 4 2}The plot is restricted to at most the estimation sample. A subset 
+of that may be shown by using {cmd:if} and/or {cmd:in}. 
+
+
+{title:Options}
+
+{p 4 8 2} 
+{cmd:show()} specifies either {cmd:observed}, to show observed values of the
+response, or options of {cmd:predict}. This option is used to specify results
+other than the default. Any abbreviation of {cmd:observed} or of
+{it:predict_options} that is acceptable to {cmd:predict} may be used. 
+
+{p 4 8 2}
+{cmd:high(}{it:#}{cmd:)} specifies that the highest {it:#} of the results are
+to be identified by their observation numbers using {cmd:xlabel()}.
+
+{p 4 8 2}
+{cmd:low(}{it:#}{cmd:)} specifies that the lowest {it:#} of the results 
+are to be identified by their observation numbers using {cmd:xlabel()}. 
+
+{p 4 8 2} 
+{cmd:base()} specifies an alternative to 0 as the starting 
+point for dropped lines. {cmd:base(mean)} specifies the mean of whatever is being 
+shown; otherwise {cmd:base(}{it:#}{cmd:)} specifies a number 
+{it:#}. 
+
+{p 4 8 2} 
+{cmd:recast()} specifies the use of a {help twoway} plottype differing 
+from the default of {cmd:twoway dropline}. 
+
+{p 4 8 2} 
+{it:graph_options} are those of {help twoway_dropline:twoway dropline}, 
+except if {cmd:recast()} is specified, in which case they are those of 
+the {it:plottype} specified.               
+
+
+{title:Examples}
+
+{p 4 8 2}{cmd:. sysuse auto}
+
+{p 4 8 2}{cmd:. regress mpg weight}{p_end}
+{p 4 8 2}{cmd:. indexplot}{p_end}
+{p 4 8 2}{cmd:. indexplot, base(mean)}{p_end}
+{p 4 8 2}{cmd:. indexplot, show(residual)}{p_end}
+{p 4 8 2}{cmd:. indexplot, show(residual) hi(3) lo(3) mla(make)}{p_end}
+{p 4 8 2}{cmd:. indexplot, show(cooksd) hi(6) mla(make)}
+
+{p 4 8 2}{cmd:. glm mpg weight, link(log)}{p_end}
+{p 4 8 2}{cmd:. indexplot, show(anscombe) hi(3) lo(3)} 
+
+{p 4 8 2}{cmd:. sysuse census}
+
+{p 4 8 2}{cmd:. regress marriage pop}{p_end}
+{p 4 8 2}{cmd:. indexplot, show(dfbeta(pop)) mla(state)} 
+
+
+{title:Author}
+
+{p 4 4 2}Nicholas J. Cox, University of Durham, U.K.{break} 
+n.j.cox@durham.ac.uk
+
+
+{title:Acknowledgements} 
+
+{p 4 4 2}Phil Ender and Andy Sloggett provided very helpful comments
+on a previous version. 
+
+
+{title:Also see}
+
+{p 4 13 2}On-line:  help for {help scatter}, {help predict}, {help modeldiag}

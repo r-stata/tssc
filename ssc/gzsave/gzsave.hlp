@@ -1,0 +1,109 @@
+{smcl}
+{* 24Nov2004}{* 12Jan2006}{* 7Nov2007}{* 15Oct2009}{* 12Sep2011}
+{hline}
+help for {hi:gzsave}, {hi:gzsaveold}, {hi:gzuse}, {hi:gzappend}, {hi:gzmerge}{right:(Henrik Stovring)}
+{hline}
+
+{title:Save, use, append, and merge datasets compressed by gzip on Windows/Unix/Linux/MacOSX}
+
+{p 8 13 2}{cmd:gzsave} [{it:filename}] [{cmd:,} {cmd:replace} {it:save_options}]
+
+{p 8 13 2}
+{cmd:gzsaveold} [{it:filename}] [{cmd:,} {cmd:replace} {it:saveold_options}]
+
+{p 8 13 2}{cmd:gzuse} {it:filename}{space 1}[{cmd:,} {cmd:clear} {it:use_options}]
+
+{p 8 13 2}{cmd:gzuse} [{varlist}] {ifin} {helpb using} {it:filename}{space 1}[{cmd:,} {cmd:clear} {it:use_options}]
+
+{p 8 13 2}{cmd:gzappend} [{varlist}] {helpb using} {it:filename} [{it:filename} {cmd:...}] [{cmd:,} {it:append_options}]
+
+{p 8 13 2}{cmd:gzmerge} [{varlist}] {helpb using} {it:filename} [{it:filename} {cmd:...}] [{cmd:,} {it:merge_options}]
+
+{title:Description}
+
+{p 4 4 2} {cmd:gzsave} compresses and stores the current dataset on disk under the name {it:filename}. If no {it:filename} is specified, the command tries to use the last filename under which the data were last known to Stata (c(filename)). If {it:filename} is specified without an extension, {hi:.dta.gz} is used.
+
+{p 4 4 2} {cmd:gzsaveold} compresses and stores the current dataset on disk in Stata 7 format.
+
+{p 4 4 2}
+{cmd:gzuse} loads a Stata-format dataset previously saved by {cmd:gzsave} into memory.  If {it:filename} is specified without an extension, {hi:.dta.gz} is assumed. In the second syntax for {cmd:gzuse}, a subset of the data may be read.
+
+{p 4 4 2}
+{cmd:gzappend} appends a Stata-format dataset previously saved by {cmd:gzsave} to the current dataset in memory.
+
+{p 4 4 2}
+{cmd:gzmerge} merges one or more Stata-format dataset(s) previously saved by {cmd:gzsave} with the current dataset in memory.
+
+{p 4 4 2} Obviously, all these commands require the gzip command to be available at the command line. It can be downloaded for free at {browse "http://www.gzip.org"}, but is preinstalled on most Unix/Linux/MacOSX systems. On Unix/Linux/MacOSX you can check if gzip is available with
+
+{p 8 8 2}{cmd:. shell which gzip}
+
+{p 4 4 2} which should return something like '/usr/bin/gzip'. On Windows the gzip.exe must similarly be found in the path, cf. the documentation on your Windows version. The easiest way to check if your path is set up correctly on Windows is to try out {cmd:gzsave} and {cmd:gzuse} on a test dataset (ie. an artificial dataset you can afford to lose!). {hi:If it does not work, the most likely explanation is that you either have not installed gzip or your path is not configured correctly.}
+
+{p 4 4 2} In principle, the command should work on any system with gzip installed and ordinary shell commands available. The command has however only been tested on the platforms mentioned above, so as always {hi:use at your own risk!}
+
+
+{title:Options}
+
+{p 4 8 2}{cmd:replace} permits gzsave to overwrite an existing dataset. {cmd:replace} may not be abbreviated.
+
+{p 4 8 2}{cmd:clear} permits the data to be loaded even if there is a dataset already in memory and even if that dataset has changed since it was last saved.
+
+{p 4 8 2}save_options are all options available with {help save}.
+
+{p 4 8 2}saveold_options are all options available with {help saveold}.
+
+{p 4 8 2}use_options are all options available with {help use}.
+
+{p 4 8 2}append_options are all options available with {help append}.
+
+{p 4 8 2}merge_options are all options available with {help merge}.
+
+{title:Remarks}
+
+{p 4 4 2} These commands are useful for two purposes: 
+
+{p 4 8 2} First, they obviously help lowering the space used on disk by a dataset, which may be important when storing very large datasets.
+
+{p 4 8 2} Second, they may help reduce network load and hence the time used for storing and opening datasets when using a distributed disk system such as NFS. This is due to the fact that the commands only transfer the compressed datasets over the network, since the uncompressed dataset is only stored as a temporay datafile, which typically resides on the local disk (where local is relative to the running instance of Stata).
+
+{p 4 4 2} The price paid for saving disk space (and network load) is the CPU time used by gzip - please, test for yourself whether compression is actually advantageous in your specific set-up.
+
+{p 4 4 2} Note, that the {cmd:gzsave} and {cmd:gzuse} commands sets the filename associated with the dataset, so that for example {cmd:describe} correctly reports the originating filename of the compressed dataset. An unwanted side-effect of this occurs when issuing a {cmd:save, replace} on a dataset opened with {cmd:gzuse}, as this will save an uncompressed dataset replacing the original compressed dataset. This is, however, considered a feature as it ensures that commands such as {cmd:describe} points exactly to the relevant file, and it remains the users responsibility to be aware which filename is actually used in the command {cmd:save, replace}.
+
+{p 4 4 2} If you prefer to use {cmd:zip} for compression, have a look at {net describe zipsave:zipsave}.
+
+{title:Examples}
+
+    {cmd:. gzsave myfile}
+    {cmd:. gzsave myfile, replace}
+
+    {cmd:. gzuse myfile}
+    {cmd:. gzuse myfile, clear}
+
+    {cmd:. gzappend using myfile2}
+
+    {cmd:. gzmerge id using myfile3, unique}
+
+    {cmd:. shell gzip -l myfile.dta.gz}    shows compression ratio
+
+{title:Author}
+
+{p 4 4 2} Henrik Stovring ({browse "mailto:stovring@biostat.au.dk":stovring@biostat.au.dk}), Biostatistics, Department of Public Health, Aarhus University, Denmark.
+
+{title:Acknowledgements}
+
+{p 4 4 2} Jun Xu, Department of Sociology, Indiana University, USA, for useful suggestions and help with testing the command for Windows XP.
+
+{p 4 4 2} Morten Andersen, Research Unit of General Practice, University of Southern Denmark, Denmark, gave suggestions on filename handling, tested on MacOSX, and requested {cmd:saveold}.
+
+{p 4 4 2} Christopher Paul Barrington-Leigh, University of British Columbia, Canada, requested handling of filenames with blanks and prompted me to add {cmd:gzappend} and {cmd:gzmerge} to the list.
+
+{title:Also see}
+
+{p 4 13 2}
+Manual:  {hi:[R] save}
+
+{p 4 13 2}
+Online: help for {help save}, {help use}, {help compress}, {help append}, {help merge}, {help zipsave} (if installed, otherwise {net describe zipsave})
+{p_end}

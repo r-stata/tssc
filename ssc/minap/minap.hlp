@@ -1,0 +1,107 @@
+{smcl}
+{.-}
+help for {cmd:minap}
+{.-}
+
+{title:Minimum Average Partial Correlation for Number of PCs}
+ 
+{p 8 27}
+{cmd:minap}
+{it:varlist}
+[{cmd:if} {it:exp}]
+[{cmd:in} {it:range}]
+
+{p 8 27}
+{cmd:minap,}
+{cmd:corr(}{it:corr matrix}{cmd:)}
+
+
+{title:Description}
+
+{p 0 0}
+Velicer(1976) proposed that, when conducting principal components analysis as 
+a version of factor analysis, the number of components one should extract is
+that at which the average partial correlation of the variables, after partialling out 
+m principal components, would be a minimum. {cmd:minap} calculates this minimum average 
+partial correlation.  It can take as input either a variable list or a 
+correlation matrix.
+
+{title:Options}
+
+{p}
+{cmd:corr(}{it:corr matrix}{cmd:)} will estimate number of components from
+provided correlation matrix. The correlation matrix must already exist.  
+One and only one of {it:varlist} or 
+{it:correlation matrix} must be provided.
+
+{title:Remarks}
+
+{p}
+Many criteria for estimating the number of components in principal components analysis, 
+or of factors in factor analysis, have been proposed (Gorsuch, 1983).  One 
+relatively little used of these criteria is the minimum average partial correlation 
+proposed by Velicer (1976). The {cmd:minap} criteria is useful when principal components
+is being used as an approximation to factor analysis, as with the Stata
+{cmd:pcf} option to the {cmd:factor} command. Gorsuch also points out that,while
+{cmd:minap} was developed for pricipal components analysis, it may also be usefu
+for common factor analysis.
+
+{p}
+This criterion has performed well in simulation studies 
+with data with a relatively clear factor structure (Zwick & Velicer, 1986).  
+Gorsuch (1976), however, warns that minimum average partial correlation 
+may not perform well and may suggest underextraction when there are components 
+or factors with only a few loadings.  Similarly, in many applications of
+principal components analysis, one may be interested in components on which 
+only one or two variables load.  {cmd:minap} would be inappropriate in those cases.
+
+{p}
+For comparison purposes, the number of eigenvalues greter than one, claimed by 
+Kaiser (1960) to be a good estimator of the number of components to extract, 
+is also provided. In most cases, this rule will recommend the extraction of more 
+components than will {cmd:minap} and Zwick and Velicer (1986) claim that it leads to
+overextraction.
+
+{p}
+It should be noted that no criterion can be counted on by itself to determine the
+number of components or factors to extract with real data.  Considerations of 
+interpretability are also important. In general, determining the precise number of
+components to retain matters more when the component (or factor) solution will be 
+rotated.
+
+{p}
+{cmd:minap} returns the minimum average partial correlation and the Kaiser (eigenvalue > 1) 
+recommended number of components, as well as the  eigenvector, eigenvalue, and 
+correlation matrices. The eigenvalue matrix is scaled so the sqares of 
+the collumn entries sum to the eigenvalues.
+
+{title:Examples}
+
+	{cmd:minap v1-v30}
+
+	{cmd:minap , corr(Harmon)}
+
+{title:References}
+
+{p 4 4}
+Gorsuch, R.L. (1983). {it:Factor analysis (second edition)}. 
+Hillsdale, NJ: Lawrence Erlbaum Associates.
+
+{p 4 4}
+Kaiser, h.F. (1960). The application of electronic computers to factor 
+analysis. {it:Educational and Psychological Measurement, 20}, 141-151.
+	
+{p 4 4}
+Velicer, W.F. (1976). Determining the number of components
+from the matrix of partial correlations. {it:Psychometrka, 41}, 321-327.
+
+{title:Author}
+
+	Stephen Soldz
+	Boston Graduate School of Psychoanalysis
+	1581 Beacon St.
+	Brookline, MA 02446
+	Tel: (617) 277-3915 x27
+	ssoldz@bgsp.edu
+
+

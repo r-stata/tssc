@@ -1,0 +1,43 @@
+{smcl}
+{* *! version 3.0 08Nov2011}{...}
+{hline}
+help for {hi:nnest}
+{hline}
+
+{title:J test and Cox-Pesaran test for non nested OLS models}
+
+{p 8 14}{cmd:nnest}{it: varlist}
+
+
+{title:Description}
+
+{p}{cmd:nnest} computes the J test and Cox-Pesaran test for non nested OLS models.
+The tests are discussed in W.H. Greene {it: Econometric Analisys}, 4th edition, (Prentice Hall International Editions) pages 302-305.
+
+{p}{cmd:nnest} requires that you run an OLS regression to define model 1 (M1). Such regression can be weighted and it can contain 
+time series operators. However, it can neither contain factor-variable operators nor any function that contains a comma (such as {help tin}, 
+{help inrange}, {help inlist}, etc.).
+{cmd:nnest} then constructs the competing model 2 (M2) by collecting the regressors listed in {it: varlist} and applies the same options
+included in the OLS regression defining M1 to the auxiliary regressions for the tests. Finally, {cmd: nnest} returns a series of scalars
+and macros in {cmd: return list}.{p_end}
+
+{p}I am grateful for the comments received from Kit Baum (kit.baum@bc.edu) in upgrading the syntax for {cmd:nnest} and the usual caveat applies.{p_end}
+
+{title:Options}
+
+{p}{cmd:nnest} has no options.{p_end}
+
+{title: Example}
+
+{phang}{cmd:. nnest cons}{p_end}
+{phang}{cmd:. nnest cons gdp}{p_end}
+{phang}{cmd:. nnest cons L(-2/3).gdp}{p_end}
+
+{title: References}
+
+{p 0 4}W.H. Greene {it: Econometric Analisys}, 4th edition, (Prentice Hall International Editions) pages 302-305.{p_end}
+
+{title: Author}
+
+{p 8 12}Gregorio Impavido, IMF, USA{p_end}
+{p 8 12}gimpavido@imf.org{p_end}

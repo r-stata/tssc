@@ -1,0 +1,64 @@
+{smcl}
+{* 19feb2015}{...}
+{cmd:help whichpkg}
+{hline}
+
+{title:Title}
+
+{p2colset 5 18 20 2}{...}
+{p2col :{hi:whichpkg} {hline 2}}Display information on components of a Stata package
+{p_end}
+{p2colreset}{...}
+
+
+{title:Syntax}
+
+{p 8 20 2}
+{cmd:which} {it:pkgname}[{cmd:.}{it:ftype}]
+
+
+{title:Description}
+
+{pstd}
+{cmd:whichpkg} is an extension to Stata's official {helpb which} command.
+{cmd:whichpkg} displays information on all the components of the package {it:pkgname}.
+A Stata package is a collection of files.
+For each component file of the package,
+{cmd:whichpkg} displays the full path and filename,
+plus (if the file is text format) all lines starting with "{hi:*!}".
+{cmd:whichpkg} can also be used as a substitute for Stata's official {helpb which}.
+
+{pstd}
+{cmd:whichpkg} is built around {helpb which}
+but differs from it in two main respects:
+(a) {cmd:whichpkg} provides support for Stata packages;
+(b) {cmd:whichpkg} always searches for {bf:all} instances of a file,
+and will report on duplicate files if encountered.
+For further details see {helpb which:help which}.
+
+{pstd}If {it:ftype} is omitted, {cmd:whichpkg} assumes {hi:.pkg}.
+Allowable {it:ftypes} are all those supported by {helpb which}.
+
+{pstd}{cmd:whichpkg} requires Stata 9 or higher.
+
+{title:Examples}
+
+{p 0}Display components of package {it:ivreg2}:
+
+{p 8 12}{stata "whichpkg ivreg2": . whichpkg ivreg2}
+
+{p 0}Display information on file {it:ivreg2.ado} (equivalent to {stata "which ivreg2, all": which ivreg2, all}:)
+
+{p 8 12}{stata "whichpkg ivreg2.ado": . whichpkg ivreg2.ado}
+
+{title:Author}
+
+	Mark E Schaffer, Heriot-Watt University, UK
+	m.e.schaffer@hw.ac.uk
+
+{title:Also see}
+
+{psee}
+Online:  {helpb which}, {helpb ssc}, {helpb ado}, {helpb net}, {helpb sj}, {helpb stb}
+{p_end}
+

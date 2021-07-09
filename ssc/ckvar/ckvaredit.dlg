@@ -1,0 +1,492 @@
+*! ckvaredit
+*! version 1.1.1 April 2, 2010 @ 14:57:39
+*! made for editing some things used by ckvar version 3.x
+VERSION 9
+SYNCHRONOUS_ONLY
+/* 1.1.0 - added functionality for stepping through variables */
+/* 1.0.3 - fixed glaring bug for [a,b) ranges */
+/* 1.0.2 - quashed some more mostly cosmetic bugs, there are probably some left */
+/*         after all, this is really krufty */
+/* 1.0.1 - changed edit controls to onchange() from onclick() on advice from */
+/*         James Hassell at StataCorp. This should fix the failure of the rules */
+/*         changes to stick in MS Windows */
+SCRIPT PREINIT
+  BEGIN
+    create STRING onevar
+    onevar.setstring char _dta[_onevar_]
+
+    create STRING stepthru
+    stepthru.setstring char _dta[_stepthru_]
+
+    create STRING allvars
+    allvars.setstring char _dta[_vars_]
+
+    create STRING okname
+    okname.setstring "Done"
+
+    create STRING submitname
+    submitname.setstring "Save"
+
+    create STRING old_varname
+    create STRING old_stub
+
+    create STRING old_is_req
+    old_is_req.setstring "0"
+
+    create BOOLEAN ruleEdited
+    ruleEdited.setfalse
+
+    create BOOLEAN ruleSaved
+    ruleSaved.setfalse
+
+    create BOOLEAN possible_changes
+    possible_changes.setfalse
+
+    create BOOLEAN harmless
+    harmless.setfalse
+
+    create STRING stub
+    stub.setstring "valid"
+
+    create STRING update_control
+    create STRING suffix
+    suffix.setstring "_rule"
+  END
+
+SCRIPT POSTINIT
+  BEGIN
+    main.txt_debug.hide
+    main.but_done_rule.hide
+    main.but_refresh_rule.hide
+  END
+
+PROGRAM POSTINIT_PROGRAM
+  BEGIN
+    if onevar {
+        call onevar.withvalue main.cbx_varname.setvalue "@"
+        call main.cbx_varname.forceselchange
+        }
+  END
+INCLUDE _std_medium
+/* do overrides work? */
+DEFINE _dlgwd 450
+DEFINE _iwd   430
+INCLUDE _ht260 // was 280
+DEFINE _grpht 220 // was 240
+DEFINE _c2wd0 225
+
+DIALOG main, title("Checkvar Editor") tabtitle("Variable")
+  BEGIN
+    GROUPBOX grp_var_sec     _lft   _top   _cwd1  _grpht, label("Variable Info")
+
+    TEXT     txt_varname     _ilft   _ss   _vnwd   .,  label("Variable to Check") 
+    COMBOBOX cbx_varname     _ilft   _ss    100    ., label("Variable to Check") ///
+        contents(char _dta[_vars_]) ///
+        dropdown ///
+        nomemory ///
+        onselchange(program switchVar) 
+
+    TEXT     txt_stub        _ilft    _ms   _vnwd  ., label("For What Purpose (Stub)?")
+    RADIO    rad_valid_stub  _indent  _ss     @    ., label("Validation (valid)") first ///
+      onclickon(script pickValid)
+    RADIO    rad_score_stub  @        _ss     @    ., label("Scoring (score)") middle ///
+      onclickon(script pickScore)
+    RADIO    rad_other_stub  @        _ss     @    ., label("Other") last ///
+      onclickon(program pickOther) ///
+      onclickoff(script othercharoff)
+
+    TEXT     txt_other_stub  _ilft   _ms     @    ., label("What Other Char Stub?")
+    EDIT     edt_other_stub  _indent _ss     @    ., label("Char Stub") ///
+      onchange(program checkOtherStub)
+
+    /* second column of controls, which deal with the rules (char contents) */
+    GROUPBOX grp_rule_sec   _lft2  _top   _c2wd0  _grpht, label("Checking Info")
+
+    TEXT     txt_rule        _ilft2  _ss   _vnwd   ., label("Current Rule(s)")
+    EDIT     edt_rule         @      _ss   _cwd1   ., label("Edit Rule") ///
+	   onchange(program markRuleEdited) ///
+      nomemory
+    BUTTON   but_edit_rule           +10   _ms   -20     ., label("Edit Complex Rule") ///
+      onpush(program editRule)
+    BUTTON   but_done_rule     @       @    @      ., label("Done Editing Complex Rule") ///
+      onpush(program clearMore)
+    BUTTON   but_refresh_rule   @       @    @      ., label("Refresh Complex Rule") ///
+      onpush(script refreshComplexRule)
+
+    CHECKBOX ckb_is_req      _ilft2    _ls   _cwd0   ., label("Required to be non-missing") ///
+      onclickon(script reqChg) ///
+      onclickoff(script reqChg) ///
+      nomemory
+    TEXT     txt_misval      _indent   _ss   _cwd0   ., label("Value Used to Mark Missing Values")
+    EDIT     edt_misval      @     _ss   50   ., label("Missing Value") ///
+      onchange(program changeOn) ///
+      nomemory
+
+    TEXT     txt_needs_varlist  _ilft2   _ms   _cwd0  ., label("Other Variables Needed for Checking")
+    EDIT     edt_needs_varlist  _indent       _ss    100    ., label("Other Variables Needed List") ///
+      nomemory ///
+      onchange(program changeOn)
+
+    /* hacked reset button which just resets what is needed */
+    BUTTON   but_reset_hack     _lft     _xls  _iwd   ., label("Reset") ///
+      onpush(script changeOff)
+
+    TEXT     txt_debug     _lft2      _ms    _cwd0     ., label("Got to flag")
+    
+
+  END /* dialog main */
+
+/* *** Part 5: Scripts */
+PROGRAM syncReq
+  BEGIN
+    if main.ckb_is_req {
+      call main.txt_misval.enable
+      call main.edt_misval.enable
+      }
+    if !main.ckb_is_req {
+      call main.txt_misval.disable
+      call main.edt_misval.disable
+      }
+  END
+
+SCRIPT reqChg
+  BEGIN
+    program syncReq
+    program changeOn
+  END
+
+PROGRAM clearMore
+  BEGIN
+    put `"display as text "done editing complex rule""'
+	stata
+    call ruleEdited.setfalse
+    call main.but_done_rule.hide
+    call main.but_refresh_rule.show
+  END
+
+/* SCRIPT editComplexRule */
+/*   BEGIN */
+/*     main.but_edit_rule.hide */
+/*     main.but_done_rule.show */
+/*     program markRuleEdited */
+/*   END */
+    
+
+SCRIPT refreshComplexRule
+  BEGIN
+    script update_rule
+    main.but_refresh_rule.hide
+    main.but_edit_rule.show
+  END
+
+PROGRAM markRuleEdited
+  BEGIN
+    if !harmless {
+       call ruleEdited.settrue
+       call program changeOn
+       }
+  END
+
+PROGRAM changeOn
+  BEGIN
+    if main.cbx_varname & !harmless {
+      call possible_changes.settrue
+      call script disableVarStub
+      }
+  END
+
+SCRIPT changeOff
+  BEGIN
+    harmless.settrue
+    possible_changes.setfalse
+    program switchVar
+    program enableVarStub
+    ruleEdited.setfalse
+    harmless.setfalse
+  END
+
+SCRIPT disableVarStub
+  BEGIN
+   main.grp_var_sec.disable
+   main.txt_varname.disable
+   main.cbx_varname.disable
+   main.txt_stub.disable
+   main.rad_valid_stub.disable
+   main.rad_score_stub.disable
+   main.rad_other_stub.disable
+   main.txt_other_stub.disable
+   main.edt_other_stub.disable    
+  END
+
+PROGRAM enableVarStub
+  BEGIN
+   call main.grp_var_sec.enable
+   call main.txt_varname.enable
+   call main.cbx_varname.enable
+   call main.txt_stub.enable
+   call main.rad_valid_stub.enable
+   call main.rad_score_stub.enable
+   call main.rad_other_stub.enable
+   if main.rad_other_stub {
+     call program pickOther
+     }
+  END   
+
+PROGRAM switchVar
+  BEGIN
+    call harmless.settrue
+    if main.cbx_varname {
+      call program ck4chg
+      call script updateAll
+      call main.but_edit_rule.enable
+      }
+    if !main.cbx_varname {
+      call main.but_edit_rule.disable
+      }
+    call ruleEdited.setfalse
+    call harmless.setfalse
+  END
+
+PROGRAM ck4chg
+  BEGIN
+    if possible_changes {
+       put "window stopbox rusure "
+       put `""Changes to the chars could have been made" "'
+       put `""Select OK to save changes""'
+       put `""Select Cancel to ignore" "'
+       put `""  (and possibly lose changes)" "'
+       stata hidden
+       if !_rc {
+          call program saveChanges
+          }
+       }
+    call script clearChangeFlags
+  END
+
+SCRIPT clearChangeFlags
+  BEGIN
+    harmless.settrue
+    possible_changes.setfalse
+    ruleEdited.setfalse
+    program enableVarStub
+    harmless.setfalse
+  END    
+
+SCRIPT pickValid
+  BEGIN
+    harmless.settrue
+    stub.setstring "valid"
+    ck4chg
+    script updateAll
+    harmless.setfalse
+  END
+
+SCRIPT pickScore
+  BEGIN
+    harmless.settrue
+    stub.setstring "score"
+    ck4chg
+    script updateAll
+    harmless.setfalse
+  END
+
+PROGRAM pickOther
+  BEGIN
+    call ck4chg
+    call script otherStubOn
+    call program checkOtherStub
+  END
+
+SCRIPT mainRuleOff
+  BEGIN
+    main.grp_rule_sec.disable
+    main.ckb_is_req.disable
+    main.txt_misval.disable
+    main.edt_misval.disable
+    main.edt_rule.disable
+    main.but_edit_rule.disable
+    main.txt_rule.disable
+    main.but_done_rule.disable
+    main.but_refresh_rule.disable
+    main.txt_needs_varlist.disable
+    main.edt_needs_varlist.disable
+  END
+
+SCRIPT mainRuleOn
+  BEGIN
+    main.grp_rule_sec.enable
+    main.ckb_is_req.enable
+    main.txt_misval.enable
+    main.edt_misval.enable
+    main.edt_rule.enable
+    main.but_edit_rule.enable
+    main.txt_rule.enable
+    main.but_done_rule.enable
+    main.but_refresh_rule.enable
+    main.txt_needs_varlist.enable
+    main.edt_needs_varlist.enable
+  END
+
+/* have this program only to not to make mainRuleOn clumsier */
+PROGRAM checkOtherStub
+  BEGIN
+    if main.cbx_varname {
+      if main.edt_other_stub {
+        put `".ckvaredit_dlg.stub.setstring ""' main.edt_other_stub `"""'
+        stata hidden
+        call script mainRuleOn
+        call harmless.settrue
+        call script updateAll
+        call harmless.setfalse
+      }
+      if !main.edt_other_stub {
+        call stub.setstring ""
+        call script mainRuleOff
+        }
+  END
+
+SCRIPT otherStubOn
+  BEGIN
+    main.edt_other_stub.enable
+    main.txt_other_stub.enable
+  END
+
+SCRIPT othercharoff
+  BEGIN
+    main.edt_other_stub.disable
+    main.txt_other_stub.disable
+    script mainRuleOn
+  END
+
+PROGRAM updateControl
+  BEGIN
+    if main.cbx_varname {
+      call harmless.settrue
+      put "_char2dlg " /hidden main.cbx_varname ", char("
+      put stub
+      put suffix
+      put ") dialog(ckvaredit) control(" update_control ")"
+      stata hidden
+      call harmless.setfalse
+     }
+  END
+
+SCRIPT update_rule
+  BEGIN
+    suffix.setstring "_rule"
+    update_control.setstring "main.edt_rule"
+    program updateControl
+  END
+
+SCRIPT update_required
+  BEGIN
+    suffix.setstring "_required"
+    update_control.setstring "main.ckb_is_req"
+    program updateControl
+  END
+
+SCRIPT update_missing_value
+  BEGIN
+    suffix.setstring "_missing_value"
+    update_control.setstring "main.edt_misval"
+    program updateControl
+  END
+
+SCRIPT update_othervars
+  BEGIN
+    suffix.setstring "_other_vars_needed"
+    update_control.setstring "main.edt_needs_varlist"
+    program updateControl
+  END
+
+SCRIPT updateAll
+  BEGIN
+    harmless.settrue
+    script update_rule
+    script update_required
+    script update_missing_value
+    script update_othervars
+    program saveOldVals
+    harmless.setfalse
+  END
+
+PROGRAM saveOldVals
+  /* a true hack to overcome a big weakness in Stata dialog programming: */
+  /*   the apparent inablity to pass values from one control to another directly */
+  BEGIN
+    if main.cbx_varname {
+      put `".ckvaredit_dlg.old_varname.setstring ""' /hidden main.cbx_varname `"""'
+      stata hidden
+      put `".ckvaredit_dlg.old_stub.setstring ""'  /hidden stub `"""'
+      stata hidden
+      }
+  END
+
+PROGRAM editRule
+  BEGIN
+    call main.but_edit_rule.hide
+    call main.but_done_rule.show
+    /* would like this to be called, but it gives a command which does */
+    /* not reproduce behavior quite correctly */
+    // call program markRuleEdited
+    put "docharedit " /hidden main.cbx_varname "["
+    if main.rad_other_stub {
+      put main.edt_other_stub
+      }
+    if !main.rad_other_stub {
+      put stub
+      }
+    put "_rule]"
+    stata
+    /* cannot update the char properly, because the call below causes docharedit to ignore the more condition */
+  END
+
+PROGRAM saveChanges
+  BEGIN
+    if possible_changes {
+      put "ckvareditsave " old_varname ", stub(" old_stub ") "
+      put "req(" main.ckb_is_req ") "
+      put "rulechgflag(" ruleEdited ") "
+      if main.edt_rule {
+        put `"rule(""' main.edt_rule `"") "'
+        }
+      if main.edt_needs_varlist {
+        put "xvars(" main.edt_needs_varlist ")"
+        }
+      if main.edt_misval {
+        put "misval(" main.edt_misval ")"
+        }
+      stata
+      call script clearChangeFlags
+      }
+  END
+
+PROGRAM saveAndContinue
+  BEGIN
+    call program saveChanges
+    call harmless.settrue
+    call script clearChangeFlags
+    call harmless.setfalse
+    if stepthru {
+       put "_ckvarnext, allvars(" allvars ") onevar(" main.cbx_varname ")"
+       stata hidden
+       call program POSTINIT_PROGRAM
+       }       
+  END
+
+/* ***  Part 6:  u-action and helper button definitions */
+/* INCLUDE header */
+POSITION . . _dlgwd _dlght
+OK  ok_button, label("Done") uaction(saveChanges)
+CANCEL cancel_button, label("Cancel")
+SUBMIT submit_button, label("Save") uaction(saveAndContinue)
+HELP hlp1, view("help ckvaredit")
+
+*** Part 7:  u-action definition
+/* not really used, here, because this dialog does not simply generate a command */         
+PROGRAM command
+  BEGIN
+    program cleanup
+    put `"display "Say Goodnight, Dick""'
+  END
+

@@ -1,0 +1,125 @@
+{smcl}
+{* 31Jan2008}{...}
+{hline}
+help for {hi:ddf2dct}
+{hline}
+
+{title:Convert DDF files describing e.g. US Census data to Stata dct and do files}
+
+{p 8 14}{cmd:ddf2dct} 
+{cmd:using }{it:filename1} 
+{bind:[{cmd:,} {cmd:dct(}{it:filename2}{cmd:)}}
+{cmd:do(}{it:filename3}{cmd:)}
+{cmd:data(}{it:filename4}{cmd:)}
+{cmd:drop(}{vars}{cmd:)}
+{cmd:keep(}{vars}{cmd:)}
+{cmd:replace} {cmd:noinfile}]
+
+{title:Description}
+
+{p}{cmd:ddf2dct} converts Data Definition File (DDF) format 
+files to Stata dct and do files.  A DDF file contains 
+entries of the form
+
+{synoptset 20 tabbed}{...}
+{synoptline}
+           D SREFMON     1     25
+           T SU: Reference month of this record
+                Universe=All persons
+           V          1 .First Reference month
+           V          2 .Second Reference month
+           V          3 .Third Reference month
+           V          4 .Fourth Reference month
+{synoptline}
+
+{p}designed to allow mainframe users to infile data, and is often distributed
+with data following standard US Census formats, e.g. the Decennial Census
+(see also {browse "http://www.nber.org/data/pums.html":http://www.nber.org/data/pums.html}), the Survey of Income and Program Participation
+(SIPP: see also
+{browse "http://www.nber.org/data/sipp.html":http://www.nber.org/data/sipp.html}), and 
+the Current Population Survey (CPS: see also
+{browse "http://www.nber.org/cps/":http://www.nber.org/cps/}).{p_end}
+
+{p}All variable names are converted to lower case. 
+Variable names in DDF files are not guaranteed to be legal in Stata, so the following substitutions are made:{p_end}
+
+  % becomes p
+  - becomes _
+  $ becomes d
+  
+{p}and any variables names that are repeated in the data dictionary have a number added to the end of their name high enough to make the name distinct from all previously defined names.  Thus, if a variable FILLER appears four times in the DDF file, the dct file will have variables filler, filler1, filler2, and filler3.{p_end}
+
+{title:Options}
+
+{p 0 4}{cmd:dct(}{it:filename2}{cmd:)} specifies a path and filename
+where a {help infiling:dictionary} file should be saved.{p_end}
+
+{p 0 4}{cmd:do(}{it:filename3}{cmd:)} specifies a path and filename
+where a do file that {help infiling:infiles} data and assigns value {help label}s should be saved.{p_end}
+
+{p 0 4}{cmd:data(}{it:filename4}{cmd:)} specifies a path and filename
+where raw data (to be {help infiling:infiled}) is saved.{p_end}
+
+{p 0 4}{cmd:drop(}{vars}{cmd:)} excludes the variables specified from the dct file.{p_end}
+
+{p 0 4}{cmd:keep(}{vars}{cmd:)} includes only the variables specified in the dct file.{p_end}
+
+{p 0 4}{cmd:replace} specifies that the files named may be overwritten if they exist already.{p_end}
+
+{p 0 4}{cmd:noinfile} requests no {cmd:infile} command in the created do file.{p_end}
+
+{title:Examples}
+
+{synoptset 20 tabbed}{...}
+{synoptline}
+{p 8 12}{stata "clear" : clear}{p_end}
+{p 8 12}{stata "tempfile do dct s96" : tempfile do dct s96}{p_end}
+{p 8 12}{stata "ddf2dct using http://www.nber.org/sipp/1996/sipp96l.ddf, dct(`dct') do(`do')" : ddf2dct using http://www.nber.org/sipp/1996/sipp96l.ddf, dct(`dct') do(`do')}{p_end}
+{p 8 12}{stata "run `do'" : run `do'}{p_end}
+{p 8 12}{stata "describe t??amt" : describe t??amt}{p_end}
+{p 8 12}{stata "notes t50" : notes t50}{p_end}
+{p 8 12}{stata "save `s96'" : save `s96'}{p_end}
+{p 8 12}{stata "tempfile do dct s01" : tempfile do dct s01}{p_end}
+{p 8 12}{stata "ddf2dct using http://www.nber.org/sipp/2001/sipp01w1.ddf, dct(`dct') do(`do')" : ddf2dct using http://www.nber.org/sipp/2001/sipp01w1.ddf, dct(`dct') do(`do')}{p_end}
+{p 8 12}{stata "clear" : clear}{p_end}
+{p 8 12}{stata "run `do'" : run `do'}{p_end}
+{p 8 12}{stata "notes t50" : notes t50}{p_end}
+{p 8 12}{stata "tempfile do dct s93" : tempfile do dct s93}{p_end}
+{p 8 12}{stata "ddf2dct using http://www.nber.org/sipp/1993/sipp93w1.ddf, dct(`dct') do(`do')" : ddf2dct using http://www.nber.org/sipp/1993/sipp93w1.ddf, dct(`dct') do(`do')}{p_end}
+{p 8 12}{stata "clear" : clear}{p_end}
+{p 8 12}{stata "run `do'" : run `do'}{p_end}
+{p 8 12}{stata "notes higrade" : notes higrade}{p_end}
+{p 8 12}{stata "ssc install vlc, replace" : ssc install vlc, replace}{p_end}
+{p 8 12}{stata "save `s93'" : save `s93'}{p_end}
+{p 8 12}{stata "vlc higrade, to(`s96')" : vlc higrade, to(`s96')}{p_end}
+{p 8 12}{stata "use `s96', clear" : use `s96', clear}{p_end}
+{p 8 12}{stata "vlc eeducate, to(`s93')" : vlc eeducate, to(`s93')}{p_end}
+{synoptline}
+{p 8 12}{stata "clear" : clear}{p_end}
+{p 8 12}{stata "tempfile do dct c89" : tempfile do dct c89}{p_end}
+{p 8 12}{stata "ddf2dct using http://www.nber.org/cps/cpsmar89_91.doc, dct(`dct') do(`do') drop(FILLER)": ddf2dct using http://www.nber.org/cps/cpsmar89_91.doc, dct(`dct') do(`do') drop(FILLER)}{p_end}
+{p 8 12}{stata "run `do'" : run `do'}{p_end}
+{p 8 12}{stata "save `c89'" : save `c89'}{p_end}
+{p 8 12}{stata "clear" : clear}{p_end}
+{p 8 12}{stata "tempfile do dct c92" : tempfile do dct c92}{p_end}
+{p 8 12}{stata "ddf2dct using http://www.nber.org/cps/cpsmar92.ddf, dct(`dct') do(`do') drop(FILLER)": ddf2dct using http://www.nber.org/cps/cpsmar92.ddf, dct(`dct') do(`do') drop(FILLER)}{p_end}
+{p 8 12}{stata "run `do'" : run `do'}{p_end}
+{p 8 12}{stata "save `c92'" : save `c92'}{p_end}
+{p 8 12}{stata "ssc install vlc, replace" : ssc install vlc, replace}{p_end}
+{p 8 12}{stata `"vlc a_hga, to(`c89')"' : vlc a_hga, to(`c89')}{p_end}
+{p 8 12}{stata `"g lab92=trim(substr(label1,1,25))"' : g lab92=trim(substr(label1,1,25)}{p_end}
+{p 8 12}{stata `"ren label2 lab91"' : ren label2 lab91}{p_end}
+{p 8 12}{stata `"li val lab91 lab92, noo clean"' : li val lab91 lab92, noo clean}{p_end}
+{synoptline}
+
+{title:Author}
+
+    Austin Nichols
+    Urban Institute
+    Washington, DC
+    austinnichols@gmail.com
+
+{title:Also see}
+
+{p 0 19}On-line:  help for {help infiling}, {help label}, {help labelbook}, {stata "findit vlc":vlc}
+

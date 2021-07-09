@@ -1,0 +1,175 @@
+{smcl}
+{* 27aug2003}{...}
+{hline}
+help for {hi:dmerge}{right:manual:  {hi:[R] merge}}
+{right:dialog:  {dialog dmerge}    }
+{hline}
+
+{title:Merge datasets using a modification of Stata's {cmd:merge}}
+
+{p 8 14 2}{cmdab:dmerge} [{it:varlist}] {cmd:using} {it:filename} [{cmd:,}
+{cmd:ukeep(}{it:varlist}{cmd:)}
+{cmdab:uniq:ue} {cmdab:uniqm:aster} {cmdab:uniqu:sing}
+{cmdab:nol:abel} {cmd:update} {cmd:replace}
+{cmdab:nok:eep} {cmd:_merge(}{it:varname}{cmd:)} 
+{cmdab:t:able} {cmdab:l:oudly} ]
+
+
+{title:Description}
+
+{p 4 4 2}
+{cmd:dmerge} joins corresponding observations from the dataset currently in
+memory (called the master dataset) with those from the Stata-format dataset
+stored as {it:filename} (called the using dataset) into single observations.
+If {it:filename} is specified without an extension, {hi:.dta} is assumed.
+{cmd:dmerge} is a modification of Stata's official {cmd:merge}
+
+{p 4 4 2}
+In contrast to Stata's {cmd:merge}, {cmd:dmerge} automatically drops 
+{cmd:_merge()} if it exists, automatically sorts the master set by 
+the merging variables, automatically sorts the using data set if it is
+not sorted by the merging variables, and suppresses Stata's listing of 
+variable labels used in both data sets.
+
+{p 4 4 2} 
+{cmd:dmerge} does not have the full range of options that {cmd:mmerge}
+has, but is considerably faster than {cmd:mmerge} when the using set is already
+sorted, as {cmd:mmerge} but not {cmd:dmerge} always requires the master set 
+to be preserved and the using set to be read into memory and saved. 
+
+{p 4 4 2}
+{cmd:dmerge} can perform both one-to-one and match merges.  In either case,
+the variable _merge (or the variable specified in {cmd:_merge()} if
+provided) is added to the data containing
+
+{center:_merge==1    obs. from master data                      }
+{center:_merge==2    obs. from using data                       }
+{center:_merge==3    obs. from both master and using data       }
+
+{p 4 4 2}
+If {cmd:update} is specified, the codes for _merge are
+
+{center:_merge==1    obs. from master data                      }
+{center:_merge==2    obs. from using data                       }
+{center:_merge==3    obs. from both, master agrees with using   }
+{center:_merge==4    obs. from both, missing in master updated  }
+{center:_merge==5    obs. from both, master disagrees with using}
+
+
+{title:Options}
+
+{p 4 8 2}
+{cmd:ukeep(}{it:varlist}{cmd:)} specifies the variables to be kept from the
+using data.  If {cmd:ukeep()} is not specified, all variables are kept.
+
+{p 8 8 2}
+The {cmd:ukeep()} {it:varlist} differs from standard Stata varlists in two
+ways.  First, if you type a simple name, it is assumed to be the exact name of
+the variable to be kept; it cannot be an abbreviation.  Second, you may not
+refer to a range of variables; specifying {cmd:ukeep(age-income)} is an error.
+You may, however, use other standard Stata varlist features such as the
+{cmd:*} and {cmd:~} characters to match one or more characters in a variable
+name; see help {help varlist}.
+
+{p 4 8 2}
+{cmd:unique}, {cmd:uniqmaster}, and {cmd:uniqusing} specify that the match
+variable(s) in a match merge uniquely identify the observations.
+
+{p 8 8 2}
+{cmd:unique} specifies that the match variable(s) uniquely identify the
+observations in the master data and in the using data.  For most match merges,
+you should specify {cmd:unique}.  {cmd:dmerge} does nothing differently if you
+specify the option unless the assumption you were making turns out to be
+false.  In that case, rather than merging the data {cmd:dmerge} issues an error
+message.
+
+{p 8 8 2}
+{cmd:uniqmaster} specifies that the match variable(s) uniquely identify
+observations in memory (the master data) but not necessarily in the using
+data.
+
+{p 8 8 2}
+{cmd:uniqusing} specifies that the match variable(s) uniquely identify
+observations in the using data but not necessarily in the master data.
+
+{p 8 8 2}
+{cmd:unique} is equivalent to specifying {cmd:uniqmaster} and {cmd:uniqusing}.
+If none of the three options are specified, then observations in the using and
+master data are not required to be unique.  In that case, records that have the
+same values of the match variables are joined observationwise until all the
+records one side or the other are matched, then the final record on the
+shorter side is duplicated over and over again to match with the remaining
+records with the same match value on the longer side.
+
+{p 4 8 2}
+{cmd:nolabel} prevents Stata from copying the value label definitions
+from the disk dataset.  Even if you do not specify this option, in no event do
+label definitions from disk replace those already in memory.
+
+{p 4 8 2}
+{cmd:update} varies the action {cmd:dmerge} takes when an observation is
+matched.  By default, the master data is held inviolate -- values from the
+master data are retained when the same variables are found in both datasets If
+{cmd:update} is specified, however, the values from the using data are
+retained in cases where the master data contains missing.
+
+{p 4 8 2}
+{cmd:replace}, allowed with {cmd:update} only, specifies that even in
+the case when the master data contains nonmissing values, they are to be
+replaced with corresponding values from the using data when corresponding
+values are not equal.  A nonmissing value, however, will never be replaced
+with a missing value.
+
+{p 4 8 2}
+{cmd:nokeep} causes {cmd:dmerge} to ignore observations in the using data
+that have no corresponding observation in the master.  The default is to add
+these observations to the merged result and mark such observations with
+_merge==2.
+
+{p 4 8 2}
+{cmd:_merge(}{it:varname}{cmd:)} specifies the name of the variable
+that will mark the source of the resulting observation.  The default is
+{cmd:_merge(_merge)}.
+
+{p 4 8 2} 
+{cmd:table} forces {cmd:dmerge} to {cmd:tabulate _merge} at the 
+completion of the merging process}.
+
+{p 4 8 2} 
+{cmd:loudly} removes {cmd:quietly} from {cmd:dmerge} so that the usual 
+{cmd:merge} descriptions are displayed.
+
+
+{title:Example:  one-to-one merge}
+
+    {cmd:. use ds1}
+    {cmd:. dmerge using ds2, unique}
+
+
+{title:Example:  match merge}
+
+    {cmd:. use ds2}
+    {cmd:. sort recid}
+    {cmd:. save ds2, replace}
+    {cmd:. use ds1}
+    {cmd:. sort recid}
+{p 4 8 2}{cmd:. dmerge recid using ds2}{p_end}
+    {cmd:. tabulate _merge}
+
+
+{title:Example:  update match merge}
+
+{p 4 8 2}{cmd:. use original, clear}{p_end}
+{p 4 8 2}{cmd:. dmerge make using updata, update}{p_end}
+    {cmd:. tabulate _merge}
+
+
+{title:Also see}
+
+{p 4 13 2}
+Manual:  {hi:[U] 25 Commands for combining data},{break}
+{hi:[R] merge}
+
+{p 4 13 2}
+Online:  help for {help append}, {help cross}, {help joinby},
+{help save}, {help sort}, {help mmerge} if installed

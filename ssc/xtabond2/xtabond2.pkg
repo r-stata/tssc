@@ -1,0 +1,66 @@
+d 'XTABOND2': module to extend xtabond dynamic panel data estimator
+d
+d     xtabond2 can fit two closely related dynamic panel data
+"d models. The first is the    Arellano-Bond (1991) estimator, which"
+d is also available with xtabond without the two-step
+d finite-sample correction described below.  The second is an
+d augmented version outlined in    Arellano and Bover (1995) and
+d fully developed in Blundell and Bond (1998).    Arellano and Bond
+d (1991) developed a Generalized Method of    Moments estimator
+"d that treats the model as a system of equations, one for each time"
+d period.    The equations differ only in their instrument/moment
+d condition sets.  The predetermined and    endogenous variables in
+d first differences are instrumented with suitable lags of their
+"d own    levels.  Strictly exogenous regressors, as well as any"
+"d other instruments, can enter the    instrument matrix in the"
+d conventional instrumental variables fashion: in first
+"d differences,    with one column per instrument.    A problem with"
+d the original Arellano-Bond estimator is that lagged levels are
+"d often poor    instruments for first differences, especially for"
+d variables that are close to a random    walk.  Arellano and Bover
+"d (1995) described how, if the original equations in levels were"
+"d added to the system, additional moment conditions could be"
+"d brought to bear to increase    efficiency.  In these equations,"
+d predetermined and endogenous variables in levels are
+d instrumented with suitable lags of their own first differences.
+d Blundell and Bond (1998)    articulated the necessary assumptions
+d for this augmented estimator more precisely and    tested it with
+d Monte Carlo simulations.  The original estimator is sometimes
+"d called    ""difference GMM,"" and the augmented one, ""system GMM."""
+d Bond (2002) is a good introduction    to these estimators and
+d their use.    xtabond2 implements both estimators.   As GMM
+"d estimators, the Arellano-Bond estimators have one- and two-step"
+"d variants.  But    though asymptotically more efficient, the"
+d two-step estimates of the standard errors tend to    be severely
+d downward biased (Arellano and Bond 1991; Blundell and Bond 1998).
+"d  To    compensate, xtabond2, unlike xtabond, makes available a"
+d finite-sample correction to the    two-step covariance matrix
+d derived by Windmeijer (2000).  This can make twostep robust more
+"d   efficient than onestep robust, especially for system GMM."
+d Note: the routine requires an up-to-date version of Stata 7 (with
+d the 21jun2002 update installed).     Users of Stata version 10
+d (25feb2008 update) or later can take advantage of speed
+d improvements due to Mata.
+d
+d KW: Arellano-Bond
+d KW: dynamic panel data
+d KW: Blundell-Bond
+d KW: Arellano-Bover
+d KW: Windmeijer
+d
+d Requires: Stata version 7.0 (with 21jun2002 update); version 9.0 for Mata version
+d
+d
+d Author: David Roodman
+d Support: email david@@davidroodman.com
+d
+d Distribution-Date: 20181225
+d
+f xtabond2.ado
+f xtabond2.mata
+f xtabond2.hlp
+f xtab2_p.ado
+f ./l/lxtabond2.mlib
+f ./a/abest.do
+f ./b/bbest.do
+f ./g/Greene.do

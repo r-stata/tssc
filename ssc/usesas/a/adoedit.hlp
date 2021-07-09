@@ -1,0 +1,87 @@
+{smcl}
+{* 10Jan2012}{...}
+{* 17Jan2008}{...}
+{* 06Nov2003}{...}
+{hline}
+help for {hi:adoedit} {right:manual:  {hi:[R] none}}
+{right:dialog:  {hi: none}    }
+{hline}
+
+
+{title:Edit an ado-file in Stata's do-file editor}
+
+{p 8 17 2}{cmd:adoedit} 
+{it:cmdname}
+{p_end}
+        
+{title:Description}
+
+{p 4 4 2}
+{cmd:adoedit} attempts to edit whichever ado-file named {cmd:cmdname.ado} is first on the
+current {help adopath:adopath}.  If you are using an old version of Stata, you may not be
+able to edit files larger than 32,000 bytes in the do-file editor.  Built-in commands
+cannot edited no matter what.  This routine is designed for use by those who are writing 
+their own ado-files; users are exhorted to make a copy of any official ado-files, and to 
+save modified official ado-files in the ado directory, rather than the Stata directory.{p_end}
+
+{p 4 4 2}
+{cmd:adoedit cmdname.ado}
+is tolerated.{p_end}
+
+{p 4 4 2}
+After a successful edit, the {cmd:discard} command is issued so that Stata will load the 
+revised ado-file. This will also clear any estimates from the last estimation.{p_end}
+
+{p 4 4 2}
+If you wish to edit ado-files with a different text editor, please see
+{stata findit fedit:fedit} and the {stata findit texteditors:texteditors} modules on the 
+{help ssc:SSC} archive.{p_end}
+
+
+{title:Examples}
+
+{p 4 8 2}{cmd:.  adoedit tsspell}{p_end}
+
+
+{title:Saved Results}
+
+{p 4 8 2}
+The {cmd:adoedit} command saves in {cmd:r()}:{p_end}
+ 
+{synoptset 20 tabbed}{...}
+{p2col 5 20 24 2: Macros}{p_end}
+{synopt:{cmd:r(adofile)}}the ado-file name and full path{p_end}
+
+
+{title:Author}
+
+{p 4 4 2}
+Dan Blanchette {break}
+The Carolina Population Center {break}
+University of North Carolina - Chapel Hill, USA {break}
+dan_blanchette@unc.edu{p_end}
+
+
+{title:Acknowledgements}
+
+{p 4 4 2}
+This program grew out of previous work by:{p_end}
+
+{p 6 4 2}
+Nicholas J. Cox, University of Durham, U.K.{p_end}
+
+{p 4 4 2}
+and{p_end}
+
+{p 6 4 2}
+Christopher F Baum, Boston College, USA{p_end}
+
+{p 4 4 2}
+Eric Booth suggested option to open the ado-file in whatever software is setup to open ".ado" file types if the file is 
+too big to open in Stata's do-file editor.{p_end}
+
+{title:Also see}
+
+{p 4 13 2}On-line: {help doedit:doedit} {help fildfile:findfile},
+{help fedit:fedit} (if installed){p_end}
+

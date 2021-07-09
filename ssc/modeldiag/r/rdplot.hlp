@@ -1,0 +1,116 @@
+{smcl}
+{* 26feb2003/3nov2004}{...}
+{hline}
+help for {hi:rdplot}
+{hline}
+
+{title:Plot residual distribution after model fit}
+
+{p 8 17 2}{cmd:rdplot}
+[{it:plottype}]
+[{cmd:,} {it:residualtype}
+{cmdab:rsc:ale(}{it:exp}{cmd:)}
+{cmd:by(}{it:varname}{cmd:)}
+[{cmd:at(}{it:numlist}{cmd:)} {c |} {cmdab:g:roup(}{it:#}{cmd:)}] 
+{it:graph_options}
+{cmd:plot(}{it:plot}{cmd:)} ] 
+
+
+{title:Description}
+
+{p 4 4 2}{cmd:rdplot} is for use after {cmd:regress} and similar commands; see
+help on the command of interest. 
+
+{p 4 4 2}{cmd:rdplot} graphs residual distributions. The residuals are, by
+default, those calculated by {cmd:predict, residuals} or (if the previous
+estimation command was {cmd:glm}) by {cmd: predict, response}. 
+
+{p 4 4 2}The graph by default is a single or multiple dotplot, as produced
+by {cmd:dotplot}. 
+
+{p 4 4 2}Histograms or box plots may be selected by specifying either
+{cmd:histogram} or {cmd:hbox} or {cmd:box} as {it:plottype}.  
+
+{p 4 4 2}Oneway plots as implemented by {cmd:onewayplot}, skewness plots as
+implemented by {cmd:skewplot}, or quantile plots as implemented by
+{cmd:qplot} may be selected by specifying {cmd:onewayplot} or {cmd:skewplot} or
+{cmd:qplot} as {it:plottype}.  
+
+{p 8 8 2}In the latter three cases, {cmd:onewayplot} or {cmd:skewplot} or
+{cmd:qplot} must be installed first.  In the last case, {cmd:qplot}
+plottypes may be specified in full (e.g. as {cmd:qplot line}); by default
+{cmd:qplot} or an abbreviation of it means {cmd:qplot connected}.
+
+{p 4 4 2}{it:plottype} may be abbreviated unambiguously, i.e. down as far as
+{cmd:d}, {cmd:hi}, {cmd:hb}, {cmd:b}, {cmd:o} or {cmd:s} or {cmd:q}. 
+
+
+{title:Options}
+
+{p 4 8 2}{it:residualtype} specifies a type of residual other than the default.
+The following types are currently supported: {cmdab:a:nscombe},
+{cmdab:d:eviance}, {cmdab:l:ikelihood}, {cmdab:p:earson}, {cmdab:r:esiduals},
+{cmdab:resp:onse}, {cmdab:rsta:ndard}, {cmdab:rstu:dent}, {cmdab:s:core},
+{cmdab:w:orking}. 
+
+{p 4 8 2}{cmd:rscale(}{it:exp}{cmd:)} specifies a transformed scale on which to
+show the residuals using Stata syntax and {cmd:X} as a placeholder for the
+residual variable name. Thus {cmd:rscale(X^2)} specifies squaring, to show relative
+contribution to residual variance; {cmd:rscale(abs(X))} specifies absolute
+value, to set aside sign; {cmd:rscale(sqrt(abs(X)))} specifies root of absolute
+value, a useful scale on which to check for heteroscedasticity. 
+
+{p 4 8 2}{cmd:by(}{it:varname}{cmd:)} specifies that plots should be 
+given for groups of {it:varname}. If {cmd:at()} or {cmd:group()} is 
+also specified, as below, groups are as specified by that option. Otherwise, 
+groups are the distinct values of {it:varname}. 
+
+{p 4 8 2}{cmd:at(}{it:numlist}{cmd:)} or {cmd:group(}{it:#}{cmd:)} specifies how 
+groups of a classifying variable are to be determined. 
+If {cmd:by(}{it:varname}{cmd:)} 
+is specified, as above, {cmd:at()} or {cmd:group()} is applied to that 
+variable. Otherwise, the first-named predictor or covariate used in the 
+previous regression-type command is used. {cmd:at()} and {cmd:group()} 
+are options of {cmd:egen, cut()}: see help on {help egen}. In brief, 
+{cmd:at()} specifies lower limits of user-defined classes and {cmd:group()} 
+specifies the number of quantile-based groups with (approximately) 
+equal frequency to be used. (With {cmd:at()}, supply one high value beyond
+the maximum of the data for best results.) 
+
+{p 4 8 2}{it:graph_options} are any of the options allowed with whichever of 
+{help dotplot:dotplot}, {help histogram:histogram}, {help graph_box:graph hbox}, 
+{help graph_box:graph box}, {help onewayplot} or {help skewplot} is selected as
+{it:plottype}. 
+
+{p 4 8 2}{cmd:plot(}{help plot_option:plot}{cmd:)} provides a way to add other
+plots to the generated graph; see {help plot_option}. {cmd:plot()} is allowed
+whenever {it:plottype} permits (and so not with {cmd:dotplot}, {cmd:box} 
+or {cmd:hbox}). 
+
+
+{title:Examples}
+
+{p 4 8 2}{cmd:. reg width length}{p_end}
+{p 4 8 2}{cmd:. rdplot, g(3)}{p_end}
+{p 4 8 2}{cmd:. foreach v in width length {c -(}}{p_end}
+{p 4 8 2}{cmd:. {space 8}gen log`v' = log(`v')}{p_end}
+{p 4 8 2}{cmd:. {c )-}} {p_end}
+{p 4 8 2}{cmd:. reg logwidth loglength}{p_end}
+{p 4 8 2}{cmd:. rdplot, g(3)}{p_end}
+{p 4 8 2}{cmd:. rdplot b, g(3)}{p_end}
+{p 4 8 2}{cmd:. rdplot hb, g(3)}{p_end}
+{p 4 8 2}{cmd:. rdplot hi, g(3)}
+	
+{p 4 8 2}{cmd:. glm price weight, link(log)}{p_end}
+{p 4 8 2}{cmd:. rdplot hi, anscombe yli(0) normal}
+
+
+{title:Author}
+
+{p 4 8 2}Nicholas J. Cox, University of Durham, U.K.{break}
+n.j.cox@durham.ac.uk
+
+
+{title:Also see}
+
+{p 4 13 2}On-line: help for {help predict}, {help modeldiag}

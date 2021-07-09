@@ -1,0 +1,184 @@
+{smcl}
+{* 19mar2004}{...}
+{hline}
+help for {hi:matsave} and {hi:matload}{right:({hi:contact {browse "mailto:muendler@econ.ucsd.edu":Marc Muendler}})}
+{hline}
+
+{title:Save and load matrices}
+
+{p 8 15}{cmdab:matsave} 
+{it:matrix} 
+[{cmd:,}
+    {cmdab:replace}
+    {cmdab:sav:ing}
+    {cmdab:dropall}
+    {cmdab:p:ath}{cmd:(}{it:path}{cmd:)}
+    {cmdab:t:ype}{cmd:(}{it:type}{cmd:)}
+]
+
+{p 8 15}{cmdab:matload} 
+{it:filename} 
+[{cmd:,}
+    {cmdab:sav:ing}
+    {cmdab:dropall}
+    {cmdab:p:ath}{cmd:(}{it:path}{cmd:)}
+    {cmdab:m:issing}{cmd:(}{it:value}{cmd:)}
+    {cmdab:row:name}{cmd:(}{it:variable}{cmd:)}
+    {cmdab:over:write}
+]
+
+
+{title:Description}
+
+{p}{cmd:matsave} saves a matrix from memory to disk as a Stata dataset 
+({it:matrix.dta}). {cmd:matload} loads a matrix that has been saved with 
+{cmd:matsave}. matsave and matload are based on Stata commands svmat and mkmat 
+({help mkmat}). 
+
+{p}{cmd:matsave} creates a Stata dataset. The variable names correspond to the 
+column names of {it:matrix}. Column names must be unique. matsave also creates 
+a variable {it:_rowname} containing the row names of {it:matrix}. {it:matrix} 
+is saved as {it:path}\{it:matrix.dta}. (To assign column and row names, see 
+{help matrname}.)
+
+{p}{cmd:matload} expects a variable {it:_rowname} for backward conversion, or a variable that takes the role of {it:_rowname} must be specified. 
+
+
+{title:Common Options}
+
+{p 0 4}{cmd:saving} forces matsave and matload to save the data that are 
+presently in memory and to restore the data upon completion. Setting 
+{cmd:saving} does not affect a preceding {cmd:preserve} command. If there are 
+data in memory and {cmd:saving} is not specified, matsave and matload will 
+abort.
+
+{p 0 4}{cmd:dropall} makes matsave and matload drop data from 
+memory if present. The data will not be restored upon completion. dropall 
+may not be abbreviated.
+
+{p 0 4}{cmd:path()} supplies the path where matsave saves {it:matrix} and from 
+where matload loads {it:matrix.dta}. The {it:pathname} in {cmd:path(}{it:pathname}{cmd:)} 
+needs to be a string. If {cmd:path()} is not specified, then matsave and matload 
+expect files in the current Stata working directory.
+
+{title:Options for matsave}
+
+{p 0 4}{cmd:replace} permits matsave to overwrite an existing dataset {it:matrix.dta}. 
+replace may not be abbreviated.
+
+{p 0 4}{cmd:type(}{it:type}{cmd:)} makes matsave save all variables as {it:type}. The default {it:type} is float.
+
+{title:Options for matload}
+
+{p 0 4}{cmd:missing(}{it:value}{cmd:)}. Matrices cannot contain missing 
+entries in versions of Stata before 8. The option {cmd:missing(}{it:value}{cmd:)} 
+replaces any missing values in the file {it:matrix.dta} with the specified 
+{it:value} when loading the file. The default {it:value} is -999.
+
+{p 0 4}{cmd:rowname(}{it:variable}{cmd:)}. matload expects a variable 
+{it:_rowname} for backward conversion. Alternatively, the option {cmd:rowname(}{it:variable}{cmd:)}
+renames the variable {it:variable} in the file {it:matrix.dta} to {it:_rowname} when loading 
+the file.
+
+{p 0 4}{cmd:overwrite} permits matload to overwrite an existing matrix in memory with the dataset 
+{it:matrix.dta} from disk.
+
+
+{title:Remarks on matsave}
+
+{p}A typical use of matsave is{p_end}
+
+{p 8 12}{inp:. matsave A, p("matrices") dropall}{p_end}
+
+{p} This saves matrix {it:A} to subdirectory "{it:dir}\matrices", where {it:dir} 
+stands for the current Stata working directory. The option {cmd:dropall} 
+works like a preceding {inp:drop _all} command and removes all data from 
+memory.{p_end}
+
+{p} matsave uses the Stata command {cmd:svmat}, and svmat requires that data 
+are removed from memory. If a dataset is in memory, an error message would result
+
+{p 8 12}{inp:. matsave A}{p_end}
+{p 8 12}no; data in memory would be lost{p_end}
+{p 8 12}r(4);{p_end}
+
+{p} matsave can remove and restore the data for you. Under the option 
+{cmd:saving}, matsave saves the current dataset temporarily, drops all 
+variables, and restores the data upon completion.{p_end}
+
+{p 8 12}{inp:. matsave A, replace p("matrices") saving}{p_end}
+
+{p} The option saving is different from {cmd:preserve} in that it can be 
+applied in addition to a preceding preserve command. In other words, 
+{cmd:saving} allows a double preservation of data.
+
+{p} The option saving can be time consuming, however, if your dataset in 
+memory is large. Dropping all variables can be more efficient when many matrices 
+are saved or loaded.{p_end}
+
+{p 8 12}{inp:. preserve}{p_end}
+{p 8 12}{inp:. matsave A, replace p("matrices") dropall}{p_end}
+{p 8 12}{inp:. matsave B, replace p("matrices") dropall}{p_end}
+{p 10 12}{it:rest of code}{p_end}
+{p 8 12}{inp:. restore}{p_end}
+
+{p} If the path "{it:dir}\matrices\" does not exist, matsave will result in the 
+error {p_end}
+
+{p 8 12}{inp:. matsave A, replace p("matrices") dropall}{p_end}
+{p 8 12}error (after svmat was applied){p_end}
+{p 8 12}file could not be opened{p_end}
+{p 8 12}r(603);{p_end}
+
+
+{title:Remarks on matload}
+
+{p} The command{p_end}
+
+{p 8 12}{inp:. matload A, p("matrices") saving over}{p_end}
+
+{p} loads the saved matrix {it:A} back into memory. matload is based on 
+the Stata command {cmd:mkmat} and also requires temporary removal of data 
+from memory. {p_end}
+
+{p} Under the option {cmd:overwrite}, matload replaces the current 
+matrix {it:A} in memory with the one loaded from "{it:dir}\matrices\A.dta". 
+Without the option overwrite, matload would have responded with an 
+error message. {p_end}
+
+{p 8 12}{inp:. matload A, p("matrices")}{p_end}
+{p 8 12}no; matrix A would be lost{p_end}
+{p 8 12}r(4);{p_end}
+
+
+{title:A note on column names}
+
+{p} matsave saves the row names of {it:matrix} in a variable {it:_rowname}. The 
+column names of {it:matrix} will become the variable names in {it:matrix.dta}. 
+Column names must be unique. If a column of {it:matrix} is called "_cons", "_b" 
+or "_coef", the according variables will be named "__cons", "__b" or "__coef" 
+in {it:matrix.dta} ("_cons", "_b" and "_coef" are protected system variables). 
+matload expects the variable {it:_rowname} for backward conversion. matload 
+transforms column names "__cons", "__b" or "__coef" back to "_cons", "_b" or 
+"_coef".{p_end}
+
+{p} To assign column and row names to {it:matrix}, see {help matrname}.{p_end}
+
+{p} The name of {it:matrix} is not allowed to coincide with a variable name in 
+memory.{p_end}
+
+
+{title:Examples}
+
+{p 8 12}{inp:. matsave A, p("matrices") s replace}{p_end}
+{p 8 12}{inp:. matload A, p("matrices") s over}{p_end}
+
+{title:Author}
+
+{p}Marc-Andreas Muendler, Assistant Professor, Department of Economics, University of California, San Diego.{p_end}
+{p}URL: {browse "http://econ.ucsd.edu/~muendler/":http://econ.ucsd.edu/~muendler/}, Email: {browse "mailto:muendler@econ.ucsd.edu":muendler@econ.ucsd.edu}.{p_end}
+
+{title:Also see}
+
+ Manual:  {hi:[P] matrix utility}
+{p 0 19}On-line:  help for {help matrix}, {help mkmat}, {help matrname}{p_end} 

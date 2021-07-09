@@ -1,0 +1,108 @@
+{smcl}
+{* 18oct2010}{...}
+{hline}
+help for {hi:fsx}
+{hline}
+
+{title:Show names of files in compact form (Unix-friendly defaults)}
+
+{p 8 17 2}
+{cmd:fsx} [{it:filespec} [{it:filespec} [ ... ]], {cmdab:a:ll} ]
+
+
+{title:Description}
+
+{p 4 4 2}{cmd:fsx} is a fork of {help fs}. Both commands list the names of 
+files in compact form.  Note that files do not include folders or directories.
+The change in the {cmd:fsx} fork is that it suppresses hidden Unix files by 
+default (much like the Stata command {help ls} or the Unix command of the same 
+name). These files are revealed with the {cmd:all} option, similar to the "ls -a" 
+syntax in Unix.
+
+{p 4 4 2}With no arguments, {cmd:fsx}
+lists names of files in the current folder or directory but excludes hidden 
+files. Otherwise, it follows file specifications.  A file specification 
+{it:filespec} is a filename or
+(more commonly) a set of filenames indicated by the use of wildcards
+{cmd:*} or {cmd:?}. A folder or directory prefix should be given for
+files outside the current directory. 
+
+{p 4 4 2}See help on {help dir} or {help ls} for listing the names of files
+with more detailed information. Unlike either of those commands, {cmd:fsx} may
+be given more than one file specification. Like {help dir} or {help ls}, but
+unlike the original {help fs} command, {cmd:fsx} suppresses hidden files. 
+
+{p 4 4 2}The list of filenames is returned in {cmd:r(files)}, so 
+long as that is not empty. 
+
+
+{title:Remarks} 
+
+{p 4 4 2}It is recommended that even if you use Windows, you use forward
+slashes {cmd:/} rather than backward slashes {cmd:\}.  Stata will
+understand and there will then be no clash with other meanings for the
+backward slash. 
+
+{p 4 4 2}This command has been successfully tested on Windows but is most
+relevant for Unix (i.e., Mac, Linux, Solaris) as these operating systems use 
+hidden files marked by leading dots which most Unix users will prefer to 
+leave alone.
+
+
+{title:Options} 
+ 
+{p 4 8 2}
+{cmd:all} allows a query to return hidden files, which are otherwise 
+suppressed. When this option is used, {cmd:fsx} behaves exactly like {help fs}.
+
+
+{title:Examples}
+
+{p 4 4 2}{cmd:. fsx}
+
+{p 4 4 2}{cmd:. fsx, all}
+
+{p 4 4 2}{cmd:. fsx *.dta}
+
+{p 4 4 2}{cmd:. fsx *.ado *.hlp}
+
+{p 4 4 2}{cmd:. fsx /ado/plus/f/*.ado}
+
+{p 4 4 2}{cmd:. fsx *.gph}{break}
+         {cmd:. foreach f in `r(files)' {c -(}}{break} 
+         {cmd:. {space 8}graph use `f'}{break} 
+         {cmd:. {space 8}more}{break} 
+         {cmd:. {c )-}} 
+
+
+{title:Saved results}
+
+{col 5}{cmd:r(files)}   {col 18}files matching the query
+
+
+{title:Acknowledgements}
+
+{p 4 4 2}
+This command was forked from the original {help fs} by Nick Cox. Please 
+direct all support questions specifically about {cmd:fsx} to Rossman.
+
+
+{title:Author}
+
+{p 4 4 2}Gabriel Rossman, UCLA, USA.{break} 
+         rossman@soc.ucla.edu
+
+{p 4 4 2}Nicholas J. Cox, Durham University, U.K.{break} 
+         n.j.cox@durham.ac.uk
+
+
+{title:Also see}
+
+{p 4 13 2}Manual:  {hi:[D] dir}
+
+{p 4 13 2}Online:  
+help for {help dir}, 
+help for {help extended_fcn:extended macro functions}, 
+help for {help folders} (if installed),
+help for {help fs} (if installed) 
+

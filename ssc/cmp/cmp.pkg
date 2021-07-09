@@ -1,0 +1,52 @@
+d 'CMP': module to implement conditional (recursive) mixed process estimator
+d
+"d  cmp estimates multi-equation, mixed process models, potentially"
+"d with hierarchical random effects. ""Mixed process"" means that"
+d different equations can have different kinds of dependent
+"d variables. The choices are: continuous (like OLS), tobit (left-,"
+"d right-, or bi-censored), probit, ordered probit or fractional"
+"d probit. ""Conditional"" means that the model can vary by"
+d observation. An equation can be dropped for observations for
+"d which it is not relevant--if, say, a worker retraining program is"
+d not offered in a city then the determinants of uptake cannot be
+d modeled there. Or the type of dependent variable can vary by
+d observation. A dependent variable in one equation can appear on
+d the right side of another equation. Such dependencies must have a
+d recursive structure if the dependencies are on censored variables
+"d as observed, meaning that they split the equations into stages."
+"d If the dependencies are on (latent) linear dependent variables,"
+d they can be recursive or simultaneous in structure. So cmp can
+"d fit many SUR, simultaneous equation, and IV models. cmp's"
+d modeling framework therefore embraces those of the official Stata
+"d commands  probit, ivprobit, treatreg, biprobit, tetrachoric,"
+"d oprobit, mprobit, asmprobit, asroprobit, tobit, ivtobit, cnreg,"
+"d intreg, truncreg, heckman, heckprob, xtreg, xtprobit, xttobit,"
+"d xtintreg, in principle even regress, sureg, and reg3. It goes"
+d beyond them in offering far more flexibility in model
+"d construction. The routine runs under Stata 10 or later, faster"
+d under Stata 11.2 or later.
+d
+d KW: conditional models
+d KW: mixed process modules
+d KW: probit
+d KW: tobit
+d KW: ivtobit
+d KW: biprobit
+d KW: multinomial probit
+d KW: ordered probit
+d KW: truncated regression
+d KW: fractional probit
+d
+d Requires: Stata version 11 and package ghk2 (q.v.)
+d
+d Distribution-Date: 20200524
+d
+d Author: David Roodman
+d Support: email david@@davidroodman.com
+d
+f cmp.ado
+f cmp_p.ado
+f cmp.sthlp
+f cmp.mata
+f ./l/lcmp.mlib
+f cmp_clear.ado

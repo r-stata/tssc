@@ -1,0 +1,75 @@
+{smcl}
+{* 22dec2003}{...}
+{hline}
+help for {hi:circvplot}
+{hline}
+
+{title:Cumulative vector plot for circular data}
+
+{p 8 17 2}
+{cmd:circvplot}
+{it:varname}
+[{cmd:if} {it:exp}] 
+[{cmd:in} {it:range}]
+[{cmd:,}
+{cmdab:result:ant(}{it:resultant_options}{cmd:)} 
+{cmdab:rot:ate(}{it:#}{cmd:)} 
+{it:twoway_options} 
+] 
+
+
+{title:Description} 
+
+{p 4 4 2} 
+{cmd:circvplot} produces a cumulative vector plot for {it:varname}.
+{it:varname} should be a circular variable taking on values between 0 and 360
+degrees. Each value of {it:varname} is plotted as a unit vector. The vectors are
+sorted and plotted end to end, by default starting opposite the mean
+direction. The resultant of the vectors is also shown as an arrow. 
+
+{p 4 4 2} 
+The graph will usually best be shown with {cmd:xsize()} and {cmd:ysize()}
+equal, or nearly so. 
+
+
+{title:Options} 
+
+{p 4 8 2}{cmd:resultant()} specifies options controlling the rendering of the
+arrow showing the resultant. In particular,
+{cmdab:arrowhead:factor(}{it:#}{cmd:)} specifies that the arrowhead length
+should be the default length (which is 7% of the resultant length) X a factor
+of {it:#}.  Otherwise, such options are typically appropriate 
+{help connect_options}. 
+
+{p 4 8 2}
+{cmd:rotate()} changes the direction at which plotting starts by a
+clockwise rotation of {it:#} degrees from the default of opposite the
+vector mean. Such rotation is needed occasionally to avoid producing
+a loop that cuts itself.
+
+{p 4 8 2} 
+{it:twoway_options} are options of {help twoway_options:twoway}.  
+By default the {cmd:subtitle()} indicates the mean direction and vector 
+strength and is at {cmd:pos(6)}.  Note that the degree symbol can be specified 
+by {cmd:`=char(176)'}. 
+
+
+{title:Example} 
+
+{p 4 8 2}{cmd:. circvplot wallasp, title("Wall aspect", pos(12)) clcolor(blue) result(clcolor(red))}{p_end}
+{p 4 8 2}{cmd:. graph display, xsize(4) ysize(4)} 
+
+
+{title:Author}
+
+{p 4 4 2}
+Nicholas J. Cox, University of Durham, U.K.{break} 
+n.j.cox@durham.ac.uk
+
+
+{title:Also see}
+
+{p 4 13 2} 
+On-line: help for {help circdplot} (if installed),  
+{help circrplot} (if installed) 
+

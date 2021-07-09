@@ -1,0 +1,160 @@
+{smcl}
+{* *! version 1.0.0  12jan2010}{...}
+{cmd:help truernd}
+{hline}
+
+{title:Title}
+
+{p2colset 5 16 20 2}{...}
+{p2col :{hi:truernd} {hline 2}}Generate true random numbers{p_end}
+{p2colreset}{...}
+
+
+{title:Syntax}
+
+{phang}
+Display information about the program
+
+{p 8 13 2}{cmd:truernd}
+
+{phang}
+Fill the specified matrix with random values
+
+{p 8 13 2}{cmd:truernd} {cmd:,} {opt matrix(matrixname)}
+
+{phang}
+Generate dataset (variables) with random values
+
+{p 8 13 2}{cmd:truernd} {cmd:,} {opt count(integer)} [{opt n(integer)} {opt min(integer)} {opt max(integer)} {opt clear}]
+
+{phang}
+Recheck quota limits after you purchase an additional quota
+
+{p 8 13 2}{cmd:truernd} {cmd:recheck}
+
+
+{title:Description}
+
+{pstd}{cmd:truernd} provides an interface to the true random number service provided by the
+random.org website created by Mads Haahr. The random.org web service samples atmospheric
+noise via radio tuned to an unused broadcasting frequency together with a skew correction
+algorithm due to John von Neumann. For details see {browse "http://www.random.org/":RANDOM.ORG}.
+Use of this command requires internet connection. Requesting random numbers via this command
+does not affect the random number generator of Stata itself (current seed). 
+
+{pstd} Note that rechecking the quota limits will not reset or extend your quotas. It will
+resend the query to the service website and react accordingly. At the moment of this writing the
+quotas are updated according to the following {browse "http://www.random.org/clients/http/#quota":rule}: every day, shortly after midnight UTC, all
+quotas with less than 1,000,000 bits receive a free top-up of 200,000 bits. 
+
+
+{title:Options}
+
+{synoptset 27 tabbed}{...}
+{synopthdr}
+{synoptline}
+{syntab:Matrix}
+
+{synopt:{opt matrix(matrixname)}}
+name of an existing matrix to fill-in with random numbers
+{p_end}
+
+{syntab:Dataset}
+
+{synopt:{opt count(#)}}
+number of observations in the dataset
+{p_end}
+
+{synopt:{opt n(#)}}
+number of variables in the dataset; default is {cmd:n(1)}
+{p_end}
+
+{synopt:{opt min(#)}}
+minimum of random values (inclusive); default is {cmd:min(0)}
+{p_end}
+
+{synopt:{opt max(#)}}
+maximum of random values (not inclusive); default is {cmd:n(100)}
+{p_end}
+
+{synopt:{opt clear}}
+specifies that it is okay to replace the data in memory,
+even though the current data have not been saved to disk.
+{p_end}
+
+{title:Error codes and limits}
+
+{pstd}111	Syntax error
+
+{pstd}990	Service responded with an error message
+
+{pstd}991	Failed to retrieve random numbers from the server
+
+{pstd}992	Quota exhausted
+
+{pstd}993	Quota exhausted. Must wait before rechecking
+
+{pstd}994	Matrix too large (rows*cols>10,000)
+
+{pstd}995	Too many random values requested (count*n>10,000)
+
+{pstd}996	Inconsistent parameters max and min (max<min)
+
+{pstd}997	Parameter max is out of range [-1e9,1e9]
+
+{pstd}998	Parameter min is out of range [-1e9,1e9]
+
+{pstd}999	Too many random variables requested (n>10,000)
+
+
+For other codes see Stata manual
+
+
+{title:Delays}
+
+{pstd} {cmd:truernd} conforms to the guidelines for automated clients as described on the website. Mandatory delays between
+requests and during the cooling off periods are enforced. It is not recommended for users to
+attempt to override these protective mechanisms. The website provides possibility to purchase additional quota once the limit is reached: {browse "http://www.random.org/quota/"}
+
+{pstd}min interval between requests for random numbers: 30 seconds
+(program waits for remaining time during this mandatory interval)
+
+{pstd}min interval between requests for quota when quota is negative: 10 minutes
+(error 993 is issued during this mandatory interval)
+
+
+
+{title:Examples}
+
+    {hline}
+{pstd}Setup: create a 6x8 matrix M of missing values{p_end}
+{phang2}{cmd:. matrix M=J(6,8,.)}{p_end}
+
+{pstd}Fill-in matrix M with random numbers{p_end}
+{phang2}{cmd:. truernd , matrix(M)}
+
+{pstd}Show the content of matrix M{p_end}
+{phang2}{cmd:. matrix list M}{p_end}
+
+    {hline}
+	{pstd}Create a dataset with 10 observations of 4 random variables v1..v4{p_end}
+	{phang2}{cmd:. truernd , count(10) n(4)}{p_end}
+
+	{pstd}Create another dataset with 50 observations of 7 random variables v1..v7 each in the range [50;80) discarding current dataset in memory{p_end}
+	{phang2}{cmd:. truernd , count(50) n(7) min(50) max(80) clear}{p_end}
+    {hline}
+
+{title:Author}
+
+{pstd} Stata module to interface RANDOM.ORG
+
+{p 8} Sergiy Radyakin, Economist {p_end}
+{p 8} Research Department {p_end}
+{p 8} The World Bank - Washington DC, USA {p_end}
+{p 8} sradyakin@worldbank.org {p_end}
+
+{pstd} Creator of RANDOM.ORG
+
+{p 8} Mads Haahr {p_end}
+{p 8} School of Computer Science and Statistics {p_end}
+{p 8} Trinity College - Dublin 2, Ireland {p_end}

@@ -1,0 +1,32 @@
+DIALOG calc, tabtitle("Calculation")
+BEGIN
+  TEXT  tx_iter      10  10  390  ., label("Days:")		   
+  SPINNER sp_days     @       +20     @       .,              ///
+        min(1) max(365) option(days) default(150) ///
+		tooltip("Number of days")
+		
+  TEXT  tx_day0      @  +20  @  ., label("Day zero (t0) in YYYY-MM-DD format:")
+  EDIT  ed_day0     @       +20     @       .,              ///
+        option(day0) default("")		///
+		tooltip("Date corresponding to day zero of the simulation (date of t0).")
+		
+TEXT  tx_steps      @  +20  390  ., label("Number of simulation steps per day (1..1000):")		   
+  SPINNER sp_steps     @       +20     @       .,              ///
+        min(1) max(1000) option(steps) default(1) ///
+		tooltip("Number of steps")		
+		
+CHECKBOX ck_clear      @       +30     @       .,              ///
+        label("Clear data in memory")                      ///
+        option(clear) 
+
+CHECKBOX ck_percent      @       +30     @       .,              ///
+        label("Report model results as percentages")                      ///
+        option(percent) 
+
+TEXT tx_report     10 +25 390 ., label("Filename for report in PDF:")  
+FILE fi_report     10 +20 390 ., label("Browse ...") ///
+       save dialogtitle("Specify filename for saving the report in PDF") ///
+	   filter("PDF documents|*.pdf|All Files|*.*") option(pdfreport) ///
+	   tooltip("Optionally specify filename for saving the report in PDF")
+		
+END

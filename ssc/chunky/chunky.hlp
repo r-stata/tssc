@@ -1,0 +1,187 @@
+{smcl}
+{* *! version 2.0.1  August 2010}{...}
+{cmd:help chunky}
+{hline}
+
+{title:Title}
+
+{pstd}
+{hi:chunky} {hline 2} Large text file chunking utility
+
+
+{title:Syntax}
+
+{p 8 16 2}
+{cmd:chunky}
+{helpb using}
+{it:filename}
+ [{cmd:,}[ [{opt p:eek(#)} {opt a:nalyze}] | [{opt c:hunksize(#.#)} {opt h:eader(string)}
+{opt s:tub(string)} {opt replace:}] ]
+
+{synoptset 21 tabbed}{...}
+{synopthdr}
+{synoptline}
+{syntab:pre-chunking options}
+{synopt:{opt p:eek(#)}} list the first # observations{p_end}
+{synopt:{opt a:nalyze}} checks the composition of {it:filename} in terms of letters, numbers and
+special characters (which can cause {help infiling} problems){p_end}
+{synoptline}
+{syntab:chunking options}
+{synopt:{opt c:hunksize(string)}} size of chunk in bytes{p_end}
+{synopt:{opt h:eader(string)}} whether {it:filename} has a header and to include or skip it{p_end}
+{synoptline}
+{syntab:saving options}
+{synopt:{opt s:tub(string)}} filename stub for chunks {p_end}
+{synopt:{opt replace:}} replace previously saved chunk filenames {p_end}
+
+
+{title:Description}
+
+{pstd}
+Some users, especially those using 32-bit versions of Stata, may find themselves faced with a
+huge data download from a database that is too large for {help infiling}.  In this situation,
+the huge file must be broken into smaller chunks that can be imported individually.
+
+{pstd}
+{cmd:chunky} provides the user with two tools:
+
+{p 4 8 2}1.  In preparation for chunking sometimes one just wants to get a
+sense of the file structure and variable names (if present)
+by peeking at just the first few lines. {cmd:chunky} can allow display of the first {it:n} lines of the
+file.  It can also provide a more complete analysis of the file including the
+number of observations, average line lengths and the presence of
+special characters that could be problematic for import.{p_end}
+{p 4 8 2}2.  Once the user has determined a chunking strategy, {cmd:chunky} will break the huge file into
+chunks of a size specified by the user and save them in serially numbered files.{p_end}
+
+{pstd}
+{cmd:chunky} returns the list of chunk filenames in {cmd:s(filelist)} for subsequent processing.
+
+
+{title:Options}
+
+{dlgtab:Pre-chunking}
+
+{phang}
+{opt p:eek(#)} Listing the first few lines of a text file can be useful. You can use the {help type}
+command but the {cmd:peek} option is an alternative and can be set to display a single line. It will
+display the end of line characters (for reference: EOL characters {it:0d0a} (CRLF) indicate Windows,
+{it:0a} (LF) Unix and {it:0d} (CR) Mac. {it:09} is the TAB character.)
+
+{phang}
+{opt a:nalyze} This option allows detailed examination of the input file looking for problems that may cause difficulty in
+chunking or with subsequent import of the chunks. {cmd:analyze} uses the {help hexdump} routine which can identify
+the file format as binary or ascii and what operating system wrote the file (based on the end of line characters used)
+A small table is produced that gives rough approximations of the number of chunks that would be created at various
+{cmd:chunksize}s and the number of observations in each chunk.  This may help in planning one's chunking strategy.
+
+{phang}
+Note: The {cmd:peek(#)} and {cmd:analyze} options are intended to be used prior to chunking.  They may be used together
+but use of either of them takes precedent over any of the chunking commands which may still be specified, but will not run and a
+warning will be generated.
+
+{dlgtab:Chunking}
+
+{phang}
+{opt c:hunksize(#.# [[k|kb]|[m|mb]|[g|gb]])} The size of the chunk in bytes.  For convenience, standard
+power of ten, case-insensitive, single or two-letter multiplier abbreviations are allowed.
+When using the multiplier form, decimal numbers are allowed and a space can exist between number and multiplier.
+{it:e.g.} 5000Kb = 5m = .005 GB{p_end}
+
+{phang}
+{opt h:eader}{bf:({ul:n}one}|{bf:{ul:i}nclude}|{bf:{ul:s}kip)} Comma Separated Value (CSV) files frequently come with the variable names in
+the first line of the file.  For this type of file, the first line of names should be retained
+for all file chunks.  {opt h:eader}{bf:({ul:i}nclude)} writes out the first line of the {help using} file at the
+beginning of each chunk.  This allows a subsequent {help insheet} to be done easily on each chunk.
+{opt h:eader}{bf:({ul:s}kip)} tells {cmd:chunky} that a header is present but to omit it. Finally, one may
+specify {opt h:eader}{bf:({ul:n}one)} to indicate the absence of a header row.  This is the default if {opt h:eader}
+is not specified. The header options may be minimally abbreviated as shown. {it:e.g.} h(s) h(i)
+
+{dlgtab:Saving}
+
+{phang}
+{opt s:tub(string)} Filename stub to use for individual chunks.  Stub may contain a directory path allowing chunks to
+be saved to a different directory (Default is to use the working directory). Chunks will be numbered consecutively using
+{it:stub}0001, {it:stub}0002, {it:stub}0003... Obviously this naming convention imposes a chunk maximum of 9999.
+
+{phang}
+{opt replace:} Replace previously saved chunk file
+
+{p 4 6 2}
+Note that if your {it:filename} or stub contains embedded spaces that they must be enclosed in double quotes.{p_end}
+
+
+{title:Examples}
+
+   .{cmd:chunky using ReallyBig.csv, peek(5)}
+
+   .{cmd:chunky using ReallyBig.csv, analyze}
+
+   .{cmd:chunky using ReallyBig.csv, chunksize(100m) header(include) stub(part) replace}
+
+   .{cmd:chunky using "c:\rawfiles\dump_07_09.raw", chunksize(.5 GB) header(none) stub("07-09 data/import")}
+
+
+{title:Cautions}
+
+{pstd}This routine has not been tested in a Mac environment. Stata appears to be able to read and write files coming
+from Unix and Mac systems in a Windows environment but cross-OS testing has not been done at this point.  The author
+welcomes any feedback in this regard.
+
+
+{title:Notes}
+
+{pstd}This version of {cmd:chunky} has been extensively rewritten and replaces the previous version which has
+been deprecated to become {cmd:chunky8}.  The routine now handles the consecutive naming of chunks
+and removes the need for the user to write the looping.  It uses a much more efficient chunking strategy and employs
+Mata functions for the file I/O.  The speed improvements on very large files and over network connections are very
+considerable.
+
+{pstd}These changes have necessitated a complete change in the command syntax, but a single command now replaces what
+previously required a block of programming to loop through the chunks.  If a user still requires breaking a
+large file apart according to a fixed number of lines per chunk,
+{net "describe chunky8, from(http://fmwww.bc.edu/RePEc/bocode/c/)":chunky8} or
+Roy Wada's {net "describe chewfile, from(http://fmwww.bc.edu/RePEc/bocode/c/)":chewfile} may be appropriate.
+
+{pstd}Once the chunks have been created, it may be convenient to use an {help infiling} method appropriate to
+the storage format.  The returned s(filelist) can easily be processed:
+
+    {cmd:foreach} {it:in_fn} {cmd:in} {it:`s(filelist)'} {cmd:{c -(}}
+        {cmd:insheet using} {it:`"`in_fn'"'} {cmd:[,} {it:options} {cmd:]}
+        // create a saving filename based on input filename minus the extension
+        {cmd:local} save_fn  {cmd:= cond(regexm(}`"`in_fn'"',"(.*)[.].*$"{cmd:),regexs(}1{cmd:),}""{cmd:)}
+        {cmd:if} `"`save_fn'"' {cmd:!=} "" {cmd:{c -(}}
+            {cmd:save(}{it:`"`save_fn'"'}{cmd:)}{cmd:[,} {it:replace} {cmd:]}
+            {cmd:{c )-}}
+            {cmd:else {c -(}}
+                {cmd:display} `"{c -(}err: Cannot extract savename from `in_fn'{c )-}"'
+                {cmd:error}
+                {cmd:{c )-}}
+        {cmd:{c )-} }
+
+{pstd}This will result in a number of individual data files being created.  Subsets of data can then be
+appended together to create a larger working dataset.  A very useful tool for this purpose is
+Roger Newson's {cmd:dsconcat} ({help dsconcat} if installed or
+{net "describe dsconcat , from(http://fmwww.bc.edu/RePEc/bocode/d/)":describe dsconcat})
+
+{pstd}Users are reminded that they can obtain a {help macrolists:macrolist} by creating an
+appropriate filemask with wildcards for use with the {help extended_fcn:dir extended function}:
+
+    {cmd:local} my_filelist {cmd:: dir} . files "stub*.ext"
+
+{pstd}Similarly, Nick Cox's {cmd:fs} ({help fs} if installed or
+{net "describe fs, from(http://fmwww.bc.edu/RePEc/bocode/f/)":describe fs}) can be used and returns a
+{help macrolists:macrolist} in r(files).
+
+
+{title:Acknowledgements}
+
+{pstd}I would like to thank Amresh Hanchate and Dan Blanchette for helpful feedback and beta-testing the routine.
+
+{pstd}
+
+
+{title:Author}
+
+{pstd}David C. Elliott, Nova Scotia Department of Health, Halifax {break}
+DCElliott@gmail.com

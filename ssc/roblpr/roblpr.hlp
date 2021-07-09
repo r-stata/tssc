@@ -1,0 +1,138 @@
+{smcl}
+{* 25jun2006}{...}
+{hline}
+help for {hi:roblpr}    (SSC distribution 25 Jun 2006)
+{hline}
+
+{title:Estimate long memory in a set of timeseries via Log-Periodogram Regression}
+
+{p 8 17}{cmd:roblpr}
+{it:varname}
+[{cmd:if} {it:exp}]
+[{cmd:in} {it:range}] 
+[{cmd:,} {cmdab:powers(}{it:numlist}{cmd:)}
+{cmdab:l}(#) {cmdab:j}(#) {cmdab:constraints(}{it:numlist}{cmd:)}]
+
+{p 4 4}{cmd:roblpr} is for use with time-series data. 
+You must {cmd:tsset} your data before using {cmd:roblpr}; see help {cmd:tsset}. 
+{cmd:roblpr} supports the {cmd:by} prefix, which may be used to operate on each 
+time series in a panel. Alternatively, the {cmd:if} qualifier may be used to specify 
+a single time series in a panel.
+
+
+{title:Description}
+
+{p 4 4}{cmd:roblpr} computes the Robinson (1995) multivariate semiparametric
+estimate of the long memory (fractional integration) parameters, {it:d(g)}, of a
+set of timeseries, y(g), g=1,G. G may be one. If a series
+exhibits long memory, it is neither stationary (I[0]) nor is it a unit 
+root (I[1]) process; it is an I({it:d}) process, with {it:d} a real number. When
+applied to a set of timeseries, the {it:d(g)} parameter for each series is 
+estimated from a single log-periodogram regression which allows the
+intercept and slope to differ for each series. The standard errors for
+the estimated parameters are derived from a pooled estimate of the variance
+in the multivariate case, so that their interval estimates differ from those
+of their univariate counterparts.{p_end}
+
+{p 4 4}
+A choice must be made of the number of harmonic ordinates to be included
+in the spectral regression. One of the innovations of Robinson's estimator
+is that it is not restricted to using a small fraction of the ordinates of
+the empirical periodogram of the series. The estimator also allows for the
+removal of one or more initial ordinates, and for the averaging of the
+periodogram over adjacent frequencies. {p_end}
+
+{p 4 4}
+Results of the estimation are returned after the command; type {cmd:return list}
+to see the returned results. If more than one series is specified in
+varlist, an F-test of the equality of the d(g) coefficients is performed,
+and those values are returned as well.{p_end}
+
+
+{title:Options}
+
+{cmd:powers(}{it:numlist}{cmd:)} specifies the number of ordinates ({it:nord}) entering the 
+    log-periodogram regression. Each value in numlist is taken as the value {it:p}
+    in {it:nord = N^p}.  The default value of {it:p}, following Robinson, is 0.9. More
+    than one {it:p} may be specified in numlist only if there is a single
+    variable in the {it:varlist}.
+
+{cmd:l}(#) specifies the number of initial ordinates to be excluded from the 
+    log-periodogram regression. Some researchers have found that such
+    exclusion improves the properties of tests based on log-periodogram
+    regressions. The default value of {it:l} is zero.
+
+{cmd:j}(#) specifies that the log-periodogram is to be computed from sums of 
+    adjacent periodogram ordinates. The default value of {it:j} is 1, so that no
+    averaging is performed. With {it:j}=2, the number of ordinates is halved; with
+    {it:j}=3, divided by three; and so on.
+
+{cmd:powers(}{it:constraints}{cmd:)} specifies the constraint numbers of the linear constraints
+    to be applied during estimation; see {cmd:help constraint}.  The default is to
+    perform unconstrained estimation.
+
+    This option allows the imposition of linear constraints prior to
+    estimation of the pooled coefficient vector. For instance, if the
+    varlist contains prices, dividends, and returns, and your prior (or
+    previous findings) states that prices' and dividends' order of integration
+    is indistinguishable, one might impose that constraint to improve the
+    power of the F-test provided by {cmd:roblpr}.  One would specify the
+    constraints prior to the {cmd:roblpr} command, and then provide the list of
+    constraints in the constraints option to {cmd:roblpr}.
+    
+    Technical note on constraints.  When constraints are imposed it is
+    difficult to identify the number of numerator degrees of freedom in the 
+    test for equality of d coefficients reported at the bottom of {cmd:roblpr}'s 
+    output. Since constraints can be of any general form and it is possible
+    specify constraints that are not unique, {cmd:roblpr} determines the
+    degrees of freedom from the rank of the matrix used to compute the Wald
+    statistic. Determining that matrix rank from a numerical standpoint can be
+    problematic, in which case {cmd:roblpr} may overstate the number
+    of constraints being tested and thereby incorrectly compute the numerator 
+    degrees of freedom for the test.  This rarely has a meaningful impact on
+    the statistical test, but you may wish to test only the unconstrained
+    coefficients if the computed degrees of freedom are wrong.
+
+    For example, after the final example below, we could perform the test by
+    typing {cmd:test ftap == ftaret}.  In this case, the degrees of freedom were
+    correct, so we needn't have gone to the trouble.
+
+
+{title:Examples}
+
+{p 4 8}{stata "use http://fmwww.bc.edu/ec-p/data/Mills2d/fta.dta": . use http://fmwww.bc.edu/ec-p/data/Mills2d/fta.dta}{p_end}
+
+{p 4 8}{stata "roblpr ftap":. roblpr ftap}{p_end}
+
+{p 4 8}{stata "roblpr ftap ftadiv":. roblpr ftap ftadiv}{p_end}
+
+{p 4 8}{stata "roblpr ftap ftadiv ftaret, j(2)":. roblpr ftap ftadiv ftaret, j(2)}{p_end}
+
+{p 4 8}{stata "roblpr ftap, power(0.7 0.75:0.9)":. roblpr ftap, power(0.7 0.75:0.9)}{p_end}
+
+{p 4 8}{stata "roblpr ftap, j(2)":. roblpr ftap, j(2)}{p_end}
+
+{p 4 8}{stata "roblpr D.ftap, j(2) l(1)":. roblpr D.ftap, j(2) l(1)}{p_end}
+
+{p 4 8}{stata "constraint define 1 ftap = ftadiv":. constraint define 1 ftap = ftadiv}{p_end}
+{p 4 8}{stata "roblpr ftap ftadiv ftaret, c(1)":. roblpr ftap ftadiv ftaret, c(1)}{p_end}
+
+
+{title:Authors}
+
+{p 4 4}Christopher F. Baum, Boston College, USA{break} 
+       baum@bc.edu
+       
+{p 4 4}Vince Wiggins, StataCorp LP{break} 
+        vwiggins@stata.com
+        
+{title:References}
+{p}Robinson, P.M. Log-Periodogram Regression of Time Series with Long
+       Range Dependence. Annals of Statistics 23:3, 1995, 1048-1072.{p_end}
+      
+
+{title:Also see}
+
+{p 4 13}On-line: {help regress}, {help time}, {help tsset}, {help ac}, 
+{help corrgram}; {help gphudak} (if installed), {help modlpr} (if installed)
+{p_end}

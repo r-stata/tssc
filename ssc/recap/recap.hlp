@@ -1,0 +1,92 @@
+.-
+help for ^recap^	written by Matthias an der Heiden, RKI Berlin,  AnderHeidenM@rki.de                                             
+.-
+
+Capture-Recapture analysis for 3 Sources
+with Goodness-of-Fit based confidence intervals
+------------------------------
+
+    ^recap  var_freq var_A var_B var_C [if] [in]^
+
+
+
+var_A:	a variables with values 0 or 1, that desribes the belonging to list A
+var_B:	a variables with values 0 or 1, that desribes the belonging to list B
+var_C:	a variables with values 0 or 1, that desribes the belonging to list C
+
+var_freq:	a non-negative variable the describes the frequency of observations in 
+		the combination of lists given by var_A, var_B and var_C. The unknown
+		frequency of cases occuring in none of the lists is missing.
+
+
+Description
+-----------
+
+^recap^ provides an estimate of the total size of a certain well-defined 
+population.
+
+To apply this method you need three different sources containing members 
+of this population, such that every member of the population has in principle 
+the same change to be "captured" by a source. The model is flexible enough to 
+allow dependences between the sources, such that an individual caught by source 
+1 has a smaller probability to be caught by source 2.
+
+An important point is that an individual that is present in two or three 
+sources can be correctly identified. All in all there are eight possible 
+situations: An individual can be present in all three sources, in two out of 
+three, in one out of three or in none of them. By knowing the frequencies for 
+seven of these eight possible combinations we can estimate the number of 
+individuals that are captured by none of our sources.
+
+To account for possible interactions between the three sources eight different 
+models are compared in the analysis. The simplest one is the independent model, 
+then there are three models that allow for an interaction between two of the 
+sources. More complicated are models with two pair-interactions present and the
+so called saturated Model, that adjusts for interaction between all three pairs 
+of sources. Note that all these models assume the absence of a triple interaction 
+between the sources.
+
+To compare the different models the Akaike’s Information Criterion (AIC) and 
+Bayesian Information Criterion (BIC) are provided.
+
+^recap^ also provides Goodness-of-Fit based 95% confidence intervals, see 
+R.R. Regal and E.B. Hook "Goodness-of-Fit based confidence intervals for 
+estimates of the size of a closed population", Statistics in Medicine, Vol. 3, 
+287-291 (1984).
+
+
+
+
+
+Options
+-------
+
+None.
+
+
+Example
+-------
+
+		freq	A	B	C
+		-------------------
+		5	1	1	1
+		15	1	0	1
+		3	0	1	1
+		20	0	0	1
+		7	1	1	0
+		37	1	0	0
+		14	0	1	0
+		.	0	0	0
+
+
+. ^recap freq A B C^
+
+calculates the capture-recapture estimates for this table.
+
+
+Also see
+-------- 
+
+ Manual:  [R] poisson
+ 
+ Online:  help for @poisson@

@@ -1,0 +1,99 @@
+{smcl}
+{* 6May2013}{...}
+{hline}
+help for {hi:traces}{right:Jean-Benoit Hardouin}
+{hline}
+
+{title:Graphical representations of the traces of dichotomous and polytomous items}
+
+{p 8 14 2}{cmd:traces} {it:varlist} [{cmd:,} {cmdab:s:core} {cmdab:r:estscore}
+{cmdab:ci} {cmdab:t:est} {cmdab:cum:ulative} {cmdab:l:ogistic}
+{cmdab:repf:ile}({it:directory}) {cmdab:scoref:iles}({it:string})
+{cmdab:restscoref:iles}({it:string}) {cmdab:logisticf:ile}({it:string})
+{cmdab:nod:raw} {cmdab:nodrawc:omb} {cmdab:rep:lace} {cmdab:only:one}({it:varname}) {cmdab:thr:esholds}({it:string})]
+
+
+{title:Description}
+
+{p 4 8 2}{cmd:traces} builds graphical representations of various kinds of
+traces (non parametric Item Response Functions) for dichotomous or polytomous items.
+
+{title:Options}
+
+{p 4 8 2}{cmd:score} displays the graphical representations of the traces of the
+items as a function of the total score. This is the defaut option if none {cmd:score},
+none {cmd:restscore}, none {cmd:logistic} are indicated.
+
+{p 4 8 2}{cmd:restscore} displays the graphical representations of the
+traces of the items as a function of the rest-score (total score unless the item).
+
+{p 4 8 2}{cmd:ci} displays the confidence interval at 95% of the traces.
+
+{p 4 8 2}{cmd:test} tests the nullity of the slope of dichotomous items traces
+with a linear model.
+
+{p 4 8 2}{cmd:cumulative} displays cumulative traces for polytomous
+items instead of classical traces.
+
+{p 4 8 2}{cmd:logistic} displays the graphical representation of the logitic
+traces of the items as a function of the score: each trace is the result of a
+logistic model with the response to the item as variable to explicate and the
+score (and a constant) as explicative variable. This kind of trace is possible
+only for dichotomous items. All the logistic traces are represented in the same
+graph.
+
+{p 4 8 2}{cmd:repfile}({it:directory}) is the directory where the files are saved.
+
+{p 4 8 2}{cmd:scorefiles}({it:string}) defines the generic name of the files containing the graphical representations of the traces as a function of the score. 
+The name will be followed by the name of each item and by the .gph extension. If this option is not
+indicated, the corresponding graphs will be not saved.
+
+{p 4 8 2}{cmd:restscorefiles}({it:string}) defines the generic name of the files containing the graphical representations of the traces as a function of the rest-scores.
+The name will be followed by the name of each item and by the .gph extension. If this option is not
+indicated, the corresponding graphs will be not saved.
+
+{p 4 8 2}{cmd:logisticfile}({it:string}) defines the name of the file containing the graphical representations of the logistic traces. This name will be followed by the .gph extension. 
+If this option is not indicated, the corresponding graph will be not saved.
+
+{p 4 8 2}{cmd:nodraw} does not display the graphs by items.
+
+{p 4 8 2}{cmd:nodrawcomb} does not display the combined graphs by items.
+
+{p 4 8 2}{cmd:replace} replaces graphical files when they already exist.
+
+{p 4 8 2}{cmd:onlyone} displays only the trace of a given item.
+
+{p 4 8 2}{cmd:thresholds} groups the individuals as a function of the (rest-)score. The string contains the maximal values of the (rest-)score in  each group.
+
+
+
+{title:Example}
+
+	{p 4 8 2}{cmd:. traces item1 item2 item3 item4 , score repfile(c:\graphs) scorefiles(score) nodraw nodrawcomb replace} /*creates the graphs files of the
+traces as a function of the score but do not display them.*/
+
+	{p 4 8 2}{cmd:. traces item1 item2 item3 item4 , score restscore} /*displays
+the graphical representations of the traces of the items as a function of the
+score and of the rest-scores, but does not save them*/
+
+	{p 4 8 2}{cmd:. traces itemA*}  /*displays the graphical
+representations of the traces of the items as a function of the score, by
+default*/
+
+	{p 4 8 2}{cmd:. traces itemA*} ,only(itemA2) thresholds(2 3 5)/*displays the graphical
+representations of the traces of the item A2 as a function of the score. Individuals are grouped: a first group of individuals with scores from 0 to 2, a second group with a score of 3, a third group with a score between 4 and 5 and a last group with a score superior to 5*/
+
+{title:Author}
+
+{p 4 8 2}Jean-Benoit Hardouin, PhD, assistant professor{p_end}
+{p 4 8 2}Team of Biostatistics, Clinical Research and Subjective Measures in Health Sciences{p_end}
+{p 4 8 2}University of Nantes - Faculty of Pharmaceutical Sciences{p_end}
+{p 4 8 2}1, rue Gaston Veil - BP 53508{p_end}
+{p 4 8 2}44035 Nantes Cedex 1 - FRANCE{p_end}
+{p 4 8 2}Email:
+{browse "mailto:jean-benoit.hardouin@univ-nantes.fr":jean-benoit.hardouin@univ-nantes.fr}{p_end}
+{p 4 8 2}Website {browse "http://www.anaqol.org":AnaQol}
+
+{title:Also see}
+
+{p 4 13 2}Online: help for {help graph}, {help loevH} and {help gengroup} if installed.{p_end}

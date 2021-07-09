@@ -1,0 +1,440 @@
+/*
+
+   superscatter.dlg
+   
+*!  VERSION 1.2  17Feb2019 by Mead Over
+
+   based on Stata's twoway.dlg VERSION 3.0.0  27jun2006
+
+*/
+
+VERSION 10
+
+INCLUDE _std_mlarge
+DEFINE _dlght	250
+INCLUDE header
+
+HELP hlp1, view("help superscatter")
+RESET res1
+
+LIST linetypes
+	BEGIN
+		means
+		medians
+    terciles
+		quartiles
+	END
+ 
+LIST stattypes
+	BEGIN
+		count
+		cell
+		row
+		col
+	END
+
+LIST locations
+	BEGIN
+        center     
+        north      
+        neast      
+        east       
+        seast      
+        south      
+        swest      
+        west       
+        nwest      
+	END
+	
+LIST textsizes
+	BEGIN
+		zero         
+		minuscule    
+		quarter_tiny 
+		third_tiny   
+		half_tiny    
+		tiny         
+		vsmall       
+		small        
+		medsmall     
+		medium       
+		medlarge     
+		large        
+		vlarge       
+		huge         
+		vhuge        
+		tenth        
+		quarter      
+		third        
+		half         
+		full         
+	END
+
+LIST marghisttypes
+	BEGIN
+        density
+        fraction
+        frequency
+        percent
+	END
+	
+LIST fittypes
+	BEGIN
+        lfit
+        lfitci 
+        qfit
+        qfitci 
+        fpfit
+        fpfitci
+        mspline
+        lowess 
+	END
+
+	
+LIST elpatterns
+	BEGIN
+		solid         
+		dash          
+		dot           
+		dash_dot              
+		shortdash             
+		shortdash_dot         
+		longdash              
+		longdash_dot          
+	END
+	
+LIST elcolors
+	BEGIN
+		black                 
+		white           
+		blue            
+		bluishgray      
+		brown           
+		cranberry       
+		cyan            
+		dimgray         
+		dkgreen         
+		dknavy          
+		dkorange        
+		eggshell        
+		emerald         
+		forest_green    
+		gold            
+		gray            
+		green           
+		khaki           
+		lavender        
+		lime            
+		ltblue          
+		ltbluishgray    
+		ltkhaki         
+		magenta         
+		maroon          
+		midblue         
+		midgreen        
+		mint            
+		navy            
+		olive           
+		olive_teal      
+		orange          
+		orange_red      
+		pink            
+		purple          
+		red             
+		sand            
+		sandb           
+		sienna          
+		stone           
+		teal            
+		yellow          
+		ebg             
+		ebblue          
+		edkblue         
+		eltblue         
+		eltgreen        
+		emidblue        
+		erose           
+		gs0             
+		gs1             
+		gs2            
+		gs3             
+		gs4             
+		gs5             
+		gs6             
+		gs7             
+		gs8             
+		gs9             
+		gs10             
+		gs11            
+		gs12            
+		gs13            
+		gs14
+		gs15            
+		gs16            
+	END
+
+LIST elwidths
+	BEGIN
+		none    
+		vvthin  
+		vthin   
+		thin    
+		medthin 
+		medium  
+		medthick
+		thick   
+		vthick  
+		vvthick 
+		vvvthick
+	END
+
+SCRIPT kdoptsoff
+    BEGIN
+		marg.kdlab.disable	
+		marg.kdlabx.disable	
+		marg.kdxopts.disable
+		marg.kdlaby.disable	
+		marg.kdyopts.disable
+    END
+
+SCRIPT kdoptson
+    BEGIN
+		marg.kdlab.enable	
+		marg.kdlabx.enable	
+		marg.kdxopts.enable
+		marg.kdlaby.enable	
+		marg.kdyopts.enable
+    END
+	
+
+DIALOG main, label("superscatter - Enhanced scatter plot")	tabtitle("Main")
+BEGIN
+	TEXT     tx_title_a     70	    _top	_ibwd	_txht, label("ENHANCED SCATTER PLOT WITH MARGINAL DISTRIBUTIONS")
+	TEXT     tx_title_b     +30     _vss    _ibwd	., label("**********  Dialog for version 2.4 of superscatter  ***********")
+
+    TEXT     dvlab		_lft	+20		@		., label("Variable on Y axis")
+    VARNAME  depvar		@		+20		@		., label("y var")
+
+    TEXT     ivlab		@		+20		@		., label("Variable on X axis")
+    VARNAME  indvar		@		+20		@		., label("x var")
+
+	CHECKBOX ck_smpl	@		+40		@		., label("Show only a percentage of the observations") ///
+														onclickon(main.sp_smpl.enable) ///
+														onclickoff(main.sp_smpl.disable)
+ 
+    TEXT     splab		@		+20		@		., label("Percentage sample")
+	SPINNER  sp_smpl	200		@		150		., default(100) min(0) max(100) option(sample)
+
+END
+
+
+DIALOG tab, tabtitle("Tabulate")
+BEGIN
+
+	TEXT     tx_tab		40	    _top	_ibwd	_txht, label("Superimpose a grid on the scatter plot & optionally add cell statistics")
+
+	TEXT     linlab		_lft	+20		_ibwd	., label("Pick a line type")
+	COMBOBOX  lines		@ 		+20		@		., contents(linetypes) dropdown default("")
+ 
+	TEXT     tablab		@		+20		@		., label("Pick a display statistic")
+	COMBOBOX tabstat	@ 		+20		@		., contents(stattypes) dropdown default("")
+	
+	TEXT     tflab		@		+20		150		., label("Display format")
+	EDIT     tabfmt		@ 		+20		150		., 
+	
+	TEXT     matlab		200		-20		150		., label("Matrix name")
+	EDIT     tabmat		200		+20		150		., 
+	
+	TEXT     tplab		_lft	+20		150		., label("Text location")
+	COMBOBOX txtplc		_lft	+20		150		., contents(locations) dropdown default("")
+	
+	TEXT     tslab		200		-20		@		., label("Text size")
+	COMBOBOX txtsiz		200		+20		@		., contents(textsizes) dropdown default("")
+	
+	CHECKBOX ck_det		_lft	+40		_ibwd	., label("Provide detailed output on tabulate statistics") option(detail)
+	
+END
+
+DIALOG marg, tabtitle("Marginals")
+BEGIN
+
+	TEXT     tx_marg1	40	    _top	_ibwd	_txht, label("Specify how the marginal distributions are plotted")
+	TEXT     tx_marg2	_lft    +20		_ibwd	., label("Select either histograms or kernel densities")
+
+	RADIO	 ck_hist	_lft	+20		150		., first label("Histograms") ///
+														onclickon(marg.mhists.enable) ///
+														onclickoff(marg.mhists.disable)
+
+	RADIO	 ck_kden	200		+0		150		., last label("Kernel Density plots") option(kdensity) ///
+														onclickon(script kdoptson) ///
+														onclickoff(script kdoptsoff)
+  
+	TEXT     mrghlab	_lft 	+20		@		., label("Pick a type of histogram")
+	COMBOBOX mhists		@ 		+20		@		., contents(marghisttypes) dropdown default("")
+ 
+	TEXT     kdlab		@		+40		_ibwd	., label("Specify options for the kdensity plots of the marginal distributions")
+	TEXT     kdlabx		@		+20		@		., label("	For the x-axis")
+	EDIT     kdxopts	@ 		+20		@		., label("For the x-axis")
+	TEXT     kdlaby		@		+20		@		., label("	For the y-axis")
+	EDIT     kdyopts	@ 		+20		@		., label("For the y-axis")
+		
+END
+
+DIALOG fitted, tabtitle("Regression")
+BEGIN
+
+	TEXT     tx_fit		40	    _top	_ibwd	_txht, label("Specify whether and how a regression line is fitted to the scatter")
+
+	TEXT     fitlab		_lft 	+40		@		., label("Pick a type of regression line to fit")
+	COMBOBOX fittype	@ 		+20		@		., contents(fittypes) dropdown default("")
+ 
+	TEXT     ftolab		@		+60		@		., label("Specify options for the selected fitted regression")
+	EDIT     fitopts	@ 		+20		@		., 
+		
+END
+
+DIALOG ellipse, tabtitle("Ellipse")
+BEGIN
+
+*	TEXT     tx_ell1	40	    _top	_ibwd	_txht, label("Overlay an ellipse representing the corresponding bivariate normal distribution")
+
+	CHECKBOX ck_ellipse	10		_top	_ibwd	., label(" Overlay an ellipse representing the corresponding bivariate normal distribution") option(ellipse) 
+
+	TEXT     tx_ell2	80		+30		_ibwd	., label("Determine the size of the ellipse")
+
+	TEXT     tx_ell3	_lft	+20		_ibwd	., label("Select either an F- or a Chi^2 statistic to define the confidence level of the ellipse (estat)")
+
+	RADIO	 ck_f		_lft	+20		150		., first label("F-statistic") option(elevel(Fstat))
+	RADIO	 ck_chi2	200		+0		150		., last label("Chi^2 statistic") option(elevel(Chi2))
+	
+    TEXT     el_lbl1	_lft	+20		@		., label("Confidence level (elevel)")
+	SPINNER  el_lvl		200		@		150		., default(50) min(0) max(100) option(elevel)
+
+	TEXT     tx_ell4	80		+30		_ibwd	., label("Determine the appearance of the ellipse")
+
+	TEXT     el_lbl2	_lft	+20		_ibwd	., label("Pick a line pattern (epattern)")
+	COMBOBOX el_pats	200		@		150		., contents(elpatterns) dropdown default("") option(epattern)
+ 
+	TEXT     el_lbl3	_lft	+20		_ibwd	., label("Pick a line color (ecolor)")
+	COMBOBOX el_col		200		@		150		., contents(elcolors) dropdown default("") option(ecolor)
+ 
+	TEXT     el_lbl4	_lft	+20		_ibwd	., label("Pick a line width (ewidth)")
+	COMBOBOX el_wid		200		@		150		., contents(elwidths) dropdown default("") option(ewidth)
+ 
+END
+
+*INCLUDE gr_tw_build
+INCLUDE ifin
+INCLUDE gr_yaxis
+INCLUDE gr_xaxis
+INCLUDE gr_titles
+INCLUDE gr_legend
+INCLUDE gr_overall
+*INCLUDE gr_by
+
+
+PROGRAM command
+BEGIN
+	put "superscatter "
+	varlist main.depvar
+	varlist main.indvar
+	put " " /program ifin_output
+	beginoptions
+		if main.sp_smpl {
+			optionarg main.sp_smpl
+		}
+		put " " tab.lines
+	    if tab.tabstat {
+			put " tabulate("
+			put tab.tabstat
+			put ") "
+			if tab.tabfmt {
+				put " tabformat("
+				put tab.tabfmt
+				put ") "
+			}
+			if tab.tabmat {
+				put " matname("
+				put tab.tabmat
+				put ") "
+			}
+			if tab.txtplc {
+				put " textplace("
+				put tab.txtplc
+				put ") "
+			}
+			if tab.txtsiz {
+				put " textsize("
+				put tab.txtsiz
+				put ") "
+			}
+		}
+		option tab.ck_det
+
+		if marg.mhists {
+			put " " marg.mhists
+		}
+		if marg.ck_kden {
+			put " kdensity"
+			if marg.kdxopts {
+				put " kdxoptions("
+				put marg.kdxopts
+				put ") "
+			}
+			if marg.kdyopts {
+				put " kdyoptions("
+				put marg.kdyopts
+				put ") "
+			}
+		}
+		
+		if fitted.fittype {
+			put " fittype("
+			put fitted.fittype
+			put ") "
+			put " fitoptions("
+			put fitted.fitopts
+			put ") "
+		}
+		
+		if ellipse.ck_ellipse {
+			put " ellipse"
+			if ellipse.estat {
+				put " estat("
+				put ellipse.estat
+				put ") "
+			}
+			if ellipse.elevel {
+				put " elevel("
+				put ellipse.elevel
+				put ") "
+			}
+			if ellipse.epattern {
+				put " epattern("
+				put ellipse.epattern
+				put ") "
+			}
+			if ellipse.ecolor {
+				put " ecolor("
+				put ellipse.ecolor
+				put ") "
+			}
+			if ellipse.ewidth {
+				put " ewidth("
+				put ellipse.ewidth
+				put ") "
+			}
+		}
+		
+		put " " /program gr_yaxis_output
+		put " " /program gr_xaxis_output
+		put " " /program gr_titles_output
+		put " " /program gr_legend_output
+		put " " /program gr_overall_output
+	endoptions
+END
+
+*  VERSION 1.0.0  16May2015
+*  VERSION 1.0.1  17May2015	Distinguish the kdxoptions from the kdyoptions
+*  VERSION 1.1    23Oct2015	Add the ellipse option and sub-options
+*  VERSION 1.2    17Feb2019	Add the terciles option

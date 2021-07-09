@@ -1,0 +1,56 @@
+{smcl}
+{* 7Feb2005}{...}
+{hline}
+help for {hi:confnd}
+{hline}
+
+{title:plot and display change-in-effect estimates after estimation} 
+
+{p 8 17 2} 
+{cmd:confnd}
+[{cmd:,}
+{cmdab:ef:orm} 
+{cmdab:f:orward} 
+{opth lock:terms(varlist)} 
+{opth f:ormat(%fmt)}
+{cmdab:v:ertical}
+{it:graph_options}
+]
+
+{title:Description}
+
+{p 4 4 2}{cmd:confnd} plots and displays effect estimates using stepwise change-in-estimate 
+method for assessing confounding. The first independent variable is the exposure of interest and all other independent variables are potential confounders. 
+
+{title:Options}
+
+{p 4 8 2} {cmd:eform} reports the estimated coefficients transformed to odds ratios, 
+hazard ratios, relative risk i.e., exp(b) rather than b.  Confidence intervals are 
+similarly transformed. 
+
+{p 4 8 2}{opth format(%fmt)} specifies the display format for
+presenting numbers in graph and table.  {cmd:format(%9.0g)} is the default. {p_end}
+{p 4 8 2}{cmd: forward} specifies the forward method, the backward method is the default. {p_end}
+{p 4 8 2}{opth lockterms(varlist)} specifies variables to be included in all models.  {p_end}
+{p 4 8 2}{cmd:vertical} plots vertical spike. The default is horizontal {p_end}
+{p 4 8 2}{it:graph_options} refers to options of {help graph twoway scatter}.  {p_end}
+
+{title:Examples}
+
+{p 4 8 2}{inp:. logistic diabetes bmi age sex cholesterol sbp crp smoking drinking }{p_end}
+{p 4 8 2}{inp:. confnd,  eform} {p_end}
+{p 4 8 2}{inp:. confnd, eform(Odds ratio) xline(1)} {p_end}
+
+{title:Author}
+{p 4 8 2} {browse "mailto:z.wang@uq.edu.au?subject=confnd":Zhiqiang Wang <z.wang@uq.edu.au>} {p_end}
+{p 4 8 2} The University of Queensland
+
+{title:Acknowledgments} 
+{p 4 8} This work was supported by the NHMRC Australia (301024). 
+
+{title:Also see}
+{p 4 13 2}On-line: help for {help confall} (if installed)
+
+
+
+

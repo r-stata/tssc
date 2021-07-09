@@ -1,0 +1,116 @@
+{smcl}
+{* version 2.01 14mar2006}{...}
+{cmd:help zerouse}
+{hline}
+
+{title:Title}
+
+{p 4 21 2}
+{hi:zerouse} {hline 2} Tabulate the pattern of zero digits in a variable
+
+{title:Syntax}
+
+{p 8 15 2}{cmdab:zerouse} {varname} [{cmd:,} {opth pat:tern(#.#)} {opth di:git(#)} {opth by:(varname)} {opth gen:erate(name)}
+{it:{help zerouse##zerouse_tabulate_options:tabulate_options}}]
+
+{title:Description}
+
+{pstd}
+The {cmd:zerouse} function displays the patterns of zero and non-zero digits
+in a variable. The range of possible formats can be defined using an option,
+as can the 'zero' digit, and results can be tabulated against a different 
+variable or stored in a new variable for later use.
+
+{title:Options}
+
+{dlgtab:General}
+
+{phang}
+{opt pattern(#.#)} indicates the number of digits to the left and to the 
+right of the decimal point that should be examined. The default is 9.9 and 
+often this is a reasonable starting value although it may capture rounding errors.
+Otherwise, select a value that will look at one digit more to the left and to
+the right than you expect to find, and check that these extreme digits 
+contain zeros rather than non-zero digits in the output.  You can also select a
+pattern that is smaller than the digits used.  For example, to tabulate records
+that do and do not have a zero in the first decimal place, use {opt pattern(0.1)}. 
+
+{phang}
+{opt by(varname)} displays results using a two way rather than one way frequency
+table, giving you digit pattern cross-classified against your variable of choice.
+
+{phang}
+{opt digit(#)} is provided so you can use this program to investigate the pattern
+of use of a digit other than zero.  For example, if you were to select the 
+digit 2 then use of the digit 2 would be compared with the use of any digit 
+other than 2 (including zero).
+
+{phang}
+{opt generate(name)} allows you to provide a name for a new variable into which
+the patterns will be stored.  This means you can save the zero digit use pattern
+for a number of variables and then cross tabulate them to identify consistent 
+patterns of (for example) mistranscription.
+
+{marker zerouse_tabulate_options}
+{dlgtab:Tabulate Options}
+
+{pstd}
+Additional options can be passed to the {cmd:tabulate} command used to format output.
+If the {opt by(varname)} option is not specified the output will be displayed 
+in a one way table and the 
+{help tabulate_oneway##tabulate1_options:tabulate oneway options} are available.
+If the {opt by(varname)} option has been used, output will be displayed 
+in a two way table and the 
+{help tabulate_twoway##tabulate2_options:tabulate twoway options} can be used.
+
+{title:Remarks}
+
+{pstd}
+This function is intended to assist with the identification of digit preferance 
+problems when cleaning data, and to help identify any systematic relationship between
+digit use and other variables, typically the laboratory or instrument that generated
+the data or the clerk who transcribing the data.  It's use is most easily explained using an example:
+
+    {cmd:. zerouse y1, pattern(2.1) sort}
+
+          Digit {c |}
+        pattern {c |}      Freq.     Percent        Cum.
+    {dup 12:{c -}}{c +}{dup 38:{c -}}
+           0#.0 {c |}     11,514       86.21       86.21
+           ##.0 {c |}        851        6.37       92.59
+           #0.0 {c |}        532        3.98       96.57
+           0#.# {c |}        424        3.17       99.75
+           00.0 {c |}         34        0.25      100.00
+    {dup 12:{c -}}{c +}{dup 38:{c -}}
+          Total {c |}     13,355      100.00
+
+{pstd}
+The example above shows zero digit use for the variable y1, from which the following can be gathered:
+
+{pstd}
+Most values are single digit integers (0#.0).  Some values have a tens digit of which about a third have a zero in the units position (#0.0) and two thirds have a digit in the units position (##.0).
+This suggests the values are mainly below ten with a few values that are ten or above.
+
+{pstd}
+Notice that only a few values are not integers and these are all below ten (0#.#).  
+These values may have been measured using greater precision but if this was the case we would expect at least a few values of ten or above (##.#).
+Alternatively, it may be that some two digit values were incorrectly transcribed.  Perhaps a decimal point was inserted and this reduced these values by an order of magnitude.  Values with this digit 
+pattern should probably be checked for transcription errors.  If there were multiple paths to the database (different data entry clerks, labs or instruments) and this 
+is stored in the database it might also be useful to cross tabulate these digit formats with this information, to see if all the anomalous values originated in the same place.
+
+
+{title:Examples}
+
+    {cmd:. zerouse y1}
+    {cmd:. zerouse y1, pattern(3.2) sort}
+    {cmd:. zerouse y1, pattern(3.2) by(group)}
+    {cmd:. zerouse y1, pattern(3.2) by(group) nofreq row}
+
+    {cmd:. zerouse y1, pattern(3.2) digit(2)}
+
+{title:Author}
+
+{pstd}Richard J. Atkins{p_end}
+{pstd}London School of Hygiene and Tropical Medicine{p_end}
+{pstd}e-mail: richard.atkins@lshtm.ac.uk{p_end}
+

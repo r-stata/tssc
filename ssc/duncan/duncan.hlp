@@ -1,0 +1,136 @@
+{smcl}
+{* 16feb2005}{...}
+{hline}
+help for {hi:duncan}
+{hline}
+
+{title:Duncan & Duncan dissimilarity index}
+
+{p 8 15 2}
+{cmd:duncan} {it:depvar} {it:groupvar} [{it:weight}] [{cmd:if} {it:exp}]
+ [{cmd:in} {it:range}] [{cmd:,}  {cmdab:freq:uencies}
+ {cmdab:m:issing} {cmdab:nol:abel} {cmdab:f:ormat:(%}{it:fmt}{cmd:)} ]
+
+{p 8 15 2}
+{cmd:duncan2} {it:depvar} {it:groupvar} [{it:weight}] [{cmd:if} {it:exp}]
+ [{cmd:in} {it:range}] [{cmd:,} {cmdab:m:issing}
+ {cmdab:f:ormat:(%}{it:fmt}{cmd:)} {cmd:d(}{it:newvar}{cmd:)}
+ {cmd:ncat(}{it:newvar}{cmd:)}
+ {cmd:nobs(}{it:newvar}{cmd:)}
+ {cmd:dj(}{it:newvar}{cmd:)} ]
+
+
+{p 4 4 2}
+{cmd:by} {it:...} {cmd::} may be used with {cmd:duncan} and
+{cmd:duncan2}; see help {help by}.
+
+{p 4 4 2}
+{cmd:fweight}s and {cmd:aweight}s are allowed; see help {help weights}.
+
+
+{title:Description}
+
+{p 4 4 2} {cmd:duncan} computes the segregation statistic known as
+dissimilarity index D (Duncan and Duncan 1955). {it:depvar} is the
+categorical characteristic of interest (e.g. occupations) and {it:groupvar}
+defines the groups (e.g. sex). D will be displayed for all pairwise
+comparisons of groups. The maximum number of distinct categories in
+{it:depvar} is limited to 300 in Intercooled Stata and 1200 in Stata/SE.
+
+{p 4 4 2} {cmd:duncan2} also computes D, but has no limitation
+concerning the number of categories in {it:depvar}. However, note that the
+{it:groupvar} must be 0/1 with {cmd:duncan2}.
+
+{p 4 4 2} Furthermore, {cmd:duncan} and {cmd:duncan2} differ in the
+treatment of the {cmd:by} prefix. {cmd:duncan} computes and displays D one
+after another for each by-group, whereas {cmd:duncan2} does all
+computations in one call and displays all results in one table.
+
+{p 4 4 2} {cmd:duncan} and {cmd:duncan2} compute D from individual level
+data. To calculate D from aggregate data, see the {cmd:dissim} package by
+Nicholas J. Cox. Also consider the {cmd:seg} package by Sean F. Reardon,
+which may be used to compute a variety of segregation indices.
+
+
+{title:Options}
+
+{p 4 8 2} {cmd:frequencies} specifies that a two-way table of frequency
+counts be displayed ({cmd:duncan} only).
+
+{p 4 8 2} {cmd:missing} requests that missing values be treated like other
+values.
+
+{p 4 8 2} {cmd:nolabel} causes the numeric codes of the groups to be
+displayed rather than the value labels ({cmd:duncan} only).
+
+{p 4 8 2} {cmd:format(%}{it:fmt}{cmd:)} specifies the format to be used to
+display the results. The default is {cmd:format(%10.0g)}.
+
+{p 4 4 2} {cmd:d(}{it:newvar}{cmd:)}, {cmd:ncat(}{it:newvar}{cmd:)},
+{cmd:nobs(}{it:newvar}{cmd:)} may be used to save the results (D, the number
+of categories, the number of observations) as variables ({cmd:duncan2} only).
+
+{p 4 4 2} {cmd:dj(}{it:newvar}{cmd:)} may be used to save the dissimilarity
+values of the individual categories as a variable (the
+sum over these values results in D) ({cmd:duncan2} only).
+
+
+{title:Examples}
+
+{p 4 8 2} Occupational sex segregation:
+
+{p 8 12 2}{inp:. duncan isco88 sex}
+
+{p 4 8 2} Sex segregation in schools by country:
+
+{p 8 12 2}{inp:. sort country}{p_end}
+{p 8 12 2}{inp:. by country: duncan2 schoolid sex}{p_end}
+
+
+{title:Saved Results}
+
+{p 4 4 2}{cmd:duncan} saves in {cmd:r()}:
+
+{p 4 4 2}
+Scalars:
+
+{p 4 17 2}{cmd:r(c)}{space 4}number of distinct categories in {it:depvar}{p_end}
+{p 4 17 2}{cmd:r(N)}{space 4}number of observations
+
+{p 4 4 2}
+Matrices:
+
+{p 4 17 2}{cmd:r(D)}{space 4}pairwise dissimilarity indices
+
+
+{title:Methods and Formulas}
+
+{p 4 4 2}
+Let N(A_j) be the frequency of category j in group A  (e.g. the frequency of male janitors)
+and N(B_j) be the frequency of category j in group B (e.g. the frequency of female janitors). The
+dissimilarity index D is defined as
+
+{p 8 12 2}D = 0.5 * sum_j | N(A_j)/N(A) - N(B_j)/N(B) | {space 4} j = 1,...,J
+
+{p 4 4 2}
+where N(A) and N(B) are the overall group sizes. D may be interpreted as the proportion of subjects in
+group B that would have to change category in order to get the same relative distribution as in
+group A (or vice versa).
+
+
+{title:References}
+
+{p 4 8 2}Duncan, O.D., Duncan, B., 1955: A Methodological Analysis of Segregation Indexes.
+American Sociological Review 20: 210-217.{p_end}
+
+
+{title:Author}
+
+{p 4 4 2}
+Ben Jann, ETH Zurich, jann@soz.gess.ethz.ch
+
+
+{title:Also see}
+
+{p 4 13 2}
+Online:  help for {help tabulate}

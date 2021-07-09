@@ -1,0 +1,92 @@
+{smcl}
+{* version 2.01 14mar2006}{...}
+{cmd:help digituse}
+{hline}
+
+{title:Title}
+
+{p 4 21 2}
+{hi:digituse} {hline 2} Tabulate the pattern of digit use in a variable
+
+{title:Syntax}
+
+
+{p 8 15 2}{cmdab:digituse} {varname} [{cmd:,} {opth pla:ces(#)}]
+
+
+{title:Description}
+
+{pstd}
+The {cmd:digituse} function displays the proportionate use of the 
+digits 0-9 in each significant digit of a variable. The number of  places to the
+right of the decimal point can be defined using an option.  The number of places
+to the left of the decimal point is automatically set as required by the maximum 
+value stored in the variable.
+
+{pstd}
+
+{title:Options}
+
+{dlgtab:General}
+
+{phang}
+{opt places(#)} indicates the number of decimal places which should
+be examined.  The default is 9 which often shows rounding errors in the
+extreme places.  Generally you should specify at least one more decimal 
+place than the expected number of places: and then expect the extra place 
+to contain 100% zeros and no other digits. 
+
+{title:Remarks}
+
+{pstd}
+This function outputs a table in which a series of columns of percentage values 
+indicate the proportionate use of digits in each significant digit of the variable.
+These percentages are rounded to integers so an entry of zero indicates some instances 
+of that digit were found in the indicated place.  An entry of '.' indicates no instances of
+the digit were found at that place.
+
+{pstd}
+The following annotated example of the output shows how this function can be used:
+
+    {cmd:. digituse sodium, places(3)}
+    {dup 7:{c -}}{c TT}{dup 28:{c -}}
+     Digit {c |} Position (10^)
+           {c |}    2   1   0  -1  -2  -3
+    {dup 7:{c -}}{c +}{dup 28:{c -}}
+       0   {c |}    1   1  16 100 100 100
+       1   {c |}   99   0  15   .   .   .
+       2   {c |}    .   1  12   .   .   .
+       3   {c |}    .  44   8   .   .   .
+       4   {c |}    0  54   6   .   .   .
+       5   {c |}    .   0   5   .   .   .
+       6   {c |}    .   0   5   .   .   .
+       7   {c |}    .   .   8   .   .   .
+       8   {c |}    .   0  10   0   .   .
+       9   {c |}    .   .  15   .   .   .
+    {dup 7:{c -}}{c BT}{dup 28:{c -}}
+
+{pstd}
+In the 10^2 column (hundreds), the zero suggests there are a small number of values in the 400's range while the 1 and 99 clearly indicate most values are in the 100's with a small proportion below this.
+
+{pstd}
+The 44 and 54 in the second columns extend this knowledge and show that most values are in the 130s and 140s, suggesting the one or more 400s are outliers and should be investigated.
+
+{pstd}
+The grouping of values in the third column suggests most values end with an 8, 9, 0, 1 or a 2 (i.e. fall between 138 and 142).
+
+{pstd}
+The 100 values in the fourth, fifth and sixth columns indicate the majority of values have zero in the tenths, hundredths and thousands. However the zero in the tenths column shows that at 
+least one value has an 8 in this position.  This is clearly an anomaly and worthy of further investigation.  The {cmd:zerouse} function could be used to identify these cases.
+ 
+
+{title:Examples}
+
+    {cmd:. digituse y1}
+    {cmd:. digituse y1, places(3)}
+
+{title:Author}
+
+{pstd}Richard J. Atkins{p_end}
+{pstd}London School of Hygiene and Tropical Medicine{p_end}
+{pstd}e-mail: richard.atkins@lshtm.ac.uk{p_end}
+

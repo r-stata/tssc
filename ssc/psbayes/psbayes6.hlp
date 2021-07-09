@@ -1,0 +1,113 @@
+.-
+help for ^psbayes6^
+.-
+
+Pseudo-Bayes smoothing of cell estimates
+----------------------------------------
+
+    ^psbayes6^ datavar [priorvar] [^if^ exp] [^in^ range]
+    [ ^, by(^rowvar [colvar [layervar]]^) g^enerate^(^newvar^) p^rob
+    tabdisp_options ]
+
+Description
+-----------
+
+^psbayes6^ takes datavar, which should be a set of frequencies, and
+shrinks or smooths it towards a set of frequencies implied by prior
+probabilities. This will have the effect of replacing sampling
+zeros by positive estimates whenever the priors are positive.
+
+For a set of data frequencies n_i, summing to n, and a set of prior
+probabilities q_i, the smoothed estimates are n * p_i, where
+
+                 n   n_i       k
+        p_i =  ----- ---  +  ----- q_i,
+               n + k  n      n + k
+
+and shrinkage is tuned by the constant
+
+                2            2
+               n  - sum ( n_i )
+        k = ----------------------.
+                                2
+             sum (n_i - n * q_i)
+
+These estimates minimise the total mean square error between
+estimated and estimand probabilities. For more details, see the
+References.
+
+If priorvar is specified, it must sum to 1 for the data used. If
+priorvar is not specified, it is taken to be a set of equal
+probabilities.
+
+^psbayes6^ is the original version of ^psbayes^, renamed on 
+the promotion of ^psbayes^ to Stata 8. Users of Stata 8 up 
+should change to ^psbayes^. 
+
+
+Options
+-------
+
+^by(^rowvar colvar layervar^)^ indicates that datavar refers to a table
+    with rows (and columns if specified (and layers if specified))
+    indexed by the variable(s) named, which will structure a display of
+    cell estimates using ^tabdisp^. If ^by( )^ is not specified, cell
+    estimates will be displayed according to observation numbers.
+
+^generate(^newvar^)^ generates a new variable containing results.
+
+^prob^ indicates that probabilities rather than estimated frequencies
+    are to be shown (and if desired kept).
+
+tabdisp_options are options of ^tabdisp^. Default ^center format(%9.1f)^.
+
+
+Examples
+--------
+
+        . ^psbayes6 f prior, by(row col) g(sf)^
+
+
+References
+----------
+
+Agresti, A. 1990. Categorical data analysis. New York: John Wiley.
+
+Bishop, Y.M.M., Fienberg, S.E. and Holland, P.W. 1975. Discrete
+multivariate analysis. Cambridge, MA: MIT Press.
+
+Fienberg, S.E. and Holland, P.W. 1970. Methods for eliminating zero
+counts in contingency tables. In Patil, G.P. (ed.) Random counts in
+scientific work. Volume 1: Random counts in models and structures.
+Pennsylvania State University Press, University Park, 233-260.
+
+Fienberg, S.E. and Holland, P.W. 1972. On the choice of flattening
+constants for estimating multinomial probabilities. Journal of
+Multivariate Analysis 2, 127-134.
+
+Fienberg, S.E. and Holland, P.W. 1973. Simultaneous estimation of
+multinomial cell probabilities. Journal, American Statistical
+Association 68, 683-691.
+
+Good, I.J. 1965. The estimation of probabilities: an essay on modern
+Bayesian methods. MIT Press, Cambridge, MA.
+
+Sutherland, M., Holland, P.W. and Fienberg, S.E. 1975. Combining Bayes
+and frequency approaches to estimate a multinomial parameter. In
+Fienberg, S.E. and Zellner, A. (eds) Studies in Bayesian econometrics
+and statistics in honor of Leonard J. Savage. North-Holland, Amsterdam,
+585-617.
+
+
+Author
+------
+
+         Nicholas J. Cox, University of Durham, U.K.
+         n.j.cox@@durham.ac.uk
+
+
+Also see
+--------
+
+On-line:  help for @tabdisp@
+

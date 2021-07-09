@@ -1,0 +1,96 @@
+{smcl}
+{* 19apr2010}{...}
+{cmd:help regdis}
+{hline}
+
+{title:Title}
+
+{p2colset 5 15 22 2}{...}
+{p2col :{hi:regdis} {hline 2}}Control variables and decimals in regression displays{p_end}
+{p2colreset}{...}
+
+
+{title:Syntax}
+
+{p 8 14 2}{cmd:regdis} [{it:varlist}] [, {it:options} : command]
+
+
+{title:Description}
+
+{pstd}
+{cmd:regdis} provides a fast and easy way to control variables and decimals in regression displays
+
+
+{title:Options}
+
+{phang}
+{opt dec(#)} specifies the number of decimal places, usually 3
+
+{phang}
+{cmd:fmt( )} specifies one of these: f g e fc gc, usually f
+
+{phang}
+{opt drop(variables)} specifies variables to be dropped
+
+{phang}
+{opt keep(variables)} specifies variables to be kept (supercedes [{it:varlist}] if both specified)
+
+{phang}
+{opt noh:eader} suppress the table header
+
+
+{title:Examples}
+
+{phang}* set up data{p_end}
+{phang}{stata cap clear*}{p_end}
+{phang}{stata sysuse auto, clear}{p_end}
+{phang}{stata tab rep78, gen(REP)}{p_end}
+
+{phang}* used as a command{p_end}
+{phang}{stata qui reg headroom length foreign REP*}{p_end}
+{phang}{stata regdis}{p_end}
+{phang}{stata regdis, drop(REP*) nohead}{p_end}
+{phang}{stata est replay}{p_end}
+{phang}{stata regdis, dec(1)}{p_end}
+{phang}{stata regdis REP*}{p_end}
+
+{phang}* used as a prefix{p_end}
+{phang}{stata `"regdis : reg headroom length foreign"'}{p_end}
+{phang}{stata `"regdis, dec(2) keep(leng): reg headroom length foreign"'}{p_end}
+
+{phang}* may get a slightly different output arrangement{p_end}
+{phang}{stata xtreg headroom length turn, fe i(foreign)}{p_end}
+{phang}{stata `"regdis : xtreg headroom length trunk, fe i(foreign)"'}{p_end}
+{phang}{stata `"regdis, dec(4) : xtreg headroom length trunk, fe i(foreign)"'}{p_end}
+
+
+{title:Remarks}
+
+{pstd}
+The e(b) and e(V) remain unchanged.{p_end}
+
+
+{title:Acknowledgement}
+
+{pstd}
+{cmd:regdis} is cloned from _prefix_display and _coef_table.{p_end}
+{pstd}
+My apologies to somewhere in College Station.{p_end}
+
+{pstd}
+{cmd:regdis} is a cleaned up version of this: http://www.stata.com/statalist/archive/2009-05/msg00661.html{p_end}
+
+
+{title:Author}
+
+{pstd}
+roywada@hotmial.com{p_end}
+
+
+{title:Also see}
+
+{psee}
+Manual:  {bf:[D] format}, {help autofmt}, {help outreg2}
+
+
+

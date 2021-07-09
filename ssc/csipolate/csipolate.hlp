@@ -1,0 +1,124 @@
+{smcl}
+{* 19 Feb 2009/24 Feb 2009/6 Apr 2011}{...}
+{hline}
+help for {hi:csipolate}
+{hline}
+
+{title:Cubic spline interpolation}
+
+{p 8 17 2}{cmd:csipolate} {it:yvar} {it:xvar} 
+[{cmd:if} {it:exp}] [{cmd:in} {it:range}] 
+{cmd:,} {cmdab:g:enerate}{cmd:(}{it:newvar}{cmd:)} 
+
+{p 4 4 2}{cmd:by} {it:...} {cmd::} may be used with {cmd:csipolate}; 
+see help {help by}.
+
+
+{title:Description}
+
+{p 4 4 2}
+{cmd:csipolate} creates {it:newvar} by averaging non-missing values of
+{it:yvar} and using natural cubic spline interpolation of missing values
+of {it:yvar}, given {it:xvar}. That is, provided that {it:xvar} is not
+missing, 
+
+{p 4 4 2}1. When {it:yvar} is not missing, {it:newvar} is the mean of
+{it:yvar} over observations with the same value of {it:xvar}. If a value
+of {it:xvar} is unique, then each mean is just the same as the value of
+{it:yvar} at that point. 
+
+{p 4 4 2}2. When {it:yvar} is missing, {it:newvar} is filled in using
+natural cubic spline interpolation. 
+
+
+{title:Remarks} 
+
+{p 4 4 2}Extrapolation is not provided. Some users may wish to
+extrapolate any remaining missing values linearly using {help ipolate}. 
+
+{p 4 4 2}{cmd:csipolate} is a wrapper using Mata functions
+{cmd:spline3()} and {cmd:spline3eval()}. If desired see help and in turn
+Mata source code {help mf_spline3:here}. That code is a translation of
+code originally given by Herriot and Reinsch (1973). 
+
+{p 4 4 2}The examples are based on the help for {help ipolate} in Stata
+10.  Stata 9 users will need to substitute their own. 
+
+
+{title:Options}
+
+{p 4 8 2}{cmd:generate()} is not optional; it specifies the name of the
+new variable to be created.
+
+
+{title:Examples}
+
+    {hline}
+{pstd}Setup{p_end}
+{phang2}{cmd:. webuse ipolxmpl1}
+
+{pstd}List the data{p_end}
+{phang2}{cmd:. list, sep(0)}
+
+{pstd}Create {cmd:y1} containing a natural cubic spline interpolation of {cmd:y} on {cmd:x}
+for missing values of {cmd:y}{p_end}
+{phang2}{cmd:. csipolate y x, gen(y1)}
+
+{pstd}List the result{p_end}
+{phang2}{cmd:. list, sep(0)}
+
+    {hline}
+{pstd}Setup{p_end}
+{phang2}{cmd:. webuse ipolxmpl2}{p_end}
+
+{pstd}Show years for which the circulation data are missing{p_end}
+{phang2}{cmd:. tabulate circ year if circ == ., missing}
+
+{pstd}Create {cmd:csicirc} containing a natural cubic spline interpolation of {cmd:circ} on
+{cmd:year} for missing values of {cmd:circ} and perform this calculation
+separately for each {cmd:magazine}{p_end}
+{phang2}{cmd:. by magazine: csipolate circ year, gen(csicirc)}{p_end}
+    {hline}
+
+
+{title:Author}
+
+{p 4 4 2}Nicholas J. Cox, Durham University, U.K.{break}  
+    n.j.cox@durham.ac.uk
+
+
+{title:Acknowledgments}
+
+{p 4 4 2}Ben Ammar reported an example which underlined that there is
+point in asking for interpolation of singleton values. If that value is
+known, there is nothing to interpolate. If that value is unknown, there 
+is nothing to do it with. 
+
+
+{title:References}
+
+{p 4 8 2}Hamming, R.W. 1973. 
+{it:Numerical methods for scientists and engineers.} 
+New York: McGraw-Hill. See pp.349{c -}356.
+
+{p 4 8 2}Herriot, J.G. and C.H. Reinsch. 1973.    
+Algorithm 472: procedures for natural spline interpolation.  
+{it:Communications of the Association for Computing Machinery}
+16: 763{c -}768.   
+
+{p 4 8 2}Lancaster, P. and K. Salkauskas. 1986. 
+{it:Curve and surface fitting: an introduction.} 
+London: Academic Press. [capital S of Salkauskas should bear caron or
+wedge diacritic]
+
+{p 4 8 2}Press, W.H., S.A. Teukolsky, W.T. Vetterling, B.P. Flannery. 2007. 
+{it:Numerical recipes: the art of scientific computing.} 
+Cambridge: Cambridge University Press. See pp.120{c -}124. 
+
+
+{title:Also see}
+
+{p 4 13 2}Manual:  {hi:[D] ipolate}
+
+{p 4 13 2}On-line:  help for {help ipolate}, 
+help for {help cipolate} (if installed) 

@@ -1,0 +1,460 @@
+{smcl}
+{* 21aug2007}{...}
+{hi:help adolist}
+{hline}
+
+{title:Title}
+
+{pstd}{hi:adolist} {hline 2} Ado package lists
+
+
+{title:Syntax}{smcl}
+
+{dlgtab:Package lists at SSC}
+
+{pstd}List available package lists at SSC
+
+{p 8 15 2}
+{bf:{stata adolist ssc}}
+
+{pstd}Describe specified package list at SSC
+
+{p 8 15 2}
+{cmd:adolist} {opt ssc} {it:pkl}
+
+{pstd}Install specified package list from SSC
+
+{p 8 15 2}
+{cmd:adolist} {opt ssc} {it:pkl}  {cmd:,} {opt ins:tall}
+[ {opt all} {opt r:eplace} {opt force} {opt ado:dir(dir)} ]
+
+{dlgtab:Package lists at other locations}
+
+{pstd} Describe specified package list
+
+{p 8 15 2}
+{cmd:adolist} {opt d:escribe} {it:filename} [ {cmd:,}
+ {opt fr:om(path)} ]
+
+{pstd} Install specified package list
+
+{p 8 15 2}
+{cmd:adolist} {opt ins:tall} {it:filename} [ {cmd:,}
+ {opt fr:om(path)} {opt all} {opt r:eplace} {opt force} {opt ado:dir(dir)}
+ ]
+
+{dlgtab:Installed package lists}
+
+{pstd} List all installed package
+lists
+
+{p 8 15 2}
+{cmd:adolist} [{opt dir}] [{cmd:,}
+ {opt ado:dir(dir)}
+ ]
+
+{pstd} Describe an installed package list
+
+{p 8 15 2}
+{cmd:adolist} {opt d:escribe} {it:pkl} [{cmd:,}
+  {opt ado:dir(dir)}
+  ]
+
+{pstd} Update an installed package list
+
+{p 8 15 2}
+{cmd:adolist} {opt up:date} {it:pkl} [{cmd:,}
+ {opt k:eep} {opt dropmost} {opt dropall} {opt all} {opt force} {opt ado:dir(dir)}
+ ]
+
+{pstd} Uninstall a previously installed package
+list
+
+{p 8 15 2}
+{cmd:adolist} {opt unins:tall} {it:pkl} [{cmd:,}
+ {opt k:eep} {opt dropmost} {opt dropall} {opt ado:dir(dir)}
+ ]
+
+{dlgtab:Create a package list}
+
+{p 8 15 2}
+{cmd:adolist} {opt sto:re} {it:filename} [{cmd:,}
+ {it:store_options}
+ ]
+
+{p 8 15 2}
+{cmd:adolist} {opt sto:re} [{it:packages}] {cmd:using} {it:filename} [{cmd:,}
+ {it:store_options}
+ ]
+
+{p 8 15 2}
+{cmd:adolist} {opt li:st} [{it:packages}] [{cmd:,}
+ {it:store_options}
+ ]
+
+        {it:store_options}{col 26}    description
+        {hline 56}
+        {opt nol:ocal}{col 26}{...}
+    do not include local packages
+        {opt l:ocalonly}{col 26}{...}
+    include local packages only
+        {opt nos:ort}{col 26}{...}
+    do not sort the package list
+        {opt ti:tle(str)}{col 26}{...}
+    include a title
+        {opt des:cription(str)}{col 26}{...}
+    include a description
+        {opt aut:hor(str)}{col 26}{...}
+    identify package list author
+        {opt h:elp}[{opt (strlist)}]{col 26}{...}
+    produce a help file
+        {opt r:eplace}{col 26}{...}
+    overwrite existing files
+        {opt ado:dir(dir)}{col 26}{...}
+    include packages installed in {it:dir}
+        {hline 56}
+
+{pstd} In the above commands, {it:pkl} denotes the name of the package
+list, possibly including a suffix (the default suffix is {cmd:.pkl}).
+{it:filename} is like {it:pkl} but may also include a file path, which can
+be a local path on your computer or an URL.
+
+
+{title:Description}
+
+{pstd} {cmd:adolist} manages lists of user ado packages.
+
+{pstd} {cmd:adolist ssc} lists, describes, and installs package lists from the
+SSC archive.
+
+{pstd} {cmd:adolist describe} describes the contents of a specified
+package list.
+
+{pstd} {cmd:adolist install} installs a specified
+package list.
+
+{pstd} {cmd:adolist dir} gives an overview of the package lists
+that are installed on your computer.
+
+{pstd} {cmd:adolist update} updates a previously installed
+package list.
+
+{pstd} {cmd:adolist uninstall} uninstalls from your computer a previously installed
+package list. The single packages are only uninstalled if they are not part of
+another package list and if they were not on the system prior to installing the
+package list.
+
+{pstd} {cmd:adolist store} creates a package list file (and, optionally,
+a help file) from the packages that are installed on your
+computer. {it:packages} specifies the packages to be included. You may
+use the {cmd:*} and {cmd:?} wildcards in {it:packages}. All installed
+packages are included if {it:packages} is omitted. {cmd:adolist list}
+is like {cmd:adolist store}, but displays the package list
+instead of storing it to a file. The {opt help} option is without
+effect for {cmd:adolist list}.
+
+{pstd} Note that {it:packages} may also include packages that are not installed
+on your computer. However, for such packages to be added to the package list,
+you have to provide the package's URL after the package name and enclose name
+and URL in double quotes. In fact, the full syntax for
+{it:packages} is
+
+        <{it:pkg}> [ <{it:pkg}> ... ]
+
+{pstd} where {it:pkg} is
+
+        {it:name} <{it:url}> <{it:title}> <{it:author}> <{it:heading}>
+
+{pstd}and <{it:str}> signifies that {it:str} must be enclosed in double
+quotes if it contains spaces (or compound double quote if it contains
+double quotes). An example would be
+
+        {com}"abc http://a.b.c/ ABC-Module" `"xyz c:/x/y/z/ "My XYZ Package""'{txt}
+
+{pstd}{it:url} may be {cmd:SSC} to indicate that the package is located in the
+SSC-Archive. {it:title} and {it:author} are relevant only for the help file (see the
+{opt help} option). {it:heading}, if specified, will be inserted on a separate line
+before the package's entry in the list and may be used to structure the package
+list (you may want to specify the {cmd:nosort} option if making use of
+headings). It affects both, the package list source file
+and the help file. {it:url} and {it:title}, if specified, take precedence over
+the package's URL and title determined from the local system. Packages that are not
+found on the local system and for which no URL is provided are
+discarded.
+
+
+{title:Options for adolist ssc}
+
+{phang} {opt install} causes the specified package list to be installed. The
+default is to describe the package.
+
+{phang} {opt all} copies any additional files (ancillary files) in the packages
+ to your current directory (or location determined by
+ {helpb net:net set other}).
+
+{phang} {opt replace} specifies that the downloaded files
+replace existing files.
+
+{phang} {opt force} specifies that the downloaded package files replace
+existing files even if Stata thinks all the files are the
+same. {opt force} implies {opt replace}.
+
+{phang} {opt adodir(dir)} specifies where to install the package
+list. The default is {cmd:adodir(PLUS)} (see help {helpb sysdir}).
+
+
+{title:Options for adolist describe}
+
+{phang} {opt from(path)} specifies the location of the package list,
+where path may be a local path on your computer or an URL. Alternatively,
+the path may also be specified as part of {it:filename}. If no path is
+specified, neither as part of {it:filename} nor in {opt from()},
+{cmd:adolist describe} first looks among the installed package
+lists and then in the current working directory.
+
+{phang} {opt adodir(dir)} specifies that the package to be described is
+installed in {it:dir}. The default {it:dir} is {cmd:PLUS} (see help
+{helpb sysdir}).
+
+
+{title:Options for adolist install}
+
+{phang} {opt from(path)} specifies the location of the package list,
+where path may be a local path on your computer or an URL. Alternatively,
+the path may also be specified as part of {it:filename}.
+
+{phang} {opt all} copies any additional files (ancillary files) in the packages
+ to your current directory (or location determined by
+ {helpb net:net set other}).
+
+{phang} {opt replace} specifies that the downloaded files
+replace existing files.
+
+{phang} {opt force} specifies that the downloaded package files replace
+existing files even if Stata thinks all the files are the
+same. {opt force} implies {opt replace}.
+
+{phang} {opt adodir(dir)} specifies where to install the package
+list. The default is {cmd:adodir(PLUS)} (see help {helpb sysdir}).
+
+
+{title:Options for adolist dir}
+
+{phang} {opt adodir(dir)} specifies where the package lists are
+installed. The default is {cmd:adodir(PLUS)} (see help {helpb sysdir}).
+
+
+{title:Options for adolist update}
+
+{phang} {opt keep} causes discontinued packages (packages that are no
+longer part of the package list) to be kept in the system. The default is to
+delete these packages unless they were in the system prior to installing
+the package list or are part of other installed package
+lists.
+
+{phang} {opt dropmost} specifies that all discontinued packages be
+uninstalled, except for packages that are part of other installed package
+lists. The default is to delete discontinued packages unless they were in
+the system prior to installing the package list or are part of other
+installed package lists.
+
+{phang} {opt dropall} specifies that all discontinued packages be
+uninstalled, even if some of these packages were in the system prior to
+installing the package list or are also part of other installed package
+lists.
+
+{phang} {opt all} copies any additional files (ancillary files) in the packages
+ to your current directory (or location determined by
+ {helpb net:net set other}).
+
+{phang} {opt force} specifies that the downloaded package files replace
+existing files even if Stata thinks all the files are the
+same.
+
+{phang} {opt adodir(dir)} specifies where where the package list is
+installed. The default is {cmd:adodir(PLUS)} (see help {helpb sysdir}).
+
+
+{title:Options for adolist uninstall}
+
+{phang} {opt keep} causes the single packages to be kept in the
+system. Use the {opt keep} option if you want to drop the
+package list definition, but keep the packages.
+
+{phang} {opt dropmost} specifies that all packages in the package list be
+uninstalled, except for packages that are part of other installed package
+lists. The default is to uninstall only packages that have not been in the
+system prior to installing the package list and that are not part of other
+installed package lists.
+
+{phang} {opt dropall} specifies that all packages in the package list be
+uninstalled, even if some of the packages have already been in the system
+before installing the package list or if some of the packages are also part
+of other installed package lists. The default is to uninstall only packages
+that have not been in the system prior to installing the package list and
+that are not part of other installed package lists.
+
+{phang} {opt adodir(dir)} specifies where the package list is
+installed. The default is {cmd:adodir(PLUS)} (see help {helpb sysdir}).
+
+
+{title:Options for adolist store and adolist list}
+
+{phang} {opt nolocal} omits packages that have been installed from a
+local path.
+
+{phang} {opt localonly} omits packages that have been installed from
+the net.
+
+{phang} {opt nosort} omits sorting the package list. The default is to return the list in
+alphabetical order.
+
+{phang} {opt title(str)} specifies a title to appear in the header of
+the package list file (and in the help file).
+
+{phang} {opt description(strlist)} specifies a description to appear in the header of
+the package list file (and in the help file). Use double quotes to specify
+multiple lines (i.e. "line 1" "line 2" etc.).
+
+{phang} {opt author(str)} specifies information on the "author" of the
+package list to appear in the header of
+the package list file (and in the help file).
+
+{phang} {opt help} generates a Stata help file for the package
+list. {opt help} has no effect if specified with {bind:{cmd:adolist list}}. The help file
+will contain the list of packages and also include the title, description, and
+author information. Additional text to be added to the help file can be specified
+as {opt help(strlist)}. The text will be inserted as is after the section
+containing the list of packages. Use double quotes and SMCL directives to
+format the text. For example {cmd:""} inserts an empty line,
+{cmd:{c -(}title:}{it:...}{cmd:{c )-}} creates a new help file section, and
+{cmd:{c -(}pstd{c )-}} inserts a standard help file paragraph:
+
+            {com}. adolist {txt}{it:...}{com}, help("" "{c -(}title:Remarks{c )-}" "" "{c -(}pstd{c )-} blah etc." ""){txt}
+
+{phang} {opt replace} permits {cmd:adolist} to overwrite
+existing files.
+
+{phang} {opt adodir(dir)} specifies where the packages to be stored are
+installed.  The default is {cmd:adodir(PLUS)} (see help {helpb sysdir}).
+
+
+{title:Examples}
+
+{pstd} The following command produces a package list of all installed user
+ado's on your system and stores the list file in the working directory:
+
+        {com}. adolist store myadosystem
+        {txt}({view myadosystem.pkl} created; containing {res}99{txt} packages)
+
+{pstd} To install the same set of ado packages on an another computer, copy
+"myadosystem.pkl" to, say "C:\temp" on this computer and run
+
+        {com}. adolist install C:\temp\myadosystem
+        {txt}(output omitted)
+
+
+{title:Conventions for package list files}
+
+{pstd} The {cmd:adolist store} command is a convenient tool to produce
+a package list, but it also has its limitations. Fortunately, it is
+easy to produce a package list file "by hand" or edit an existing package
+file. Here are the details:
+
+{phang}{space 1}1. The first line of a package list file must
+start with
+
+            {cmd:*! Stata package list}
+
+{phang}{space 1}2. Lines containing comments must start with
+{cmd:*}. For example, the header of a package list file might read:
+
+            {cmd:*! Stata package list  21aug2007}
+            {cmd:*  My favorite packages}
+
+{pmore}The second line of the file is assumed to contain the title of the
+package list, if it is a comment line. Consecutive comment lines, up to the
+first line that contains a package entry or that is entirely blank, are assumed
+to contain the description and author information. Example:
+
+            {cmd:*! Stata package list  21aug2007}
+            {cmd:*  My favorite packages}
+            {cmd:*  This list contains}
+            {cmd:*  my favorite packages.}
+            {cmd:*}
+            {cmd:*  Assembled by: me}
+
+{phang}{space 1}3. A package list entry is a line
+containing a package name (with an optional {cmd:.pkg} suffix),
+followed by a path or URL indicating the location of the package,
+followed by an optional title. Use double quotes if a path or title
+contains spaces. Example:
+
+            {cmd:*! Stata package list  21aug2007}
+            {cmd:*  My favorite packages}
+            {cmd:*  This list contains}
+            {cmd:*  my favorite packages.}
+            {cmd:* }
+            {cmd:*  Assembled by: me}
+            {cmd:estout.pkg   http://fmwww.bc.edu/repec/bocode/e "a title"}
+            {cmd:moremata.pkg http://fmwww.bc.edu/repec/bocode/m}
+
+{phang}{space 1}4. Empty lines or comment lines may be inserted
+between package list entries. Example:
+
+            {cmd:*! Stata package list  21aug2007}
+            {cmd:*  My favorite packages}
+            {cmd:*  This list contains}
+            {cmd:*  my favorite packages.}
+            {cmd:*}
+            {cmd:*  Assembled by: me}
+            {cmd:}
+            {cmd:*! some packages}
+            {cmd:estout.pkg   http://fmwww.bc.edu/repec/bocode/e "a title"}
+            {cmd:moremata.pkg http://fmwww.bc.edu/repec/bocode/m}
+            {cmd:}
+            {cmd:*! some more packages}
+            {cmd:center.pkg   http://fmwww.bc.edu/repec/bocode/c}
+
+{pmore}Note that comment lines are printed by {cmd:adolist describe}
+if they start with "{cmd:*!}".
+
+{phang}{space 1}5. The recommended suffix for a package list file is
+{cmd:.pkl} (although this is not a strict requirement).
+
+
+{title:Returned results}
+
+{pstd} {cmd:adolist describe} returns in macro {cmd:r(names)} the
+names of the contained packages.
+
+{pstd} {cmd:adolist install} returns in macro {cmd:r(installed)} the
+names of the successfully installed packages and in macro {cmd:r(omitted)}
+the names of the omitted packages due to, say, network problems.
+
+{pstd} {cmd:adolist update} returns in macro {cmd:r(installed)} the
+names of the successfully installed/updated packages, in macro {cmd:r(omitted)}
+the names of the omitted packages due to, say, network problems, and in
+{cmd:r(uninstalled)} the names of the uninstalled packages.
+
+{pstd} {cmd:adolist uninstall} returns in macro {cmd:r(names)} the names
+of the uninstalled packages.
+
+{pstd} {cmd:adolist dir} returns in macro {cmd:r(names)} the names
+of the installed package lists.
+
+{pstd} {cmd:adolist store} and {cmd:adolist list} return in macro
+{cmd:r(names)} the names of the included packages.
+
+
+{title:Authors}
+
+{pstd} Ben Jann, ETH Zurich, jann@soz.gess.ethz.ch
+
+{pstd} Stefan Wehrli, ETH Zurich, wehrli@soz.gess.ethz.ch
+
+
+{title:Also see}
+
+{psee} Online:  {helpb net}, {helpb adoupdate}, {helpb ssc},
+{help sj}, {help stb}, {helpb sysdir}

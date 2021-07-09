@@ -1,0 +1,71 @@
+{smcl}
+{* 18apr2005}{...}
+{hline}
+help for {hi:eret2}
+{hline}
+
+{title:Save results in e()}
+
+{p 8 16 2}{cmd:eret2} {cmdab:loc:al} {it:name ...} [{cmd:,} {cmd:replace} ]
+
+{p 8 16 2}{cmd:eret2} {cmdab:sca:lar} {it:name} {cmd:=} {it:exp}
+ [{cmd:,} {cmd:replace} ]
+
+{p 8 16 2}{cmd:eret2} {cmdab:mat:rix} {it:name} [{cmd:=}] {it:matname}
+        [{cmd:,} {cmd:copy} {cmd:replace} ]
+
+
+{p 4 4 2}
+where {it:name} is the name of the macro, scalar, or matrix that will be
+returned in {hi:e(}{it:name}{hi:)} and {it:matname} is
+the name of an existing matrix.
+
+
+{title:Description}
+
+{p 4 4 2} {cmd:eret2} is a hack to save a macro, scalar, or matrix in
+{cmd:e()} and may be used after any estimation command (see help
+{help estcom}) to add additional results to the {cmd:e()}-returns. It is
+implemented as a wrapper for the {cmd:ereturn} command (see help
+{help ereturn}). However, {cmd:eret2} can be used in any context whereas
+{cmd:ereturn} can only be used within an e-class program (see help
+{help program}).
+
+{p 4 4 2} {cmd:eret2} may be useful, for example, if the estimation results
+be tabulated by {help estimates table} or {help estout} (available from the
+SSC archive; type
+ {net "describe http://fmwww.bc.edu/repec/bocode/e/estout":{bind:ssc describe estout}}).
+
+
+{title:Options}
+
+{p 4 8 2}
+{cmd:copy} specified with {cmd:eret2 matrix} indicates that the matrix is
+to be copied, leaving the original in place.  The default is to move the
+matrix.
+
+{p 4 8 2}
+{cmd:replace} permits {cmd:eret2} to replace an existing {cmd:e()} macro,
+scalar, or matrix.
+
+
+{title:Examples}
+
+        {inp}. sysuse auto
+        . regress price weight mpg
+        . test weight = mpg
+        . eret2 scalar p_wtmpg = r(p)
+        {txt}
+
+{title:Author}
+
+{p 4 4 2}
+Ben Jann, ETH Zurich, jann@soz.gess.ethz.ch
+
+
+{title:Also see}
+
+{p  4 13 2}Online:  help for
+{help ereturn}, {help estimates}, {help program}, {help return}, {help estcom},
+{help matrix}, {help scalar}, {help macro}, {help estout} (if installed),
+{help estadd} (if installed)

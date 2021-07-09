@@ -1,0 +1,250 @@
+{smcl}
+{* 10 February 2006}{...}
+{hline}
+help for {hi:margeff8}{right:(This version: 10 February 2006)}
+{hline}
+
+{title:Marginal effects for categorical dependent variable models}
+
+{p 4 12 2}
+{cmd:margeff8} [{cmdab:c:ompute}]
+[{cmd:if} {it:exp}]
+[{cmd:in} {it:range}]  [{cmd:,}	 
+	{cmd:at(}{it:atlist}{cmd:)} 
+    {cmdab:c:ount}
+	{cmdab:nod:iscrete}{break}
+    {cmdab:d:ummies(}{it:varlist_1} [{cmd:\} {it:varlist_2} ..]{cmd:)}
+    {cmdab:e:form}
+    {cmdab:m:odel(}{it:stata_cmd}{cmd:)}
+    {cmdab:nooff:set}
+	{cmdab:out:come(}{it:numlist}{cmd:)}
+    {cmdab:p:ercent}
+    {cmdab:r:eplace} ]
+{p_end}
+
+{p 4 12 2}{cmd:margeff8} {cmdab:r:eplay}
+
+{p 4 4 2} where {it:stata_cmd} is one of
+
+{col 9}[group 1:] {col 22}{help probit}    {col 32}{help logit}    {col 40}{help logistic}  {col 50}{help cloglog} {col 60}{help heckprob} {col 70}{help xtprobit}   
+{col 9}[group 2:] {col 22}{help oprobit}   {col 32}{help ologit}   {col 40}{help gologit}   {col 50}{help mlogit} {col 60}{help biprobit}
+{col 9}[group 3:] {col 22}{help poisson}   {col 32}{help nbreg}    {col 40}{help zip}       {col 50}{help zinb}
+
+{p 4 4 2} and {it:atlist} is  {p_end}
+{p 8 8 2}{c -(} {cmd:mean} | {cmd:median} | {cmd:zero} [ {it:varname}
+{cmd:=} {it:#} [{cmd:,} {it:varname} {cmd:=} {it:#}] [{it:...}]] {c )-}{p_end}
+{p 8 8 2}{c -(} [{cmd:mean}] |[{cmd:median}] | [{cmd:zero}]  {it:varname}
+{cmd:=} {it:#} [{cmd:,} {it:varname} {cmd:=} {it:#}] [{it:...}]  {c )-}	{p_end}
+
+{p 4 4 2} and {it:varlist_1} [{cmd:\} {it:varlist_2} ... ] are lists of dummy variables, where all dummies of a list indicate
+  different categories of the same underlying categorical variable.
+
+{title:Description}
+
+{p 4 4 2}
+{cmd:margeff8 compute} analytically estimates marginal effects, and standard errors for marginal effects
+using the delta method.	The default behavior of {cmd:margeff8} is the following:
+{p_end}
+
+{p 4 8 2}{cmd:1.}
+{cmd:margeff8} calculates average marginal effects, that is, changes in the quantities of interest evaluated for each observations,
+and the reported marginal effects are sample averages of these changes.
+Note that {cmd:margeff8} can also compute marginal effects evaluated at sample means or at other values if the user specifies the {cmd:at(}{it:atlist}{cmd:)} option. 
+Calculations are restricted to the estimation sample.
+{p_end}
+
+{p 4 8 2}{cmd:2. }
+For continuous variables, marginal effects are partial changes in the quantities of interest.
+For dummy variables, marginal effects are discrete changes in the quantities of interest as the dummy variable changes from 0 to 1.
+Dummies are automatically detected. Before using {cmd:margeff8}, please make sure that you coded your dummy variables as 0/1 variables.
+Otherwise your dummies will be considered as being continuous variables, and you run the risk of obtaining misleading results.
+Users can change this behavior by specifying the {cmd:count} or {cmd:nodiscrete} options.
+{p_end}
+
+{p 4 8 2}{cmd:3.}
+Quantities of interest are defined as follows:
+
+{p 8 19 4}[group 1:] the probability of positive outcome {p_end}
+{p 8 19 4}[group 2:] the probabilities of all possible outcomes defined by the dependent variable(s){p_end}
+{p 8 19 4}[group 3:] the expected number of counts or the incidence rate {p_end}
+
+{p 4 8 2}{cmd:4.}
+{cmd:margeff8} supports only the above listed models. The {cmd:model(}{it:stata_cmd}{cmd:)}
+option, however, adds some flexibility.	This is useful if users wish to obtain marginal effects after the survey version of
+{it:stata_cmd}, or after their own program.
+
+{p 4 8 2}{cmd:5.}
+{cmd:margeff8} behaves as a post-estimation command (see help {help postest}).
+However, option {cmd:replace} forces {cmd:margeff8} to behave as an estimation command
+(see help {help est}). This enables the use of post-estimation commands like
+{cmd:lincom} or {cmd:test} after {cmd:margeff8}.
+
+{p 4 4 2}
+Typed without arguments, {cmd:margeff8} replays the results of the previous {cmd:margeff8}
+computations, provided the last use of {cmd:margeff8} was combined with the {cmd:replace}
+option.{p_end}
+
+{p 4 4 2}
+{cmd:margeff8 replay} replays the results of the previous {cmd:margeff8} computation.
+
+{title:Options}
+
+{p 4 8 2}
+{cmd:at(}{it:atlist}{cmd:)} forces {cmd:margeff8} to estimate marginal effects at points specified in
+{it:atlist}, instead of estimating average marginal effects.
+{p_end}
+
+{p 8 8 2}
+	{cmd:at(} {cmd:mean} | {cmd:median} | {cmd:zero} [ {it:varname}
+    {cmd:=} {it:#} [{cmd:,} {it:varname} {cmd:=} {it:#} [{it:...}]] {cmd:)}
+    specifies that the marginal effects be evaluated at means, at medians of the independent variables, or at zeros.
+	It also allows users to specify particular values for one or more independent
+    variables, assuming that the rest are means, medians, or zeros.
+{p_end}
+
+{p 8 8 2}
+	{cmd:at(} [{cmd:mean}] |[{cmd:median}] | [{cmd:zero}]  {it:varname}
+	{cmd:=} {it:#} [{cmd:,} {it:varname} {cmd:=} {it:#}] [{it:...}]  {cmd:)}
+	specifies that the marginal effects be
+    evaluated at particular values for one or more independent
+    variables, assuming that the rest are means.
+{p_end}
+
+{p 4 8 2}
+{cmd:count} modifies the calculation of marginal effects for count variables, i.e.
+   variables that take more than two values and all of the values are integers.
+   By default, {cmd:margeff8} treates count variables as continuous variables, thus
+   marginal effects correspont to small changes in the independent variables.
+   If the count option is specified, the marginal effects are changes in
+   probabilities when the count variables increase by unity.
+{p_end}
+
+{p 4 8 2}
+{cmd:nodiscrete} forces {cmd:margeff8} to treat dummy variables as if they were continuous.  Recall that if
+{cmd:nodiscrete} is not specified, the marginal effect of a dummy variable is
+calculated as the discrete change in the expected value of the dependent
+variable as the dummy variable changes from 0 to 1.
+{p_end}
+
+{p 4 8 2}
+{cmd:dummies(}{it:varlist_1} [{cmd:\} {it:varlist_2} ... ]{cmd:)}
+modifies the calculation of marginal effects for dummy variables. Let {it:xvar} be a categorical variables
+   with {it:K}+1 ({it:K}>1) categories. In this case, not xvar, but {it:K} dummies - say, D1, ..., DK - are included
+   in the regression model. The estimated marginal effects for these {it:K} dummies
+   may be misleading (see the example below). The correct result is obtained if
+   one specifies the {cmd:dummies(}D*{cmd:)} option.
+{p_end}
+
+{p 4 8 2}
+{cmd:eform} forces {cmd:margeff8} to define the quantity of interest as {it:exp(xb)}, where {it:xb} is the linear prediction.
+{p_end}
+
+{p 4 8 2}
+{cmd:model(}{it:stata_cmd}{cmd:)} forces {cmd:margeff8} to estimate marginal effects as if the preceeding estimation command were {it:stata_cmd}.
+{it:stata_cmd} must be one of the supported commands that are listed above. 
+The {cmd:model(}{it:stata_cmd}{cmd:)} is likely to be helpful if you wish to obtain marginal effects
+after the survey version of a supported estimation command, or you wish to estimate a supported model using {help glm}.
+The estimates, however, will be meaningful only if the estimation command issued by the user and {it:stata_cmd} have the same link functions.
+It is the user's responsibility to ensure that this condition holds.
+{p_end}
+
+{p 4 8 2}
+{cmd:nooffset} causes {cmd:margeff8} to ignore the offset variable during the calculations.
+{p_end}
+
+{p 4 8 2}
+{cmd:outcome(}{it:numlist}{cmd:)} causes {cmd:margeff8} to display only the probability outcomes corresponding to the numbers
+specified {it:numlist} (see {help numlist} for syntax guide).
+This option is useful after estimation commands listed as [group 2] models.	The correspondence rule is the following:
+{p_end}
+{p 8 12 2}
+{cmd:1.} After {cmd:biprobit}, numbers 1 2 3 and 4 refer to outcomes p00 p01 p10 p11.
+{p_end}
+{p 8 12 2}
+{cmd:2.} After {cmd:ologit}, {cmd:oprobit}, {cmd:gologit} and {cmd:mlogit}, number # refers to the #th category of the dependent variable.
+Thus, number 1 always indicates the lowest category. And if the dependent variable has, say, 5 categories, then
+number 5 indicates the highest category.
+{p_end}
+
+{p 4 8 2}
+{cmd:percent} causes {cmd:margeff8} to display the results in a percentage form.
+{p_end}
+
+{p 4 8 2}
+{cmd:replace} causes {cmd:margeff8} to overwrite the estimation results left behind.	This option is useful if
+{p_end}
+{p 8 12 2} {cmd:1.}  you wish to include marginal effects in publication-quality tables using either the official {help estimates table} command or
+the user-written commands {help outreg} or {help estout}; or
+{p_end}
+{p 8 12 2} {cmd:2.}  your model contains a variable (such as age-squared) which is a mathematical transformation of another independent variable,
+and you wish to obtain the total effect of that variable (age) using the {help lincom} or the {help nlcom} command.
+{p_end}
+
+{title:Remarks}
+
+{p 4 4 2}
+{cmd:margeff8} is a work-in-progress; comments, suggestions, bug reports are welcome!
+Please direct correspondence to the adress described at the end of the help file. {p_end}
+{p 4 4 2}
+To keep {cmd:margeff8} up-to-date, visit the website{p_end}
+{p 8 4 2}{browse "http://www.uni-corvinus.hu/bartus"} {p_end}
+{p 4 4 2}or type{p_end}
+{p 8 4 2}		{cmd: net from http://www.uni-corvinus.hu/bartus/stata} {p_end}
+{p 8 4 2}		{cmd: net install margeff8}{p_end}
+
+ 
+{title:Examples}
+
+{p 4 4 2}{cmd:Illustrating the importance of the dummies( varlist_1 \ ... ) option }
+
+{p 4 4 2}Type the following commands:{p_end}
+
+{p 4 8 2}{cmd:. [save mydata, replace]}{p_end}
+{p 4 8 2}{cmd:.	tabi 60 30 10 \ 20 60 20 \ 10 10 80 , replace }{p_end}
+{p 4 8 2}{cmd:.	xi: mlogit col i.row [fw=pop] }{p_end}
+{p 4 8 2}{cmd:.	margeff8 }{p_end}
+
+{p 4 4 2}You will see that the marginal effects do not correspond to changes in probabilities in
+the 3X3 table. Only the changes in the probabilities of the third outcome approximate the true
+changes, namely 0.1 and 0.7. The correct results are obtained after specifying the dummies(..)
+option:	{p_end}
+
+{p 4 8 2}{cmd:.	margeff8, dummies(_I*)}{p_end}
+
+{p 4 8 2}{cmd:Easy calculation of the total effect of age	}
+
+{p 4 4 2} Suppose you wish to model employment status as a function of the usual human capital variables: gender, years of education, experience,
+and the square of experience. Assume further that the sample average of experience is 20. The total effect of experience on employment probabilities can be estimated as follows:
+
+{p 4 8 2}{cmd:. logit employed gender edu exp exp2	}{p_end}
+{p 4 8 2}{cmd:.	margeff8, at(mean) replace }	{p_end}
+{p 4 8 2}{cmd:.	lincom exp+40*exp2 }{p_end}
+
+
+{title:Acknowledgements}
+
+{p 4 4 2}
+Some parts of the code relies on margfx (version 30 Jul 1999 for Stata 5)
+written by Jonah B. Gelbach, Dept of Economics, Univ of MD at College Park.
+
+{title:Also see}
+
+{p 4 13 2}
+Online:  help for {help est}, {help postest}; {help mfx}
+
+
+{title:Author}
+
+{p 4 8 2} {browse "http://www.uni-corvinus.hu/bartus":Tamas Bartus}	{p_end}
+{p 4 8 2} Department of Sociology and Social Policy,{p_end}
+{p 4 8 2} Corvinus University Budapest,{p_end}
+{p 4 8 2} Budapest, Hungary {p_end}
+{p 4 8 2} URL: {browse "http://www.uni-corvinus.hu/bartus":http://www.uni-corvinus.hu/bartus}{p_end}
+{p 4 8 2} Email: {browse "mailto:tamas.bartus@uni-corvinus.hu":tamas.bartus@uni-corvinus.hu}{p_end}
+
+
+
+
+
+
+

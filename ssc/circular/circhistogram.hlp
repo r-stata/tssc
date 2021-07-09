@@ -1,0 +1,66 @@
+{smcl}
+{* 6may2004}{...}
+{hline}
+help for {hi:circhistogram}
+{hline}
+
+{title:Histogram for circular data with wrapping round of bins} 
+
+{p 8 17 2}
+{cmdab:circhist:ogram} 
+{it:varname}
+[{it:weight}] 
+[{cmd:if} {it:exp}] 
+[{cmd:in} {it:range}]
+[
+{cmd:,} 
+{cmdab:p:ad(}{it:#}{cmd:)}
+{it:histogram_options} ]
+
+{p 4 4 2}
+{cmd:fweight}s are allowed; see help {help weights}.
+
+{p 4 4 2}The abbreviation {cmd:circhist} (only) is allowed. 
+
+
+{title:Description} 
+
+{p 4 4 2}
+{cmd:circhistogram} produces a histogram for varname with some wrapping round of
+bins. {it:varname} should be a circular variable taking on values between 0
+and 360 degrees.
+
+
+{title:Options} 
+
+{p 4 8 2}{cmd:pad()} places a pad of {it:#} degrees at each end. Data less than or
+equal to {it:#} degrees are copied at the right end of the axis for a
+horizontal interval of 360 to {bind:360 + {it:#}} degrees. Data more than 
+{bind:360 - {it:#}} 
+degrees are copied at the left end of the axis for a horizontal
+interval of -{it:#} to 0 degrees. The default is 180, so that a full two
+cycles are shown.
+
+{p 4 8 2}{cmd:histogram_options} are any of the options allowed with 
+{help histogram}, 
+except that at present only the display of frequencies is supported. 
+
+
+{title:Examples}
+
+{p 4 8 2}{cmd:. circhistogram wallasp, start(-180) width(30)}
+
+{p 4 8 2}{cmd:. circhistogram wallasp, pad(90) start(-90) width(30)}
+
+
+{title:Author} 
+
+{p 4 4 2}Nicholas J. Cox, University of Durham, U.K.{break} 
+         n.j.cox@durham.ac.uk
+
+
+{title:Also see} 
+
+{p 4 13 2}
+On-line: help for {help histogram}, {help circkdensity} 
+

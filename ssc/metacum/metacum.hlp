@@ -1,0 +1,502 @@
+{smcl}
+{* 03Sep2008}{...}
+{hline}
+help for {hi:metacum}
+{hline}
+
+
+{title:Cumulative meta-analysis, with graphics}
+
+{p 8 12 2}
+{cmd:metacum}
+{it:varlist}
+{ifin}
+[{cmd:,}
+[{it:{help metacum##binary:binary_data_options}} {c |}
+ {it:{help metacum##continuous:continuous_data_options}} {c |}
+ {it:{help metacum##precalculated:precalculated_effect_estimates_options}}]
+{it:{help metacum##measure:measure_and_model_option}}
+{it:{help metacum##output:output_options}}
+{it:{help metacum##forest:forest_plot_options}}]
+
+
+{phang2}{marker binary}
+{it:binary_data_options}
+
+{p 12 12 2}
+{cmd:or}
+{cmd:rr}
+{cmd:rd}
+{cmd:fixed}
+{cmd:random}
+{cmd:fixedi}
+{cmd:randomi}
+{cmd:peto}
+{cmdab:noint:eger}
+{cmd:cc(}{it:#}{cmd:)}
+
+
+{phang2}{marker continuous}
+{it:continuous_data_options}
+
+{p 12 12 2}
+{cmd:cohen}
+{cmd:hedges}
+{cmd:glass}
+{cmd:nostandard}
+{cmd:fixed}
+{cmd:random}
+{cmdab:noint:eger}
+
+
+{phang2}{marker precalculated}
+{it:precalculated_effect_estimates_options}
+
+{p 12 12 2}
+{cmd:fixed}
+{cmd:random}
+
+
+{phang2}{marker measure}
+{it:measure_and_model_option}
+
+{p 12 12 2}
+{cmd:wgt(}{it:wgtvar}{cmd:)}
+
+
+{phang2}{marker output}
+{it:output_options} 
+
+{p 12 12 2}
+{cmd:by(}{it:byvar}{cmd:)}
+{cmd:log}
+{cmd:eform}
+{cmdab:il:evel(}{it:#}{cmd:)}
+{cmd:sortby(}{it:varlist}{cmd:)}
+{bind:{cmd:label(}[{cmd:namevar=}{it:namevar}]{cmd:,} [{cmd:yearvar=}{it:yearvar}]{cmd:)}}
+{cmd:notable}
+{cmd:nograph}
+
+
+{phang2}{marker forest}
+{it:forest_plot_options}
+
+{p 12 12 2}
+{cmdab:xla:bel(}{it:#}{cmd:,}...{cmd:)}
+{cmdab:xt:ick(}{it:#}{cmd:,}...{cmd:)}
+{opt texts:ize(#)}
+{cmd:nowt}
+{cmd:nostats}
+{cmd:counts}
+{cmd:group1(}{it:string}{cmd:)}
+{cmd:group2(}{it:string}{cmd:)}
+{cmd:effect(}{it:string}{cmd:)}
+{cmd:force}
+{opt lcols(varlist)}
+{opt rcols(varlist)}
+{opt astext(#)}
+{opt double}
+{cmd:summaryonly}
+{cmd:null(}{it:#}{cmd:)}
+{cmd:nulloff}
+{cmd:favours(}{it:string} # {it:string}{cmd:)}
+{cmd:pointopt(}{it:{help marker_options}} {c |} {it:{help marker_label_options}}{cmd:)}
+{cmd:ciopt(}{it:{help line_options}}{cmd:)}
+{cmd:olineopt(}{it:{help line_options}}{cmd:)}
+{cmd:classic}
+{cmd:nowarning}
+{it:graph_options}
+
+
+{title:Description}
+
+{p 4 4 2}
+{cmd:metacum} provides cumulative pooled estimates and confidence limits 
+obtained from fixed or random effects
+meta-analysis and plots the cumulative pooled estimates
+in the style of Lau et al. (1992). 
+
+{p 4 4 2}
+This updated version requires that {cmd:metan} is installed, for which
+{cmd:metacum} now acts as a wrapper. As such the syntax is very similar,
+allowing the user to supply data in a variety of formats.  Version 9 graphics
+are displayed and most of the options for {cmd:metan}, and many general
+graphics options, are permitted.  This help file is very similar to that of
+{cmd:metan}, although with the omission of some options.
+
+{p 4 4 2}
+{cmd:metacum} requires either two, three, four or six variables to be declared.
+When four variables are specified these correspond to the number of events and
+non-events in the experimental group followed by those of the control group,
+and analysis of binary data is performed on the 2x2 table.  With six variables,
+the data are assumed continuous and to be the sample size, mean and standard
+deviation of the experimental group followed by those of the control group.  If
+three variables are specified these are assumed to be the effect estimate and
+its lower and upper confidence interval, and it is suggested that these are log
+transformed for odds ratios or risk ratios and the {cmd: eform} option used.
+If two variables are specified these are assumed to be the effect estimate and
+standard error; again, it is recommended that odds ratios or risk ratios are
+log transformed.
+
+
+{title:Options}
+
+    {title:{it:binary_data_options}}
+
+{p 4 8 2}
+{cmd:or} pools ORs.
+
+{p 4 8 2}
+{cmd:rr} pools RRs; this is the default.
+
+{p 4 8 2}
+{cmd:rd} pools risk differences.
+
+{p 4 8 2}
+{cmd:fixed} specifies a fixed-effect model using the Mantel-Haenszel
+   method; this is the default.
+
+{p 4 8 2}
+{cmd:random} specifies a random-effects model using the DerSimonian and Laird
+   method, with the estimate of heterogeneity being taken.
+
+{p 4 8 2}
+{cmd:fixedi} specifies a fixed-effect model using the inverse-variance method.
+
+{p 4 8 2}
+{cmd:randomi} specifies a random-effects model using the 
+    DerSimonian and Laird method, with the estimate of heterogeneity being
+    taken from the inverse-variance fixed-effect model.
+
+{p 4 8 2}
+{cmd:peto} specifies that the Peto method is used to pool ORs.
+
+{p 4 8 2}{marker binary_nointeger}
+{cmd:nointeger} allows the cell counts to be nonintegers. This option may be
+useful when a variable continuity correction is sought for studies containing
+zero cells but also may be used in other circumstances, such as where a
+cluster-randomized trial is to be incorporated and the "effective sample size"
+is less than the total number of observations.
+
+{p 4 8 2}
+{cmd:cc(}{it:#}{cmd:)} defines a fixed-continuity correction to add
+    where a study contains a zero cell. By default, {cmd:metan8} adds 0.5 to
+    each cell of a trial where a zero is encountered when using
+    inverse-variance, DerSimonian and Laird, or Mantel-Haenszel weighting to
+    enable finite variance estimators to be derived.  However, the {cmd:cc()}
+    option allows the use of other constants (including none). See also the
+    {cmd:nointeger} option.
+
+    {title:{it:continuous_data_options}}
+
+{p 4 8 2}
+{cmd:cohen} pools standardized mean differences by the Cohen method;
+    this is the default.
+
+{p 4 8 2}
+{cmd:hedges} pools standardized mean differences by the Hedges method.
+
+{p 4 8 2}
+{cmd:glass} pools standardized mean differences by the Glass method.
+
+{p 4 8 2}
+{cmd:nostandard} pools unstandardized mean differences.
+
+{p 4 8 2}
+{cmd:fixed} specifies a fixed-effect model using the Mantel-Haenszel
+   method; this is the default.
+
+{p 4 8 2}
+{cmd:random} specifies a random-effects model using the DerSimonian and Laird
+   method, with the estimate of heterogeneity being taken.
+
+{p 4 8 2}
+{cmd:nointeger} denotes that the number of observations in each arm does not 
+    need to be an integer. By default, the first and fourth variables specified 
+    (containing N_intervention and N_control, respectively) may occasionally be 
+    noninteger (see {helpb metacum##binary_nointeger:nointeger} under binary
+    data).
+
+    {title:{it:precalculated_effect_estimates_options}}
+
+{p 4 8 2}
+{cmd:fixed} specifies a fixed-effect model using the 
+    Mantel-Haenszel method; this is the default.
+
+{p 4 8 2}
+{cmd:random} specifies a random-effects model using the DerSimonian and Laird
+     method, with the estimate of heterogeneity being taken.
+
+    {title:{it:measure_and_model_option}}
+
+{p 4 8 2}
+{cmd:wgt(}{it:wgtvar}{cmd:)} specifies alternative weighting
+    for any data type. The effect size is to be computed by assigning 
+    a weight of {it:wgtvar} to the studies. When RRs or ORs are
+    declared, their logarithms are weighted. This option should be used only if
+    you are satisfied that the weights are meaningful. 
+
+    {title:{it:output_options}}
+
+{p 4 8 2}
+{opt by(byvar)} specifies that the meta-analysis is to be stratified
+    according to the variable declared.
+
+{p 4 8 2}
+{cmd:log} reports the results on the log scale 
+    (valid only for ORs and RRs analyses from raw data counts).
+
+{p 4 8 2}
+{cmd:eform} exponentiates all effect sizes and confidence intervals  
+    (valid only when the input variables are log-ORs or log-hazard
+    ratios with standard error or confidence intervals).
+
+{p 4 8 2}
+{cmd:ilevel(}{it:#}{cmd:)} specifies the coverage (e.g., 90%, 95%, 99%) for the
+	individual trial confidence intervals; the default is {cmd:$S_level}.
+        See {helpb set level}.
+
+{p 4 8 2}
+{cmd:sortby(}{it:varlist}{cmd:)} sorts by variable(s) in {it:varlist}.
+
+{p 4 8 2}
+{cmd:label(}[{cmd:namevar=}{it:namevar}]{cmd:,} [{cmd:yearvar=}{it:yearvar}]{cmd:)}
+    labels the data by its name, year, or both. Either or both
+    variable lists  may be left blank. For the table display, the overall
+    length of the label is restricted to 20 characters. If the {cmd:lcols()}
+    option is also specified, it will override the {cmd:label()} option.
+
+{p 4 8 2}
+{cmd:notable} prevents the display of a results table.
+
+{p 4 8 2}
+{cmd:nograph} prevents the display of a graph.
+
+    {title:{it:forest_plot_options}}
+
+{p 4 8 2}
+{cmd:xlabel(}{it:#}{cmd:,}...{cmd:)} defines x-axis labels. This option has been
+    modified so that any number of points may be defined. Also, checks are no
+    longer made as to whether these points are sensible, so the
+    user may define anything if the {cmd:force} option is used. Points must
+    be comma separated.
+
+{p 4 8 2}
+{cmd:xtick(}{it:#}{cmd:,}...{cmd:)} adds tick marks to the x-axis. Points must
+    be comma separated.
+
+{p 4 8 2}
+{opt textsize(#)} specifies the font size for the text display on the graph. 
+    This option has been modified so that the default is
+    {cmd:textsize(100)} (as in 100%) and the percentage may be increased or
+    decreased (e.g., 80 or 120 for 20% smaller or larger, respectively).
+
+{p 4 8 2}
+{cmd:nowt} prevents the display of study weight on the graph.
+
+{p 4 8 2}
+{cmd:nostats} prevents the display of study statistics on the graph.
+
+{p 4 8 2}
+{cmd:counts} displays data counts (n/N) for each group when using
+    binary data or the sample size, mean, and standard deviation for each
+    group if mean differences are used (the latter is a new feature).
+
+{p 4 8 2}
+{cmd:group1(}{it:string}{cmd:)} and {cmd:group2(}{it:string}{cmd:)} may be
+    used with the {cmd:counts} option, and the text should contain the
+    names of the two groups.
+
+{p 4 8 2}
+{opt effect(string)} allows the graph to name the summary statistic used
+    when the effect size and its standard error are declared.
+
+{p 4 8 2}
+{cmd:force} forces the x-axis scale to be in the range specified
+    by {cmd:xlabel()}.
+
+{p 4 8 2}
+{cmd:lcols(}{it:varlist}{cmd:)} and {cmd:rcols(}{it:varlist}{cmd:)} 
+    define columns of additional data to the left or right of the graph. The
+    first two columns on the right are automatically set to effect size and
+    weight, unless suppressed by using the options {cmd:nostats} and
+    {cmd:nowt}. If {cmd:counts} is used, this will be set as the third column.
+    {cmd:textsize()} can be used to fine-tune the size of the text to achieve a
+    satisfactory appearance.  The columns are labeled with the variable label or
+    the variable name if this is not defined. The first variable specified in
+    {cmd:lcols()} is assumed to be the study identifier and this is used in the
+    table output.
+
+{p 4 8 2}
+{cmd:astext(}{it:#}{cmd:)}
+    specifies the percentage of the graph to be taken up by text.
+    The default is 50%, and the percentage must be in the range 10-90.
+
+{p 4 8 2}
+{cmd:double}
+    allows variables specified in {cmd:lcols()} and {cmd:rcols()} to run over
+    two lines in the plot. This option may be of use if long strings are used.
+
+{p 4 8 2}
+{cmd:summaryonly}
+    shows only summary estimates in the graph. This option may be of use for
+    multiple subgroup analyses.
+
+{p 4 8 2}
+{cmd:null(}{it:#}{cmd:)}
+    displays the null line at a user-defined value rather than at 0 or 1. 
+
+{p 4 8 2}
+{cmd:nulloff}
+    removes the null hypothesis line from the graph.
+
+{p 4 8 2}
+{cmd:favours(}{it:string} {cmd:#} {it:string}{cmd:)}
+    applies a label saying something about the treatment effect to either
+    side of the graph (strings are separated by the {cmd:#} symbol). This
+    option replaces the feature available in {cmd:b1title} in the previous
+    version of {cmd:metan}.
+
+{p 4 8 2}
+{opt pointopt(marker_options)}, {opt ciopt(line_options)}, and
+{opt olineopt(line_options)}
+    specify options for the graph routines within the program, allowing the
+    user to alter the appearance of the graph. Any options associated with a
+    particular graph command may be used, except some that would cause incorrect
+    graph appearance. For example, diamonds are plotted using the
+    {helpb twoway pcspike} command, so options for line styles are available
+    (see {it:{help line options}}); however, altering the x-y orientation with
+    the option {cmd:horizontal} or {cmd:vertical} is not allowed. So,
+    {cmd:ciopt(lcolor(green) lwidth(thick))} feeds into a command such as
+    {cmd:pcspike(y1 x1 y2 x2, lcolor(green) lwidth(thick))}
+
+{p 8 8 2}
+{opt pointopt(marker_options)} controls the point estimate by using marker
+    options.  See {it:{help marker_options}} and
+    {it:{help marker_label_options}}.
+
+{p 8 8 2}
+{opt ciopt(line_options)} controls the confidence intervals for studies by using
+    options for {cmd:twoway pcspike} (not horizontal/vertical). See
+    {it:{help line_options}}.
+
+{p 8 8 2}
+{opt olineopt(line_options)} controls the overall effect line with options for
+    another line (not position). See {it:{help line_options}}.
+
+{p 4 8 2}
+{cmd:classic} specifies that solid black boxes without point estimate markers
+     are used, as in the previous version of {cmd:metan}.
+
+{p 4 8 2}
+{cmd:nowarning} switches off the default display of a note warning that studies
+        are weighted from random-effects analyses.
+
+{p 4 8 2}
+{it:graph_options}
+    are any of the options documented in {manhelpi twoway_options G}.
+    These allow the addition of titles, subtitles,
+    captions, etc.; control of margins, plot regions, graph size, aspect
+    ratio; and the use of schemes.  Because titles may be added with 
+    {it:graph_options}, previous options such as {cmd:b2title} are no longer
+    necessary. 
+
+
+{title:Remarks on metacum (calling metan)}
+
+{p 4 4 2}
+For two or three variables, a variance-weighted analysis is performed in 
+a similar fashion to the {helpb meta} command; the two variable syntax
+is {it:theta} and {it:SE(theta)}. The 3 variable syntax is {it:theta},
+{it:lower ci (theta)}, {it:upper ci (theta)}. Note that in this situation
+"{it:theta}" is taken to be the logarithm of the effect size if the odds
+ratio or risk ratio is used. {hi:This differs from the equivalent in the {cmd:meta} command}.
+This program does not assume the three variables need log transformation:
+if odds ratios or risk ratios are combined, it is up to the user to
+log-transform them first. The {cmd:eform} option may be used to change
+back to the original scale if needed. By default the confidence
+intervals are assumed symmetric, and the studies are pooled by taking
+the variance to be equal to (CI width)/2z. 
+
+{p 4 4 2}
+Note that for graphs on the log scale (that is, ORs or RRs), values
+outside the range [10e-8,10e8] are not displayed, and similarly graphs of
+other measures (log ORs, RDs, SMDs) are restricted to the range [-10e8,10e8].
+A confidence interval which extends beyond this, or the specified scale
+if {cmd:force} is used, will have an arrow added at the end of the range.
+
+
+{title:Examples}
+
+{p 4 8 2}
+All examples use a simulated example dataset (Ross Harris 2006)
+
+{p 8 12 2}
+{stata "use http://fmwww.bc.edu/repec/bocode/m/metan_example_data":. use http://fmwww.bc.edu/repec/bocode/m/metan_example_data}
+
+{p 4 8 2}
+Risk difference from raw cell counts, random effects model, "label" specification
+
+{p 8 12 2}
+{cmd:. metacum tdeath tnodeath cdeath cnodeath, }
+{p_end}
+{p 12 12 2}
+{cmd:rd random label(namevar=id, yearid=year)}
+{p_end}
+{p 12 12 2}
+{it:({stata "metacum_examples metacum_ex1":click to run})}
+
+{p 4 8 2}
+Generate log odds ratio and standard error. Graph has exponential form,
+scale is forced within set limits and ticks added. Data columns syntax used and effect label specified.
+
+{p 8 12 2}
+{cmd:. gen logor = ln( (tdeath*cnodeath)/(tnodeath*cdeath) )}
+
+{p 8 12 2}
+{cmd:. gen selogor = sqrt( (1/tdeath) + (1/tnodeath) + (1/cdeath) + (1/cnodeath) )}
+
+{p 8 12 2}
+{cmd:. metacum logor selogor, eform xlabel(0.6, 0.8, 1, 1.2, 1.4, 1.6) }
+{p_end}
+{p 12 12 2}
+{cmd:force xtick(0.7, 0.9, 1.1, 1.3, 1.5) lcols(id year country) effect(Odds ratio)}
+{p_end}
+{p 12 12 2}
+{it:({stata "metacum_examples metacum_ex2":click to run})}
+
+
+{title:Reference}
+
+{phang} Lau, J., E. M. Antman, J. Jimenez-Silva, F. Mosteller, and T. C. 
+Chalmers. 1992.  Cumulative meta-analysis of therapeutic trials for myocardial
+infarction.  {it:New England Journal of Medicine} 327: 248-254.
+
+
+{title:Authors}
+
+    {title:First version}
+
+{phang}
+Jonathan A. C. Sterne{break}
+Department of Social Medicine, University of Bristol,
+Canynge Hall, Whiteladies Road, Bristol BS8 2PR, UK
+
+    {title:Version 9 update}
+
+{phang}
+Ross J. Harris{break}
+Department of Social Medicine, University of Bristol,
+Canynge Hall, Whiteladies Road, Bristol BS8 2PR, UK
+
+
+{title:Also see}
+
+{p 7 11 2}STB:  STB-44 sbe24
+
+{psee}Online:  {helpb metan}, {helpb metannt} (if installed),
+         {helpb meta} (if installed), {helpb metareg} (if installed), 
+         {helpb metabias} (if installed), {helpb metatrim} (if installed), 
+         {helpb metainf} (if installed), {helpb galbr} (if installed),
+         {helpb metafunnel} (if installed)
+{p_end}

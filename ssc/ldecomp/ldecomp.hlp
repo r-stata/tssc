@@ -1,0 +1,256 @@
+{smcl}
+{* 29Jan2008}
+help for {hi:ldecomp}
+{hline}
+
+{title:Title}
+
+{p2colset 5 16 18 2}{...}
+{p2col :{hi: ldecomp} {hline 2}}Decomposes total effects in logistic 
+regresion into direct and indirect effects.{p_end}
+{p2colreset}{...}
+
+{title:Syntax}
+
+{p 8 15 2}
+{cmd:ldecomp} {it:depvar} [ {it:control_var1} [...]] } {ifin} {weight} {cmd:,} 
+{opt d:irect(varname)} {opt i:ndirect(varlist)}
+[
+{opt at(control_var1 # [; control_var2 #] [...])}
+{opt obs:pr}
+{opt predp:r}
+{opt predo:dds}
+{opt or}
+{opt ri:ndirect}
+{opt norm:al}
+{opt range(# #)}
+{opt nip(#)}
+{opt int:eractions}
+{opt noleg:end}
+{opt nodec:omp}
+{opt noboot:strap}
+{it:{help ldecomp##bootopt:bootstrap_options}} 
+]
+
+{p 8 8}
+fweights, pweights, and iweights are allowed when the {cmd:nobootstrap} option 
+is specified.
+
+{title:Description}
+
+{pstd}
+{cmd:ldecomp} decomposes the total effects of a categorical variable in logistic 
+regresion into direct and indirect effects using a method method by Erikson et 
+al. (2005) and a generalization of this method by  Buis (2008). Say our dependent 
+variable is  whether or not someone attends college, and we are interested in 
+decomposing the total effect of class background (high or low). We suspect that 
+part of the total effect can be explained by differences between the classes in 
+performance during high school: higher class children do better at high school 
+and children that do better at high school are more likely to attend college. 
+This is the indirect effect. The direct effect of class is the effect while 
+controlling for the performance: higher class children are more likely to attend
+college even if they have the same performance during high school.
+
+{pstd}
+There are two ways in which one can see the impact of differences in the 
+distribution of performance across classes, and thus get the indirect effect. One 
+can fix the logistic regresion coefficients to be equal to the coefficients for 
+the lower class and compare the proportion attending college of the group with a 
+distribution of performance equal to the lower class and proportion attending 
+college of the group with a distribution of performance equal to the higher class.
+This way the only difference between the two groups is the distribution of 
+performance. Call this method 1. Alternatively, one can make the same comparison 
+but fix the logistic regression coefficients to be equal to the coefficients of 
+the higher class. Call this method 2.
+
+{pstd}
+Similarly, one can control for performance, and thus get the direct effect, 
+by fixing the distribution of performance to be equal to the distribution of
+performance of the higher class (method 1) or the lower class (method 2). Once these
+distributions are fixed one can compare the proportion attending college of the 
+group with the logistic regression coefficients of the lower class with the 
+proportion attending college of the group with the logistic regression coefficients 
+of the higher class. 
+
+{pstd}
+If these direct and indirect effects are represented as odds ratios than the total 
+effect is the product of the the direct and indirect effect, as can be seen in 
+equations 1 (method 1) and 2 (method 2). The O represents the odds of attending
+college, the first subscript the distribution of performance and the second 
+subscript the logistic regression coefficients.
+
+{col 8}O_hl{col 17}O_hh{col 26}O_hh
+{col 7}{hline 6} X {col 16}{hline 6} = {hline 6}              (1)
+{col 8}O_ll{col 17}O_hl{col 26}O_ll
+
+{col 8}O_hh{col 17}O_lh{col 26}O_hh
+{col 7}{hline 6} X {col 16}{hline 6} = {hline 6}              (2)
+{col 8}O_lh{col 17}O_ll{col 26}O_ll
+
+{pstd}
+If these direct and indirect effects are represented as log odds ratios than the total 
+effect is the sum of the the direct and indirect effect, as can be seen in 
+equations 1' (method 1) and 2' (method 2). 
+
+{col 9}{c TLC}{col 16}{c TRC}{col 22}{c TLC}{col 29}{c TRC}{col 35}{c TLC}{col 42}{c TRC}
+{col 9}{c |} O_hl {c |}{col 22}{c |} O_hh {c |}{col 35}{c |} O_hh {c |}
+{col 7}ln{c |}{hline 6}{c |} + ln{c |}{hline 6}{c |} = ln{c |}{hline 6}{c |}  (1')
+{col 9}{c |} O_ll {c |}{col 22}{c |} O_hl {c |}{col 35}{c |} O_ll {c |}
+{col 9}{c BLC}{col 16}{c BRC}{col 22}{c BLC}{col 29}{c BRC}{col 35}{c BLC}{col 42}{c BRC}
+
+{col 9}{c TLC}{col 16}{c TRC}{col 22}{c TLC}{col 29}{c TRC}{col 35}{c TLC}{col 42}{c TRC}
+{col 9}{c |} O_hh {c |}{col 22}{c |} O_lh {c |}{col 35}{c |} O_hh {c |}
+{col 7}ln{c |}{hline 6}{c |} + ln{c |}{hline 6}{c |} = ln{c |}{hline 6}{c |}  (2')
+{col 9}{c |} O_lh {c |}{col 22}{c |} O_ll {c |}{col 35}{c |} O_ll {c |}
+{col 9}{c BLC}{col 16}{c BRC}{col 22}{c BLC}{col 29}{c BRC}{col 35}{c BLC}{col 42}{c BRC}
+
+{pstd}
+By default {cmd:ldecomp} shows the decomposition in terms of log odds ratios for both 
+method 1 and 2, and computes standard errors using {helpb bootstrap}. By specifying the
+{cmd:relindir} option {cmd:ldecomp} will also show estimates of the size of the indirect 
+relative to the total effect, using method 1 and 2 and the average of these two, and 
+their standard errors, also computed using the bootstrap. 
+
+{pstd}
+In order for this decomposition to work one needs a whole set of odds of attending college,
+both of groups that actually exist in the data like the group with the distribution of
+performance and the logistic regression coefficients of the lower class, and of groups that
+don't exist in the data, like the group with the distribution of performance of the lower
+class and the logistic regression coefficients of the higher class. All these odds are 
+computed by transforming the average predicted probability of all these actual and 
+counterfactual groups. Erikson et al. (2005) and Buis (2008) differ with respect to the 
+way these average probabilities are computed: Erikson et al. assume that ability is 
+normaly distributed and numerically integrate over this distribution, while Buis makes no
+assumption about this distribution and just computes the predicted probabilities and then 
+computes the mean, effectively integrating over the empirical distribution of performance 
+instead of over a normal distribution. 
+
+{pstd}
+Other than Erikson et al. (2005) {cmd:ldecomp} also allows one to add control variables.
+While computing this decompostion these will by default be fixed at their mean value if 
+no value was specified in the {cmd:at()} option
+
+
+{title:Options}
+
+{phang}
+{opt direct(varname)} specifies the variable whose direct effect we want to decompose into 
+an indirect and total effect. This has to be a categorical variable, each value of
+varnameis assumed to represent a group.
+
+{phang}
+{opt indirect(varlist)} specifies the variable(s) through which the indirect effect occurs. By
+default multiple variables are allowed and these can be from any distribution. If
+the {cmd:normal} option is specified only one variable can be entered, and this variable is
+assumed to be normally distributed.
+
+{phang}
+{opt at(control_var1 # [; control_var2 #] [...])} specifies the values at which the control
+variables are to be fixed. The default is to fix the value of control variable at its mean
+value.
+
+{phang}
+{cmd:obspr} specifies that a table of the observed proportions are to be displayed.
+
+{phang}
+{cmd:predpr} specifies that a table of predicted and counterfactual proportions is to be displayed.
+If the {cmd:normal} option is not specified the diagonal elements of this table will be exactly
+the same as the observed proportions.
+
+{phang}
+{cmd:predodds} specifies that a table of predicted and counterfactual odds is to be displayed.
+
+{phang}
+{cmd:or} specifies that the decomposition is displayed in terms of odds-ratios instead of log 
+odds-ratios.
+
+{phang}
+{cmd:rindirect} specifies that the relative contributions of the indirect effects to the 
+total effect (in terms of log odds ratios) is to be displayed.
+
+{phang}
+{cmd:normal} specifies that the predicted and counterfactual proportions are to be computed
+according to the method specified by Erikson et al. (2005). This means that the variable 
+specified in {cmd:indirect()} is assumed to be normally distributed. This option was 
+primarily added for compatibility with Erikson et al. (2005). By default the method 
+by Buis (2008) is used, which allows multiple variables to be specified in {cmd:indirect()} 
+and makes no assumptions about the distribution of these variables. 
+
+{phang}
+{opt range(##)} specifies the range over which the numerical integration of varlist is to be
+performed. The default is the minimum of the variable in varlist minus 10% of the
+range of varlist and the maximum of varlist plus 10% of the range of varlist. This
+option can only be specified with the {cmd:normal} option because in the default method there
+is no need for numerical integration.
+
+{phang}
+{opt nip(#)} specifies the number of integration points used in the numerical integration of
+the variable in varlist. The default is 1000. This option can only be specified with
+the {cmd:normal} option because in the default method there is no need for numerical 
+integration.
+
+{phang}
+{cmd: interactions} specifies that interactions between the categories of the variable 
+specified in {cmd: direct()} and the variable(s) specified in {cmd: indirect()}. In other
+words the effects of the variables specified in {cmd: indirect()} on the dependent variable
+are allowed to differ from one another for each category of the variable specified in 
+{cmd: direct()}. This option was primarily added for compatibility with Erikson et al. (2005).
+
+{phang}
+{cmd: nolegend} suppresses a legend that is by default displayed at the bottom of the main
+table.
+
+{phang}
+{cmd: nodecomp} prevents {cmd: ldecomp} from displaying the table of decompositions, which can be 
+useful in combination with the {cmd: obspr}, {cmd: predpr}, and/or {cmd: predodds} options.
+
+{phang}
+{cmd: nobootstrap} prevents {cmd:ldecomp} from using {cmd:bootstrap} to calculate standard errors.
+
+{marker bootopt}{...}
+{phang}
+{it:bootstrap_options} The following options of {helpb bootstrap} are allowed: {opt r:eps(#)}, {opt str:ata(varlist)},
+{opt si:ze(#)}, {opt cl:uster(varlist)}, {opt id:cluster(newvar)}, 
+{bf:saving}({it:filename}[, {it:suboptions}]), {opt bca}, {opt mse}, {opt l:evel(#)}, 
+{opt nodots}, {opt seed(#)}, and {opt jack:knifeopts(jkopts)}.
+
+
+{title:Example}
+
+{phang}{cmd:. use wisconsin.dta, clear}{p_end}
+{phang}{cmd:. ldecomp college , direct(ocf57) indirect(hsrankq)}{p_end}
+
+
+{title:Author}
+
+{p 4 4}
+Maarten L. Buis{break}
+Universitaet Tuebingen{break}
+Instituet fur Soziologie{break}
+maarten.buis@uni-tuebingen.de
+{p_end}
+
+
+{title:References}
+
+{p 4 8 2}Buis, M.L. (2009). Direct and indirect effects in a logit model.
+{browse "http://www.maartenbuis.nl/wp/ldecomp.html"}
+
+{p 4 8 2}Erikson, R, J.H. Goldthorpe, M. Jackson, M. Yaish, D.R. Cox (2005).
+On class differentials in educational attainment. 
+{it:Proceedings of the National Academy of Science}, 102(27): 9730-9732.
+
+{p 4 8 2}Jackson, M, R. Erikson, J. Goldthorpe, M. Yaish (2007). Primary and 
+secondary effects in class differentials in educational attainment: The 
+transition to A-level courses in England and Wales. {it:Acta Sociologica},
+50(3): 211-229.
+
+
+{title:Also see}
+
+{psee}
+Online: {helpb logit} {helpb bootstrap} {helpb bootstrap_postestimation} {helpb jackknife}
+
+{psee}
+If installed: {helpb fairlie}  {helpb gdecomp}
+{p_end}

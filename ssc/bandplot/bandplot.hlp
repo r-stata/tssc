@@ -1,0 +1,327 @@
+{smcl}
+{* 25nov2008}{...}
+{hline}
+help for {hi:bandplot}
+{hline}
+
+{title:Plot summary statistics of responses for bands of predictors}
+
+{p 8 17 2} 
+{cmd:bandplot} 
+{it:yvar} {it:xvars} 
+[{it:weight}]
+[{cmd:if} {it:exp}] 
+[{cmd:in} {it:range}]
+[ 
+{cmdab:cat:egorical(}{it:varlist}{cmd:)} 
+{cmdab:cont:inuous(}{it:varlist}{cmd:)} 
+{cmd:dta(}{it:filename} [{cmd:,} {it:save_options}]{cmd:)}  
+{cmdab:miss:ing} 
+{cmdab:nq:uantiles(}{it:#}{cmd:)}  
+{cmdab:s:tatistics(}{it:stat} [{it:stat} ... ]{cmd:)} 
+{cmd:xweighted} 
+
+{p 17 17 2} 
+{cmd:bandopts(}{it:over_subopts}{cmd:)}
+{cmdab:nu:mber}
+{cmd:recast(}{cmd:hbar} | {cmd:bar}{cmd:)}  
+{cmd:xopts(}{it:over_subopts}{cmd:)}
+{cmd:xvarlabels}
+{cmd:yvarlabels} 
+{it:graph_options}  
+]
+
+
+{p 8 17 2} 
+{cmd:bandplot} 
+({it:yvars}) {it:xvars} 
+[{it:weight}]
+[{cmd:if} {it:exp}] 
+[{cmd:in} {it:range}]
+[ 
+{cmd:,}
+{cmdab:cat:egorical(}{it:varlist}{cmd:)} 
+{cmdab:cont:inuous(}{it:varlist}{cmd:)} 
+{cmd:dta(}{it:filename} [{cmd:,} {it:save_options}]{cmd:)}  
+{cmdab:miss:ing} 
+{cmdab:nq:uantiles(}{it:#}{cmd:)}  
+{cmdab:s:tatistics(}{it:stat}{cmd:)} 
+{cmd:xweighted} 
+
+{p 17 17 2}
+{cmd:bandopts(}{it:over_subopts}{cmd:)}
+{cmdab:nu:mber}
+{cmd:recast(}{cmd:hbar} | {cmd:bar}{cmd:)}  
+{cmd:xopts(}{it:over_subopts}{cmd:)}
+{cmd:xvarlabels}
+{cmd:yvarlabels} 
+{it:graph_options}  
+]
+
+{p 4 4 2}
+{cmd:aweight}s and {cmd:fweight}s may be specified. 
+
+
+{title:Description}
+
+{p 4 4 2}
+{cmd:bandplot} produces plots showing summary statistics of one or more
+response variables for bands of one or more predictor variables. 
+
+{p 4 4 2}
+By default, {cmd:bandplot} is a wrapper for {help graph dot}.
+Optionally, {cmd:bandplot} can be specified to be a wrapper for 
+{help graph hbar} or {help graph bar}. 
+
+{p 4 4 2}
+There are two syntaxes. In the first, {cmd:bandplot} takes the first
+variable in a {it:varlist} to be a response variable {it:yvar}, which is
+summarised for observations in each of various bands of the other predictor 
+variables {it:xvars}. In the second, {cmd:bandplot} takes two or more
+variables specified first within parentheses {cmd:()} as being response 
+variables {it:yvars}; all subsequent variables are then taken to be 
+predictors {it:xvars}. 
+
+{p 4 4 2}
+By default, {cmd:bandplot} shows means. Any other statistics produced by
+{help summarize} may be specified. Note that with two or more {it:yvars}
+only one statistic may be shown.
+
+{p 4 4 2}
+Bands are to be interpreted as follows. By default numeric variables are
+divided into quantile-based bands. (By default in turn quartile-based
+bands are used.) Alternatively, variables can be declared explicitly or
+implicitly as categorical, in which case the distinct values of each
+such variable are used as bands. Any string variables specified as
+{it:xvars} are treated as categorical, regardless of any other
+specifications.  No string variables may be specified as {it:yvars}. 
+
+
+{title:Remarks} 
+
+{p 4 4 2}
+{cmd:bandplot} does not draw plots based on coloured bands. 
+If your search for those or similar plots has led you
+here, check out {help twoway rarea}. The name used here is not standard,
+but nor apparently is any other name used routinely for what is plotted
+by this command. 
+
+{p 4 4 2}
+The idea of showing summaries of responses for bands of one or more
+predictors evidently has a long history, which is difficult to trace.
+Plots summarizing polls or elections in terms of votes for major parties
+or candidates broken down separately by categorical variables such as
+sex, age, race or region are common. The particular choices here were
+inspired largely by examples given by Harrell (2001). See his pp. 126,
+303f, 314f, 336. 
+
+{p 4 4 2}
+What {cmd:bandplot} offers is perhaps best explained by a direct
+comparison with {help graph dot}. There are three major differences and
+several minor differences. (Similar comments apply to {help graph bar}
+or {help graph hbar} if either is invoked.) 
+
+{p 4 4 2} 
+First, consider an example with the auto data. Compare 
+
+{p 4 8 2}
+{cmd:. graph dot (mean) mpg, over(foreign) over(rep78)} 
+
+{p 4 4 2}
+and 
+
+{p 4 8 2}
+{cmd:. bandplot mpg foreign rep78, cat(foreign rep78)} 
+
+{p 4 4 2}
+The {cmd:graph dot} command shows means of {cmd:mpg} for the
+cross-combinations of {cmd:foreign} and {cmd:rep78} occurring in the
+data, i.e. one variable's classes are nested inside the other's. The
+{cmd:bandplot} command shows means of {cmd:mpg} separately for classes of each
+variable. 
+
+{p 4 4 2}
+Second, {cmd:bandplot} supports quantile-based bands on the fly. You
+could show those with {cmd:graph dot}, but you would need to create any 
+variables classed into bands first, say by using {help xtile}. 
+
+{p 4 4 2}
+Third, {cmd:graph dot} typically carries out a temporary reduction of
+the dataset, but {cmd:bandplot} carries out its own reduction and passes
+the results to {cmd:graph dot} for plotting {cmd:asis}. Various options
+of {cmd:graph dot} are thus irrelevant or inappropriate so far as
+{cmd:bandplot} is concerned. Further, variables in the dataset are not
+accessible to the {cmd:graph dot} command. 
+
+{p 4 4 2}
+{cmd:bandplot} does not offer any rounding or coarsening option such as
+might be used to bin numeric variables into equal intervals. You
+would need to do that first. Advice is to use {help clonevar} to create
+a copy of a variable (notably, keeping the variable label) and then to
+{cmd:replace} that with a binned version using a function such as 
+{help round()}, {help floor()} or {help ceil()}. Then declare such variables to
+{cmd:bandplot} as categorical [sic]. 
+
+{p 4 4 2}
+Although {cmd:bandplot} ignores missing values on the {it:yvars}, the
+structure of such missing values may be explored by creating an
+indicator for missingness using {help missing()}. 
+
+
+{title:Options} 
+
+{title:{it:Statistics options}} 
+
+{p 4 8 2} 
+{cmd:categorical()} specifies the names of variables to be treated as
+categorical, so that the bands of each are the distinct values of each. 
+All string variables are treated as categorical, regardless of any 
+explicit or implicit specification. 
+
+{p 4 8 2} 
+{cmd:continuous()} specifies the names of variables to be treated as
+continuous, meaning here only that tbe bands of each are based on
+quantiles calculated from the data. 
+
+{p 8 8 2}
+If {cmd:categorical()} is specified but not {cmd:continuous()},
+then continuous variables are those not declared as categorical; and
+conversely. If both {cmd:categorical()} and {cmd:continuous()} are
+specified, note that all variables must be classified one way or the other. If
+neither {cmd:categorical()} nor {cmd:continuous()} is specified, all
+numeric variables are treated as continuous. It will typically be
+easiest to specify which kind of variable is in the minority. The
+convention here thus resembles that used by {help anova}. 
+
+{p 4 8 2}
+{cmd:dta(}{it:filename} [{cmd:,} {it:save_options}]{cmd:)}
+specifies that the dataset used on the fly for the graph is to be saved
+as a Stata data file {it:filename} using {help save}. {it:save_options}
+are options of {help save}. The non-standard option name reflects the
+fact that users may wish to use the {cmd:graph, saving()} option to save their
+graph to a file. 
+
+{p 4 8 2} 
+{cmd:missing} specifies that missing values of the {it:xvars} be used as
+separate bands for summary. Missing values of the {it:yvars} are
+ignored, come what may. Note that specifying this option has
+implications for which observations are included in the plot, as
+observations with missing values on any of the {it:xvars} are by default
+excluded from the summarized and plotted data. The {cmd:missing} option
+overrides that default. 
+
+{p 4 8 2}
+{cmd:nquantiles()} specifies the number of quantile bands to be used for
+continuous variables. The default is 4. Quantiles are calculated using
+{help _pctile}.  Brackets and parentheses are used on the
+plot to indicate bands precisely.  Quantile bands take the form [,) [,)
+... [,] i.e. values equal to calculated quantiles are allocated to the
+higher band; values equal to the minimum and maximum are necessarily
+allocated to the lowest and highest bands respectively.  Users
+unfamiliar with this notation should note that {bind:[a, b)} means
+{bind:a <= values < b} and {bind:[a, b]} means {bind:a <= values <= b}. 
+Note that the binning convention here differs from that applied by 
+{help xtile}. 
+
+{p 4 8 2} 
+{cmd:statistics()} indicates one or more statistics as calculated by
+{help summarize}. Names must be used exactly as listed in the help 
+for {cmd:summarize} indicating its saved results. For example, use 
+{cmd:sd} not {cmd:SD} and {cmd:N} not
+{cmd:n}. If not specified, the default is to show means. If two or more
+{it:yvars} are specified, only one statistic may be specified. 
+
+{p 4 8 2}
+{cmd:xweighted} indicates that any weights specified are to be used in
+determining the quantiles of continuous {it:xvars}. By default, weights
+are used only in summarizing the {it:yvars}. This is a rarely used
+option.  
+
+
+{title:{it:Graphics options}}
+
+{p 4 8 2}
+{cmd:bandopts()} are {it:over_subopts} of {help graph dot} (or
+{help graph hbar} or {help graph bar}, as the case may be) used to
+specify the appearance of the band information (the inside 
+categorical axis). 
+
+{p 4 8 2}
+{cmd:number} specifies that the (unweighted) number of observations in
+each band be shown on the graph. The number will appear as part of the
+band label. 
+
+{p 4 8 2}
+{cmd:recast(}{cmd:hbar} | {cmd:bar}{cmd:)} specifies that either 
+{help graph hbar} or {help graph bar} be used to plot results rather
+than {help graph dot}. The name is inspired by an option of 
+{help graph twoway}: see {help advanced_options}. Otherwise there is no
+resemblance, so that in particular this option can not be used to recast
+the graph to a {cmd:twoway} type. 
+
+{p 4 8 2}
+{cmd:xopts()} are {it:over_subopts} of {help graph dot} (or
+{help graph hbar} or {help graph bar}, as the case may be) used to
+specify the appearance of the {it:xvars} information (the outside 
+categorical axis). 
+
+{p 4 8 2}
+{cmd:xvarlabels} specifies that the variable labels of the {it:xvars}
+are to be shown on the outer categorical axis. By default, variable names are
+shown, to save space. 
+
+{p 4 8 2}
+{cmd:yvarlabels} specifies that the variable labels of two or more {it:yvars}
+specified are to be shown in the legend. By default, variable names are
+shown, to save space. 
+
+{p 4 8 2} 
+{it:graph_options} are other options of  {help graph dot} (or
+{help graph hbar} or {help graph bar}, as the case may be). 
+See also {cmd:Remarks} above. 
+
+
+{title:Examples}
+
+{p 4 8 2}{cmd:. sysuse auto, clear}{p_end}
+{p 4 8 2}{cmd:. bandplot mpg foreign rep78 weight, cat(for rep) }{p_end}
+{p 4 8 2}{cmd:. bandplot mpg foreign rep78 weight, cont(weight) }{p_end}
+{p 4 8 2}{cmd:. bandplot mpg foreign rep78 weight, cont(weight) missing }{p_end}
+{p 4 8 2}{cmd:. bandplot mpg foreign rep78 weight, cont(weight) missing dta(results) }{p_end}
+{p 4 8 2}{cmd:. bandplot mpg foreign rep78 weight, cont(weight) missing nq(8) dta(results, replace) }{p_end}
+{p 4 8 2}{cmd:. bandplot mpg foreign rep78 weight, cont(weight) missing nq(8) s(mean p50) legend(order(1 "mean" 2 "median")) marker(1, ms(Sh)) marker(2, ms(Dh)) }{p_end}
+{p 4 8 2}{cmd:. bandplot (trunk turn) foreign rep78 weight, cont(weight) yvarlabels }{p_end}
+{p 4 8 2}{cmd:. bandplot (trunk turn) foreign rep78 weight, cont(weight) yvarlabels xvarlabels marker(1, ms(Sh)) marker(2, ms(Dh))  }{p_end}
+{p 4 8 2}{cmd:. bandplot (trunk turn) foreign rep78 weight, cont(weight) number yvarlabels xopts(relabel(1 `" "Car" "type" "' 2 `" "Repair" "record" "1978" "' 3 `" "Weight" "(lb)" "'))   }{p_end}
+{p 4 8 2}{cmd:. bandplot (trunk turn) foreign rep78 weight, cont(weight) number yvarlabels xopts(relabel(1 `" "Car" "type" "' 2 `" "Repair" "record" "1978" "' 3 `" "Weight" "(lb)" "'))  recast(hbar)}{p_end}
+{p 4 8 2}{cmd:. bandplot (trunk turn) foreign rep78 weight, cont(weight) number yvarlabels xopts(relabel(1 `" "Car" "type" "' 2 `" "Repair" "record" "1978" "' 3 `" "Weight" "(lb)" "')) bandopts(label(labsize(*0.8))) }
+
+
+{title:Author}
+
+{p 4 4 2}Nicholas J. Cox, Durham University{break} 
+n.j.cox@durham.ac.uk
+
+
+{title:Acknowledgments} 
+
+{p 4 4 2}Marcello Pagano and Fred Wolfe kindly notified me of small bugs. 
+
+	 
+{title:References}
+
+{p 4 8 2}
+Harrell, F.E. 2001. 
+{it:Regression Modeling Strategies: With Applications to Linear Models, Logistic Regression, and Survival Analysis.} 
+New York: Springer. 
+
+
+{title:Also see}
+
+{p 4 13 2}On-line:  
+help for {help graph dot}, 
+help for {help graph hbar}, 
+help for {help graph bar}, 
+help for {help summarize}, 
+help for {help _pctile}
+

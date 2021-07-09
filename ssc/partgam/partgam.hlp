@@ -1,0 +1,97 @@
+.-
+help for ^partgam^   Partial Gamma        26. apr. 1999             
+.-
+
+  ^partgam^ v1 v2 [^if^ exp] [^in^ range] [weight] [, 
+	     ^sub^table ^t^able ^subp^ct ^adj^ust(varlist) ^by^(varlist)
+              ^not^able ^test l^evel() ^one dl^() ^r^ef() ^i^nfo  ]
+^Description^
+----------
+ partgam  Calculation and tests for partial gamma coefficient (stata 6)
+
+ Partgam is relevant for overall and stratified (conditional) analysis of
+ two variables which are of type ^ordinal^. If called without any ^adjust^
+ variables, the procedure will show the gamma with confidence intervals for
+ the overall table.
+
+ The partial gamma coefficient is a weighted summary version of gamma
+ across subtables of the Goodman & Kruskal's gamma coefficient. A test 
+ of homogeneity of stratified gamma's is applied.
+
+ See ref. for gamma in Stata Manual under @tabulate@ 
+       1: Kruskal & Wallis
+       2: Agresti
+
+ By default observations with missing (.) will be excluded. Variable labels
+ are only shown frist time a particular variable is used in subsequent runs.
+
+^Options^
+--------
+^tab^le        Show table of overall counts
+^tabpct^       Show table of overall counts with row percentage
+^sub^table     Show stratified table
+^subp^ct       Show stratified table with row percentages
+^not^able      Do not show stratified confidence intervals for gamma 
+
+^adj^ust(var)  Stratify (condition) on variable. Only one variable allowed
+               Can be exchanged with ^by(var)^
+^m^iss         Include all cases with missing on stratification variables
+^one^          Calculate one-sided tests for gamma (default is two sided)
+^i^nfo         Write out all information on ^varlist, missing etc^
+^dl^           Set display and log line length (default 100)
+^t^est         Apply a test of whether gamma's are equal to reference
+               Default reference category is the first stratum shown in
+               the stratified results. See option ^ref^.
+^r^ef          Reference stratum, when ^test^ is applied (default 1)
+^l^evel(int)   Level for confidence interval (default $S_level, see @level@)
+
+-----------------------------------------------------------------------------
+Files are: partgam.ado, partgam.hlp, partgam1.do, partgam2.do
+Latest version accessible as download by: 
+Stata version 6 : net from http://www.bola.suite.dk
+Internet browser: point at http://www.bola.suite.dk
+As an STB contribution if accepted by STB 
+
+Additional information:
+It can be useful to execute @pattern@ STB 33) to see which variables 
+have missing values (^search pattern,STB^). If you wish to recode continous
+variables into ordinal type variables use the function @cut@, see STB52.
+
+When stratifying the following results are returned:
+^matrix form^: r(ase) r(high)  r(low) r(gamma)  
+^scalars^:r(strata) r(partgam) r(hi_gam) r(lo_gam) 
+        r(p_gamma) r(chi_gam) r(p_chi) 
+
+
+Note ^only one variable for adjust^ allowed. 
+     But you can yourself generate a variable group variable if you
+     want to adjust for more than one variable: 
+         egen group=group(var1 var2 var3)
+         partgam v1 v2, adjust(group)
+
+Examples
+---------
+
+ . ^partgam agegrp incgrp, adjust(sex)^
+ . ^partgam agegrp incgrp, adjust(sex) table sw level(90) one^
+ . ^partgam agegrp incgrp, adjust(sex) subpct table^
+ . ^partgam health socgrp, adjust(agegrp) subpct table one info all^
+
+ Applying if in weights
+ . ^partgam d1 d2 if r > 0^ 
+ . ^partgam d1 d2 in 1/400^
+ . ^partgam d1 d2 [freq=pop] ^
+
+Author
+-------
+         Jens M.Lauritsen, County of Fyn, Odense Denmark
+                          jm.lauritsen@@dadlnet.dk
+        Svend Kreiner     svend.kreiner@@sociology.ku.dk
+
+Also see
+---------
+On-line: help for @tabulate@ @pattern@ @level@ 
+
+
+
+

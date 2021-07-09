@@ -1,0 +1,33 @@
+d 'MULTISHELL': module to allot do files and variations of loops across parallel instances of Windows Stata and computers efficiently
+d
+d       multishell allows the efficient processing of loops and
+d multiple do files across a single and    multiple computers.
+d multishell dissects forvalues and foreach loops and creates for
+d each    variation (tasks) a separate do file.  The do files are
+"d queued and sequentially processed.    Besides the do file, a .bat"
+d file is created for each task.  Then Stata's build in shell
+d command is    used to start a new instance of Stata using the
+d .bat file.  The instance is closed as soon as the    task is
+"d completed (or failed, then it is reported) and a new instance"
+d processing the next task is    started.  One instance is reserved
+d to organise the tasks and starts other instances.  Multiple
+d instances can be run in parallel on the same computer.
+d
+d KW: batch processing
+d KW: loops
+d KW: parallel processing
+d
+d Requires: Stata version 14 for Windows
+d
+d Distribution-Date: 20181013
+d
+"d Author: Jan Ditzen, Heriot-Watt University"
+d Support: email  j.ditzen@@hw.ac.uk
+d
+f multishell.ado
+f multishell.sthlp
+f MonteCarloSimulation_Multishell.do
+f MonteCarloSimulation.do
+f MonteCarloSimulation_panel.do
+f MonteCarloSimulation_Multishell_panel_server.do
+f MonteCarloSimulation_Multishell_panel_client.do

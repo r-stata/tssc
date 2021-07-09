@@ -1,0 +1,838 @@
+/* 
+
+*! metan7 dialog version 1.0.5,  1 Apr 2004, T. J. Steichen, steichen@triad.rr.com 
+*!    for metan7 version 1.85,  15 Mar 2004, M. J. Bradburn, mike.bradburn@cancer.org.uk 
+
+Fixed and random effects meta-analysis
+--------------------------------------
+Syntax: metan7 varlist [if exp] [in range] [, 
+              label(namevar=name, yearvar=year)
+              fixed random fixedi randomi peto 
+              rr or rd cornfield chi2 breslow notable nograph
+              cohen hedges glass nostandard
+              log sortby(sort_vars) ilevel(#) olevel(#) nokeep 
+              xlabel(#,..,#) force t1title(#,..,#) boxsha(#) boxsca(#) texts(#) 
+              saving(filename) nowt counts nostats nooverall 
+              group1(text) group2(text) effect(text) nobox eform 
+              wgt(weightvar) xtick(#,..,#)              
+              t2title(#,..,#) b1title(#,..,#) b2title(#,..,#)
+              nointeger cc(#) by(byvar) nosubgroup sgweight legend(text) ]
+
+To install in User Statistics menu via Stata commands:
+  . window menu append item "stUserStatistics" "Meta-analysis of Binary and Continuous Data (meta&n)" "db metan7"
+  . window menu refresh
+To permanently install, place the commands in your -profile.do- file.
+
+*/
+
+VERSION 8.0
+
+INCLUDE _std_medium
+INCLUDE _ht300
+DEFINE _dlgwd 450
+INCLUDE header
+
+HELP hlp1, view("help metan7")
+RESET res1, label("Reset")
+
+DIALOG main, label("metan7 1.85 - Meta-analysis of Binary & Continuous") tabtitle("Main")
+BEGIN
+  GROUPBOX gb_data      10    5  310  _ht1h,            ///
+     label("Type of Data:")
+  RADIO    r_binary      15  25   60      .,            ///
+     label(" Count")            first                   ///
+     onclickon(script main_binary_on)                   ///
+     onclickoff(script main_binary_off)
+  RADIO    r_continuous  75  25   90      .,            ///
+     label("Continuous")       middle                   ///
+     onclickon(script main_continuous_on)               ///
+     onclickoff(script main_continuous_off)
+  RADIO    r_effect_ci  165  25   75      .,            ///
+     label("Effect/CI")        middle                   ///
+     onclickon(script main_effect_ci_on)                ///
+     onclickoff(script main_effect_ci.off)
+  RADIO    r_effect_se  240  25   75      .,            ///
+     label("Effect/SE")          last                   ///
+     onclickon(script main_effect_se_on)                ///
+     onclickoff(script main_effect_se_off)
+
+/*  end GROUPBOX gb_data  */
+
+  TEXT     tx_binary    10   50  310      .,            ///
+     label("Vars for Counts: a, b, c, d, in that order")
+  VARLIST  vl_binary     @   _ss   @      .,            ///
+     label("Vars for a, b, c, d")
+
+  TEXT     tx_contin_exp @   50  310      .,            ///
+     label("Vars for Exp. Group: n, mean, sd, in that order")
+  VARLIST  vl_contin_exp @   _ss   @      .,            ///
+     label("Experimental Group: n, mean, sd")
+  TEXT     tx_contin_ctl @   _ss 310      .,            ///
+     label("Vars for Control Group: n, mean, sd, in that order")
+  VARLIST  vl_contin_ctl @   _ss   @      .,            ///
+     label("Control Group: n, mean, sd")
+
+  TEXT     tx_effect_ci  @   50  310      .,            ///
+     label("Vars for Effects: theta, lowerCI, upperCI, in that order")
+  VARLIST  vl_effect_ci  @   _ss   @      .,            ///
+     label("Effect Sizes: theta, lowerCI, upperCI")
+
+  TEXT     tx_effect_se  @   50  310      .,            ///
+     label("Vars for Effects: theta, se(theta), in that order")
+  VARLIST  vl_effect_se  @   _ss   @      .,            ///
+     label("Effect Sizes: theta, se(theta)")
+
+/*  end vars  */
+
+  GROUPBOX gb_labels     10  130  310  _ht3h,           ///
+     label("Labels for Data:")
+  CHECKBOX cb_name       20  150  70 .,                 ///
+     label("Name:")                                     ///
+     onclickon(main.vn_name.enable)                     ///
+     onclickoff(main.vn_name.disable)
+  VARNAME  vn_name      100  150 210 .,                 ///
+     label("Name Variable")
+  CHECKBOX cb_year       20  170  70 .,                 ///
+     label("Year:")                                     ///
+     onclickon(main.vn_year.enable)                     ///
+     onclickoff(main.vn_year.disable)
+  VARNAME  vn_year      100  170 210  .,                /// 
+     label("Year Variable")
+
+/*  end GROUPBOX gb_labels  */
+      
+  GROUPBOX gb_by         10  200  310 45,               ///
+     label("By Variable:")
+  CHECKBOX cb_by         20  220   70  .,               ///
+     label("  By:")                                     ///
+     onclickon(script main_by_on)                       ///
+     onclickoff(script main_by_off)
+  VARLIST  vl_by        100  220  210  .,               ///
+     label("By Variable")                               ///
+     option("by")
+
+/*  end GROUPBOX gb_by  */
+
+  GROUPBOX gb_sortby     10  250  310 45,               ///
+     label("Sort Data:")
+  CHECKBOX cb_sortby     20  270   70  .,               ///
+     label("  By:")                                     ///
+     onclickon(main.vl_sortby.enable)                   ///
+     onclickoff(main.vl_sortby.disable)
+  VARLIST  vl_sortby    100  270  210  .,               ///
+     label("Name Variable")                             ///
+     option("sortby")
+
+/*  end GROUPBOX gb_sortby  */
+      
+  GROUPBOX gb_opts      325    5  120  85,              ///
+     label("General Options:")
+
+  CHECKBOX cb_nokeep    330   25   70   .,              ///
+     label("noKeep")                                    ///
+     option("nokeep")
+
+  CHECKBOX cb_ilevel    330   45   60   .,              ///
+     label("ilevel:")                                   ///
+     onclickon(main.ed_ilevel.enable)                   ///
+     onclickoff(main.ed_ilevel.disable)
+  EDIT     ed_ilevel    400   45   40   .,              ///
+     label("ilevel")                                    ///
+     numonly default(global S_level)                    ///
+     option("ilevel")
+
+  CHECKBOX cb_olevel    330  65   60   .,               ///
+     label("olevel:")                                   ///
+     onclickon(main.ed_olevel.enable)                   ///
+     onclickoff(main.ed_olevel.disable)
+  EDIT     ed_olevel    400  65   40   .,               ///
+     label("olevel")                                    ///
+     numonly default(global S_level)                    ///
+     option("olevel")
+
+/*  end GROUPBOX gb_opts  */
+
+  FRAME    fr_wgt      325   95 120  60
+  CHECKBOX cb_wgt      330  100 110  .,                 ///
+     label("Weight Var")                                ///
+     onclickon(main.vn_wgt.enable)                      ///
+     onclickoff(main.vn_wgt.disable)
+  VARNAME  vn_wgt      330  121 110  .,                 ///
+     label("Weight Variable")                           ///
+     option("wgt")
+
+/*  end wgt  */
+
+  GROUPBOX gb_by_opts   325  200  120  61,              ///
+     label("By Options:")
+
+  CHECKBOX cb_nosubgroup 330 220  100   .,              ///
+     label("noSubGroup")                                ///
+     option("nosubgroup")
+
+  CHECKBOX cb_sgweight  330  240  100   .,              ///
+     label("sgWeight")                                  ///
+     option("sgweight")
+
+/*  end GROUPBOX gb_by_opts  */
+
+END
+
+DIALOG metan7_b, tabtitle("Binary...")
+BEGIN
+  GROUPBOX gb_pool 0      10      210      _ht9h,       ///
+     label("Pooling Model")
+  RADIO    r_fixed 10  30     190     .,                ///
+     label("Fixed, Mantel-Haenszel")   first            ///
+     onclickoff(program metan7_b_bd)                     ///
+     option("fixed")
+  RADIO    r_fixedi  @         _ss       @         .,   ///
+     label("Fixed, Inverse Variance")  middle           ///
+     onclickoff(program metan7_b_bd)                     ///
+     option("fixedi")
+  RADIO    r_random    @         _ss     195       .,   ///
+     label("Random (M-H heterogeneity)") middle         ///
+     onclickon(script metan7_b_random_on)                ///
+     onclickoff(program metan7_b_chi2)                   ///
+     option("random")
+  RADIO    r_randomi  @         _ss       @        .,   ///
+     label("Random (I-V heterogeneity)") middle         ///
+     onclickon(script metan7_b_random_on)                ///
+     onclickoff(program metan7_b_chi2)                   ///
+     option("randomi")
+  RADIO    r_peto    @         _ss       @         .,   ///
+     label("Peto")                     last             ///
+     onclickon(script metan7_b_peto_on)                  ///
+     onclickoff(program metan7_b_cornfield)              ///
+     option("peto")
+
+  GROUPBOX gb_stat 220     10     120 _ht5h,            ///
+     label("Statistic")
+  RADIO    r_rr  230       30      80     .,            ///
+     label("RR") first                                  ///
+     onclickon(script metan7_b_rr_on)                    ///
+     onclickoff(program metan7_b_rr_off)                 ///
+     option("rr")
+  RADIO    r_or  @         _ss       @    .,            ///
+     label("OR") middle                                 ///
+     onclickon(program metan7_b_or_on)                   ///
+     onclickoff(program metan7_b_or_off)                 ///
+     option("or")
+  RADIO    r_rd  @         _ss       @    .,            ///
+     label("RD") last                                   ///
+     option("rd")
+
+  CHECKBOX cb_cornfield 10  140 200  .,                 ///
+     label("Use Cornfield CI's")                        ///
+     option("cornfield")
+  CHECKBOX cb_chi2      10  160 200  .,                 ///
+     label("Use Chi-2 Statistic")                       ///
+     option("chi2")
+  CHECKBOX cb_breslow   10  180 200  .,                 ///
+     label("Use Breslow-Day test")                      ///
+     option("breslow")
+
+  CHECKBOX cb_log      230  100 200  .,                 ///
+     label("Log scaled")                                ///
+     option("log")
+
+  CHECKBOX cb_eform    230  120 200  .,                 ///
+     label("Exponentiate")                              ///
+     option("eform")
+
+  CHECKBOX cb_notable  230  140 200  .,                 ///
+     label("noTable")                                   ///
+     option("notable")
+  CHECKBOX cb_nograph  230  160 200  .,                 ///
+     label("noGraph")                                   ///
+     option("nograph")
+
+  CHECKBOX cb_cc        10  260 150  .,                 ///
+     label("Continuity Correction:")                    ///
+     onclickon(metan7_b.ed_cc.enable)                    ///
+     onclickoff(metan7_b.ed_cc.disable)
+  EDIT     ed_cc       160  260  65  .,                 ///
+     label("Continuity Correction")                     ///
+     option("cc")
+
+  CHECKBOX cb_nointeger 230 260 200  .,                 ///
+     label("noInteger")                                 ///
+     option("nointeger")
+END
+
+DIALOG metan7_c, tabtitle("Continuous...")
+BEGIN
+  GROUPBOX gb_pool    0  10     210      _ht3h,         ///
+     label("Pooling Model")
+  RADIO    r_fixed   10  30     190        .,           ///
+     label("Fixed, Inverse Variance")  first            ///
+     option("fixed")
+  RADIO    r_random   @         _ss       @        .,   ///
+     label("Random (I-V heterogeneity)") last           ///
+     option("random")
+
+  GROUPBOX gb_stat      220     10     120 _ht7h,       ///
+     label("Statistic")
+  RADIO    r_cohen      230     30      100    .,       ///
+     label("Cohen")      first                          ///
+     option("cohen")
+  RADIO    r_hedges       @     _ss       @    .,       ///
+     label("Hedges")     middle                         ///
+     option("hedges")
+  RADIO    r_glass        @     _ss       @    .,       ///
+     label("Glass")      middle                         ///
+     option("glass")
+  RADIO    r_nostandard   @     _ss       @    .,       ///
+     label("noStandard") last                           ///
+     option("nostandard")
+
+  CHECKBOX cb_notable     230  140 200  .,              ///
+     label("noTable")                                   ///
+     option("notable")
+  CHECKBOX cb_nograph     230  160 200  .,              ///
+     label("noGraph")                                   ///
+     option("nograph")
+
+  CHECKBOX cb_nointeger    230 260 200  .,              ///
+     label("noInteger")                                 ///
+     option("nointeger")
+     
+END
+
+DIALOG metan7_e, tabtitle("Effect...")
+BEGIN
+  GROUPBOX gb_pool    0  10     210      _ht3h,         ///
+     label("Pooling Model")
+  RADIO    r_fixed   10  30     190        .,           ///
+     label("Fixed, Inverse Variance")  first            ///
+     option("fixed")
+  RADIO    r_random   @  _ss      @        .,           ///
+     label("Random (I-V heterogeneity)") last           ///
+     option("random")
+
+  CHECKBOX cb_notable 230  140   200  .,                ///
+     label("noTable")                                   ///
+     option("notable")
+  CHECKBOX cb_nograph 230  160   200  .,                ///
+     label("noGraph")                                   ///
+     option("nograph")
+     
+  CHECKBOX cb_effect   10  110   100  .,                ///
+     label("Effect Label:")                             ///
+     onclickon(metan7_e.ed_effect.enable)                ///
+     onclickoff(metan7_e.ed_effect.disable) 
+  EDIT     ed_effect  115    @   225  .,                ///
+     label("effect label")                              ///
+     option("effect")
+
+END
+
+DIALOG graph, tabtitle("Graph Opts")
+BEGIN
+
+  CHECKBOX cb_saving    10   10  100      .,            ///
+     label("Save graph:")                               ///
+     onclickon(graph.fi_saving.enable)                  ///
+     onclickoff(graph.fi_saving.disable) 
+  FILE     fi_saving   110   10  240      .,            ///
+     label("File Name")                                 ///
+     error("Save filename")                             ///
+     dialogtitle("Save graph")                          ///
+     filter("Stata Graphs|*.gph")                       ///
+     save                                               ///
+     option("saving")
+
+/*  end saving  */
+
+  GROUPBOX gb_xlabel    10   40  330  _ht3h,            ///
+     label("X-axis Tick Labels (comma between):")
+
+  CHECKBOX cb_xlabel    15   60   45      .,            ///
+     label("Set:")                                      ///
+     onclickon(script graph_xlabel_on)                  ///
+     onclickoff(script graph_xlabel_off) 
+  EDIT     ed_xlabel    65    @  270      .,            ///
+     label("X Tick labels")                             ///
+     option("xlabel")
+
+  CHECKBOX cb_force     15  80  320       .,            ///
+     label("Force Scale to Tick Range")                 ///  
+     option("force")
+
+/*  end tick labels  */
+     
+  CHECKBOX cb_counts    15 115   65       .,            ///
+     label("Counts")                                    ///
+     onclickon(script graph_counts_on)                  ///
+     onclickoff(script graph_counts_off)                ///
+     option("counts")
+ 
+  CHECKBOX cb_nowt      15 145   85       .,            ///
+     label("noWeights")                                 ///
+     option("nowt")
+
+  CHECKBOX cb_nostats   15 165   85       .,            ///
+     label("noStats")                                   ///
+     option("nostats")
+
+  CHECKBOX cb_nooverall 115 145  85       .,            ///
+     label("noOverall")                                 ///
+     option("nooverall")
+
+  CHECKBOX cb_nobox     115 165  85       .,            ///
+     label("noBox")                                     ///
+     option("nobox")
+
+/*  end switches  */
+
+  CHECKBOX cb_legend    115 185  70       .,            ///
+     label("Legend:")                                   ///
+     onclickon(graph.ed_legend.enable)                  ///
+     onclickoff(graph.ed_legend.disable)
+  EDIT     ed_legend    190  @   55       .,            ///
+     label("legend")                                    ///
+     option("legend")
+
+  CHECKBOX cb_grp1     85 115    55       .,            ///
+     label("Grp 1:")                                    ///
+     onclickon(graph.ed_grp1.enable)                    ///
+     onclickoff(graph.ed_grp1.disable)
+  EDIT     ed_grp1     145   @   90       .,            ///
+     label("Grp1")                                      ///
+     option("group1")
+
+  CHECKBOX cb_grp2     245 115   55       .,            ///
+     label("Grp 2:")                                    ///
+     onclickon(graph.ed_grp2.enable)                    ///
+     onclickoff(graph.ed_grp2.disable)
+  EDIT     ed_grp2     305   @   90       .,            ///
+     label("Grp2")                                      ///
+     option("group2")
+
+  CHECKBOX cb_boxy     255 145   95       .,            ///
+     label("Box yscale:")                               ///
+     onclickon(graph.ed_boxy.enable)                    ///
+     onclickoff(graph.ed_boxy.disable)
+  EDIT     ed_boxy     355   @   40       .,            ///
+     label("Box yscale") numonly default(1)             ///
+     option("boxsca")
+
+  CHECKBOX cb_boxs     255 165   95       .,            ///
+     label("Box shade:")                                ///
+     onclickon(graph.ed_boxs.enable)                    ///
+     onclickoff(graph.ed_boxs.disable)
+  EDIT     ed_boxs     355   @   40       .,            ///
+     label("Box shading") numonly default(4)            ///
+     option("boxsha")
+
+  CHECKBOX cb_texts    255 185   95       .,            ///
+     label("Font scale:")                               ///
+     onclickon(graph.ed_texts.enable)                   ///
+     onclickoff(graph.ed_texts.disable)
+  EDIT     ed_texts    355   @   40       .,            ///
+     label("Font scale") numonly default(1)             ///
+     option("texts")
+
+/*  end sets  */
+
+  GROUPBOX gb_gopts7   10 205  390   _ht1h,             ///
+     label("Allowed Graph7 Options:")
+  EDIT     ed_gopts7   15 225  380       .,             ///
+     label("Graph7 Options")
+
+  CHECKBOX cb_b1       15 255  390       .,             ///
+     label("Effect Direction Labels, option b1( ):")    ///
+     onclickon(script graph_b1_on)                      ///
+     onclickoff(script graph_b1_off)
+  TEXT     tx_b1_l     10 275   25       .,             ///
+     label("Left:")  
+  EDIT     ed_b1_l     35 275  160       .,             ///
+     label(" Left")
+  TEXT     tx_b1_r    205 275   35       .,             ///
+     label("Right:")
+  EDIT     ed_b1_r    240 275  160       .,             ///
+     label("Right")
+
+/*  end Graph7 opts  */
+
+END
+
+INCLUDE ifin
+
+SCRIPT main_binary_on
+BEGIN
+  main.tx_binary.show
+  main.vl_binary.show
+  main.tx_binary.enable
+  main.vl_binary.enable
+
+  main.tx_effect_ci.disable
+  main.vl_effect_ci.disable
+  main.tx_effect_ci.hide
+  main.vl_effect_ci.hide
+  
+  main.tx_effect_se.disable
+  main.vl_effect_se.disable
+  main.tx_effect_se.hide
+  main.vl_effect_se.hide
+  
+  main.tx_contin_exp.disable
+  main.vl_contin_exp.disable
+  main.tx_contin_exp.hide
+  main.vl_contin_exp.hide
+  
+  main.tx_contin_ctl.disable
+  main.vl_contin_ctl.disable
+  main.tx_contin_ctl.hide
+  main.vl_contin_ctl.hide
+
+  graph.cb_counts.enable
+END
+
+SCRIPT main_binary_off
+BEGIN
+  main.tx_binary.disable
+  main.vl_binary.disable
+  main.tx_binary.hide
+  main.vl_binary.hide
+  
+  graph.cb_counts.disable
+END
+
+SCRIPT main_continuous_on
+BEGIN
+  main.tx_contin_exp.show
+  main.vl_contin_exp.show
+  main.tx_contin_exp.enable
+  main.vl_contin_exp.enable
+
+  main.tx_contin_ctl.show
+  main.vl_contin_ctl.show
+  main.tx_contin_ctl.enable
+  main.vl_contin_ctl.enable
+
+  main.tx_binary.disable
+  main.vl_binary.disable
+  main.tx_binary.hide
+  main.vl_binary.hide
+  
+  main.tx_effect_ci.disable
+  main.vl_effect_ci.disable
+  main.tx_effect_ci.hide
+  main.vl_effect_ci.hide
+  
+  main.tx_effect_se.disable
+  main.vl_effect_se.disable
+  main.tx_effect_se.hide
+  main.vl_effect_se.hide
+END
+
+SCRIPT main_continuous_off
+BEGIN
+  main.tx_contin_exp.disable
+  main.vl_contin_exp.disable
+  main.tx_contin_exp.hide
+  main.vl_contin_exp.hide
+  
+  main.tx_contin_ctl.disable
+  main.vl_contin_ctl.disable
+  main.tx_contin_ctl.hide
+  main.vl_contin_ctl.hide
+END
+
+SCRIPT main_effect_ci_on
+BEGIN
+  main.tx_effect_ci.show
+  main.vl_effect_ci.show
+  main.tx_effect_ci.enable
+  main.vl_effect_ci.enable
+
+  main.tx_effect_se.disable
+  main.vl_effect_se.disable
+  main.tx_effect_se.hide
+  main.vl_effect_se.hide
+
+  main.tx_binary.disable
+  main.vl_binary.disable
+  main.tx_binary.hide
+  main.vl_binary.hide
+  
+  main.tx_contin_exp.disable
+  main.vl_contin_exp.disable
+  main.tx_contin_exp.hide
+  main.vl_contin_exp.hide
+  
+  main.tx_contin_ctl.disable
+  main.vl_contin_ctl.disable
+  main.tx_contin_ctl.hide
+  main.vl_contin_ctl.hide
+END
+
+SCRIPT main_effect_ci_off
+BEGIN
+  main.tx_effect_ci.disable
+  main.vl_effect_ci.disable
+  main.tx_effect_ci.hide
+  main.vl_effect_ci.hide
+END
+
+SCRIPT main_effect_se_on
+BEGIN
+  main.tx_effect_se.show
+  main.vl_effect_se.show
+  main.tx_effect_se.enable
+  main.vl_effect_se.enable
+
+  main.tx_effect_ci.disable
+  main.vl_effect_ci.disable
+  main.tx_effect_ci.hide
+  main.vl_effect_ci.hide
+
+  main.tx_binary.disable
+  main.vl_binary.disable
+  main.tx_binary.hide
+  main.vl_binary.hide
+  
+  main.tx_contin_exp.disable
+  main.vl_contin_exp.disable
+  main.tx_contin_exp.hide
+  main.vl_contin_exp.hide
+  
+  main.tx_contin_ctl.disable
+  main.vl_contin_ctl.disable
+  main.tx_contin_ctl.hide
+  main.vl_contin_ctl.hide
+END
+
+SCRIPT main_effect_se_off
+BEGIN
+  main.tx_effect_se.disable
+  main.vl_effect_se.disable
+  main.tx_effect_se.hide
+  main.vl_effect_se.hide
+END
+
+SCRIPT main_by_on
+BEGIN
+  main.vl_by.enable
+  main.gb_by_opts.enable
+  main.cb_nosubgroup.enable
+  main.cb_sgweight.enable
+END
+
+SCRIPT main_by_off
+BEGIN
+  main.vl_by.disable
+  main.gb_by_opts.disable
+  main.cb_nosubgroup.disable
+  main.cb_sgweight.disable
+END
+
+SCRIPT metan7_b_random_on
+BEGIN
+  metan7_b.cb_breslow.disable
+  metan7_b.cb_chi2.disable
+END
+
+SCRIPT metan7_b_peto_on
+BEGIN
+  metan7_b.cb_breslow.disable
+  metan7_b.cb_cornfield.disable
+END
+
+PROGRAM metan7_b_bd
+BEGIN
+  if metan7_b.r_or {
+     call metan7_b.cb_breslow.enable
+  }
+END
+
+PROGRAM metan7_b_chi2
+BEGIN
+  if metan7_b.r_or & !(metan7_b.r_random | metan7_b.r_randomi) {
+     call metan7_b.cb_chi2.enable
+  }
+END
+
+PROGRAM metan7_b_cornfield
+BEGIN
+  if metan7_b.r_or {
+     call metan7_b.cb_cornfield.enable
+  }
+END
+
+SCRIPT metan7_b_rr_on
+BEGIN
+   metan7_b.cb_log.enable
+   metan7_b.cb_eform.enable
+END
+
+PROGRAM metan7_b_or_on
+BEGIN
+  call metan7_b.cb_log.enable
+  call metan7_b.cb_eform.enable
+  call metan7_b.r_peto.enable
+  if !metan7_b.r_peto {
+     call metan7_b.cb_cornfield.enable
+  }
+  if !(metan7_b.r_random | metan7_b.r_randomi) {
+     call metan7_b.cb_chi2.enable
+  }
+  call metan7_b.cb_breslow.enable
+END
+
+PROGRAM metan7_b_or_off
+BEGIN
+  if !metan7_b.r_rr {
+     call metan7_b.cb_log.disable
+     call metan7_b.cb_eform.disable
+  }
+  call metan7_b.r_peto.disable
+  call metan7_b.cb_cornfield.disable
+  call metan7_b.cb_chi2.disable
+  call metan7_b.cb_breslow.disable
+END
+
+PROGRAM metan7_b_rr_off
+BEGIN
+  if !metan7_b.r_or {
+     call metan7_b.cb_log.disable
+     call metan7_b.cb_eform.disable
+  }
+END
+
+SCRIPT graph_xlabel_on
+BEGIN
+   graph.ed_xlabel.enable
+   graph.cb_force.enable
+END   
+
+SCRIPT graph_xlabel_off
+BEGIN
+   graph.ed_xlabel.disable 
+   graph.cb_force.disable
+END
+
+SCRIPT graph_counts_on
+BEGIN
+   graph.cb_grp1.enable
+   graph.cb_grp2.enable
+END   
+
+SCRIPT graph_counts_off
+BEGIN
+   graph.cb_grp1.disable 
+   graph.cb_grp2.disable
+   graph.cb_grp1.setoff 
+   graph.cb_grp2.setoff
+   graph.ed_grp1.disable 
+   graph.ed_grp2.disable
+END
+
+SCRIPT graph_b1_on
+BEGIN
+   graph.tx_b1_l.enable
+   graph.ed_b1_l.enable
+   graph.tx_b1_r.enable
+   graph.ed_b1_r.enable
+END
+
+SCRIPT graph_b1_off
+BEGIN
+   graph.tx_b1_l.disable
+   graph.ed_b1_l.disable
+   graph.tx_b1_r.disable
+   graph.ed_b1_r.disable
+END
+
+
+PROGRAM command
+BEGIN
+  put " metan7 "
+  if main.r_binary {
+    varlist main.vl_binary 
+  }
+  if main.r_continuous {
+    varlist main.vl_contin_exp main.vl_contin_ctl 
+  }
+  if main.r_effect_ci {
+    varlist main.vl_effect_ci 
+  }
+  if main.r_effect_se {
+    varlist main.vl_effect_se 
+  }
+  INCLUDE _ifin_pr
+  beginoptions
+    if main.cb_name | main.cb_year {
+      put "label("
+      if main.cb_name {
+        put "namevar=" main.vn_name
+      }
+      if main.cb_name & main.cb_year {
+        put ", "
+      }
+      if main.cb_year {
+        put "yearvar=" main.vn_year
+      }
+      put ") "
+    }
+    optionarg main.vl_sortby
+    optionarg main.vl_by
+    optionarg main.ed_ilevel
+    optionarg main.ed_olevel
+    optionarg main.vn_wgt
+    option main.cb_nokeep
+    option main.cb_nosubgroup
+    option main.cb_sgweight
+    if main.r_binary {
+      if !main.vn_wgt {
+        option radio(metan7_b r_fixed r_fixedi r_random r_randomi r_peto)
+      }
+      option radio(metan7_b r_rr r_or r_rd)
+      option metan7_b.cb_cornfield
+      option metan7_b.cb_chi2
+      option metan7_b.cb_breslow
+      option metan7_b.cb_log
+      option metan7_b.cb_eform
+      option metan7_b.cb_nograph
+      option metan7_b.cb_notable
+      optionarg metan7_b.ed_cc
+      option metan7_b.cb_nointeger
+    }
+    if main.r_continuous {
+      if !main.vn_wgt {
+        option radio(metan7_c r_fixed r_random)
+      }
+      option radio(metan7_c r_cohen r_hedges r_glass r_nostandard)
+      option metan7_c.cb_nograph
+      option metan7_c.cb_notable
+      option metan7_c.cb_nointeger
+    }
+    if main.r_effect_se | main.r_effect_ci {
+      if !main.vn_wgt {
+        option radio(metan7_e r_fixed r_random)
+      }
+      optionarg metan7_e.ed_effect
+      option metan7_e.cb_nograph
+      option metan7_e.cb_notable
+    }
+    optionarg graph.fi_saving
+    optionarg graph.ed_xlabel
+    option graph.cb_force
+    option graph.cb_counts
+    option graph.cb_nowt
+    option graph.cb_nostats
+    option graph.cb_nooverall
+    option graph.cb_nobox
+    optionarg graph.ed_grp1
+    optionarg graph.ed_grp2
+    optionarg graph.ed_texts
+    optionarg graph.ed_legend
+    optionarg graph.ed_boxy
+    optionarg graph.ed_boxs
+    put graph.ed_gopts7 " "
+    if graph.cb_b1 {
+       put "b1(*I:" graph.ed_b1_l "*" graph.ed_b1_r ") "
+    }
+  endoptions
+END

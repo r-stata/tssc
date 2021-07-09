@@ -1,0 +1,96 @@
+{smcl}
+{* 13oct2009}{...}
+{cmd:help }
+
+{hline}
+
+{title:Title}
+
+{p2colset 5 18 22 2}{...}
+{p2col :{hi:  chewfile} {hline 2}}chew and digest ASCII file down to size.{p_end}
+
+{marker s_Syntax}
+{title:Syntax}
+
+{p 4 4 6}
+{cmdab:chewfile} [{it:using filename}] [, {it:options}]
+
+{marker s_Description}
+{title:Description}
+
+{p 4 4 6}
+{cmd:chewfile} provides a fast and easy way to chew your ASCII file. It will (1) cut down a 
+file down to size, (2) export it as a text file, or (3) force it to read in as strings. It is a 
+supplement to {help insheet} or {help infile} for importing ASCII files.
+
+{p 4 4 6}
+Use {help insheet} or {help infile} if you want to read it as a number. If it's too big, then 
+read them after cutting it down to size using {opt begin(#)}, {opt end(#)}, and {opt save( )}.
+
+{marker s_Options}
+{title:Options}
+
+{dlgtab:Main}
+
+{p 4 12 6}{opt replace} Replace the existing file. {p_end}
+
+{p 4 12 6}{opt clear} Read it into memory as strings. {p_end}
+
+{p 4 12 6}{opt save( )} Must be specified when {opt clear} is not specified. {p_end}
+
+{p 4 12 6}{opt parse(" ")} Parsing character. The default is tab. Choose comma like this, 
+parse(",").{p_end}
+
+{p 4 12 6}{opt begin(#)} The starting line to read, inclusive. The default is begin(1).{p_end}
+
+{p 4 12 6}{opt end(#)} The ending line to read, inclusive. The default is end(.).{p_end}
+
+{p 4 12 6}{opt raw} Raw file appears in the first column in addition to the usual stuff. Use this if you 
+want to see unaltered file.{p_end}
+
+{marker s_0}
+{title:Examples}
+
+{p 4 4 6}* example data {p_end}
+{p 4 4 6}{stata clear}{p_end}
+{p 4 4 6}{stata set obs 100}{p_end}
+{p 4 4 6}{stata gen var1=uniform()}{p_end}
+{p 4 4 6}{stata gen var2=uniform()}{p_end}
+{p 4 4 6}{stata gen var3=uniform()}{p_end}
+{p 4 4 6}{stata outsheet using rawfile.txt, replace noname comma}{p_end}
+
+{p 4 4 6}* import them as strings{p_end}
+{p 4 4 6}{stata clear}{p_end}
+{p 4 4 6}{stata chewfile using rawfile.txt, clear parse(",")}{p_end}
+
+{p 4 4 6}* read through without storing in memory{p_end}
+{p 4 4 6}{stata clear}{p_end}
+{p 4 4 6}{stata chewfile using rawfile.txt, save(chewed_file.txt) replace}{p_end}
+
+{p 4 4 6}* read through only a part of file without storing in memory{p_end}
+{p 4 4 6}{stata clear}{p_end}
+{p 4 4 6}{stata chewfile using rawfile.txt, begin(5) end(.) save(chewed_file.txt) replace}{p_end}
+
+
+{title:Remarks}
+
+{p 4 12 6}Bare minimum programming. Should work.{p_end}
+
+{p 4 12 6}First published on Statalist http://www.stata.com/statalist/archive/2008-08/msg00834.html
+{p_end}
+
+{p 4 12 6}I have been told the responsible thing to do is to write the help file and put it up on ssc.{p_end}
+
+{p 4 12 6}You may prefer {cmd:chunk} by David C. Elliott.{p_end}
+
+
+{title:Author}
+
+{p 4 4 6}Roy Wada{p_end}
+{p 4 4 6}roywada@hotmail.com{p_end}
+
+
+{title:Also see}
+
+{psee} Online: {help insheet} or {help infile}{p_end}
+

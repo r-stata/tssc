@@ -1,0 +1,97 @@
+VERSION 16.0
+
+POSITION . . 410 250
+
+DIALOG params, label("seir - SEIR model") tabtitle("Model parameters")
+BEGIN
+		   
+  TEXT     tx_beta      10  10  390  ., label("Beta:")		   
+  EDIT     ed_beta     @       +20     @       .,              ///
+        numonly option(beta) default(0.9) ///
+		tooltip("The parameter controlling how often a susceptible-infected contact results in a new exposure.")
+
+  TEXT     tx_gamma      10  +25  390  ., label("Gamma:")		   
+  EDIT     ed_gamma     @       +20     @       .,              ///
+        numonly option(gamma) default(0.2) ///
+		tooltip("The rate an infected recovers and moves into the recovered phase.")
+		
+  TEXT     tx_sigma      10  +25  390  ., label("Sigma:")		   
+  EDIT     ed_sigma     @       +20     @       .,              ///
+        numonly option(sigma) default(0.5)	///
+		tooltip("The rate at which an exposed person becomes infective.")
+
+  TEXT     tx_mu      10  +25  390  ., label("Mu:")		   
+  EDIT     ed_mu     @       +20     @       .,              ///
+        numonly option(mu) default(0.00) ///
+		tooltip("The natural mortality rate (unrelated to disease).")
+
+  TEXT     tx_nu      10  +25  390  ., label("Nu:")		   
+  EDIT     ed_nu     @       +20     @       .,              ///
+        numonly option(nu) default(0.00) ///
+		tooltip("The rate of vaccination, moving persons from susceptible to recovered directly.")
+		
+END
+
+OK ok1,      label("OK")
+CANCEL can1, label("Cancel")
+SUBMIT sub1, label("Submit")
+HELP hlp1,   view("help seir")
+RESET res1
+COPY copy1
+
+
+DIALOG inicond, tabtitle("Initial conditions")
+BEGIN
+  TEXT     tx_susceptible      10  10  390  ., label("Susceptible:")		   
+  EDIT     ed_susceptible     @       +20     @       .,              ///
+        numonly option(susceptible) default(10) ///
+		tooltip("The number of susceptible individuals at the beginning of the model run.")
+
+  TEXT     tx_exposed      10  +25  390  ., label("Exposed:")		   
+  EDIT     ed_exposed     @       +20     @       .,              ///
+        numonly option(exposed)  default(1)		///
+		tooltip("The number of exposed individuals at the beginning of the model run.")
+		
+  TEXT     tx_infected      10  +25  390  ., label("Infected:")		   
+  EDIT     ed_infected     @       +20     @       .,              ///
+        numonly option(infected) default(0)		///
+		tooltip("The number of infected individuals at the beginning of the model run.")
+
+  TEXT     tx_recovered      10  +25  390  ., label("Recovered:")		   
+  EDIT     ed_recovered     @       +20     @       .,              ///
+        numonly option(recovered) default(0)		///
+		tooltip("The number of recovered individuals at the beginning of the model run.")
+END
+
+INCLUDE epimodels_calc
+INCLUDE epimodels_graph
+
+PROGRAM command
+BEGIN
+    put "epi_seir "
+	beginoptions
+	   optionarg params.ed_beta
+	   optionarg params.ed_gamma
+	   optionarg params.ed_sigma
+	   optionarg params.ed_mu
+	   optionarg params.ed_nu
+	   
+	   optionarg inicond.ed_susceptible
+	   optionarg inicond.ed_exposed
+	   optionarg inicond.ed_infected
+	   optionarg inicond.ed_recovered
+	   
+	   optionarg calc.sp_days
+	   optionarg calc.ed_day0
+	   optionarg calc.sp_steps
+	   option calc.ck_clear
+	   option calc.ck_percent
+	   optionarg calc.fi_report
+	   
+	   option graph.ck_nogr
+	   optionarg graph.cb_scheme
+	   option graph.ck_colmodel
+	endoptions
+END
+
+// END OF FILE

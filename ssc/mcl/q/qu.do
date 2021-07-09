@@ -1,0 +1,1 @@
+* Quasi-uniform association model with covariatesuse loganmclgen occgen d1=(focc==1)*(occ==1)gen d2=(focc==2)*(occ==2)gen d3=(focc==3)*(occ==3)gen d4=(focc==4)*(occ==4)gen d5=(focc==5)*(occ==5)gen u=focc*occxi: mclest i.occ d* u i.occ|black i.occ|educ

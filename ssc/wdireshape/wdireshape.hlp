@@ -1,0 +1,227 @@
+{smcl}
+{* December 2006}{...}
+{* Updated September 2007, August 2008, May 2009}
+{hline}
+{cmd:help for wdireshape} 
+{hline}
+
+{title:Title}
+
+{p 4 8 2}
+{bf:wdireshape --- Reshapes the World Development Indicators (WDI) database for panel data, seemingly unrelated regression, or cross-sectional analysis}
+
+{marker contents}{dlgtab: Table of Contents}
+{p 6 16 2}
+
+{p 2}{help wdireshape##syntax:Syntax}{p_end}
+{p 2}{help wdireshape##description:General description of {cmd:wdireshape}}{p_end}
+{p 2}{help wdireshape##options:Description of the options}{p_end}
+{p 2}{help wdireshape##examples:Examples}{p_end}
+{p 2}{help wdireshape##refs:References}{p_end}
+{p 2}{help wdireshape##acknow:Acknowledgments}{p_end}
+{p 2}{help wdireshape##author:Author information}{p_end}
+{hline}
+
+{marker syntax}{title:Syntax}
+
+Check the number of indicators and their order of appearance in a WDI dataset
+
+{phang}{cmd: wdireshape,} {opth sername(varname)}
+
+
+Reshape the dataset
+
+{phang}
+{cmd: wdireshape} {help newvarlist}{cmd:,} {cmdab:prep:end(}{it:letter(s)}{cmd:)}
+						    {opth ctyn:ame(varname)} 
+						    {opth sern:ame(varname)} 
+						    {opth ctyc:ode(varname)} 
+						    {opth serc:ode(varname)} 
+						    [{it:{help wdireshape##options:other options}}]
+
+
+{synoptset 20 tabbed}
+{synopthdr}
+{synoptline}
+{syntab:Options}   
+     
+{synopt :{cmdab:prep:end(}{it:letter(s)}{cmd:)}}indicate the prepending letter(s){p_end}
+{synopt :{opth ctyn:ame(varname)}}indicate the variable holding the country names{p_end}
+{synopt :{opth sern:ame(varname)}}indicate the variable holding the series names{p_end}
+{synopt :{opth ctyc:ode(varname)}}indicate the variable containing the country code elements{p_end}
+{synopt :{opth serc:ode(varname)}}indicate the variable holding the series code elements{p_end}
+{synopt :{opt byp:er(#)} }reshape the data using sub-periods{p_end}
+{synopt :{opt start:yr(#)}}indicate the first year of the time period{p_end}
+{synopt :{opt end:yr(#)}}indicate the last year of the time period{p_end}
+{synopt :{opt byv:ar}}reshape the data variable by variable{p_end}
+{synopt :{opt sur}}reshape in wide form for seemingly unrelated regression analysis{p_end}
+{synopt :{opt cros}}reshape in wide form for cross-sectional analysis{p_end}
+{synopt :{opt ns:tring(#)}}remove the WDI missing value symbols, the double dots (..){p_end}
+{synoptline}
+{p2colreset}{...}
+
+{marker description}{dlgtab:Description}
+
+{pstd}{cmd:wdireshape} reshapes a Stata dataset obtained by insheeting a text (.csv) file downloaded from the World Development 
+Indicators (WDI) website or extracted from the WDI CD-ROM. The new dataset has a structure suitable for panel-data analysis, 
+seemingly unrelated regression (SUR), or cross-sectional modeling. The panel-data structure is known as long form and the SUR 
+and cross-sectional structures are known as wide form. {cmd:wdireshape}, a wrapper for the Stata's official {cmd:reshape} command 
+(see {help reshape}), enables users to rename the indicators with names of their devising. However, the number of variable names 
+supplied and their order must match those of the indicators in the spreadsheet. After insheeting the raw dataset to be reshaped, 
+users can use the first syntax of {cmd:wdireshape} to determine the number of indicators as well as their order of appearance in 
+the dataset. While reshaping the data, {cmd:wdireshape} places the WDI series descriptors into labels and attaches them to the 
+user-supplied variable names. Note that, for long series descriptors, labels will be truncated to 80 characters.{p_end} 
+
+{marker remarks}{dlgtab:Important Remarks}
+
+{pstd}Before extracting a .csv file from the WDI web site or a recent CD release, users must choose a data orientation with series 
+or countries in rows and time in columns. A WDI dataset downloaded using this orientation is ready to be insheeted since the years
+are prepended with two letters "yr". Thus, no data preparation is needed. However, the WDI missing value symbols, the double dots (..), 
+must be removed. Otherwise, Stata will treat as string data in any columns containing those double dots. At the users' request, 
+{cmd:wdireshape} will remove the double dots. {p_end}
+
+{pstd}Older CD releases, such as the WDI-2005 CD-ROM, produce .csv files that must be managed prior to insheeting. In particular, the 
+years must be prepended with a letter, which can be done in a spreadsheet or by using the procedure suggested in Baum and Cox (2007). 
+The raw or prepared dataset saved as a .csv file can be imported into Stata using the {cmd:insheet} command as follows:{p_end}
+
+
+		{cmd:. insheet using} {it:filename.csv}, {cmd:names clear}
+
+
+{phang}Data may also be imported into Stata by copying from Excel and pasting directly into the Stata data editor.{p_end}
+
+{marker options}{dlgtab:Required options}
+
+{pstd}
+{cmd:prepend(}{it:letter(s)}{cmd:)} specifies the prepending letter(s). For example, specify {opt prepend(yr)} if {hi:yr} are the prepending letters.
+
+{pstd}
+{opth sername(varname)} specifies the variable holding the series names. 
+
+{pstd}
+{opth ctyname(varname)} specifies the variable containing country names. 
+
+{pstd}
+{opth ctycode(varname)} specifies the variable containing the country code elements. 
+
+{pstd}
+{opth sercode(varname)} specifies the variable containing the series code elements.
+
+
+{pmore} With these required options specified, {cmd:wdireshape} will attempt to reshape the entire 
+dataset at once, which is the default.
+
+{marker options}{dlgtab:Optional options}
+
+{phang}
+{opt byper(#)} requires {cmd:wdireshape} to reshape the dataset 1 year, 5 years, or 10 years at a time,
+as long as the time span contains no gaps. One of these three values should be used with the {opt byp:er(#)} 
+option. If either 5 or 10 is specified, {cmd:wdireshape} will account for the fact that the last subperiod may not be of
+5 or 10 years. Also, Stata will check whether the current memory size is enough to reshape the data 5 or 10
+years at a time.{p_end}
+
+{phang}
+{opt startyr(#)} specifies the first year of the time period.
+
+{phang}
+{opt endyr(#)} specifies the last year of the time period.
+
+{pmore}{hi:Note 1:} The {opt byper(#)}, {opt startyr(#)}, and {opt endyr(#)} options must be combined.{p_end}
+
+{phang}
+{opt byvar} specifies that the dataset to be reshaped one variable at a time, as proposed by Kossinets (2006). The {opt byvar}
+option may not be combined with {opt byper(#)}, {opt startyr(#)}, and {opt endyr(#)}.{p_end}
+
+{pmore}
+Due to memory issues, reshaping large datasets at once may not be successful. In such a case, Stata will prompt the user
+to specify the {cmd:byvar} or {cmd:byper(#)} option, or to increase the amount of memory allocated to Stata. Note that you can reset the size of memory
+only if you are using {help statamp:Stata/MP}, {help specialedition:Stata/SE}, or {help stataic:Stata/IC}.{p_end}
+
+{phang}
+{opt sur} requests a wide form suitable for SUR analysis (see {help SUREG}). 
+By default, the dataset is reshaped in long form for panel data analysis (see {help XTREG}). When the {opt sur} option is
+specified, in the reshaped dataset, the country names are postfixed to the user-supplied variable names and are 
+represented by c1, c2, and so. {cmd:Describe} the reshaped dataset if you want to know what countries
+c1, c2,...,cn represent. In Stata 10 or higher, you can just look at the variable labels in the variable window.
+The SUR-reshaped structure displays the years in rows and the variables, for each country, in columns. 
+
+{phang}
+{opt cros} requests a wide form amenable to cross-sectional analysis. The CROS-reshaped structure displays the country
+names in rows and the variables, for each year, in columns. Obviously, {opt cros} may not be combined with {opt sur}.
+
+{pmore}
+{hi:Note 2:} When the  {opt sur} or {opt cros} option is specified, Stata will complain if the resulting number of variables
+exceeds its limits, which are 99 for small Stata, 2047 for intercooled, and 32,767 for Stata/MP and Stata/SE.
+
+{phang}
+{opt nstring(#)} indicates that the dataset contains the WDI missing value symbols, the double dots (..), and that 
+they should be removed. # represents the number of identifier variables in the dataset. For example, {opt nstring(4)} 
+must be specified when the dataset includes names and code elements for both countries and series as identifier variables.
+When the  {opt nstring(#)} option is specified, if an error occurs for any reasons, the dataset to be reshaped needs to 
+be reloaded before running {cmd:wdireshape} again. Otherwise, Stata will abort with a type-mismatch error.
+
+{pmore}
+{hi:Note 3:} Depending on your computer system performance, in case of large datasets, reshaping 10 years at a time - as long as 
+the time period is at least 10 years - may be faster than reshaping variable by variable. However, when the time period contains gaps,
+the {opt byper(#)} option will not work. 
+
+{marker examples}{dlgtab:Examples}
+
+Check the number of indicators and their order of appearance in a WDI dataset
+{phang}{cmd:. wdireshape, sername(seriesname)}
+
+
+Reshape the entire dataset at once
+{phang}{cmd:. wdireshape  v1-v10, prepend(yr) ctyname(countryname) sername(seriesname) ctycode(countrycode) sercode(seriescode)}
+
+{phang}{cmd:. wdireshape gdpcap trade invest cropland tractor popdensity arable, prepend(yr) ctyname(countryname) ///}{p_end}
+{bf:      sername(seriesname) ctycode(countrycode) sercode(seriescode)}
+
+
+Reshape variable by variable
+{phang}{cmd:. wdireshape export import gdpcur gdpcnst foodindx irrig, prepend(yr) ctyname(countryname) ///}{p_end}
+{bf:      sername(seriesname) ctycode(countrycode) sercode(seriescode) byvar}
+
+
+Reshape 5 years at a time
+{phang}{cmd:. wdireshape myvar1-myvar16, prepend(yr) ctyname(countryname) sername(seriesname) ctycode(countrycode) ///}{p_end}
+{bf:      sercode(seriescode) byp(5) start(1960) end(2004)}
+
+
+Reshape 10 years at a time, but for SUR analysis
+{phang}{cmd:. wdireshape myvar1-myvar16, prepend(yr) ctyname(countryname) sername(seriesname) ctycode(countrycode) ///}{p_end}
+{bf:      sercode(seriescode) byp(10) start(1960) end(2004) sur}
+
+
+{hi:Note 4:} To obtain series of averages, first run {cmd:wdireshape} without specifying the {opt sur} or {opt cros} option, and then run {cmd:paverage} (see {help paverage} if installed)
+
+
+{marker refs}{title:References}
+
+Baum, C.B. and N.J. Cox. 2007. Getting those Data into Shape. {it:Stata Journal} 7: 268-271
+
+Kossinets, G. 2006. {browse "http://www.columbia.edu/acis/eds/data_tools/tips/reshape_manyvar.do":http://www.columbia.edu/acis/eds/data_tools/tips/reshape_manyvar.do}
+
+The World Bank Group. 2009. {it:World Development Indicators (WDI) Online}.
+   {browse "http://publications.worldbank.org/WDI/":http://publications.worldbank.org/WDI/}
+
+
+{marker acknow}{title:Acknowledgments}
+
+Thanks to Kit Baum for useful comments. Thanks to Simon Feeny for pointing out the need to allow for quotes in the WDI series descriptors.
+
+
+{marker author}{title:Author}
+
+{p 4 4 2}{hi: P. Wilner Jeanty}, Dept. of Agricultural, Environmental, and Development Economics,{break} 
+    	   The Ohio State University{break}
+	   
+{p 4 4 2}Email to {browse "mailto:jeanty.1@osu.edu":jeanty.1@osu.edu} for any comments or suggestions.
+
+ 
+{title:Also see}
+
+{p 4 13 2}Manual: {hi:[D] reshape} 
+{p 4 13 2}Online: {helpb reshape}, {helpb insheet}
+
+

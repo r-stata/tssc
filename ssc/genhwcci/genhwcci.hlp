@@ -1,0 +1,103 @@
+{smcl}
+{* *! version 9.0.1  5Oct2006}{...}
+{cmd:help genhwcci}
+{right:(STB-57: sg150)}
+{right: also see:  {help genhwi}}
+{hline}
+
+{title:Title}
+
+{p2colset 5 19 21 2}{...}
+{p2col :{hi: genhwcci} {hline 2}}Hardy-Weinberg equilibrium test in case-control studies{p_end}
+{p2colreset}{...}
+
+
+{title:Syntax}
+
+{p 8 14 2}
+{cmd:genhwcci} #AA1 #Aa1 #aa1 #AA2 #Aa2 #aa2 [{cmd:,} {it:options}]
+
+
+{synoptset 21 tabbed}{...}
+{synopthdr}
+{synoptline}
+{syntab:Main}
+{synopt :{cmdab:l:abel(}{it:genotypes}{cmd:)}}requests that labels are used in the output of the genotype frequency table{p_end}
+{synopt :{cmdab:bin:var}}requests that the standard errors from a binomial distribution are reported for each allele frequency{p_end}
+{synoptline}
+{p2colreset}{...}
+
+
+{title:Description}
+
+{pstd}
+{cmd:genhwcci} is an immediate command used for estimating allele frequency, 
+genotype frequencies, disequilibrium coefficients and the associated standard error
+for codominant traits or data of completely known genotypes in case-control studies. 
+For both genotypic counts of cases and controls, it performs asymptotic 
+Hardy-Weinberg Equilibrium (HWE) tests. It also tests the HWE for genotypic 
+counts of cases, under the assumption that the genotypic counts of 
+controls are under HWE; where #AA1, #Aa1 and #aa1 are 
+genotypic counts for the AA, Aa and aa of cases; while #AA2, #Aa2 and #aa2 
+are genotypic counts of the controls. This command works for biallelic 
+loci only.
+
+
+{title:Options}
+
+{dlgtab:Main}
+
+{phang}
+{opt label(genotypes))} requests that labels are used in the output of the genotype frequency table.
+
+{phang}
+{opt binvar} requests that the standard errors from a binomial distribution are
+reported for each allele frequency, under the assumption that the population is under HWE. 
+By default, standard errors without this assumption are calculated and reported.
+
+
+{title:Examples}
+
+{phang}
+{stata genhwcci 67 156 146 31 135 118, binvar label(AA Aa aa)}
+
+{phang}
+{stata genhwcci 41 47 21 37 58 18}
+
+
+{title:Also see}
+
+{psee}
+   STB:  STB-48 sg110, STB-57 sg150
+
+{psee}
+Online:  {help genhwi}
+
+
+{title:References}
+
+{phang}
+Cui J. Hardy-Weinberg equilibrium test in case-control studies. Stata Technical Bulletin 2000; 57: 17-19.
+
+{phang}
+Cleves M. Hardy-Weinberg equilibrium test and allele frequency estimation. Stata Technical Bulletin 1999; 48: 34-37. 
+
+
+{title:Author}
+
+{p 4 4 2}
+James Cui, Department of Epidemiology and Preventive Medicine, Monash University.
+
+{p 4 4 2}
+Email: {browse "mailto:james.cui@med.monash.edu.au":james.cui@med.monash.edu.au}
+
+
+
+Other Commands I have written:
+{help simuped2}   (if installed)      {stata ssc install simuped2}     (to install this command)
+{help simuped3}   (if installed)      {stata ssc install simuped3}     (to install this command)
+{help phenotype}  (if installed)      {stata ssc install phenotype}    (to install this command)
+{help buckley}    (if installed)      {stata ssc install buckley}      (to install this command)
+{help qic}        (if installed)      {stata ssc install qic}          (to install this command)
+
+

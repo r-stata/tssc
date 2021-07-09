@@ -1,0 +1,189 @@
+/* 
+
+*! metabias dialog version 1.0.1, 13 May 2003, T. J. Steichen, steichen@triad.rr.com 
+*!    for metabias version 1.2.4, 08 Sep 2003, T. J. Steichen, steichen@triad.rr.com
+
+Tests for publication bias in meta-analysis
+-------------------------------------------
+
+Syntax: metabias { theta { se_theta | var_theta } | exp(theta) ll ul [cl] }
+            [ if exp ] [ in range ] [, by(by_var) { var | ci } 
+              graph({ begg | egger }) gweight level(#) graph_options ]
+
+Install in User Statistics menu via Stata commands:
+  . window menu append item "stUserStatistics" "meta&bias (Publication Bias in Meta-analysis)" "db metabias"
+  . window menu refresh
+To permanently install, place the commands in your -profile.do- file.
+*/
+
+VERSION 8.0
+
+INCLUDE _std_small
+INCLUDE header
+
+HELP hlp1, view("help metabias")
+RESET res1, label("Reset")
+
+DIALOG main, label("metabias 1.2.4 - Publication Bias in Meta-analysis") tabtitle("Main")
+BEGIN
+  GROUPBOX gb_data      10    5  330  _ht5h,            ///
+     label("Type of Data:")
+  RADIO    r_se         15   25  100      .,            ///
+     label("Theta, SE")        first                    ///
+     onclickon(script main_se_on)                       ///
+     onclickoff(script main_se_off)                     ///
+     option(NONE)
+  RADIO    r_var       115   25  100      .,            ///
+     label("Theta, Var")       middle                   ///
+     onclickon(script main_var_on)                      ///
+     onclickoff(script main_var_off)                    ///
+     option("var")
+  RADIO    r_ci        215   25  110      .,            ///
+     label("exp(Theta), CI")   last                     ///
+     onclickon(script main_ci_on)                       ///
+     onclickoff(script main_ci_off)                     ///
+     option("ci")
+
+  TEXT     tx_se        15   45   320     .,            ///
+     label("Vars for theta, se(theta), in that order")
+  VARLIST  vl_se         @   _ss   @      .,            ///
+     label("Vars for theta, se(theta)")
+
+  TEXT     tx_var        @   45   320     .,            ///
+     label("Vars for theta, var(theta), in that order")
+  VARLIST  vl_var        @   _ss   @      .,            ///
+     label("Vars for theta, var(theta)")
+  
+  TEXT     tx_ci         @   45   320     .,            ///
+     label("Vars for exp(theta), CI_LL, CI_UL, in that order")
+  VARLIST  vl_ci         @   _ss   @      .,            ///
+     label("Vars for exp(theta), CI_LL, CI_UL")
+
+  CHECKBOX cb_by        10 100  100       .,            ///
+     label("By Variable:")                              ///
+     onclickon(main.vn_by.enable)                       ///
+     onclickoff(main.vn_by.disable)
+  VARNAME  vn_by       110 100  230       .,            /// 
+     label("By Variable")                               ///
+     option("by")
+
+  GROUPBOX gb_graph     10  130  330  _ht3h,            ///
+     label("Graph:")
+  RADIO    r_none       15  150  100      .,            ///
+     label("None")            first                     ///
+     onclickon(main.cb_gwt.disable)                     ///
+     option(NONE)
+  RADIO    r_begg      115  150  100      .,            ///
+     label("Begg")            middle                    ///
+     onclickon(main.cb_gwt.enable)                      ///
+     option("graph(begg)")
+  RADIO    r_egger     215  150  100      .,            ///
+     label("Egger")           last                      ///
+     onclickon(main.cb_gwt.enable)                      ///
+     option("graph(egger)")
+
+  CHECKBOX cb_gwt       15  175  300      .,            ///
+     label("Size Graph Symbol by Weights")              ///
+     option("gweight")
+END
+ 
+INCLUDE ifin
+
+SCRIPT main_se_on
+BEGIN
+  main.tx_se.show
+  main.vl_se.show
+  main.tx_se.enable
+  main.vl_se.enable
+
+  main.tx_var.disable
+  main.vl_var.disable
+  main.tx_var.hide
+  main.vl_var.hide
+  
+  main.tx_ci.disable
+  main.vl_ci.disable
+  main.tx_ci.hide
+  main.vl_ci.hide
+END
+
+SCRIPT main_se_off
+BEGIN
+  main.tx_se.disable
+  main.vl_se.disable
+  main.tx_se.hide
+  main.vl_se.hide
+END
+
+SCRIPT main_var_on
+BEGIN
+  main.tx_var.show
+  main.vl_var.show
+  main.tx_var.enable
+  main.vl_var.enable
+
+  main.tx_se.disable
+  main.vl_se.disable
+  main.tx_se.hide
+  main.vl_se.hide
+  
+  main.tx_ci.disable
+  main.vl_ci.disable
+  main.tx_ci.hide
+  main.vl_ci.hide
+END
+
+SCRIPT main_var_off
+BEGIN
+  main.tx_var.disable
+  main.vl_var.disable
+  main.tx_var.hide
+  main.vl_var.hide
+END
+
+SCRIPT main_ci_on
+BEGIN
+  main.tx_ci.show
+  main.vl_ci.show
+  main.tx_ci.enable
+  main.vl_ci.enable
+
+  main.tx_se.disable
+  main.vl_se.disable
+  main.tx_se.hide
+  main.vl_se.hide
+  
+  main.tx_var.disable
+  main.vl_var.disable
+  main.tx_var.hide
+  main.vl_var.hide
+END
+
+SCRIPT main_ci_off
+BEGIN
+  main.tx_ci.disable
+  main.vl_ci.disable
+  main.tx_ci.hide
+  main.vl_ci.hide
+END
+
+PROGRAM command
+BEGIN
+  put "metabias "
+  if main.r_se {
+    varlist main.vl_se 
+  }
+  if main.r_var {
+    varlist main.vl_var 
+  }
+  if main.r_ci {
+    varlist main.vl_ci 
+  }
+  INCLUDE _ifin_pr
+  beginoptions
+    option radio(main r_se r_var r_ci)
+    optionarg main.vn_by
+    option radio(main r_none r_begg r_egger)
+    option main.cb_gwt
+  endoptions
+END

@@ -1,0 +1,140 @@
+{smcl}
+{* *! version 9.0.1  5Oct2006}{...}
+{cmd:help phenotype}
+{right:(STB-61: dm92)}
+{hline}
+
+{title:Title}
+
+{p2colset 5 19 21 2}{...}
+{p2col :{hi: phenotype} {hline 2}}Simulate disease status and censored age for family data{p_end}
+{p2colreset}{...}
+
+
+{title:Syntax}
+
+{p 8 14 2}
+{cmd:phenotype} {it:hr} [{cmd:,} {it:options}]
+
+
+{synoptset 21 tabbed}{...}
+{synopthdr}
+{synoptline}
+{syntab:Main}
+{synopt :{cmdab:t:ype(}{it:d}|{it:r}{cmd:)}}specifies the type of inheritance{p_end}
+{synopt :{cmdab:a:lpha(}{it:#}{cmd:)}}specifies the shape parameter of the Weibull distribution{p_end}
+{synopt :{cmdab:l:ambda(}{it:#}{cmd:)}}specifies the scale parameter of the Weibull distribution{p_end}
+{synopt :{cmdab:m:axage(}{it:#}{cmd:)}}specifies the upper bound of age of death{p_end}
+{synopt :{cmdab:g:amma(}{it:#}{cmd:)}}specifies the parameter in the log-power density function of death{p_end}
+{synopt :{cmdab:s:ex(}{it:b}|{it:f}|{it:m}{cmd:)}}specifies the gender being affected by a disease{p_end}
+{synopt :{cmdab:sav:ing(}{it:filename}{cmd:)}}specifies the name of the file to be saved{p_end}
+{synoptline}
+{p2colreset}{...}
+
+
+{title:Description}
+
+{pstd}
+{cmd:phenotype} generates the disease status and censored age based on family data
+created by simuped2 or simuped3 (Cui 2000). A censored age 
+is the age at onset of a disease if a person is affected, or the age of death 
+if a person has died before developing the disease. Otherwise it is the 
+calendar age contained in the original family data. This program expects that the
+genetic hazard ratio, {it:hr}, to be specified as a non-negative value. 
+This program is also known as {cmd:phenotyp} in the previous versions.
+
+{pstd}
+Two modes of inheritance, dominant and recessive, are allowed for in
+this program. They are represented by {bf:d} and {bf:r} in the {cmd:type}
+option, respectively. Use of other letters will produce an error message.
+if a disease affects one gender only, the disease
+status is generated as 0 for a person with an opposite gender. 
+The age of death is determined by a log-power density function.
+The hazard function of developing a disease is assumed to be a Weibull distribution.
+
+
+{title:Options}
+
+{dlgtab:Main}
+
+{phang}
+{opt type(inheritance)} specifies the type of inheritance. The option {bf:d} (the default) specifies
+a dominant inheritance, and {bf:r} specifies a recessive inheritance.
+
+{phang}
+{opt alpha(#)} specifies the shape parameter of the Weibull distribution. The default 
+value is 4.21.
+
+{phang}
+{opt lambda(#)} specifies the scale parameter of the Weibull distribution. The default 
+value is 9.95e-10.
+
+{phang}
+{opt maxage(#)} specifies the upper bound of age of death. The default value is 100.
+
+{phang}
+{opt gamma(#)} specifies the parameter in the log-power density function of death. 
+The default value is 15.
+
+{phang}
+{opt sex(b|f|m)} specifies the gender affected by a disease. The option {bf:b} (the default) specifies that
+both genders are affected, {bf:f} specifies that only females are affected, and {bf:m} specifies that only males are  
+affected.
+
+{phang}
+{opt saving(filename)} specifies the file name of the simulated data. The default file name is {bf:temp1.dta}.
+
+
+{title:Examples}
+
+{phang}{stata clear}
+
+{phang}{stata run simuped2.ado}
+
+{phang}{stata simuped2 70 10 40 10, reps(1000) sav(output) alle(0.05) sib(5)}
+
+{phang}{stata use output, clear}
+
+{phang}{stata phenotype 10, type(d) alpha(4.21) lambda(9.95e-10) maxage(100) gamma(15) sex(f) sav(output1)}
+
+{phang}{stata use output1, clear}
+
+{phang}{stata list if famid <= 2, sepby(famid)}
+
+
+{title:Also see}
+
+{psee}
+   STB:  STB-58: dm82 
+
+
+{title:References}
+
+{phang}
+Cui J. Simulating two- and three-generation families. Stata Technical Bulletin 2000; 58: 2-5.
+
+{phang}
+Cui J. Simulating disease status and censored age. Stata Technical Bulletin 2001; 61: 8-10.
+
+{phang}
+Cui J and Hopper JL. Why are the majority of hereditary cases of early-onset breast cancer sporadic? A
+simulation study. Cancer Epidemiology, Biomarkers & Prevention 2000; 9: 805-812.
+
+
+{title:Author}
+
+{p 4 4 2}
+James Cui, Department of Epidemiology and Preventive Medicine, Monash University.
+
+{p 4 4 2}
+Email: {browse "mailto:james.cui@med.monash.edu.au":james.cui@med.monash.edu.au}
+
+
+Other Commands I have written:
+{help genhwcci}   (if installed)      {stata ssc install genhwcci}     (to install this command)
+{help simuped2}   (if installed)      {stata ssc install simuped2}     (to install this command)
+{help simuped3}   (if installed)      {stata ssc install simuped3}     (to install this command)
+{help buckley}    (if installed)      {stata ssc install buckley}      (to install this command)
+{help qic}        (if installed)      {stata ssc install qic}          (to install this command)
+
+

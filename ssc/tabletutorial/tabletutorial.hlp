@@ -1,0 +1,1973 @@
+{smcl}
+{* 25nov2008}{...}
+    {hline 63}
+
+    {hi:Tutorial:}
+
+    {hi:Automated table generation and reporting with Stata}
+
+    {hline 63}
+
+
+    Ben Jann, ETH Zurich, jannb@ethz.ch
+
+    November 2008
+
+
+
+    Required user packages:
+
+        - {cmd:mat2txt}   {it:{stata "ssc install mat2txt, replace":<install>}}
+        - {cmd:estwrite}  {it:{stata "ssc install estwrite, replace":<install>}}
+        - {cmd:estout}    {it:{stata "ssc install estout, replace":<install>}}
+
+
+
+
+    {it:{help tabletutorial##outline:<next>}}{...}
+    {col 55}{it:{browse "http://fmwww.bc.edu/RePEc/bocode/t/tabletutorial.pdf":<PDF version>}}
+    {hline 63}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    {hline 63}
+{marker outline}
+    {hi:Outline}
+
+
+      o {help tabletutorial##intro:Introduction}
+
+      o {help tabletutorial##part1:Part 1: Low-level results processing}
+
+        - {help tabletutorial##part1a:How to access results from Stata routines}
+        - {help tabletutorial##part1b:Getting things out of Stata: The {bf:file} command}
+        - {help tabletutorial##part1c:Wrappers}
+
+      o {help tabletutorial##part2:Part 2: Handling model estimation results}
+
+        - {help tabletutorial##part2a:Results from "estimation" commands are special}
+        - {help tabletutorial##part2b:Archiving models}
+        - {help tabletutorial##part2c:Tabulating estimation results}
+
+      o {help tabletutorial##part3:Part 3: Automatic reporting}
+
+        - {help tabletutorial##part3a:Automation}
+        - {help tabletutorial##part3b:Example with LaTeX}
+        - {help tabletutorial##part3c:Example with MS Word and Excel}
+
+
+    {it:{help tabletutorial##intro:<next>}}{...}
+    {col 63}{it:{help tabletutorial:<top>}}
+    {hline 63}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    {hline 63}
+{marker intro}
+    {hi:Introduction I}
+
+    Statistical software packages are good at analyzing data, 
+    but they are often weak when it comes to reporting.
+
+
+      o Output from statistical routines contains all sorts of
+        details that are valuable to the researcher but are not
+        so important for reporting.
+
+
+        {hi:=> you have to select relevant results}
+
+
+
+      o Output from statistical routines sometimes contains 
+        results that are not well suited for interpretation or 
+        for presentation to a non-expert audience.
+
+
+        {hi:=> you have to transform results}
+
+
+
+    {it:{help tabletutorial##intro2:<next>}}{...}
+    {col 58}{it:{help tabletutorial##outline:<overview>}}
+    {hline 63}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    {hline 63}
+{marker intro2}
+    {hi:Introduction II}
+
+      o Output from statistical routines is often not well 
+        formatted for presentation.
+
+
+        {hi:=> you have to rearrange and reformat results}
+
+
+
+      o Various software packages might be used for further
+        processing of results and for reporting.
+
+
+        {hi:=> you have to transfer results to specific file formats}
+
+
+
+      o You might need to re-use results for other reports or
+        extract additional results at a later point in time.
+
+
+        {hi:=> you have to archive results}
+
+    {it:{help tabletutorial##intro3:<next>}}{...}
+    {col 58}{it:{help tabletutorial##outline:<overview>}}
+    {hline 63}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    {hline 63}
+{marker intro3}
+    {hi:Introduction III}
+
+
+
+    {c TLC}{hline 14}{c TRC}
+    {c |}  {hi:TWO MAXIMS}  {c |}
+    {c BLC}{hline 14}{c BRC}
+
+
+
+    {bf:{err:1) Never Copy/Paste results by hand}}
+
+    You will almost surely make tons of mistakes!
+
+
+
+    {bf:{err:2) Do everything only once}}
+
+    It is simply a waste of time to do things more than once.
+
+
+
+
+
+    {it:{help tabletutorial##intro4:<next>}}{...}
+    {col 58}{it:{help tabletutorial##outline:<overview>}}
+    {hline 63}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    {hline 63}
+{marker intro4}
+    {hi:Introduction IV}
+
+
+      o These two goals can be reached by {hi:automation}.
+
+
+      o Automation has its {hi:price}:
+
+        - initial investment of time and effort
+
+        - reduced flexibility
+
+
+      o However, personally I find that automation almost always 
+        pays off.
+
+
+      o For example, although you are convinced that you do the
+        tables in your research paper only once, you'll find 
+        yourself doing them over, and over, and over, ...
+
+
+
+
+    {it:{help tabletutorial##intro5:<next>}}{...}
+    {col 58}{it:{help tabletutorial##outline:<overview>}}
+    {hline 63}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    {hline 63}
+{marker intro5}
+    {hi:Introduction V}
+
+
+      o Furthermore, automation increases {hi:quality}:
+
+        - no copy/paste errors
+
+        - errors and possible improvements are often detected after 
+          everything is done; in a non-automated settings there are 
+          high barriers against correcting such errors or 
+          implementing the improvements
+
+        - the lack of flexibility leads to standardization (which 
+          is usually positive, but can sometimes also hinder 
+          innovation)
+
+        - automation makes research more replicable
+
+
+      o Moreover, good tools can lower the costs of automation
+        dramatically.
+
+
+
+    {it:{help tabletutorial##intro6:<next>}}{...}
+    {col 58}{it:{help tabletutorial##outline:<overview>}}
+    {hline 63}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    {hline 63}
+{marker intro6}
+    {hi:Introduction VI}
+
+
+      o Of course, there are also exceptions where automation might 
+        not be worth the effort.
+
+
+      o Examples:
+
+        - slides for presentations that are only used once or twice
+
+        - numbers in text body (trick: only cite approximate 
+          values)
+
+
+
+
+
+
+
+
+
+
+
+    {it:{help tabletutorial##part1:<next>}}{...}
+    {col 58}{it:{help tabletutorial##outline:<overview>}}
+    {hline 63}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    {hline 63}
+{marker part1}
+    {hi:Part 1: Low-level results processing}
+
+
+      o {help tabletutorial##part1a:How to access results from Stata routines}
+
+      o {help tabletutorial##part1b:Getting things out of Stata: The {bf:file} command}
+
+      o {help tabletutorial##part1c:Wrappers}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    {it:{help tabletutorial##part1a:<next>}}{...}
+    {col 58}{it:{help tabletutorial##outline:<overview>}}
+    {hline 63}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    {hline 63}
+{marker part1a}
+    {hi:Accessing results in Stata I}
+
+      o A prerequisite for automation is that the results from
+        statistical routines can be accessed by the user.
+
+
+      o In Stata, most commands return their results in {cmd:r()} or {cmd:e()}
+        (see {helpb return##|_new:return}).
+
+        - {cmd:r()} is used by "general" commands such as {helpb summarize##|_new:summarize}
+        - {cmd:e()} is used by "estimation" commands such as {helpb regress##|_new:regress}
+
+
+      o Returned are:
+
+        - string scalars
+        - numeric scalars
+        - numeric matrices
+
+        - For example, estimation commands return the number of 
+          observations in {cmd:e(N)}, the name of the command in {cmd:e(cmd)}, 
+          and the coefficients vector and the variance matrix in 
+          {cmd:e(b)} and {cmd:e(V)}.
+
+    {it:{help tabletutorial##part1a2:<next>}}{...}
+    {col 58}{it:{help tabletutorial##outline:<overview>}}
+    {hline 63}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    {hline 63}
+{marker part1a2}
+    {hi:Accessing results in Stata II}
+
+
+      o Use {helpb return##|_new:return list} or {helpb ereturn##|_new:ereturn list} to find out about available 
+        returns. Use {helpb matrix list##|_new:matrix list} to see the contents of a returned 
+        matrix.
+{com}
+INCLUDE help tabletutorial_1
+{txt}        {it:{stata tabletutorial_do tabletutorial_1.ihlp:<run>}}
+{com}
+INCLUDE help tabletutorial_2
+{txt}        {it:{stata tabletutorial_do tabletutorial_2.ihlp:<run>}}
+
+
+      o Use {helpb matrix list##|_new:matrix list} to see the contents of a returned matrix.
+{com}
+INCLUDE help tabletutorial_3
+{txt}        {it:{stata tabletutorial_do tabletutorial_3.ihlp:<run>}}
+
+
+    {it:{help tabletutorial##part1a3:<next>}}{...}
+    {col 58}{it:{help tabletutorial##outline:<overview>}}
+    {hline 63}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    {hline 63}
+{marker part1a3}
+    {hi:Accessing results in Stata III}
+
+
+      o You can use the {cmd:e()} and {cmd:r()} scalars and matrices more or 
+        less as you would use any other scalar or matrix, although 
+        it is often advisable to first copy the results into 
+        regular macros, scalars, or matrices (see {helpb macro##|_new:macro}, {helpb scalar##|_new:scalar},
+        and {helpb matrix##|_new:matrix}).
+
+
+      o Examples:
+
+{com}
+INCLUDE help tabletutorial_4
+{txt}        {it:{stata tabletutorial_do tabletutorial_4.ihlp:<run>}}
+
+{com}
+INCLUDE help tabletutorial_5
+{txt}        {it:{stata tabletutorial_do tabletutorial_5.ihlp:<run>}}
+
+
+
+
+    {it:{help tabletutorial##part1a4:<next>}}{...}
+    {col 58}{it:{help tabletutorial##outline:<overview>}}
+    {hline 63}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    {hline 63}
+{marker part1a4}
+    {hi:Accessing results in Stata IV}
+
+      o Example with matrices:
+{com}
+INCLUDE help tabletutorial_6
+{txt}        {it:{stata tabletutorial_do tabletutorial_6.ihlp:<run>}}
+{com}
+INCLUDE help tabletutorial_7
+{txt}        {it:{stata tabletutorial_do tabletutorial_7.ihlp:<run>}}
+
+
+      o Note that coefficients and standard errors can also be 
+        accessed as {cmd:_b[]} and {cmd:_se[]}:
+{com}
+INCLUDE help tabletutorial_8
+{txt}        {it:{stata tabletutorial_do tabletutorial_8.ihlp:<run>}}
+
+    {it:{help tabletutorial##part1b:<next>}}{...}
+    {col 58}{it:{help tabletutorial##outline:<overview>}}
+    {hline 63}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    {hline 63}
+{marker part1b}
+    {hi:Getting things out of Stata: The file command I}
+
+
+      o The {helpb file##|_new:file} command is used in Stata to write to (or read 
+        from) a file on disk.
+
+      o Use {helpb file##|_new:file} to produce custom output files.
+
+      o {helpb file##|_new:file} is a low level command. It just writes plain text, 
+        line by line. You have to do all formatting yourself.
+
+      o {helpb file##|_new:file} may appear a bit clumsy: You have to
+
+          {cmd:file open} {it:handle} {cmd:using} {it:filename}, {cmd:write} /*initialize*/
+
+          {cmd:file write} {it:handle} {it:...}                  /*write*/
+          {it:...}
+
+          {cmd:file close} {it:handle}                      /*done*/
+
+      o However, {helpb file##|_new:file} can produce any desired output.
+
+
+
+    {it:{help tabletutorial##part1b2:<next>}}{...}
+    {col 58}{it:{help tabletutorial##outline:<overview>}}
+    {hline 63}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    {hline 63}
+{marker part1b2}
+    {hi:Getting things out of Stata: The file command II}
+
+
+      o Example: Write a tab delimited file containing descriptive
+        statistics
+
+{com}
+INCLUDE help tabletutorial_9
+{txt}        {it:{stata tabletutorial_do tabletutorial_9.ihlp:<run>}}{...}
+  {it:{browse example.txt:<show>}}
+
+
+
+
+
+
+
+    {it:{help tabletutorial##part1b3:<next>}}{...}
+    {col 58}{it:{help tabletutorial##outline:<overview>}}
+    {hline 63}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    {hline 63}
+{marker part1b3}
+    {hi:Getting things out of Stata: The file command III}
+
+
+      o This can easily be turned into a program:
+{com}
+INCLUDE help tabletutorial_11
+{txt}        {it:{stata tabletutorial_do tabletutorial_11.ihlp:<run>}}{...}
+  {it:{browse example.txt:<show>}}
+
+
+    {it:{help tabletutorial##part1b4:<next>}}{...}
+    {col 58}{it:{help tabletutorial##outline:<overview>}}
+    {hline 63}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    {hline 63}
+{marker part1b4}
+    {hi:Getting things out of Stata: The file command IV}
+
+      o Or let's do HTML:
+{com}
+INCLUDE help tabletutorial_12
+{txt}        {it:{stata tabletutorial_do tabletutorial_12.ihlp:<run>}}{...}
+  {it:{browse example.html:<show>}}
+
+    {it:{help tabletutorial##part1c:<next>}}{...}
+    {col 58}{it:{help tabletutorial##outline:<overview>}}
+    {hline 63}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    {hline 63}
+{marker part1c}
+    {hi:Wrappers}
+
+
+      o Of course you do not have to write a new program for
+        everything.
+
+
+      o Check the SSC Archive to find out whether anything already
+        exists that serves your needs (see {helpb findit##|_new:findit} and {helpb ssc##|_new:ssc}).
+
+
+      o For example, {helpb mat2txt##|_new:mat2txt} can be used to write a matrix to a
+        tab-delimited file:
+{com}
+INCLUDE help tabletutorial_13
+{txt}        {it:{stata tabletutorial_do tabletutorial_13.ihlp:<run>}}{...}
+  {it:{browse example.txt:<show>}}
+
+
+
+
+    {it:{help tabletutorial##part2:<next>}}{...}
+    {col 58}{it:{help tabletutorial##outline:<overview>}}
+    {hline 63}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    {hline 63}
+{marker part2}
+    {hi:Part 2: Handling model estimation results}
+
+
+      o {help tabletutorial##part2a:Results from "estimation" commands are special}
+
+      o {help tabletutorial##part2b:Archiving models}
+
+      o {help tabletutorial##part2c:Tabulating estimation results}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    {it:{help tabletutorial##part2a:<next>}}{...}
+    {col 58}{it:{help tabletutorial##outline:<overview>}}
+    {hline 63}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    {hline 63}
+{marker part2a}
+    {hi:Results from "estimation" commands are special}
+
+
+      o Results from e-class commands are special because they
+        share a common structure:
+
+        - a coefficients vector: {cmd:e(b)}
+
+        - and a variance matrix: {cmd:e(V)}
+
+
+      o There is, to some degree, a consensus/common practice of
+        how to design tables containing model estimation results.
+
+
+      o Many models are estimated, usually, and estimation may be 
+        computationally intensive so that archiving the results is 
+        an issue.
+
+
+
+
+
+
+    {it:{help tabletutorial##part2b:<next>}}{...}
+    {col 58}{it:{help tabletutorial##outline:<overview>}}
+    {hline 63}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    {hline 63}
+{marker part2b}
+    {hi:Archiving models I}
+
+
+      o A good approach is to keep model estimation and reporting 
+        two separate processes.
+
+      o This requires that model estimates are stored for later
+        tabulation.
+
+      o Estimating a new model replaces the {cmd:e()}-returns of a 
+        previous model. However, the results can be stored in 
+        memory under a specific name using {helpb estimates store##|_new:estimates store} or the 
+        {helpb eststo##|_new:eststo} user command.
+
+      o In Stata 10, it is also possible to save the results of a 
+        model on disk using {helpb estimates save##|_new:estimates save}.
+
+      o A problem with {helpb estimates save##|_new:estimates save} is that it can only store one 
+        model at the time (i.e. each model is saved in a separate 
+        file). However, the {helpb estwrite##|_new:estwrite} user command overcomes this 
+        problem.
+
+
+
+    {it:{help tabletutorial##part2b2:<next>}}{...}
+    {col 58}{it:{help tabletutorial##outline:<overview>}}
+    {hline 63}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    {hline 63}
+{marker part2b2}
+    {hi:Archiving models II}
+
+
+      o Example:
+{com}
+INCLUDE help tabletutorial_14
+{txt}        {it:{stata tabletutorial_do tabletutorial_14.ihlp:<run>}}
+{com}
+INCLUDE help tabletutorial_15
+{txt}        {it:{stata tabletutorial_do tabletutorial_15.ihlp:<run>}}
+
+
+      o Two weeks later:
+{com}
+INCLUDE help tabletutorial_16
+{txt}        {it:{stata tabletutorial_do tabletutorial_16.ihlp:<run>}}
+
+
+    {it:{help tabletutorial##part2c:<next>}}{...}
+    {col 58}{it:{help tabletutorial##outline:<overview>}}
+    {hline 63}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    {hline 63}
+{marker part2c}
+    {hi:Tabulating estimation results I}
+
+      o Various commands exists to compile and export tables of 
+        model estimates. {cmd:estout} is one of them. Others are {cmd:outreg} 
+        (John Luke Gallup), {cmd:outreg2} (Roy Wada), {cmd:xml_tab} (Lokshin &
+        Sajaia), {cmd:outtex} (Antoine Terracol), {cmd:est2tex} (Marc 
+        Muendler), {cmd:mktab} (Nicholas Winter), {cmd:parmest} (Roger Newson), 
+        of which all have their pros and cons.
+
+
+      o The {cmd:estout} package contains four commands:
+
+        {helpb esttab##|_new:esttab}: User-friendly command to produce publication-style 
+        regression tables for screen display or in various export 
+        formats such as such as CSV, RTF, HTML, or LaTeX.
+
+        {helpb estout##|_new:estout}: Generic program to compile regression tables (the 
+        engine behind {helpb esttab##|_new:esttab}).
+
+        {helpb estadd##|_new:estadd}: Program to add extra results (such as e.g., beta
+        coefficients) to {cmd:e()} so that they can be tabulated.
+
+        {helpb eststo##|_new:eststo}: Improved version of {helpb estimates store##|_new:estimates store}.
+
+    {it:{help tabletutorial##part2c2:<next>}}{...}
+    {col 58}{it:{help tabletutorial##outline:<overview>}}
+    {hline 63}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    {hline 63}
+{marker part2c2}
+    {hi:Tabulating estimation results II}
+
+
+      o {helpb esttab##|_new:esttab} and {helpb estout##|_new:estout} are very flexible and can produce all 
+        sorts of regression tables.
+
+
+      o I will only show a few basic examples here. Many more
+        examples can be found at the following website:
+
+            {browse "http://repec.org/bocode/e/estout"}
+
+
+      o The basic procedure is to store a number of models and 
+        then apply {helpb esttab##|_new:esttab} (or {helpb estout##|_new:estout}) to tabulate them:
+{com}
+INCLUDE help tabletutorial_17
+{txt}        {it:{stata tabletutorial_do tabletutorial_17.ihlp:<run>}}
+
+
+    {it:{help tabletutorial##part2c3:<next>}}{...}
+    {col 58}{it:{help tabletutorial##outline:<overview>}}
+    {hline 63}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    {hline 63}
+{marker part2c3}
+    {hi:Tabulating estimation results III}
+
+
+      o {helpb esttab##|_new:esttab} can either display the table in Stata's results
+        window or export it to a file on disk using one of several
+        formats, such as
+
+        - {cmd:fixed}: fixed-format ASCII
+
+        - {cmd:tab}: tab-delimited ASCII
+
+        - {cmd:csv}: CSV (Comma Separated Value format) for use with 
+          MS Excel
+
+        - {cmd:rtf}: Rich Text Format for use with word processors
+
+        - {cmd:tex}: LaTeX format
+
+        - ...
+
+
+
+
+
+    {it:{help tabletutorial##part2c4:<next>}}{...}
+    {col 58}{it:{help tabletutorial##outline:<overview>}}
+    {hline 63}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    {hline 63}
+{marker part2c4}
+    {hi:Tabulating estimation results IV}
+
+
+      o Use with MS Excel: {cmd:csv} or {cmd:scsv}
+{com}
+INCLUDE help tabletutorial_18
+{txt}        {it:{stata tabletutorial_do tabletutorial_18.ihlp:<run>}}{...}
+  {it:{browse example.csv:<show>}}
+{com}
+INCLUDE help tabletutorial_19
+{txt}        {it:{stata tabletutorial_do tabletutorial_19.ihlp:<run>}}{...}
+  {it:{browse example.csv:<show>}}
+
+        (The {cmd:scsv} format uses a semi-colon as delimiter which is
+        appropriate for certain language versions of Excel.)
+
+
+      o Use the {cmd:plain} option if you intend to do additional 
+        computations in MS Excel:
+{com}
+INCLUDE help tabletutorial_20
+{txt}        {it:{stata tabletutorial_do tabletutorial_20.ihlp:<run>}}{...}
+  {it:{browse example.csv:<show>}}
+
+        (No XML support. Sorry.)
+
+
+    {it:{help tabletutorial##part2c5:<next>}}{...}
+    {col 58}{it:{help tabletutorial##outline:<overview>}}
+    {hline 63}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    {hline 63}
+{marker part2c5}
+    {hi:Tabulating estimation results V}
+
+
+      o Use with MS Word: {cmd:rtf}
+{com}
+INCLUDE help tabletutorial_21
+{txt}        {it:{stata tabletutorial_do tabletutorial_21.ihlp:<run>}}{...}
+  {it:{browse example.rtf:<show>}}
+
+      o Appending is possible. Furthermore, use {cmd:varwidth(#)} and 
+        {cmd:modelwidth(#)} to change column widths:
+{com}
+INCLUDE help tabletutorial_21b
+{txt}        {it:{stata tabletutorial_do tabletutorial_21b.ihlp:<run>}}{...}
+  {it:{browse example.rtf:<show>}}
+
+      o Including RTF literals:
+{com}
+INCLUDE help tabletutorial_21c
+{txt}        {it:{stata tabletutorial_do tabletutorial_21c.ihlp:<run>}}{...}
+  {it:{browse example.rtf:<show>}}
+{com}
+INCLUDE help tabletutorial_21d
+{txt}        {it:{stata tabletutorial_do tabletutorial_21d.ihlp:<run>}}{...}
+  {it:{browse example.rtf:<show>}}
+
+    {it:{help tabletutorial##part2c6:<next>}}{...}
+    {col 58}{it:{help tabletutorial##outline:<overview>}}
+    {hline 63}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    {hline 63}
+{marker part2c6}
+    {hi:Tabulating estimation results VI}
+
+
+      o Use with LaTeX: {cmd:tex}
+{com}
+INCLUDE help tabletutorial_22
+{txt}        {it:{stata tabletutorial_do tabletutorial_22.ihlp:<run>}}
+      
+        For a preview, click
+        
+            {it:{stata "!texify.exe --pdf example.tex":<texify>}}
+                
+        to compile the file (LaTeX required) and then 
+        
+            {it:{browse example.pdf:<show PDF>}}
+
+        to view the result. If {it:<texify>} does not work, click
+         
+            {it:{browse "http://fmwww.bc.edu/RePEc/bocode/t/tabletutorial_example1.pdf":<show PDF from web>}}
+        
+        to download and view a precompiled version. 
+
+    {it:{help tabletutorial##part2c7:<next>}}{...}
+    {col 58}{it:{help tabletutorial##outline:<overview>}}
+    {hline 63}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    {hline 63}
+{marker part2c7}
+    {hi:Tabulating estimation results VII}
+
+
+      o Improved LaTeX table using the {it:booktabs} package:
+{com}
+INCLUDE help tabletutorial_24
+{txt}        {it:{stata tabletutorial_do tabletutorial_24.ihlp:<run>}}
+                {it:{stata "!texify.exe --pdf example.tex":<texify>}}{...}
+  {it:{browse example.pdf:<show PDF>}}{...}
+  {it:{browse "http://fmwww.bc.edu/RePEc/bocode/t/tabletutorial_example2.pdf":<show PDF from web>}}
+
+
+      o Improved LaTeX table using the {it:dcolumn} package:
+{com}
+INCLUDE help tabletutorial_25
+{txt}        {it:{stata tabletutorial_do tabletutorial_25.ihlp:<run>}}
+                {it:{stata "!texify.exe --pdf example.tex":<texify>}}{...}
+  {it:{browse example.pdf:<show PDF>}}{...}
+  {it:{browse "http://fmwww.bc.edu/RePEc/bocode/t/tabletutorial_example3.pdf":<show PDF from web>}}
+
+
+
+    {it:{help tabletutorial##part2c8:<next>}}{...}
+    {col 58}{it:{help tabletutorial##outline:<overview>}}
+    {hline 63}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    {hline 63}
+{marker part2c8}
+    {hi:Tabulating estimation results VIII}
+
+
+      o Advanced LaTeX example
+{com}
+INCLUDE help tabletutorial_26
+{txt}        {it:{stata tabletutorial_do tabletutorial_26.ihlp:<run>}}
+                {it:{stata "!texify.exe --pdf example.tex":<texify>}}{...}
+  {it:{browse example.pdf:<show PDF>}}{...}
+  {it:{browse "http://fmwww.bc.edu/RePEc/bocode/t/tabletutorial_example4.pdf":<show PDF from web>}}
+
+
+    {it:{help tabletutorial##part2c9:<next>}}{...}
+    {col 58}{it:{help tabletutorial##outline:<overview>}}
+    {hline 63}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    {hline 63}
+{marker part2c9}
+    {hi:Tabulating estimation results IX}
+
+
+      o {helpb esttab##|_new:esttab} can be used to tabulate any results, not just
+        regression models, as long as they are posted in {cmd:e()} in an
+        appropriate way.
+
+
+      o Example: descriptives table
+{com}
+INCLUDE help tabletutorial_27
+{txt}        {it:{stata tabletutorial_do tabletutorial_27.ihlp:<run>}}
+
+
+
+
+
+
+
+    {it:{help tabletutorial##part3:<next>}}{...}
+    {col 58}{it:{help tabletutorial##outline:<overview>}}
+    {hline 63}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    {hline 63}
+{marker part3}
+    {hi:Part 3: Automatic reporting}
+
+
+      o {help tabletutorial##part3a:Automation}
+
+      o {help tabletutorial##part3b:Example with LaTeX}
+      
+      o {help tabletutorial##part3c:Example with MS Word and Excel}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    {it:{help tabletutorial##part3a:<next>}}{...}
+    {col 58}{it:{help tabletutorial##outline:<overview>}}
+    {hline 63}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    {hline 63}
+{marker part3a}
+    {hi:Automation}
+
+
+      o Automatic reporting means that results and information on
+        formatting should be separated.
+
+
+      o It has to be possible to replace the data without losing
+        the formatting.
+
+
+      o The usual approach is to maintain a hand-edited master 
+        file that structures the document and sets the formatting 
+        etc. and then dynamically link the files containing 
+        results into this file.
+
+
+
+
+
+
+
+
+
+    {it:{help tabletutorial##part3b:<next>}}{...}
+    {col 58}{it:{help tabletutorial##outline:<overview>}}
+    {hline 63}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    {hline 63}
+{marker part3b}
+    {hi:Example with LaTeX I}
+
+
+      o Step 1: Set up a master file
+{com}
+INCLUDE help tabletutorial_28
+{txt}        {it:{stata tabletutorial_do tabletutorial_28.ihlp:<run>}}
+
+        (Of course you would, usually, set up a master file in a 
+        text editor, not in Stata.)
+        
+
+
+
+
+
+    {it:{help tabletutorial##part3b2:<next>}}{...}
+    {col 58}{it:{help tabletutorial##outline:<overview>}}
+    {hline 63}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    {hline 63}
+{marker part3b2}
+    {hi:Example with LaTeX II}
+
+
+      o Step 2: Generate table files
+{com}
+INCLUDE help tabletutorial_29
+{txt}        {it:{stata tabletutorial_do tabletutorial_29.ihlp:<run>}}
+
+
+      o Step 3: Compile the document
+
+        {it:{stata "!texify.exe --pdf example.tex":<texify>}}{...}
+  {it:{browse example.pdf:<show PDF>}}{...}
+  {it:{browse "http://fmwww.bc.edu/RePEc/bocode/t/tabletutorial_example5.pdf":<show PDF from web>}}
+
+
+    {it:{help tabletutorial##part3b3:<next>}}{...}
+    {col 58}{it:{help tabletutorial##outline:<overview>}}
+    {hline 63}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    {hline 63}
+{marker part3b3}
+    {hi:Example with LaTeX III}
+
+
+      o You can now easily replace the tables and recompile the 
+        document
+{com}
+INCLUDE help tabletutorial_31
+{txt}        {it:{stata tabletutorial_do tabletutorial_31.ihlp:<run>}}
+
+            {it:{stata "!texify.exe --pdf example.tex":<texify>}}{...}
+  {it:{browse example.pdf:<show PDF>}}{...}
+  {it:{browse "http://fmwww.bc.edu/RePEc/bocode/t/tabletutorial_example6.pdf":<show PDF from web>}}
+
+
+
+
+    {it:{help tabletutorial##part3c:<next>}}{...}
+    {col 58}{it:{help tabletutorial##outline:<overview>}}
+    {hline 63}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    {hline 63}
+{marker part3c}
+    {hi:Example with MS Word and Excel I}
+
+
+      o Such automation does not seem to be easily possible with
+        MS Word.
+
+
+      o However, you can link data files into Excel and then
+        dynamically link Excel tables into Word.
+
+
+      o Step 1: Generate results files in tab-delimited format
+{com}
+INCLUDE help tabletutorial_32
+{txt}        {it:{stata tabletutorial_do tabletutorial_32.ihlp:<run>}}
+
+
+
+
+
+    {it:{help tabletutorial##part3c2:<next>}}{...}
+    {col 58}{it:{help tabletutorial##outline:<overview>}}
+    {hline 63}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    {hline 63}
+{marker part3c2}
+    {hi:Example with MS Word and Excel II}
+
+
+      o Step 2: Link data into Excel ("Data" > "Import External 
+        Data" > "Import Data..."; locate and select the 
+        "_example.txt" file; go through the "Text Import Wizard" 
+        and click "Finish"; on the last dialog, called "Import 
+        Data", click "Properties...", uncheck "Prompt for file 
+        name on refresh" and check "Refresh data on file open", 
+        possibly uncheck "Adjust column width").
+        
+
+      o Step 3: Format the table in Excel.
+
+
+      o Step 4: Mark and copy the table in Excel and, in Word, 
+        paste the table as an Excel object ("Edit" > "Paste 
+        Special..."; make sure to select "Paste link").
+
+
+      o Save the Excel and Word documents.
+
+
+
+    {it:{help tabletutorial##part3c3:<next>}}{...}
+    {col 58}{it:{help tabletutorial##outline:<overview>}}
+    {hline 63}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    {hline 63}
+{marker part3c3}
+    {hi:Example with MS Word and Excel III}
+
+
+      o You can now replace the results files ...
+{com}
+INCLUDE help tabletutorial_33
+{txt}        {it:{stata tabletutorial_do tabletutorial_33.ihlp:<run>}}
+
+      o ... open the Excel file and click "Enable automatic 
+        refresh" ...
+        
+      o ... open the Word document, mark the section containing 
+        the table, and hit "F9" ("Edit" > "Update Link") to
+        update the table.
+
+        (The default settings can be changed so that updating 
+        occurs automatically when opening the file: "Tools" > 
+        "Options" > "General" > check "Update automatic links 
+        at open") 
+
+    {it:{help tabletutorial##end:<next>}}{...}
+    {col 58}{it:{help tabletutorial##outline:<overview>}}
+    {hline 63}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    {hline 63}
+{marker end}
+    {hi:End of tutorial}
+
+
+      o Clean-up: erase working files
+{com}
+INCLUDE help tabletutorial_cleanup
+{txt}        {it:{stata tabletutorial_do tabletutorial_cleanup.ihlp:<run>}}
+
+
+
+
+
+    {it:{help tabletutorial:<top>}}
+    {hline 63}

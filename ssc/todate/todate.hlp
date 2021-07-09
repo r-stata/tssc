@@ -1,0 +1,131 @@
+{smcl}
+{* 6sep2005}{...}
+{hline}
+help for {hi:todate}
+{hline}
+
+{title:Generate Stata date variables from run-together date variables}
+
+{p 8 17 2} 
+{cmd:todate}
+{it:varlist}
+[{cmd:if} {it:exp}]
+[{cmd:in} {it:range}]
+{cmd:,}
+{cmdab:g:enerate(}{it:newvarlist}{cmd:)} 
+{cmdab:p:attern(}{it:patternspec}{cmd:)} 
+[{cmdab:f:ormat(}{it:format}{cmd:)}
+{cmdab:c:end(}{it:year}{cmd:)}] 
+
+
+{title:Description} 
+
+{p 4 4 2} 
+{cmd:todate} takes run-together date variables consisting of integers or
+integer characters and generates the corresponding Stata date variables.
+Depending on input, the resulting variables will have units that are the
+numbers of days, weeks, months, quarters or half-years since the beginning of
+1960. 
+
+
+{title:Remarks}
+
+{p 4 4 2} 
+As explained in [U] 24.2.2.2, Stata's {cmd:date()} function cannot convert 
+run-together date variables which consist of integers or integer characters
+and represent some permutation of years, months and days, with values such as 
+{cmd:19520121} or {cmd:520121} or {cmd:"19520121"}, to Stata date variables. However, it 
+is possible to use other numeric or string functions to extract year, month 
+and day and then to compute the dates.
+
+{p 4 4 2} 
+A similar problem and a similar solution arise with run-together dates 
+representing years and one of half-years, quarters, months or weeks. 
+
+{p 4 4 2} 
+{cmd:todate} offers an alternative. It can handle one or more numeric 
+and/or string variables with run-together dates which are integers or 
+integer characters, hereafter both referred to as digits.
+
+
+{title:Options} 
+
+{p 4 8 2}
+{cmd:generate(}{cmd:)} specifies a list of new variable names to hold the 
+Stata date variables. There must be as many new names as there are 
+existing run-together date variables. This is a required option. 
+
+{p 4 8 2} 
+{cmd:pattern(}{cmd:)} specifies the pattern for interpreting digits
+in the dates. 
+
+{p 8 8 2}
+{cmd:y} indicates {cmd:y}ear.{break}
+{cmd:h} indicates {cmd:h}alf-year.{break}
+{cmd:q} indicates {cmd:q}uarter.{break}
+{cmd:m} indicates {cmd:m}onth.{break}
+{cmd:w} indicates {cmd:w}eek.{break}
+{cmd:d} indicates {cmd:d}ay.
+
+{p 8 8 2} 
+The patterns supported are of types {cmd:mdy}, {cmd:yh}, {cmd:yq}, {cmd:ym} and
+{cmd:yw}.  For example, type {cmd:mdy} consists of some permutation of
+{cmd:m}s, {cmd:d}s and {cmd:y}s. In general, all {cmd:y}s, ... , all {cmd:d}s
+should be contiguous.
+    
+{p 8 8 2}    
+Thus {cmd:p(yyyymmdd)} indicates that {cmd:19520121} is to be interpreted
+as 1952 January 21. Dates like {cmd:3281952} and {cmd:12251999} for March
+28 1952 and December 25 1999, in which the first digit for shorter dates is
+not specified, but could be {cmd:0}, should be specified as {cmd:p(mmddyyyy)}.
+    
+{p 8 8 2} 
+{cmd:todate} cannot handle input variables whose maximum length does not
+match the length of pattern specified, nor input variables whose non-
+missing values vary in length by more than 1 digit. Such variables are
+skipped. 
+    
+{p 8 8 2}This is a required option. 
+
+{p 4 8 2} 
+{cmd:cend(}{cmd:)} specifies the end of the century (any period of 100
+years) to which years belong. With {cmd:cend(2000)} year digits of {cmd:52} and
+{cmd:99} will be interpreted as {cmd:1952} and {cmd:1999}. With
+{cmd:cend(2060)} they will be interpreted as {cmd:2052} and {cmd:1999}.
+{cmd:cend()} is ignored if 4 digit years are given.  
+
+{p 4 8 2} 
+{cmd:format(}{cmd:)} specifies a format to be attached to each new variable, 
+usually but not necessarily a date format. See help on 
+{help dfmt:date formats} or {help tfmt:time-series formats}. 
+By default the formats will be {cmd:%d}, {cmd:%tw}, {cmd:%tm}, {cmd:%tq} or 
+{cmd:%th} as appropriate. 
+
+
+{title:Examples} 
+
+{p 4 8 2}{cmd:. todate d1 d2 d3, gen(ndate1-ndate3) p(yyyymmdd) f(%dd_m_cy)}{p_end}
+{p 4 8 2}{cmd:. todate d1 d2 d3, gen(ndate1-ndate3) p(mmddyy) c(2000) f(%dd_m_cy)}{p_end}
+{p 4 8 2}{cmd:. todate d1 d2 d3, gen(ndate1-ndate3) p(yyyyq) f(%tq_q_cy)}
+
+
+{title:Author}
+
+{p 4 4 2}Nicholas J. Cox, Durham University, U.K.{break}
+         n.j.cox@durham.ac.uk
+
+
+{title:Acknowledgments}
+
+{p 4 4 2}
+Kit Baum, Roger Harbord, David Kantor and Gary Longton made very helpful
+comments.
+
+
+{title:Also see}
+
+{p 4 13 2}On-line:  help for {help datefcn}, {help ywfcns}, {help dfmt}, {help tfmt}{p_end}
+{p 4 13 2}Manual: {hi:[U] 27 Commands for dealing with dates}{p_end}
+{p 4 13 2}FAQ:
+{browse "http://www.stata.com/support/faqs/data/dateseq.html":http://www.stata.com/support/faqs/data/dateseq.html}
+

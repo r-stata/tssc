@@ -1,0 +1,182 @@
+.-
+help for ^grnote^ and ^grnotem^					 
+.-
+
+Add Text and Lines to graphs
+----------------------------
+
+basic syntax:
+
+^grnote ,^ [ ^t^ext^(^text string^) y(^y-coordinate^) x(^x-coordinate^)^
+	 ^y2(^y-coord of line^) x2(^x-coord of line^)^ ^arr^ow 
+	 ^sav^ing^(^gphfilename^)^ ^pix^el ]
+
+additional fine-tuning options:
+	
+	for text:
+
+	[ ^tal^ign^(l^eft|^c^enter|^r^ight^) tva^lign^(t^op|^c^enter|^b^ottom^)^
+	^ts^ize^(^%magnification^) tp^en^(^pen#^)^ ]
+
+	for line:
+
+	[ ^lal^ign^(l^eft|^c^enter|^r^ight^) lva^lign^(t^op|^c^enter|^b^ottom^)^ 
+        ^lp^en^(^pen#^) xln^udge^(^offset^) yln^udge^(^offset^)^ ]
+
+	for arrow:
+
+	[^as^ize^(^%magnification^) aang^le^(^angle^) ap^en^(^pen#^)^ ]
+
+	for managing multiple additions:
+
+	[^keep all clear^]
+
+Alternative command syntax for interactive dialog box:
+
+^grnotem^
+
+
+Description
+-----------
+
+^grnote^ adds text and lines for annotating a stata graph just drawn.  
+Text is positioned by the options y(#) and x(#) where values are 
+given in the scale of the data.  A line extending from the text 
+can be drawn by specifying its end point using the y2(#) and x2(#) 
+options.  An arrow can be added to the end of the line using the ^arrow^
+option.  Other options are available for fine-tuning the placement, 
+size and pen # of the added elements.  Options are also available for 
+accumulating multiple annotations on the same graph and for saving the 
+resulting graph.  
+
+Nearly all of the functionality of grnote is also available through 
+^grnotem^, a dialog-driven interactive command that can be accessed
+after graph or grnote by simply typing ^grnotem^.  ^Grnotem^ allows
+for visual placement of multiple elements and will draw annotations 
+saved by ^grnote^ through the ^keep^ option.  It can also generate 
+an equivalent grnote command and put it in the Review window if 
+desired.  ^Grnotem^ is mostly self-explanatory after learning about 
+the features of ^grnote^ listed below.
+
+
+Basic Options for ^grnote^
+-------------------------
+^y(^#^)^ and ^x(^#^)^ are required to draw anything.  They specify the y and 
+    x coordinates where the text should be placed and/or the line should 
+    begin.  Both y and x are to be specified in the scale of the data, unless
+    the ^pixel^ option is selected.
+
+^text(^string^)^ is the text message to be displayed on the graph.
+
+^y2(^#^)^ and ^x2(^#^)^ specify the ending coordinates for a line to be 
+    drawn.  The line is drawn from ^y^,^x^ to ^y2^,^x2^.  Actually, 
+    small adjustments may be made to ^y^ and ^x^, depending on the 
+    direction of the line and the placement options.  
+
+^arrow^ specifies that an arrow should be drawn at the end of the line 
+    pointing toward ^y2^,^x2^.
+
+^saving(^filename^)^ saves the resulting graph in filename.gph.  The user 
+    needs to ensure that the filename is valid and does not exist.  
+    (^Grnotem^ will check and issue a message if it already exists)
+
+^pixel^ specifies that coordinates are given in virtual pixels, not in 
+    the scale of the data.  Virtual pixel coordinates range from 0,0
+    in the upper left corner to 23062,32000 in the lower right corner. 
+    This option allows one to draw annotations on Stata graphs that do 
+    not provide information on axis scaling such as box plots and matrix 
+    plots.  (^Grnotem^ automatically invokes pixel mode when needed)
+
+Additional Options : Adding Multiple Elements
+---------------------------------------------
+
+^keep^ specifies that information about the text and lines drawn 
+    should be saved in global macros so that multiple additions 
+    can be drawn on the same graph.  ^keep^ should not be 
+    specified until the desired results are achieved.  
+
+^all^ specifies that all graph additions saved by prior ^keep^ commands 
+    should be drawn, along with any current addition.  In ^grnotem^, ^all^
+    is the default behavior, but can be unchecked.
+
+^clear^ specifies that all information saved by ^keep^ should be cleared.
+
+
+Additional Options : Fine Tuning 
+--------------------------------
+
+^talign(^left|center|right^)^ and ^tvalign(^top|center|bottom^)^ are options 
+    that adjust the alignment of the text.  ^Talign^ specifies the 
+    horizontal alignment and ^tvalign^ specifies the vertical alignment.  
+    Defaults are to center text at ^x^ and align the bottom of text with ^y^.
+
+^tsize(^%magnification^)^ allows the user to change the size of the text by 
+    specifying a magnification percent, the default is 100 meaning 100% of 
+    the default size.
+
+^tpen(^#^)^, ^lpen(^#^)^, and ^apen(^#^)^ are options for specifying the pen to be 
+    used for drawing the text, line and arrow respectively.  The default 
+    pens are ^tpen^=1, ^lpen^=3, ^apen^=^lpen^.
+
+^lalign(^left|center|right^)^ and ^lvalign(^top|center|bottom^)^ adjust the position 
+    of the start of the line drawn relative to the text.  ^Lalign^ specifies the 
+    horizontal position and ^lvalign^ specifies the vertical position. Defaults 
+    are chosen based on the angle of the line and position of the text. 
+
+^xlnudge(^#^)^ and ^ylnudge(^#^)^ adjust the position of the start of the line.
+    Values should be specified in virtual pixels.  This option is not 
+    available in ^grnotem^, but lines can be placed anywhere by using 
+    a blank text field.
+
+^asize(^#^)^ allows the user to change the size of the arrow by specifying
+    a magnification percent, the default is 100 meaning 100% of the default.
+
+^aangle(^angle^)^ allows the user to specify the angle between the arrow lines 
+    and the line, in radians.  The default is pi/6. 
+
+
+Remarks
+-------
+
+^grnote^ must be issued after a graph command and is intended primarily
+for use with scatterplots.  Attempts to annotate other types of plots 
+(e.g., bar graphs) can produce unexpected results due to Stata's 
+treatment of x axis scaling and the results returned by the graph 
+command.  The ^pixel^ option can be useful on graphs where the
+standard approach doesn't work well.  
+
+The text and lines will extend beyond the data region of the graph 
+if values outside the scales are specified. 
+
+^grnotem^ is a powerful alternative because of the visual interaction
+provided through the dialog box approach.
+
+Examples
+--------
+
+. ^graph  length weight, yla xla^       
+
+. ^grnote , text(hello Cad Seville) y(155) x(4000) y2(204) x2(4290) arrow^  
+
+multiple annotations
+. ^grnote , text(hello Seville) y(155) x(4000) y2(204) x2(4290) arrow keep^  
+. ^grnote , text(This is Regal) y(250) x(2000) y2(200) x2(3280) talign(L) arrow keep all^
+. ^grnote , text(here is Pacer) y(140) x(2300) y2(173) x2(3350) arrow tsize(150) asize(300)^
+     ^keep all saving(test)^
+
+
+or
+
+. ^grnotem^
+
+
+Author
+------
+        Michael Blasnik, Blasnik & Associates,	Boston, MA
+	mblasnik@@110.net
+
+Also see
+--------
+
+On-line:  ^help^ for @gph@ 
+

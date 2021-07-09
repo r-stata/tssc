@@ -1,0 +1,73 @@
+// Revised 10/24/2010
+// Version 3.0
+
+VERSION 10.0
+POSITION . . 340 340
+
+DIALOG main, label("SRR\SRRi TABLE") tabtitle("Main")
+BEGIN
+   GROUPBOX gb_dx_format          10 10  320 70,                        ///
+            label("Diagnosis Code Format")
+   RADIO    rd_without_dec_pt     20 30  300 20,                        ///
+            first label("Without Decimal Point ")
+   RADIO    rd_with_dec_pt        20 50  300 20,                        ///
+            last label("With Decimal Point ")
+   GROUPBOX gb_dx_prefix          10 90  320 60,                        ///
+            label("Diagnosis Code Variable Name Prefix")
+   EDIT     ed_dx_prefix          20 115 50  20,                        ///
+            error("Diagnosis Code Variable Name Prefix")
+   TEXT     tx_dx_prefix          75 115 245 20,                        ///
+            label("Enter diagnosis code prefix")
+   GROUPBOX gb_discharge_status   10 160 320 60,                        ///
+            label("Discharge Status Variable Name")
+   EDIT     ed_discharge_status   20 185 50  20,                        ///
+            error("Discharge Status Variable Name")
+   TEXT     tx_discharge_status   75 185 245 20,                        ///
+            label("Enter discharge status variable name")
+   GROUPBOX gb_in_out_files       10 230 320 90,                        ///
+            label("Select Input and Output Files")
+   FILE     fn_in                 20 255 300 20,                        ///
+            label("Browse Input File")                                  ///
+            error("Input File Name")                                    ///
+            buttonwidth(100)                                            ///
+            filter("Stata Dataset (*.dta)|*.dta|All Files (*.*)|*.*") 
+   FILE     fn_out                20 285 300 20,                        ///
+            label("Browse Output File")                                 ///
+            error("Output File Name")                                   ///
+		    buttonwidth(100)                                            ///
+            save                                                        ///
+            filter("Stata Dataset (*.dta)|*.dta|All Files (*.*)|*.*")
+END
+
+OK ok1, label("OK")
+CANCEL can1, label("Cancel")
+SUBMIT sub1, label("Submit")
+HELP hlp1, view("help srr")
+RESET res1
+COPY copy1
+
+PROGRAM command
+BEGIN
+   require main.ed_dx_prefix
+   require main.ed_discharge_status
+   require main.fn_in
+   require main.fn_out
+   put "srr "
+   put `"""'
+   put main.fn_in
+   put `"""'
+   put " "
+   put `"""'
+   put main.fn_out
+   put `"""'
+   put " "
+   if main.rd_without_dec_pt {
+      put "1 "
+   }
+   if main.rd_with_dec_pt {
+      put "2 "
+   }
+   put main.ed_dx_prefix
+   put " "
+   put main.ed_discharge_status
+END

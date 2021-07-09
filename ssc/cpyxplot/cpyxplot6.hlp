@@ -1,0 +1,71 @@
+.-
+help for ^cpyxplot6^
+.-
+
+Scatter plots for each y vs each x variable
+-------------------------------------------
+
+    ^cpyxplot6^ yvarlist \ xvarlist [weight] [^if^ exp] [^in^ range]
+    [ ^,^ graph_options ^text^size^(^#^)^ ]
+
+Description
+-----------
+
+^cpyxplot6^ produces an array of scatter or twoway plots for yvarlist
+versus xvarlist. There is one plot for each y variable from yvarlist and
+each x variable from xvarlist. The name ^cpyxplot6^ is derived from
+Cartesian product of y and x. ^cp^ may also be interpreted as `cross
+pairs'. The backslash ^\^ must be used to separate the yvarlist and the
+xvarlist.
+
+A neat arrangement of the individual graphs is produced if the
+number of y variables is equal to the number of x variables, or the
+number of y variables is 1, or the number of x variables is 1.
+
+^cpyxplot6^ is the original version for Stata 6, renamed but otherwise
+frozen as is, on 21 November 2004. Users of Stata 8 upwards should use
+^cpyxplot^ instead. 
+
+
+Options
+-------
+
+graph_options are options allowed with ^graph, twoway^ or ^graph using^.
+    Note that
+
+    1. ^margin( )^, ^saving( )^ and ^title( )^ apply to the combined
+    graph.
+
+    2. all other options, including ^b1( )^, refer to all the individual
+    graphs.
+
+^textsize(^#^)^ temporarily sets textsize to #% of the default.
+
+
+Examples
+--------
+
+ . ^cpyxplot6 y1 y2 y3 \ x1 x2 x3^
+ . ^cpyxplot6 srunoff \ srain17 srain23 srain60^
+
+
+Author
+------
+
+         Nicholas J. Cox, University of Durham, U.K.
+         n.j.cox@@durham.ac.uk
+
+
+Acknowledgements
+----------------
+
+        Rory Wolfe suggested the original problem.
+        Phil Ender alerted me to a bug.
+
+
+Also see
+--------
+
+On-line: help for @graph@
+ Manual: [R] graph
+

@@ -1,0 +1,116 @@
+DIALOG advanced, tabtitle("advanced") title("Export data to SPSS system file (*.sav)")
+BEGIN
+        GROUPBOX gb_options  _lft           _top       _iwd           180,	///
+	label("Options")
+
+	TEXT tx_codepage	_ilft	_ms	_inwd	.,			///
+	label("Codepage:")
+
+        COMBOBOX cb_codepage	120	@	200	.,	///
+	dropdownlist						///
+	contents(codepage_names)			        ///
+	values(codepage_values)					///
+	label("Codepage")
+	
+        TEXT tx_strlmax _ilft _ms 300 ., label("Maximum length of strLs (for Stata 13 and newer):")
+
+	SPINNER sp_strlmax	260	@	_spwd	.,	///
+	option(strlmax)						///
+	min(1) max(32767) default(32767)
+
+    TEXT tx_extmv	_ilft	_ms	200	.,			///
+	label("Extended missing values:")
+    
+	COMBOBOX cb_mvmethod  150	@	300	.,	///
+	dropdownlist						///
+	contents(mv_methods)			        ///
+	values(mv_values)					///
+	label("Extended missing values") onselchangelist(mv_changedlist)
+	
+	TEXT tx_missa 50 _ms 20 . , label(".a")
+	EDIT ed_missa 70 @ 120 . , label("Extended missing value .a")
+	TEXT tx_missb 50 _ms 20 . , label(".b")
+	EDIT ed_missb 70 @ 120 . , label("Extended missing value .b")
+	TEXT tx_missc 50 _ms 20 . , label(".c")
+	EDIT ed_missc 70 @ 120 . , label("Extended missing value .c")
+
+END
+
+LIST codepage_names
+BEGIN
+	"ANSI Latin-1"
+	"ANSI Latin-2"
+	"ANSI Cyrillic"
+	"ANSI Greek"
+	"ANSI Turkish"
+	"ANSI Hebrew"
+	"ANSI Arabic"
+	"ANSI Baltic"
+	"ANSI Vietnamese"
+END
+
+LIST codepage_values
+BEGIN
+	"1252"
+	"1250"
+	"1251"
+	"1253"
+	"1254"
+	"1255"
+	"1256"
+	"1257"
+	"1258"
+END
+
+LIST mv_methods
+BEGIN
+    "automatic - let the program decide (usually best choice)"
+	"manual - use specific values for all numeric variables"
+	"off - write as system missing values"
+END
+
+LIST mv_values
+BEGIN
+    "1"
+	"2"
+	"3"
+END
+
+SCRIPT adv_miss_on
+BEGIN
+	advanced.ed_missa.show
+	advanced.ed_missb.show
+	advanced.ed_missc.show
+
+	advanced.tx_missa.show
+	advanced.tx_missb.show
+	advanced.tx_missc.show
+
+	advanced.ed_missa.enable
+	advanced.ed_missb.enable
+	advanced.ed_missc.enable
+END
+
+SCRIPT adv_miss_off
+BEGIN
+	advanced.ed_missa.disable
+	advanced.ed_missb.disable
+	advanced.ed_missc.disable
+
+	advanced.tx_missa.hide
+	advanced.tx_missb.hide
+	advanced.tx_missc.hide
+
+	advanced.ed_missa.hide
+	advanced.ed_missb.hide
+	advanced.ed_missc.hide
+END
+
+LIST mv_changedlist
+BEGIN
+	script adv_miss_off
+	script adv_miss_on
+	script adv_miss_off
+END
+
+// EOF

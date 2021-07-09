@@ -1,0 +1,127 @@
+{smcl}
+{* version 1.0.4 27jun2012}{...}
+{cmd:help labvars}
+{hline}
+
+{title:Title}
+
+{p 5}
+{cmd:labvars} {hline 2} Label list of variables
+
+
+{title:Syntax}
+
+{p 8}
+{cmd:labvars} [{varlist}] [{cmd:"}{it:label}{cmd:"}] 
+[[{cmd:"}]{it:label}[{cmd:"}] {it: ...}]
+[{cmd:,} {{opt r:emove}|{opt c:arryon}}]
+
+{p 8}
+{cmd:labvars} {varname} [{cmd:"}]{it:label}[{cmd:"}]
+[{varname} [{cmd:"}]{it:label}[{cmd:"}]] [{it:...}] 
+{cmd:,} {opt a:lternate}
+
+{p 8}
+{cmd:labvars} [{varlist}] {cmd:,} {opt nam:es}
+
+
+{title:Description}
+
+{pstd}
+{cmd:labvars} attaches variable labels to variables.
+
+{pstd}
+In the first syntax the first {it:label} must be enclosed in double 
+quotes. If fewer labels than variables in {it:varlist} are specified, 
+one of the options {opt remove} or {opt carryon} must be used.
+
+{pstd}
+In the second syntax each {it:varname} must be followed by one 
+{it:label}. Variable labels may not be empty.
+
+{pstd}
+In the third syntax you do not specify any {it:labels}.
+
+{pstd}
+Double quotes are required if {it:label} contains embedded spaces. 
+
+
+{title:Options}
+
+{phang}
+{opt remove} allows variable labels to be removed. If fewer labels 
+than variables are specified, labels will be removed from any 
+additional variable. May only be used with the first syntax.
+
+{phang}
+{opt carryon} uses the same label for multiple variables, filling 
+empty labels. If fewer labels than variables are specified, the last 
+label will be attached to any additional variable. If empty labels are 
+specified, these labels will be filled with the preceding label. May 
+only be used with the first syntax.
+
+{phang}
+{opt alternate} specifies that variable names and labels are given in 
+alternate order. This option is required with the second syntax. It is 
+not allowed with the first or third syntax.
+
+{phang}
+{opt names} uses variable names as variable labels. This option is 
+required with the third syntax, and not allowed otherwise.
+
+
+{title:Remarks}
+
+{pstd}
+Although this is no longer shown in the syntax diagram, you may use a 
+backslash ({hi:\}) to separate variable names from variable labels in 
+the first syntax. If a backslash is used, the first label does not have 
+to be enclosed in double quotes, unless it contains embedded spaces. 
+Thus, the syntax diagram reads
+
+{p 8}
+{cmd:labvars} [{varlist}] {cmd:\} [[{cmd:"}]{it:label}[{cmd:"}] 
+{it: ...}]
+
+
+{title:Examples}
+
+{phang2}{cmd:. sysuse auto}{p_end}
+{phang2}
+{cmd:. labvars make price mpg "first label" "second label" "third label"}
+{p_end}
+{phang2}{cmd:. labvars make price mpg "first label" "" "third label"}
+{p_end}
+{phang2}
+{cmd:. labvars make-rep78 "1st to 3rd" "" "" "4th variable" ,carryon}
+{p_end}
+{phang2}{cmd:. labvars "first variable" ,remove}{p_end}
+{phang2}{cmd:. labvars "one label fits all" ,carryon}{p_end}
+{phang2}{cmd:. labvars ,remove}{p_end}
+{phang2}{cmd:. labvars ,carryon}{p_end}
+{phang2}{cmd:. labvars make "Make and Model" price "Price" ,alternate}
+{p_end}
+{phang2}{cmd:. labvars ,names}{p_end}
+
+
+{title:Acknowledgments}
+
+{pstd}
+Option {opt names} is ispired by a question from Suryadipta Roy on  
+{browse "http://www.stata.com/statalist/archive/2012-06/msg01216.html":Statalist}.
+
+
+{title:Author}
+
+{pstd}Daniel Klein, University of Kassel, klein.daniel.81@gmail.com
+
+
+{title:Also see}
+
+{psee}
+Online: {help label}
+{p_end}
+
+{psee}
+if installed: {help labvarch}, {help labutil2}
+{p_end}

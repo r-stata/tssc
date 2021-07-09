@@ -1,0 +1,76 @@
+.-
+help for ^chitest6^
+.-
+
+Chi-square test for univariate frequency distributions
+------------------------------------------------------
+
+    ^chitest6^ observed [ expected ] [^if^ exp] [^in^ range] 
+    [ ^, nfit(^#^) count^  ]
+
+Description
+-----------
+
+^chitest6^ works on either one or two variables. 
+
+By default the first variable is taken to be observed frequencies, which must 
+be zeros or positive integers. Optionally, the first variable is treated as a 
+variable with distinct values to be counted: the observed frequencies are then 
+used in a chi-square test. 
+
+The second variable, if specified, is taken to be expected frequencies under 
+some hypothesis, which must be positive. If the second variable is not
+specified, the expected frequencies are taken to be equal, i.e. equal to
+the mean of the observed frequencies.
+
+The display includes the Pearson chi-square statistic and its P-value
+for a test of the hypothesis, the likelihood-ratio chi-square statistic
+and its P-value, observed frequencies, expected frequencies, classic
+residuals (observed - expected), and Pearson residuals, defined as
+(observed - expected) / sqrt(expected).
+
+Any cells with expected frequencies less than 5 are flagged.
+
+
+Options
+-------
+
+^nfit^ indicates the number of parameters that have been estimated from
+    the data. This number will be subtracted from (number of cells - 1)
+    to give the number of degrees of freedom. The default is 0.
+
+^count^ instructs ^chitest6^ to count the single variable specified, which 
+    is treated as a categorical variable. 
+
+
+Examples
+--------
+
+        . ^chitest6 count Poisson, nfit(1)^
+
+
+Saved values
+------------
+
+    r(k)       number of classes in distribution
+    r(df)      degrees of freedom
+    r(chi2)    Pearson chi-square
+    r(p)       P-value of Pearson chi-square
+    r(chi2_lr) likelihood-ratio chi-square
+    r(p_lr)    P-value of likelihood-ratio chi-square
+    r(emean)   mean expected frequency
+
+
+Author
+------
+
+         Nicholas J. Cox, University of Durham, U.K.
+         n.j.cox@@durham.ac.uk
+
+
+Also see
+--------
+
+ Manual:  [R] tabulate 
+On-line:  help for @tabulate@, @chitest6i@ (if installed) 
+

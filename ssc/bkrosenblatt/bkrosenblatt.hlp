@@ -1,0 +1,256 @@
+{smcl}
+{* 4oct2007/15oct2007/6sep2008/2oct2009/12oct2009}{...}
+{hline}
+help for {hi:bkrosenblatt}
+{hline}
+
+{title:Blum, Kiefer and Rosenblatt test of bivariate independence}
+
+{p 8 17 2}
+{cmd:bkrosenblatt} 
+{it:xvar} {it:yvar} 
+{ifin} 
+
+
+{title:Description}
+
+{p 4 4 2}{cmd:bkrosenblatt} provides a test of bivariate independence
+due to Blum, Kiefer and Rosenblatt (1961), itself a variant on a test
+due to Hoeffding (1948). P-values are computed or indicated following
+the work of Mudholkar and Wilding (2003, 2005). 
+
+
+{title:Remarks} 
+
+{p 4 4 2}Bivariate independence of continuous variables is usually
+tested for by focusing on a specific alternative hypothesis of linear or
+monotonic relationship.  However, Harrell (2001), among others, stresses
+the value of screening data for non-monotonic relationships.  More
+general omnibus tests have been provided by Hoeffding (1948) and, in
+related work, by Blum, Kiefer and Rosenblatt (1961) (hereafter BKR).
+For an introductory overview and comparison of such tests, with many
+worked empirical examples, see Hollander and Wolfe (1999, Ch.8).
+Mudholkar and Wilding (2003, 2005) give further references. 
+
+{p 4 4 2}These tests have long remained difficult to implement fully
+because of a lack of information on sampling distributions for finite
+sample sizes.  Hollander and Wolfe (1999, pp.733-734) give detailed
+tables for Hoeffding's statistic for n = 5(1)9, thereby extending the
+results of Hoeffding (1948) for n = 5, 6, 7. Hollander and Wolfe (1999,
+p.735) table the BKR statistic only for the limiting (asymptotic)
+distribution.  Note that the original table in BKR (1961, p.497) carries
+one more decimal place. 
+
+{p 4 4 2}Mudholkar and Wilding (2003, 2005) have addressed this problem
+with a combination of analytical and simulation work.  They show that
+the Hoeffding and BKR procedures differ more than is widely recognised
+and that the asymptotic distribution for the BKR statistic can be a poor
+approximation for many sample sizes. More positively, they detail
+procedures for calculating P-values for BKR for all but very small
+sample sizes. 
+
+{p 4 4 2}{cmd:bkrosenblatt} implements the BKR test. See Mudholkar and
+Wilding (2003) for arguments and evidence that this is generally
+preferable to competing tests in terms of power against positive
+dependence alternatives. 
+
+{p 4 4 2}The main idea is best explained with some details.  For data
+x[i], y[i], i = 1,...,n, count the numbers of values lying in each of
+four quadrants of the plane relative to each data point. That is, form
+vectors with typical elements 
+
+	N_1[i] = #(x <= x[i] & y <= y[i])
+	N_2[i] = #(x >  x[i] & y <= y[i])
+	N_3[i] = #(x <= x[i] & y >  y[i])
+	N_4[i] = #(x >  x[i] & y >  y[i])
+
+{p 4 4 2}For conditions near independence these vectors will have very
+similar averages. The reduction used by BKR is the sum of (N_1 N_4 - N_2 N_3)^2
+divided by n^4. (All calculations are performed elementwise.) This
+statistic, conventionally denoted {bind:n B_n}, is a measure of bivariate
+dependence, but it is not on a particularly intuitive scale.  Mudholkar
+and Wilding (2005) show that for moderate sample sizes a power
+transformation of {bind:n B_n} has an approximately normal sampling
+distribution, which provides a way of computing a z-score and thus a
+P-value. The power h to be used and the mean mu and standard deviation
+sigma of the resulting distribution all depend on sample size n: 
+
+	h = -0.36 + 2.866 * n^-0.775 - 0.683 * exp(-0.244 n) 
+
+	mu = 4.663 - 1/(0.2137 + 0.00448 n)        15 <= n <= 24
+	   = 3.823 - 1/(0.193 + 0.01662 n^0.8481)  n >= 25 
+ 
+	sigma = 0.614 - 1 / (1.187 + 0.0328 n) 
+
+{p 4 4 2}As h is always negative, the transformation reverses high and
+low values. Hence the z-score reported by {cmd:bkrosenblatt} is
+calculated as z = (mu - ({bind:n B_n})^h) / sigma, so that high positive values
+correspond to strong bivariate dependence. Note especially that high
+negative values correspond to conditions near independence. 
+
+{p 4 4 2}Mudholkar and Wilding (2005) do not suggest approximations for
+sample sizes less than 15. However, Mudholkar and Wilding (2003) give
+simulation results for a range of sample sizes as low as n = 5. For
+sample sizes between 5 and 14 therefore, {cmd:bkrosenblatt} does not
+calculate a z-score or P-value, but it does display critical values of
+{bind:n B_n} from the simulations for each sample size. See p.46 of the
+2003 paper for a fuller table, while noting the irregularity of the
+distribution near n = 5. Bootstrapping may appeal as an alternative, but
+best of all is to get more data. 
+                 
+{p 4 4 2}Naturally, you should always look at a scatter plot too and
+apply whatever subject-matter knowledge is available to interpretation.                  
+
+
+{title:Vignettes} 
+
+{p 4 4 2}Wassily Hoeffding (1914{c -}1991) was born in Mustam{c a:}ki,
+then in Finland. He studied and worked in Denmark and Germany, gaining a
+doctorate from Berlin University, before entering the United States in
+1946. Hoeffding attended statistical lectures at Columbia before moving
+in 1947 to the University of North Carolina at Chapel Hill, where he
+settled. He produced much pioneering work in the area of nonparametric
+statistics, including the development of U-statistics.  Hoeffding is
+remembered as well read in Russian literature and as good-natured, even
+in the face of prolonged ill-health and disability.  He was a member of
+the U.S. National Academy of Sciences. 
+
+{p 4 4 2} Julius Rubin Blum (1922{c -}1982) was born in Nuremberg in 
+Germany and moved to the United States in 1937. His parents perished in
+the Holocaust. After war service, he gained degrees in mathematics and
+statistics from Berkeley. Blum researched and taught at Indiana
+University, Sandia Corporation, the University of New Mexico, the
+University of Wisconsin, Milwaukee, the University of Arizona and the
+University of California, Davis.  He was gregarious and highly
+productive and collaborative in probability, ergodic theory and
+mathematical statistics, with 86 publications and 34 co-authors.  
+
+{p 4 4 2} Jack Carl Kiefer (1924{c -}1981) was born in Cincinnati. He
+studied electrical engineering, economics, and statistics at MIT and
+Columbia and researched and taught at Cornell and Berkeley. Kiefer was
+many-sided: he nearly sought a career in show business, he was a very
+serious amateur mycologist and he was active in liberal causes such as
+opposition to the Vietnam war and to the oppression of Jews and
+dissidents. In statistics he is best known for outstanding work on
+optimal design of experiments, but he contributed to several other
+areas. Kiefer was a member of the U.S. National Academy of Sciences. 
+
+{p 4 4 2}Murray Rosenblatt (1926{c -} ) was born in New York City. He
+gained degrees from City College of New York and Cornell before
+researching and teaching at Chicago, Indiana, Brown and (from 1964)
+University of California, San Diego. Rosenblatt has made outstanding
+contributions to several areas of probability and statistics, including
+Markov processes and time series. He made key specific contributions to 
+density estimation, central limit theorems under strong mixing and long 
+memory processes. Rosenblatt is a member of the U.S. National Academy of 
+Sciences. 
+{* Govind Shrikrishna Mudholkar, Ph.D. UNC Chapel Hill, is at the}{...}
+{* University of Rochester.}{...}
+{* Gregory Edward Wilding, Ph.D. Rochester, is at the University}{...}
+{* of Buffalo. He was a student of Govind Mudholkar.}
+
+
+{title:Examples}
+
+{p 4 4 2}{cmd:. bkrosenblatt price foreign}
+
+
+{title:Saved results}
+
+    r(n)       number of data pairs n 
+    r(n_B_n)   n B_n
+    r(z)       z-score (if n >= 15)  
+    r(P_n_B_n) P-value (if n >= 15) 
+
+
+{title:Author}
+
+{p 4 4 2}Nicholas J. Cox, Durham University, U.K.{break} 
+         n.j.cox@durham.ac.uk
+
+
+{title:References} 
+
+{p 4 8 2}
+Blum, J.R., Kiefer, J. and Rosenblatt, M. 1961. 
+Distribution free tests of independence based on the sample  
+distribution function. 
+{it:Annals of Mathematical Statistics} 32: 485{c -}498. 
+
+{p 4 8 2}
+Brillinger, D.R. and Davis, R.A. 2009. 
+A conversation with Murray Rosenblatt. 
+{it:Statistical Science} 24: 116{c -}140. 
+
+{p 4 8 2} 
+Brown, L.D. 1984. The research of Jack Kiefer outside the area of 
+experimental design.  
+{it:Annals of Statistics} 12: 406{c -}415.  
+
+{p 4 8 2}
+Fisher, N.I. and van Zwet, W.R. 2005. 
+Wassily Hoeffding 1914-1991. 
+{it:Biographical Memoirs, National Academy of Sciences} 
+86: 208{c -}227.
+
+{p 4 8 2}
+Fisher, N.I. and van Zwet, W.R. 2008. 
+Remembering Wassily Hoeffding. 
+{it:Statistical Science} 23: 536{c -}547. 
+
+{p 4 8 2} 
+Harrell, F.E. 2001.  
+{it:Regression modeling strategies: with applications to linear models, logistic regression, and survival analysis.} 
+New York: Springer. 
+
+{p 4 8 2}
+Hoeffding, W. 1948.  
+A non-parametric test of independence. 
+{it:Annals of Mathematical Statistics} 19: 546{c -}557. 
+
+{p 4 8 2} 
+Hollander, M. and Wolfe, D.A. 1999.  
+{it:Nonparametric statistical methods.} 
+New York: Wiley. 
+
+{p 4 8 2} 
+The publications and writings of Jack Kiefer. 
+{it:Annals of Statistics} 12: 424{c -}430.  
+
+{p 4 8 2}
+Mudholkar, G.S. and Wilding, G.E. 2003. 
+On the conventional wisdom regarding two consistent tests of 
+bivariate dependence. 
+{it:The Statistician} 52: 41{c -}57. 
+
+{p 4 8 2} 
+Mudholkar, G.S. and Wilding, G.E. 2005. 
+Two Wilson-Hilferty type approximations for the null distribution
+of the Blum, Kiefer and Rosenblatt test of bivariate independence. 
+{it:Journal of Statistical Planning and Inference} 
+128: 31{c -}41. 
+
+{p 4 8 2}
+Rosenblatt, M. and Samaniego, F.J. 1985. Julius R. Blum 1922{c -}1982. 
+{it:Annals of Statistics} 13: 1{c -}9.  
+
+{p 4 8 2} 
+Sacks, J. 1984. Jack Carl Kiefer 1924{c -}1981. 
+{it:Annals of Statistics} 12: 403{c -}405.  
+
+{p 4 8 2}
+Sen, P.K. 1997. 
+Hoeffding, Wassily. In Johnson, N.L. and Kotz, S. (eds) 
+{it:Leading personalities in statistical sciences.} 
+New York: John Wiley, 118{c -}122. 
+
+{p 4 8 2} 
+Sun, T.C. 1997. 
+Murray Rosenblatt: his contributions to probability and statistics.
+{it:Journal of Theoretical Probability} 10: 279{c -}286.
+
+{p 4 8 2} 
+Wynn, H.P. 1984. Jack Kiefer's contributions to experimental design. 
+{it:Annals of Statistics} 12: 416{c -}423.  
+
+

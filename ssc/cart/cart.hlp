@@ -1,0 +1,96 @@
+.-
+help for ^cart^                 Version: 6/9/2004 
+.-
+
+^Classification And Regression Tree analysis^
+^-------------------------------------------^
+
+
+ ^cart^ varlist [^if^] [^in^] ^,  t^ime^(^var^) f^ail^(^var^)^
+        [ ^s^trata^(^varlist^) a^djust^(^varlist^) na^me^(^string^)^
+         ^p^val^(^real 0.05^) mins^ize^(^int 10^) minf^ail^(^int 10^)^ 
+         ^su^mby^(^varlist^) tab^by^(^varlist^)^ ^at(^string^)^]
+
+^Description^
+^-----------^
+This program performs a CART analysis for failure time data. It uses 
+the martingale residuals of a Cox model to calculate (approximate) 
+chisquare values for all possible cutpoints on all the CART covariates. 
+
+
+^Varlist^
+^-------^
+The varlist (required with minimum one variable) specifies the independent
+variables for CART. Observations with missing values on any of the variables
+in this list are deleted.
+
+^Options^
+^-------^
+
+ ^time()^ specifies the time variable. Observations with values <0 or missing 
+    are deleted. Value 0 is replaced by a small positive value.
+ 
+ ^fail()^ specifies the failure indicator. Observations with values <0 or missing
+    are deleted and values >0 are considered failures. 
+     
+ ^strata()^ Optional. Specifies a varlist for a priori stratification of Cox model
+ 
+ ^adjust()^ Optional. Specifies a varlist for apriori adjustment of Cox model.
+ 
+  Default the null Cox model will be used for calculation of the individual
+  relative hazard rate = exp(b'x), i.e. =1 in case of the null model, 
+  which will form the basis for the calculation of the expected amount of 
+  events for each subject within a CART subgroup.
+  However it is also possible to calculate the expected number after adjustment
+  for some variables and stratification by others. 
+  This gives the opportunity to perform a CART for some variables after 
+  adjustment and/or stratification by other variables in a Cox model.
+  The Cox model for adjustment and the associated exp(b'x) is fitted only once,
+  but the expected number of failures per subject is recalculated within each 
+  CART subgroup.
+	
+ ^pval()^  specifies the maximum  P-value for a split; default ^pval^=0.05.
+     P-values will be adjusted for the search of the optimal cutpoint within
+     a range within a group by the formulas of Miller&Siegmund and Worsley.
+     A split is not allowed if the adjusted minimum P-value is larger than ^pval^.
+     See Lausen for more details. 
+ 
+ ^minsize()^ specifies the minimum size of a subgroup for a split; default 10.
+ 
+ ^minfail()^ specifies the minimum number of failures in a subgroup that is
+    required before a split will be attempted. Default 10.
+    
+ ^Output control:^   
+
+ ^sumby()^ specifies varlist for a summary of these variables by the final CART
+    grouping variable.
+
+ ^tabby()^ specifies varlist for a tabulation of these variables by the final CART
+    grouping variable.
+
+ ^at()^ specifies timepoints for display of survival probabilities by the final
+    CART grouping variable. See ^help sby^ for the use of the ^at^ option.
+    
+ ^name()^ specifies a name (default _cart) that will be used for 
+    - the log-file 
+    - the cart-tree graph
+    - the dta file with results 
+    - the CART grouping variable. 
+    The _cart splitting history is posted to a file with name <name>x, default _cartx.
+
+^References^
+^----------^
+Lausen et al, in Computational Statistics (Eds. P Dirschedl, R Ostermann),p 483-496, 1994. 
+Lausen et al, Informatik, Biometrie und Epidemiologie in Medizin und Biologie 28, 1-13, 1997
+Miller and Siegmund, Biometrics 38, 1011-1016, 1982.
+Worsley, Technometrics 25, 35-42, 1983.              
+
+^Author:^
+^-------^
+  Wim van Putten
+  Erasmus MC - Daniel den Hoed Cancer Center
+  Rotterdam
+  The Netherlands
+  FAX: +31.10.4391028
+  e-mail: w.vanputten@@erasmusmc.nl 
+    

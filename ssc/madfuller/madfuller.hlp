@@ -1,0 +1,106 @@
+{smcl}
+{* 15jul2001}{...}
+{hline}
+help for {hi:madfuller}{right:(StataList distribution 16 July 2001)}
+{hline}
+
+{title:Multivariate Augmented Dickey-Fuller panel unit root test}
+
+{p 8 14}{cmd:madfuller} {it:varname} 
+[{cmd:if} {it:exp}] [{cmd:in} {it:range}] {cmd:,lags({it:numlist})} 
+
+{p}{cmd:madfuller} is for use with panel data.  You must {cmd:tsset} your
+data before using {cmd:madfuller}, using the panel form of {cmd:tsset}; see help {help tsset}.
+
+{p} {it:varname} may contain time-series operators; see help {help varlist}.
+
+{title:Description}
+
+{p}{cmd:madfuller}  performs the multivariate augmented Dickey-Fuller (MADF) panel unit
+root test (Sarno and Taylor, 1998; Taylor and Sarno, 1998) on a variable 
+that contains both cross-section and time-series components. The MADF test is
+a generalization of the test developed by Abuaf and Jorion (1990) in which
+a single autoregressive parameter is estimated over the panel. In contrast, Sarno and Taylor allow for higher order
+serial correlation in the series and allow the sum of autoregressive 
+coefficients to vary across panel units under the alternative hypothesis. The authors
+claim that the MADF test is "very much more powerful than the univariate 
+ADF test." (Taylor and Sarno, p. 298)
+
+The test applies Zellner's seemingly unrelated equation estimator {help sureg}
+to {cmd:N} equations, defined for the {cmd:N} units of the panel. Each equation is
+specified as a {cmd:k}-th order autoregression. The test involves testing the
+hypothesis, for each equation, that the sum of the coefficients of the 
+autoregressive polynomial is unity. The null hypothesis consists of the 
+joint test that this condition is satisfied over the {cmd:N} equations. Under
+the null hypothesis, all of the series under consideration are realizations
+of I(1), or nonstationary, stochastic processes. The distribution of the 
+test statistic must be approximated because of the "theoretically infinite
+variance of the processes generating the ... series under the null
+hypothesis." Taylor and Sarno (1998, p. 299) provide response surface 
+estimates of the 5% critical values, derived from Monte Carlo simulation.
+The response surface was estimated over sample sizes ranging from 25 to
+500 observations per cross-sectional unit. 
+
+
+The test's null hypothesis should be carefully considered. It will be 
+violated if even one of the series in the panel is stationary. A rejection 
+should thus not be taken to indicate that each of the series is stationary. 
+Johansen's likelihood ratio test (Sarno and Taylor, 1998) applies the opposite
+hypothesis: that at least one of the series in the panel is a nonstationary 
+process.
+
+{p} The test may be compared with Levin and Lin's (1993) panel unit root test 
+{help levinlin} which imposes a single autoregressive parameter over all units in the panel 
+but utilizes a variant of {help xtreg, fe} for estimation. The Levin-Lin test 
+may thus be employed for small-T, large-N panels. However, the caveats mentioned above apply to this test.
+{p_end}
+
+{title:Options}
+
+{p 0 4}{cmd:lags}, which must be provided, 
+specifies the lag orders to be used in augmenting the 
+Dickey-Fuller regression. If multiple lag orders are given, the test
+is performed for each lag order.
+
+{title:Examples}
+
+{p 8 12}{inp:.} {stata "use http://fmwww.bc.edu/ec-p/data/hayashi/sheston91.dta,clear":use http://fmwww.bc.edu/ec-p/data/hayashi/sheston91.dta,clear}
+
+{p 8 12}{inp:.} {stata "madfuller rgdppc if country<11, lags(2(2)8)":madfuller rgdppc if country<11, lags(2(2)8)}
+
+{p 8 12}{inp:.} {stata "madfuller D.rgdppc if country<11, lags(4)":madfuller D.rgdppc if country<11, lags(4)}
+
+
+{title:References}
+
+
+Abuaf, N. and P. Jorion. Purchasing power parity in the long run. Journal
+of Finance 45, 1990, 157-174.
+
+Levin, Andrew and Lin, Chien-Fu. Unit Root Tests in Panel Data:
+New Results", University of California Discussion Paper No. 93-56, 1993.
+
+Sarno, Lucio and Mark P. Taylor. Real exchange rates under the current
+float: unequivocal evidence of mean reversion. Economics Letters, 60,
+1998, 131-137.
+
+Taylor, Mark P. and Lucio Sarno. The behavior of real exchange rates during
+the post-Bretton Woods period. Journal of International Economics, 46,
+1998, 281-312.
+
+{title:Acknowledgements}
+
+I thank Falko Juessen for suggesting improvements to the help file.
+
+{title:Author}
+
+Christopher F Baum, Boston College, USA, baum@bc.edu
+
+{title:Also see}
+
+{p 0 19}Manual: [R] dfuller 
+{p 0 19}On-line:  help for {help dfuller}, {help time}, {help tsset}, 
+{help sureg}, {help dfgls} (if installed),  {help levinlin} (if installed) 
+
+
+

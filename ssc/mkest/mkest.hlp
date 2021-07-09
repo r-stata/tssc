@@ -1,0 +1,75 @@
+{smcl}
+{* 13jan2010}{...}
+{cmd:help mkest}
+{hline}
+
+{title:Title}
+
+{p2colset 5 14 17 2}{...}
+{p2col :{hi:mkest} {hline 2}}Convert variables to estimates matrix{p_end}
+{p2colreset}{...}
+
+
+{title:Syntax}
+
+{p 8 14 2}{cmd:mkest} {ifin},
+{cmd:replace b( ) v( ) [depvar( ) cmd( ) obs( )]}
+
+
+{title:Description}
+
+{pstd}
+{cmd:mkest} provides a fast and easy way to convert variables into estimates matrices e(b) and e(V). 
+
+{pstd}
+{cmd:mkest} thus facilitates exporting of variables into non-Stata format through 
+programs such as {cmd:est_table}, {cmd:xml_tab}, or {cmd:outreg2}.
+
+
+{title:Options}
+
+{phang}
+{cmd:replace} is required since the estimates may be lost
+
+{phang}
+{cmd:b( )} one variable to be placed in e(b)
+
+{phang}
+{cmd:v( )} one variable to be placed in e(V)
+
+{phang}
+{cmd:depvar( )} specifies depvar name
+
+{phang}
+{cmd:cmd( )} specifies cmd name
+
+{phang}
+{cmd:obs(#)} specifies # of observations, N
+
+
+{title:Remarks}
+
+{pstd}
+{cmd:mkest} is based on {help mkmat}.
+
+{title:Examples}
+
+{phang}{cmd:. sysuse auto, clear}{p_end}
+{phang}{cmd:. mkest, b(price) v(mpg) replace}{p_end}
+
+{phang}{cmd:. eret list}{p_end}
+{phang}{cmd:. mat list e(b)}{p_end}
+
+{phang}{cmd:. xml_tab ., replace}{p_end}
+{phang}{cmd:. outreg2 using myfile, replace nonote noaster excel}{p_end}
+
+
+{title:Also see}
+
+{psee}
+Manual:  {bf:[P] matrix mkest}
+
+{psee}
+Online:  {helpb matrix}
+{p_end}
+

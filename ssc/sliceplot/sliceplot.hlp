@@ -1,0 +1,103 @@
+{smcl}
+{* 1 Nov 2005}{...}
+{cmd:help sliceplot}
+{hline}
+
+{title:Title}
+
+{p2colset 5 18 18 2}{...}
+{p2col :{hi:sliceplot} {hline 2}}time series or other plot in slices{p_end}
+{p2colreset}{...}
+
+
+{title:Syntax}
+
+{p 8 17 2}
+{cmd:sliceplot} {it:plottype} {it:yvarlist} {it:xvar} {ifin} [{cmd:,} {it:options}]
+
+{p 8 17 2}where {it:plottype} is a {opt twoway} plottype. 
+
+{synoptset 29 tabbed}{...}
+{synopthdr}
+{synoptline}
+{syntab :Slicing options}
+{synopt :{opt at()}}values marking ends of slices{p_end}
+{synopt :{opt unequal}}slices may use unequal scales{p_end}
+{synopt :{opt length()}}maximum length of slices{p_end}
+{synopt :{opt slices()}}number of slices{p_end}
+
+{syntab :Standard graph options}
+{synopt :{opt combine()}}control {help graph combine}{p_end}
+{synopt :{it:twoway_options}}affect other features of graph{p_end}
+
+{synoptline}
+{p2colreset}{...}
+
+
+{title:Description}
+
+{pstd}
+{cmd:sliceplot} produces a time series or other plot divided into a series 
+of slices and then combined. The horizontal variable
+may be any numeric variable, but the program is motivated by the case
+of time series plots that would benefit from a short and wide scale. 
+
+
+{title:Options}
+
+{dlgtab:Slicing options}
+
+{phang}
+{opt at()} specifies cut points for the ends of each slice
+as values of the {it:x}-axis variable. 
+Values outside the range of the data will be ignored with 
+a warning. 
+
+{phang}
+{opt unequal} applies with {opt at()}. It specifies that 
+unequal scales should be used on slices of different length. 
+The default is to use (approximately) the same scale. A common application
+is to show more interesting values at a greater magnification
+than others. 
+
+{phang}
+{opt slices()} specifies the number of slices. 
+
+{phang}
+{opt length()} specifies the maximum length of each slice
+in units of the {it:x}-axis variable. The default is 100. 
+
+{dlgtab:Standard graph options}
+
+{phang}
+{opt combine()} specifies options of {help graph combine}. The defaults 
+are {cmd:imargin(zero) cols(1)}. 
+
+{phang}
+{it:twoway_options()} are options of {help graph twoway} controlling 
+other features of the graph. 
+
+
+{title:Examples}
+
+{phang}{cmd:. sliceplot line sunspots year, slices(4)}  
+
+{phang}{cmd:. sliceplot line sunspots year, at(1800 1900 1950 2003) unequal}  
+
+{phang}{cmd:. sliceplot rarea sunspots mean year, at(1800 1900 1950 2003) unequal}  
+
+
+{title:Author}
+
+{pstd}Nicholas J. Cox, Durham University{break}
+n.j.cox@durham.ac.uk
+
+
+{title:Also see}
+
+{psee}
+Manual:  {bf:[G] twoway}, {bf:[G] graph combine} 
+
+{psee}
+Online:  {helpb twoway}, {helpb graph combine} 
+{p_end}

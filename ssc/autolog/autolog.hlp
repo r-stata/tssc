@@ -1,0 +1,72 @@
+.-
+help for ^autolog^                                                
+.-
+
+Utility for dialog box to create log files
+------------------------------------------
+
+    ^autolog using^ filename [,^sm^ ^path(^dirpath^)^]
+
+
+Description
+-----------
+
+^autolog^ is a utility designed for use in Stata's profile.do 
+file (though it can be used interactively if desired).
+
+^autolog^ causes a dialogue box to pop up every time Stata starts 
+and prompts the user for a filename for the log file. This allows
+the user to easily enter project filenames depending on what analysis
+is underway. ^autolog^ is also designed to overcome the common 
+frustration of forgetting to send output to a log file at the 
+start of a session.
+
+The input required for the command line (^using^) is the filename of the 
+default file where output will be sent when no filename is entered
+in the dialogue box. This happens when the user presses Esc when 
+confronted by the dialogue box. A typical name might be "basic" or
+"default". See examples below.
+
+Options
+-------
+
+^sm^ in the command line indicates that the log file should use
+Stata's smcl format. Omitting the ^sm^ option causes the log 
+file to be written as a plain text file.
+
+^path(^dirpath^)^ in the command line indicates that both the
+dialogue box file and the default file are to be placed in that 
+directory. Omitting the ^path^ option places these file in the
+current working directory.
+
+Examples
+--------
+
+^autolog using basic, sm path(d:\data\current\projects)^
+
+^autolog using default, path(d:\data\projects)^
+
+^autolog^ should ideally be entered in the profile.do file
+(found in Stata's program directory). An example follows:
+
+set memory 150m
+set matsize 800
+set varlabelpos 20
+cd d:\data
+autolog using basic, path(d:\data\logfiles)
+noisily di 
+noisily di "This session began at: $S_TIME on: $S_DATE"
+noisily di   
+
+
+Author
+------
+
+   Ian Watson          
+   ACIRRT
+   University of Sydney
+   Australia
+   iangwatson@pnc.com.au
+   www.pnc.com.au/~iangwatson
+   
+Date: 18 December 2002

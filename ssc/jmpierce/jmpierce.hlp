@@ -1,0 +1,273 @@
+{smcl}
+{* 25oct2006}{...}
+{hline}
+help for {hi:jmpierce}
+{hline}
+
+{title:Juhn-Murphy-Pierce decomposition}
+
+{p 8 15 2}
+{cmd:jmpierce} {it:est1} {it:est2} [ {cmd:,}
+  {cmdab:r:eference:(}{cmd:0}|{cmd:1}|{cmd:2}|{it:estref}{cmd:)}
+  {cmdab:s:tatitics:(}{it:statlist}{cmd:)}
+  {cmdab:b:locks:(}{it:blist}{cmd:)}
+  {bind:{cmdab:sav:e:(}{it:newvar1} {it:newvar2}|{it:prefix}{cmd:)}}
+  {cmdab:res:iduals:(}{it:newvar}{cmd:)}
+  ]
+
+{p 4 4 2} where {it:blist} is
+
+{p 15 15 2}
+{it:name1} {cmd:=} {it:varlist1} [{cmd:,} {it:name2} {cmd:=} {it:varlist2}
+[{cmd:,} {it:...}] ]
+
+
+{title:Description}
+
+{p 4 4 2} {cmd:jmpierce} computes the decomposition of
+differences between two outcome distributions introduced by Juhn, Murphy and Pierce
+(1993; also see Blau and Kahn 1996) from models previously fitted and stored
+by {help estimates:estimates store}. Examples are the decomposition of
+changes in the income distribution over time, the decomposition of
+male-female wage differentials, or the decomposition of wage inequality
+differences between countries.
+
+{p 4 4 2} {it:est1} is the name of the estimates related to the first
+distribution (e.g. the distribution in country A, among males, or at
+time point t), {it:est2} is the name of the estimates related to the second
+distribution (e.g. the distribution in country B, among females, or at
+time point t-1). Note that the samples underlying {it:est1} and {it:est2}
+must be disjunctive.
+
+{p 4 4 2} The model estimated last may be
+indicated by a period (.), even if it has not yet been stored.
+
+{p 4 4 2} See the {help oaxaca} package and the {help decompose} package
+(available from the SSC archive; type
+{net "describe http://fmwww.bc.edu/repec/bocode/o/oaxaca":ssc describe oaxaca}
+and
+{net "describe http://fmwww.bc.edu/repec/bocode/d/decompose":ssc describe decompose})
+for programs to compute Oaxaca-Blinder type decompositions. See the
+{help jmpierce2} package for the decomposition of changes of differentials over
+time
+({net "describe http://fmwww.bc.edu/repec/bocode/j/jmpierce2":ssc describe jmpierce2}).
+
+{p 4 4 2}{hi:Warning:} {cmd:jmpierce} is intended for use with models
+that have been estimated by the {help regress} command. Use {cmd:jmpierce} with
+other models at your own risk.
+
+
+{title:Options}
+
+{p 4 8 2}{cmd:reference()} specifies the reference or benchmark model. The
+default is {cmd:reference(0)}, meaning that the average coefficients from
+{it:est1} and {it:est2} are used as the reference prices and the average
+residual distribution from {it:est1} and {it:est2} is used as the reference
+residual distribution. However, {cmd:reference(1)} uses {it:est1} and
+{cmd:reference(2)} uses {it:est2} as the benchmark, i.e. the coefficients
+from either {it:est1} or {it:est2} are used as the reference prices and the
+residuals from {it:est1} or {it:est2} are used to determine the reference
+residual distribution. Alternatively, specify
+{cmd:reference(}{it:estref}{cmd:)}, where {it:estref} is the name of the
+reference model. In this case, the coefficients from {it:estref} are used
+as the reference prices and the average residual distribution from
+{it:est1} and {it:est2} is used as the reference residual distribution. See
+the "Methods and Formulas" section for more details.
+
+{p 4 8 2} {cmd:statistics(}{it:statlist}{cmd:)} specifies the summary
+statistics for which the decomposition be displayed. The default is
+{cmd:statistics(mean)}. Specify, for example,
+{bind:{cmd:statistics(p25 p50 p75)}} to compute the decomposition for the
+25th, 50th, and 75th percentile. Available statistics are
+
+{p 12 26 2}{it:statname} {space 2} definition{p_end}
+            {hline 50}
+{p 12 26 2}{cmdab:me:an} {space 6} mean{p_end}
+{p 12 26 2}{cmd:sd} {space 8} standard deviation{p_end}
+{p 12 26 2}{cmdab:med:ian} {space 4} median (same as {cmd:p50}){p_end}
+{p 12 26 2}{cmd:p5} {space 8} 5th percentile{p_end}
+{p 12 26 2}{cmd:p10} {space 7} 10th percentile{p_end}
+{p 12 26 2}{cmd:p25} {space 7} 25th percentile{p_end}
+{p 12 26 2}{cmd:p50} {space 7} 50th percentile (same as {cmd:median}){p_end}
+{p 12 26 2}{cmd:p75} {space 7} 75th percentile{p_end}
+{p 12 26 2}{cmd:p90} {space 7} 90th percentile{p_end}
+{p 12 26 2}{cmd:p95} {space 7} 95th percentile{p_end}
+{p 12 26 2}{cmd:iqr} {space 7} interquartile range (same as {cmd:d7525}){p_end}
+{p 12 26 2}{cmd:d9010} {space 5} p90 - p10{p_end}
+{p 12 26 2}{cmd:d7525} {space 5} p75 - p25 (same as {cmd:iqr}){p_end}
+{p 12 26 2}{cmd:d9050} {space 5} p90 - p50{p_end}
+{p 12 26 2}{cmd:d5010} {space 5} p50 - p10{p_end}
+            {hline 50}
+
+{p 4 8 2} {cmd:blocks(}{it:blist}{cmd:)} reports the quantity effect (Q) of
+specified blocks of variables. Unless the decomposition is conducted at the
+mean, the results will most likely depend on the order of the blocks.
+
+{p 4 8 2} {cmd:save(}{it:newvar1} {it:newvar2}|{it:prefix}{cmd:)}
+creates a variable reflecting the hypothetical outcome distribution under
+the condition of fixed prices and fixed unobservables (called {it:newvar1} or
+{it:prefix}{cmd:1}, respectively) and a variable reflecting the
+hypothetical outcome distribution under the condition of fixed unobservables
+(called {it:newvar2} or {it:prefix}{cmd:2}, respectively).
+
+{p 4 8 2} {cmd:residuals(}{it:newvar}{cmd:)} creates a variable containing
+the hypothetical residuals called {it:newvar}.
+
+
+{title:Examples}
+
+{p 4 4 2} Decomposition of the gender wage gap using the residuals/prices
+of the male model as benchmark:
+
+        {com}. regress lnwage educ exp exp2 if sex==1
+        . estimates store male
+        . regress lnwage educ exp exp2 if sex==2
+        . estimates store female
+        . jmpierce male female, reference(1) statistics(mean median)
+        {txt}
+
+{p 4 4 2} ... subdividing the quantity effect Q between education and experience:
+
+        {com}. jmpierce male female, reference(1) blocks(educ=educ, exp=exp*)
+        {txt}
+
+{p 4 4 2} ... using a the average residual distribution and the prices of
+a pooled model as benchmark:
+
+        {com}. regress lnwage educ exp exp2 if sex==1 | sex==2
+        . jmpierce male female, ref(.)
+        {txt}
+
+
+{title:Saved Results}
+
+{p 4 4 2}
+Matrices:
+
+{p 4 25 2}{cmd:r(D)}{space 17}The components of the decomposition(s){p_end}
+{p 4 25 2}{cmd:r(stats1)}, {cmd:r(stats2)}{space 1}The summary statistics for the
+hypothetical and raw distributions{p_end}
+{p 4 25 2}{cmd:r(Qblocks)}{space 11}Quantity effect by (blocks of) variables{p_end}
+
+
+{title:Methods and Formulas}
+
+{p 4 4 2}
+Closely following Juhn, Murphy and Pierce (1993):
+Given are the models
+
+{p 8 8 2}{bf:y}_1 = {bf:x}_1{bf:b}_1 + {bf:u}_1{p_end}
+{p 8 8 2}{bf:y}_2 = {bf:x}_2{bf:b}_2 + {bf:u}_2{p_end}
+
+{p 4 4 2} where {bf:y}_1 and {bf:y}_2 are the vectors of the values of the
+dependent variable in two samples, {bf:x}_1 and {bf:x}_2 are the data
+matrices (observable quantities), {bf:b}_1 and {bf:b}_2 are the vectors of
+estimated coefficients (observable prices) and {bf:u}_1 and {bf:u}_2 are
+the residuals (unmeasured prices and quantities).
+
+{p 4 4 2} Let F_1(.) and F_2(.) denote the cumulative distribution functions
+of the residuals. For example,
+
+{p 8 8 2} p_i1 = F_1(u_i1|{bf:x}_i1)
+
+{p 4 4 2}
+is the percentile of an individual residual in the residual distribution of
+model 1. By definition we can write
+
+{p 8 8 2}u_i1 = F_1[-1](p_i1|{bf:x}_i1)
+
+{p 4 4 2}where F_1[-1](.) is the inverse of the cumulative distribution
+function.
+
+{p 4 4 2}Next, assume that F(.) is a reference residual distribution
+(e.g. the average residual distribution over both samples) and that {bf:b}
+is an estimate of benchmark coefficients (e.g. the coefficients
+from a pooled model over the whole sample). We can then determine
+hypothetical outcomes with varying quantities between the groups but
+fixed prices (coefficients) and a fixed residual distribution as
+
+{p 8 8 2}{bf:y1}_i1 = {bf:x}_i1{bf:b} + F[-1]({bf:p}_i1|{bf:x}_i1){p_end}
+{p 8 8 2}{bf:y1}_i2 = {bf:x}_i2{bf:b} + F[-1]({bf:p}_i2|{bf:x}_i2){p_end}
+
+{p 4 4 2} Furthermore, the hypothetical outcomes with varying quantities
+and varying prices but a fixed residual distribution are given as
+
+{p 8 8 2}{bf:y2}_i1 = {bf:x}_i1{bf:b}_1 + F[-1]({bf:p}_i1|{bf:x}_i1){p_end}
+{p 8 8 2}{bf:y2}_i2 = {bf:x}_i2{bf:b}_2 + F[-1]({bf:p}_i2|{bf:x}_i2){p_end}
+
+{p 4 4 2}Finally, the outcomes with varying quantities, varying prices and
+a varying residual distribution can be determined as
+
+{p 8 8 2}{bf:y3}_i1 = {bf:x}_i1{bf:b}_1 + F_1[-1]({bf:p}_i1|{bf:x}_i1) {p_end}
+{p 8 8 2}{bf:y3}_i2 = {bf:x}_i2{bf:b}_2 + F_2[-1]({bf:p}_i2|{bf:x}_i2) {p_end}
+
+{p 4 4 2}
+These last outcomes are obviously nothing else than the originally observed
+values, that is:
+
+{p 8 8 2}{bf:y3}_i1 = {bf:y}_i1 = {bf:x}_i1{bf:b}_1 + {bf:u}_i1 {p_end}
+{p 8 8 2}{bf:y3}_i2 = {bf:y}_i1 = {bf:x}_i2{bf:b}_1 + {bf:u}_i2 {p_end}
+
+{p 4 4 2}Let a capital letter stand for a summary statistic of the
+distribution of the variable denoted by the corresponding lower-case
+letter. For instance, Y may be the mean or the interquartile range of the
+distribution of y. The differential Y_1-Y_2 can then be decomposed as
+
+{p 8 12 2}Y_1-Y_2 = [Y1_1-Y1_2] + {bind:[(Y2_1-Y2_2) - (Y1_1-Y1_2)]} +
+{bind:[(Y3_1-Y3_2) - (Y2_1-Y2_2)]} = T = Q + P + U
+
+{p 4 4 2}That is, the total difference (T) can be attributed to
+differences in observable quantities (Q), differences in observable
+prices (P), and differences in unobservable quantities and prices (U).
+
+
+{p 4 4 2}Technical notes:
+
+{p 8 10 2}- {cmd:jmpierce}'s method to invert the empirical
+distribution function uses averages where the function is flat (the same
+method is used by {help summarize} and {help pctile}). Also see the
+{net "describe http://fmwww.bc.edu/repec/bocode/i/invcdf":invcdf}
+package
+(available from the SSC archive; type {cmd:ssc d invcdf}). The
+choice of the inversion method may have a significant
+impact on the decomposition results (especially in small samples).
+
+{p 8 10 2}- {cmd:reference(0)} (the default) causes {cmd:jmpierce} to use
+the average coefficients from {it:est1} and {it:est2} as the reference
+coefficients. The "average" coefficients are derived by computing a simple
+arithmetic mean, that
+is {bind:{bf:b} = ({bf:b}_1+{bf:b}_2)/2}.
+
+{p 8 10 2}- {cmd:reference(0)} or {cmd:reference(}{it:estref}{cmd:)},
+where {it:estref} is not {it:est1} nor {it:est2}, causes {cmd:jmpierce}
+to use the average residual distribution from {it:est1} and {it:est2}
+as the reference residual distribution. The "average" residual distribution
+is computed by pooling the residuals from {it:est1}
+and {it:est2}.
+
+
+{title:References}
+
+{p 4 8 2}
+Juhn, Chinhui, Kevin M. Murphy, Brooks Pierce (1993). Wage
+Inequality and the Rise in Returns to Skill. Journal of Political Economy
+101(3): 410-442.
+
+{p 4 8 2}
+Blau, Francine D., Lawrence M. Kahn (1996). International
+Differences in Male Wage Inequality: Institutions versus Market Forces.
+Journal of Political Economy 104(4): 791-837.
+
+
+{title:Author}
+
+{p 4 4 2}
+Ben Jann, ETH Zurich, jann@soz.gess.ethz.ch
+
+
+{title:Also see}
+
+{p 4 13 2}
+Online:  help for {help regress}, {help estimates}, {help cumul},
+{help pctile}, {help oaxaca} (if installed), {help decompose}
+(if installed), {help jmpierce2} (if installed), {help invcdf} (if installed)

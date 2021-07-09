@@ -1,0 +1,63 @@
+{smcl}
+{* 21dec2010}{...}
+{hline}
+help for {hi:romantoarabic}
+{hline}
+
+{title:Roman numerals to arabic numbers}
+
+{p 8 17 2}
+{cmd:romantoarabic}
+{it:romanvar} 
+[{cmd:if} {it:exp}] 
+[{cmd:in} {it:range}] 
+{cmd:,}  
+{cmdab:g:enerate(}{it:arabicvar}{cmd:)} 
+   
+   
+{title:Description} 
+
+{p 4 4 2} 
+{cmd:romantoarabic} creates a numeric variable {it:arabicvar} from a string variable 
+{it:romanvar} following these rules: 
+
+{p 8 8 2}1. Lower case letters are treated as if upper case. 
+
+{p 8 8 2}2. Any spaces are ignored. 
+
+{p 8 8 2}3. Numerals must match the Stata regular expression "^M*(CM|CD|D?)C*(XC|XL|L?)X*(IX|IV|V?I*)$".  
+Note that this is more generous than many authorities would allow. 
+
+{p 8 8 2}4. Single occurrences of CM, CD, XC, XL, IX, IV are treated as 900, 400, 90, 40, 9, 4 respectively. 
+
+{p 8 8 2}5. M, D, C, L, X, V, I are treated as 1000, 500, 100, 50, 10, 5, 1 respectively as many times 
+as they occur.
+
+{p 8 8 2}6. The results of 4 and 5 are added.  
+
+{p 8 8 2}7. Input of any other expression or characters is treated as an error and results in missing. 
+
+
+{title:Options} 
+
+{p 4 8 2} 
+{cmd:generate()} specifies the name of the new numeric variable to be created and 
+is not optional. 
+
+
+{title:Examples} 
+
+{p 4 8 2}{cmd:. romantoarabic roman, gen(arabic)}
+
+
+{title:Acknowledgments} 
+
+{p 4 4 2}Peter A. [Tony] Lachenbruch suggested this problem on Statalist. Sergiy Radyakin's comments 
+on that list provoked more error checking.  
+
+
+{title:Author} 
+
+{p 4 4 2}Nicholas J. Cox, Durham University, U.K.{break} 
+         n.j.cox@durham.ac.uk
+

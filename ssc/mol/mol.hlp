@@ -1,0 +1,134 @@
+{smcl}
+{* 12dec2008}{...}
+{hline}
+help for {hi:mol}{right:Joao Pedro Azevedo}
+{hline}
+
+
+
+{title:Measures of Effective Literacy}
+
+{p 8 15}
+{cmd:mol} 
+{it:varlist} 
+[{it:weight}] 
+[{cmd:if} {it:exp}] 
+[{cmd:in} {it:range}] 
+{cmd:,}
+{cmd:house(}{it:varname)}   
+{cmd:[}
+{cmdab:f:ormat}{cmd:(%}{it:fmt}{cmd:)}
+{cmd:by(}{it:varname}{cmd:)} 
+{cmd:rank} 
+{cmd:gen} 
+{cmd:]}
+{p_end}
+
+{p}{cmd:aweight}s and {cmd:fweight}s are allowed; see help {help weights}.{p_end}
+
+
+
+{title:Description}
+
+{p}A country's overall level of literacy is usually measured by taking the number
+of adults who are literate as a percentage of the total number of adults - the
+so-called literacy rate. Following Sen (1985) there has been increased use of the
+literacy rate and other social indicators to evaluate the overall standard of
+living in a country.{p_end}
+
+{p}{cmd:mol} implements an alternative aproaches to evaluate the aggregate literacy level 
+in a country or region or any type of group. The resulting 'effective literacy' proposed by 
+Basu and Foster (1998). This measure takes into account the intrahousehold externality arising 
+from the presence of a literate member in the household. The extensions proposed by 
+Subramanian (2004) are also implemented.{p_end}
+
+
+
+{title:Option}
+
+{p 0 4}{cmd:by(}housevar{cmd:)} indicates the variable that will be used to 
+identify the members of a given household.{p_end}
+
+{p 0 4}{cmd:by(}groupvar{cmd:)} repeats the command for each group of observations for which 
+the values of the variables in varlist are the same. Groupvar must be an integer variable.{p_end}
+
+{p 0 4}{cmd:alpha(}number{cmd:)} specifies the sensitivity alpha used. Alpha is contained within 
+the interval [0,1]. If alpha is omited, only the houseshould effective literacy is calculated. 
+Multiple alphas are allowed to be calculated at once. {p_end}
+
+{p 0 4}{cmd:rank} returns the rank of different groups according to each indicator.{p_end}
+
+{p 0 4}{cmd:gen} generates tree new variables in the dataset with the output of the exercise.{p_end}
+
+{p 0 4}{cmd:format(%}{it:fmt}{cmd:)} specifies the format to be used to
+display the estimated inequality indices. The default is to use a
+{cmd:%6.5f} format.{p_end}
+
+
+
+{title:Output Variables}
+
+{p 5 4}{cmd:R    :}  'Crude' Literacy Rate .{p_end}
+{p 5 4}{cmd:Re   :}  Effective Literacy [alpha = hous. lit. rate].{p_end}
+{p 5 4}{cmd:(1-I):}  Isolated Rate of Literacy (1-I).{p_end}
+{p 5 4}{cmd:I    :}  Isolated Rate of Illiteracy (1-I).{p_end}
+{p 5 4}{cmd:Q    :}  Efficiency Loss. Q is contained within the interval [0,1]: Q= 0 when I = 0, and Q= 1 when I=1R
+(which, of course, is the maximum value I can attain, corresponding to a situation in which
+all illiterates are isolated illiterates).{p_end}
+{p 5 4}{cmd:R*   :}  Externality-adjusted Literacy Rate (Subramanian, 2004).{p_end}
+
+
+
+{title:Saved Results}
+
+{p 5}{cmd:mol} returns results in r() format.{p_end}
+
+
+
+{title:Example}
+
+{p 8 12}{inp:. mol alfab [fw= weight], house(domicilio)}{p_end}
+
+{p 8 12}{inp:. mol alfab [fw= weight], house(domicilio) alpha(.2 .5 .8)}{p_end}
+
+{p 8 12}{inp:. mol alfab [fw= weight], house(domicilio) by(region) gen}{p_end}
+
+{p 8 12}{inp:. mol alfab [fw= weight], house(domicilio) by(state) rank}{p_end}
+
+{p 8 12}{inp:. mol alfab [fw= weight], house(domicilio) by(gender) alpha(.2)}{p_end}
+
+{p 8 12}{inp:. mol alfab [fw= weight], house(domicilio) by(gender) alpha(.2 .5 .8)}{p_end}
+
+
+
+{title:Reference}
+
+{p 5 10}Basu, Kaushik and Foster, James E. (1998) On measuring literacy. Economic Journal, 
+vol.108, no.451, Nov., pp.1733-1749.{p_end}
+
+{p 5 10}Sen, A. (1985), Commodities and Capability. Amsterdam: North-Holland.{p_end}
+
+{p 5 10}Subramanian, S (2004) Measuring literacy: some extensions of the Basu-Foster framework. 
+Journal of Development Economics, vol.73, pp453-463.{p_end}
+
+
+
+{title:Author}
+
+{p 5}Joao Pedro Azevedo{p_end}
+{p 5}jazevedo@worldbank.org{p_end}
+{p 5}World Bank{p_end}
+
+
+
+{title:Also see}
+
+{p 4 13 2}Manual:  {hi:[R] lorenz}{p_end}
+{p 4 13 2}Online:  help for {help alorenz}; {help apoverty}; {help changemean} (if installed).{p_end}
+
+
+
+{title:Acknowledgements}
+
+{p 4 4 2}The financial support of UNESCO is gratefully acknowledge.{p_end} 
+{p 4 4 2}The usual disclaimer applies.{p_end}

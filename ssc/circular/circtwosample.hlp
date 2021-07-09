@@ -1,0 +1,115 @@
+{smcl}
+{* 6may2004}{...}
+{hline}
+help for {hi:circtwosample} 
+{hline}
+
+{title:Two-sample tests for circular data} 
+
+{p 8 17 2} 
+{cmd:circtwosample}
+{it:varlist}
+[{cmd:if} {it:exp}]
+[{cmd:in} {it:range}]
+{cmd:,}
+{cmd:by(}{it:byvar}{cmd:)}
+
+
+{title:Description} 
+
+{p 4 4 2}
+{cmd:circtwosample} carries out two-sample tests due to Watson (1962) and
+Kuiper (1960) for circular variables in {it:varlist} with scales between 0 and
+360 degrees.  The values of each variable are grouped according to the
+precisely two distinct non-missing values defined by {it:byvar} together with
+any restrictions imposed by {cmd:if} or {cmd:in}. The hypothesis under test is
+that the distributions so defined are identical. The test statistics are based
+on the empirical distribution functions of the two samples.
+
+{p 4 4 2} 
+Note that allowing a {it:varlist} is a convenience to allow many tests from a
+single command: the tests are separate and users searching for significant
+results are urged to consider carefully what they are doing. 
+
+
+{title:Remarks} 
+
+{p 4 4 2}For the Watson {it:U}-square statistic, critical values are given here
+for a few examples of sample sizes {it:n_1} and {it:n_2} and significance level
+{it:P}. For many problems with large or moderate samples, the values for
+infinite sizes will serve as adequate approximations.
+
+    {it:n}_1 {it:n}_2   {it:P} = 0.5      0.2      0.1      0.05     0.01     0.005    0.001
+      5   5       0.089    0.161    0.225    0.225
+      7   7       0.079    0.135    0.158    0.199    0.304    0.304
+      9   9       0.077    0.125    0.155    0.187    0.266    0.286    0.384
+     12  12       0.075    0.122    0.153    0.186    0.256    0.284    0.344
+     20  20       0.069    0.117    0.151    0.185    0.261    0.293    0.367
+     40  40       0.069    0.117    0.152    0.186    0.264    0.298    0.374
+    100 100       0.069    0.117    0.152    0.187    0.267    0.300    0.378
+    infinite      0.071    0.117    0.152    0.187    0.268    0.304    0.385
+
+{p 4 4 2}
+Fuller tables can be found in Mardia (1972, p.314), Batschelet (1981, p.348),
+Kanji (1999, p.210), Zar (1999, Table B.38) and Mardia and Jupp (2000, p.377);
+that of Zar is the most extensive of these.
+
+{p 4 4 2} 
+For the Kuiper statistics, tables can be found in Batschelet (1981, pp.341,
+346-7) and in Upton and Fingleton (1989, pp.393, 395). So long as at least one
+sample is more than 12, {it:k*} may be compared with the following critical
+values (see discussion in Upton and Fingleton, 1989, p.279):
+
+    {it:P} = 0.1      0.05      0.01      0.005      0.001
+        1.62     1.75      2.00      2.10       2.30
+
+
+{title:Options} 
+
+{p 4 8 2}{cmd:by()} indicating grouping is a required option.
+
+
+{title:Example} 
+
+{p 4 8 2}{cmd:. circtwosample dir, by(group)} 
+
+
+{title:References} 
+
+{p 4 8 2}Batschelet, E. 1981. {it:Circular statistics in biology.}
+London: Academic Press. (Edward Batschelet, 1914-1979) 
+
+{p 4 8 2}Kanji, G.K. 1999. {it:100 statistical tests.} 
+London: Sage. 
+
+{p 4 8 2}Kuiper, N.H. 1960. Tests concerning random points on a circle. 
+{it:Proceedings, Koninklijke Nederlandse Akademie van Wetenschappen} 
+Series A 68: 38-47. (Nicolaas Hendrik Kuiper, 1920-1994) 
+
+{p 4 8 2}Mardia, K.V. 1972. {it:Statistics of directional data.}
+London: Academic Press.
+
+{p 4 8 2}Mardia, K.V. and Jupp, P.E. 2000. {it:Directional statistics.}
+Chichester: John Wiley.
+
+{p 4 8 2}Upton, G.J.G. and Fingleton, B. 1989. 
+{it:Spatial data analysis by example. Volume 2: Categorical and directional data.}
+Chichester: John Wiley.
+
+{p 4 8 2}Watson, G.S. 1962. Goodness-of-fit tests on a circle. II. 
+{it:Biometrika} 49: 57-63. (Geoffrey Stuart Watson, 1921-1998) 
+
+{p 4 8 2}Zar, J.H. 1999. {it:Biostatistical analysis.} Upper Saddle River, NJ:
+Prentice-Hall.
+
+
+{title:Author}
+
+{p 4 4 2}Nicholas J. Cox, University of Durham, U.K.{break} 
+         n.j.cox@durham.ac.uk
+
+
+{title:Also see} 
+
+{p 4 13 2} 
+On-line:  help for {help circwwmardia}

@@ -1,0 +1,82 @@
+.-
+help for ^stselpre^                                            [ec]  Feb 10, 2010
+.-
+
+Fits proportional hazards model to case-cohort data
+---------------------------------------------------
+
+    ^stselpre^ varlist [^if^ exp] [^in^ range] [^, nohr^ ^l^evel^(^#^)^ ^self^
+               {^bre^slow | ^efr^on | ^exactm^ | ^exactp^} ^nosh^ow  ^force^ ]
+
+
+^stselpre^ is for use with survival-time data; see help @st@. Before using the command,
+data must be prepared for case-cohort analysis by ^stcascoh^; see help @stcascoh@.
+
+
+Description
+-----------
+
+^stselpre^ returns estimates and standard errors from proportional hazards fit to
+case-cohort data. Coefficients are estimated according to two methods:
+
+- Self-Prentice scheme. Risk sets uses just the sub-cohort member at risk,
+- Prentice scheme. Risk sets are augmented by non sub-cohort cases when they fail.
+
+The asymptotic Self-Prentice method variance-covariance matrix and standard errors are
+computed using the simplification  described in Therneau and Li (1999).
+
+The syntax of @predict@ following ^stselpre^ is as in ^stcox^
+
+
+Options
+-------
+
+^nohr^ specifies that coefficients rather than hazard ratios are to be displayed 
+    ^nohr^ may be typed at estimation or when replaying previously estimated results.
+
+^level(^#^)^ specifies the confidence level for the confidence intervals of the
+    coefficients; see help @level@. ^level^ may be also specified when replaying previously
+    estimated results.
+
+^self^ specifies that Self-Prentice method coefficient vector is to be saved in e(b).
+    Prentice method coefficients are saved by default. 
+
+^breslow^, ^efron^, ^exactm^, and ^exactp^ each specify a method for handling tied
+    deaths that the underlying ^stcox^ command executes. ^efron^ is the default.
+
+^noshow^ prevents ^stselpre^ from displaying the identities of the key st variables
+    above its output.
+
+^force^ prevents ^stselpre^ from doing some check on the data set previously prepared by ^stcascoh^.
+
+
+
+Examples
+--------
+
+        . ^stselpre stage age^
+        . ^xi: stselpre i.stage*i.histol, nohr self^
+
+
+Also see
+--------
+
+ Manual:  ^[R] stcox  [R] sttocc^
+On-line:  help for @stcascoh@  @stcox@  @sttocc@
+
+
+
+Reference
+---------
+
+Therneau M T, Li H: Computing the Cox Model for Case Cohort Designs.
+           Lifetime Data Analysis 1999; 5: 99-112.
+
+
+Author
+------
+
+      Enzo Coviello
+      Epidemiology Unit ASL BT 
+      Italy
+      enzo.coviello@@alice.it

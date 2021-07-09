@@ -1,0 +1,68 @@
+{smcl}
+{* 13dec2007}{...}
+{hline}
+help for {hi:hetred}
+{hline}
+
+{title:Heterogeneity reducing algorithms}
+
+{p 4 14 10}{cmd:hetred} {it:#logEffect} {it:#SElogEffect} {cmd:,} {cmdab:i2h:(}{it:#}{cmd:)} {cmdab:i2l:(}{it:#}{cmd:)} {cmdab:ID:(}{it:varname}{cmd:)} [random tuples max] 
+
+{p 4 14 10} where  {p_end}
+
+{p 4 14 10}{it:#logEffect} is the ln of the effect size estimate   {p_end}
+{p 4 14 10}{it:#SElogEffect} is the standard error of  ln of the effect size estimate {p_end}
+
+
+
+{title:Description}
+
+{p 4 10 10}{cmd:hetred} reduces the statistical heterogeneity of meta-analysis as measured by I-squared. It uses 2 differnt algorithms. A sequential one (default) and a combinatorial one ({it:tuples} option). 
+For further explanation please see {it:Reference} section below. Using the combinatorial algorithm can demand extreme CPU resources in case where more than 6-7 studies have to be dropped. 
+Always run the sequential algorithm (default option) to see how many studies have been ommitted. The difference between the two is that the combinatorial one might find a better combination ommitting fewer studies.
+
+
+ 
+{title:Options}
+
+{p 4 14 10}{hi:i2h} is the level of initial I-squared we want to evaluate, e.g. 50  {p_end}
+{p 4 14 10}{hi:i2l} is the level under which we want to drop the I-squared , e.g. 25  {p_end}
+{p 4 14 10}{hi:ID} is a variable that uniquely  identifies the studies {p_end}
+{p 4 14 10}{hi:random} uses the random effects model to synthesize the data. Fixed effects model is used by default.  {p_end}
+{p 4 14 10}{hi:tuples} uses the combinatorial algorithm as well. Drops 2, 3, etc studies together at each step till i2l level is reached.  {p_end}
+{p 4 14 10}{hi:max} returns the result that drops I-squared below i2l but has the largest possible heterogeneity.  {p_end}
+
+
+{title:Examples}
+	If I-squared >=75% then try to drop it under 25%
+     . hetred lnES selnES, i2h(75) i2l(25) ID(study)
+
+	The same as above but using random effects model (affects only the summary estimate and respective CIs)
+     . hetred lnES selnES, i2h(75) i2l(25) ID(study) random
+
+	Using combinatorial algorithm as well
+     . hetred lnES selnES, i2h(75) i2l(25) ID(study) random tuples
+
+	Asking for the maximum possible I-squared below the i2l (25%)
+     . hetred lnES selnES, i2h(75) i2l(25) ID(study) max
+
+
+{title:Author}
+
+ 
+{p 4 4 2}Nikolaos A Patsopoulos, Department of Hygiene and Epidemiology
+University of Ioannina School of Medicine {p_end}
+
+
+{title:Reference}
+
+{p 4 4 2}Patsopoulos NA, Evangelou E, Ioannidis JPA. {it:Sensitivity of between-study heterogeneity in meta-analysis: Proposed metrics and empirical evaluation}, Submitted{p_end}
+
+{title:Support}
+
+{p 4 12}{browse "mailto:npatsop@cc.uoi.gr?subject=info hetred":npatsop@cc.uoi.gr}{p_end}
+{p 4 12}{browse "mailto:npatsop@gmail.com?subject=info hetred":npatsop@gmail.com}{p_end}
+
+{title:Also see}
+
+{p 0 19}On-line:  help for {help metan}{p_end}

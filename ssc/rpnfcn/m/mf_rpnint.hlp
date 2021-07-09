@@ -1,0 +1,92 @@
+{smcl}
+{* 25jun2007}{...}
+{cmd:help mata MCatnode()}
+{cmd:help mata MCatwt()}
+{cmd:help mata tlMCatnode()}
+{cmd:help mata tlMCatwt()}
+{cmd:help mata intres()}
+{hline}
+{* index rpn Monte Carlo integration with stratified antithetic sampling mata}{...}
+{* index MCatnode()}{...}
+{* index MCatwt()}{...}
+{* index tlMCatnode()}{...}
+{* index tlMCatwt()}{...}
+{* index intres()}{...}
+
+{title:Title}
+
+{p 4 4 2} {bf:Functions for Monte Carlo integration with stratified antithetic sampling with rpnfcn()}
+
+
+{title:Syntax}
+
+{p 16 12 2}
+{bf:{ul:Command name}}{space 5} {ul:Argument}
+
+{p 16 12 2}
+{cmd:&MCatnode()}{space 6} {it:&ab}
+
+{p 16 12 2}
+{cmd:&MCatwt()}{space 8} {it:&ab}
+
+{p 16 12 2}
+{cmd:&tlMCatnode()}{space 4} {it:&a}
+
+{p 16 12 2}
+{cmd:&tlMCatwt()}{space 6} NULL
+
+{p 16 12 2}
+{cmd:&intres()}{space 8} NULL
+
+
+{title:Description}
+
+{p 4 4 2} These functions are to be used with {cmd:rpnfcn()}. The
+functions {cmd:&MCatnode()}, {cmd:&MCatwt()}, {cmd:&tlMCatnode()}, and
+{cmd:&tlMCatwt()} compute nodes and weights for numerical integration
+based on Monte Carlo with stratified antithetic sampling. The function
+{cmd:&intres()} computes the result by summing the evaluated nodes
+multiplied with the weights. 
+
+{title:Remarks}
+
+{p 4 4 2} {cmd:&MCatnode()} and {cmd:&tlMCatnode()} use the argument
+vector {it:ab} and {it:a}, respectively, to set up the nodes based on
+the matrix of uniformly distributed random variables presumed to be in
+the current top element of the stack in {cmd:rpnfcn()}. The number of
+columns of the matrix of uniformly distributed random variables equals
+the number of strata used in the integration, thus precision is
+improved when the number of columns is increased. {it:ab} must be a
+matrix with two columns specifying the lower and upper boundary of the
+integration interval, respectively, while {it:a} must be a column
+vector specifying the lower boundary for the indefinite integral.
+
+
+
+{title:Source code}
+
+{p 4 4 2}
+{view rpnint.mata, adopath asis:rpnint.mata}
+
+{title:Author}
+
+{p 4 4 2}{browse "http://www.almen.dk/hstovring":Henrik Støvring},
+Research Unit of General Practice, University of Southern Denmark.
+Please email
+{browse "mailto:hstovring@health.sdu.dk":hstovring@health.sdu.dk}
+if you have comments, questions or observe any problems.
+
+
+{title:Also see}
+
+{p 4 13 2}
+Manual:  {hi:[M] Mata Reference Manual}
+
+{p 4 13 2}
+Online:  help for 
+{bf:{help mata:[M-0] mata}},
+{bf:{help mf_rpnfcn: Evaluation of algorithm matrix using RPN}},
+{bf:{help mf_rpnbinop:RPN stack manipulation functions}}, 
+{bf:{help mf_rpnbinop:RPN binary operators}}, 
+{bf:{help mf_rpndist:RPN distribution functions}},
+{p_end}

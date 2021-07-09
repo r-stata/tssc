@@ -1,0 +1,136 @@
+{smcl}
+{hline}
+help for {hi:svrmean}, {hi:svrtotal}, {hi:svrratio}
+{hline}
+
+{title:Estimate means, totals, ratios, and proportions for survey data,}
+{title:with replication-based standard errors}
+
+{p 8 17}{cmd:svrmean}{space 2}{it:varlist} [{cmd:if} {it:exp}]
+		[{cmd:in} {it:range}] [{cmd:,} {it:common_options}]
+
+{p 8 17}{cmd:svrtotal} {it:varlist} [{cmd:if} {it:exp}]
+		[{cmd:in} {it:range}] [{cmd:,} {it:common_options}]
+
+{p 8 17}{cmd:svrratio} {it:varname} [{cmd:/}] {it:varname} [{it:varname}
+		[{cmd:/}] {it:varname ...}]  [{cmd:if} {it:exp}]
+		[{cmd:in} {it:range}] [{cmd:,} {it:common_options}]
+
+
+{p}where {it:common_options} are
+
+{p 17 17}{cmd:by(}{it:varlist}{cmd:)}
+	[{cmdab:com:plete}|{cmdab:av:ailable}]
+	{cmdab:nolab:el}
+	{cmdab:l:evel(}{it:#}{cmd:)} {cmd:ci} {cmd:deff} {cmd:deft} {cmd:meff}
+	{cmd:meft} {cmd:obs} {cmd:size}
+
+{p}{cmd:svrmean}, {cmd:svrratio}, and {cmd:svrtotal} typed without arguments
+redisplay previous results.  Any of the following options can be used when
+redisplaying results:
+
+{p 17 17}{cmdab:l:evel(}{it:#}{cmd:)} {cmd:ci} {cmd:deff} {cmd:deft}
+	{cmd:meff} {cmd:meft} {cmd:obs} {cmd:size}
+
+{p}These commands are for use with replication weights.  You must set your data for
+replication based survey estimation with {help svrset} or {help survwgt} before
+using these commands.
+
+
+{title:Description}
+
+{p}{cmd:svrmean}, {cmd:svrtotal}, and {cmd:svrratio} produce
+estimates of population means, totals, ratios, and proportions.
+Standard errors are calculated using a series of user-supplied replication weights, by
+balanced repeated replication (BRR) or the survey jackknife (JK1, JK2, or JKn).
+This is an alternate method to the Taylor series linearization methods
+used by Stata's {help svy} commands.  See {help survwgt} for details on the
+creation of weights and estimation of variances with replication.
+
+{p}Estimates for multiple subpopulations can be obtained using the {cmd:by()}
+option.  The {cmd:if} option will give estimates for a single population.  (Note that
+with replication methods, use of {cmd:if} or {cmd:in} produces correct estimates for
+the relevant subpopulation; this is not the case with {help svy} commands.)
+
+{p}{help svytest} will operate after these commands, as it does after their svy-based
+equivalents.
+
+
+{title:Options}
+
+{p 0 4}{cmd:by(}{it:varlist}{cmd:)} specifies that estimates be computed for
+the subpopulations defined by different values of the variable(s) in the
+{it:varlist}.
+
+{p 0 4}{cmd:nolabel} can only be specified when {cmd:by()} is specified.
+{cmd:nolabel} requests that numeric values rather than value labels be used to
+label output for subpopulations.  By default, value labels are used.
+
+{p 0 4}[{cmd:complete}|{cmd:available}] specifies how missing values
+are to be handled.  {cmd:complete} specifies that only observations with
+complete data should be used.  {cmd:available} specifies that all available
+nonmissing values be used for each estimate.
+
+{p 4 4}If neither {cmd:complete} nor {cmd:available} is specified,
+{cmd:available} is the default when there are missing values and there are two
+or more variables in the {it:varlist} (or four or more for {cmd:svyratio}).
+{cmd:complete} must be specified to compute the covariance or to use
+{cmd:svytest} after running the command; see help
+{help svytest}.
+
+{p 0 4}{cmd:level(}{it:#}{cmd:)} specifies the confidence level (i.e., nominal
+coverage rate), in percent, for confidence intervals; see help {help level}.
+
+{p 0 4}{cmd:ci} requests that confidence intervals be displayed.  If no
+display options are specified then, by default, confidence intervals are
+displayed.
+
+{p 0 4}{cmd:deff} requests that the design-effect measure deff be displayed.
+If no display options are specified then, by default, deff is displayed.
+
+{p 0 4}{cmd:deft} requests that the design-effect measure deft be displayed.
+See {hi:[R] svymean} for a discussion on deff and deft.
+
+{p 0 4}{cmd:meff} requests that the meff measure of misspecification effects
+be displayed.
+
+{p 0 4}{cmd:meft} requests that the meft measure of misspecification effects
+be displayed.  See {hi:[R] svymean} for a discussion of meff and meft.
+
+{p 0 4}{cmd:obs} requests that the number of observations used for the
+computation of the estimate be displayed for each row of estimates.
+
+{p 0 4}{cmd:size} requests that the estimate of the (sub)population size be
+displayed for each row of estimates.  The (sub)population size estimate equals
+the sum of the weights for those observations used for the mean/total/ratio
+estimate.
+
+
+{title:Examples}
+
+{p 8 12}{inp:. svrmean birthwgt {p_end}
+{p 8 12}{inp:. svrmean birthwgt, by(race)}{p_end}
+{p 8 12}{inp:. svrmean birthwgt if race==1}
+
+{p 8 12}{inp:. svrratio hdresult/tcresult}{p_end}
+
+
+{title:Methods and formulae}
+
+{p}See {help survwgt}.
+
+
+{title:Acknowledgements}
+
+{p}These commands consists largely of the ado file code from official Stata's {cmd:svy_x} command, which
+underlies {cmd:svymean}, {cmd:svytotal}, and {cmd:svyratio}.  They are
+modified to calculate (co)variances differently.
+I would like to thank Bobby Gutierrez at StataCorp for advice on implementation of BRR.
+
+
+{title:Author}
+
+	Nick Winter
+	Cornell University
+	nw53@cornell.edu
+

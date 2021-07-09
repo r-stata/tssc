@@ -1,0 +1,61 @@
+{smcl}
+{* 25jan2006}{...}
+{hline}
+help for {hi:heterogi}
+{hline}
+
+{title:Heterogeneity measures}
+
+{p 4 14 10}{cmd:heterogi} {it:#Q} {it:#df} [{cmd:,} {cmdab:l:evel(}{it:#}{cmd:)} {cmdab:f:ormat(%}{it:fmt}{cmd:)} {cmdab:nc:chi2} ]{p_end}
+
+{p 4 14 10} where  {p_end}
+
+{p 4 14 10}{it:#Q} is the Cochran's Chi-Square or Q-test   {p_end}
+{p 4 14 10}{it:#df} is the degrees of freedom {p_end}
+
+{title:Description}
+
+{p 4 10 10}{cmd:heterogi} provides the statistics H and I^2 to quantify heterogeneity in a meta-analysis.
+
+{title:Remark}
+
+{p 4 10 10}It is an immediate command, see help {help immed}. The Q-test can be obtained by {help metan} or {help meta} command.{p_end}
+ 
+{title:Options}
+
+{p 4 8 2}{cmdab:l:evel(}{it:#}{cmd:)} specifies the width of the confidence interval; see help {help level}.{p_end}
+
+{p 4 8 2}{cmdab:f:ormat(%}{it:fmt}{cmd:)} specifies the display format for presenting numbers in the table's cells.{p_end}
+
+{p 4 8 2}{cmdab:nc:chi2} specifies the use of the noncentral chi-squared distribution 
+to calculate confidence intervals. The default is the test-based confidence interval (Higgins and Thompson, 2002).{p_end}
+
+{title:Examples}
+
+     . {stata "heterogi 14.4 24"}
+     . {stata "heterogi 14.4 24, level(99)"}
+     . {stata "heterogi 14.1 11, nc"}
+     . {stata "heterogi 81.5 19, nc f(%3.2f)"}
+     . {stata "heterogi 41.5  7"}
+     . {stata "heterogi 130.3 3"}
+
+{title:Authors}
+
+{p 4 4 2}Nicola Orsini, Division of Nutritional Epidemiology, IMM, Karolinska Institutet, Sweden {p_end}
+{p 4 4 2}Julian P.T. Higgins, MRC Biostatistics Unit, Cambridge, UK {p_end}
+{p 4 4 2}Matteo Bottai, Arnold School of Public Health, University of South Carolina, USA {p_end}
+{p 4 4 2}Iain Buchan, Northwest Institute for Bio-Health Informatics, University of Manchester, UK {p_end}
+
+{title:Reference}
+
+{p 4 4 2}Higgins J.P.T. and Thompson S.G., {it:Quantifying heterogeneity in a meta-analysis}, Statistics in Medicine, 2002, 21: 1539-1558{p_end}
+
+{title:Support}
+
+{p 4 12}{browse "http://nicolaorsini.altervista.org"}{p_end}
+{p 4 12}{browse "mailto:nicola.orsini@ki.se?subject=info heterogi":nicola.orsini@ki.se}
+
+{title:Also see}
+
+{p 0 19}On-line:  help for {help metan}, {help meta} (if installed) {p_end}
+
