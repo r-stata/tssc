@@ -10,6 +10,7 @@ for(i in dir_ls('ssc')){
 
 # 获取 Stata 的简介
 info <- function(cmd){
+  print(cmd)
   readLines(paste0('ssc/', cmd, '/', cmd, '.pkg'))[1]
 }
 

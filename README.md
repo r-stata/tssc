@@ -1,6 +1,5 @@
 
-RStata 统计程序软件归档
-=======================
+# RStata 统计程序软件归档
 
 这里存放在 ssc 上所有的 Stata 命令以及我从 GitHub 上搜集的各种 Stata
 命令，另外也托管用户自编的 Stata
@@ -11,33 +10,37 @@ RStata 统计程序软件归档
 |:-----------------------------------------------------------------------------------------------:|:-----------------------------------------------------------------------------------------------:|
 | <img src="https://mdniceczx.oss-cn-beijing.aliyuncs.com/image_20201120143454.png" width="50%"/> | <img src="https://mdniceczx.oss-cn-beijing.aliyuncs.com/image_20201120143508.png" width="50%"/> |
 
-安装 tssc 命令
---------------
+## 安装 tssc 命令
 
-    * 从 Gitee 上安装
-    net install tssc.pkg, from("https://tidyfriday.gitee.io/tssc/") replace force
-    * 从 GitHub 上安装：
-    net install tssc.pkg, from("https://r-stata.github.io/tssc/") replace force
+``` stata
+* 从 Gitee 上安装
+net install tssc.pkg, from("https://tidyfriday.gitee.io/tssc/") replace force
+* 从 GitHub 上安装：
+net install tssc.pkg, from("https://r-stata.github.io/tssc/") replace force
+```
 
-安装 tssc 部署的 Stata 外部命令
--------------------------------
+## 安装 tssc 部署的 Stata 外部命令
 
-    * 查看命令列表
-    tssc list
+``` stata
+* 查看命令列表
+tssc list
 
-    * 安装命令（以 spmap 为例）
-    tssc install spmap, all replace
+* 安装命令（以 spmap 为例）
+tssc install spmap, all replace
+```
 
 另外你也可以使用 net install 安装：
 
-    * 从 Gitee 上安装：
-    net install spmap.pkg, from("https://tidyfriday.gitee.io/tssc/ssc/spmap/") all replace force
-    * 如果提示 Web Error 可以尝试从 GitHub 上安装：
-    net install spmap.pkg, from("https://r-stata.github.io/tssc/ssc/spmap/") all replace force
+``` stata
+* 从 Gitee 上安装：
+net install spmap.pkg, from("https://tidyfriday.gitee.io/tssc/ssc/spmap/") all replace force
+* 如果提示 Web Error 可以尝试从 GitHub 上安装：
+net install spmap.pkg, from("https://r-stata.github.io/tssc/ssc/spmap/") all replace force
+```
 
 ### TSSC 命令列表
 
-TSSC 上合计有 2981 个 Stata 外部命令：
+TSSC 上合计有 2987 个 Stata 外部命令：
 
 <details>
 <summary>
@@ -498,6 +501,7 @@ TSSC 上合计有 2981 个 Stata 外部命令：
 |         dashgph          |                                                                                                        module to construct dashed lines in scatterplots                                                                                                        |         tssc install dashgph          |
 |          dashln          |                                                                                                              module to add dashed lines to graphs                                                                                                              |          tssc install dashln          |
 |        datacheck         |                                                                                                  module to perform data checks and produce informative output                                                                                                  |        tssc install datacheck         |
+|         datadoc          |                                                                                                                                                                                                                                                                |         tssc install datadoc          |
 |          dataex          |                                                                                               module to generate a properly formatted data example for Statalist                                                                                               |          tssc install dataex          |
 |         datanet          |                                                                                            module to facilitate dataset organization for network analysis purposes                                                                                             |         tssc install datanet          |
 |         dataout          |                                                                                             module to export a dataset or tab-delimited file into various formats                                                                                              |         tssc install dataout          |
@@ -906,6 +910,8 @@ TSSC 上合计有 2981 个 Stata 外部命令：
 |         gintreg          |                                                                                                       module to perform Generalized Interval Regression                                                                                                        |         tssc install gintreg          |
 |           gipf           |                                                                                                        module to graphically display a log-linear model                                                                                                        |           tssc install gipf           |
 |           git            |                                                                                                               module to manage git repositories                                                                                                                |           tssc install git            |
+|          github          |                                                                                                                                                                                                                                                                |          tssc install github          |
+|       githubtools        |                                                                                                                                                                                                                                                                |       tssc install githubtools        |
 |        givgauss2         |                                                                                            module to estimate generalized two-parameter inverse Gaussian regression                                                                                            |        tssc install givgauss2         |
 |         glcurve          |                                                                                                      module to derive generalised Lorenz curve ordinates                                                                                                       |         tssc install glcurve          |
 |         glcurve7         |                                                                                     module to derive generalised Lorenz curve ordinates with unit record data (version 7)                                                                                      |         tssc install glcurve7         |
@@ -1493,6 +1499,7 @@ TSSC 上合计有 2981 个 Stata 外部命令：
 |        mcmclinear        |                                                                                                           module for MCMC sampling of linear models                                                                                                            |        tssc install mcmclinear        |
 |        mcmcstats         |                                                                                            module to compute convergence and summary statistics for MCMC estimation                                                                                            |        tssc install mcmcstats         |
 |         mcqscore         |                                                                                          module to score the Monetary Choice Questionnaire using logistic regression                                                                                           |         tssc install mcqscore         |
+|         md2smcl          |                                                                                                                                                                                                                                                                |         tssc install md2smcl          |
 |         mdensity         |                                                                                           module for univariate kernel density estimation, for variables or groups"                                                                                            |         tssc install mdensity         |
 |         mdepriv          |                                                                                                 module to compute synthetic indicators of multiple deprivation                                                                                                 |         tssc install mdepriv          |
 |          mdesc           |                                                                                                        module to tabulate prevalence of missing values                                                                                                         |          tssc install mdesc           |
@@ -2048,6 +2055,9 @@ TSSC 上合计有 2981 个 Stata 外部命令：
 |           rc2            |                                                                                                      module to estimate Goodman’s Row and Columns model 2                                                                                                      |           tssc install rc2            |
 |        rc\_spline        |                                                                                                          module to generate restricted cubic splines                                                                                                           |        tssc install rc\_spline        |
 |           rca            |                                                                                             module to compute various revealed comparative advantage (RCA) indices                                                                                             |           tssc install rca            |
+|          rcall           |                                                                                                                                                                                                                                                                |          tssc install rcall           |
+|     rcallcountrycode     |                                                                                                                                                                                                                                                                |     tssc install rcallcountrycode     |
+|     rcallstringdist      |                                                                                                                                                                                                                                                                |     tssc install rcallstringdist      |
 |           rcd            |                                                                                                               module to run commands recursively                                                                                                               |           tssc install rcd            |
 |         rcentile         |                                                                                                 module to compute robust confidence intervals for percentiles                                                                                                  |         tssc install rcentile         |
 |           rcl            |                                                                                            module for estimation and simulation of random coefficient logit models                                                                                             |           tssc install rcl            |
@@ -2855,7 +2865,6 @@ TSSC 上合计有 2981 个 Stata 外部命令：
 |         weakiv10         |                                                     module to perform weak-instrument-robust tests and confidence intervals for instrumental-variable (IV) estimation of linear, probit and tobit models"                                                      |         tssc install weakiv10         |
 |        weakivtest        |                                                                                   module to perform weak instrument test for a single endogenous regressor in TSLS and LIML                                                                                    |        tssc install weakivtest        |
 |          weathr          |                                                                                                            module to display US weather conditions                                                                                                             |          tssc install weathr          |
-|          weaver          |                                                                                                   module to produce dynamic reports in HTML, LaTeX and PDF"                                                                                                    |          tssc install weaver          |
 |          webdoc          |                                                                                              module to create a HTML or Markdown document including Stata output                                                                                               |          tssc install webdoc          |
 |         webimage         |                                                                                         module to print images from web files in pdf, png, jpeg, gif, and bmp format"                                                                                          |         tssc install webimage         |
 |       weeklyclaims       |                                                                                             module to Get Weekly Initial Jobless Claims from the US Dept. of Labor                                                                                             |       tssc install weeklyclaims       |
