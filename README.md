@@ -40,7 +40,7 @@ net install spmap.pkg, from("https://r-stata.github.io/tssc/ssc/spmap/") all rep
 
 ### TSSC 命令列表
 
-TSSC 上合计有 2987 个 Stata 外部命令：
+TSSC 上合计有 2985 个 Stata 外部命令：
 
 <details>
 <summary>
@@ -2056,8 +2056,6 @@ TSSC 上合计有 2987 个 Stata 外部命令：
 |        rc\_spline        |                                                                                                          module to generate restricted cubic splines                                                                                                           |        tssc install rc\_spline        |
 |           rca            |                                                                                             module to compute various revealed comparative advantage (RCA) indices                                                                                             |           tssc install rca            |
 |          rcall           |                                                                                                                                                                                                                                                                |          tssc install rcall           |
-|     rcallcountrycode     |                                                                                                                                                                                                                                                                |     tssc install rcallcountrycode     |
-|     rcallstringdist      |                                                                                                                                                                                                                                                                |     tssc install rcallstringdist      |
 |           rcd            |                                                                                                               module to run commands recursively                                                                                                               |           tssc install rcd            |
 |         rcentile         |                                                                                                 module to compute robust confidence intervals for percentiles                                                                                                  |         tssc install rcentile         |
 |           rcl            |                                                                                            module for estimation and simulation of random coefficient logit models                                                                                             |           tssc install rcl            |
