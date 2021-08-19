@@ -1,0 +1,31 @@
+---
+title: "tssc: 完整的 Stata 命令列表"
+subtitle: "微信公众号 RStata"
+output: html_document 
+---
+
+```{r echo=FALSE}
+haven::read_dta('cmdlist.dta') %>% 
+  mutate(install = paste("tssc install", cmd)) %>% 
+  mutate(download = paste0('<a target="_blank" href="', paste0("https://r-stata.github.io/tssc/ssczip/", cmd, ".zip"), '">', cmd ,'.pkg</a>')) %>% 
+  purrr::set_names(c("命令", "描述", "安装方法", "下载安装包")) %>% 
+  DT::datatable(width = "100%", height = "400px",
+    rownames = FALSE, # 去除表头
+    filter = "top", # 在顶部添加过滤控件
+    options = list(
+      autoWidth = TRUE,
+      pageLength = 50, # 每页显示的数量
+      order = list(0, "asc"),
+      initComplete = htmlwidgets::JS(
+        "function(settings, json) {",
+        "$(this.api().table().container()).css({'font-family': 'SourceHanSerifSC-Medium'});",
+        "}")
+    ),
+    escape = FALSE # 使得表格中的链接可以点击跳转
+  )
+```
+
+------------
+
+<h4 align="center">License</h4>
+<h6 align="center">MIT © 微信公众号 RStata</h6>
