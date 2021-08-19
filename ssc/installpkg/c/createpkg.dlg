@@ -1,0 +1,143 @@
+/*
+    Credit declaration
+    This command is a minor modification version of make.dlg from
+    E. F. Haghish
+    University of Göttingen
+    haghish@med.uni-goesttingen.de
+    https://github.com/haghish
+
+*/
+
+
+
+VERSION 14.0
+POSITION . . 400 320
+OK ok1,      label("OK")
+CANCEL can1, label("Cancel")
+
+RESET res1
+
+
+// Specify package license
+//      https://help.github.com/articles/licensing-a-repository/
+
+
+DIALOG createpkg, label("create and install package") 
+BEGIN
+
+	// replace
+	CHECKBOX inplus  10  10   @   ., option(inplus) default(1) ///
+	         label("install package") 
+			 
+	// replace
+	CHECKBOX replace  10  +20   @   ., option(replace) default(global reinstall) ///
+	         label("re-install package if exist and different") 			 
+			 
+	// force
+	CHECKBOX force  10    +20   @   ., option(force) default(global reinstallforce) ///
+	         label("re-install package if exist")  
+			 
+			 
+	// select installable files
+	TEXT tx_pkginfo  10   +40  . ., label("Package information")
+	
+	// title of the document
+	TEXT tx_name 10 +20 . ., label("pkg name*")
+	EDIT name    80 @ 310 19 , default("")
+	
+	// title of the document
+	TEXT tx_title 10 +20 . ., label("short title")
+	EDIT title    80 @ 310 19, default("")
+	
+	// verrsion
+	TEXT tx_version  10   +20  . 310, label("version")
+	EDIT version     80   @    310  19  , default("")
+	
+	// Description
+	TEXT tx_description  10   +20  . 310, label("description")
+	EDIT description     80   @    310  19  , default("")
+	
+	
+	TEXT tx_author 10   +20  . 310, label("author")
+	EDIT author 80 @ 310 19  
+	
+		  
+	// select installable files
+	TEXT tx_summary3  10   +40  . 310, label("select installation files*  (hold CTRL/CMD key)")
+	
+	TEXT tx_summary4  10   +20  . 310, label("installation")
+	FILE ffile	 80 @  310  .  , error("Open file")  ///
+	      label("select") ///
+	      tooltip("select the installation files. hold CTRL key for selecting multiple files") multiselect ///
+	      onchange("script mainReset") 
+		  		  
+	
+	// required
+	TEXT tx_required  10   +40  . 310, label("* stared items are required")
+	
+END
+
+
+
+// ---------------------------------------------------------
+// createpkg COMMAND
+// =========================================================
+PROGRAM command
+BEGIN
+	
+	// repository, name, title, version, author should be specified
+	if (!createpkg.name | createpkg.name.iseq("")) {
+		stopbox stop "pkg name is required"
+	}
+
+
+	// one of the installing or ancillary files should be specified
+	if (!createpkg.ffile ) {
+		stopbox stop "select installation files"
+	}
+	
+	put "createpkgdlg "
+	put createpkg.name 
+	put ", "
+
+	option createpkg.inplus	
+	option createpkg.replace						// replace
+	option createpkg.force						    // force	
+	
+	
+	if (createpkg.title) {
+			put "title(`"`"""'
+			put createpkg.title
+			put `"""'"') "
+	}
+		
+	if (createpkg.version) {
+		put "version(" `"""'
+		put createpkg.version
+		put `"""'") "
+	}
+	
+	if (createpkg.description) {
+		put "description(`"`"""'
+		put createpkg.description
+		put `"""'"') "
+	}
+	
+	
+	if (createpkg.author) {
+		put "author(" `"""'
+		put createpkg.author
+		put `"""'") "
+	}
+	
+	
+	if (createpkg.ffile) {
+		put "install(`"`"""'
+		require createpkg.ffile
+		put createpkg.ffile
+		put `"""'"') "
+	}
+	
+
+		
+END

@@ -1,0 +1,34 @@
+d 'DID2S': module to estimate a TWFE model using the two-stage difference-in-differences approach
+d
+d      did2s implements Two-Stage Difference-in-Differences by
+d Gardner (2021). A TWFE model for    outcomes is given by
+"d unit/group fixed effects, time fixed effects, treatment variable"
+"d (or    variables in the case of event study), and potentially"
+d covariates. To avoid the problems    with OLS estimation of
+d difference-in-differences/event-studies in the presence of
+"d staggered    treatment adoption, this method proceeds in two"
+d stages:        1. This program estimates the unit/group fixed
+"d effects, time fixed effects, and            potentially"
+d covariates using only untreated/not-yet-treated observations.
+d This is            used to predict counterfactual outcomes in all
+d periods and residualize the observed            outcome.
+d 2. Then regress the residualized outcome on the treatment
+d variable(s) to estimate the            treatment effects.
+d
+d KW: two-way fixed effects
+d KW: differences in differences
+d KW: DID
+d
+d Requires: Stata version 13
+d
+d Distribution-Date: 20210627
+d
+"d Author: Kyle Butts,  University of Colorado, Boulder"
+d Support: email   buttskyle96@@gmail.com
+d
+f did2s.ado
+f did2s.sthlp
+f did2s_example.do
+f df_het.dta
+f df_hom.dta
+f ./g/Gardner_2sdd.pdf

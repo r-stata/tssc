@@ -1,0 +1,50 @@
+d 'METASTRONG': module for estimating the proportion of true effect sizes above or below a threshold in random-effects meta-analysis
+d
+d  metastrong estimates evidence strength for scientifically
+d meaningful effects in meta-analyses under effect heterogeneity
+"d (ie, a nonzero estimated variance of the true effect"
+d distribution) as proposed by Mathur and VanderWeele (2019; 2020).
+d metastrong reports the estimated proportion of true effect sizes
+"d above or below a chosen threshold of a meaningful effect size q,"
+d together with confidence intervals derived via the bootstrap.
+d These metrics could help identify if (1) there are few effects of
+d scientifically meaningful size despite a “statistically
+"d significant” pooled point estimate, (2) there are some large"
+"d effects despite an apparently null point estimate, or (3) strong"
+d effects in the direction opposite the pooled estimate also
+"d regularly occur (and thus, potential effect  modifiers should be"
+"d examined) (Mathur and VanderWeele 2019). By default, metastrong"
+"d performs estimation using the ""calibrated"" method (Mathur and"
+d VanderWeele 2020) that extends work by Wang and Lee (2019).
+d metastrong first calibrates the effect estimates and then
+d computes the proportion of studies above (or below) q. This
+d method makes no assumptions about the distribution of true
+d effects and performs well in meta-analyses with as few as 10
+"d studies. When the parametric option is specified, metastrong"
+d estimates the proportion of studies above (or below) q using the
+d formulae devised by Mathur and VanderWeele (2019). This estimate
+d is then bootstrapped to derive confidence intervals. As with the
+"d calibrated method, at least 10 individual studies should be"
+d available in the meta-analysis for these estimates to provide
+d valid results. Point estimates produced by metastrong correspond
+d to those produced by the function prop_stronger in the R package
+d MetaUtility as of version 2.0.0. Confidence intervals will likely
+d differ between packages given that Stata and R use different
+d random number seeds for determining which studies to include in
+d each bootstrap repetition.
+d
+d KW: meta-analysis
+d KW: effect sizes
+d KW: heterogeneity
+d KW: sensitivity analysis
+d
+d Requires: Stata version 16
+d
+d Distribution-Date: 20200912
+d
+"d Author: Ariel Linden, Linden Consulting Group, LLC"
+d Support: email alinden@@lindenconsulting.org
+d
+f metastrong.ado
+f metastrong_nonpar.ado
+f metastrong.sthlp

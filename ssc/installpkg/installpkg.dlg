@@ -1,0 +1,79 @@
+* By Kerry Du, 2020-02-28
+
+VERSION 14.0
+POSITION . . 400 200
+OK ok1,      label("OK")
+CANCEL can1, label("Cancel")
+
+HELP hlp1, view("help installpkg")
+RESET res1
+
+DIALOG installpkg, label("Install package") 
+BEGIN
+	// replace
+	CHECKBOX replace  10  10   @   ., option(replace) default(0) ///
+	         label("replace files if they are exist and different") 
+	// force
+	CHECKBOX force  10    +20   @   ., option(force) default(0) ///
+	         label("replace files if they are exist")  
+		  
+	// select installable files
+	TEXT tx_summary3  10   +40  . 310, label("select installable zipfile/pkgfile or directory*")
+	
+	TEXT tx_summary4  10   +20  . 310, label("zip/pkg")
+	FILE ffile	 80 @  310  .  , error("Open file")  ///
+		  filter("zip|*.zip|pkg|*.pkg|All Files|*.*") ///
+	      label("select") ///
+	      tooltip("select the installation files")  ///
+	      onchange("script mainReset") 
+		  
+	TEXT tx_summary5  10   +30  . 310, label("directory")
+	FILE  fdir	 80 @  310  .  , error("Open file")  ///
+		  directory                                 ///
+	      label("select") ///
+	      tooltip("select the directory")  ///
+	      onchange("script mainReset") 	
+		  
+	// required
+	TEXT tx_required  10   +40  . 310, label("*directory option is ignored when zip/pkg is selected")
+	
+END
+
+
+
+
+// ---------------------------------------------------------
+// MAKE COMMAND
+// =========================================================
+PROGRAM command
+BEGIN
+
+	put "installpkgdlg"
+	put ", "
+		
+	// one of the installing  filesshould be specified
+	if (!installpkg.ffile & !installpkg.fdir) {
+		stopbox stop "select installation zip/pkg file or directory"
+	}
+	
+	option installpkg.replace						// replace
+	option installpkg.force						    // force
+	
+	if (installpkg.ffile) {
+		put "from(`"`"""'
+		require installpkg.ffile
+		put installpkg.ffile
+		put `"""'"') "
+	}
+		
+	if (installpkg.fdir) {
+		put "dirc(`"`"""'
+		require installpkg.fdir
+		put installpkg.fdir
+		put `"""'"') "	
+		
+	}
+	
+		
+END
+

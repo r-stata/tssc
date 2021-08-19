@@ -17,4 +17,5 @@ haven::read_dta('sschotPPPcur.dta') %>%
 # 没有的
 library(hotkeys)
 
-all %w/o% have
+all %w/o% have %>% 
+  dput

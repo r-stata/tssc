@@ -38,7 +38,7 @@ net install spmap.pkg, from("https://r-stata.github.io/tssc/ssc/spmap/") all rep
 
 ### TSSC 命令列表
 
-tssc 上合计有 2985 个 Stata 外部命令：
+tssc 上合计有 3104 个 Stata 外部命令：
 
 > 点击查看完整的命令列表：[cmdlist.html](https://r-stata.github.io/tssc/cmdlist.html)
 

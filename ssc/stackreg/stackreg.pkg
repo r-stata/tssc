@@ -1,0 +1,46 @@
+d 'STACKREG': module to perform stacked linear regression analysis to facilitate testing of multiple hypotheses
+d
+d   stackreg implements the stacked regression analysis which
+d facilitates statistical testing in a multiple testing framework.
+d The stacked regression approach was suggested e.g. by Weesie
+"d (STB, 1999) and Pei et al. (JBES, 2019).  stackreg is closely"
+"d realted to the  Stata command suest.  Unlike suest, which is"
+d extremely flexible in allowing inference involving regression
+"d models of different type, stackreg is confined to the linear"
+"d model.  However, in the context of the linear model, stackreg is"
+d more flexible than suest in several respects.  In detail: (i)
+"d stackreg accomodates multi-way clustering (Cameron et al., JBES,"
+"d 2011), if the community-distributed command cgmreg (by Jonah B."
+d Gelbach and Douglas L. Miller) is installed;  (ii) stackreg
+d allows imposing cross-equation constraints by specifying the
+d option constraints(); (iii) stackreg is a panel data command that
+"d accomodates fixed-effects estimation; (iv) unlike suest, stackrg"
+d applies a degrees-of-freedom adjustment that exactly reproduces
+d the standard errors equation-by-equantion estimation yields; (v)
+d stackreg allows for factor-variables in depvars.  stackreg can
+d also be regarded as more robust alternative to sureg and mvreg in
+d particular.  While these commands implement an FGLS estimator
+"d and, hence, rely on strong assumptions when estimating"
+"d cross-equation coefficient covariances, stackreg uses clustering"
+d in the same fashion as suest.  The stacked regression approach
+d may alternatively implemented using the data management tool
+d stack.
+d
+d KW: stacked regression
+d KW: mutiple hypotheses
+d KW: stack
+d
+d Requires: Stata version 12 and cgmreg from Colin Cameron's website at UC Davis
+d
+d Distribution-Date: 20210224
+d
+"d Author: Harald Tauchmann, Friedrich-Alexander-Universität Erlangen-Nürnberg"
+d Support: email harald.tauchmann@@fau.de
+d
+"d Author: Michael Oberfichtner, Institute for Employment Research (IAB)"
+d Support: email michael.oberfichtner2@@iab.de
+d
+f stackreg.ado
+f stackreg.sthlp
+f ./x/xtstackreg.ado
+f ./x/xtstackreg.sthlp

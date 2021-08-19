@@ -1,0 +1,53 @@
+/*
+This command is a minor modification version of makedlg from
+
+    E. F. Haghish
+    University of Göttingen
+    haghish@med.uni-goesttingen.de
+    https://github.com/haghish
+
+*/
+
+
+
+VERSION 14.0
+POSITION . . 250 60
+OK ok1,      label("Yes")
+CANCEL can1, label("No")
+
+
+
+// Specify package license
+//      https://help.github.com/articles/licensing-a-repository/
+
+
+DIALOG createtoc, label("create stata.toc") 
+BEGIN
+	  
+	// select installable files
+	TEXT tx_summary3  10  10   @   ., label("stata.toc NOT found.")
+	
+	CHECKBOX cinst   10  +20   .   ., option(cinst) default(1) ///
+	         label("Create a stata.toc file") 
+	//TEXT tx_summary4  10  +20   .   ., label("Create package information for installation?")
+
+	
+END
+
+
+
+// ---------------------------------------------------------
+// nextcpkg COMMAND
+// =========================================================
+PROGRAM command
+BEGIN
+	
+
+	put "createtocdlg "
+	put ", "
+	
+    option createtoc.cinst	
+    
+		    
+		
+END

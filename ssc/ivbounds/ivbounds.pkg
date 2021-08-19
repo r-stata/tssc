@@ -1,0 +1,46 @@
+d 'IVBOUNDS': module providing instrumental variable method to bound treatment-effects estimates with potentially misreported and endogenous program participation
+d
+d   ivbounds provides an estimate of the bounds of the average
+"d causal effect for compliers (Imbens and Angrist, 1994)    when"
+d both noncompliance and misreporting of treatment status are
+d present.  The approach follows the estimation    procedure
+d developed in Tommasi and Zhang (2020).  When iv(varname_iv) is
+"d binary, the command estimates the bounds    of the local average"
+d treatment effect (LATE).  When iv(varname_iv) is binary and
+"d covariates are included, the    command estimates the bounds of"
+"d the unconditional LATE (Frölich, 2007).  In both cases, the"
+d estimated bounds    coincide with those in Ura (2018).  When
+"d iv(varname_iv) is discrete, the command estimates the bounds of"
+d the    weighted average of LATEs (WLATE).  When iv(varname_iv) is
+"d discrete and covariates are included, the command    estimates"
+"d the bounds of the conditional WLATE.  In the latter case, the"
+d user must specify the number of strata to    discretise the
+d propensity score. The inference procedure follows Dehejia and
+d Wahba (1999) and Battistin and    Sianesi (2011).  ivbounds
+"d assumes a binary treat(varname_t), a binary or discrete"
+"d iv(varname_iv), and a continuous    or discrete depvar.  The"
+d bounds can be improved if external information regarding the
+d treatment misclassification    probability in treat(varname_t) is
+d available.
+d
+d KW: treatment effect
+d KW: average causal effect
+d KW: LATE
+d
+"d Requires: Stata version 13, moremata from SSC, bsweights from st0187, bs4rw from search"
+d
+d Distribution-Date: 20210621
+d
+"d Author: Andy Lin, Institute for Digital Research and Education"
+d Support: email alin@@oit.ucla.edu
+d
+"d Author: Denni Tommasi, Monash University"
+d Support: email denni.tommasi@@monash.edu
+d
+"d Author: Lina Zhang, Monash University"
+d Support: email lina.zhang@@monash.edu
+d
+f ivbounds.ado
+f ivbounds.sthlp
+f ivbounds_table2.do
+f ivbounds_dataset.dta

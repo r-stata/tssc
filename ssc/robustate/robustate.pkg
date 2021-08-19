@@ -1,0 +1,37 @@
+d 'ROBUSTATE': module for estimation and inference for the average treatment effect (ATE) robustly against the limited overlap
+d
+d  robustate executes estimation and inference for the average
+d treatment effect (ATE) robustly against the limited overlap based
+d on Sasaki and Ura (2021) -- Section 7.  Under the limited
+"d overlap, the naive inverse propensity score weighting estimation"
+d method suffers from large variances (if not a lack of the
+"d consistency or the asymptotic normality).  Hence, it is a common"
+d practice to trim observations whose propensity scores are close
+"d to 0 or 1, but such a practice biases the estimator of the ATE."
+"d This command, robustate, corrects the bias from the trimming and"
+d computes a valid standard error accounting for the bias
+"d correction.  The command accepts an outcome variable, a binary"
+"d treatment variable, and a list of control variables.  It returns"
+d both the naive inverse propensity score weighted estimate and the
+d robust inverse propensity score weighted estimate.  The robust
+d estimator in general yields a smaller standard error than the
+d naive estimator.
+d
+d KW: ATE
+d KW: estimation
+d KW: overlap
+d KW: propensity score
+d
+d Requires: Stata version 14.2
+d
+d Distribution-Date: 20210406
+d
+"d Author: Yuya Sasaki, Department of Economics, Vanderbilt University"
+d Support: email yuya.sasaki@@gmail.com
+d
+"d Author: Takuya Ura, University of California, Davis"
+d Support: email NA
+d
+f robustate.ado
+f robustate.sthlp
+f ./c/catheterization_small.dta
